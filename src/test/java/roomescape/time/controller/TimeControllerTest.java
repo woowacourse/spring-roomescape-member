@@ -13,13 +13,11 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.member.security.service.MemberAuthService;
 import roomescape.member.service.MemberService;
@@ -28,11 +26,10 @@ import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
 import roomescape.time.service.TimeService;
 
-@ExtendWith(SpringExtension.class)
 @WebMvcTest(TimeController.class)
 class TimeControllerTest {
 
-    private final Time time = new Time(4L, LocalTime.of(12,0));
+    private final Time time = new Time(4L, LocalTime.of(12, 0));
 
     @Autowired
     private MockMvc mockMvc;
@@ -55,9 +52,9 @@ class TimeControllerTest {
                 .writeValueAsString(new TimeRequest(time.getStartAt()));
 
         mockMvc.perform(post("/times")
-                                .content(content)
-                                .contentType("application/Json")
-                                .accept(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .contentType("application/Json")
+                        .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated());

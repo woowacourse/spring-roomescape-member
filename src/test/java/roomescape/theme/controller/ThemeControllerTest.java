@@ -31,7 +31,7 @@ import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
-public class ThemeControllerTest {
+class ThemeControllerTest {
 
     private final Theme theme = new Theme(1L, "포레스트", "공포 테마",
             "https://zerogangnam.com/storage/AVISPw8N2JfMThKvnk3VJzeY9qywIaYd8pTy46Xx.jpg");
@@ -55,7 +55,6 @@ public class ThemeControllerTest {
         token = jwtTokenProvider.createToken(member, new Date());
     }
 
-
     @Test
     @DisplayName("테마 정보를 정상적으로 저장하는지 확인한다.")
     void saveTheme() throws Exception {
@@ -65,7 +64,8 @@ public class ThemeControllerTest {
         String content = new ObjectMapper().writeValueAsString(
                 new ThemeRequest(theme.getName(), theme.getDescription(), theme.getThumbnail()));
 
-        mockMvc.perform(post("/themes").cookie(new Cookie("token", token)).content(content)
+        mockMvc.perform(post("/themes").cookie(new Cookie("token", token))
+                        .content(content)
                         .contentType("application/Json")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

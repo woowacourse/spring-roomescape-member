@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.member.domain.Member;
@@ -22,8 +20,7 @@ import roomescape.member.security.crypto.JwtTokenProvider;
 import roomescape.reservation.dto.ReservationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(scripts = {"/schema-test.sql", "/data-test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationIntegrationTest {
 
     @Value("${security.jwt.token.secret-key}")
@@ -39,7 +36,7 @@ class ReservationIntegrationTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        Member member = new Member(1,"valid", "testUser@email.com", "pass");
+        Member member = new Member(1, "valid", "testUser@email.com", "pass");
         JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(secretKey, validityInMilliseconds);
         token = jwtTokenProvider.createToken(member, new Date());
     }

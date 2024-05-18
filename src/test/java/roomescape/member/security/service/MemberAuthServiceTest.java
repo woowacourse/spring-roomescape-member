@@ -34,7 +34,7 @@ class MemberAuthServiceTest {
     @DisplayName("비밀번호 불일치시 인증 예외를 발생시킨다")
     void validateAuthentication_ShouldThrowException_WhenPasswordDoesNotMatch() {
         // Given
-        Member member = new Member("name","user@example.com",
+        Member member = new Member("name", "user@example.com",
                 "encodedPassword");
         MemberLoginRequest loginRequest = new MemberLoginRequest("user@example.com", "wrongPassword");
 

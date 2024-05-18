@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberProfileInfo;
@@ -39,15 +38,12 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 @WebMvcTest(ReservationController.class)
-@TestPropertySource(properties = {"security.jwt.token.secret-key=test_secret_key",
-                                  "security.jwt.token.expire-length=3600000"})
 class ReservationControllerTest {
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
-
     private final Reservation reservation = new Reservation(1L, "polla", LocalDate.MAX,
             new Time(1L, LocalTime.of(12, 0)), new Theme(1L, "polla", "폴라 방탈출", "이미지~"));
 
@@ -61,15 +57,13 @@ class ReservationControllerTest {
     @MockBean
     private MemberAuthService memberAuthService;
 
-    private JwtTokenProvider jwtTokenProvider;
-
     private String token;
 
     @BeforeEach
     void setUp() {
         Member member = new Member("valid", "testUser@email.com", "pass");
-        jwtTokenProvider = new JwtTokenProvider(secretKey, validityInMilliseconds);
-
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(secretKey, validityInMilliseconds);
+        token = jwtTokenProvider.createToken(member, new Date());
     }
 
     @Test
@@ -81,8 +75,7 @@ class ReservationControllerTest {
                 .thenReturn(true);
         Mockito.when(memberAuthService.extractPayload(any()))
                 .thenReturn(new MemberProfileInfo(1L, "어드민", "admin@email.com"));
-        Member member = new Member(1, "valid", "testUser@email.com", "pass");
-        token = jwtTokenProvider.createToken(member, new Date());
+
         String content = new ObjectMapper().registerModule(new JavaTimeModule())
                 .writeValueAsString(new ReservationRequest(reservation.getDate(), "polla", 1L, 1L));
 

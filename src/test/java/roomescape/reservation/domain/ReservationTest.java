@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
@@ -46,7 +45,7 @@ class ReservationTest {
     void validation_ShouldThrowException_WhenNameContainsSymbol() {
         assertAll(() -> {
             Throwable pastDateReservation = assertThrows(BadRequestException.class,
-                    () -> new Reservation("@특수문자", LocalDate.now(), new Time(1L, LocalTime.of(12,0)), new Theme(1L)));
+                    () -> new Reservation("@특수문자", LocalDate.now(), new Time(1L, LocalTime.of(12, 0)), new Theme(1L)));
             assertEquals("특수문자가 포함된 이름으로 예약을 시도하였습니다.", pastDateReservation.getMessage());
         });
     }

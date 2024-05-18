@@ -14,7 +14,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.time.domain.Time;
 
 @JdbcTest
-@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/schema-test.sql", "/data-test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class TimeJdbcDaoTest {
 
     private final TimeJdbcDao timeJdbcDao;
@@ -27,7 +27,7 @@ class TimeJdbcDaoTest {
     @Test
     @DisplayName("시간 데이터들이 잘 저장되는지 확인.")
     void saveTime() {
-        Time time = new Time(LocalTime.of(12,0));
+        Time time = new Time(LocalTime.of(12, 0));
         timeJdbcDao.save(time);
 
         Assertions.assertThat(time.getId())
@@ -50,7 +50,7 @@ class TimeJdbcDaoTest {
         timeJdbcDao.deleteById(3L);
 
         Assertions.assertThat(timeJdbcDao.findAllReservationTimesInOrder()
-                                      .size())
+                        .size())
                 .isEqualTo(2);
     }
 

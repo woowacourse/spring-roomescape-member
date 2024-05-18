@@ -18,7 +18,7 @@ import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRegistrationInfo;
 
 @JdbcTest
-@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/schema-test.sql", "/data-test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class MemberJdbcDaoTest {
 
     private final MemberJdbcDao memberDao;
@@ -54,7 +54,7 @@ class MemberJdbcDaoTest {
     void findAll_ShouldReturnAllRegistration_WhenCalled() {
         // Given
         List<Member> expectedMembers = List.of(
-                new Member(1,"어드민", "admin@admin.com", "1234"),
+                new Member(1, "어드민", "admin@admin.com", "1234"),
                 new Member(2, "어드민2", "admin2@admin.com", "1234"),
                 new Member(3, "도비", "kimdobby@wootaeco.com", "pass1"),
                 new Member(4, "피케이", "pke@best.com", "pass2"),

@@ -16,7 +16,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 @JdbcTest
-@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/schema-test.sql", "/data-test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
 
     private final ReservationJdbcDao reservationDao;
