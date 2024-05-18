@@ -20,8 +20,8 @@ public class MemberService {
     }
 
     public Member createMember(Cookie[] cookies) {
-        Long memberId = jwtTokenProvider.getMemberIdFromToken(cookies);
-        return memberRepository.findById(memberId);
+        String email = jwtTokenProvider.getMemberEmailFromToken(cookies);
+        return memberRepository.findByEmail(email);
     }
 
     public List<MemberResponse> findAll() {

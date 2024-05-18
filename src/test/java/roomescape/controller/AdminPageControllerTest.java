@@ -83,7 +83,7 @@ class AdminPageControllerTest {
                             .cookie("token", accessToken)
                             .when().get("/admin")
                             .then().log().all()
-                            .statusCode(401);
+                            .statusCode(400);
                 })
         );
     }

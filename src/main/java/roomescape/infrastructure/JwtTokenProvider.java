@@ -22,18 +22,18 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .claim("id", member.getId())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
-    public Long getMemberIdFromToken(Cookie[] cookies) {
+    public String getMemberEmailFromToken(Cookie[] cookies) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(extractTokenFromCookie(cookies))
-                .getBody().get("id", Long.class);
+                .getBody()
+                .getSubject();
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
