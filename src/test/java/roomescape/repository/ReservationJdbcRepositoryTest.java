@@ -12,11 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.UserName;
-import roomescape.exception.ExistingEntryException;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.global.exception.exceptions.ExistingEntryException;
+import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.time.domain.ReservationTimeRepository;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -31,17 +35,21 @@ class ReservationJdbcRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @BeforeEach
     void setUp() {
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
+        Member member = memberRepository.findByMemberId(1L);
         Reservation reservation1 = new Reservation(
-                new UserName("초롱"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
-                theme
+                theme,
+                member
         );
         reservationRepository.save(reservation1);
     }
@@ -74,11 +82,12 @@ class ReservationJdbcRepositoryTest {
         LocalDate date = LocalDate.parse("2025-10-05");
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         Theme theme = themeRepository.findByThemeId(1L);
+        Member member = memberRepository.findByMemberId(1L);
         Reservation reservation2 = new Reservation(
-                new UserName("메이슨"),
                 date,
                 reservationTime,
-                theme
+                theme,
+                member
         );
 
         //when & then

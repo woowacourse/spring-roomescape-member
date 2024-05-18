@@ -14,17 +14,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.UserName;
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.ReservationCreateRequest;
-import roomescape.dto.ReservationResponse;
-import roomescape.exception.NotExistingEntryException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.reservation.dto.AvailableTimeResponse;
+import roomescape.auth.dto.LoginMember;
+import roomescape.reservation.dto.ReservationCreateRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.global.exception.exceptions.NotExistingEntryException;
+import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.time.domain.ReservationTimeRepository;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.reservation.application.ReservationService;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -41,17 +44,21 @@ class ReservationServiceTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @BeforeEach
     void setUp() {
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
+        Member member = memberRepository.findByMemberId(1L);
         Reservation reservation1 = new Reservation(
-                new UserName("초롱"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
-                theme
+                theme,
+                member
         );
         reservationRepository.save(reservation1);
     }
@@ -82,18 +89,18 @@ class ReservationServiceTest {
     void checkReservationCreate() {
         //given
         ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(
-                "메이슨",
                 LocalDate.parse("2025-04-10"),
                 1L,
                 1L
         );
+        LoginMember loginMember = new LoginMember("어드민");
 
         //when
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest);
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, loginMember);
 
         //then
         assertAll(
-                () -> assertThat(reservationResponse.name()).isEqualTo("메이슨"),
+                () -> assertThat(reservationResponse.memberResponse().name()).isEqualTo("어드민"),
                 () -> assertThat(reservationResponse.date()).isEqualTo("2025-04-10"),
                 () -> assertThat(reservationResponse.time().id()).isEqualTo(1L),
                 () -> assertThat(reservationResponse.theme().id()).isEqualTo(1L)
@@ -105,12 +112,12 @@ class ReservationServiceTest {
     void checkReservationDelete() {
         //given
         ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(
-                "메이슨",
                 LocalDate.parse("2025-04-10"),
                 1L,
                 1L
         );
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest);
+        LoginMember loginMember = new LoginMember("어드민");
+        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, loginMember);
 
         //when & then
         assertDoesNotThrow(() -> reservationService.delete(reservationResponse.id()));
@@ -121,12 +128,12 @@ class ReservationServiceTest {
     void checkReservationDeleteFail() {
         //given
         ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(
-                "메이슨",
                 LocalDate.parse("2025-04-10"),
                 1L,
                 1L
         );
-        reservationService.create(reservationCreateRequest);
+        LoginMember loginMember = new LoginMember("어드민");
+        reservationService.create(reservationCreateRequest, loginMember);
 
         //when & then
         assertThatThrownBy(() -> reservationService.delete(0L))

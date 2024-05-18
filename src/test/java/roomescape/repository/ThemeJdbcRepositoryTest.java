@@ -12,12 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
-import roomescape.domain.UserName;
-import roomescape.exception.ExistingEntryException;
-import roomescape.exception.ReferencedRowExistsException;
+import roomescape.member.domain.Member;
+import roomescape.reservation.domain.Reservation;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.global.exception.exceptions.ExistingEntryException;
+import roomescape.global.exception.exceptions.ReferencedRowExistsException;
+import roomescape.member.domain.MemberRepository;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.time.domain.ReservationTimeRepository;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -30,6 +34,9 @@ class ThemeJdbcRepositoryTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     @DisplayName("중복된 테마 추가가 불가능한 지 확인한다.")
@@ -54,11 +61,12 @@ class ThemeJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
+        Member member = memberRepository.findByMemberId(1L);
         reservationRepository.save(new Reservation(
-                new UserName("메이슨"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
-                theme
+                theme,
+                member
         ));
 
         //when & then
@@ -73,13 +81,13 @@ class ThemeJdbcRepositoryTest {
     @DisplayName("주간 인기 테마 목록이 10개인지 확인한다.")
     void checkWeeklyHotThemesSize() {
         //given
-        LocalDate start = LocalDate.parse("2024-04-26");
-        LocalDate end = LocalDate.parse("2024-05-02");
-        Integer limit = 10;
-        Integer offset = 0;
+        LocalDate start = LocalDate.parse("2024-05-12");
+        LocalDate end = LocalDate.parse("2024-05-19");
+        Integer page = 10;
+        Integer size = 0;
 
         //when
-        List<Theme> themes = themeRepository.findHotThemesByDurationAndCount(start, end, limit, offset);
+        List<Theme> themes = themeRepository.findHotThemesByDurationAndCount(start, end, page, size);
 
         //then
         assertThat(themes.size()).isEqualTo(10);

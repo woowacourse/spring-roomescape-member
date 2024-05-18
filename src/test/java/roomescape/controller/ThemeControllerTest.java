@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.domain.Theme;
+import roomescape.theme.domain.Theme;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -143,16 +143,16 @@ public class ThemeControllerTest {
     @Test
     @DisplayName("주간 인기 테마 목록 조회 API 작동을 확인한다")
     void checkWeeklyHotThemes() {
-        LocalDate start = LocalDate.parse("2024-05-02");
+        LocalDate start = LocalDate.parse("2024-05-19");
         LocalDate end = start.minusDays(7);
-        Integer limit = 10;
-        Integer offset = 0;
+        Integer page = 10;
+        Integer size = 0;
 
         RestAssured.given().log().all()
                 .when().get("themes/hot?start=" + start +
                         "&end=" + end +
-                        "&limit=" + limit +
-                        "&offset=" + offset
+                        "&page=" + page +
+                        "&size=" + size
                 )
                 .then().log().all()
                 .statusCode(200);

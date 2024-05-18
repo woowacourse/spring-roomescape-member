@@ -11,6 +11,7 @@
 ### 사용자 페이지
 - localhost:8080 요청 시 인기 테마 페이지가 응답할 수 있도록 구현한다.
 - localhost:8080/reservation 요청 시 사용자 예약 페이지가 응답할 수 있도록 구현한다.
+- localhost:8080/login 요청 시 사용자 로그인 페이지가 응답할 수 있도록 구현한다.
 
 ### 기능
 - 예약 관리 페이지 로드 시 호출되는 예약 목록 조회 API도 함께 구현한다.
@@ -21,6 +22,8 @@
 - 테마 추가 API와 삭제 API를 구현한다.
 - 예약 가능 시간 조회 API를 구현한다.
 - 인기 테마 목록 조회 API를 구현한다.
+- 로그인 요청 API를 구현한다.
+- 로그인 인증 정보 조회 API를 구현한다.
 
 ## 2. 요구 사항 목록
 ### 어드민 페이지
@@ -69,6 +72,16 @@
 - [x] 인기 테마 목록을 조회한다.
   - [x] 인기 테마의 조회 시작일, 종료일, 테마 개수는 사용자의 요청에 따라 동적으로 처리한다. 
   - [x] 최근 일주일 기준 방문이 많은 테마 상위 10개를 조회한다.
+- [x] 로그인 페이지를 응답한다.
+
+### 로그인 기능
+- [x] 로그인을 요청한다.
+  - [x] Email과 Password를 이용해서 멤버를 조회한다.
+  - [x] 조회한 멤버로 토큰을 제작한다.
+  - [x] Cookie를 만들어 응답한다.
+- [x] 인증 정보를 조회한다.
+  - [x] Cookie에서 토큰 정보를 추출한다.
+  - [x] 멤버를 찾아 멤버 정보를 응답한다.
 
 ## 3. API 명세
 
@@ -92,9 +105,43 @@ Content-Type: application/json
       "time": {
         "id": 1,
         "startAt": "10:00"
+      },
+      "theme": {
+        "id": 1,
+        "name": "테마명01",
+        "description": "테마 설명01",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
       }
     }
   ]
+}
+```
+
+### 예약 단건 조회
+- Request
+```http request
+GET /reservations/1 HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+```
+```json
+{
+  "id": 1,
+  "name": "브라운",
+  "date": "2024-08-05",
+  "time": {
+    "id": 1,
+    "startAt": "10:00"
+  },
+  "theme": {
+    "id": 1,
+    "name": "테마명01",
+    "description": "테마 설명01",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
 }
 ```
 
@@ -166,6 +213,23 @@ Content-Type: application/json
 }
 ```
 
+### 예약 시간 단건 조회
+- Request
+```http request
+GET /times/1 HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+```
+```json
+{
+  "id": 1,
+  "startAt": "10:00"
+}
+```
+
 ### 예약 시간 추가
 - Request
 ```http request
@@ -219,6 +283,25 @@ Content-Type: application/json
       "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
     }
   ]
+}
+```
+
+### 테마 단건 조회
+- Request
+```http request
+GET /themes/1 HTTP/1.1
+```
+- Response
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+```
+```json
+{
+  "id": 1,
+  "name": "레벨2 탈출",
+  "description": "우테코 레벨2를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
 }
 ```
 
@@ -281,8 +364,9 @@ content-type: application/json
 
 ### 인기 테마 목록 조회
 - Request
+
 ```http request
-GET /themes/hot?start=${start}&end=${end}&limit=${limit}&offset=${offset} HTTP/1.1
+GET /themes/hot?start=${start}&end=${end}&page=${page}&size=${size} HTTP/1.1
 content-type: application/json
 ```
 - Response
@@ -296,5 +380,49 @@ content-type: application/json
       "description": "테마 설명"
     }
   ]
+}
+```
+
+### 로그인 요청
+- Request
+```http request
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+```
+```json
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+```
+- Response
+```http request
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+### 인증 정보 조회
+- Request
+```http request
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+```
+
+- Response
+```http request
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+```
+```json
+{
+  "name": "어드민"
 }
 ```
