@@ -83,7 +83,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 생성 기능을 확인한다.")
-    void checkReservationCreate() {
+    void checkReservationCreateUserReservation() {
         //given
         ReservationCreateRequest reservationCreateRequest = new ReservationCreateRequest(
                 LocalDate.parse("2025-04-10"),
@@ -94,7 +94,8 @@ class ReservationServiceTest {
         Member member = new Member(Role.ADMIN, "admin1@email.com", "password");
 
         //when
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, member);
+        ReservationResponse reservationResponse = reservationService.createUserReservation(reservationCreateRequest,
+                member);
 
         //then
         assertAll(
@@ -115,7 +116,8 @@ class ReservationServiceTest {
                 1L
         );
         Member member = new Member(Role.ADMIN, "admin1@email.com", "password");
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, member);
+        ReservationResponse reservationResponse = reservationService.createUserReservation(reservationCreateRequest,
+                member);
 
         //when & then
         assertDoesNotThrow(() -> reservationService.delete(reservationResponse.id()));
@@ -131,7 +133,8 @@ class ReservationServiceTest {
                 1L
         );
         Member member = new Member(Role.ADMIN, "admin1@email.com", "password");
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest, member);
+        ReservationResponse reservationResponse = reservationService.createUserReservation(reservationCreateRequest,
+                member);
 
         //when & then
         assertThatThrownBy(() -> reservationService.delete(0L))

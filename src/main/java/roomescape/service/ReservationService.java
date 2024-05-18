@@ -61,29 +61,28 @@ public class ReservationService {
         return availableTimeResponses;
     }
 
-    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest, Member member) {
-        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
-        validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
-        Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
-        Reservation reservation = new Reservation(
-                member,
-                reservationCreateRequest.date(),
-                reservationTime,
-                theme
-        );
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationResponse.from(savedReservation);
+    public ReservationResponse createUserReservation(ReservationCreateRequest reservationCreateRequest, Member member) {
+        Long timeId = reservationCreateRequest.timeId();
+        Long themeId = reservationCreateRequest.themeId();
+        LocalDate date = reservationCreateRequest.date();
+        return createReservation(member, timeId, themeId, date);
     }
 
     public ReservationResponse createAdminReservation(ReservationAdminCreateRequest reservationAdminCreateRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(
-                reservationAdminCreateRequest.timeId());
-        validateAvailableDateTime(reservationAdminCreateRequest.date(), reservationTime.getStartAt());
-        Theme theme = themeRepository.findByThemeId(reservationAdminCreateRequest.themeId());
+        Long timeId = reservationAdminCreateRequest.timeId();
+        Long themeId = reservationAdminCreateRequest.themeId();
+        LocalDate date = reservationAdminCreateRequest.date();
         Member member = memberRepository.findById(reservationAdminCreateRequest.memberId());
+        return createReservation(member, timeId, themeId, date);
+    }
+
+    private ReservationResponse createReservation(Member member, Long timeId, Long themeId, LocalDate date) {
+        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(timeId);
+        validateAvailableDateTime(date, reservationTime.getStartAt());
+        Theme theme = themeRepository.findByThemeId(themeId);
         Reservation reservation = new Reservation(
                 member,
-                reservationAdminCreateRequest.date(),
+                date,
                 reservationTime,
                 theme
         );
