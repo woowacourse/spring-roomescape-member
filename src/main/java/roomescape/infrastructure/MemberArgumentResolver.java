@@ -7,26 +7,28 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.Member;
-import roomescape.service.MemberService;
+import roomescape.domain.LoginMember;
 
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberArgumentResolver(MemberService memberService) {
-        this.memberService = memberService;
+    public MemberArgumentResolver(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().isAssignableFrom(Member.class);
+        return parameter.getParameterType().isAssignableFrom(LoginMember.class);
     }
 
     @Override
-    public Member resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public LoginMember resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                       NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
+            throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        return memberService.createMember(request.getCookies());
+        Long id = jwtTokenProvider.getMemberIdFromToken(request.getCookies());
+        String name = jwtTokenProvider.getMemberNameFromToken(request.getCookies());
+        return new LoginMember(id, name);
     }
 }

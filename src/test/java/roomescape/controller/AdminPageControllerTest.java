@@ -34,7 +34,6 @@ class AdminPageControllerTest {
     @DisplayName("방탈출 어드민 메인 페이지 조회를 확인한다")
     Stream<DynamicTest> showAdminMainPage() {
         Map<String, String> login = Map.of(
-                "role", "admin",
                 "email", "admin1@email.com",
                 "password", "password"
         );

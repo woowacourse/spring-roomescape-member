@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
@@ -91,7 +91,7 @@ class ReservationServiceTest {
                 1L
         );
 
-        Member member = new Member(Role.ADMIN, "admin1@email.com", "password");
+        LoginMember member = new LoginMember(2L, "유저");
 
         //when
         ReservationResponse reservationResponse = reservationService.createUserReservation(reservationCreateRequest,
@@ -115,7 +115,7 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        Member member = new Member(Role.ADMIN, "admin1@email.com", "password");
+        LoginMember member = new LoginMember(1L, "관리자");
         ReservationResponse reservationResponse = reservationService.createUserReservation(reservationCreateRequest,
                 member);
 
@@ -132,7 +132,7 @@ class ReservationServiceTest {
                 1L,
                 1L
         );
-        Member member = new Member(Role.ADMIN, "admin1@email.com", "password");
+        LoginMember member = new LoginMember(1L, "관리자");
         ReservationResponse reservationResponse = reservationService.createUserReservation(reservationCreateRequest,
                 member);
 

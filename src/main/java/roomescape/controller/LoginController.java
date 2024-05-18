@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.domain.Member;
+import roomescape.domain.LoginMember;
 import roomescape.dto.request.MemberCreateRequest;
 import roomescape.dto.response.MemberLoginResponse;
 import roomescape.dto.response.TokenResponse;
@@ -41,7 +41,7 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<MemberLoginResponse> checkLogin(Member member) {
+    public ResponseEntity<MemberLoginResponse> checkLogin(LoginMember member) {
         return ResponseEntity.ok().body(MemberLoginResponse.from(member));
     }
 }

@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -61,22 +62,24 @@ public class ReservationService {
         return availableTimeResponses;
     }
 
-    public ReservationResponse createUserReservation(ReservationCreateRequest reservationCreateRequest, Member member) {
+    public ReservationResponse createUserReservation(ReservationCreateRequest reservationCreateRequest,
+                                                     LoginMember member) {
         Long timeId = reservationCreateRequest.timeId();
         Long themeId = reservationCreateRequest.themeId();
         LocalDate date = reservationCreateRequest.date();
-        return createReservation(member, timeId, themeId, date);
+        return createReservation(member.id(), timeId, themeId, date);
     }
 
     public ReservationResponse createAdminReservation(ReservationAdminCreateRequest reservationAdminCreateRequest) {
+        Long memberId = reservationAdminCreateRequest.memberId();
         Long timeId = reservationAdminCreateRequest.timeId();
         Long themeId = reservationAdminCreateRequest.themeId();
         LocalDate date = reservationAdminCreateRequest.date();
-        Member member = memberRepository.findById(reservationAdminCreateRequest.memberId());
-        return createReservation(member, timeId, themeId, date);
+        return createReservation(memberId, timeId, themeId, date);
     }
 
-    private ReservationResponse createReservation(Member member, Long timeId, Long themeId, LocalDate date) {
+    private ReservationResponse createReservation(Long memberId, Long timeId, Long themeId, LocalDate date) {
+        Member member = memberRepository.findById(memberId);
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(timeId);
         validateAvailableDateTime(date, reservationTime.getStartAt());
         Theme theme = themeRepository.findByThemeId(themeId);
