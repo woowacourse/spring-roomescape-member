@@ -1,0 +1,15 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:database
+logging:
+  level:
+    org.springframework.jdbc.core.JdbcTemplate: WARN
+    org.springframework.jdbc.datasource.init.ScriptUtils: WARN
+security:
+  jwt:
+    token:
+      secret-key: hellowootecoworldhihowareyouiamfinethankyouandyou
+      expire-length: 3600000 #unit hour(ms): 1hour/60minutes
