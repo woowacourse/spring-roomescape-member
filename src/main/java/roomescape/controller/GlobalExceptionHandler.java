@@ -32,6 +32,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         e.printStackTrace();
-        return new ResponseEntity<>("서버에서 예상치 못한 에러가 발생했습니다." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("서버에서 예상치 못한 에러가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

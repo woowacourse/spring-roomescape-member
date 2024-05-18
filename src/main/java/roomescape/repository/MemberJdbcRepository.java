@@ -5,7 +5,6 @@ import javax.sql.DataSource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
@@ -14,7 +13,6 @@ import roomescape.domain.Role;
 public class MemberJdbcRepository implements MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
     private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
@@ -26,9 +24,6 @@ public class MemberJdbcRepository implements MemberRepository {
 
     public MemberJdbcRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("member")
-                .usingGeneratedKeyColumns("id");
     }
 
     @Override
