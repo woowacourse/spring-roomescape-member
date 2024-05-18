@@ -30,7 +30,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
         RestAssured.given().log().all()
                 .cookie("token", tokenFixture.adminToken)
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().as(reservationListFormat);

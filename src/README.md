@@ -79,7 +79,7 @@
 | GET         | `/`                    | 사용자 메인 페이지   |
 | GET         | `/reservation`         | 예약 페이지       |
 | GET         | `/login`               | 로그인 페이지      |
-| GET         | `/reservations`        | 예약 목록 조회     |
+| GET         | `/admin/reservations`  | 예약 목록 조회     |
 | POST        | `/reservations`        | 예약 추가        |
 | GET         | `/reservations/filter` | 예약 목록 필터링    |
 | DELETE      | `/reservations/{id}`   | 예약 삭제        |

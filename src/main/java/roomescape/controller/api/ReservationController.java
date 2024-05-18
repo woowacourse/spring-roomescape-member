@@ -21,14 +21,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
-        List<ReservationResponse> responses = reservationService.getAllReservations();
-
-        return ResponseEntity.ok()
-                .body(responses);
-    }
-
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservation(
             @RequestBody MemberReservationRequest request,
