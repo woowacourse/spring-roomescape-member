@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import roomescape.acceptance.BaseAcceptanceTest;
-import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
@@ -57,7 +56,7 @@ class ReservationTimeAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자가 예약 시간을 삭제한다.")
     @Nested
-    class deleteReservationTime extends NestedAcceptanceTest {
+    class deleteReservationTime {
 
         @DisplayName("정상 작동")
         @Test

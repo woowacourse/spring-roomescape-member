@@ -29,7 +29,7 @@ class PageAccessAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자만 접근 가능한 페이지가 있다.")
     @Nested
-    class pagesOnlyForAdmin extends NestedAcceptanceTest {
+    class pagesOnlyForAdmin {
 
         private static final String ADMIN_MAIN = "/admin";
         private static final String ADMIN_RESERVATION = "/admin/reservation";

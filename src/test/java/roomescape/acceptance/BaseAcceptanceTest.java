@@ -12,7 +12,7 @@ import roomescape.acceptance.fixture.TokenFixture;
 @Import(TestFixtureConfig.class)
 @Sql(scripts = {"/truncate.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BaseAcceptanceTest {
+abstract public class BaseAcceptanceTest {
 
     @LocalServerPort
     private int port;

@@ -11,7 +11,7 @@ class PageLanderTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자만 접근 가능한 페이지가 있다.")
     @Nested
-    class pagesOnlyForAdmin extends NestedAcceptanceTest {
+    class pagesOnlyForAdmin {
 
         @DisplayName("관리자는 접근 가능하다.")
         @ParameterizedTest

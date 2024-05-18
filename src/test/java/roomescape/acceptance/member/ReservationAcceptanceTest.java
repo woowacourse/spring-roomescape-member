@@ -6,7 +6,6 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;
 import roomescape.acceptance.BaseAcceptanceTest;
-import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.MemberReservationRequest;
 import roomescape.dto.ReservationResponse;
@@ -24,7 +23,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("고객이 예약을 추가한다.")
     @Nested
-    class addReservation extends NestedAcceptanceTest {
+    class addReservation {
 
         @DisplayName("정상 작동")
         @Test

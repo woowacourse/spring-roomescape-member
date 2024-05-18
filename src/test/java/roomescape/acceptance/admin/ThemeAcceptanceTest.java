@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import roomescape.acceptance.BaseAcceptanceTest;
-import roomescape.acceptance.NestedAcceptanceTest;
 import roomescape.controller.exception.CustomExceptionResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
@@ -59,7 +58,7 @@ class ThemeAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("관리자가 테마를 삭제한다.")
     @Nested
-    class deleteTheme extends NestedAcceptanceTest {
+    class deleteTheme {
 
         @DisplayName("정상 작동")
         @Test
