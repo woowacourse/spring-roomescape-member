@@ -30,8 +30,8 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<TokenResponse> showMemberLoginPage(HttpServletResponse response,
-                                                             @RequestBody MemberCreateRequest memberCreateRequest) {
+    public ResponseEntity<TokenResponse> login(HttpServletResponse response,
+                                               @RequestBody MemberCreateRequest memberCreateRequest) {
         TokenResponse tokenResponse = loginService.createToken(memberCreateRequest);
         Cookie cookie = new Cookie("token", tokenResponse.token());
         cookie.setHttpOnly(true);
