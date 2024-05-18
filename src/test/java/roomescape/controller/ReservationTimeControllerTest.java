@@ -1,8 +1,18 @@
 package roomescape.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -10,13 +20,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.ReservationTime;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

@@ -1,11 +1,10 @@
 package roomescape.domain;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class ReservationTest {
 

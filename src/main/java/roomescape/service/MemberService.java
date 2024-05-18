@@ -1,13 +1,12 @@
 package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.response.MemberResponse;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.repository.MemberRepository;
-
-import java.util.List;
 
 @Service
 public class MemberService {

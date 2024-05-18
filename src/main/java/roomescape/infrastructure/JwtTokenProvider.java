@@ -4,11 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.Cookie;
-import org.springframework.stereotype.Component;
-import roomescape.domain.Member;
-
 import java.util.Arrays;
 import java.util.Date;
+import org.springframework.stereotype.Component;
+import roomescape.domain.Member;
 
 @Component
 public class JwtTokenProvider {

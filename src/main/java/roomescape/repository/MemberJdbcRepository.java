@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,9 +9,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Role;
-
-import javax.sql.DataSource;
-import java.util.List;
 
 @Repository
 public class MemberJdbcRepository implements MemberRepository {
@@ -43,7 +42,7 @@ public class MemberJdbcRepository implements MemberRepository {
         try {
             String sql = "SELECT id, role, name, email, password FROM member WHERE email = ?";
             return jdbcTemplate.queryForObject(sql, memberRowMapper, email);
-        } catch(IncorrectResultSizeDataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             throw new IllegalArgumentException("존재하지 않는 이메일입니다.");
         }
     }

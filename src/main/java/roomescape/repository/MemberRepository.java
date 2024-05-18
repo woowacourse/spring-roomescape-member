@@ -1,9 +1,8 @@
 package roomescape.repository;
 
+import java.util.List;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
-
-import java.util.List;
 
 @Repository
 public interface MemberRepository {

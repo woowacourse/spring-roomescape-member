@@ -1,5 +1,8 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
+import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -10,10 +13,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-
-import javax.sql.DataSource;
-import java.time.LocalTime;
-import java.util.List;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {

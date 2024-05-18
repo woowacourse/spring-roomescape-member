@@ -1,8 +1,9 @@
 package roomescape.repository;
 
+import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,9 +12,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-
-import javax.sql.DataSource;
-import java.util.List;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {

@@ -1,8 +1,7 @@
 package roomescape.repository;
 
-import roomescape.domain.ReservationTime;
-
 import java.util.List;
+import roomescape.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
 
