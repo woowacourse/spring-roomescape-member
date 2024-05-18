@@ -5,8 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.exception.SaveDuplicateContentException;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.domain.Member;
+import roomescape.member.dto.MemberProfileInfo;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.AdminReservationRequest;
+import roomescape.reservation.dto.ReservationConditionSearchRequest;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.dto.ReservationTimeAvailabilityResponse;
@@ -21,24 +26,29 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final TimeDao timeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, TimeDao timeDao, ThemeDao themeDao, MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.timeDao = timeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse addReservation(ReservationRequest reservationRequest,
+            MemberProfileInfo memberProfileInfo) {
         Time time = timeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
         validateReservationRequest(reservationRequest, time);
         Reservation reservation = reservationRequest.toReservation(time, theme);
         Reservation savedReservation = reservationDao.save(reservation);
+        reservationDao.saveMemberReservation(savedReservation.getId(), memberProfileInfo.id());
         return ReservationResponse.fromReservation(savedReservation);
     }
 
     private void validateReservationRequest(ReservationRequest reservationRequest, Time time) {
-        if (reservationRequest.date().isBefore(LocalDate.now())) {
+        if (reservationRequest.date()
+                .isBefore(LocalDate.now())) {
             throw new IllegalReservationDateTimeRequestException("지난 날짜의 예약을 시도하였습니다.");
         }
         validateDuplicateReservation(reservationRequest, time);
@@ -49,6 +59,31 @@ public class ReservationService {
         if (isTimeBooked(time, bookedTimes)) {
             throw new SaveDuplicateContentException("해당 시간에 예약이 존재합니다.");
         }
+    }
+
+    private List<Time> getBookedTimesOfThemeAtDate(long themeId, LocalDate date) {
+        List<Reservation> reservationsOfThemeInDate = reservationDao.findAllByThemeIdAndDate(themeId, date);
+        return extractReservationTimes(reservationsOfThemeInDate);
+    }
+
+    private boolean isTimeBooked(Time time, List<Time> bookedTimes) {
+        return bookedTimes.contains(time);
+    }
+
+    private List<Time> extractReservationTimes(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(Reservation::getReservationTime)
+                .toList();
+    }
+
+    public ReservationResponse addReservation(AdminReservationRequest reservationRequest) {
+        Time time = timeDao.findById(reservationRequest.timeId());
+        Theme theme = themeDao.findById(reservationRequest.themeId());
+        Member member = memberDao.findById(reservationRequest.memberId());
+        Reservation reservation = new Reservation(member.getName(), reservationRequest.date(), time, theme);
+        Reservation savedReservation = reservationDao.save(reservation);
+        reservationDao.saveMemberReservation(savedReservation.getId(), member.getId());
+        return ReservationResponse.fromReservation(savedReservation);
     }
 
     public List<ReservationResponse> findReservations() {
@@ -68,19 +103,15 @@ public class ReservationService {
                 .toList();
     }
 
-    private List<Time> getBookedTimesOfThemeAtDate(long themeId, LocalDate date) {
-        List<Reservation> reservationsOfThemeInDate = reservationDao.findAllByThemeIdAndDate(themeId, date);
-        return extractReservationTimes(reservationsOfThemeInDate);
-    }
-
-    private List<Time> extractReservationTimes(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(Reservation::getReservationTime)
+    public List<ReservationResponse> findReservationsByConditions(ReservationConditionSearchRequest request) {
+        List<Long> reservationIds = reservationDao.findReservationIdsByMemberId(request.memberId());
+        List<Reservation> reservations = reservationIds.stream()
+                .map(reservationDao::findByIdOrderByDate)
                 .toList();
-    }
-
-    private boolean isTimeBooked(Time time, List<Time> bookedTimes) {
-        return bookedTimes.contains(time);
+        return reservations.stream()
+                .filter(reservation -> reservation.isReservedAtPeriod(request.dateFrom(), request.dateTo()))
+                .map(ReservationResponse::fromReservation)
+                .toList();
     }
 
     public void removeReservations(long reservationId) {

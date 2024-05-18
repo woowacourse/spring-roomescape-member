@@ -19,6 +19,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import roomescape.member.security.service.MemberAuthService;
+import roomescape.member.service.MemberService;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.TimeRequest;
 import roomescape.time.dto.TimeResponse;
@@ -27,13 +29,17 @@ import roomescape.time.service.TimeService;
 @WebMvcTest(TimeController.class)
 class TimeControllerTest {
 
-    private final Time time = new Time(4L, LocalTime.of(12,0));
+    private final Time time = new Time(4L, LocalTime.of(12, 0));
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private TimeService timeService;
+    @MockBean
+    private MemberService memberService;
+    @MockBean
+    private MemberAuthService memberAuthService;
 
     @Test
     @DisplayName("시간을 잘 저장하는지 확인한다.")
@@ -46,9 +52,9 @@ class TimeControllerTest {
                 .writeValueAsString(new TimeRequest(time.getStartAt()));
 
         mockMvc.perform(post("/times")
-                                .content(content)
-                                .contentType("application/Json")
-                                .accept(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .contentType("application/Json")
+                        .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated());

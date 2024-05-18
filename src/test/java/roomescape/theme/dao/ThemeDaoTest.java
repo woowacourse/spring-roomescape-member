@@ -16,8 +16,8 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest
-@Sql(scripts = "/data-test.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class ThemeDaoTest {
+@Sql(scripts = {"/schema-test.sql", "/data-test.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+class ThemeDaoTest {
 
     private final ThemeJdbcDao themeJdbcDao;
 
@@ -61,8 +61,10 @@ public class ThemeDaoTest {
     @Test
     @DisplayName("지난 7일 기준 예약이 많은 테마 순으로 조회한다.")
     void getTopReservationThemes() {
-        List<Theme> themes = themeJdbcDao.findByDateOrderByCount(LocalDate.now()
-                .minusWeeks(1), LocalDate.now());
+        LocalDate reservationStartDate = LocalDate.now()
+                .minusDays(6);
+        List<Theme> themes = themeJdbcDao.findByDateOrderByCount(reservationStartDate
+                , reservationStartDate.plusWeeks(1));
 
         Assertions.assertThat(themes.get(0)
                         .getId())

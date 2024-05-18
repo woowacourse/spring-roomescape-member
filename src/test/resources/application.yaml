@@ -10,3 +10,13 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+  sql:
+    init:
+      mode: embedded
+
+security:
+  jwt:
+    token:
+      secret-key: ZG9iYnlpc21ha2luZ2phdmFzcHJpbmdyb29tZXNjYXBlbWVtYmVy
+      expire-length: 3600000  # 1시간

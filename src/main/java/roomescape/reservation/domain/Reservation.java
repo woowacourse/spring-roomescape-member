@@ -4,34 +4,32 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.IllegalReservationDateTimeRequestException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 
 public class Reservation {
 
     private static final Pattern ILLEGAL_NAME_REGEX = Pattern.compile(".*[^\\w\\s가-힣].*");
-    private final String name;
+    private final String memberName;
     private final LocalDate date;
     private Theme theme;
     private long id;
     private Time time;
 
-    public Reservation(String name, LocalDate date, Time time, Theme theme) {
-        this(0, name, date, time, theme);
-
+    public Reservation(String memberName, LocalDate date, Time time, Theme theme) {
+        this(0, memberName, date, time, theme);
     }
 
-    public Reservation(long id, String name, LocalDate date, Time time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(long id, String memberName, LocalDate date, Time time, Theme theme) {
+        validate(memberName, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.memberName = memberName;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public void validate(String name, LocalDate date, Time time, Theme theme) {
+    private void validate(String name, LocalDate date, Time time, Theme theme) {
         if (name == null || date == null || time == null || theme == null) {
             throw new BadRequestException("예약 정보가 부족합니다.");
         }
@@ -56,12 +54,8 @@ public class Reservation {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
+    public String getMemberName() {
+        return memberName;
     }
 
     public LocalDate getDate() {
@@ -84,12 +78,20 @@ public class Reservation {
         return theme.getId();
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void setTime(Time time) {
         this.time = time;
     }
 
     public void setTheme(Theme theme) {
         this.theme = theme;
+    }
+
+    public boolean isReservedAtPeriod(LocalDate start, LocalDate end) {
+        return date.isAfter(start) && date.isBefore(end);
     }
 
     @Override
@@ -100,13 +102,25 @@ public class Reservation {
         if (!(o instanceof Reservation that)) {
             return false;
         }
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(
+        return id == that.id && Objects.equals(memberName, that.memberName) && Objects.equals(date, that.date)
+                && Objects.equals(
                 theme, that.theme) && Objects.equals(time, that.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, date, theme, id, time);
+        return Objects.hash(memberName, date, theme, id, time);
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "date=" + date +
+                ", memberName='" + memberName + '\'' +
+                ", theme=" + theme +
+                ", id=" + id +
+                ", time=" + time +
+                '}';
     }
 
 }

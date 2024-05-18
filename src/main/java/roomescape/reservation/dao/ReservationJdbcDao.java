@@ -45,15 +45,21 @@ public class ReservationJdbcDao implements ReservationDao {
     @Override
     public Reservation save(Reservation reservation) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("name", reservation.getMemberName())
                 .addValue("date", reservation.getDate())
                 .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("theme_id", reservation.getThemeId());
-
-        long id = jdbcInsert.executeAndReturnKey(sqlParameterSource)
+                .addValue("theme_id", reservation.getThemeId()
+                );
+        long reservationId = jdbcInsert.executeAndReturnKey(sqlParameterSource)
                 .longValue();
-        reservation.setId(id);
+        reservation.setId(reservationId);
         return reservation;
+    }
+
+    @Override
+    public void saveMemberReservation(long reservationId, long memberId) {
+        String sql = "INSERT INTO member_reservation (reservation_id, member_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, String.valueOf(reservationId), String.valueOf(memberId));
     }
 
     @Override
@@ -87,6 +93,29 @@ public class ReservationJdbcDao implements ReservationDao {
                 """;
 
         return jdbcTemplate.query(findAllByThemeIdAndDateSql, RESERVATION_ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public Reservation findByIdOrderByDate(long reservationId) {
+        String findReservationByIdSql =
+                """
+                SELECT r.id, r.name, r.date, 
+                t.id AS time_id, t.start_at, 
+                th.id AS theme_id, th.name AS themeName, th.description, th.thumbnail 
+                FROM reservation r 
+                INNER JOIN reservation_time t ON r.time_id = t.id 
+                INNER JOIN theme th ON r.theme_id = th.id 
+                WHERE r.id = ?
+                ORDER BY r.date ASC
+                """;
+
+        return jdbcTemplate.queryForObject(findReservationByIdSql, RESERVATION_ROW_MAPPER, reservationId);
+    }
+
+    @Override
+    public List<Long> findReservationIdsByMemberId(long memberId) {
+        String findReservationIdByMemberId = "SELECT reservation_id FROM member_reservation WHERE member_id = ?";
+        return jdbcTemplate.queryForList(findReservationIdByMemberId, Long.class, memberId);
     }
 
     @Override

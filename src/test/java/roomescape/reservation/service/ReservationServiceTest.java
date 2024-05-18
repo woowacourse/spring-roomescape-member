@@ -17,6 +17,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.exception.ConflictException;
 import roomescape.exception.IllegalReservationDateTimeRequestException;
+import roomescape.member.dao.MemberDao;
+import roomescape.member.dto.MemberProfileInfo;
 import roomescape.reservation.dao.ReservationJdbcDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -32,7 +34,7 @@ class ReservationServiceTest {
     private final Reservation reservation = new Reservation(1L, "Dobby", LocalDate.MAX,
             new Time(1L, LocalTime.of(12, 0)),
             new Theme(1L, "pollaBang", "폴라 방탈출", "thumbnail"));
-
+    private final MemberProfileInfo memberProfileInfo = new MemberProfileInfo(1L, "Dobby", "kimdobby@wotaeco.com");
     @InjectMocks
     private ReservationService reservationService;
     @Mock
@@ -41,6 +43,8 @@ class ReservationServiceTest {
     private TimeJdbcDao timeJdbcDao;
     @Mock
     private ThemeJdbcDao themeJdbcDao;
+    @Mock
+    private MemberDao memberDao;
 
     @Test
     @DisplayName("예약을 추가한다.")
@@ -54,11 +58,13 @@ class ReservationServiceTest {
         Mockito.when(themeJdbcDao.findById(1L))
                 .thenReturn(reservation.getTheme());
 
-        ReservationRequest reservationRequest = new ReservationRequest(reservation.getDate(), reservation.getName(),
+        ReservationRequest reservationRequest = new ReservationRequest(reservation.getDate(),
+                reservation.getMemberName(),
                 reservation.getReservationTime()
                         .getId(), reservation.getTheme()
                 .getId());
-        ReservationResponse reservationResponse = reservationService.addReservation(reservationRequest);
+        ReservationResponse reservationResponse = reservationService.addReservation(reservationRequest,
+                memberProfileInfo);
 
         Assertions.assertThat(reservationResponse.id())
                 .isEqualTo(1);
@@ -77,12 +83,12 @@ class ReservationServiceTest {
         assertThrows(IllegalReservationDateTimeRequestException.class,
                 () -> reservationService.addReservation(
                         new ReservationRequest(
-                        LocalDate.MIN,
-                        reservation.getName(),
-                        reservation.getReservationTimeId(),
-                        reservation.getThemeId()
-                        )
-                )
+                                LocalDate.MIN,
+                                reservation.getMemberName(),
+                                reservation.getReservationTimeId(),
+                                reservation.getThemeId()
+                        ),
+                        memberProfileInfo)
         );
 
     }
@@ -120,13 +126,13 @@ class ReservationServiceTest {
 
         ReservationRequest reservationRequest = new ReservationRequest(
                 reservation.getDate(),
-                reservation.getName(),
+                reservation.getMemberName(),
                 reservation.getReservationTimeId(),
                 reservation.getThemeId()
         );
 
         assertThrows(ConflictException.class, () ->
-                reservationService.addReservation(reservationRequest)
+                reservationService.addReservation(reservationRequest, memberProfileInfo)
         );
     }
 
