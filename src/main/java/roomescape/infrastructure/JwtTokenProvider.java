@@ -12,26 +12,26 @@ import roomescape.domain.Member;
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey = "spring-roomescape-member-secret-key";
-    private final long validityInMilliseconds = 3600000;
+    private static final String SECRET_KEY = "spring-roomescape-member-secret-key";
+    private static final long VALIDITY_IN_MILLION_SECONDS = 3600000;
 
     public String createToken(Member member) {
         Claims claims = Jwts.claims().setSubject(member.getEmail());
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date validity = new Date(now.getTime() + VALIDITY_IN_MILLION_SECONDS);
 
         return Jwts.builder()
                 .setClaims(claims)
                 .claim("id", member.getId())
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
     public Long getMemberIdFromToken(Cookie[] cookies) {
         return Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(extractTokenFromCookie(cookies))
                 .getBody().get("id", Long.class);
     }
