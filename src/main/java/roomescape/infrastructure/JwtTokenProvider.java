@@ -37,6 +37,10 @@ public class JwtTokenProvider {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            throw new IllegalArgumentException("쿠키가 찾을 수 없습니다.");
+        }
+
         return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .map(Cookie::getValue)
