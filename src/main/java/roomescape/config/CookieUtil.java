@@ -11,6 +11,10 @@ public class CookieUtil {
     private static final String TOKEN_NAME = "token";
 
     public static Optional<String> extractTokenFromCookie(Cookie[] cookies) {
+        if(cookies == null) {
+            return Optional.empty();
+        }
+
         for (Cookie cookie : cookies) {
             if (Objects.equals(TOKEN_NAME, cookie.getName())) {
                 return Optional.of(cookie.getValue());
