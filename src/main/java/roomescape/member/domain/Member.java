@@ -10,16 +10,16 @@ public class Member {
     private final String password;
     private MemberRole role;
 
+    public Member(long id, String name, String email, String password) {
+        this(id, name, email, password, "USER");
+    }
+
     public Member(long id, String name, String email, String password, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = MemberRole.valueOf(role);
-    }
-
-    public Member(long id, String name, String email, String password) {
-        this(id, name, email, password, "USER");
     }
 
     public Member(String name, String email, String password) {

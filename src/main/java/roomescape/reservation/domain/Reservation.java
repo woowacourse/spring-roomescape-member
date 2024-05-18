@@ -91,7 +91,7 @@ public class Reservation {
     }
 
     public boolean isReservedAtPeriod(LocalDate start, LocalDate end) {
-        return  date.isAfter(start) && date.isBefore(end);
+        return date.isAfter(start) && date.isBefore(end);
     }
 
     @Override
@@ -102,7 +102,8 @@ public class Reservation {
         if (!(o instanceof Reservation that)) {
             return false;
         }
-        return id == that.id && Objects.equals(memberName, that.memberName) && Objects.equals(date, that.date) && Objects.equals(
+        return id == that.id && Objects.equals(memberName, that.memberName) && Objects.equals(date, that.date)
+                && Objects.equals(
                 theme, that.theme) && Objects.equals(time, that.time);
     }
 
