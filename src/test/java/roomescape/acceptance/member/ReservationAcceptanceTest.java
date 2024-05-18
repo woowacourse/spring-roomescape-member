@@ -32,7 +32,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
                     LocalDate.parse("2099-01-11")
             );
 
-            sendPostRequest(requestBody)
+            sendPostRequestWithToken(requestBody)
                     .statusCode(HttpStatus.CREATED.value())
                     .header("location", containsString("/reservations/"))
                     .extract().as(ReservationResponse.class);
@@ -45,7 +45,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
                     LocalDate.now().minusDays(1)
             );
 
-            CustomExceptionResponse response = sendPostRequest(reservationForPast)
+            CustomExceptionResponse response = sendPostRequestWithToken(reservationForPast)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -63,10 +63,10 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
             );
 
             return Stream.of(
-                    DynamicTest.dynamicTest("예약을 추가한다", () -> sendPostRequest(requestBody)),
+                    DynamicTest.dynamicTest("예약을 추가한다", () -> sendPostRequestWithToken(requestBody)),
 
                     DynamicTest.dynamicTest("동일한 예약을 추가한다", () -> {
-                                CustomExceptionResponse response = sendPostRequest(requestBody)
+                                CustomExceptionResponse response = sendPostRequestWithToken(requestBody)
                                         .statusCode(HttpStatus.BAD_REQUEST.value())
                                         .extract().as(CustomExceptionResponse.class);
                                 assertAll(
@@ -87,7 +87,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
             );
         }
 
-        private ValidatableResponse sendPostRequest(MemberReservationRequest requestBody) {
+        private ValidatableResponse sendPostRequestWithToken(MemberReservationRequest requestBody) {
             return RestAssured.given().log().ifValidationFails()
                     .cookie("token", tokenFixture.customerToken)
                     .contentType(ContentType.JSON)

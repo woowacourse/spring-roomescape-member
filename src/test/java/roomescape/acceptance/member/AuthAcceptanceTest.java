@@ -36,7 +36,7 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
 
         return Stream.of(
                 dynamicTest("로그인한다.", () -> {
-                            String token = sendLoginRequest(customerRequest);
+                            String token = sendLoginRequestWithToken(customerRequest);
                             Claims claims = parseToken(token);
 
                             assertAll("토큰에 고객의 식별자와 권한이 포함되어있는지 검증한다.",
@@ -48,8 +48,8 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
                         }
                 ),
                 dynamicTest("로그인 정보를 확인한다.", () -> {
-                            String token = sendLoginRequest(customerRequest);
-                            MemberPreviewResponse response = sendCheckNameRequest(token);
+                            String token = sendLoginRequestWithToken(customerRequest);
+                            MemberPreviewResponse response = sendCheckNameRequestWithToken(token);
 
                             assertThat(response.name())
                                     .isEqualTo(PRE_INSERTED_CUSTOMER_1.getName());
@@ -58,7 +58,7 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
-    private String sendLoginRequest(LogInRequest requestBody) {
+    private String sendLoginRequestWithToken(LogInRequest requestBody) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
@@ -76,7 +76,7 @@ class AuthAcceptanceTest extends BaseAcceptanceTest {
                 .getPayload();
     }
 
-    private MemberPreviewResponse sendCheckNameRequest(String token) {
+    private MemberPreviewResponse sendCheckNameRequestWithToken(String token) {
         return RestAssured.given().log().all()
                 .cookie("token", token)
                 .when().get("/login/check")

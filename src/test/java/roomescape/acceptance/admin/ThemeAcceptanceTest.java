@@ -65,7 +65,7 @@ class ThemeAcceptanceTest extends BaseAcceptanceTest {
         void deleteTheme_forExist_success() {
             long existThemeId = PRE_INSERTED_THEME_1.getId();
 
-            sendDeleteRequest(existThemeId)
+            sendDeleteRequestWithToken(existThemeId)
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }
 
@@ -74,7 +74,7 @@ class ThemeAcceptanceTest extends BaseAcceptanceTest {
         void deleteTheme_forNonExist_fail() {
             long notExistTimeId = 0L;
 
-            CustomExceptionResponse response = sendDeleteRequest(notExistTimeId)
+            CustomExceptionResponse response = sendDeleteRequestWithToken(notExistTimeId)
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -89,7 +89,7 @@ class ThemeAcceptanceTest extends BaseAcceptanceTest {
         void deleteTheme_whenReservationExist_fail() {
             long themeIdWhereReservationExist = PRE_INSERTED_THEME_2.getId();
 
-            CustomExceptionResponse response = sendDeleteRequest(themeIdWhereReservationExist)
+            CustomExceptionResponse response = sendDeleteRequestWithToken(themeIdWhereReservationExist)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -99,7 +99,7 @@ class ThemeAcceptanceTest extends BaseAcceptanceTest {
             );
         }
 
-        private ValidatableResponse sendDeleteRequest(long id) {
+        private ValidatableResponse sendDeleteRequestWithToken(long id) {
             return RestAssured.given().log().all()
                     .when().delete("/themes/" + id)
                     .then().log().all();

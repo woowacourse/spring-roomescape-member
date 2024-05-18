@@ -63,7 +63,7 @@ class ReservationTimeAcceptanceTest extends BaseAcceptanceTest {
         void deleteReservationTime_forExist_success() {
             long existReservationTimeId = PRE_INSERTED_RESERVATION_TIME_1.getId();
 
-            sendDeleteRequest(existReservationTimeId)
+            sendDeleteRequestWithToken(existReservationTimeId)
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }
 
@@ -72,7 +72,7 @@ class ReservationTimeAcceptanceTest extends BaseAcceptanceTest {
         void deleteReservationTime_forNonExist_fail() {
             long notExistTimeId = 0L;
 
-            CustomExceptionResponse response = sendDeleteRequest(notExistTimeId)
+            CustomExceptionResponse response = sendDeleteRequestWithToken(notExistTimeId)
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -87,7 +87,7 @@ class ReservationTimeAcceptanceTest extends BaseAcceptanceTest {
         void deleteReservationTime_whenReservationExist_fail() {
             long timeIdWhereReservationExist = PRE_INSERTED_RESERVATION_TIME_2.getId();
 
-            CustomExceptionResponse response = sendDeleteRequest(timeIdWhereReservationExist)
+            CustomExceptionResponse response = sendDeleteRequestWithToken(timeIdWhereReservationExist)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -97,7 +97,7 @@ class ReservationTimeAcceptanceTest extends BaseAcceptanceTest {
             );
         }
 
-        private ValidatableResponse sendDeleteRequest(long existReservationTimeId) {
+        private ValidatableResponse sendDeleteRequestWithToken(long existReservationTimeId) {
             return RestAssured.given().log().all()
                     .when().delete("/times/" + existReservationTimeId)
                     .then().log().all();

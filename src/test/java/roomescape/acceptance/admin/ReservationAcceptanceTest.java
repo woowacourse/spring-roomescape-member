@@ -65,7 +65,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
                     LocalDate.now().minusDays(1)
             );
 
-            CustomExceptionResponse response = sendPostRequest(reservationForPast)
+            CustomExceptionResponse response = sendPostRequestWithToken(reservationForPast)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -83,10 +83,10 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
             );
 
             return Stream.of(
-                    DynamicTest.dynamicTest("예약을 추가한다", () -> sendPostRequest(requestBody)),
+                    DynamicTest.dynamicTest("예약을 추가한다", () -> sendPostRequestWithToken(requestBody)),
 
                     DynamicTest.dynamicTest("동일한 예약을 추가한다", () -> {
-                                CustomExceptionResponse response = sendPostRequest(requestBody)
+                                CustomExceptionResponse response = sendPostRequestWithToken(requestBody)
                                         .statusCode(HttpStatus.BAD_REQUEST.value())
                                         .extract().as(CustomExceptionResponse.class);
                                 assertAll(
@@ -107,7 +107,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
             );
         }
 
-        private ValidatableResponse sendPostRequest(AdminReservationRequest requestBody) {
+        private ValidatableResponse sendPostRequestWithToken(AdminReservationRequest requestBody) {
             return RestAssured.given().log().all()
                     .cookie("token", tokenFixture.adminToken)
                     .contentType(ContentType.JSON)
@@ -126,7 +126,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
         void deleteReservation_forExist_success() {
             Long existReservationId = PRE_INSERTED_RESERVATION_1.getId();
 
-            sendDeleteRequest(existReservationId)
+            sendDeleteRequestWithToken(existReservationId)
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }
 
@@ -135,7 +135,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
         void deleteReservation_forNonExist_fail() {
             long notExistReservationId = 0L;
 
-            CustomExceptionResponse response = sendDeleteRequest(notExistReservationId)
+            CustomExceptionResponse response = sendDeleteRequestWithToken(notExistReservationId)
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .extract().as(CustomExceptionResponse.class);
 
@@ -145,7 +145,7 @@ class ReservationAcceptanceTest extends BaseAcceptanceTest {
             );
         }
 
-        private ValidatableResponse sendDeleteRequest(Long id) {
+        private ValidatableResponse sendDeleteRequestWithToken(Long id) {
             return RestAssured.given().log().all()
                     .cookie("token", tokenFixture.adminToken)
                     .when().delete("/reservations/" + id)

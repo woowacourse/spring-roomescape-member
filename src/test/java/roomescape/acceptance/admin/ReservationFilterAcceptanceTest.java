@@ -19,7 +19,7 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("필터링하지 않음")
     void filterNone() {
-        List<ReservationResponse> response = sendRequestFiltering("");
+        List<ReservationResponse> response = sendRequestFilteringWithToken("");
 
         assertThat(response).containsExactlyInAnyOrder(
                 ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
@@ -32,7 +32,7 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("사용자로 필터링")
     void filterByMemberId() {
-        List<ReservationResponse> response = sendRequestFiltering("?memberId=2");
+        List<ReservationResponse> response = sendRequestFilteringWithToken("?memberId=2");
 
         assertThat(response).containsExactlyInAnyOrder(
                 ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
@@ -44,7 +44,7 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("테마로 필터링")
     void filterByThemeId() {
-        List<ReservationResponse> response = sendRequestFiltering("?themeId=2");
+        List<ReservationResponse> response = sendRequestFilteringWithToken("?themeId=2");
 
         assertThat(response).containsExactlyInAnyOrder(
                 ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
@@ -55,7 +55,7 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("시작 날짜로 필터링")
     void filterByDateFrom() {
-        List<ReservationResponse> response = sendRequestFiltering("?dateFrom=2024-05-02");
+        List<ReservationResponse> response = sendRequestFilteringWithToken("?dateFrom=2024-05-02");
 
         assertThat(response).containsExactlyInAnyOrder(
                 ReservationResponse.from(PRE_INSERTED_RESERVATION_2),
@@ -66,7 +66,7 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("끝 날짜로 필터링")
     void filterByTimeId() {
-        List<ReservationResponse> response = sendRequestFiltering("?dateTo=2024-05-01");
+        List<ReservationResponse> response = sendRequestFilteringWithToken("?dateTo=2024-05-01");
 
         assertThat(response).containsExactlyInAnyOrder(
                 ReservationResponse.from(PRE_INSERTED_RESERVATION_1),
@@ -77,14 +77,14 @@ class ReservationFilterAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("종합 필터링")
     void filterComprehensive() {
-        List<ReservationResponse> response = sendRequestFiltering("?memberId=2&themeId=3&dateFrom=2024-05-02&dateTo=2024-05-02");
+        List<ReservationResponse> response = sendRequestFilteringWithToken("?memberId=2&themeId=3&dateFrom=2024-05-02&dateTo=2024-05-02");
 
         assertThat(response).containsExactlyInAnyOrder(
                 ReservationResponse.from(PRE_INSERTED_RESERVATION_2)
         );
     }
 
-    private List<ReservationResponse> sendRequestFiltering(String path) {
+    private List<ReservationResponse> sendRequestFilteringWithToken(String path) {
         TypeRef<List<ReservationResponse>> memberListFormat = new TypeRef<>() {
         };
 
