@@ -7,16 +7,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationQuery;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
-import roomescape.dto.reservation.ReservationAvailableTimeResponse;
-import roomescape.dto.reservation.ReservationRequest;
-import roomescape.dto.reservation.ReservationResponse;
+import roomescape.dto.reservation.request.UserReservationRequest;
+import roomescape.dto.reservation.response.ReservationAvailableTimeResponse;
+import roomescape.dto.reservation.response.ReservationResponse;
 import roomescape.global.exception.ApplicationException;
+import roomescape.global.exception.ExceptionType;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+import roomescape.repository.condition.Conditions;
 
 @Service
 public class ReservationService {
@@ -24,17 +29,19 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              TimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TimeRepository timeRepository,
+                              ThemeRepository themeRepository, MemberRepository memberRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> findAllReservations() {
-        return reservationRepository.findAll()
+    public List<ReservationResponse> findReservationsByCondition(ReservationQuery reservationRequest) {
+        return reservationRepository.findByFilterConditions(new Conditions(reservationRequest))
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
@@ -42,7 +49,8 @@ public class ReservationService {
 
     public List<ReservationAvailableTimeResponse> findReservationByDateAndThemeId(LocalDate date, Long themeId) {
         List<Time> allTimes = timeRepository.findAll();
-        Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId).stream()
+        Set<Long> reservedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
+                .stream()
                 .map(Reservation::getTime)
                 .map(Time::getId)
                 .collect(Collectors.toSet());
@@ -56,16 +64,18 @@ public class ReservationService {
         return response;
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(UserReservationRequest reservationRequest, Long memberId) {
         LocalDate today = LocalDate.now();
         LocalDate requestDate = reservationRequest.date();
         Time time = timeRepository.findById(reservationRequest.timeId());
         Theme theme = themeRepository.findById(reservationRequest.themeId());
+        Member member = memberRepository.findById(memberId);
 
         validateDateAndTime(requestDate, today, time);
         validateReservationDuplicate(reservationRequest, theme);
 
-        Reservation savedReservation = reservationRepository.save(reservationRequest.toReservation(time, theme));
+        Reservation savedReservation = reservationRepository.save(
+                reservationRequest.toReservation(time, theme, member));
 
         return ReservationResponse.from(savedReservation);
     }
@@ -73,16 +83,16 @@ public class ReservationService {
     private void validateDateAndTime(LocalDate requestDate, LocalDate today, Time time) {
         LocalTime currentTime = LocalTime.now();
         if (requestDate.isBefore(today) || (requestDate.isEqual(today) && time.getStartAt().isBefore(currentTime))) {
-            throw new ApplicationException("지난 날짜나 시간은 예약이 불가능합니다.");
+            throw new ApplicationException(ExceptionType.RESERVATION_NOT_ALLOWED_IN_PAST);
         }
     }
 
-    private void validateReservationDuplicate(ReservationRequest reservationRequest, Theme theme) {
+    private void validateReservationDuplicate(UserReservationRequest reservationRequest, Theme theme) {
         List<Reservation> duplicateTimeReservation = reservationRepository.findByTimeIdAndDateThemeId(
                 reservationRequest.timeId(), reservationRequest.date(), theme.getId());
 
         if (duplicateTimeReservation.size() > 0) {
-            throw new ApplicationException("이미 해당 날짜/시간/테마에 예약이 존재합니다.");
+            throw new ApplicationException(ExceptionType.RESERVATION_ALREADY_EXIST);
         }
     }
 

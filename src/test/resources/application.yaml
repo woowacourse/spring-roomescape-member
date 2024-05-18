@@ -11,3 +11,6 @@ spring:
     url: jdbc:h2:mem:database-test
     username: sa
     password:
+
+jwt:
+  secret: "나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다.나는 신이다."

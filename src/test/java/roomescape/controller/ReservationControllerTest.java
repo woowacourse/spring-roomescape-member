@@ -13,13 +13,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import roomescape.global.util.TokenManager;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/truncate.sql", "/memberData.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class ReservationControllerTest {
 
     @LocalServerPort
     private int port;
+
+    private final Map<String, String> memberParams = Map.of(
+            "email", "ddang@google.com",
+            "password", "password"
+    );
 
     private final Map<String, String> timeParams = Map.of("startAt", "17:00");
 
@@ -30,7 +36,6 @@ public class ReservationControllerTest {
     );
 
     private final Map<String, String> reservationParams = Map.of(
-            "name", "썬",
             "date", LocalDate.now().plusDays(1L).toString(),
             "timeId", "1",
             "themeId", "1"
@@ -60,8 +65,11 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("처음으로 등록하는 예약의 id는 1이다.")
     void firstPost() {
+        String token = loginWith(memberParams);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .body(reservationParams)
                 .when().post("/reservations")
@@ -85,9 +93,12 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("하나의 예약만 등록한 경우, 예약 목록 조회 결과 개수는 1개이다.")
     void readReservationsSizeAfterFirstPost() {
+        String token = loginWith(memberParams);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .port(port)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
@@ -106,8 +117,11 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("하나의 예약만 등록한 경우, 예약 삭제 뒤 예약 목록 조회 결과 개수는 0개이다.")
     void readReservationsSizeAfterPostAndDelete() {
+        String token = loginWith(memberParams);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie(TokenManager.TOKEN_NAME, token)
                 .port(port)
                 .body(reservationParams)
                 .when().post("/reservations")
@@ -140,5 +154,16 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    private String loginWith(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .port(port)
+                .body(params)
+                .when().post("/login")
+                .then().log().all()
+                .statusCode(200)
+                .extract().cookie(TokenManager.TOKEN_NAME);
     }
 }

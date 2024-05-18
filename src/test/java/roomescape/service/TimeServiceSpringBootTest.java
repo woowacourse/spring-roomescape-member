@@ -1,14 +1,11 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.Time;
@@ -17,6 +14,11 @@ import roomescape.global.exception.ApplicationException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class TimeServiceSpringBootTest {
@@ -50,9 +52,10 @@ class TimeServiceSpringBootTest {
         // given
         Time time = timeRepository.save(new Time(LocalTime.now()));
         Theme theme = themeRepository.save(new Theme("테마명", "설명", "썸네일URL"));
+        Member member = new Member(1L, "ddang", "user", "ddang@google.com", "password");
 
         // when
-        reservationRepository.save(new Reservation("예약", LocalDate.now().plusDays(1L), time, theme));
+        reservationRepository.save(new Reservation(LocalDate.now().plusDays(1L), time, theme, member));
 
         // then
         assertThatThrownBy(() -> timeService.deleteTime(time.getId()))

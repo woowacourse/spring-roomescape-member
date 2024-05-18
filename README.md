@@ -5,14 +5,18 @@
 | Method | Endpoint                              | Description           | File Path                              | Controller Type   |
 |--------|---------------------------------------|-----------------------|----------------------------------------|-------------------|
 | GET    | `/`                                   | 인기 테마 페이지 요청          | `templates/index.html`                 | `@Controller`     |
+| GET    | `/login`                              | 인기 테마 페이지 요청          | `templates/login.html`                 | `@Controller`     |
 | GET    | `/reservation`                        | 사용자 예약 페이지 요청         | `templates/reservation.html`           | `@Controller`     |
 | GET    | `/admin`                              | 어드민 페이지 요청            | `templates/admin/index.html`           | `@Controller`     |
 | GET    | `/admin/reservation`                  | 예약 관리 페이지 요청          | `templates/admin/reservation-new.html` | `@Controller`     |
 | GET    | `/admin/time`                         | 예약 시간 관리 페이지 요청       | `templates/admin/time.html`            | `@Controller`     |
 | GET    | `/admin/theme`                        | 테마 관리 페이지 요청          | `templates/admin/theme.html`           | `@Controller`     |
+| POST   | `/login`                              | 로그인                   |                                        | `@RestController` |
+| GET    | `/login/check`                        | 인증 정보 조회              |                                        | `@RestController` |
 | GET    | `/reservations`                       | 예약 정보 조회              |                                        | `@RestController` |
 | GET    | `/reservations/themes/{themeId}?date` | 특정 날짜의 특정 테마 예약 정보 조회 |                                        | `@RestController` |
-| POST   | `/reservations`                       | 예약 추가                 |                                        | `@RestController` |
+| POST   | `/reservations`                       | 사용자 예약 추가             |                                        | `@RestController` |
+| POST   | `/admin/reservations`                 | 관리자 예약 추가             |                                        | `@RestController` |
 | DELETE | `/reservations/{id}`                  | 예약 취소                 |                                        | `@RestController` |
 | GET    | `/times`                              | 예약 시간 조회              |                                        | `@RestController` |
 | DELETE | `/times/{id}`                         | 예약 시간 추가              |                                        | `@RestController` |
@@ -22,6 +26,55 @@
 | DELETE | `/themes/{id}`                        | 테마 삭제                 |                                        | `@RestController` |
 
 ---
+
+### 로그인 API
+
+- Request
+
+```
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+```
+
+- Response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+Keep-Alive: timeout=60
+Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+```
+
+### 인증 정보 조회 API
+
+- Request
+
+```
+GET /login/check HTTP/1.1
+cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+host: localhost:8080
+```
+
+- Response
+
+```
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json
+Date: Sun, 03 Mar 2024 19:16:56 GMT
+Keep-Alive: timeout=60
+Transfer-Encoding: chunked
+
+{
+    "name": "어드민"
+}
+```
 
 ### 예약 정보 조회 API
 
@@ -81,18 +134,57 @@ GET /reservations/themes/1?date=2024-12-31 HTTP/1.1
 
 ---
 
-### 예약 추가 API
+### 사용자 예약 추가 API
 
 - Request
 
 ```
 POST /reservations HTTP/1.1
 content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
 
 {
-    "date": "2023-08-05",
-    "name": "브라운",
+    "date": "2024-03-01",
+    "themeId": 1,
     "timeId": 1
+}
+```
+
+- Response
+
+```
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-05",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    }
+}
+```
+
+---
+
+### 관리자 예약 추가 API
+
+- Request
+
+```
+POST /admin/reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+host: localhost:8080
+
+{
+    "date": "2024-03-01",
+    "themeId": 1,
+    "timeId": 1,
+    "memberId": 1
 }
 ```
 
