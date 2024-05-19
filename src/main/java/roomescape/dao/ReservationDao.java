@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -123,9 +122,22 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
-        return Objects.requireNonNull(jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
+    public List<Reservation> findByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                SELECT reservation.id, reservation.date,
+                `time`.id AS time_id, `time`.start_at AS time_start_at, 
+                theme.id AS theme_id, theme.name AS theme_name, 
+                theme.description AS theme_description, theme.thumbnail AS theme_thumbnail, 
+                member.id AS member_id, member.name AS member_name, member.email AS member_email, member.role AS member_role                
+                FROM reservation
+                INNER JOIN member ON reservation.member_id = member.id
+                INNER JOIN theme ON reservation.theme_id = theme.id
+                INNER JOIN reservation_time AS `time` ON reservation.time_id = `time`.id 
+                WHERE reservation.date = ?
+                AND reservation.time_id = ? 
+                AND reservation.theme_id = ? 
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);
     }
 
     @Override

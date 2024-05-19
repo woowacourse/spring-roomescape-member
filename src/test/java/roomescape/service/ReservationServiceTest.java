@@ -18,7 +18,6 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.policy.FixeDueTimePolicy;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
@@ -65,18 +64,18 @@ class ReservationServiceTest {
         Member savedMember2 = memberRepository.save(member2);
 
         Reservation reservation1 = new Reservation(LocalDate.of(2023, JANUARY, 1), savedTime, savedTheme1,
-                savedMember1, new FixeDueTimePolicy());
+                savedMember1);
         Reservation reservation2 = new Reservation(LocalDate.of(2023, JANUARY, 2), savedTime, savedTheme1,
-                savedMember1, new FixeDueTimePolicy());
+                savedMember1);
 
         Reservation reservation3 = new Reservation(LocalDate.of(2023, JANUARY, 3), savedTime, savedTheme1,
-                savedMember1, new FixeDueTimePolicy());
+                savedMember1);
         Reservation reservation4 = new Reservation(LocalDate.of(2023, JANUARY, 2), savedTime, savedTheme2,
-                savedMember1, new FixeDueTimePolicy());
+                savedMember1);
         Reservation reservation5 = new Reservation(LocalDate.of(2022, DECEMBER, 31), savedTime, savedTheme1,
-                savedMember1, new FixeDueTimePolicy());
+                savedMember1);
         Reservation reservation6 = new Reservation(LocalDate.of(2023, JANUARY, 1), savedTime, savedTheme1,
-                savedMember2, new FixeDueTimePolicy());
+                savedMember2);
         Reservation savedReservation1 = reservationRepository.save(reservation1);
         Reservation savedReservation2 = reservationRepository.save(reservation2);
         reservationRepository.save(reservation3);

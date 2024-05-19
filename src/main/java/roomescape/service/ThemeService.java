@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import roomescape.domain.Theme;
 import roomescape.domain.policy.RankingPolicy;
+import roomescape.domain.policy.WeeklyRankingPolicy;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.theme.ReservationReferencedThemeException;
@@ -29,7 +30,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findAllPopularTheme(RankingPolicy rankingPolicy) {
+    public List<ThemeResponse> findAllPopularTheme() {
+        RankingPolicy rankingPolicy = new WeeklyRankingPolicy();
         LocalDate startDate = rankingPolicy.getStartDateAsString();
         LocalDate endDate = rankingPolicy.getEndDateAsString();
         int limit = rankingPolicy.exposureSize();

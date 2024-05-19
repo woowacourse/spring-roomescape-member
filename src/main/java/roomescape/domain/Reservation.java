@@ -2,10 +2,11 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
-import roomescape.domain.policy.CurrentDueTimePolicy;
 import roomescape.domain.policy.ReservationDueTimePolicy;
+import roomescape.exception.reservation.DuplicatedReservationException;
 import roomescape.exception.reservation.InvalidDateTimeReservationException;
 
 
@@ -26,17 +27,18 @@ public class Reservation {
 
     public Reservation(LocalDate date, ReservationTime time, Theme theme, Member member) {
         this(null, date, time, theme, member);
-        validateDateTimeReservation(date.atTime(time.getStartAt()), new CurrentDueTimePolicy());
     }
 
-    public Reservation(LocalDate date, ReservationTime time, Theme theme, Member member,
-                       ReservationDueTimePolicy dueTimePolicy) {
-        this(null, date, time, theme, member);
-        validateDateTimeReservation(date.atTime(time.getStartAt()), dueTimePolicy);
+    public void validateDuplicateDateTime(List<Reservation> foundReservations) {
+        if (foundReservations.isEmpty()) {
+            return;
+        }
+        throw new DuplicatedReservationException();
     }
 
-    private void validateDateTimeReservation(LocalDateTime dateTime, ReservationDueTimePolicy timePolicy) {
-        if (dateTime.isBefore(timePolicy.getDueTime())) {
+    public void validateDateTimeReservation(ReservationDueTimePolicy timePolicy) {
+        LocalDateTime reservationDateTime = date.atTime(time.getStartAt());
+        if (reservationDateTime.isBefore(timePolicy.getDueTime())) {
             throw new InvalidDateTimeReservationException();
         }
     }
