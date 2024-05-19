@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.util;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

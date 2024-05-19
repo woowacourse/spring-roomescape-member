@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.controller.api.dto.request.ReservationCreateForUserRequest;
 import roomescape.controller.api.dto.response.ReservationResponse;
-import roomescape.controller.api.resolver.AuthMember;
+import roomescape.resolver.AuthMember;
 import roomescape.service.ReservationService;
 
 @RestController

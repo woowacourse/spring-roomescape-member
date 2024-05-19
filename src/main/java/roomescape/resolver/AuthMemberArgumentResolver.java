@@ -1,4 +1,4 @@
-package roomescape.controller.api.resolver;
+package roomescape.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -9,7 +9,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.exception.CustomException;
 import roomescape.exception.CustomUnauthorized;
-import roomescape.infrastructure.CookieProvider;
+import roomescape.util.CookieProvider;
 
 public class AuthMemberArgumentResolver implements HandlerMethodArgumentResolver {
 

@@ -11,8 +11,8 @@ import roomescape.controller.api.dto.request.MemberAuthRequest;
 import roomescape.controller.api.dto.request.MemberLoginRequest;
 import roomescape.controller.api.dto.response.AuthMemberNameResponse;
 import roomescape.controller.api.dto.response.MemberResponse;
-import roomescape.controller.api.resolver.AuthMember;
-import roomescape.infrastructure.CookieProvider;
+import roomescape.resolver.AuthMember;
+import roomescape.util.CookieProvider;
 import roomescape.service.MemberService;
 
 @RestController

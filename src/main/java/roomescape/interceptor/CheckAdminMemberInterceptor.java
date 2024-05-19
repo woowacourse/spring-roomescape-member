@@ -1,11 +1,10 @@
-package roomescape.controller.api.interceptor;
+package roomescape.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.exception.CustomException;
 import roomescape.exception.CustomForbidden;
-import roomescape.infrastructure.CookieProvider;
+import roomescape.util.CookieProvider;
 
 public class CheckAdminMemberInterceptor implements HandlerInterceptor {
 

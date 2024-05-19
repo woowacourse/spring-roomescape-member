@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.controller.api.interceptor.CheckAdminMemberInterceptor;
-import roomescape.controller.api.resolver.AuthMemberArgumentResolver;
-import roomescape.infrastructure.CookieProvider;
+import roomescape.interceptor.CheckAdminMemberInterceptor;
+import roomescape.resolver.AuthMemberArgumentResolver;
+import roomescape.util.CookieProvider;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
