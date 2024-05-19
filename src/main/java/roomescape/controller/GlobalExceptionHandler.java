@@ -1,4 +1,4 @@
-package roomescape.controller.rest;
+package roomescape.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +12,8 @@ import roomescape.exception.EntityExistsException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ForeignKeyViolationException;
 
-@ControllerAdvice(basePackages = "roomescape.controller.rest")
-public class ApiExceptionHandler {
+@ControllerAdvice(basePackages = "roomescape")
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException exception) {
