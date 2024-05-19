@@ -1,0 +1,11 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:test
+security:
+  jwt:
+    token:
+      secret-key: hellowootecoworldhihowareyouiamfinethankyouandyou
+      expire-length: 360000 # unit hour(ms): 1hour/60minutes

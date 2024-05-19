@@ -7,12 +7,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
 import roomescape.domain.policy.RankingPolicy;
+import roomescape.domain.policy.WeeklyRankingPolicy;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.theme.NotFoundThemeException;
 import roomescape.exception.theme.ReservationReferencedThemeException;
-import roomescape.web.dto.request.ThemeRequest;
-import roomescape.web.dto.response.ThemeResponse;
+import roomescape.web.dto.request.theme.ThemeRequest;
+import roomescape.web.dto.response.theme.ThemeResponse;
 
 @Service
 public class ThemeService {
@@ -29,7 +30,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> findAllPopularTheme(RankingPolicy rankingPolicy) {
+    public List<ThemeResponse> findAllPopularTheme() {
+        RankingPolicy rankingPolicy = new WeeklyRankingPolicy();
         LocalDate startDate = rankingPolicy.getStartDateAsString();
         LocalDate endDate = rankingPolicy.getEndDateAsString();
         int limit = rankingPolicy.exposureSize();

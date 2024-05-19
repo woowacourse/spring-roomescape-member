@@ -2,8 +2,11 @@ package roomescape.helper;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -14,6 +17,7 @@ public class DatabaseInitializer {
     private Theme theme;
     private ReservationTime time;
     private Reservation reservation;
+    private Member member;
 
     public DatabaseInitializer(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -22,7 +26,14 @@ public class DatabaseInitializer {
     public void execute() {
         theme = createTheme();
         time = createInitTime();
-        reservation = createInitReservation(time, theme);
+        member = createMember();
+        reservation = createInitReservation(time, theme, member);
+    }
+
+    private Member createMember() {
+        jdbcTemplate.update("INSERT INTO member(name, email, password, role) VALUES (?, ?, ?, ?)", "이름",
+                "email@email.com", "password", "admin");
+        return new Member(1L, "이름", "email@email.com", "password");
     }
 
     private Theme createTheme() {
@@ -36,9 +47,9 @@ public class DatabaseInitializer {
         return new ReservationTime(1L, LocalTime.of(10, 0));
     }
 
-    private Reservation createInitReservation(ReservationTime time, Theme theme) {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2024-08-05", "1", "1");
-        return new Reservation(1L, "브라운", LocalDate.of(2024, 8, 5), time, theme);
+    private Reservation createInitReservation(ReservationTime time, Theme theme, Member member) {
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                "2024-08-05", "1", "1", "1");
+        return new Reservation(1L, LocalDate.of(2024, 8, 5), time, theme, member);
     }
 }

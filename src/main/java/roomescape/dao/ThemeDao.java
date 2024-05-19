@@ -14,8 +14,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
-import roomescape.exception.theme.ThemeDeletionException;
+import roomescape.domain.repository.ThemeRepository;
+import roomescape.exception.theme.NotFoundThemeException;
 
 @Repository
 public class ThemeDao implements ThemeRepository {
@@ -74,21 +74,20 @@ public class ThemeDao implements ThemeRepository {
 
     @Override
     public void delete(Theme theme) {
-        try {
-            String sql = "DELETE FROM theme WHERE id = ?";
-            jdbcTemplate.update(sql, theme.getId());
-        } catch (Exception e) {
-            throw new ThemeDeletionException();
+        String sql = "DELETE FROM theme WHERE id = ?";
+        int update = jdbcTemplate.update(sql, theme.getId());
+        checkRemoved(update);
+    }
+
+    private void checkRemoved(int count) {
+        if (count < 1) {
+            throw new NotFoundThemeException();
         }
     }
 
     @Override
     public void deleteAll() {
-        try {
-            String sql = "DELETE FROM theme";
-            jdbcTemplate.update(sql);
-        } catch (Exception e) {
-            throw new ThemeDeletionException();
-        }
+        String sql = "DELETE FROM theme";
+        jdbcTemplate.update(sql);
     }
 }

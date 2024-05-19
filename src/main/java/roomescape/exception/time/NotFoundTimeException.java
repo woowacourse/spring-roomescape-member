@@ -1,6 +1,7 @@
 package roomescape.exception.time;
 
 import org.springframework.http.HttpStatus;
+
 import roomescape.exception.CustomException;
 
 public class NotFoundTimeException extends CustomException {

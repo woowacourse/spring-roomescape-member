@@ -6,15 +6,15 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.exception.time.DuplicatedTimeException;
 import roomescape.exception.time.NotFoundTimeException;
 import roomescape.exception.time.ReservationReferencedTimeException;
-import roomescape.web.dto.request.ReservationTimeRequest;
-import roomescape.web.dto.response.AvailableReservationTimeResponse;
-import roomescape.web.dto.response.ReservationTimeResponse;
+import roomescape.web.dto.request.time.ReservationTimeRequest;
+import roomescape.web.dto.response.time.AvailableReservationTimeResponse;
+import roomescape.web.dto.response.time.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {

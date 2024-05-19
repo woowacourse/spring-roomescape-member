@@ -17,16 +17,21 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.web.ReservationController;
-import roomescape.web.dto.response.ReservationResponse;
+import roomescape.domain.Member;
+import roomescape.domain.Role;
+import roomescape.web.controller.ReservationController;
+import roomescape.web.dto.response.reservation.ReservationResponse;
 
 class MissionStepTest extends AcceptanceTest {
+
     @Autowired
     private ReservationController reservationController;
+
 
     @Test
     void 일단계() {
         RestAssured.given().log().all()
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
@@ -35,6 +40,7 @@ class MissionStepTest extends AcceptanceTest {
     @Test
     void 이단계() {
         RestAssured.given().log().all()
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
@@ -57,6 +63,7 @@ class MissionStepTest extends AcceptanceTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -95,10 +102,11 @@ class MissionStepTest extends AcceptanceTest {
 
     @Test
     void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", "2023-08-05", "1", "1");
+        jdbcTemplate.update("INSERT INTO reservation (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)",
+                "2023-08-05", "1", "1", "1");
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -116,10 +124,12 @@ class MissionStepTest extends AcceptanceTest {
         params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
+        params.put("memberId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -172,10 +182,12 @@ class MissionStepTest extends AcceptanceTest {
         reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
+        reservation.put("memberId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
+                .cookie("token", jwtProvider.encode(new Member(1L, "a", "B", "c", Role.ADMIN)))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);

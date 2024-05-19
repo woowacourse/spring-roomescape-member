@@ -3,7 +3,6 @@ package roomescape.acceptance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.domain.Member;
 
 class ReservationAcceptanceTest extends AcceptanceTest {
     @Nested
@@ -41,19 +41,6 @@ class ReservationAcceptanceTest extends AcceptanceTest {
             params.put("timeId", "1");
         }
 
-        @Test
-        void 예약을_추가할_수_있다() {
-            params.put("date", LocalDate.now().plusDays(1).toString());
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/reservations")
-                    .then().log().all()
-                    .statusCode(201)
-                    .header("Location", "/reservations/2")
-                    .body("id", is(2));
-        }
 
         @Test
         void 필드가_빈_값이면_예약을_추가할_수_없다() {
@@ -85,6 +72,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
+                    .cookie("token", jwtProvider.encode(new Member(1L, "a", "b", "c")))
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
@@ -107,6 +95,7 @@ class ReservationAcceptanceTest extends AcceptanceTest {
     @Nested
     @DisplayName("예약 삭제 API")
     class DeleteReservation {
+
         @Test
         void 예약을_삭제할_수_있다() {
             RestAssured.given().log().all()

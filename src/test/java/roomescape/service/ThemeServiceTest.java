@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import static java.time.Month.FEBRUARY;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -13,14 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
-import roomescape.domain.policy.FixedDateWeeklyRankingPolicy;
-import roomescape.web.dto.response.ThemeResponse;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.domain.repository.ThemeRepository;
+import roomescape.web.dto.response.theme.ThemeResponse;
 
 @SpringBootTest
 class ThemeServiceTest {
@@ -60,7 +58,7 @@ class ThemeServiceTest {
         creatReservation(1, savedReservationTime, savedTheme3);
 
         // when
-        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme(new FixedDateWeeklyRankingPolicy());
+        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme();
 
         // then
         Assertions.assertThat(popularTheme)
@@ -87,27 +85,28 @@ class ThemeServiceTest {
 
         ReservationTime savedReservationTime = reservationTimeRepository.save(new ReservationTime(LocalTime.of(1, 0)));
 
-        creatReservation(1, savedReservationTime, savedTheme1);
-        creatReservation(1, savedReservationTime, savedTheme2);
-        creatReservation(1, savedReservationTime, savedTheme3);
-        creatReservation(1, savedReservationTime, savedTheme4);
-        creatReservation(1, savedReservationTime, savedTheme5);
-        creatReservation(1, savedReservationTime, savedTheme6);
-        creatReservation(1, savedReservationTime, savedTheme7);
-        creatReservation(1, savedReservationTime, savedTheme8);
-        creatReservation(1, savedReservationTime, savedTheme9);
-        creatReservation(1, savedReservationTime, savedTheme10);
-        creatReservation(1, savedReservationTime, savedTheme11);
+        creatReservation(1L, savedReservationTime, savedTheme1);
+        creatReservation(1L, savedReservationTime, savedTheme2);
+        creatReservation(1L, savedReservationTime, savedTheme3);
+        creatReservation(1L, savedReservationTime, savedTheme4);
+        creatReservation(1L, savedReservationTime, savedTheme5);
+        creatReservation(1L, savedReservationTime, savedTheme6);
+        creatReservation(1L, savedReservationTime, savedTheme7);
+        creatReservation(1L, savedReservationTime, savedTheme8);
+        creatReservation(1L, savedReservationTime, savedTheme9);
+        creatReservation(1L, savedReservationTime, savedTheme10);
+        creatReservation(1L, savedReservationTime, savedTheme11);
 
         // when
-        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme(new FixedDateWeeklyRankingPolicy());
+        List<ThemeResponse> popularTheme = themeService.findAllPopularTheme();
 
         // then
         Assertions.assertThat(popularTheme)
                 .hasSize(10);
     }
 
-    private void creatReservation(int day, ReservationTime reservationTime, Theme theme) {
-        reservationRepository.save(new Reservation("fram1", LocalDate.of(2023, FEBRUARY, day), reservationTime, theme));
+    private void creatReservation(long day, ReservationTime reservationTime, Theme theme) {
+        reservationRepository.save(
+                new Reservation(LocalDate.now().minusDays(day), reservationTime, theme, new Member("a", "b", "C")));
     }
 }
