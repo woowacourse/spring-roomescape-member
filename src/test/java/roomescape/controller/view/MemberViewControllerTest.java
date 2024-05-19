@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import io.restassured.RestAssured;
+import roomescape.BaseTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class MemberViewControllerTest {
+class MemberViewControllerTest extends BaseTest {
 
     @Test
     @DisplayName("인기 테마 페이지를 매핑한다.")

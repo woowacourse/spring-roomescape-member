@@ -7,10 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.Cookie;
+import roomescape.BaseTest;
 import roomescape.util.JwtProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class AdminViewControllerTest {
+class AdminViewControllerTest extends BaseTest {
 
     @Autowired
     JwtProvider jwtProvider;
