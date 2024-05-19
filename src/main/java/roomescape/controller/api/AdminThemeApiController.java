@@ -34,14 +34,6 @@ public class AdminThemeApiController {
                 .body(ThemeResponse.from(output));
     }
 
-    @GetMapping("/popular")
-    public ResponseEntity<ThemesResponse> findPopularThemes(
-            @RequestParam final String date,
-            @RequestParam(required = false, defaultValue = "10") final int limit) {
-        final List<ThemeOutput> outputs = themeService.findPopularThemes(date, limit);
-        return ResponseEntity.ok().body(ThemesResponse.from(outputs));
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable final long id) {
         themeService.deleteTheme(id);
