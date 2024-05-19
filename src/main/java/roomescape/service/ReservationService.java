@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.exception.CustomBadRequest;
-import roomescape.repository.ReservationRepository;
 import roomescape.service.dto.input.ReservationInput;
 import roomescape.service.dto.output.ReservationOutput;
 import roomescape.service.util.DateTimeFormatter;
@@ -13,22 +12,28 @@ import roomescape.service.util.DateTimeFormatter;
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
+    private final MemberService memberService;
     private final ReservationDao reservationDao;
     private final DateTimeFormatter dateTimeFormatter;
 
-    public ReservationService(final ReservationRepository reservationRepository,
+    public ReservationService(final ReservationTimeService reservationTimeService,
+                              final ThemeService themeService,
+                              final MemberService memberService,
                               final ReservationDao reservationDao,
                               final DateTimeFormatter dateTimeFormatter) {
-        this.reservationRepository = reservationRepository;
+        this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
+        this.memberService = memberService;
         this.reservationDao = reservationDao;
         this.dateTimeFormatter = dateTimeFormatter;
     }
 
     public ReservationOutput createReservation(final ReservationInput input) {
-        final var member = reservationRepository.getMemberById(input.memberId());
-        final var time = reservationRepository.getReservationTimeById(input.timeId());
-        final var theme = reservationRepository.getThemeById(input.themeId());
+        final var member = memberService.getMemberById(input.memberId());
+        final var time = reservationTimeService.getReservationTimeById(input.timeId());
+        final var theme = themeService.getThemeById(input.themeId());
 
         final var reservation = new Reservation(member, input.date(), time, theme);
 
@@ -44,6 +49,11 @@ public class ReservationService {
         }
     }
 
+    private Reservation getReservationById(final Long reservationId) {
+        return reservationDao.findById(reservationId)
+                .orElseThrow(() -> new CustomBadRequest(String.format("reservationId(%s)가 존재하지 않습니다.", reservationId)));
+    }
+
     public List<ReservationOutput> filterReservations(final Long themeId,
                                                       final Long memberId,
                                                       final String dateFrom,
@@ -53,7 +63,7 @@ public class ReservationService {
     }
 
     public void deleteReservation(final long id) {
-        final var reservation = reservationRepository.getReservationById(id);
+        final var reservation = getReservationById(id);
         reservationDao.delete(reservation.getId());
     }
 }
