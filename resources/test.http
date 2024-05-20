@@ -1,0 +1,21 @@
+### 로그인
+POST /login HTTP/1.1
+content-type: application/json
+host: localhost:8080
+
+{
+    "password": "password",
+    "email": "admin@email.com"
+}
+
+### 없는 예약 조회
+POST /reservations HTTP/1.1
+content-type: application/json
+cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJpZCI6MSwiaWF0IjoxNzE1NTgyMTk1LCJleHAiOjE3MTU1ODU3OTV9.SglWbdJrCN1CcCTrvTVl92VvyLukPNS6Rx86IZz2frM
+host: localhost:8080
+
+{
+  "date": "2026-03-01",
+  "themeId": 1,
+  "timeId": 200
+}

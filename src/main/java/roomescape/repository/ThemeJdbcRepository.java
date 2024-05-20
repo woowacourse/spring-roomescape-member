@@ -4,6 +4,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -38,8 +39,12 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     public Theme findByThemeId(Long themeId) {
-        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, themeRowMapper, themeId);
+        try {
+            String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, themeRowMapper, themeId);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
     }
 
     public List<Theme> findWeeklyHotThemes() {

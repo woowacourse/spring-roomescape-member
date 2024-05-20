@@ -11,10 +11,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -24,7 +25,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            new UserName(resultSet.getString("name")),
+            new Member(
+                    resultSet.getLong("member_id"),
+                    Role.from(resultSet.getString("member_role")),
+                    resultSet.getString("member_name"),
+                    resultSet.getString("email"),
+                    resultSet.getString("password")),
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -45,12 +51,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
+                    u.id AS member_id,
+                    u.role AS member_role,
+                    u.name AS member_name,
+                    u.email AS email,
+                    u.password AS password,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
@@ -59,18 +70,24 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     th.thumbnail AS theme_thumbnail
                 FROM
                     reservation AS r
+                INNER JOIN member AS u ON r.member_id = u.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id;
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
+    @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
-                    r.name,
                     r.date,
+                    u.id AS member_id,
+                    u.role AS member_role,
+                    u.name AS member_name,
+                    u.email AS email,
+                    u.password AS password,
                     t.id AS time_id,
                     t.start_at AS time_value,
                     th.id AS theme_id,
@@ -79,24 +96,55 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     th.thumbnail AS theme_thumbnail
                 FROM
                     reservation AS r
+                INNER JOIN member AS u ON r.member_id = u.id
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE date = ? AND theme_id = ?;
+                WHERE r.date = ? AND r.theme_id = ?;
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
+    @Override
+    public List<Reservation> findSearchedReservation(Long themeId, Long memberId, LocalDate dateFrom,
+                                                     LocalDate dateTo) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.date,
+                    u.id AS member_id,
+                    u.role AS member_role,
+                    u.name AS member_name,
+                    u.email AS email,
+                    u.password AS password,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM
+                    reservation AS r
+                INNER JOIN member AS u ON r.member_id = u.id
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.theme_id = ? AND r.member_id = ? AND r.date BETWEEN ? AND ?;
+                """;
+
+        return jdbcTemplate.query(sql, reservationRowMapper, themeId, memberId, dateFrom, dateTo);
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         try {
             SqlParameterSource parameterSource = new MapSqlParameterSource()
-                    .addValue("name", reservation.getName().getUserName())
                     .addValue("date", reservation.getDate())
+                    .addValue("member_id", reservation.getMember().getId())
                     .addValue("time_id", reservation.getReservationTime().getId())
                     .addValue("theme_id", reservation.getTheme().getId());
             Long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
             return new Reservation(
                     id,
-                    reservation.getName(),
+                    reservation.getMember(),
                     reservation.getDate(),
                     reservation.getReservationTime(),
                     reservation.getTheme()
@@ -106,6 +154,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         }
     }
 
+    @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);

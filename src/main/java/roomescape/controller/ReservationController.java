@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.LoginMember;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
@@ -35,6 +36,15 @@ public class ReservationController {
                 .body(reservationResponses);
     }
 
+    @PostMapping
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody ReservationCreateRequest reservationCreateRequest, LoginMember member) {
+        ReservationResponse reservationResponse = reservationService.createUserReservation(reservationCreateRequest,
+                member);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
+                .body(reservationResponse);
+    }
+
     @GetMapping("/available")
     public ResponseEntity<List<AvailableTimeResponse>> findAllAvailableTimes(
             @RequestParam LocalDate date, @RequestParam String themeId) {
@@ -42,14 +52,6 @@ public class ReservationController {
                 Long.valueOf(themeId));
         return ResponseEntity.ok()
                 .body(availableTimeResponses);
-    }
-
-    @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody ReservationCreateRequest reservationCreateRequest) {
-        ReservationResponse reservationResponse = reservationService.create(reservationCreateRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
-                .body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")

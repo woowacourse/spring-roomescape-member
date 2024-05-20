@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -31,14 +32,18 @@ class ReservationJdbcRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @BeforeEach
     void setUp() {
         reservationTimeRepository.save(new ReservationTime(LocalTime.parse("10:00")));
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
+        Member member = memberRepository.findById(1L);
         Reservation reservation1 = new Reservation(
-                new UserName("초롱"),
+                member,
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme
@@ -74,7 +79,7 @@ class ReservationJdbcRepositoryTest {
         ReservationTime reservationTime = reservationTimeRepository.findByTimeId(1L);
         Theme theme = themeRepository.findByThemeId(1L);
         Reservation reservation2 = new Reservation(
-                new UserName("메이슨"),
+                new Member(Role.ADMIN, "admin1@email.com", "password"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme

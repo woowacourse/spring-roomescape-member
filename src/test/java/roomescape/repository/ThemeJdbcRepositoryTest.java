@@ -13,10 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -54,7 +55,7 @@ class ThemeJdbcRepositoryTest {
         themeRepository.save(new Theme("테마명", "테마 설명", "테마 이미지"));
         Theme theme = themeRepository.findByThemeId(1L);
         reservationRepository.save(new Reservation(
-                new UserName("메이슨"),
+                new Member(Role.ADMIN, "admin1@email.com", "password"),
                 LocalDate.parse("2025-10-05"),
                 reservationTime,
                 theme

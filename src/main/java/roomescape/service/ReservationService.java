@@ -6,16 +6,19 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.LoginMember;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.UserName;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.dto.request.ReservationAdminCreateRequest;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.AvailableTimeResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
@@ -23,13 +26,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<ReservationResponse> findAll() {
@@ -56,13 +62,30 @@ public class ReservationService {
         return availableTimeResponses;
     }
 
-    public ReservationResponse create(ReservationCreateRequest reservationCreateRequest) {
-        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(reservationCreateRequest.timeId());
-        validateAvailableDateTime(reservationCreateRequest.date(), reservationTime.getStartAt());
-        Theme theme = themeRepository.findByThemeId(reservationCreateRequest.themeId());
+    public ReservationResponse createUserReservation(ReservationCreateRequest reservationCreateRequest,
+                                                     LoginMember member) {
+        Long timeId = reservationCreateRequest.timeId();
+        Long themeId = reservationCreateRequest.themeId();
+        LocalDate date = reservationCreateRequest.date();
+        return createReservation(member.id(), timeId, themeId, date);
+    }
+
+    public ReservationResponse createAdminReservation(ReservationAdminCreateRequest reservationAdminCreateRequest) {
+        Long memberId = reservationAdminCreateRequest.memberId();
+        Long timeId = reservationAdminCreateRequest.timeId();
+        Long themeId = reservationAdminCreateRequest.themeId();
+        LocalDate date = reservationAdminCreateRequest.date();
+        return createReservation(memberId, timeId, themeId, date);
+    }
+
+    private ReservationResponse createReservation(Long memberId, Long timeId, Long themeId, LocalDate date) {
+        Member member = memberRepository.findById(memberId);
+        ReservationTime reservationTime = reservationTimeRepository.findByTimeId(timeId);
+        validateAvailableDateTime(date, reservationTime.getStartAt());
+        Theme theme = themeRepository.findByThemeId(themeId);
         Reservation reservation = new Reservation(
-                new UserName(reservationCreateRequest.name()),
-                reservationCreateRequest.date(),
+                member,
+                date,
                 reservationTime,
                 theme
         );
@@ -83,5 +106,12 @@ public class ReservationService {
         if (reservationRepository.deleteById(id) == 0) {
             throw new IllegalArgumentException("삭제할 예약이 존재하지 않습니다");
         }
+    }
+
+    public List<ReservationResponse> findSearchedReservations(
+            Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findSearchedReservation(themeId, memberId, dateFrom, dateTo).stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 }
