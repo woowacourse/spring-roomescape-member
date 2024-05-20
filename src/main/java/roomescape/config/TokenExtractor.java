@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import java.util.Optional;
 
-public class CookieUtil {
+public class TokenExtractor {
 
     private static final String TOKEN_NAME = "token";
 

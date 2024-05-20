@@ -1,6 +1,5 @@
 package roomescape.config;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -33,6 +32,6 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     }
 
     private static Optional<String> extractToken(HttpServletRequest request) {
-        return CookieUtil.extractTokenFromCookie(request.getCookies());
+        return TokenExtractor.extractTokenFromCookie(request.getCookies());
     }
 }

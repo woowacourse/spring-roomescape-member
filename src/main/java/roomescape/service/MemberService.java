@@ -2,7 +2,7 @@ package roomescape.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
-import roomescape.config.CookieUtil;
+import roomescape.config.TokenExtractor;
 import roomescape.config.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.domain.MemberRepository;
@@ -29,11 +29,11 @@ public class MemberService {
         Member member = getValidatedUserByEmailAndPassword(email, password);
         String token = jwtTokenProvider.createToken(member);
 
-        return CookieUtil.makeTokenCookie(token);
+        return TokenExtractor.makeTokenCookie(token);
     }
 
     public void logout(HttpServletResponse response) {
-        CookieUtil.makeCookieExpired(response);
+        TokenExtractor.makeCookieExpired(response);
     }
 
     private Member getValidatedUserByEmailAndPassword(String email, String password) {
