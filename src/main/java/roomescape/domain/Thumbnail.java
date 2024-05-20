@@ -3,7 +3,7 @@ package roomescape.domain;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.CustomBadRequest;
 
 public record Thumbnail(String value) {
 
@@ -23,7 +23,9 @@ public record Thumbnail(String value) {
 
     private void validateExt(final String url) {
         if (!ALLOWED_EXTENSIONS_PATTERN.matcher(url).matches()) {
-            throw InvalidInputException.of(String.format("thumbnail (%s 확장자만 가능)", EXTENSIONS_JOINER.apply(", ")), url);
+            throw new CustomBadRequest(
+                    String.format("thumbnail(%s)이 유효하지 않습니다. (가능한 확장자: %s)", url, EXTENSIONS_JOINER.apply(", "))
+            );
         }
     }
 

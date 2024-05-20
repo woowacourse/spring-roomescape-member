@@ -1,12 +1,13 @@
 package roomescape.service.dto.input;
 
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.ReservationDate;
 
-public record ReservationInput(String name, String date, Long timeId, Long themeId) {
+public record ReservationInput(ReservationDate date, Long timeId, Long themeId, Long memberId) {
 
-    public Reservation toReservation(final ReservationTime time, final Theme theme) {
-        return Reservation.from(null, name, date, time, theme);
+    public static ReservationInput of(final String date,
+                                      final Long timeId,
+                                      final Long themeId,
+                                      final Long memberId) {
+        return new ReservationInput(ReservationDate.from(date), timeId, themeId, memberId);
     }
 }

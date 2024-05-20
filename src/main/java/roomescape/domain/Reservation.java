@@ -7,37 +7,60 @@ import java.util.Objects;
 public class Reservation {
 
     private final Long id;
-    private final Name name;
+    private final Member member;
     private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final Name name, final ReservationDate date, final ReservationTime time, final Theme theme) {
-        this.id = id;
-        this.name = name;
+    public Reservation(final Member member,
+                       final ReservationDate date,
+                       final ReservationTime time,
+                       final Theme theme) {
+        this.id = null;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    public static Reservation from(final Long id, final String name, final String date, final ReservationTime time, final Theme theme) {
-        return new Reservation(id, new Name(name), ReservationDate.from(date), time, theme);
+    public Reservation(final Long id,
+                       final Member member,
+                       final ReservationDate date,
+                       final ReservationTime time,
+                       final Theme theme) {
+        this.id = id;
+        this.member = member;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
+    public static Reservation of(final Long id, final Reservation reservation) {
+        return new Reservation(id, reservation.member, reservation.date, reservation.time, reservation.theme);
+    }
+
+    public static Reservation of(final Long id,
+                                 final Member member,
+                                 final String date,
+                                 final ReservationTime time,
+                                 final Theme theme) {
+        return new Reservation(id, member, ReservationDate.from(date), time, theme);
     }
 
     public Long getId() {
         return id;
     }
 
-    public Name getName() {
-        return name;
-    }
-
-    public String getNameAsString() {
-        return name.asString();
+    public Member getMember() {
+        return member;
     }
 
     public ReservationDate getDate() {
         return date;
+    }
+
+    public String getDateAsString() {
+        return date.asString();
     }
 
     public ReservationTime getTime() {
@@ -46,10 +69,6 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
-    }
-
-    public String getDateAndTimeFormat() {
-        return this.date.asString() + " " + this.time.getStartAtAsString();
     }
 
     public boolean isBefore(final LocalDate localDate, final LocalTime localTime) {
@@ -77,5 +96,16 @@ public class Reservation {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", member=" + member +
+                ", date=" + date +
+                ", time=" + time +
+                ", theme=" + theme +
+                '}';
     }
 }

@@ -38,4 +38,13 @@ class UserPageControllerTest {
                 .then()
                 .statusCode(200);
     }
+
+    @DisplayName("/login 요청 시 로그인 폼이 있는 페이지를 응답한다.")
+    @Test
+    void response_login_page() {
+        RestAssured.given()
+                .when().get("/login")
+                .then()
+                .statusCode(200);
+    }
 }

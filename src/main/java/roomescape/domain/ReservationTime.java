@@ -3,32 +3,20 @@ package roomescape.domain;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.CustomBadRequest;
 
-public class ReservationTime {
-
-    private final Long id;
-    private final LocalTime startAt;
-
-    public ReservationTime(final Long id, final LocalTime startAt) {
-        this.id = id;
-        this.startAt = startAt;
-    }
+public record ReservationTime(Long id, LocalTime startAt) {
 
     public static ReservationTime of(final Long id, final String startAt) {
         try {
             return new ReservationTime(id, LocalTime.parse(startAt));
         } catch (final DateTimeException exception) {
-            throw InvalidInputException.of("startAt", startAt);
+            throw new CustomBadRequest(String.format("startAt(%s)이 유효하지 않습니다.", startAt));
         }
     }
 
     public boolean isBefore(final LocalTime other) {
         return this.startAt.isBefore(other);
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getStartAtAsString() {

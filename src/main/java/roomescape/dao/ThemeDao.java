@@ -31,15 +31,15 @@ public class ThemeDao {
 
     public Theme create(final Theme theme) {
         final SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", theme.getName())
-                .addValue("description", theme.getDescription())
+                .addValue("name", theme.name())
+                .addValue("description", theme.description())
                 .addValue("thumbnail", theme.getThumbnailAsString());
 
         final long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return Theme.of(id, theme.getName(), theme.getDescription(), theme.getThumbnailAsString());
+        return Theme.of(id, theme.name(), theme.description(), theme.getThumbnailAsString());
     }
 
-    public Optional<Theme> find(final long id) {
+    public Optional<Theme> findById(final long id) {
         final String sql = "SELECT * FROM theme WHERE id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
