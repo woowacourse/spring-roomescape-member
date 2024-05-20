@@ -46,7 +46,7 @@ class PageAccessAcceptanceTest extends BaseAcceptanceTest {
     @ValueSource(strings = {ADMIN_MAIN, ADMIN_RESERVATION, ADMIN_TIME, ADMIN_THEME})
     void adminPageAccess_guest_fail(String path) {
         CustomExceptionResponse response = sendGetRequestWithoutToken(path)
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .extract().as(CustomExceptionResponse.class);
 
         assertAll(
