@@ -1,19 +1,15 @@
 package roomescape.infrastructure;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -22,11 +18,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final SimpleJdbcInsert jdbcInsert;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
+            new Member(
+                    resultSet.getLong("member_id"),
+                    resultSet.getString("member_name"),
+                    resultSet.getString("member_email"),
+                    resultSet.getString("member_password"),
+                    Role.findByName(resultSet.getString("member_role"))
+            ),
             LocalDate.parse(resultSet.getString("date")),
             new ReservationTime(
                     resultSet.getLong("time_id"),
-                    LocalTime.parse(resultSet.getString("time_value"))
+                    LocalTime.parse(resultSet.getString("time_start_at"))
             ),
             new Theme(
                     resultSet.getLong("theme_id"),
@@ -35,56 +37,64 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getString("theme_thumbnail")
             )
     );
-    private final String basicSelectQuery = "SELECT " +
-            "r.id AS reservation_id, " +
-            "r.name, " +
-            "r.date, " +
-            "t.id AS time_id, " +
-            "t.start_at AS time_value, " +
-            "th.id AS theme_id, " +
-            "th.name AS theme_name, " +
-            "th.description AS theme_description, " +
-            "th.thumbnail AS theme_thumbnail " +
-            "FROM reservation AS r " +
-            "INNER JOIN reservation_time AS t ON r.time_id = t.id " +
-            "INNER JOIN theme AS th ON r.theme_id = th.id ";
+    private static final String BASIC_SELECT_QUERY = """
+            SELECT 
+                r.id AS reservation_id, 
+                r.date,
+                t.id AS time_id, 
+                t.start_at AS time_start_at, 
+                th.id AS theme_id, 
+                th.name AS theme_name, 
+                th.description AS theme_description, 
+                th.thumbnail AS theme_thumbnail,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
+                m.role AS member_role,
+                m.password AS member_password
+            FROM reservation AS r 
+            INNER JOIN reservation_time AS t ON r.time_id = t.id  
+            INNER JOIN theme AS th ON r.theme_id = th.id
+            INNER JOIN member AS m ON r.member_id = m.id
+            """;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public List<Reservation> findAll() {
-        List<Reservation> reservations = jdbcTemplate.query(this.basicSelectQuery, reservationRowMapper);
+        List<Reservation> reservations = jdbcTemplate.query(BASIC_SELECT_QUERY, reservationRowMapper);
 
         return Collections.unmodifiableList(reservations);
     }
 
     @Override
-    public Reservation findById(Long id) {
-        String sql = basicSelectQuery + "WHERE reservation_id = ?";
-        Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
-        if (reservation == null) {
-            throw new NoSuchElementException("존재하지 않는 아아디입니다.");
-        }
+    public Optional<Reservation> findById(Long id) {
+        String sql = BASIC_SELECT_QUERY + "WHERE r.id = ?";
 
-        return reservation;
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> params = Map.of(
-                "name", reservation.getName(),
+                "member_id", reservation.getMember().getId(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
         );
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return new Reservation(id, reservation.getMember(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
 
@@ -96,7 +106,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existByReservationTimeId(Long id) {
-        String sql = basicSelectQuery + "WHERE time_id = ?";
+        String sql = BASIC_SELECT_QUERY + "WHERE t.id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
 
         return !reservations.isEmpty();
@@ -104,17 +114,48 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existByThemeId(Long id) {
-        String sql = basicSelectQuery + "WHERE theme_id = ?";
+        String sql = BASIC_SELECT_QUERY + "WHERE th.id = ?";
         List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, id);
 
         return !reservations.isEmpty();
     }
 
     @Override
-    public boolean existByDateAndTimeId(LocalDate date, Long id) {
-        String sql = basicSelectQuery + "WHERE r.date = ? AND t.id = ?";
-        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, id);
+    public boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = BASIC_SELECT_QUERY + "WHERE r.date = ? AND t.id = ? AND th.id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(sql, reservationRowMapper, date, timeId, themeId);
 
         return !reservations.isEmpty();
+    }
+
+    @Override
+    public List<Reservation> filter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = makeQueryForFilter(themeId, memberId, dateFrom, dateTo);
+
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    private String makeQueryForFilter(Long themeId, Long memberId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = BASIC_SELECT_QUERY;
+        List<String> wherePhrase = new LinkedList<>();
+
+        if (themeId != null) {
+            wherePhrase.add(" th.id = " + themeId);
+        }
+        if (memberId != null) {
+            wherePhrase.add(" m.id = " + memberId);
+        }
+        if (dateFrom != null) {
+            wherePhrase.add(" r.date >= '" + dateFrom + "'");
+        }
+        if (dateTo != null) {
+            wherePhrase.add(" r.date <= '" + dateTo + "'");
+        }
+
+        if (wherePhrase.isEmpty()) {
+            return sql;
+        }
+
+        return sql + " WHERE " + String.join(" AND ", wherePhrase);
     }
 }

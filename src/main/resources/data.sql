@@ -19,11 +19,16 @@ VALUES ('우테코 수료 대장정',
         '자고 있는 사이에 캠퍼스 문이 닫혀버렸다! 잠실 캠퍼스 탈출기',
         'https://velog.velcdn.com/images/jangws/post/7199f6ba-b3a8-4e2f-b86a-e5406b166bcd/image.jpeg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('알알알', '2024-04-30', 1, 1),
-       ('산초', '2024-04-30', 2, 2),
-       ('칸쵸', '2024-04-30', 3, 2),
-       ('찰리', '2024-04-30', 4, 3),
-       ('러너덕', '2024-04-30', 4, 2),
-       ('위브', '2024-04-30', 3, 4),
-       ('아래브', '2024-04-30', 2, 3);
+INSERT INTO member (name, email, password, role)
+VALUES ('산초', 'sancho@sancho.com', 'sancho', 'ADMIN'),
+       ('찰리', 'charlie@sancho.com', 'charlie', 'CUSTOMER'),
+       ('알파카', 'alpaca@sancho.com', 'alpaca', 'CUSTOMER'),
+       ('위브', 'wiib@sancho.com', 'wiib', 'CUSTOMER');
+
+INSERT INTO reservation (member_id, date, time_id, theme_id)
+VALUES (2, '2024-05-10', 1, 1),
+       (3, '2024-05-11', 3, 2),
+       (3, '2024-05-12', 4, 3),
+       (4, '2024-05-13', 4, 2),
+       (4, '2024-05-14', 3, 4),
+       (4, '2024-05-15', 2, 3);

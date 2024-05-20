@@ -1,22 +1,32 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestPropertySource(locations = "classpath:application-test.properties")
 class DataBaseConnectionTest {
+
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    private void setUp() {
+        RestAssured.port = port;
+    }
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -27,16 +37,17 @@ class DataBaseConnectionTest {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             Assertions.assertAll(
                     () -> assertThat(connection).isNotNull(),
-                    () -> assertThat(connection.getCatalog()).isEqualTo("TEST"),
-                    () -> assertThat(
-                            connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue(),
-                    () -> assertThat(
-                            connection.getMetaData().getTables(null, null, "RESERVATION_TIME", null).next()).isTrue(),
-                    () -> assertThat(
-                            connection.getMetaData().getTables(null, null, "THEME", null).next()).isTrue()
+                    () -> assertThat(isTableExist(connection, "RESERVATION")).isTrue(),
+                    () -> assertThat(isTableExist(connection, "RESERVATION_TIME")).isTrue(),
+                    () -> assertThat(isTableExist(connection, "THEME")).isTrue(),
+                    () -> assertThat(isTableExist(connection, "MEMBER")).isTrue()
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isTableExist(Connection connection, String tableName) throws SQLException {
+        return connection.getMetaData().getTables(null, null, tableName, null).next();
     }
 }

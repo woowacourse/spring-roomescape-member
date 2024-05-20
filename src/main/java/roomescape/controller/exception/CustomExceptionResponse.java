@@ -1,4 +1,4 @@
 package roomescape.controller.exception;
 
-public record CustomExceptionResponse(String detail) {
+public record CustomExceptionResponse(String title, String detail) {
 }
