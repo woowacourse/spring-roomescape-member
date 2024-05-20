@@ -1,8 +1,8 @@
 package roomescape.configuration.resolver;
 
-import java.util.Arrays;
 import java.util.Objects;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.core.MethodParameter;
@@ -14,6 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import roomescape.exception.AuthenticationException;
 import roomescape.service.AuthService;
+import roomescape.util.CookieUtil;
 
 @Component
 public class AccessTokenArgumentResolver implements HandlerMethodArgumentResolver {
@@ -37,11 +38,7 @@ public class AccessTokenArgumentResolver implements HandlerMethodArgumentResolve
             WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest request = Objects.requireNonNull(webRequest.getNativeRequest(HttpServletRequest.class));
-        String token = Arrays.stream(request.getCookies())
-                .filter(cookie -> Objects.equals(cookie.getName(), "token"))
-                .findFirst()
-                .orElseThrow(AuthenticationException::new)
-                .getValue();
-        return authService.findByToken(token);
+        Cookie[] cookies = CookieUtil.requireNonnull(request.getCookies(), AuthenticationException::new);
+        return authService.findFromCookies(cookies);
     }
 }

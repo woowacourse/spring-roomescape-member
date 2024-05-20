@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import jakarta.servlet.http.Cookie;
 
@@ -12,42 +11,41 @@ import roomescape.domain.Member;
 import roomescape.exception.AuthenticationException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.MemberDao;
-import roomescape.util.JwtProvider;
+import roomescape.util.CookieUtil;
 
 @Service
 public class AuthService {
 
     private final MemberDao memberDao;
-    private final JwtProvider jwtProvider;
+    private final CookieUtil tokenUtil;
 
-    public AuthService(MemberDao memberDao, JwtProvider jwtProvider) {
+    public AuthService(MemberDao memberDao, CookieUtil tokenUtil) {
         this.memberDao = memberDao;
-        this.jwtProvider = jwtProvider;
+        this.tokenUtil = tokenUtil;
+    }
+
+    public Member findFromCookies(Cookie[] cookies) {
+        String email = extractTokenValue(cookies);
+        return findByEmail(email);
     }
 
     public Member findByEmail(String email) {
-        Optional<Member> member = memberDao.findByEmail(email);
-        if (member.isEmpty()) {
-            throw new EntityNotFoundException("Member with email %s not found.".formatted(email));
-        }
-        return member.get();
-    }
-
-    public Member findByToken(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new AuthenticationException("Token is null or empty.");
-        }
-        String email = jwtProvider.getSubject(token);
-        return findByEmail(email);
+        return memberDao.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Member with email " + email + " not found."));
     }
 
     public Cookie createToken(LoginRequest request) {
         validate(request);
-        String token = jwtProvider.createToken(request.email());
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
+        return tokenUtil.create(request.email());
+    }
+
+    public Cookie expiredToken() {
+        return tokenUtil.expired();
+    }
+
+    private String extractTokenValue(Cookie[] cookies) {
+        return tokenUtil.extractValue(cookies)
+                .orElseThrow(() -> new AuthenticationException("Token doesn't exist."));
     }
 
     private void validate(LoginRequest request) {
@@ -58,7 +56,7 @@ public class AuthService {
     }
 
     private boolean isValidLogin(LoginRequest request, Member member) {
-        return Objects.equals(member.email(), request.email())
-                && Objects.equals(member.password(), request.password());
+        return Objects.equals(member.getEmail(), request.email())
+                && Objects.equals(member.getPassword(), request.password());
     }
 }

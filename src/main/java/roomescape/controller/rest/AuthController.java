@@ -37,13 +37,12 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public ResponseEntity<LoginResponse> check(@AccessToken Member member) {
-        return ResponseEntity.ok().body(new LoginResponse(member.name()));
+        return ResponseEntity.ok().body(new LoginResponse(member.getName()));
     }
 
     @GetMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) throws IOException {
-        Cookie cookie = new Cookie("token", null);
-        cookie.setMaxAge(0);
+        Cookie cookie = authService.expiredToken();
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
