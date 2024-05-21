@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
 import roomescape.domain.Theme;
 
 @Repository
@@ -32,7 +31,7 @@ public class ReservationDao {
                     resultSet.getString("member_email"),
                     null,
                     resultSet.getString("member_name"),
-                    Role.from(resultSet.getString("member_role"))
+                    resultSet.getString("member_role")
             ),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -98,7 +97,7 @@ public class ReservationDao {
     public Reservation save(Reservation reservation) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("date", reservation.date())
-                .addValue("member_id", reservation.member().id())
+                .addValue("member_id", reservation.member().getId())
                 .addValue("time_id", reservation.time().id())
                 .addValue("theme_id", reservation.theme().id());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
