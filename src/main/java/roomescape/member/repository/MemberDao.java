@@ -11,12 +11,13 @@ import roomescape.member.response.MemberReservationResponse;
 
 @Repository
 public class MemberDao {
+    private static final String SECRET = "password";
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Member> memberRowMapper = (resultSet, __) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            resultSet.getString("password"),
+            SECRET,
             resultSet.getBoolean("is_admin")
     );
     private final RowMapper<MemberReservationResponse> memberReservationResponseRowMapper = (resultSet, __) -> new MemberReservationResponse(
