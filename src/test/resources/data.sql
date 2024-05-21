@@ -22,7 +22,7 @@ VALUES ('Theme1', 'Description for Theme1', 'https://i.pinimg.com/236x/6e/bc/46/
 
 INSERT INTO reservation (date, member_id, time_id, theme_id)
 VALUES ('2024-05-01', 1, 1, 1),
-       ('2024-05-02', 1, 1, 4),
+       ('2024-05-02', 1, 1, 1),
        ('2024-05-03', 1, 2, 4),
        ('2024-05-04', 1, 3, 4),
        ('2024-05-05', 1, 3, 3)

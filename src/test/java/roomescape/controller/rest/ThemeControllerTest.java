@@ -14,7 +14,7 @@ import roomescape.BaseTest;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeDao;
 
-public class ThemeControllerTest extends BaseTest {
+class ThemeControllerTest extends BaseTest {
 
     @Autowired
     private ThemeDao themeDao;
