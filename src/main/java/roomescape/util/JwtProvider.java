@@ -18,6 +18,14 @@ public class JwtProvider implements TokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    public JwtProvider() {
+    }
+
+    public JwtProvider(String secretKey, long validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
+
     public String create(String subject) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMilliseconds);
