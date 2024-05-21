@@ -21,7 +21,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationResponse> createReservationByClient(@Valid @RequestBody final MemberReservationRequest memberRequest,
                                                                          final LoginMember member) {
         ReservationRequest reservationRequest = new ReservationRequest(member.id(), memberRequest.date(),
@@ -30,7 +30,7 @@ public class ReservationController {
         return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> readReservations() {
         List<ReservationResponse> reservations = reservationService.findEntireReservationList();
         return ResponseEntity.ok(reservations);

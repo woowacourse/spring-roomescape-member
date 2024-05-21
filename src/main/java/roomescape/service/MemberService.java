@@ -13,9 +13,6 @@ import java.util.List;
 
 @Service
 public class MemberService {
-    private final String TEST_EMAIL = "test@email.com";
-    private final String TEST_PASSWORD = "1234";
-
     private final TokenGenerator tokenGenerator;
     private final MemberDao memberDao;
 
