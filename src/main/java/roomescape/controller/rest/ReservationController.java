@@ -41,7 +41,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservation);
     }
 
-    @PostMapping("/reservations/member")
+    @PostMapping("/reservations")
     public ResponseEntity<Reservation> createByMember(
             @AccessToken Member member,
             @RequestBody ReservationRequest request
