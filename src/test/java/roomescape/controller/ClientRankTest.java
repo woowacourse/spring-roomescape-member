@@ -16,6 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ClientRankTest {
+    public static final long MOST_POPULAR_THEME_ID = 2L;
+
     @LocalServerPort
     int port;
 
@@ -32,6 +34,6 @@ class ClientRankTest {
                 .then().extract().body()
                 .jsonPath().getList("", ThemeResponse.class);
         ThemeResponse actual = themeResponses.get(0);
-        assertThat(actual.id()).isEqualTo(2L);
+        assertThat(actual.id()).isEqualTo(MOST_POPULAR_THEME_ID);
     }
 }

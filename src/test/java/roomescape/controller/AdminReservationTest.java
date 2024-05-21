@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminReservationTest {
+    public static final int RESERVAION_COUNT = 7;
     private static final String EMAIL = "testDB@email.com";
     private static final String PASSWORD = "1234";
     @LocalServerPort
@@ -51,7 +52,7 @@ class AdminReservationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(7)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", is(RESERVAION_COUNT));
     }
 
     @DisplayName("reservation 페이지에 새로운 예약 정보를 추가, 조회, 삭제할 수 있다.")
@@ -76,7 +77,7 @@ class AdminReservationTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(8));
+                .body("size()", is(RESERVAION_COUNT + 1));
 
         RestAssured.given().log().all()
                 .cookies("token", accessToken)
@@ -172,7 +173,7 @@ class AdminReservationTest {
         reservation.put("name", "포케");
         reservation.put("date", "2099-04-30");
         reservation.put("timeId", 1); // 10:00
-        reservation.put("themeId", 1);
+        reservation.put("themeId", 3);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -231,7 +232,7 @@ class AdminReservationTest {
         reservation.put("name", "포케");
         reservation.put("date", "2099-04-30");
         reservation.put("timeId", 1); // 10:00
-        reservation.put("themeId", 3);
+        reservation.put("themeId", 2);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

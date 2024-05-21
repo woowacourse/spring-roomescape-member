@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LoginControllerTest {
     private static final String EMAIL = "testDB@email.com";
     private static final String PASSWORD = "1234";
+    public static final String TOKEN = "token";
 
     @LocalServerPort
     int port;
@@ -51,11 +52,11 @@ class LoginControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/login")
-                .then().log().cookies().extract().cookie("token");
+                .then().log().cookies().extract().cookie(TOKEN);
 
         MemberResponse client = RestAssured
                 .given().log().all()
-                .cookies("token", accessToken)
+                .cookies(TOKEN, accessToken)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/login/check")
                 .then().log().all()

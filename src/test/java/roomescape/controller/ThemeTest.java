@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeTest {
+    public static final int THEME_COUNT = 6;
     @LocalServerPort
     int port;
 
@@ -35,7 +36,7 @@ class ThemeTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(6));
+                .body("size()", is(THEME_COUNT));
     }
 
     @DisplayName("theme 등록 및 삭제 요청이 올바르게 동작한다.")
@@ -57,7 +58,7 @@ class ThemeTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(7));
+                .body("size()", is(THEME_COUNT + 1));
 
         RestAssured.given().log().all()
                 .when().delete("/themes/4")
