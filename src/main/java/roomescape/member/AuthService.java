@@ -24,7 +24,7 @@ public class AuthService {
     }
 
     public boolean checkInvalidLogin(String email, String password) {
-        return !memberDao.isMember(email, password);
+        return !memberDao.existsByEmailAndPassword(email, password);
     }
 
     public String createToken(LoginRequest loginRequest) {

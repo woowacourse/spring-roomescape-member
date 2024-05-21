@@ -28,7 +28,7 @@ public class MemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean isMember(String email, String password) {
+    public boolean existsByEmailAndPassword(String email, String password) {
         String query = "SELECT COUNT(*) FROM MEMBER WHERE EMAIL = ? AND PASSWORD = ?";
         Integer count = jdbcTemplate.queryForObject(query, Integer.class, email, password);
         return count != null && count == 1;
