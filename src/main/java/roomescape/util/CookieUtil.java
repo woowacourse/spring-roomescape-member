@@ -13,9 +13,12 @@ public interface CookieUtil {
 
     Optional<String> extractValue(Cookie[] cookies);
 
-    static <T extends Throwable> Cookie[] requireNonnull(Cookie[] cookies, Supplier<T> throwable) {
+    static <X extends RuntimeException> Cookie[] requireNonnull(
+            Cookie[] cookies,
+            Supplier<? extends X> exceptionSupplier
+    ) throws X {
         if (cookies == null) {
-            throwable.get();
+            throw exceptionSupplier.get();
         }
         return cookies;
     }

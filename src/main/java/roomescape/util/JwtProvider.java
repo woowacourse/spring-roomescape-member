@@ -26,6 +26,7 @@ public class JwtProvider implements TokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
+    @Override
     public String create(String subject) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMilliseconds);
@@ -37,6 +38,7 @@ public class JwtProvider implements TokenProvider {
                 .compact();
     }
 
+    @Override
     public String extract(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey())
