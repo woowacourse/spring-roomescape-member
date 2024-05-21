@@ -23,7 +23,7 @@ class AdminPageControllerTest {
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    void setUp() {
+    void setUpAdminMember() {
         String query = "INSERT INTO member (name, email, password, is_admin) "
                 + "values ('admin', 'admin@naver.com', '123', true)";
         jdbcTemplate.update(query);
