@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.response.BookResponse;
 import roomescape.service.BookService;
-import roomescape.service.ReservationService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,11 +15,9 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookingController {
     private final BookService bookService;
-    private final ReservationService reservationService;
 
-    public BookingController(final BookService bookService, final ReservationService reservationService) {
+    public BookingController(final BookService bookService) {
         this.bookService = bookService;
-        this.reservationService = reservationService;
     }
 
     @GetMapping("/{date}/{theme_id}")

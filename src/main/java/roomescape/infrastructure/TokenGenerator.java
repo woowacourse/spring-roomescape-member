@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
+import roomescape.domain.Role;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -12,7 +13,8 @@ import java.util.Date;
 public class TokenGenerator {
 
     public static final String COOKIE_NAME = "token";
-    public static final String ADMIN = "ADMIN";
+    public static final String ADMIN = Role.ADMIN.name();
+    public static final String ROLE = "role";
     private final String secretKey = "secret-token-test";
     private final long validityInMilliseconds = 3600000;
 
@@ -23,7 +25,7 @@ public class TokenGenerator {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .claim("role", role)
+                .claim(ROLE, role)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -47,7 +49,7 @@ public class TokenGenerator {
 
     public void validateTokenRole(final String token) {
         final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-        final boolean isAdmin = ADMIN.equals(claims.getBody().get("role"));
+        final boolean isAdmin = ADMIN.equals(claims.getBody().get(ROLE));
 
         if (!isAdmin) {
             throw new JwtException("해당 기능에 접근하려면 관리자 권한이 필요합니다.");

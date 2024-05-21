@@ -20,7 +20,7 @@ import java.util.List;
 public class LoginController {
     public static final String COOKIE_NAME = "token";
 
-    MemberService memberService;
+    private final MemberService memberService;
 
     public LoginController(final MemberService memberService) {
         this.memberService = memberService;
