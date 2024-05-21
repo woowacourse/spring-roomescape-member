@@ -22,9 +22,8 @@ public class CheckRoleInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String accessToken = authService.extractToken(request);
         long memberId = authService.findMemberIdByToken(accessToken);
-        Member member = memberService.findMemberById(memberId);
 
-        if (member == null || !member.isAdmin()) {
+        if (!memberService.isAdmin(memberId)) {
             response.setStatus(401);
             return false;
         }
