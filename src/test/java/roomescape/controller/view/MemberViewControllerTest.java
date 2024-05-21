@@ -2,12 +2,10 @@ package roomescape.controller.view;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import io.restassured.RestAssured;
 import roomescape.BaseTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class MemberViewControllerTest extends BaseTest {
 
     @Test
