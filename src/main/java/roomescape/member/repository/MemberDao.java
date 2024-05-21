@@ -43,11 +43,6 @@ public class MemberDao {
         return jdbcTemplate.queryForObject(query, memberRowMapper, email);
     }
 
-    public String findNameById(Long memberId) {
-        String query = "SELECT NAME FROM MEMBER WHERE ID = ?";
-        return jdbcTemplate.queryForObject(query, String.class, memberId);
-    }
-
     public Member findMemberById(long id) {
         String query = "SELECT ID, NAME, EMAIL, PASSWORD, IS_ADMIN FROM MEMBER WHERE ID = ?";
         return jdbcTemplate.queryForObject(query, memberRowMapper, id);

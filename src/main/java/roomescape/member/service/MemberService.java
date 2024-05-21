@@ -20,15 +20,11 @@ public class MemberService {
         return memberDao.findMemberById(id);
     }
 
-    public String findMemberNameById(long id) {
-        return memberDao.findNameById(id);
-    }
-
     public List<MemberReservationResponse> findAll() {
         return memberDao.findAllReservationResponse();
     }
 
-    public boolean isAdmin(long id){
+    public boolean isAdmin(long id) {
         Member member = memberDao.findMemberById(id);
         return member.isAdmin();
     }
