@@ -23,8 +23,4 @@ public enum Role {
     public boolean isAdmin() {
         return this == ADMIN;
     }
-
-    public String getName() {
-        return this.name();
-    }
 }
