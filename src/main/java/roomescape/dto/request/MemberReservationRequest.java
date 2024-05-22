@@ -7,20 +7,16 @@ import roomescape.domain.TimeSlot;
 
 import java.time.LocalDate;
 
-public record ReservationRequest(Long memberId, LocalDate date, Long timeId, Long themeId) {
-    public ReservationRequest {
-        isValid(memberId, date, timeId, themeId);
+public record MemberReservationRequest(LocalDate date, Long timeId, Long themeId) {
+    public MemberReservationRequest {
+        isValid(date, timeId, themeId);
     }
 
     public Reservation toEntity(final Long id, final Member member, final TimeSlot time, final Theme theme) {
         return new Reservation(id, member, date, time, theme);
     }
 
-    private void isValid(final Long memberId, final LocalDate date, final Long timeId, final Long themeId) {
-        if (memberId == null) {
-            throw new IllegalArgumentException("[ERROR] 예약자는 비워둘 수 없습니다.");
-        }
-
+    private void isValid(final LocalDate date, final Long timeId, final Long themeId) {
         if (date == null || date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 예약 날짜입니다.");
         }

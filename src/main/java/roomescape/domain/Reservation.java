@@ -4,14 +4,14 @@ import java.time.LocalDate;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final TimeSlot time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot time, final Theme theme) {
+    public Reservation(final Long id, final Member member, final LocalDate date, final TimeSlot time, final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -21,8 +21,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

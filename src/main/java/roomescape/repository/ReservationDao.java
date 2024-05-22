@@ -6,12 +6,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
-import roomescape.domain.Theme;
-import roomescape.domain.TimeSlot;
+import roomescape.domain.*;
 import roomescape.dto.request.ReservationRequest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -21,42 +20,32 @@ public class ReservationDao {
     private final RowMapper<Reservation> rowMapper =
             (resultSet, rowNum) -> new Reservation(
                     resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    new Member(resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("member_password"),
+                            Role.valueOf(resultSet.getString("member_role"))),
                     LocalDate.parse(resultSet.getString("date")),
                     new TimeSlot(resultSet.getLong("time_id"), resultSet.getString("time_value")),
-                    new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"), resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
+                    new Theme(resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail"))
             );
+
 
     public ReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
-                .usingColumns("name", "date", "time_id", "theme_id")
+                .usingColumns("member_id", "date", "time_id", "theme_id")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> findAll() {
-        String sql = """
-                SELECT
-                    r.id as reservation_id,
-                    r.name,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as theme_description,
-                    th.thumbnail as theme_thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id;
-                """;
-        return jdbcTemplate.query(sql, rowMapper);
-    }
 
     public Long create(final ReservationRequest reservationRequest) {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("name", reservationRequest.name())
+                .addValue("member_id", reservationRequest.memberId())
                 .addValue("date", reservationRequest.date())
                 .addValue("time_id", reservationRequest.timeId())
                 .addValue("theme_id", reservationRequest.themeId());
@@ -68,13 +57,13 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
+    public List<Reservation> findAll() {
+        String sql = buildSelectQuery();
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
     public boolean isExists(final LocalDate date, final Long timeId, final Long themeId) {
-        String sql = """
-                SELECT
-                count(*)
-                FROM reservation
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-                """;
+        String sql = buildCountQuery();
         return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId) != 0;
     }
 
@@ -89,10 +78,25 @@ public class ReservationDao {
     }
 
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        String sql = """
-                    SELECT
+        String sql = buildSelectQuery() + " where date = ? and theme_id = ?";
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+    }
+
+    public List<Reservation> findAllByMemberAndDateAndTheme(final Long memberId, final Long themeId,
+                                                            final String dateFrom, final String dateTo) {
+        String sql = buildSelectQuery() + buildConditionQuery(memberId, themeId, dateFrom, dateTo);
+        return jdbcTemplate.query(sql, rowMapper);
+    }
+
+    private String buildSelectQuery() {
+        return """
+                SELECT
                     r.id as reservation_id,
-                    r.name,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email as member_email,
+                    m.password as member_password,
+                    m.role as member_role,
                     r.date,
                     t.id as time_id,
                     t.start_at as time_value,
@@ -100,10 +104,39 @@ public class ReservationDao {
                     th.name as theme_name,
                     th.description as theme_description,
                     th.thumbnail as theme_thumbnail
-                    FROM reservation as r
-                    INNER JOIN reservation_time as t ON r.time_id = t.id
-                    INNER JOIN theme as th ON r.theme_id = th.id where date = ? and theme_id = ?
+                FROM reservation as r
+                INNER JOIN member as m ON r.member_id = m.id
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
                 """;
-        return jdbcTemplate.query(sql, rowMapper, date, themeId);
+    }
+
+    private String buildCountQuery() {
+        return """
+                SELECT
+                    count(*)
+                FROM reservation
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """;
+    }
+
+    private String buildConditionQuery(final Long memberId, final Long themeId, final String dateFrom,
+                                       final String dateTo) {
+        final List<String> whereQuery = new ArrayList<>();
+
+        if (memberId != null) {
+            whereQuery.add("r.member_id = " + memberId);
+        }
+        if (themeId != null) {
+            whereQuery.add("r.theme_id = " + themeId);
+        }
+        if (!dateFrom.isEmpty() && !dateTo.isEmpty()) {
+            whereQuery.add("r.date BETWEEN '" + dateFrom + "' AND '" + dateTo + "'");
+        }
+
+        if (whereQuery.isEmpty()) {
+            return "";
+        }
+        return " WHERE " + String.join(" AND ", whereQuery);
     }
 }

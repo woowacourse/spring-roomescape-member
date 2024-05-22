@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.is;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class TimeTest {
+    public static final int TIMESLOT_COUNT = 8;
     @LocalServerPort
     int port;
 
@@ -46,7 +47,7 @@ class TimeTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(5));
+                .body("size()", is(TIMESLOT_COUNT + 1));
 
         RestAssured.given().log().all()
                 .when().delete("/times/4")

@@ -36,4 +36,13 @@ class ClientPageTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("login 페이지 URL 요청이 올바르게 연결된다.")
+    @Test
+    void given_when_GetLogInPage_then_statusCodeIsOkay() {
+        RestAssured.given().log().all()
+                .when().get("/login")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

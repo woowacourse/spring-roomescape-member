@@ -11,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ranks")
-public class ClientRankController {
+public class RankingController {
     private final RankService rankService;
 
-    public ClientRankController(final RankService rankService) {
+    public RankingController(final RankService rankService) {
         this.rankService = rankService;
     }
 

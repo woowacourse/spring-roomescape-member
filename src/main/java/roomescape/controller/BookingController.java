@@ -12,16 +12,17 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("books")
-public class ClientReservationController {
+@RequestMapping("/books")
+public class BookingController {
     private final BookService bookService;
 
-    public ClientReservationController(final BookService bookService) {
+    public BookingController(final BookService bookService) {
         this.bookService = bookService;
     }
 
     @GetMapping("/{date}/{theme_id}")
-    public ResponseEntity<List<BookResponse>> read(@PathVariable final LocalDate date, @PathVariable(value = "theme_id") final Long themeId) {
+    public ResponseEntity<List<BookResponse>> read(@PathVariable final LocalDate date,
+                                                   @PathVariable(value = "theme_id") final Long themeId) {
         List<BookResponse> books = bookService.findAvaliableBookList(date, themeId);
         return ResponseEntity.ok(books);
     }

@@ -2,11 +2,13 @@ package roomescape.service;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.domain.TimeSlot;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.repository.MemberDao;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 import roomescape.repository.TimeDao;
@@ -16,11 +18,14 @@ import java.util.List;
 
 @Service
 public class ReservationService {
+    private final MemberDao memberDao;
     private final TimeDao timeDao;
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
 
-    public ReservationService(final TimeDao timeDao, final ReservationDao reservationDao, final ThemeDao themeDao) {
+    public ReservationService(final MemberDao memberDao, final TimeDao timeDao,
+                              final ReservationDao reservationDao, final ThemeDao themeDao) {
+        this.memberDao = memberDao;
         this.timeDao = timeDao;
         this.reservationDao = reservationDao;
         this.themeDao = themeDao;
@@ -33,14 +38,23 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<ReservationResponse> findDistinctReservations(final Long memberId, final Long themeId,
+                                                              final String dateFrom, final String dateTo) {
+        return reservationDao.findAllByMemberAndDateAndTheme(memberId, themeId, dateFrom, dateTo)
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public ReservationResponse create(final ReservationRequest reservationRequest) {
+        Member member = memberDao.findById(reservationRequest.memberId());
         TimeSlot timeSlot = checkTimeSlot(reservationRequest);
         Theme theme = checkTheme(reservationRequest);
 
         validate(reservationRequest.date(), timeSlot, theme);
 
         Long reservationId = reservationDao.create(reservationRequest);
-        Reservation reservation = reservationRequest.toEntity(reservationId, timeSlot, theme);
+        Reservation reservation = reservationRequest.toEntity(reservationId, member, timeSlot, theme);
 
         return ReservationResponse.from(reservation);
     }
