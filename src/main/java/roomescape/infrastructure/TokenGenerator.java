@@ -55,4 +55,8 @@ public class TokenGenerator {
             throw new JwtException("해당 기능에 접근하려면 관리자 권한이 필요합니다.");
         }
     }
+
+    public String getCookieName() {
+        return COOKIE_NAME;
+    }
 }

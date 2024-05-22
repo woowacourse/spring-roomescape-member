@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.TokenRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.dto.response.TokenResponse;
+import roomescape.service.CookieService;
 import roomescape.service.MemberService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
 public class LoginController {
-    public static final String COOKIE_NAME = "token";
-
+    private final CookieService cookieService;
     private final MemberService memberService;
 
-    public LoginController(final MemberService memberService) {
+    public LoginController(final CookieService cookieService, final MemberService memberService) {
+        this.cookieService = cookieService;
         this.memberService = memberService;
     }
 
@@ -30,18 +30,14 @@ public class LoginController {
     public ResponseEntity<TokenResponse> login(@RequestBody final TokenRequest tokenRequest,
                                                HttpServletResponse response) {
         TokenResponse tokenResponse = memberService.createToken(tokenRequest);
-        response.addCookie(createCookie(tokenResponse));
+        response.addCookie(cookieService.createCookie(tokenResponse));
         return ResponseEntity.ok(tokenResponse);
     }
 
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponse> authorizeLogin(final HttpServletRequest request) {
         final Cookie[] cookies = request.getCookies();
-        final String token = Arrays.stream(cookies)
-                .filter(cookie -> COOKIE_NAME.equals(cookie.getName()))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다"));
+        final String token = cookieService.extractTokenFromCookie(cookies);
         final MemberResponse response = memberService.findMemberByToken(token);
 
         return ResponseEntity.ok(response);
@@ -49,7 +45,7 @@ public class LoginController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(final HttpServletResponse response) {
-        final Cookie cookie = createEmptyCookie();
+        final Cookie cookie = cookieService.createEmptyCookie();
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
@@ -60,17 +56,4 @@ public class LoginController {
         return ResponseEntity.ok(members);
     }
 
-    private Cookie createCookie(final TokenResponse tokenResponse) {
-        final Cookie cookie = new Cookie(COOKIE_NAME, tokenResponse.accessToken());
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
-
-    private Cookie createEmptyCookie() {
-        final Cookie cookie = new Cookie(COOKIE_NAME, null);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
 }
