@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
@@ -70,5 +72,16 @@ public class AdminPageTest {
                 .when().get("/admin/theme")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @DisplayName("토큰이 유효하지 않을 경우 'admin' 페이지에 접근할 수 없다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"/admin", "/admin/theme", "/admin/reservation", "/admin/time"})
+    void given_invalidToken_when_GetAdminPage_then_statusCodeIsUnauthorized(String url) {
+        RestAssured.given().log().all()
+                .cookies("token", "invalid-token")
+                .when().get(url)
+                .then().log().all()
+                .statusCode(401);
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -35,7 +36,7 @@ public class MemberDao {
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, email);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("회원 가입이 되지 않은 사용자입니다");
+            throw new JwtException("회원 가입이 되지 않은 사용자입니다");
         }
     }
 
@@ -44,7 +45,7 @@ public class MemberDao {
         try {
             return jdbcTemplate.queryForObject(sql, rowMapper, email, password);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("회원 가입이 되지 않은 사용자입니다");
+            throw new JwtException("회원 가입이 되지 않은 사용자입니다");
         }
     }
 

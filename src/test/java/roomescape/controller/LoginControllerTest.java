@@ -18,10 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class LoginControllerTest {
+    public static final String TOKEN = "token";
     private static final String EMAIL = "testDB@email.com";
     private static final String PASSWORD = "1234";
-    public static final String TOKEN = "token";
-
     @LocalServerPort
     int port;
 
@@ -84,6 +83,6 @@ class LoginControllerTest {
                 .body(request)
                 .when().post("/login")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(401);
     }
 }
