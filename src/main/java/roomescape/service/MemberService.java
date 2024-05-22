@@ -27,9 +27,8 @@ public class MemberService {
         return TokenResponse.from(accessToken);
     }
 
-    public MemberResponse findMemberByToken(final String token) {
-        String email = tokenGenerator.getPayload(token);
-        Member member = memberDao.findByEmail(email);
+    public MemberResponse checkLogin(final LoginMember loginMember) {
+        Member member = memberDao.findById(loginMember.id());
         return MemberResponse.from(member);
     }
 

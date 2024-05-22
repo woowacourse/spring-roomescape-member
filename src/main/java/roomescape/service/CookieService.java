@@ -1,11 +1,10 @@
 package roomescape.service;
 
 import jakarta.servlet.http.Cookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import roomescape.dto.response.TokenResponse;
 import roomescape.infrastructure.TokenGenerator;
-
-import java.util.Arrays;
 
 @Service
 public class CookieService {
@@ -15,25 +14,27 @@ public class CookieService {
         this.tokenGenerator = tokenGenerator;
     }
 
-    public Cookie createCookie(final TokenResponse tokenResponse) {
+    public ResponseCookie createCookie(final TokenResponse tokenResponse) {
         final Cookie cookie = new Cookie(tokenGenerator.getCookieName(), tokenResponse.accessToken());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        return cookie;
+        return convertCookieToResponseCookie(cookie);
     }
 
-    public Cookie createEmptyCookie() {
+    public ResponseCookie createEmptyCookie() {
         final Cookie cookie = new Cookie(tokenGenerator.getCookieName(), null);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        return cookie;
+        return convertCookieToResponseCookie(cookie);
     }
 
-    public String extractTokenFromCookie(final Cookie[] cookies) {
-        return Arrays.stream(cookies)
-                .filter(cookie -> tokenGenerator.getCookieName().equals(cookie.getName()))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new IllegalArgumentException("토큰이 존재하지 않습니다"));
+    private ResponseCookie convertCookieToResponseCookie(final Cookie cookie) {
+        return ResponseCookie.from(cookie.getName(), cookie.getValue())
+                .path(cookie.getPath())
+                .domain(cookie.getDomain())
+                .maxAge(cookie.getMaxAge())
+                .httpOnly(cookie.isHttpOnly())
+                .secure(cookie.getSecure())
+                .build();
     }
 }
