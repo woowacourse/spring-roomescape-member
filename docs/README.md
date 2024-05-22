@@ -35,3 +35,28 @@
 - [x] 사용자는 원하는 시간에 예약할 수 있다.
 - [x] 사용자 인기 테마 페이지 연결
 - [x] 최근 일주일 내에 예약이 가장 많은 순서대로 테마 10개를 조회할 수 있다.
+
+## 4단계
+
+- [x] 사용자 로그인 페이지 연결
+- [x] 로그인
+  - [x] 이메일과 비밀번호를 입력하여 로그인
+  - [x] 토큰 발급
+- [x] 로그인 후 토큰을 이용한 사용자 정보 조회 API 구현
+- [x] 로그아웃
+
+## 5단계
+
+- [x] 템플릿 활성화
+  - [x] `reservation.html`
+  - [x] `user-reservation.html`
+  - [x] `admin/reservation-new.html`
+- [x] 사용자 정보 조회 로직 리팩터링
+  - [x] `HandlerMethodArgumentResolver` 사용하여 쿠키를 `Member` 객체로 변환 
+- [x] 예약 생성 API 리팩터링
+
+## 6단계
+
+- [x] 어드민 진입 권한 제한
+  - [x] HandlerInterceptor를 사용해 권한 확인
+- [x] 예약자, 테마, from, to 를 선택해 예약 검색

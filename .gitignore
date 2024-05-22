@@ -38,3 +38,6 @@ out/
 
 ### macOS ###
 .DS_STORE
+
+### properties ###
+application-jwt.properties

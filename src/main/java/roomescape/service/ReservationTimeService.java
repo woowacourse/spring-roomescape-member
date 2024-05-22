@@ -24,11 +24,11 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTime> getAll() {
-        return reservationTimeDao.getAll();
+        return reservationTimeDao.findAll();
     }
 
     public List<ReservationTime> getAvailableTimes(LocalDate date, long themeId) {
-        return reservationTimeDao.getAvailableTimes(date, themeId);
+        return reservationTimeDao.findAvailableTimes(date, themeId);
     }
 
     public ReservationTime create(ReservationTime reservationTime) {
