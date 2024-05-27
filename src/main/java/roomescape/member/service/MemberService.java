@@ -24,8 +24,8 @@ public class MemberService {
         return memberDao.findAllReservationResponse();
     }
 
-    public boolean isAdmin(long id) {
+    public boolean isNotAdmin(long id) {
         Member member = memberDao.findMemberById(id);
-        return member.isAdmin();
+        return !member.isAdmin();
     }
 }
