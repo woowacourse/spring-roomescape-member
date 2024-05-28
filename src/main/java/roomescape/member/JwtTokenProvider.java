@@ -33,8 +33,9 @@ public class JwtTokenProvider {
 
     public boolean isExpiredToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser()
+            Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
                     .parseClaimsJws(token);
 
             return claims.getBody().getExpiration().before(new Date());

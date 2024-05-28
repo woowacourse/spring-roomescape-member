@@ -28,7 +28,6 @@ public class ReservationDao {
                     resultSet.getLong("member_id"),
                     resultSet.getString("member_name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password"),
                     resultSet.getBoolean("is_admin")
             ),
             resultSet.getDate("date").toLocalDate(),

@@ -32,7 +32,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("방탈출 관리 홈페이지를 매핑한다.")
     void index() {
-        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", "123", true));
+        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", true));
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -44,7 +44,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("방탈출 예약 관리 페이지를 매핑한다.")
     void reservation() {
-        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", "123", true));
+        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", true));
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -56,7 +56,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("방탈출 테마 관리 페이지를 매핑한다.")
     void theme() {
-        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", "123", true));
+        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", true));
 
         RestAssured.given().log().all()
                 .cookie("token", token)

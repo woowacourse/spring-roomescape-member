@@ -17,7 +17,6 @@ public class MemberDao {
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
-            SECRET,
             resultSet.getBoolean("is_admin")
     );
     private final RowMapper<MemberReservationResponse> memberReservationResponseRowMapper = (resultSet, __) -> new MemberReservationResponse(
