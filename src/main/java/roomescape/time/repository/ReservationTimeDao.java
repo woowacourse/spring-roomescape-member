@@ -3,7 +3,9 @@ package roomescape.time.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -42,17 +44,23 @@ public class ReservationTimeDao {
         return jdbcTemplate.query("SELECT * FROM RESERVATION_TIME", reservationTimeRowMapper);
     }
 
-    public ReservationTime findById(long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM RESERVATION_TIME WHERE ID = ?", reservationTimeRowMapper, id
-        );
+    public Optional<ReservationTime> findById(long id) {
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(
+                    "SELECT * FROM RESERVATION_TIME WHERE ID = ?",
+                    reservationTimeRowMapper,
+                    id
+            ));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.startAt());
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return findById(id);
+        return findById(id).get();
     }
 
     public boolean exists(LocalTime startAt) {

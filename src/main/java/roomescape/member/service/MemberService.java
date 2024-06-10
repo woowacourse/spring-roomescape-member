@@ -17,15 +17,16 @@ public class MemberService {
     }
 
     public Member findMemberById(long id) {
-        return memberDao.findMemberById(id);
+        return memberDao.findMemberById(id)
+                .orElseThrow(() -> new IllegalArgumentException(id + "에 맞는 회원은 존재하지 않습니다."));
     }
 
     public List<MemberReservationResponse> findAll() {
-        return memberDao.findAllReservationResponse();
+        return memberDao.findAllMemberReservationResponse();
     }
 
     public boolean isNotAdmin(long id) {
-        Member member = memberDao.findMemberById(id);
+        Member member = findMemberById(id);
         return !member.isAdmin();
     }
 }

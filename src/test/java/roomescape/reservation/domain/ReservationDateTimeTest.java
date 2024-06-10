@@ -1,7 +1,8 @@
 package roomescape.reservation.domain;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ class ReservationDateTimeTest {
     void validatePastTest() {
         LocalDate date = LocalDate.parse("2023-04-23");
         LocalTime time = LocalTime.parse("15:30");
-        ReservationRequest request = new ReservationRequest("pond", date, 0, 0);
+        ReservationRequest request = new ReservationRequest(date, 0, 0,0);
         ReservationTime reservationTime = new ReservationTime(time);
         ReservationDateTime reservationDateTime = new ReservationDateTime(request, reservationTime);
 

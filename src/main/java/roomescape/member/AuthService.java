@@ -31,7 +31,8 @@ public class AuthService {
         if (checkInvalidLogin(loginRequest.email(), loginRequest.password())) {
             throw new IllegalArgumentException("login failed");
         }
-        Member member = memberDao.findMemberByEmail(loginRequest.email());
+        Member member = memberDao.findMemberByEmail(loginRequest.email())
+                .orElseThrow(() -> new IllegalArgumentException(loginRequest.email() + "에 맞는 회원은 존재하지 않습니다."));
         return jwtTokenProvider.createToken(member);
     }
 

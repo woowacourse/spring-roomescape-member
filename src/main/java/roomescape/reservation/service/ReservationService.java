@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import roomescape.member.domain.Member;
 import roomescape.member.repository.MemberDao;
+import roomescape.member.service.MemberService;
 import roomescape.reservation.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDateTime;
@@ -24,13 +25,13 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
-    private final MemberDao memberDao;
+    private final MemberService memberService;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, MemberDao memberDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao, MemberService memberService) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
-        this.memberDao = memberDao;
+        this.memberService = memberService;
     }
 
     public List<ReservationResponse> findAll() {
@@ -39,17 +40,21 @@ public class ReservationService {
 
     public Reservation save(ReservationRequest request) {
         validateDuplicate(request);
-        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
-        Theme theme = themeDao.findById(request.themeId());
-        Member member = memberDao.findMemberById(request.memberId());
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
+                .orElseThrow(()->new IllegalArgumentException(request.timeId()+"에 해당하는 시간은 존재하지 않습니다"));
+        Theme theme = themeDao.findById(request.themeId())
+                .orElseThrow(()->new IllegalArgumentException(request.themeId()+"에 해당하는 테마는 존재하지 않습니다"));
+        Member member = memberService.findMemberById(request.memberId());
         return reservationDao.save(new Reservation(member, request.date(), reservationTime, theme));
     }
 
     public Reservation validatePastAndSave(ReservationRequest request, Member member) {
         validateDuplicate(request);
-        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
+                .orElseThrow(()->new IllegalArgumentException(request.timeId()+"에 해당하는 시간은 존재하지 않습니다"));
         new ReservationDateTime(request, reservationTime).validatePast(LocalDateTime.now());
-        Theme theme = themeDao.findById(request.themeId());
+        Theme theme = themeDao.findById(request.themeId())
+                .orElseThrow(()->new IllegalArgumentException(request.themeId()+"에 해당하는 테마는 존재하지 않습니다"));
         return reservationDao.save(new Reservation(member, request.date(), reservationTime, theme));
 
     }

@@ -1,7 +1,9 @@
 package roomescape.member.repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -34,20 +36,28 @@ public class MemberDao {
         return count != null && count == 1;
     }
 
-    public Member findMemberByEmail(String email) {
+    public Optional<Member> findMemberByEmail(String email) {
         String query = "SELECT " +
                 "ID, NAME, EMAIL, PASSWORD, IS_ADMIN " +
                 "FROM MEMBER " +
                 "WHERE email = ?";
-        return jdbcTemplate.queryForObject(query, memberRowMapper, email);
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(query, memberRowMapper, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
-    public Member findMemberById(long id) {
+    public Optional<Member> findMemberById(long id) {
         String query = "SELECT ID, NAME, EMAIL, PASSWORD, IS_ADMIN FROM MEMBER WHERE ID = ?";
-        return jdbcTemplate.queryForObject(query, memberRowMapper, id);
+       try{
+           return Optional.of(jdbcTemplate.queryForObject(query, memberRowMapper, id));
+       }catch(EmptyResultDataAccessException e){
+           return Optional.empty();
+       }
     }
 
-    public List<MemberReservationResponse> findAllReservationResponse() {
+    public List<MemberReservationResponse> findAllMemberReservationResponse() {
         String query = "SELECT "
                 + "ID, NAME "
                 + "FROM MEMBER ";
