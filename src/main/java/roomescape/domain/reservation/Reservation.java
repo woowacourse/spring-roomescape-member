@@ -1,22 +1,21 @@
 package roomescape.domain.reservation;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.domain.member.Member;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
-import roomescape.domain.user.UserName;
 
 public class Reservation {
     private static final int IN_ADVANCE_RESERVATION_DAYS = 1;
 
     private final Long id;
-    @NotBlank(message = "예약자명은 필수입니다.")
-    @Size(min = 2, max = 10, message = "이름 길이는 2글자 이상, 10글자 이하여야 합니다.")
-    private final UserName name;
+    @NotNull(message = "예약자는 필수입니다.")
+    private final Member member;
 
     @NotBlank(message = "예약 날짜는 필수입니다.")
     private final LocalDate date;
@@ -27,30 +26,26 @@ public class Reservation {
     @NotBlank(message = "예약 테마는 필수입니다.")
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
-    }
-
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(id, new UserName(name), date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
     }
 
     public Reservation(Long id, Reservation reservation) {
-        this(id, reservation.name, reservation.date, reservation.time, reservation.theme);
+        this(id, reservation.member, reservation.date, reservation.time, reservation.theme);
     }
 
-    private Reservation(Long id, UserName name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
         Objects.requireNonNull(date, "예약 날짜는 필수입니다.");
-        validateReservationInAdvance(date, time.getStartAt());
+        validateReservationDateInAdvance(date, time.getStartAt());
 
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validateReservationInAdvance(LocalDate date, LocalTime time) {
+    private void validateReservationDateInAdvance(LocalDate date, LocalTime time) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
         LocalDateTime baseDateTime = LocalDateTime.now().plusDays(IN_ADVANCE_RESERVATION_DAYS);
         if (reservationDateTime.isBefore(baseDateTime)) {
@@ -62,15 +57,19 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name.getValue();
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {
         return date;
     }
 
-    public LocalTime getTime() {
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public LocalTime getStartAtTime() {
         return time.getStartAt();
     }
 

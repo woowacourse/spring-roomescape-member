@@ -17,7 +17,6 @@ public class ThemeName {
         }
     }
 
-
     private void validateLength(String name) {
         if (name.length() < MIN_LENGTH || name.length() > MAX_LENGTH) {
             throw new IllegalArgumentException(
