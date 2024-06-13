@@ -14,7 +14,7 @@ public class JwtTokenProvider {
 
     private static final String SECRET_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI";
     private static final long VALIDITY_IN_MILLISECONDS = 3600000;
-    public static final String TOKEN = "token=";
+    private static final String SEPERATOR = "=";
 
     public String createToken(Member member) {
         Date now = new Date(System.currentTimeMillis());
@@ -32,8 +32,8 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getPayload(String token, String key) {
-        String rawToken = removePrefix(token);
+    public String getPayload(String cookieName, String token, String key) {
+        String rawToken = removePrefix(cookieName, token);
         Object claims = parseClaims(rawToken).get(key);
 
         return claims.toString();
@@ -50,9 +50,9 @@ public class JwtTokenProvider {
         }
     }
 
-    private String removePrefix(String token) {
-        if (token.startsWith(TOKEN)) {
-            return token.substring(TOKEN.length());
+    private String removePrefix(String cookieName, String token) {
+        if (token.startsWith(cookieName + SEPERATOR)) {
+            return token.substring(cookieName.length() + 1);
         } else {
             return token;
         }

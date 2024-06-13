@@ -24,7 +24,7 @@ public class CheckAdminInterceptor implements HandlerInterceptor {
             throw new UnAuthorizedException("토큰이 존재하지 않습니다.");
         }
 
-        String role = jwtTokenProvider.getPayload(accessToken, "role");
+        String role = jwtTokenProvider.getPayload("token", accessToken, "role");
 
         if (!role.equals(MemberRole.ADMIN.name())) {
             throw new UnAuthorizedException("접근 권한이 없습니다.");

@@ -173,6 +173,6 @@ class ReservationAcceptanceTest {
     private String makeToken() {
         Member member = new Member(1L, new MemberName("레모네"), "lemone@gmail.com", "lemon12", MemberRole.ADMIN);
         String accessToken = jwtTokenProvider.createToken(member);
-        return "token=" + accessToken;
+        return "token" + accessToken;
     }
 }

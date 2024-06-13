@@ -1,10 +1,12 @@
 package roomescape.controller.api;
 
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.AuthService;
 import roomescape.domain.member.Member;
 import roomescape.dto.auth.TokenRequest;
-import roomescape.dto.auth.TokenResponse;
 import roomescape.dto.member.MemberNameResponse;
 
 @RestController
@@ -29,16 +30,10 @@ public class TokenLoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> tokenLogin(@Valid @RequestBody TokenRequest tokenRequest,
-                                           HttpServletResponse response) {
-        TokenResponse tokenResponse = authService.createToken(tokenRequest);
+    public ResponseEntity<Void> tokenLogin(@Valid @RequestBody TokenRequest tokenRequest) {
+        ResponseCookie tokenResponse = authService.createCookie(tokenRequest);
 
-        Cookie cookie = new Cookie(TOKEN_NAME, tokenResponse.accessToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().header(SET_COOKIE, tokenResponse.toString()).build();
     }
 
     @GetMapping("/check")

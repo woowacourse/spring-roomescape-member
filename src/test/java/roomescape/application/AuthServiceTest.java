@@ -34,7 +34,7 @@ class AuthServiceTest {
 
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@wooteco.com");
 
-        assertDoesNotThrow(() -> authService.createToken(tokenRequest));
+        assertDoesNotThrow(() -> authService.createCookie(tokenRequest));
     }
 
     @Test
@@ -47,7 +47,7 @@ class AuthServiceTest {
         );
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@invalid.com");
 
-        assertThatThrownBy(() -> authService.createToken(tokenRequest))
+        assertThatThrownBy(() -> authService.createCookie(tokenRequest))
                 .isExactlyInstanceOf(BadRequestException.class)
                 .hasMessageContaining("로그인 정보가 잘못되었습니다.");
     }
@@ -63,7 +63,7 @@ class AuthServiceTest {
         );
         TokenRequest tokenRequest = new TokenRequest("invalid1234", "lemone@invalid.com");
 
-        assertThatThrownBy(() -> authService.createToken(tokenRequest))
+        assertThatThrownBy(() -> authService.createCookie(tokenRequest))
                 .isExactlyInstanceOf(BadRequestException.class)
                 .hasMessageContaining("로그인 정보가 잘못되었습니다.");
     }

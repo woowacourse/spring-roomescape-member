@@ -16,10 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.ResponseCookie;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.application.AuthService;
 import roomescape.dto.auth.TokenRequest;
-import roomescape.dto.auth.TokenResponse;
 
 @Sql("/clear.sql")
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +42,8 @@ class TokenLoginControllerTest {
     @Test
     void 로그인에_성공한다() throws Exception {
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@wooteco.com");
-        when(authService.createToken(any())).thenReturn(new TokenResponse("testtoken"));
+        when(authService.createCookie(any())).thenReturn(
+                ResponseCookie.from("token", "testtoken").httpOnly(true).build());
 
         RestAssured.given()
                 .contentType(ContentType.JSON)

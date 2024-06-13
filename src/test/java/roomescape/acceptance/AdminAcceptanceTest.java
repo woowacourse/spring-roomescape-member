@@ -24,7 +24,7 @@ class AdminAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setAdmin() {
-        token = "token=" + jwtTokenProvider.createToken(ADMIN);
+        token = "token" + jwtTokenProvider.createToken(ADMIN);
     }
 
     @DisplayName("[1단계 - 홈 화면] 관리자 메인 페이지를 응답한다")
