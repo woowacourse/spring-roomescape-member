@@ -85,21 +85,23 @@ public class ReservationDao {
     }
 
     private Reservation findById(long id) {
-        String query = "SELECT "
-                + "r.id, "
-                + "m.id AS member_id, m.name AS member_name, m.email, m.password, m.is_admin, "
-                + "r.date, "
-                + "t.id AS time_id, t.start_at, "
-                + "theme.id AS theme_id, theme.name as theme_name, "
-                + "theme.description AS theme_description, theme.thumbnail AS theme_thumbnail "
-                + "FROM RESERVATION AS r "
-                + "INNER JOIN RESERVATION_TIME AS t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN THEME AS theme "
-                + "ON r.theme_id = theme.id "
-                + "INNER JOIN MEMBER AS m "
-                + "ON r.member_id = m.id "
-                + "WHERE r.id = ?";
+        String query = """
+                SELECT 
+                r.id, 
+                m.id AS member_id, m.name AS member_name, m.email, m.password, m.is_admin, 
+                r.date, 
+                t.id AS time_id, t.start_at, 
+                theme.id AS theme_id, theme.name as theme_name, 
+                theme.description AS theme_description, theme.thumbnail AS theme_thumbnail 
+                FROM RESERVATION AS r 
+                INNER JOIN RESERVATION_TIME AS t 
+                ON r.time_id = t.id 
+                INNER JOIN THEME AS theme 
+                ON r.theme_id = theme.id 
+                INNER JOIN MEMBER AS m 
+                ON r.member_id = m.id 
+                WHERE r.id = ?
+                """;
         return jdbcTemplate.queryForObject(query, reservationRowMapper, id);
     }
 
@@ -120,23 +122,25 @@ public class ReservationDao {
     }
 
     public List<ReservationResponse> filter(long themeId, long memberId, LocalDate from, LocalDate to) {
-        String query = "SELECT "
-                + "r.id, "
-                + "m.name AS member_name, "
-                + "r.date, "
-                + "t.id AS time_id, t.start_at, "
-                + "theme.name as theme_name, "
-                + "FROM RESERVATION AS r "
-                + "INNER JOIN RESERVATION_TIME AS t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN THEME AS theme "
-                + "ON r.theme_id = theme.id "
-                + "INNER JOIN MEMBER AS m "
-                + "ON r.member_id = m.id " +
-                "WHERE r.theme_id = ? AND " +
-                "r.member_id = ? AND " +
-                "r.date >= ? AND " +
-                "r.date <= ? ";
+        String query = """
+                SELECT 
+                 r.id, 
+                 m.name AS member_name, 
+                 r.date, 
+                 t.id AS time_id, t.start_at, 
+                 theme.name as theme_name, 
+                 FROM RESERVATION AS r 
+                 INNER JOIN RESERVATION_TIME AS t 
+                 ON r.time_id = t.id 
+                 INNER JOIN THEME AS theme 
+                 ON r.theme_id = theme.id 
+                 INNER JOIN MEMBER AS m 
+                 ON r.member_id = m.id  
+                WHERE r.theme_id = ? AND  
+                r.member_id = ? AND  
+                r.date >= ? AND  
+                r.date <= ? 
+                """;
         return jdbcTemplate.query(query, responseRowMapper, themeId, memberId, from, to);
     }
 }

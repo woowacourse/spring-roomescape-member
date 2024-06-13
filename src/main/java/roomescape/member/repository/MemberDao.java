@@ -37,10 +37,12 @@ public class MemberDao {
     }
 
     public Optional<Member> findMemberByEmail(String email) {
-        String query = "SELECT " +
-                "ID, NAME, EMAIL, PASSWORD, IS_ADMIN " +
-                "FROM MEMBER " +
-                "WHERE email = ?";
+        String query = """
+                SELECT 
+                ID, NAME, EMAIL, PASSWORD, IS_ADMIN 
+                FROM MEMBER 
+                WHERE email = ?
+                """;
         try {
             return Optional.of(jdbcTemplate.queryForObject(query, memberRowMapper, email));
         } catch (EmptyResultDataAccessException e) {
@@ -50,17 +52,19 @@ public class MemberDao {
 
     public Optional<Member> findMemberById(long id) {
         String query = "SELECT ID, NAME, EMAIL, PASSWORD, IS_ADMIN FROM MEMBER WHERE ID = ?";
-       try{
-           return Optional.of(jdbcTemplate.queryForObject(query, memberRowMapper, id));
-       }catch(EmptyResultDataAccessException e){
-           return Optional.empty();
-       }
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(query, memberRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<MemberReservationResponse> findAllMemberReservationResponse() {
-        String query = "SELECT "
-                + "ID, NAME "
-                + "FROM MEMBER ";
+        String query = """ 
+                SELECT 
+                ID, NAME 
+                FROM MEMBER
+                """;
         return jdbcTemplate.query(query, memberReservationResponseRowMapper);
     }
 }

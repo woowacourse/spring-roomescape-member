@@ -77,16 +77,18 @@ public class ReservationTimeDao {
     }
 
     public List<AvailableTime> available(LocalDate date, long themeId) {
-        String query = "SELECT " +
-                "rt.id, " +
-                "rt.start_at, " +
-                "CASE WHEN r.id IS NULL THEN FALSE ELSE TRUE END AS is_available " +
-                "FROM " +
-                "reservation_time rt " +
-                "LEFT JOIN " +
-                "reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ? " +
-                "ORDER BY " +
-                "rt.start_at";
+        String query = """
+                SELECT  
+                rt.id,  
+                rt.start_at,  
+                CASE WHEN r.id IS NULL THEN FALSE ELSE TRUE END AS is_available  
+                FROM  
+                reservation_time rt  
+                LEFT JOIN  
+                reservation r ON rt.id = r.time_id AND r.date = ? AND r.theme_id = ?  
+                ORDER BY  
+                rt.start_at
+                """;
         return jdbcTemplate.query(query, availableTimeRowMapper, date, themeId);
     }
 }

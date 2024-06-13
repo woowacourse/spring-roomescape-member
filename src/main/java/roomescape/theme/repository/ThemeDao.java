@@ -45,9 +45,9 @@ public class ThemeDao {
     }
 
     public Optional<Theme> findById(long id) {
-        try{
+        try {
             return Optional.of(jdbcTemplate.queryForObject("SELECT * FROM THEME WHERE ID = ?", themeRowMapper, id));
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -64,14 +64,16 @@ public class ThemeDao {
     }
 
     public List<RankTheme> getRank() {
-        String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
-                "FROM theme t " +
-                "INNER JOIN reservation r ON t.id = r.theme_id " +
-                "WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE)) " +
-                "AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE)) " +
-                "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                "ORDER BY reservation_count DESC " +
-                "LIMIT 10";
+        String query = """ 
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count  
+                FROM theme t  
+                INNER JOIN reservation r ON t.id = r.theme_id  
+                WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE))  
+                AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE))  
+                GROUP BY t.id, t.name, t.description, t.thumbnail  
+                ORDER BY reservation_count DESC  
+                LIMIT 10
+                """;
 
         return jdbcTemplate.query(query, rankThemeRowMapper);
     }
