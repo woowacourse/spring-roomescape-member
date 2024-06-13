@@ -6,15 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberRole;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.dto.auth.TokenRequest;
+import roomescape.global.exception.BadRequestException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
+@Sql("/clear.sql")
 class AuthServiceTest {
 
     @Autowired
@@ -30,6 +31,7 @@ class AuthServiceTest {
                 "lemone1234",
                 MemberRole.ADMIN)
         );
+
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@wooteco.com");
 
         assertDoesNotThrow(() -> authService.createToken(tokenRequest));
@@ -46,7 +48,7 @@ class AuthServiceTest {
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@invalid.com");
 
         assertThatThrownBy(() -> authService.createToken(tokenRequest))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .isExactlyInstanceOf(BadRequestException.class)
                 .hasMessageContaining("로그인 정보가 잘못되었습니다.");
     }
 
@@ -62,7 +64,7 @@ class AuthServiceTest {
         TokenRequest tokenRequest = new TokenRequest("invalid1234", "lemone@invalid.com");
 
         assertThatThrownBy(() -> authService.createToken(tokenRequest))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .isExactlyInstanceOf(BadRequestException.class)
                 .hasMessageContaining("로그인 정보가 잘못되었습니다.");
     }
 }

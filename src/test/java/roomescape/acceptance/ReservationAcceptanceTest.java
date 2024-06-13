@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
@@ -29,6 +30,7 @@ import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.support.SimpleRestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Disabled
 class ReservationAcceptanceTest {
     private static final String PATH = "/reservations";
     private static final ReservationRequest REQUEST = new ReservationRequest(

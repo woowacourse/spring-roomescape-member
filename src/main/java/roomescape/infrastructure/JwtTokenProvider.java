@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureException;
 import java.util.Date;
 import org.springframework.stereotype.Component;
 import roomescape.domain.member.Member;
-import roomescape.ui.AuthorizationException;
+import roomescape.global.exception.UnAuthorizedException;
 
 @Component
 public class JwtTokenProvider {
@@ -45,7 +45,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (SignatureException exception) {
-            throw new AuthorizationException("토큰이 올바르지 않습니다.");
+            throw new UnAuthorizedException("토큰이 올바르지 않습니다.");
         }
     }
 
