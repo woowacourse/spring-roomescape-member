@@ -16,10 +16,13 @@ public class Reservation {
     private final Long id;
     @NotNull(message = "예약자는 필수입니다.")
     private final Member member;
+
     @NotBlank(message = "예약 날짜는 필수입니다.")
     private final LocalDate date;
+
     @NotBlank(message = "예약 시간은 필수입니다.")
     private final ReservationTime time;
+
     @NotBlank(message = "예약 테마는 필수입니다.")
     private final Theme theme;
 

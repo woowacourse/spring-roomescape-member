@@ -32,6 +32,7 @@ public class ThemeController {
         Theme theme = themeService.save(request);
         ThemeResponse response = ThemeResponse.from(theme);
         URI location = URI.create("/themes/" + response.id());
+
         return ResponseEntity.created(location).body(response);
     }
 

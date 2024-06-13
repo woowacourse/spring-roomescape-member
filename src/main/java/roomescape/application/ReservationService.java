@@ -10,6 +10,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.dto.reservation.FilteredReservationRequest;
 import roomescape.dto.reservation.ReservationInfo;
 
 @Service
@@ -58,5 +59,14 @@ public class ReservationService {
             throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
         reservationRepository.deleteById(id);
+    }
+
+    public List<Reservation> findReservationBy(FilteredReservationRequest filteredReservationRequest) {
+        return reservationRepository.findByThemeIdAndMemberIdAndDateFromAndDateTo(
+                filteredReservationRequest.getThemeId(),
+                filteredReservationRequest.getMemberId(),
+                filteredReservationRequest.getDateTo(),
+                filteredReservationRequest.getDateFrom()
+        );
     }
 }

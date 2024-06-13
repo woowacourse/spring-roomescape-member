@@ -25,7 +25,8 @@ public class MemberTest {
 
     @Test
     void 이메일_형식에_맞지_않으면_예외가_발생한다() {
-        Member invalidMember = new Member(new MemberName("lemone"), "lemone.com", "lemone1234");
+        Member invalidMember = new Member(new MemberName("lemone"),
+                "lemone.com", "lemone1234", MemberRole.ADMIN);
         Set<ConstraintViolation<Member>> violation = validator.validate(invalidMember);
 
         violation.forEach(error -> {
@@ -37,7 +38,7 @@ public class MemberTest {
     @ValueSource(strings = {"123", "01234567890123456789"})
     void 비밀번호가_4글자_미만이거나_20글자_초과이면_예외가_발생한다(String invalidPassword) {
         String validEmail = "lemone@wooteco.com";
-        Member invalidMember = new Member(new MemberName("lemone"), validEmail, invalidPassword);
+        Member invalidMember = new Member(new MemberName("lemone"), validEmail, invalidPassword, MemberRole.ADMIN);
 
         Set<ConstraintViolation<Member>> violation = validator.validate(invalidMember);
 

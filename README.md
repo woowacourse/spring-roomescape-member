@@ -1,4 +1,4 @@
-# 4단계 요구사항
+## 4단계 요구사항
 
 - [x] 사용자 도메인을 추가한다.
     - [x] 사용자는 아래의 정보를 가진다.
@@ -94,3 +94,36 @@ Transfer-Encoding: chunked
         "memberId": 1
     }
     ```
+
+## 6단계 요구사항
+
+- [x] ***< 접근 권한 제어 >*** : 어드민 페이지 진입은 admin 권한이 있는 사람만 할 수 있도록 제한한다.
+    - [x] Member의 Role이 ADMIN 인 사람만 /admin 으로 시작하는 페이지에 접근할 수 있다.
+    - [x] HandlerInterceptor를 활용하여 권한을 확인하고, 권한이 없는 경우 요청에 대한 거부 응답을 한다.
+- [x] ***< 예약 목록 검색 >*** : 관리자가 조건에 따라 예약을 검색할 수 있도록 기능을 추가한다.
+    - [x] 예약이 많아질 경우 관리가 용이하도록 예약 검색 기능을 추가한다.
+    - [x] 예약자별, 테마별, 날짜별 검색 조건을 사용해 예약 검색이 가능하도록 기능을 추가한다.
+- [x] [6단계] 주석을 검색하여 안내사항에 맞게 클라이언트 코드를 수정한다.
+    - 힌트
+        - ***< 예약 목록 검색 >***
+        - `어드민 > 예약 관리 페이지`에서 검색 조건을 선택하고 적용을 누르면,
+          reservation-with-member.js의 applyFilter() 함수가 실행 된다.
+            - 입력한 themeId, memberId, dateFrom, dateTo 값을 사용해 검색 기능을 완성하세요.
+        - ***< HandlerInterceptor >***
+            - 컨트롤러에 진입하기 전에 Cookie 값을 확인하여 role를 확인한다.
+            - return 값에 따라 처리되는 방식을 확인한다.
+      ``` java
+      @Override
+      public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    
+          // ...
+    
+          if (member == null || !member.getRole().equals("ADMIN")) {
+              response.setStatus(401);
+              return false;
+          }
+    
+          return true;
+      }
+      ```
+    

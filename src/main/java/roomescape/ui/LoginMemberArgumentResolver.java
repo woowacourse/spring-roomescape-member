@@ -28,13 +28,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         Cookie[] cookies = validCookieIsNull(request);
 
         String token = extractTokenFromCookie(cookies);
         Member member = authService.findMemberByToken(token);
-        return new LoginInfo(member.getId(), member.getName().getValue(), member.getEmail());
+        return new LoginInfo(member.getId(), member.getName().getValue(), member.getEmail(), member.getRole().name());
     }
 
     private static Cookie[] validCookieIsNull(HttpServletRequest request) {

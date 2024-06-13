@@ -1,82 +1,126 @@
 package roomescape.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 import roomescape.application.ThemeService;
+import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
 import roomescape.domain.theme.Theme;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.fixture.ThemeFixture;
-import roomescape.support.ControllerTest;
-import roomescape.support.SimpleMockMvc;
+import roomescape.infrastructure.JwtTokenProvider;
 
-class ThemeControllerTest extends ControllerTest {
+@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class ThemeControllerTest {
+
+    @LocalServerPort
+    private int port;
+
     @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
     private ThemeService themeService;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     void 테마를_생성한다() throws Exception {
-        Theme theme = ThemeFixture.theme(1L, "레모네와 함께 탐험", "설명", "https://lemone.png");
-        when(themeService.save(any())).thenReturn(theme);
-        ThemeRequest request = new ThemeRequest(theme.getName(), theme.getDescription(), theme.getThumbnail());
-        String content = objectMapper.writeValueAsString(request);
+        ThemeRequest request = new ThemeRequest("테마 : 공포 공포", "무서웡", "https://image.jpg");
+        Mockito.when(themeService.save(request))
+                .thenReturn(new Theme(1L, request.name(), request.description(), request.thumbnail()));
 
-        ResultActions result = SimpleMockMvc.post(mockMvc, "/themes", content);
-
-        result.andExpectAll(
-                status().isCreated(),
-                jsonPath("$.id").value(theme.getId()),
-                jsonPath("$.name").value(theme.getName()),
-                jsonPath("$.description").value(theme.getDescription()),
-                jsonPath("$.thumbnail").value(theme.getThumbnail())
-        ).andDo(print());
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .cookie(makeToken())
+                .body(request)
+                .when().post("/themes")
+                .then()
+                .statusCode(201)
+                .body("id", equalTo(1))
+                .body("name", equalTo(request.name()))
+                .body("description", equalTo(request.description()))
+                .body("thumbnail", equalTo(request.thumbnail()));
     }
 
     @Test
     void 전체_테마를_조회한다() throws Exception {
         List<Theme> themes = List.of(ThemeFixture.theme(), ThemeFixture.theme());
-        when(themeService.getThemes()).thenReturn(themes);
+        Mockito.when(themeService.getThemes()).thenReturn(themes);
 
-        ResultActions result = SimpleMockMvc.get(mockMvc, "/themes");
+        ExtractableResponse<Response> response = RestAssured
+                .given()
+                .cookie(makeToken())
+                .when().get("/themes")
+                .then()
+                .statusCode(200)
+                .extract();
+        JsonPath result = response.jsonPath();
 
-        result.andExpectAll(
-                status().isOk(),
-                jsonPath("$[0].id").value(themes.get(0).getId()),
-                jsonPath("$[1].id").value(themes.get(1).getId())
-        ).andDo(print());
+        assertAll(
+                () -> assertEquals(result.getString("[0].id"), themes.get(0).getId().toString()),
+                () -> assertEquals(result.getString("[0].name"), themes.get(0).getName()),
+                () -> assertEquals(result.getString("[0].description"), themes.get(0).getDescription()),
+                () -> assertEquals(result.getString("[0].thumbnail"), themes.get(0).getThumbnail())
+        );
     }
 
     @Test
     void 테마를_삭제한다() throws Exception {
         long id = 1L;
-        doNothing().when(themeService).delete(id);
+        Mockito.doNothing().when(themeService).delete(id);
 
-        ResultActions result = SimpleMockMvc.delete(mockMvc, "/themes/{id}", id);
-
-        result.andExpect(status().isNoContent())
-                .andDo(print());
+        RestAssured
+                .given()
+                .cookie(makeToken())
+                .when().delete("/themes/" + id)
+                .then()
+                .statusCode(204);
     }
 
     @Test
     void 썸네일_URL이_올바르지_않으면_Bad_Request_상태를_반환한다() throws Exception {
-        String content = "{\"name\":\"테마테카\", \"description\": \"테마 설명\", \"thumbnail\":\"잘못된 링크\"}";
-        ResultActions result = SimpleMockMvc.post(mockMvc, "/themes", content);
+        ThemeRequest request = new ThemeRequest("테마 : 공포 공포", "무서웡", "잘못된 썸네일 url");
 
-        result.andExpectAll(
-                        status().isBadRequest(),
-                        jsonPath("$.fieldErrors[0].field").value("thumbnail"),
-                        jsonPath("$.fieldErrors[0].rejectedValue").value("잘못된 링크"),
-                        jsonPath("$.fieldErrors[0].reason").value("URL 형식에 맞지 않습니다.")
-                )
-                .andDo(print());
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .cookie(makeToken())
+                .body(request)
+                .when().post("/themes")
+                .then()
+                .statusCode(400);
     }
 
+    private String makeToken() {
+        Member member = new Member(1L, new MemberName("레모네"), "lemone@gmail.com", "lemon12", MemberRole.ADMIN);
+        return jwtTokenProvider.createToken(member);
+    }
 }

@@ -14,6 +14,7 @@ import roomescape.domain.theme.Theme;
 
 @JdbcTest
 class JdbcThemeRepositoryTest {
+
     private final ThemeRepository themeRepository;
 
     @Autowired
@@ -28,6 +29,7 @@ class JdbcThemeRepositoryTest {
         Theme savedTheme = themeRepository.save(theme);
 
         assertAll(
+                () -> assertThat(themeRepository.findAll()).hasSize(1),
                 () -> assertThat(savedTheme.getName()).isEqualTo("테마1"),
                 () -> assertThat(savedTheme.getDescription()).isEqualTo("설명"),
                 () -> assertThat(savedTheme.getThumbnail()).isEqualTo("썸네일1")

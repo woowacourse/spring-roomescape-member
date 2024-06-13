@@ -14,7 +14,7 @@ INSERT INTO theme
 VALUES (3L, '굿굿1', '설명33', '썸네일3');
 
 INSERT INTO member
-VALUES (1L, '프린', 'prin@wooteco.com', 'prin1234');
+VALUES (1L, '프린', 'prin@wooteco.com', 'prin1234', 'ADMIN');
 
 -- 테마 1, 테마 3, 테마 2 순으로 예약이 많이 되었다.
 INSERT INTO reservation

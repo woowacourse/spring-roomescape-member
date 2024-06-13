@@ -11,9 +11,9 @@ import roomescape.ui.AuthorizationException;
 
 @Component
 public class JwtTokenProvider {
+
     private static final String SECRET_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI";
     private static final long VALIDITY_IN_MILLISECONDS = 3600000;
-
 
     public String createToken(Member member) {
         Date now = new Date(System.currentTimeMillis());
@@ -23,16 +23,19 @@ public class JwtTokenProvider {
                 .claim("id", member.getId())
                 .claim("name", member.getName().getValue())
                 .claim("email", member.getEmail())
+                .claim("role", member.getRole().name())
                 .setIssuedAt(now)
                 .setExpiration(validity)
+                .setHeaderParam("typ", "JWT")
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
     public String getPayload(String token, String key) {
-        return parseClaims(token)
-                .get(key)
-                .toString();
+        String rawToken = removePrefix(token);
+        Object claims = parseClaims(rawToken).get(key);
+
+        return claims.toString();
     }
 
     public Claims parseClaims(String token) {
@@ -43,6 +46,15 @@ public class JwtTokenProvider {
                     .getBody();
         } catch (SignatureException exception) {
             throw new AuthorizationException("토큰이 올바르지 않습니다.");
+        }
+    }
+
+    private String removePrefix(String token) {
+        String prefix = "token=";
+        if (token.startsWith(prefix)) {
+            return token.substring(prefix.length());
+        } else {
+            return token;
         }
     }
 }

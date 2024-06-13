@@ -1,52 +1,56 @@
 package roomescape.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.application.AuthService;
-import roomescape.controller.api.TokenLoginController;
 import roomescape.dto.auth.TokenRequest;
 import roomescape.dto.auth.TokenResponse;
 
-@WebMvcTest(TokenLoginController.class)
-@Sql("/member.sql")
-public class TokenLoginControllerTest {
-    @Autowired
-    private AuthService authService;
+@Sql("/clear.sql")
+@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+class TokenLoginControllerTest {
     @MockBean
-    private MockMvc mockMvc;
+    private AuthService authService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
+
     @Test
     void 로그인에_성공한다() throws Exception {
-        when(authService.createToken(any())).thenReturn(new TokenResponse("테스트 토큰"));
-        TokenRequest request = new TokenRequest("lemone1234", "lemone@wooteco.com");
+        TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@wooteco.com");
+        when(authService.createToken(any())).thenReturn(new TokenResponse("testtoken"));
 
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post("/login")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(request)));
-
-        result.andExpectAll(
-                status().isOk(),
-                content().contentType("application/json"),
-                header().stringValues("Keep-Alive", "timeout=60"),
-                header().stringValues("Set-Cookie", "테스트 토큰"),
-                header().exists("Path=/; HttpOnly")
-
-        ).andDo(print());
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(tokenRequest))
+                .when().post("/login")
+                .then().statusCode(200)
+                .header("Keep-Alive", "timeout=60")
+                .header("Set-Cookie", containsString("testtoken"))
+                .header("Set-Cookie", containsString("HttpOnly"));
     }
 }

@@ -4,5 +4,5 @@ VALUES ('23:00');
 INSERT INTO THEME(NAME, DESCRIPTION, THUMBNAIL)
 VALUES ('테마1', '설명1', '썸네일1');
 
-INSERT INTO MEMBER(NAME, EMAIL, PASSWORD)
-VALUES ('레모네', 'lemone@wooteco.com', 'lemone1234')
+INSERT INTO MEMBER(NAME, EMAIL, PASSWORD, ROLE)
+VALUES ('레모네', 'lemone@wooteco.com', 'lemone1234', 'ADMIN')

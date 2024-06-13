@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.MemberName;
+import roomescape.domain.member.MemberRole;
 import roomescape.domain.member.repository.MemberRepository;
 import roomescape.dto.auth.TokenRequest;
 
@@ -23,7 +24,12 @@ class AuthServiceTest {
 
     @Test
     void 로그인에_성공한다() {
-        memberRepository.save(new Member(new MemberName("레모네"), "lemone@wooteco.com", "lemone1234"));
+        memberRepository.save(new Member(
+                new MemberName("레모네"),
+                "lemone@wooteco.com",
+                "lemone1234",
+                MemberRole.ADMIN)
+        );
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@wooteco.com");
 
         assertDoesNotThrow(() -> authService.createToken(tokenRequest));
@@ -31,7 +37,12 @@ class AuthServiceTest {
 
     @Test
     void 존재하지_않는_email로_로그인하면_예외가_발생한다() {
-        memberRepository.save(new Member(new MemberName("레모네"), "lemone@wooteco.com", "lemone1234"));
+        memberRepository.save(new Member(
+                new MemberName("레모네"),
+                "lemone@wooteco.com",
+                "lemone1234",
+                MemberRole.ADMIN)
+        );
         TokenRequest tokenRequest = new TokenRequest("lemone1234", "lemone@invalid.com");
 
         assertThatThrownBy(() -> authService.createToken(tokenRequest))
@@ -41,7 +52,13 @@ class AuthServiceTest {
 
     @Test
     void 존재하지_않는_password로_로그인하면_예외가_발생한다() {
-        memberRepository.save(new Member(new MemberName("레모네"), "lemone@wooteco.com", "lemone1234"));
+        memberRepository.save(new Member(
+                        new MemberName("레모네"),
+                        "lemone@wooteco.com",
+                        "lemone1234",
+                        MemberRole.ADMIN
+                )
+        );
         TokenRequest tokenRequest = new TokenRequest("invalid1234", "lemone@invalid.com");
 
         assertThatThrownBy(() -> authService.createToken(tokenRequest))
