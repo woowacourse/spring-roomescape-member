@@ -14,6 +14,7 @@ public class JwtTokenProvider {
 
     private static final String SECRET_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI";
     private static final long VALIDITY_IN_MILLISECONDS = 3600000;
+    public static final String TOKEN = "token=";
 
     public String createToken(Member member) {
         Date now = new Date(System.currentTimeMillis());
@@ -50,9 +51,8 @@ public class JwtTokenProvider {
     }
 
     private String removePrefix(String token) {
-        String prefix = "token=";
-        if (token.startsWith(prefix)) {
-            return token.substring(prefix.length());
+        if (token.startsWith(TOKEN)) {
+            return token.substring(TOKEN.length());
         } else {
             return token;
         }
