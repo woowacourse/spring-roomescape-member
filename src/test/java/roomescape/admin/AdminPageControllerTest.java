@@ -12,27 +12,27 @@ import org.springframework.test.annotation.DirtiesContext;
 import io.restassured.RestAssured;
 import roomescape.member.JwtTokenProvider;
 import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberDao;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AdminPageControllerTest {
 
     @Autowired
-    private JwtTokenProvider tokenProvider;
+    private MemberDao memberDao;
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JwtTokenProvider tokenProvider;
+    private Member admin;
 
     @BeforeEach
     void setUpAdminMember() {
-        String query = "INSERT INTO member (name, email, password, is_admin) "
-                + "values ('admin', 'admin@naver.com', '123', true)";
-        jdbcTemplate.update(query);
+        admin = memberDao.findMemberById(2L).get();
     }
 
     @Test
     @DisplayName("방탈출 관리 홈페이지를 매핑한다.")
     void index() {
-        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", true));
+        String token = tokenProvider.createToken(admin);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -44,7 +44,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("방탈출 예약 관리 페이지를 매핑한다.")
     void reservation() {
-        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", true));
+        String token = tokenProvider.createToken(admin);
 
         RestAssured.given().log().all()
                 .cookie("token", token)
@@ -56,7 +56,7 @@ class AdminPageControllerTest {
     @Test
     @DisplayName("방탈출 테마 관리 페이지를 매핑한다.")
     void theme() {
-        String token = tokenProvider.createToken(new Member(1, "admin", "admin@naver.com", true));
+        String token = tokenProvider.createToken(admin);
 
         RestAssured.given().log().all()
                 .cookie("token", token)

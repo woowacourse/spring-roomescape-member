@@ -14,6 +14,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.member.domain.Member;
+import roomescape.member.repository.MemberDao;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeDao;
@@ -34,12 +37,13 @@ public class ThemeControllerTest {
     @Autowired
     private ReservationDao reservationDao;
 
+    @Autowired
+    private MemberDao memberDao;
+
     @Test
     @DisplayName("저장된 모든 테마를 조회하고 상태코드 200을 응답한다.")
     void findAll() {
-        insertTheme("브라운", "테마 설명1", "thumbnail1.jpg");
-        insertTheme("구구", "테마 설명2", "thumbnail2.jpg");
-        assertThemeCountIsEqualTo(2);
+        int count = count();
 
         List<Theme> themes = RestAssured.given().log().all()
                 .when().get("/themes")
@@ -47,15 +51,13 @@ public class ThemeControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", Theme.class);
 
-        Integer count = themeDao.findAll().size();
         assertThat(themes.size()).isEqualTo(count);
     }
 
     @Test
     @DisplayName("테마를 추가하고 상태코드 201을 응답한다.")
     void create() {
-        insertTheme("브라운", "테마 설명1", "thumbnail1.jpg");
-        assertThemeCountIsEqualTo(1);
+        int count = count();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -64,76 +66,61 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        assertThemeCountIsEqualTo(2);
+        assertThat(count()).isEqualTo(count + 1);
+
     }
 
     @Test
     @DisplayName("저장된 테마를 삭제하고 상태코드 204를 응답한다.")
     void delete() {
-        long id = insertThemeAndGetId("브라운", "테마 설명1", "thumbnail1.jpg");
-        assertThemeCountIsEqualTo(1);
+        int count = count();
 
         RestAssured.given().log().all()
-                .when().delete("/themes/" + id)
+                .when().delete("/themes/" + 3)
                 .then().log().all()
                 .statusCode(204);
 
-        assertThemeCountIsEqualTo(0);
+        assertThat(count()).isEqualTo(count - 1);
+
     }
 
-//    @Test
-//    @DisplayName("최근 일주일 인기 테마 목록을 확인한다")
-//    void getRank() {
-//        initializeForRank();
-//
-//        List<RankTheme> rankThemes = RestAssured.given().log().all()
-//                .when().get("/themes/rank")
-//                .then().log().all()
-//                .statusCode(200).extract()
-//                .jsonPath().getList(".", RankTheme.class);
-//
-//        List<RankTheme> target = List.of(new RankTheme("솔라", "테마 설명3", "thumbnail3.jpg"),
-//                new RankTheme("브라운", "테마 설명1", "thumbnail1.jpg"));
-//
-//        assertThat(rankThemes.size()).isEqualTo(2);
-//        assertThat(rankThemes).usingRecursiveComparison().isEqualTo(target);
-//    }
+    @Test
+    @DisplayName("최근 일주일 인기 테마 목록을 확인한다")
+    void getRank() {
+        initializeForRank();
 
-//    void initializeForRank() {
-//        insertTheme("브라운", "테마 설명1", "thumbnail1.jpg");
-//        insertTheme("구구", "테마 설명2", "thumbnail2.jpg");
-//        insertTheme("솔라", "테마 설명3", "thumbnail3.jpg");
-//        insertReservationTime(LocalTime.parse("15:30"));
-//        insertReservationTime(LocalTime.parse("16:30"));
-//
-//        insertReservation("pond", LocalDate.now().minusDays(1)
-//                , reservationTimeDao.findById(1), themeDao.findById(3L));
-//        insertReservation("pond", LocalDate.now().minusDays(2)
-//                , reservationTimeDao.findById(1), themeDao.findById(3L));
-//        insertReservation("pond", LocalDate.now().minusDays(3)
-//                , reservationTimeDao.findById(1), themeDao.findById(3L));
-//        insertReservation("pond", LocalDate.now().minusDays(1)
-//                , reservationTimeDao.findById(1), themeDao.findById(1L));
-//
-//    }
+        List<RankTheme> rankThemes = RestAssured.given().log().all()
+                .when().get("/themes/rank")
+                .then().log().all()
+                .statusCode(200).extract()
+                .jsonPath().getList(".", RankTheme.class);
 
-    void insertTheme(String name, String description, String thumbnail) {
-        insertThemeAndGetId(name, description, thumbnail);
+        List<RankTheme> target = List.of(new RankTheme("Theme1", "Description for Theme1", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+                new RankTheme("Theme3", "Description for Theme3", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+
+        assertThat(rankThemes).usingRecursiveComparison().isEqualTo(target);
     }
 
-    long insertThemeAndGetId(String name, String description, String thumbnail) {
-        return themeDao.save(new Theme(0L, name, description, thumbnail)).id();
+    void insertReservation(long memberId, LocalDate date, long timeId, long themeId) {
+        Member member = memberDao.findMemberById(memberId).get();
+        ReservationTime reservationTime = reservationTimeDao.findById(timeId).get();
+        Theme theme = themeDao.findById(themeId).get();
+
+        reservationDao.save(new Reservation(member, date, reservationTime, theme));
     }
 
-    void insertReservationTime(LocalTime time) {
-        reservationTimeDao.save(new ReservationTime(0, time));
+    void initializeForRank() {
+        insertReservation(1,
+                LocalDate.now().minusDays(1),
+                1,
+                1);
+        insertReservation(1,
+                LocalDate.now().minusDays(6),
+                1,
+                3);
     }
 
-//    void insertReservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-//        reservationDao.save(new Reservation3(name, date, time, theme));
-//    }
-
-    void assertThemeCountIsEqualTo(int count) {
-        assertThat(count).isEqualTo(themeDao.findAll().size());
+    int count() {
+        return themeDao.findAll().size();
     }
 }

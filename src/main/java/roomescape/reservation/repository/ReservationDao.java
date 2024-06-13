@@ -84,7 +84,7 @@ public class ReservationDao {
         return findById(id);
     }
 
-    private Reservation findById(long id) {
+    public Reservation findById(long id) {
         String query = """
                 SELECT 
                 r.id, 
