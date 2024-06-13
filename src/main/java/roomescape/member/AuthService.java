@@ -4,6 +4,7 @@ package roomescape.member;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Jwts;
@@ -16,6 +17,8 @@ import roomescape.member.request.LoginRequest;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
     private final MemberDao memberDao;
 
     public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
@@ -38,7 +41,7 @@ public class AuthService {
 
     public long findMemberIdByToken(String token) {
         return Long.valueOf(Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor("Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=".getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
