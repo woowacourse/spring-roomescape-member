@@ -13,8 +13,8 @@ import roomescape.member.domain.Member;
 import roomescape.member.service.MemberService;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
-    private AuthService authService;
-    private MemberService memberService;
+    private final AuthService authService;
+    private final MemberService memberService;
 
     public LoginMemberArgumentResolver(AuthService authService, MemberService memberService) {
         this.authService = authService;
