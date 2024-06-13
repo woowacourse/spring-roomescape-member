@@ -39,7 +39,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
 
             return claims.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException je) {
             return true;
         }
     }
