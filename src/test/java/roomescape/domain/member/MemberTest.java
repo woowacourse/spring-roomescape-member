@@ -8,7 +8,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -23,14 +22,15 @@ public class MemberTest {
         validator = factory.getValidator();
     }
 
-    @Test
-    void 이메일_형식에_맞지_않으면_예외가_발생한다() {
+    @ParameterizedTest
+    @ValueSource(strings = {"@woo.com", "sfd@w", "@woo", "no.com"})
+    void 이메일_형식에_맞지_않으면_예외가_발생한다(String email) {
         Member invalidMember = new Member(new MemberName("lemone"),
-                "lemone.com", "lemone1234", MemberRole.ADMIN);
+                email, "lemone1234", MemberRole.ADMIN);
         Set<ConstraintViolation<Member>> violation = validator.validate(invalidMember);
 
         violation.forEach(error -> {
-            assertEquals(error.getMessage(), "이메일 형식에 맞게 입력해 주세요.");
+            assertEquals("이메일 형식에 맞게 입력해 주세요.", error.getMessage());
         });
     }
 
@@ -43,7 +43,7 @@ public class MemberTest {
         Set<ConstraintViolation<Member>> violation = validator.validate(invalidMember);
 
         violation.forEach(error -> {
-            assertEquals(error.getMessage(), "비밀번호는 최소 4글자, 최대 20글자로 작성해주세요.");
+            assertEquals("비밀번호는 최소 4글자, 최대 20글자로 작성해주세요.", error.getMessage());
         });
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.application.AuthService;
 import roomescape.domain.member.Member;
 import roomescape.dto.auth.LoginInfo;
+import roomescape.global.exception.ForbiddenException;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -40,7 +41,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         try {
             return request.getCookies();
         } catch (NullPointerException e) {
-            throw new NullPointerException("쿠키에 값이 없습니다.");
+            throw new ForbiddenException("쿠키에 값이 없습니다.");
         }
     }
 

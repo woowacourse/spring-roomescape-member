@@ -2,19 +2,20 @@ package roomescape.global.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class BadRequestException extends RuntimeException {
+public class BadRequestException extends StatusException {
 
-    private static final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    private static final HttpStatus BAD_REQUEST = HttpStatus.BAD_REQUEST;
 
     private final String message;
 
     public BadRequestException(String message) {
-        super(message);
+        super(BAD_REQUEST, message);
         this.message = message;
     }
 
+    @Override
     public HttpStatus getHttpStatus() {
-        return httpStatus;
+        return BAD_REQUEST;
     }
 
     @Override

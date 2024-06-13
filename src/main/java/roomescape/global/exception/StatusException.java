@@ -2,20 +2,19 @@ package roomescape.global.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class ForbiddenException extends StatusException {
+public class StatusException extends RuntimeException {
 
-    private static final HttpStatus FORBIDDEN = HttpStatus.FORBIDDEN;
-
+    private final HttpStatus httpStatus;
     private final String message;
 
-    public ForbiddenException(String message) {
-        super(FORBIDDEN, message);
+    public StatusException(HttpStatus httpStatus, String message) {
+        super(message);
+        this.httpStatus = httpStatus;
         this.message = message;
     }
 
-    @Override
     public HttpStatus getHttpStatus() {
-        return FORBIDDEN;
+        return httpStatus;
     }
 
     @Override
