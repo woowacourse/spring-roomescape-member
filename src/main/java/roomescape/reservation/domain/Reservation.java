@@ -3,18 +3,19 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
-public record Reservation(long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+public record Reservation(long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
     private static final long UNDEFINED = 0;
 
     public Reservation {
-        validateName(name);
+        validateName(member.name());
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(UNDEFINED, name, date, time, theme);
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(UNDEFINED, member, date, time, theme);
     }
 
     private String validateName(String name) {

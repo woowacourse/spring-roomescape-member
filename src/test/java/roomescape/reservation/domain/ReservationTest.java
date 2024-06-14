@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -18,9 +19,11 @@ public class ReservationTest {
     @DisplayName("이름에 빈 값이 들어간 경우 예외가 발생한다.")
     void nameEmptyException() {
         assertThatThrownBy(() -> new Reservation(
-                " ", LocalDate.now(),
+                new Member(1L,"","pond@mail.com",false),
+                LocalDate.now(),
                 new ReservationTime(0, LocalTime.now()),
-                new Theme(0, "theme", "description", "thumbnail"))
+                new Theme(0, "theme", "description", "thumbnail")
+                )
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Name cannot be empty");
@@ -30,7 +33,8 @@ public class ReservationTest {
     @DisplayName("이름이 10글자 초과일 경우 예외가 발생한다.")
     void nameLengthException() {
         assertThatThrownBy(() -> new Reservation(
-                "namelength12", LocalDate.now(),
+                new Member(1L,"namelength12","pond@mail.com",false),
+                LocalDate.now(),
                 new ReservationTime(0, LocalTime.now()),
                 new Theme(0, "theme", "description", "thumbnail"))
         )

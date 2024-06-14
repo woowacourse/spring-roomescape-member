@@ -1,7 +1,9 @@
 package roomescape.theme.repository;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -42,14 +44,18 @@ public class ThemeDao {
         return jdbcTemplate.query("SELECT * FROM THEME", themeRowMapper);
     }
 
-    public Theme findById(long id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM THEME WHERE ID = ?", themeRowMapper, id);
+    public Optional<Theme> findById(long id) {
+        try {
+            return Optional.of(jdbcTemplate.queryForObject("SELECT * FROM THEME WHERE ID = ?", themeRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Theme save(Theme theme) {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(theme);
         long id = simpleJdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return findById(id);
+        return findById(id).get();
     }
 
     public int delete(long themeID) {
@@ -58,14 +64,16 @@ public class ThemeDao {
     }
 
     public List<RankTheme> getRank() {
-        String query = "SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count " +
-                "FROM theme t " +
-                "INNER JOIN reservation r ON t.id = r.theme_id " +
-                "WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE)) " +
-                "AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE)) " +
-                "GROUP BY t.id, t.name, t.description, t.thumbnail " +
-                "ORDER BY reservation_count DESC " +
-                "LIMIT 10";
+        String query = """ 
+                SELECT t.id, t.name, t.description, t.thumbnail, COUNT(r.id) AS reservation_count  
+                FROM theme t  
+                INNER JOIN reservation r ON t.id = r.theme_id  
+                WHERE r.date >=( TIMESTAMPADD(DAY, -7, CURRENT_DATE))  
+                AND r.date <= ( TIMESTAMPADD(DAY, -1, CURRENT_DATE))  
+                GROUP BY t.id, t.name, t.description, t.thumbnail  
+                ORDER BY reservation_count DESC  
+                LIMIT 10
+                """;
 
         return jdbcTemplate.query(query, rankThemeRowMapper);
     }

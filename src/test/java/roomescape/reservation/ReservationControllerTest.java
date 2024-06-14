@@ -16,10 +16,12 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.member.repository.MemberDao;
 import roomescape.reservation.controller.ReservationController;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservation.request.ReservationRequest;
+import roomescape.reservation.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeDao;
 import roomescape.time.domain.ReservationTime;
@@ -39,59 +41,50 @@ class ReservationControllerTest {
     private ThemeDao themeDao;
 
     @Autowired
+    private MemberDao memberDao;
+
+    @Autowired
     private ReservationController reservationController;
 
     @Test
     @DisplayName("저장된 모든 예약을 조회하고 상태코드 200을 응답한다.")
     void findAll() {
-        long timeId = insertReservationTimeAndGetId("10:00");
-        long themeId = insertThemeAndGetId("name", "description", "thumbnail");
-        insertReservation("브라운", "2024-08-05", timeId, themeId);
-        insertReservation("구구", "2024-08-06", timeId, themeId);
-        assertReservationCountIsEqualTo(2);
-
-        List<Reservation> reservations = RestAssured.given().log().all()
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = reservationDao.findAll().size();
+        int count = reservationDao.findAll().size();
         assertThat(reservations.size()).isEqualTo(count);
     }
 
     @Test
     @DisplayName("예약을 추가하고 상태코드 201을 응답한다.")
     void create() {
-        long themeId = insertThemeAndGetId("name", "description", "thumbnail");
-        long timeId = insertReservationTimeAndGetId("10:00");
-
-        insertReservation("브라운", "2024-08-05", timeId, themeId);
-        assertReservationCountIsEqualTo(1);
+        int count = count();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationRequest("구구", "2024-08-06", timeId, themeId))
+                .body(new ReservationRequest(LocalDate.now(),1,1,1))
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
-        assertReservationCountIsEqualTo(2);
+        assertThat(count()).isEqualTo(count+1);
     }
 
     @Test
     @DisplayName("저장된 예약을 삭제하고 상태코드 204을 응답한다.")
     void delete() {
-        long themeId = insertThemeAndGetId("name", "description", "thumbnail");
-        long timeId = insertReservationTimeAndGetId("10:00");
-        long id = insertReservationAndGetId("브라운", "2024-08-05", timeId, themeId);
+        int count = count();
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/" + id)
+                .when().delete("/reservations/" + 1)
                 .then().log().all()
                 .statusCode(204);
 
-        assertReservationCountIsEqualTo(0);
+        assertThat(count()).isEqualTo(count-1);
     }
 
     @Test
@@ -109,33 +102,7 @@ class ReservationControllerTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
-    ReservationRequest reservationRequest(String name, String date, long timeId, long themeId) {
-        return new ReservationRequest(name, LocalDate.parse(date), timeId, themeId);
-    }
-
-    long insertReservationTimeAndGetId(String time) {
-        return reservationTimeDao.save(new ReservationTime(0, LocalTime.parse(time))).id();
-    }
-
-    void insertReservation(String name, String date, long timeId, long themeId) {
-        insertReservationAndGetId(name, date, timeId, themeId);
-    }
-
-    void insertTheme(String name, String description, String thumbnail) {
-        insertThemeAndGetId(name, description, thumbnail);
-    }
-
-    long insertThemeAndGetId(String name, String description, String thumbnail) {
-        return themeDao.save(new Theme( name, description, thumbnail)).id();
-    }
-
-    long insertReservationAndGetId(String name, String date, long timeId, long themeId) {
-        ReservationTime time = reservationTimeDao.findById(timeId);
-        Theme theme = themeDao.findById(themeId);
-        return reservationDao.save(new Reservation(name, LocalDate.parse(date), time, theme)).id();
-    }
-
-    void assertReservationCountIsEqualTo(int count) {
-        assertThat(count).isEqualTo(reservationDao.findAll().size());
+    int count(){
+        return reservationDao.findAll().size();
     }
 }

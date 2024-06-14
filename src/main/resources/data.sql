@@ -15,13 +15,17 @@ VALUES ('Theme1', 'Description for Theme1', 'https://i.pinimg.com/236x/6e/bc/46/
        ('Theme5', 'Description for Theme5', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('Theme6', 'Description for Theme6', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
 
-INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('User1', '2024-04-24', 1, 1),
-       ('User2', '2024-04-25', 1, 4),
-       ('User2', '2024-04-25', 2, 4),
-       ('User2', '2024-04-25', 3, 4),
-       ('User3', '2024-04-25', 3, 3),
-       ('User3', '2024-04-26', 3, 3),
-       ('User4', '2024-04-26', 4, 2),
-       ('User5', '2024-05-01', 1, 5),
-       ('User5', '2024-05-02', 6, 6)
+INSERT INTO reservation (date, time_id, theme_id, member_id)
+VALUES ('2024-05-10', 1, 1, 1),
+       ('2024-05-11', 1, 4, 1),
+       ('2024-05-11', 2, 4, 1),
+       ('2024-05-11', 3, 4, 2),
+       ('2024-05-11', 3, 3, 1),
+       ('2024-05-09', 3, 3, 2),
+       ('2024-05-09', 4, 2, 1),
+       ('2024-05-15', 1, 5, 1),
+       ('2024-05-15', 6, 6, 1);
+
+INSERT INTO member (name, email, password, is_admin)
+VALUES ('pond', 'pond@naver.com', '123', false),
+       ('admin', 'admin@naver.com', '123', true);

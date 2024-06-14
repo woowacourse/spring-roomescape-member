@@ -28,9 +28,7 @@ class ReservationTimeControllerTest {
     @Test
     @DisplayName("저장된 모든 예약시간을 조회하고 상태코드 200을 응답한다.")
     void findAll() {
-        insertReservationTime("09:00");
-        insertReservationTime("10:00");
-        assertReservationTimeCountIsEqualTo(2);
+        int count = count();
 
         List<ReservationTime> times = RestAssured.given().log().all()
                 .when().get("/times")
@@ -38,15 +36,13 @@ class ReservationTimeControllerTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationTime.class);
 
-        Integer count = reservationTimeDao.findAll().size();
         assertThat(times.size()).isEqualTo(count);
     }
 
     @Test
     @DisplayName("예약시간을 추가하고 상태코드 201을 응답한다.")
     void create() {
-        insertReservationTime("11:00");
-        assertReservationTimeCountIsEqualTo(1);
+        int count = count();
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -55,21 +51,21 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
-        assertReservationTimeCountIsEqualTo(2);
+        assertThat(count()).isEqualTo(count + 1);
     }
 
     @Test
     @DisplayName("저장된 예약시간을 삭제하고 상태코드 204을 응답한다.")
     void delete() {
-        long id = insertReservationTimeAndGetId("13:00");
-        assertReservationTimeCountIsEqualTo(1);
+        int count = count();
 
         RestAssured.given().log().all()
-                .when().delete("/times/" + id)
+                .when().delete("/times/" + 3)
                 .then().log().all()
                 .statusCode(204);
 
-        assertReservationTimeCountIsEqualTo(0);
+        assertThat(count()).isEqualTo(count - 1);
+
     }
 
     @Test
@@ -87,18 +83,10 @@ class ReservationTimeControllerTest {
     }
 
     ReservationTime reservationTime(String time) {
-        return new ReservationTime(0, LocalTime.parse(time));
+        return new ReservationTime(LocalTime.parse(time));
     }
 
-    void insertReservationTime(String time) {
-        insertReservationTimeAndGetId(time);
-    }
-
-    long insertReservationTimeAndGetId(String time) {
-        return reservationTimeDao.save(new ReservationTime(0, LocalTime.parse(time))).id();
-    }
-
-    void assertReservationTimeCountIsEqualTo(int count) {
-        assertThat(count).isEqualTo(reservationTimeDao.findAll().size());
+    int count() {
+        return reservationTimeDao.findAll().size();
     }
 }
