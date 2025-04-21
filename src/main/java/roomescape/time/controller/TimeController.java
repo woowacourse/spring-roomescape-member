@@ -1,7 +1,9 @@
 package roomescape.time.controller;
 
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,14 @@ public class TimeController {
     ){
         int timeId = timeDao.insert(timeEntity);
         return ResponseEntity.created(createUri(timeId)).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TimeEntity>> getTimes(
+    ){
+        return ResponseEntity.ok().body(
+                timeDao.findAllTimes()
+        );
     }
 
     private URI createUri(int reservationId) {
