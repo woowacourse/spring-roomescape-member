@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.model.Reservation;
+import roomescape.reservation.model.ReservationEntity;
 
 @RestController
 @RequestMapping("/reservations")
@@ -25,7 +25,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> getReservations(
+    public ResponseEntity<List<ReservationEntity>> getReservations(
     ) {
         return ResponseEntity.ok().body(
                 reservationDao.findAllReservations()
@@ -34,14 +34,14 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Integer> createReservation(
-            @RequestBody Reservation reservation
+            @RequestBody ReservationEntity reservationEntity
     ) {
-        int reservationId = reservationDao.insert(reservation);
+        int reservationId = reservationDao.insert(reservationEntity);
         return ResponseEntity.created(createUri(reservationId)).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<List<Reservation>> deleteReservation(
+    public ResponseEntity<List<ReservationEntity>> deleteReservation(
             @PathVariable Long id
     ) {
         reservationDao.delete(id);
