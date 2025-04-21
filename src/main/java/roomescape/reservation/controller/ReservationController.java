@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,12 +13,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationResponseDto;
 import roomescape.reservation.model.Reservation;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
+
+    private ReservationDao reservationDao;
+
+    public ReservationController(ReservationDao reservationDao) {
+        this.reservationDao = reservationDao;
+    }
 
     private AtomicLong index = new AtomicLong(1);
     private Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
@@ -31,14 +40,11 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> createReservation(
+    public ResponseEntity<Integer> createReservation(
             @RequestBody Reservation reservation
     ) {
-
-        long reservationId = index.getAndIncrement();
-        reservations.put(reservationId, reservation);
-
-        return ResponseEntity.ok().body(new ReservationResponseDto(reservationId, reservation));
+        int reservationId = reservationDao.insert(reservation);
+        return ResponseEntity.created(createUri(reservationId)).build();
     }
 
     @DeleteMapping("/{id}")
@@ -48,6 +54,13 @@ public class ReservationController {
         reservations.remove(id);
 
         return ResponseEntity.ok().build();
+    }
+
+    private URI createUri(int reservationId) {
+        return ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(reservationId)
+                .toUri();
     }
 
 }

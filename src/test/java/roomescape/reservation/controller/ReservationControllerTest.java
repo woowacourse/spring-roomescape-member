@@ -1,5 +1,7 @@
 package roomescape.reservation.controller;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -35,8 +37,9 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("id", is(1));
+                .statusCode(201)
+                .header("Location", containsString("reservations/1"));
+//                .body("id", is(1));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
