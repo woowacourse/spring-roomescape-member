@@ -1,7 +1,7 @@
 package roomescape.reservation.dao;
 
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.model.Reservation;
 
@@ -22,4 +22,19 @@ public class ReservationDao {
         String sql = "insert into reservation (name, date, time) values (?, ?, ?)";
         return jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(), reservation.getTime());
     }
+
+    public List<Reservation> findAllReservations() {
+        String sql = "select id, name, date, time from reservation";
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> {
+                    return new Reservation(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getDate("date").toLocalDate(),
+                            resultSet.getTime("time").toLocalTime()
+                    );
+                });
+    }
+
 }

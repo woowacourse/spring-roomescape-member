@@ -35,7 +35,7 @@ public class ReservationController {
     public ResponseEntity<List<Reservation>> getReservations(
     ) {
         return ResponseEntity.ok().body(
-                reservations.values().stream().toList()
+                reservationDao.findAllReservations()
         );
     }
 
@@ -53,7 +53,7 @@ public class ReservationController {
     ) {
         reservations.remove(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private URI createUri(int reservationId) {
