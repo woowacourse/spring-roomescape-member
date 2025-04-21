@@ -33,7 +33,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Integer> createReservation(
+    public ResponseEntity<Void> createReservation(
             @RequestBody ReservationEntity reservationEntity
     ) {
         int reservationId = reservationDao.insert(reservationEntity);
