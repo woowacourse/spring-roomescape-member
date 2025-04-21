@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.model.ReservationEntity;
+import roomescape.reservation.entity.ReservationEntity;
 
 @RestController
 @RequestMapping("/reservations")

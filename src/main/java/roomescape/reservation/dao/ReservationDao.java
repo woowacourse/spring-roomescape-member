@@ -3,7 +3,7 @@ package roomescape.reservation.dao;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.model.ReservationEntity;
+import roomescape.reservation.entity.ReservationEntity;
 
 @Repository
 public class ReservationDao {
