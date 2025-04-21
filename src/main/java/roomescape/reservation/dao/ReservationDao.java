@@ -13,6 +13,11 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public int count() {
+        String sql = "select count(*) from reservation";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+
     public int insert(ReservationEntity reservationEntity) {
         String sql = "insert into reservation (name, date, time) values (?, ?, ?)";
         return jdbcTemplate.update(sql, reservationEntity.getName(), reservationEntity.getDate(), reservationEntity.getTime());
