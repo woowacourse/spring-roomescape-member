@@ -1,6 +1,5 @@
 package roomescape.reservation.controller;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
@@ -28,7 +27,6 @@ class ReservationControllerTest {
         params.put("time", "15:40");
     }
 
-
     @Test
     @DisplayName("예약 추가 테스트")
     void createReservationTest() {
@@ -39,7 +37,6 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201)
                 .header("Location", containsString("reservations/1"));
-//                .body("id", is(1));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -56,13 +53,13 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("id", is(1));
+                .statusCode(201)
+                .header("Location", containsString("reservations/1"));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -79,8 +76,8 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
-                .body("id", is(1));
+                .statusCode(201)
+                .header("Location", containsString("reservations/1"));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")

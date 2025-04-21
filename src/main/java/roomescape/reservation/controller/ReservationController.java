@@ -2,9 +2,6 @@ package roomescape.reservation.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.dto.ReservationResponseDto;
 import roomescape.reservation.model.Reservation;
 
 @RestController
@@ -27,9 +23,6 @@ public class ReservationController {
     public ReservationController(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
     }
-
-    private AtomicLong index = new AtomicLong(1);
-    private Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
 
     @GetMapping
     public ResponseEntity<List<Reservation>> getReservations(
@@ -51,8 +44,7 @@ public class ReservationController {
     public ResponseEntity<List<Reservation>> deleteReservation(
             @PathVariable Long id
     ) {
-        reservations.remove(id);
-
+        reservationDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 
