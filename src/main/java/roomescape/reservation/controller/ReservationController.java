@@ -24,20 +24,20 @@ public class ReservationController {
         this.reservationDao = reservationDao;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationEntity>> getReservations(
-    ) {
-        return ResponseEntity.ok().body(
-                reservationDao.findAllReservations()
-        );
-    }
-
     @PostMapping
     public ResponseEntity<Void> createReservation(
             @RequestBody ReservationEntity reservationEntity
     ) {
         int reservationId = reservationDao.insert(reservationEntity);
         return ResponseEntity.created(createUri(reservationId)).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationEntity>> getReservations(
+    ) {
+        return ResponseEntity.ok().body(
+                reservationDao.findAllReservations()
+        );
     }
 
     @DeleteMapping("/{id}")
