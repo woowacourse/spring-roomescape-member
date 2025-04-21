@@ -35,4 +35,9 @@ public class TimeDao {
                     );
                 });
     }
+
+    public int delete(Long id) {
+        String sql = "delete from reservation_time where id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
 }
