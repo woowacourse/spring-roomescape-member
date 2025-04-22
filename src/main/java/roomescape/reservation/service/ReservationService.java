@@ -29,8 +29,6 @@ public class ReservationService {
                 reservationTime
         );
 
-        reservationDao.insert(reservation);
-
-        return new ReservationResponse(reservation);
+        return new ReservationResponse(reservationDao.insert(reservation));
     }
 }

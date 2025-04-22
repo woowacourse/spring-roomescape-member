@@ -1,6 +1,5 @@
 package roomescape.reservation.controller;
 
-import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,32 +9,37 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dao.ReservationTimeDao;
+import roomescape.reservation.dto.ReservationTimeRequest;
+import roomescape.reservation.dto.ReservationTimeResponse;
 import roomescape.reservation.entity.ReservationTime;
+import roomescape.reservation.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
 
+    private ReservationTimeService reservationTimeService;
     private ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeController(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeController(ReservationTimeDao reservationTimeDao,
+                                     ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
         this.reservationTimeDao = reservationTimeDao;
     }
 
-
     @PostMapping
-    public ResponseEntity<Void> createTime(
-            @RequestBody ReservationTime reservationTime
-    ){
-        int timeId = reservationTimeDao.insert(reservationTime);
-        return ResponseEntity.created(createUri(timeId)).build();
+    public ResponseEntity<ReservationTimeResponse> createTime(
+            @RequestBody ReservationTimeRequest reservationTimeRequest
+    ) {
+        return ResponseEntity.ok().body(
+                reservationTimeService.createReservationTime(reservationTimeRequest)
+        );
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTime>> getTimes(
-    ){
+    ) {
         return ResponseEntity.ok().body(
                 reservationTimeDao.findAllTimes()
         );
@@ -44,15 +48,8 @@ public class ReservationTimeController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(
             @PathVariable Long id
-    ){
+    ) {
         reservationTimeDao.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private URI createUri(int reservationId) {
-        return ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(reservationId)
-                .toUri();
     }
 }

@@ -8,8 +8,8 @@ public class ReservationTimeResponse {
     private LocalTime startAt;
 
     public ReservationTimeResponse(ReservationTime reservationTime) {
-       this.id = reservationTime.getId();
-       this.startAt = reservationTime.getStartAt();
+        this.id = reservationTime.getId();
+        this.startAt = reservationTime.getStartAt();
     }
 
     public long getId() {
