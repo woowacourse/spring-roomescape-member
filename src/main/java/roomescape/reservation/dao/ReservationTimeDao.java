@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.entity.ReservationTime;
+import roomescape.reservation.model.ReservationTime;
 
 @Repository
 public class ReservationTimeDao {
@@ -29,7 +29,7 @@ public class ReservationTimeDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
-                    new String[]{"id"}
+                    new String[] {"id"}
             );
             ps.setString(1, reservationTime.getStartAt().toString());
             return ps;
@@ -59,7 +59,7 @@ public class ReservationTimeDao {
 
     public Optional<ReservationTime> findById(long timeId) {
         String sql = "select id, start_at from reservation_time where id = ?";
-        try{
+        try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                     sql,
                     (resultSet, rowNum) -> {

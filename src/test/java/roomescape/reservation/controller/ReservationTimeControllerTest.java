@@ -30,7 +30,7 @@ public class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("시간 조회 테스트")
-    void getTimeTest(){
+    void getTimeTest() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -50,7 +50,7 @@ public class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("시간 삭제 테스트")
-    void deleteTimeTest(){
+    void deleteTimeTest() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
