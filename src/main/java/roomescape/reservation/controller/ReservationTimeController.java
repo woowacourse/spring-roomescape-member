@@ -1,4 +1,4 @@
-package roomescape.time.controller;
+package roomescape.reservation.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -11,32 +11,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import roomescape.time.dao.TimeDao;
-import roomescape.time.entity.TimeEntity;
+import roomescape.reservation.dao.ReservationTimeDao;
+import roomescape.reservation.entity.ReservationTimeEntity;
 
 @RestController
 @RequestMapping("/times")
-public class TimeController {
+public class ReservationTimeController {
 
-    private TimeDao timeDao;
+    private ReservationTimeDao reservationTimeDao;
 
-    public TimeController(TimeDao timeDao) {
-        this.timeDao = timeDao;
+    public ReservationTimeController(ReservationTimeDao reservationTimeDao) {
+        this.reservationTimeDao = reservationTimeDao;
     }
 
     @PostMapping
     public ResponseEntity<Void> createTime(
-            @RequestBody TimeEntity timeEntity
+            @RequestBody ReservationTimeEntity reservationTimeEntity
     ){
-        int timeId = timeDao.insert(timeEntity);
+        int timeId = reservationTimeDao.insert(reservationTimeEntity);
         return ResponseEntity.created(createUri(timeId)).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeEntity>> getTimes(
+    public ResponseEntity<List<ReservationTimeEntity>> getTimes(
     ){
         return ResponseEntity.ok().body(
-                timeDao.findAllTimes()
+                reservationTimeDao.findAllTimes()
         );
     }
 
@@ -44,7 +44,7 @@ public class TimeController {
     public ResponseEntity<Void> deleteTime(
             @PathVariable Long id
     ){
-        timeDao.delete(id);
+        reservationTimeDao.delete(id);
         return ResponseEntity.noContent().build();
     }
 
