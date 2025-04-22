@@ -3,7 +3,7 @@ package roomescape.reservation.dao;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.entity.Reservation;
 
 @Repository
 public class ReservationDao {
@@ -18,17 +18,17 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
-    public int insert(ReservationEntity reservationEntity) {
+    public int insert(Reservation reservation) {
         String sql = "insert into reservation (name, date, time) values (?, ?, ?)";
-        return jdbcTemplate.update(sql, reservationEntity.getName(), reservationEntity.getDate(), reservationEntity.getTime());
+        return jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(), reservation.getTime());
     }
 
-    public List<ReservationEntity> findAllReservations() {
+    public List<Reservation> findAllReservations() {
         String sql = "select id, name, date, time from reservation";
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
-                    return new ReservationEntity(
+                    return new Reservation(
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
                             resultSet.getDate("date").toLocalDate(),

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.entity.Reservation;
 
 @RestController
 @RequestMapping("/reservations")
@@ -26,14 +26,14 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<Void> createReservation(
-            @RequestBody ReservationEntity reservationEntity
+            @RequestBody Reservation reservation
     ) {
-        int reservationId = reservationDao.insert(reservationEntity);
+        int reservationId = reservationDao.insert(reservation);
         return ResponseEntity.created(createUri(reservationId)).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationEntity>> getReservations(
+    public ResponseEntity<List<Reservation>> getReservations(
     ) {
         return ResponseEntity.ok().body(
                 reservationDao.findAllReservations()

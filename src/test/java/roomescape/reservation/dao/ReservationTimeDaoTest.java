@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.entity.ReservationTimeEntity;
+import roomescape.reservation.entity.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -25,13 +25,13 @@ public class ReservationTimeDaoTest {
     @Test
     @DisplayName("시간 추가 확인 테스트")
     void insertTest() {
-        reservationTimeDao.insert(new ReservationTimeEntity(1, LocalTime.of(15, 40)));
+        reservationTimeDao.insert(new ReservationTime(1, LocalTime.of(15, 40)));
 
-        List<ReservationTimeEntity> times = RestAssured.given().log().all()
+        List<ReservationTime> times = RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTimeEntity.class);
+                .jsonPath().getList(".", ReservationTime.class);
 
         assertThat(times.size()).isEqualTo(reservationTimeDao.count());
     }

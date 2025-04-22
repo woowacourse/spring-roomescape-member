@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dao.ReservationTimeDao;
-import roomescape.reservation.entity.ReservationTimeEntity;
+import roomescape.reservation.entity.ReservationTime;
 
 @RestController
 @RequestMapping("/times")
@@ -20,20 +20,22 @@ public class ReservationTimeController {
 
     private ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeController(ReservationTimeDao reservationTimeDao) {
-        this.reservationTimeDao = reservationTimeDao;
-    }
+//    public ReservationTimeController(ReservationTimeDao reservationTimeDao) {
+//        this.reservationTimeDao = reservationTimeDao;
+//    }
+
+
 
     @PostMapping
     public ResponseEntity<Void> createTime(
-            @RequestBody ReservationTimeEntity reservationTimeEntity
+            @RequestBody ReservationTime reservationTime
     ){
-        int timeId = reservationTimeDao.insert(reservationTimeEntity);
+        int timeId = reservationTimeDao.insert(reservationTime);
         return ResponseEntity.created(createUri(timeId)).build();
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeEntity>> getTimes(
+    public ResponseEntity<List<ReservationTime>> getTimes(
     ){
         return ResponseEntity.ok().body(
                 reservationTimeDao.findAllTimes()
