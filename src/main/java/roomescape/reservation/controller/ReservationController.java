@@ -12,24 +12,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
 
+    private ReservationService reservationService;
     private ReservationDao reservationDao;
 
-    public ReservationController(ReservationDao reservationDao) {
+    public ReservationController(ReservationDao reservationDao, ReservationService reservationService) {
         this.reservationDao = reservationDao;
+        this.reservationService = reservationService;
     }
 
     @PostMapping
-    public ResponseEntity<Void> createReservation(
-            @RequestBody Reservation reservation
+    public ResponseEntity<ReservationResponse> createReservation(
+            @RequestBody ReservationRequest reservationRequest
     ) {
-        int reservationId = reservationDao.insert(reservation);
-        return ResponseEntity.created(createUri(reservationId)).build();
+        return ResponseEntity.ok().body(
+                reservationService.createReservation(reservationRequest)
+        );
     }
 
     @GetMapping

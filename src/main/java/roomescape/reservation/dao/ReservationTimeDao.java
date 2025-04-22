@@ -1,6 +1,8 @@
 package roomescape.reservation.dao;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.ReservationTime;
@@ -38,5 +40,21 @@ public class ReservationTimeDao {
     public int delete(Long id) {
         String sql = "delete from reservation_time where id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public Optional<ReservationTime> findById(long timeId) {
+        String sql = "select id, start_at from reservation_time where id = ?";
+        try{
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    sql,
+                    (resultSet, rowNum) -> {
+                        return new ReservationTime(
+                                resultSet.getLong("id"),
+                                resultSet.getTime("start_at").toLocalTime()
+                        );
+                    }, timeId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

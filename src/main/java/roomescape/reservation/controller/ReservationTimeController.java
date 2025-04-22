@@ -20,10 +20,9 @@ public class ReservationTimeController {
 
     private ReservationTimeDao reservationTimeDao;
 
-//    public ReservationTimeController(ReservationTimeDao reservationTimeDao) {
-//        this.reservationTimeDao = reservationTimeDao;
-//    }
-
+    public ReservationTimeController(ReservationTimeDao reservationTimeDao) {
+        this.reservationTimeDao = reservationTimeDao;
+    }
 
 
     @PostMapping

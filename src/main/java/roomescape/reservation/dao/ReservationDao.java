@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.entity.ReservationTime;
 
 @Repository
 public class ReservationDao {
@@ -19,12 +20,23 @@ public class ReservationDao {
     }
 
     public int insert(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time) values (?, ?, ?)";
-        return jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(), reservation.getTime());
+        String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
+        return jdbcTemplate.update(sql, reservation.getName(), reservation.getDate(), reservation.getReservationTime().getId());
     }
 
     public List<Reservation> findAllReservations() {
-        String sql = "select id, name, date, time from reservation";
+        String sql = """
+                SELECT
+                r.id as reservation_id,
+                r.name,
+                r.date,
+                t.id as time_id,
+                t.start_at as time_value
+            FROM reservation as r
+            inner join reservation_time as t
+            on r.time_id = t.id
+            """;
+
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
@@ -32,8 +44,10 @@ public class ReservationDao {
                             resultSet.getLong("id"),
                             resultSet.getString("name"),
                             resultSet.getDate("date").toLocalDate(),
-                            resultSet.getTime("time").toLocalTime()
-                    );
+                            new ReservationTime(
+                                resultSet.getLong("time_id"),
+                                resultSet.getTime("start_at").toLocalTime()
+                            ));
                 });
     }
 
