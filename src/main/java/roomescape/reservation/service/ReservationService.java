@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dao.ReservationTimeDao;
@@ -30,5 +31,11 @@ public class ReservationService {
         );
 
         return new ReservationResponse(reservationDao.insert(reservation));
+    }
+
+    public List<ReservationResponse> getReservations() {
+        return reservationDao.findAllReservations().stream()
+                .map(ReservationResponse::new)
+                .toList();
     }
 }
