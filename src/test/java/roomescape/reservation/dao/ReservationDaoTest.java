@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.entity.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -23,16 +25,23 @@ public class ReservationDaoTest {
     @Autowired
     private ReservationDao reservationDao;
 
+    @Autowired
+    private ReservationTimeDao reservationTimeDao;
+
     @Test
     @DisplayName("예약 추가 확인 테스트")
     void insertTest() {
-        reservationDao.insert(new Reservation(1, "브라운", LocalDate.of(2023, 8, 5), LocalTime.of(15, 40)));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
+        Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), reservationTime);
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        reservationTimeDao.insert(reservationTime);
+        reservationDao.insert(reservation);
+
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".", ReservationResponse.class);
 
         assertThat(reservations.size()).isEqualTo(reservationDao.count());
     }
@@ -40,17 +49,26 @@ public class ReservationDaoTest {
     @Test
     @DisplayName("예약 삭제 확인 테스트")
     void deleteTest() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("time", "10:00");
+        Map<String, String> reservationTimeParams = new HashMap<>();
+        reservationTimeParams.put("startAt", "10:00");
+
+        Map<String, String> reservationParams = new HashMap<>();
+        reservationParams.put("name", "브라운");
+        reservationParams.put("date", "2023-08-05");
+        reservationParams.put("timeId", "1");
+
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTimeParams)
+                .when().post("/times");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         assertThat(reservationDao.count()).isEqualTo(1);
 

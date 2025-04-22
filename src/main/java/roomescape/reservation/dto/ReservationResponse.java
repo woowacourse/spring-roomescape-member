@@ -9,6 +9,9 @@ public class ReservationResponse {
     private LocalDate date;
     private ReservationTimeResponse reservationTimeResponse;
 
+    private ReservationResponse() {
+    }
+
     public ReservationResponse(Reservation reservation) {
         this.id = reservation.getId();
         this.name = reservation.getName();
@@ -31,4 +34,5 @@ public class ReservationResponse {
     public ReservationTimeResponse getReservationTimeResponse() {
         return reservationTimeResponse;
     }
+
 }

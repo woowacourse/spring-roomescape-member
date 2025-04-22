@@ -5,12 +5,12 @@ import java.time.LocalDate;
 public class ReservationRequest {
     private LocalDate date;
     private String name;
-    private Long time_id;
+    private Long timeId;
 
-    public ReservationRequest(LocalDate date, String name, Long time_id) {
+    public ReservationRequest(LocalDate date, String name, Long timeId) {
         this.date = date;
         this.name = name;
-        this.time_id = time_id;
+        this.timeId = timeId;
     }
 
     public LocalDate getDate() {
@@ -22,6 +22,6 @@ public class ReservationRequest {
     }
 
     public Long getTimeId() {
-        return time_id;
+        return timeId;
     }
 }

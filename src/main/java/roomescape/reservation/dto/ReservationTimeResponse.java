@@ -12,6 +12,9 @@ public class ReservationTimeResponse {
         this.startAt = reservationTime.getStartAt();
     }
 
+    private ReservationTimeResponse() {
+    }
+
     public long getId() {
         return id;
     }

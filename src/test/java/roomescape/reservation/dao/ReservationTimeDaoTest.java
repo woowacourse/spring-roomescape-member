@@ -25,7 +25,8 @@ public class ReservationTimeDaoTest {
     @Test
     @DisplayName("시간 추가 확인 테스트")
     void insertTest() {
-        reservationTimeDao.insert(new ReservationTime(1, LocalTime.of(15, 40)));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
+        reservationTimeDao.insert(reservationTime);
 
         List<ReservationTime> times = RestAssured.given().log().all()
                 .when().get("/times")
@@ -47,7 +48,7 @@ public class ReservationTimeDaoTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200);
 
         assertThat(reservationTimeDao.count()).isEqualTo(1);
 

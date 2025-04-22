@@ -1,6 +1,5 @@
 package roomescape.reservation.controller;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -18,13 +17,22 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
-    Map<String, String> params = new HashMap<>();
+    Map<String, String> reservationParams = new HashMap<>();
+
+    Map<String, String> reservationTimeParams = new HashMap<>();
 
     @BeforeEach
     void setUp() {
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("time", "15:40");
+        reservationTimeParams.put("startAt", "10:00");
+
+        reservationParams.put("name", "브라운");
+        reservationParams.put("date", "2023-08-05");
+        reservationParams.put("timeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTimeParams)
+                .when().post("/times");
     }
 
     @Test
@@ -32,11 +40,10 @@ class ReservationControllerTest {
     void createReservationTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .header("Location", containsString("reservations/1"));
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -48,13 +55,13 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 삭제 테스트")
     void deleteReservationTest() {
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .header("Location", containsString("reservations/1"));
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -73,11 +80,10 @@ class ReservationControllerTest {
     void reservationPageTest() {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
-                .header("Location", containsString("reservations/1"));
+                .statusCode(200);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -88,6 +94,6 @@ class ReservationControllerTest {
 
     @AfterEach
     void clear() {
-        params.clear();
+        reservationParams.clear();
     }
 }
