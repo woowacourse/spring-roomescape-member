@@ -29,4 +29,8 @@ public class ReservationTimeService {
                 .map(ReservationTimeResponse::new)
                 .toList();
     }
+
+    public void deleteReservationTime(Long id) {
+        reservationTimeDao.delete(id);
+    }
 }
