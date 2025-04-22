@@ -38,10 +38,10 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> getTimes(
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes(
     ) {
         return ResponseEntity.ok().body(
-                reservationTimeDao.findAllTimes()
+                reservationTimeService.getReservationTimes()
         );
     }
 
