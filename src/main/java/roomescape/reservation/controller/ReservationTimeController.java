@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dao.ReservationTimeDao;
 import roomescape.reservation.dto.ReservationTimeRequest;
 import roomescape.reservation.dto.ReservationTimeResponse;
-import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.service.ReservationTimeService;
 
 @RestController
@@ -20,12 +18,9 @@ import roomescape.reservation.service.ReservationTimeService;
 public class ReservationTimeController {
 
     private ReservationTimeService reservationTimeService;
-    private ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeController(ReservationTimeDao reservationTimeDao,
-                                     ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
-        this.reservationTimeDao = reservationTimeDao;
     }
 
     @PostMapping
