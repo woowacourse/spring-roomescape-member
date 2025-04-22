@@ -48,7 +48,7 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(
             @PathVariable Long id
     ) {
-        reservationDao.delete(id);
+        reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
 }

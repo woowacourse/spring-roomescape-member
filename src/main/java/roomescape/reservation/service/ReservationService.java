@@ -38,4 +38,8 @@ public class ReservationService {
                 .map(ReservationResponse::new)
                 .toList();
     }
+
+    public void deleteReservation(Long id) {
+        reservationDao.delete(id);
+    }
 }
