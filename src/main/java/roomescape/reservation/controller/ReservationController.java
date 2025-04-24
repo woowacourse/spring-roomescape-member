@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -19,10 +18,8 @@ import roomescape.reservation.service.ReservationService;
 public class ReservationController {
 
     private ReservationService reservationService;
-    private ReservationDao reservationDao;
 
-    public ReservationController(ReservationDao reservationDao, ReservationService reservationService) {
-        this.reservationDao = reservationDao;
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
