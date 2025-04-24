@@ -18,11 +18,6 @@ public class ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int count() {
-        String sql = "select count(*) from reservation_time";
-        return jdbcTemplate.queryForObject(sql, Integer.class);
-    }
-
     public ReservationTime insert(final ReservationTime reservationTime) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

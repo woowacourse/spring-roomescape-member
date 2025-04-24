@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.model.Reservation;
@@ -24,9 +25,10 @@ public class ReservationDaoTest {
 
     @Autowired
     private ReservationDao reservationDao;
-
     @Autowired
     private ReservationTimeDao reservationTimeDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("예약 추가 확인 테스트")
@@ -43,7 +45,7 @@ public class ReservationDaoTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        assertThat(reservations.size()).isEqualTo(reservationDao.count());
+        assertThat(reservations.size()).isEqualTo(count());
     }
 
     @Test
@@ -70,15 +72,19 @@ public class ReservationDaoTest {
                 .then().log().all()
                 .statusCode(200);
 
-        assertThat(reservationDao.count()).isEqualTo(1);
+        assertThat(count()).isEqualTo(1);
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
-        assertThat(reservationDao.count()).isEqualTo(0);
+        assertThat(count()).isEqualTo(0);
     }
 
+    private int count() {
+        String sql = "select count(*) from reservation";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
 
 }
