@@ -9,13 +9,13 @@ import roomescape.reservation.model.ReservationTime;
 
 @Service
 public class ReservationTimeService {
-    private ReservationTimeDao reservationTimeDao;
+    private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(final ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTimeResponse createReservationTime(ReservationTimeRequest reservationTimeRequest) {
+    public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = new ReservationTime(
                 null,
                 reservationTimeRequest.getStartAt()
@@ -30,7 +30,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTime(final Long id) {
         reservationTimeDao.delete(id);
     }
 }

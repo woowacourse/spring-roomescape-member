@@ -11,15 +11,15 @@ import roomescape.reservation.model.ReservationTime;
 
 @Service
 public class ReservationService {
-    private ReservationDao reservationDao;
-    private ReservationTimeDao reservationTimeDao;
+    private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
+    public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.getTimeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 예약 시간 정보를 찾을 수 없습니다."));
 
@@ -39,7 +39,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public void deleteReservation(Long id) {
+    public void deleteReservation(final Long id) {
         reservationDao.delete(id);
     }
 }

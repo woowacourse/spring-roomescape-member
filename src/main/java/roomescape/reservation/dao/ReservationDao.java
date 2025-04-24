@@ -11,9 +11,9 @@ import roomescape.reservation.model.ReservationTime;
 
 @Repository
 public class ReservationDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public ReservationDao(JdbcTemplate jdbcTemplate) {
+    public ReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -22,7 +22,7 @@ public class ReservationDao {
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
-    public Reservation insert(Reservation reservation) {
+    public Reservation insert(final Reservation reservation) {
         String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -67,7 +67,7 @@ public class ReservationDao {
                 });
     }
 
-    public int delete(Long id) {
+    public int delete(final Long id) {
         String sql = "delete from reservation where id = ?";
         return jdbcTemplate.update(sql, id);
     }

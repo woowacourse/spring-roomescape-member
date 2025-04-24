@@ -4,10 +4,10 @@ import java.time.LocalTime;
 import roomescape.reservation.model.ReservationTime;
 
 public class ReservationTimeResponse {
-    private long id;
+    private Long id;
     private LocalTime startAt;
 
-    public ReservationTimeResponse(ReservationTime reservationTime) {
+    public ReservationTimeResponse(final ReservationTime reservationTime) {
         this.id = reservationTime.getId();
         this.startAt = reservationTime.getStartAt();
     }
@@ -15,7 +15,7 @@ public class ReservationTimeResponse {
     private ReservationTimeResponse() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

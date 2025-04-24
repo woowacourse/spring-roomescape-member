@@ -12,7 +12,7 @@ public class ReservationResponse {
     private ReservationResponse() {
     }
 
-    public ReservationResponse(Reservation reservation) {
+    public ReservationResponse(final Reservation reservation) {
         this.id = reservation.getId();
         this.name = reservation.getName();
         this.date = reservation.getDate();

@@ -12,9 +12,9 @@ import roomescape.reservation.model.ReservationTime;
 
 @Repository
 public class ReservationTimeDao {
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -23,7 +23,7 @@ public class ReservationTimeDao {
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
-    public ReservationTime insert(ReservationTime reservationTime) {
+    public ReservationTime insert(final ReservationTime reservationTime) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -52,12 +52,12 @@ public class ReservationTimeDao {
                 });
     }
 
-    public int delete(Long id) {
+    public int delete(final Long id) {
         String sql = "delete from reservation_time where id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
-    public Optional<ReservationTime> findById(long timeId) {
+    public Optional<ReservationTime> findById(final long timeId) {
         String sql = "select id, start_at from reservation_time where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(

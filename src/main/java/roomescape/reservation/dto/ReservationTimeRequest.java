@@ -3,10 +3,10 @@ package roomescape.reservation.dto;
 import java.time.LocalTime;
 
 public class ReservationTimeRequest {
-    private Long id;
-    private LocalTime startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
-    public ReservationTimeRequest(Long id, LocalTime startAt) {
+    public ReservationTimeRequest(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }

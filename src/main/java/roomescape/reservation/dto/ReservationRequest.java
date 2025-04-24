@@ -3,11 +3,11 @@ package roomescape.reservation.dto;
 import java.time.LocalDate;
 
 public class ReservationRequest {
-    private LocalDate date;
-    private String name;
-    private Long timeId;
+    private final LocalDate date;
+    private final String name;
+    private final Long timeId;
 
-    public ReservationRequest(LocalDate date, String name, Long timeId) {
+    public ReservationRequest(final LocalDate date, final String name, final Long timeId) {
         this.date = date;
         this.name = name;
         this.timeId = timeId;
