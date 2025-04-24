@@ -38,6 +38,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 추가 테스트")
     void createReservationTest() {
+        // given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
@@ -45,6 +46,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200);
 
+        // when-then
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -55,7 +57,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 삭제 테스트")
     void deleteReservationTest() {
-
+        // given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
@@ -63,11 +65,13 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200);
 
+        // when
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
                 .statusCode(204);
 
+        // then
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -78,6 +82,7 @@ class ReservationControllerTest {
     @Test
     @DisplayName("예약 조회 테스트")
     void reservationPageTest() {
+        // given
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationParams)
@@ -85,6 +90,7 @@ class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200);
 
+        // when-then
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()

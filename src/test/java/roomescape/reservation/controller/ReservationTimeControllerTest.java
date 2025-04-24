@@ -17,9 +17,11 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("시간 추가 테스트")
     void createTimeTest() {
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
+        // when-then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -31,6 +33,7 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("시간 조회 테스트")
     void getTimeTest() {
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -41,6 +44,7 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(200);
 
+        // when-then
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -51,6 +55,7 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("시간 삭제 테스트")
     void deleteTimeTest() {
+        // given
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
@@ -67,6 +72,7 @@ public class ReservationTimeControllerTest {
                 .statusCode(200)
                 .body("size()", is(1));
 
+        // when-then
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
