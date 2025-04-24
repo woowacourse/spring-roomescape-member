@@ -3,22 +3,30 @@ package roomescape.reservation.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.model.ReservationTime;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
 public class ReservationTimeDaoTest {
 
-    @Autowired
     private ReservationTimeDao reservationTimeDao;
-    @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public ReservationTimeDaoTest(JdbcTemplate jdbcTemplate) {
+        this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @BeforeEach
+    public void resetAutoIncrement() {
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+    }
 
     @Test
     @DisplayName("시간 추가 확인 테스트")
