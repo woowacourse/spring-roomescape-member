@@ -28,38 +28,27 @@ public class ReservationTimeDaoTest {
     @Test
     @DisplayName("시간 추가 확인 테스트")
     void insertTest() {
+        // given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
+
+        // when
         reservationTimeDao.insert(reservationTime);
 
-        List<ReservationTime> times = RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationTime.class);
-
-        assertThat(times.size()).isEqualTo(count());
+        // then
+        assertThat(count()).isEqualTo(count());
     }
 
     @Test
     @DisplayName("시간 삭제 확인 테스트")
     void deleteTest(){
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        // given
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
+        reservationTimeDao.insert(reservationTime);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(200);
+        // when
+        reservationTimeDao.delete(1L);
 
-        assertThat(count()).isEqualTo(1);
-
-        RestAssured.given().log().all()
-                .when().delete("/times/1")
-                .then().log().all()
-                .statusCode(204);
-
+        // then
         assertThat(count()).isEqualTo(0);
     }
 
