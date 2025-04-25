@@ -1,16 +1,45 @@
 package roomescape.domain;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Objects;
 
-public record ReservationTime(LocalDateTime reservationTime) {
+public class ReservationTime {
 
-    public LocalDate getDate() {
-        return reservationTime.toLocalDate();
+    private Long id;
+    private final LocalTime startAt;
+
+    public ReservationTime(Long id, LocalTime startAt) {
+        this.id = id;
+        this.startAt = startAt;
     }
 
-    public LocalTime getTime() {
-        return reservationTime.toLocalTime();
+    public ReservationTime(LocalTime startAt) {
+        this(null, startAt);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalTime getStartAt() {
+        return startAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTime that = (ReservationTime) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
