@@ -47,9 +47,12 @@ public class ReservationTimeDao {
                 });
     }
 
-    public int delete(final Long id) {
+    public void delete(final Long id) {
         String sql = "delete from reservation_time where id = ?";
-        return jdbcTemplate.update(sql, id);
+        int rows = jdbcTemplate.update(sql, id);
+        if (rows != 1) {
+            throw new IllegalArgumentException("[ERROR] 삭제하지 못했습니다.");
+        }
     }
 
     public Optional<ReservationTime> findById(final long timeId) {

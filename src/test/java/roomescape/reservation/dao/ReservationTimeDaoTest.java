@@ -1,6 +1,7 @@
 package roomescape.reservation.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +54,14 @@ public class ReservationTimeDaoTest {
 
         // then
         assertThat(count()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
+    void deleteExceptionTest() {
+        assertThatThrownBy(() -> reservationTimeDao.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 삭제하지 못했습니다.");
     }
 
     private int count() {
