@@ -14,10 +14,11 @@ import roomescape.reservation.presentation.dto.ReservationTimeResponse;
 
 public class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void init(){
-        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeDao();
+        reservationTimeRepository = new FakeReservationTimeDao();
         reservationTimeService = new ReservationTimeService(reservationTimeRepository);
     }
 
