@@ -36,7 +36,7 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("예약 시간 조회 테스트")
+    @DisplayName("예약 시간 전체 조회 테스트")
     void getReservationTimesTest(){
         // given
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));

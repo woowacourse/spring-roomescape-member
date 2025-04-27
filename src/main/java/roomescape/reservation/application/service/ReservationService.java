@@ -27,13 +27,13 @@ public class ReservationService {
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 new ReservationName(reservationRequest.getName()),
                 new ReservationDate(reservationRequest.getDate()),
-                findReservationTime(reservationRequest.getTimeId())
+                getReservationTime(reservationRequest.getTimeId())
         );
 
         return new ReservationResponse(reservationRepository.insert(createReservationRequest));
     }
 
-    private ReservationTime findReservationTime(Long timeId) {
+    private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 예약 시간 정보를 찾을 수 없습니다."));
     }
