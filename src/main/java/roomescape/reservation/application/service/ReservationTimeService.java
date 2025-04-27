@@ -1,7 +1,8 @@
-package roomescape.reservation.application;
+package roomescape.reservation.application.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeResponse;
 

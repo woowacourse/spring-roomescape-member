@@ -1,4 +1,4 @@
-package roomescape.reservation.domain;
+package roomescape.reservation.domain.aggregate;
 
 public class Reservation {
 

@@ -1,8 +1,8 @@
-package roomescape.reservation.application;
+package roomescape.reservation.application.repository;
 
 import java.util.List;
 import roomescape.reservation.application.dto.CreateReservationRequest;
-import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.aggregate.Reservation;
 
 public interface ReservationRepository {
     Reservation insert(CreateReservationRequest request);

@@ -1,4 +1,4 @@
-package roomescape.reservation.infrastructure;
+package roomescape.reservation.infrastructure.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -6,12 +6,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.application.ReservationRepository;
+import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.dto.CreateReservationRequest;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationName;
-import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.aggregate.Reservation;
+import roomescape.reservation.domain.aggregate.ReservationDate;
+import roomescape.reservation.domain.aggregate.ReservationName;
+import roomescape.reservation.domain.aggregate.ReservationTime;
 
 @Repository
 public class ReservationDao implements ReservationRepository {
