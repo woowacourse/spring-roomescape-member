@@ -2,6 +2,9 @@ package roomescape.reservation.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.application.dto.CreateReservationRequest;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.infrastructure.ReservationDao;
 import roomescape.reservation.infrastructure.ReservationTimeDao;
 import roomescape.reservation.presentation.dto.ReservationRequest;
@@ -20,17 +23,18 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.getTimeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 예약 시간 정보를 찾을 수 없습니다."));
-
-        Reservation reservation = new Reservation(
-                null,
-                reservationRequest.getName(),
-                reservationRequest.getDate(),
-                reservationTime
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                new ReservationName(reservationRequest.getName()),
+                new ReservationDate(reservationRequest.getDate()),
+                findReservationTime(reservationRequest.getTimeId())
         );
 
-        return new ReservationResponse(reservationDao.insert(reservation));
+        return new ReservationResponse(reservationDao.insert(createReservationRequest));
+    }
+
+    private ReservationTime findReservationTime(Long timeId) {
+        return reservationTimeDao.findById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 예약 시간 정보를 찾을 수 없습니다."));
     }
 
     public List<ReservationResponse> getReservations() {

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 
 @JdbcTest
 public class ReservationTimeDaoTest {
@@ -33,10 +34,10 @@ public class ReservationTimeDaoTest {
     @DisplayName("시간 추가 확인 테스트")
     void insertTest() {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
 
         // when
-        reservationTimeDao.insert(reservationTime);
+        reservationTimeDao.insert(reservationTimeRequest.getStartAt());
 
         // then
         assertThat(count()).isEqualTo(count());
@@ -46,8 +47,8 @@ public class ReservationTimeDaoTest {
     @DisplayName("시간 삭제 확인 테스트")
     void deleteTest() {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
-        reservationTimeDao.insert(reservationTime);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        reservationTimeDao.insert(reservationTimeRequest.getStartAt());
 
         // when
         reservationTimeDao.delete(1L);

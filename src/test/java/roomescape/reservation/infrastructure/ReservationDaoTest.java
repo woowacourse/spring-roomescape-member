@@ -11,8 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.application.dto.CreateReservationRequest;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 
 @JdbcTest
 public class ReservationDaoTest {
@@ -38,12 +41,15 @@ public class ReservationDaoTest {
     @DisplayName("예약 추가 확인 테스트")
     void insertTest() {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
-        Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), reservationTime);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                new ReservationName("브라운"),
+                new ReservationDate(LocalDate.of(2023, 8, 5)),
+                reservationTimeDao.insert(reservationTimeRequest.getStartAt())
+        );
 
         // when
-        reservationTimeDao.insert(reservationTime);
-        reservationDao.insert(reservation);
+        reservationDao.insert(createReservationRequest);
 
         // then
         assertThat(count()).isEqualTo(1);
@@ -53,10 +59,13 @@ public class ReservationDaoTest {
     @DisplayName("예약 삭제 확인 테스트")
     void deleteTest() {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(15, 40));
-        Reservation reservation = new Reservation(1L, "브라운", LocalDate.of(2023, 8, 5), reservationTime);
-        reservationTimeDao.insert(reservationTime);
-        reservationDao.insert(reservation);
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                new ReservationName("브라운"),
+                new ReservationDate(LocalDate.of(2023, 8, 5)),
+                reservationTimeDao.insert(reservationTimeRequest.getStartAt())
+        );
+        reservationDao.insert(createReservationRequest);
 
         // when
         reservationDao.delete(1L);

@@ -6,7 +6,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 
 @Repository
@@ -17,22 +20,22 @@ public class ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Reservation insert(final Reservation reservation) {
+    public Reservation insert(final CreateReservationRequest request) {
         String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
                     new String[] {"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getReservationTime().getId());
+            ps.setString(1, request.getName().getName());
+            ps.setString(2, request.getDate().getReservationDate().toString());
+            ps.setLong(3, request.getTime().getId());
             return ps;
         }, keyHolder);
 
         long id = keyHolder.getKey().longValue();
 
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getReservationTime());
+        return new Reservation(id, request.getName(), request.getDate(), request.getTime());
     }
 
     public List<Reservation> findAllReservations() {
@@ -53,8 +56,12 @@ public class ReservationDao {
                 (resultSet, rowNum) -> {
                     return new Reservation(
                             resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getDate("date").toLocalDate(),
+                            new ReservationName(
+                                    resultSet.getString("name")
+                            ),
+                            new ReservationDate(
+                                resultSet.getDate("date").toLocalDate()
+                            ),
                             new ReservationTime(
                                     resultSet.getLong("time_id"),
                                     resultSet.getTime("start_at").toLocalTime()
