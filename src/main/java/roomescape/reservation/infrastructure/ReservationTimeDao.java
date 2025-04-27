@@ -9,16 +9,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.application.ReservationTimeRepository;
 import roomescape.reservation.domain.ReservationTime;
 
 @Repository
-public class ReservationTimeDao {
+public class ReservationTimeDao implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public ReservationTimeDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public ReservationTime insert(final LocalTime reservationTime) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -36,6 +38,8 @@ public class ReservationTimeDao {
         return new ReservationTime(id, reservationTime);
     }
 
+    @Override
+
     public List<ReservationTime> findAllTimes() {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(
@@ -48,15 +52,8 @@ public class ReservationTimeDao {
                 });
     }
 
-    public void delete(final Long id) {
-        String sql = "delete from reservation_time where id = ?";
-        int rows = jdbcTemplate.update(sql, id);
-        if (rows != 1) {
-            throw new IllegalArgumentException("[ERROR] 삭제하지 못했습니다.");
-        }
-    }
-
-    public Optional<ReservationTime> findById(final long timeId) {
+    @Override
+    public Optional<ReservationTime> findById(final Long timeId) {
         String sql = "select id, start_at from reservation_time where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
@@ -69,6 +66,15 @@ public class ReservationTimeDao {
                     }, timeId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public void delete(final Long id) {
+        String sql = "delete from reservation_time where id = ?";
+        int rows = jdbcTemplate.update(sql, id);
+        if (rows != 1) {
+            throw new IllegalArgumentException("[ERROR] 삭제하지 못했습니다.");
         }
     }
 }

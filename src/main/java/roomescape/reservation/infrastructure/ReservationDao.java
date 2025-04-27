@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.application.ReservationRepository;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -13,13 +14,14 @@ import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.ReservationTime;
 
 @Repository
-public class ReservationDao {
+public class ReservationDao implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public ReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Reservation insert(final CreateReservationRequest request) {
         String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -38,6 +40,7 @@ public class ReservationDao {
         return new Reservation(id, request.getName(), request.getDate(), request.getTime());
     }
 
+    @Override
     public List<Reservation> findAllReservations() {
         String sql = """
                     SELECT
@@ -69,6 +72,7 @@ public class ReservationDao {
                 });
     }
 
+    @Override
     public void delete(final Long id) {
         String sql = "delete from reservation where id = ?";
         int rows = jdbcTemplate.update(sql, id);
