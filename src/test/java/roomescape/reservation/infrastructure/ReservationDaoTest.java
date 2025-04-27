@@ -1,4 +1,4 @@
-package roomescape.reservation.dao;
+package roomescape.reservation.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservation.model.Reservation;
-import roomescape.reservation.model.ReservationTime;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
 
 @JdbcTest
 public class ReservationDaoTest {

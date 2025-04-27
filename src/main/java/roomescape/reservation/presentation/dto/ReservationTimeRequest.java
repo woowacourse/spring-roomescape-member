@@ -1,12 +1,12 @@
-package roomescape.reservation.model;
+package roomescape.reservation.presentation.dto;
 
 import java.time.LocalTime;
 
-public class ReservationTime {
+public class ReservationTimeRequest {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(final Long id, final LocalTime startAt) {
+    public ReservationTimeRequest(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
