@@ -1,6 +1,9 @@
 package roomescape.entity;
 
+import roomescape.exception.PastReservationException;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -11,6 +14,7 @@ public class Reservation {
     private final ReservationTime time;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        validatePastDateTime(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -18,9 +22,15 @@ public class Reservation {
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
+        this(null, name, date, time);
+    }
+
+    private void validatePastDateTime(LocalDate date, ReservationTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new PastReservationException("현재보다 과거의 날짜로 예약 할 수 없습니다.");
+        }
     }
 
     public boolean isSameId(long id) {
