@@ -30,6 +30,9 @@ public class ReservationService {
         if (reservation.isPast(LocalDate.now())) {
             throw new IllegalArgumentException("하루 전 까지 예약 가능합니다.");
         }
+        if (reservationDao.isExistByTimeIdAndDate(reservationRequest.timeId(), reservationRequest.date())) {
+            throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
+        }
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromEntity(savedReservation);
     }

@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -74,6 +75,15 @@ public class JdbcReservationDao implements ReservationDao {
                 "SELECT COUNT(*) FROM reservation WHERE time_id = ?",
                 Integer.class,
                 timeId
+        );
+    }
+
+    public boolean isExistByTimeIdAndDate(Long timeId, LocalDate date) {
+        return jdbcTemplate.queryForObject(
+                "SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE time_id = ? AND date = ?)",
+                Boolean.class,
+                timeId,
+                date
         );
     }
 }

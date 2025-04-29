@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,5 +37,10 @@ public class FakeReservaionDao implements ReservationDao {
     @Override
     public int countByTimeId(Long timeId) {
         return 0;
+    }
+
+    @Override
+    public boolean isExistByTimeIdAndDate(Long timeId, LocalDate date) {
+        return false;
     }
 }
