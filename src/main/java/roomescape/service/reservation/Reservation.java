@@ -8,15 +8,13 @@ public final class Reservation {
 
     private final Long id;
     private final String name;
-    private final LocalDate date;
-    private final ReservationTime time;
+    private final ReservationDateTime dateTime;
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
         validateName(name);
         this.id = id;
         this.name = name;
-        this.date = date;
-        this.time = time;
+        this.dateTime = new ReservationDateTime(date, time);
     }
 
     private void validateName(final String name) {
@@ -25,18 +23,12 @@ public final class Reservation {
         }
     }
 
-    public boolean isBefore(final LocalDateTime dateTime) {
-        if (date.isBefore(dateTime.toLocalDate())) {
-            return true;
-        }
-        if (date.equals(dateTime.toLocalDate())) {
-            return time.isBefore(dateTime.toLocalTime());
-        }
-        return false;
+    public boolean isBefore(final LocalDateTime other) {
+        return dateTime.isBefore(other);
     }
 
     public Long getTimeId() {
-        return time.getId();
+        return dateTime.getTimeId();
     }
 
     public Long getId() {
@@ -48,33 +40,24 @@ public final class Reservation {
     }
 
     public LocalDate getDate() {
-        return date;
+        return dateTime.getDate();
     }
 
     public ReservationTime getTime() {
-        return time;
+        return dateTime.getTime();
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-
-        final Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-                && Objects.equals(date, that.date) && Objects.equals(time, that.time);
+        Reservation that = (Reservation) object;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(name);
-        result = 31 * result + Objects.hashCode(date);
-        result = 31 * result + Objects.hashCode(time);
-        return result;
+        return Objects.hashCode(id);
     }
 }

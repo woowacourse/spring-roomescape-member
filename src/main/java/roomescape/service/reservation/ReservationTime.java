@@ -30,22 +30,16 @@ public final class ReservationTime {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+    public boolean equals(Object object) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-
-        final ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
+        ReservationTime that = (ReservationTime) object;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(startAt);
-        return result;
+        return Objects.hashCode(id);
     }
 }

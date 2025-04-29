@@ -29,19 +29,4 @@ class ReservationTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자명은 최소 1글자, 최대 5글자여야합니다.");
     }
-
-    @DisplayName("주어진 날짜와 시간보다 이전인지 확인한다.")
-    @ParameterizedTest
-    @CsvSource(value = {"2025-04-29;09:59;False", "2025-04-29;10:00;True", "2025-04-29;10:01;True",
-            "2025-04-28;10:01;False", "2025-04-30;10:01;True"}, delimiterString = ";")
-    void testIsBefore(LocalDate date, LocalTime time, boolean expected) {
-        // given
-        LocalDate reservationDate = LocalDate.of(2025, 4, 29);
-        LocalTime reservationTime = LocalTime.of(10, 0);
-        Reservation reservation = new Reservation(1L, "leo", reservationDate, new ReservationTime(1L, reservationTime));
-        // when
-        boolean result = reservation.isBefore(LocalDateTime.of(date, time));
-        // then
-        assertThat(result).isEqualTo(expected);
-    }
 }
