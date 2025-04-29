@@ -15,6 +15,9 @@ public class Reservation {
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        if (name.length() < 2 || name.length() > 5) {
+            throw new IllegalArgumentException("예약자명은 2글자에서 5글자까지만 가능합니다.");
+        }
         this.id = id;
         this.name = name;
         this.date = date;
