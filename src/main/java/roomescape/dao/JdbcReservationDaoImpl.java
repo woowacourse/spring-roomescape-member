@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Person;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 
 @Repository
@@ -33,7 +34,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
                 Reservation reservation = new Reservation(
                     resultSet.getLong("reservation_id"),
                     new Person(resultSet.getString("name")),
-                    LocalDate.parse(resultSet.getString("date")),
+                    new ReservationDate(LocalDate.parse(resultSet.getString("date"))),
                     new ReservationTime(
                         resultSet.getLong("time_id"),
                         LocalTime.parse(resultSet.getString("time_value")))

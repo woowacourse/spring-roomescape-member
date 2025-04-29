@@ -7,17 +7,18 @@ public class Reservation {
 
     private Long id;
     private final Person person;
-    private final LocalDate date;
+    private final ReservationDate date;
     private final ReservationTime reservationTime;
 
-    public Reservation(Long id, Person person, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Long id, Person person, ReservationDate date,
+        ReservationTime reservationTime) {
         this.id = id;
         this.person = person;
         this.date = date;
         this.reservationTime = reservationTime;
     }
 
-    public Reservation(Person person, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Person person, ReservationDate date, ReservationTime reservationTime) {
         this(null, person, date, reservationTime);
     }
 
@@ -34,7 +35,7 @@ public class Reservation {
     }
 
     public LocalDate getDate() {
-        return date;
+        return date.getDate();
     }
 
     public ReservationTime getReservationTime() {

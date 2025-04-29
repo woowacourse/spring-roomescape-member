@@ -16,6 +16,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.dao.JdbcReservationDaoImpl;
 import roomescape.domain.Person;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 
 public class JdbcReservationDaoTest {
@@ -50,7 +51,8 @@ public class JdbcReservationDaoTest {
     @Test
     void given_reservation_then_save_db_and_set_id() {
         //given
-        Reservation reservation = new Reservation(new Person("james"), LocalDate.of(2025, 12, 25),
+        Reservation reservation = new Reservation(new Person("james"),
+            new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime);
 
         //when
@@ -65,13 +67,16 @@ public class JdbcReservationDaoTest {
     @Test
     void get_all_reservation() {
         //given
-        Reservation reservation1 = new Reservation(new Person("james"), LocalDate.of(2025, 12, 25),
+        Reservation reservation1 = new Reservation(new Person("james"),
+            new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime);
         reservationDao.saveReservation(reservation1);
-        Reservation reservation2 = new Reservation(new Person("james"), LocalDate.of(2025, 12, 26),
+        Reservation reservation2 = new Reservation(new Person("james"),
+            new ReservationDate(LocalDate.of(2025, 12, 26)),
             reservationTime);
         reservationDao.saveReservation(reservation2);
-        Reservation reservation3 = new Reservation(new Person("james"), LocalDate.of(2025, 12, 27),
+        Reservation reservation3 = new Reservation(new Person("james"),
+            new ReservationDate(LocalDate.of(2025, 12, 27)),
             reservationTime);
         reservationDao.saveReservation(reservation3);
 
@@ -85,7 +90,8 @@ public class JdbcReservationDaoTest {
     @Test
     void given_reservation_id_then_delete_data() {
         //given
-        Reservation reservation = new Reservation(new Person("james"), LocalDate.of(2025, 12, 25),
+        Reservation reservation = new Reservation(new Person("james"),
+            new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime);
         reservationDao.saveReservation(reservation);
 

@@ -7,6 +7,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Person;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
@@ -31,7 +32,8 @@ public class ReservationService {
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
         Person person = new Person(reservationRequestDto.name());
-        LocalDate date = LocalDate.parse(reservationRequestDto.date());
+
+        ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
         ReservationTime reservationTime = reservationTimeDao.findById(
             reservationRequestDto.timeId());
         Reservation reservation = new Reservation(person, date, reservationTime);
