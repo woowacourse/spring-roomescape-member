@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository;
 import roomescape.global.exception.DeleteReservationException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.dto.CreateReservationRequest;
-import roomescape.reservation.domain.aggregate.Reservation;
-import roomescape.reservation.domain.aggregate.ReservationDate;
-import roomescape.reservation.domain.aggregate.ReservationName;
-import roomescape.reservation.domain.aggregate.ReservationTime;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationName;
+import roomescape.reservation.domain.ReservationTime;
 
 @Repository
 public class ReservationDao implements ReservationRepository {

@@ -1,8 +1,8 @@
 package roomescape.reservation.application.dto;
 
-import roomescape.reservation.domain.aggregate.ReservationDate;
-import roomescape.reservation.domain.aggregate.ReservationName;
-import roomescape.reservation.domain.aggregate.ReservationTime;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationName;
+import roomescape.reservation.domain.ReservationTime;
 
 public class CreateReservationRequest {
     private final ReservationName name;

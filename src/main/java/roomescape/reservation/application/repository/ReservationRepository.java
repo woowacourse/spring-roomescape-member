@@ -3,7 +3,7 @@ package roomescape.reservation.application.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import roomescape.reservation.application.dto.CreateReservationRequest;
-import roomescape.reservation.domain.aggregate.Reservation;
+import roomescape.reservation.domain.Reservation;
 
 public interface ReservationRepository {
     Reservation insert(CreateReservationRequest request);

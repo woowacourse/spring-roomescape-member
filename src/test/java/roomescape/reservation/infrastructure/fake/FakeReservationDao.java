@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
-import roomescape.reservation.domain.aggregate.Reservation;
+import roomescape.reservation.domain.Reservation;
 
 public class FakeReservationDao implements ReservationRepository {
 

@@ -1,4 +1,4 @@
-package roomescape.reservation.domain.aggregate;
+package roomescape.reservation.domain;
 
 public final class ReservationName {
     private final String name;

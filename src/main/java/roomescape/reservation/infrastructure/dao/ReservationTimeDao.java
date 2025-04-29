@@ -11,7 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.global.exception.DeleteTimeException;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
-import roomescape.reservation.domain.aggregate.ReservationTime;
+import roomescape.reservation.domain.ReservationTime;
 
 @Repository
 public class ReservationTimeDao implements ReservationTimeRepository {
