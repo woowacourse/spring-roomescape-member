@@ -30,12 +30,8 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
-        try {
-            ReservationResponse response = reservationService.createReservation(request);
-            return ResponseEntity.created(URI.create("admin/reservation")).body(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        ReservationResponse response = reservationService.createReservation(request);
+        return ResponseEntity.created(URI.create("admin/reservation")).body(response);
     }
 
     @DeleteMapping("/reservations/{id}")
