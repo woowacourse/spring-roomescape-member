@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -24,12 +27,23 @@ public class ReservationService {
     public ReservationResponseDto createReservation(ReservationCreateRequestDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
+
+        validateReservationDateTime(dto.date(), reservationTime.startAt());
+
         Reservation requestReservation = dto.createWithoutId(reservationTime);
 
         Reservation newReservation = reservationRepository.save(requestReservation)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약 생성을 실패하였습니다."));
 
         return ReservationResponseDto.from(newReservation, newReservation.time());
+    }
+
+    private void validateReservationDateTime(LocalDate date, LocalTime time) {
+        LocalDateTime dateTime = LocalDateTime.of(date, time);
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (dateTime.isBefore(currentTime) || dateTime.equals(currentTime)) {
+            throw new IllegalArgumentException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
+        }
     }
 
     public List<ReservationResponseDto> findAllReservationResponses() {
