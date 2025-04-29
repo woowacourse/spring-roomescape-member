@@ -15,7 +15,8 @@ class ReservationDateTest {
         LocalDate date = LocalDate.of(2025, 4, 28);
         LocalDate current = LocalDate.of(2025, 4, 29);
 
-        assertThatThrownBy(() -> new ReservationDate(date, current))
+        ReservationDate reservationDate = new ReservationDate(date);
+        assertThatThrownBy(() -> reservationDate.validateDate(current))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("현재 날짜 기준으로 과거의 날짜는 예약할 수 없습니다.");
     }
@@ -24,9 +25,10 @@ class ReservationDateTest {
     @Test
     void after_date_then_success() {
         LocalDate date = LocalDate.of(2025, 4, 28);
-        LocalDate current = LocalDate.of(2025, 4, 28);
+        LocalDate current = LocalDate.of(2025, 4, 27);
 
-        assertThatCode(() -> new ReservationDate(date, current))
+        ReservationDate reservationDate = new ReservationDate(date);
+        assertThatCode(() -> reservationDate.validateDate(current))
             .doesNotThrowAnyException();
     }
 }

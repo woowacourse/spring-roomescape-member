@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -31,13 +32,19 @@ public class ReservationService {
     }
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
-        Person person = new Person(reservationRequestDto.name());
+        LocalDateTime currentDateTime = LocalDateTime.now();
 
+        Person person = new Person(reservationRequestDto.name());
         ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
+        date.validateDate(currentDateTime.toLocalDate());
         ReservationTime reservationTime = reservationTimeDao.findById(
             reservationRequestDto.timeId());
+
         Reservation reservation = new Reservation(person, date, reservationTime);
+        reservation.validateDateTime(date, reservationTime, currentDateTime);
+
         reservationDao.saveReservation(reservation);
+
         return ReservationResponseDto.from(reservation);
     }
 
