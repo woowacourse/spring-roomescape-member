@@ -15,9 +15,14 @@ import java.util.NoSuchElementException;
 public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationQueryUseCase reservationQueryUseCase;
+    private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
 
     @Override
     public Reservation create(final CreateReservationServiceRequest createReservationServiceRequest) {
+        final ReservationTime reservationTime = reservationTimeQueryUseCase.get(
+                ReservationTimeId.from(createReservationServiceRequest.timeId()));
+
         return reservationRepository.save(
                 ReservationConverter.toDomain(createReservationServiceRequest));
     }
