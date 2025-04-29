@@ -11,4 +11,6 @@ public interface ReservationRepository {
     Reservation findById(final Long id);
 
     List<Reservation> findAll();
+
+    boolean existByReservationTimeId(final Long timeId);
 }
