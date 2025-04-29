@@ -8,6 +8,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.ReservationDuplicateException;
 
 @Service
 public class ReservationService {
@@ -27,8 +28,11 @@ public class ReservationService {
                 reservationCreateRequest.name(),
                 reservationCreateRequest.getLocalDate(),
                 time);
-        Reservation savedReservation = reservationDao.create(reservation);
-        return new ReservationCreateResponse(savedReservation);
+
+        if (reservationDao.findByDateAndTime(reservation).isPresent()) {
+            throw new ReservationDuplicateException("이미 존재하는 예약입니다.");
+        }
+        return new ReservationCreateResponse(reservationDao.create(reservation));
     }
 
     public List<ReservationResponse> findAll() {

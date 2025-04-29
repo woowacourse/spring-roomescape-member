@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -66,5 +67,21 @@ public class JdbcReservationDao implements ReservationDao {
     public void delete(final long id) {
         final String sql = "DELETE reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Optional<Reservation> findByDateAndTime(final Reservation reservation) {
+        final String sql = "SELECT " +
+                "r.id as reservation_id, " +
+                "r.name, " +
+                "r.date, " +
+                "t.id as time_id, " +
+                "t.start_at as time_value " +
+                "FROM reservation as r " +
+                "inner join reservation_time as t " +
+                "on r.time_id = t.id " +
+                "WHERE r.date = ? AND r.time_id = ?";
+        return jdbcTemplate.query(sql, reservationMapper, reservation.getDate(),
+                reservation.getTime().getId()).stream().findFirst();
     }
 }

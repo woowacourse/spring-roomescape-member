@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.resetvationTime.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
@@ -29,19 +30,18 @@ public class InMemoryReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public void delete(final long id) {
+    public boolean deleteIfNoReservation(final long id) {
         ReservationTime reservationTime = reservationTimes.stream()
                 .filter(it -> it.isEqualId(id))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        reservationTimes.remove(reservationTime);
+        return reservationTimes.remove(reservationTime);
     }
 
     @Override
-    public ReservationTime findById(final long id) {
+    public Optional<ReservationTime> findById(final long id) {
         return reservationTimes.stream()
                 .filter(it -> it.isEqualId(id))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .findFirst();
     }
 }

@@ -60,6 +60,6 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     @Override
     public Optional<ReservationTime> findById(final long id) {
         final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeMapper, id));
+        return jdbcTemplate.query(sql, reservationTimeMapper, id).stream().findFirst();
     }
 }

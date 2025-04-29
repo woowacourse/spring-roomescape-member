@@ -7,6 +7,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -131,7 +134,7 @@ public class MissionStepTest {
     @Test
     void addReservationTest() {
         Map<String, Object> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "10:00");
+        reservationTime.put("startAt", LocalTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -142,7 +145,7 @@ public class MissionStepTest {
         Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().toString());
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -156,7 +159,7 @@ public class MissionStepTest {
     @Test
     void findAllReservationTest() {
         Map<String, Object> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "10:00");
+        reservationTime.put("startAt", LocalTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -168,7 +171,7 @@ public class MissionStepTest {
         Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().toString());
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -190,7 +193,7 @@ public class MissionStepTest {
     void deleteReservationTest() {
 
         Map<String, Object> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "10:00");
+        reservationTime.put("startAt", LocalTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -202,7 +205,7 @@ public class MissionStepTest {
         Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().toString());
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
