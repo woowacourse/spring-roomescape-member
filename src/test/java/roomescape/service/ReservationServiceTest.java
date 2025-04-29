@@ -94,6 +94,19 @@ class ReservationServiceTest {
                     Arguments.of((String) null)
             );
         }
+
+        @DisplayName("이미 동일한 날짜와 시간에 예약이 있으면 생성할 수 없다")
+        @Test
+        void createDuplicateReservationTest() {
+            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
+            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+            reservationTimeRepository.addReservation(new Reservation(1L, "가이온", LocalDate.now().plusDays(7), new ReservationTime(1L, LocalTime.now())));
+            reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L);
+
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+        }
     }
 
     @Nested
