@@ -44,12 +44,12 @@ class ReservationQueryUseCaseImplTest {
 
         final Reservation given1 = Reservation.withoutId(
                 ReserverName.from("강산"),
-                ReservationDate.from(LocalDate.now()),
+                ReservationDate.from(LocalDate.now().plusDays(1)),
                 reservationTime);
 
         final Reservation given2 = Reservation.withoutId(
                 ReserverName.from("강산2"),
-                ReservationDate.from(LocalDate.now()),
+                ReservationDate.from(LocalDate.now().plusDays(1)),
                 reservationTime);
 
         final Reservation saved1 = reservationRepository.save(given1);

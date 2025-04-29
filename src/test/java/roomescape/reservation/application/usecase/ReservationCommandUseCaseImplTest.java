@@ -46,8 +46,8 @@ class ReservationCommandUseCaseImplTest {
 
         final CreateReservationServiceRequest requestDto = new CreateReservationServiceRequest(
                 "브라운",
-                LocalDate.of(2023, 8, 5),
-                reservationTime
+                LocalDate.of(2025, 8, 5),
+                reservationTime.getId().getValue()
         );
 
         // when
@@ -65,6 +65,32 @@ class ReservationCommandUseCaseImplTest {
     }
 
     @Test
+    @DisplayName("중복된 예약을 생성할 수 없다.")
+    void existsReservation() {
+        // given
+        final ReservationTime reservationTime = reservationTimeRepository.save(
+                ReservationTime.of(
+                        ReservationTimeId.unassigned(),
+                        LocalTime.of(10, 0)));
+
+        final Reservation savedReservation = reservationCommandUseCase.create(new CreateReservationServiceRequest(
+                "브라운",
+                LocalDate.of(2025, 8, 5),
+                reservationTime.getId().getValue()
+        ));
+
+        // when
+        // then
+        assertThatThrownBy(() -> reservationCommandUseCase.create(
+                new CreateReservationServiceRequest(
+                        "강산",
+                        LocalDate.of(2025, 8, 5),
+                        reservationTime.getId().getValue())))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("추가하려는 예약이 이미 존재합니다.");
+    }
+
+    @Test
     @DisplayName("예약을 삭제할 수 있다")
     void deleteReservation() {
         // given
@@ -76,7 +102,7 @@ class ReservationCommandUseCaseImplTest {
         final Reservation reservation = reservationRepository.save(
                 Reservation.withoutId(
                         ReserverName.from("브라운"),
-                        ReservationDate.from(LocalDate.of(2023, 8, 5)),
+                        ReservationDate.from(LocalDate.of(2025, 8, 5)),
                         reservationTime));
 
         // when

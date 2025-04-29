@@ -18,6 +18,7 @@ import roomescape.reservation_time.infrastructure.entity.ReservationTimeEntity;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,6 +63,17 @@ public class H2ReservationRepository implements ReservationRepository {
 
         return Boolean.TRUE.equals(
                 jdbcTemplate.queryForObject(sql, Boolean.class, timeId.getValue()));
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final LocalDate date, final ReservationTimeId timeId) {
+        final String sql = """
+                select exists 
+                    (select 1 from reservation where date = ? and time_id = ?)
+                """;
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId.getValue()));
     }
 
     @Override
