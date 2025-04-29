@@ -2,9 +2,11 @@ package roomescape.controller;
 
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,13 +28,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> reserve(@RequestBody CreateReservationRequest request) {
-        try {
-            var reservation = service.reserve(request.name(), request.date(), request.timeSlotId());
-            var response = ReservationResponse.from(reservation);
-            return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var reservation = service.reserve(request.name(), request.date(), request.timeSlotId());
+        var response = ReservationResponse.from(reservation);
+        return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(response);
     }
 
     @GetMapping
@@ -49,5 +47,10 @@ public class ReservationController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>("예약 정보를 잘못 입력했습니다.", HttpStatus.BAD_REQUEST);
     }
 }
