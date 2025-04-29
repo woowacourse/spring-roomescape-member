@@ -17,10 +17,10 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.EntityRepository;
+import roomescape.domain.reservation.repository.ReservationRepository;
 
 @Repository
-public class ReservationDAO implements EntityRepository<Reservation> {
+public class ReservationDAO implements ReservationRepository {
 
     private static final String TABLE_NAME = "reservation";
 
@@ -144,5 +144,14 @@ public class ReservationDAO implements EntityRepository<Reservation> {
         if (updatedRowCount != 1) {
             throw new EntityNotFoundException("Reservation with id " + id + " not found");
         }
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+        String sql = "select count(*) from reservation where date = :date and time_id = :time_id";
+        Map<String, Object> params = Map.of("date", date, "time_id", timeId);
+
+        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != 0;
     }
 }

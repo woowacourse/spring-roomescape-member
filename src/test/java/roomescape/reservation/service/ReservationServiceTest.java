@@ -13,6 +13,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -99,9 +100,24 @@ class ReservationServiceTest {
         softAssertions.assertAll();
     }
 
-    @DisplayName("과거 날짜에 예약을 추가하면 예외가 발생한다.")
+    @DisplayName("이미 존재하는 예약과 동일하면 예외가 발생한다.")
     @Test
     void test4() {
+        // given
+        String name = "꾹";
+        LocalDate date = LocalDate.of(2025, 1, 1);
+
+        ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId);
+        reservationService.create(requestDto);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(requestDto))
+                .isInstanceOf(AlreadyInUseException.class);
+    }
+
+    @DisplayName("과거 날짜에 예약을 추가하면 예외가 발생한다.")
+    @Test
+    void test5() {
         // given
         String name = "꾹";
         LocalDate date = LocalDate.of(2024, 12, 18);
@@ -117,7 +133,7 @@ class ReservationServiceTest {
 
     @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
     @Test
-    void test5() {
+    void test6() {
         LocalDate date = LocalDate.of(2025, 4, 29);
 
         Long notExistId = 1000L;
@@ -129,7 +145,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약 시간을 삭제한다")
     @Test
-    void test6() {
+    void test7() {
         // given
         Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), reservationTime);
         Reservation saved = reservationRepository.save(reservation);
@@ -143,7 +159,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약 시간이 존재하지 않으면 예외를 반환한다.")
     @Test
-    void test7() {
+    void test8() {
         Long id = 1L;
         assertThatThrownBy(() -> reservationService.delete(id))
                 .isInstanceOf(EntityNotFoundException.class);

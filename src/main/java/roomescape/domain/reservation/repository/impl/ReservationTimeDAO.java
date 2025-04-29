@@ -17,10 +17,10 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.EntityRepository;
+import roomescape.domain.reservation.repository.ReservationTimeRepository;
 
 @Repository
-public class ReservationTimeDAO implements EntityRepository<ReservationTime> {
+public class ReservationTimeDAO implements ReservationTimeRepository {
 
     private static final String TABLE_NAME = "reservation_time";
 

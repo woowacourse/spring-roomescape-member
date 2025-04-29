@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.dto.ReservationTimeRequest;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.EntityRepository;
+import roomescape.domain.reservation.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
-    private final EntityRepository<ReservationTime> reservationTimeRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeService(EntityRepository<ReservationTime> reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 

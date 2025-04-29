@@ -1,5 +1,6 @@
 package roomescape.reservation.repository.fake;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.repository.EntityRepository;
+import roomescape.domain.reservation.repository.ReservationRepository;
 
-public class FakeReservationRepository implements EntityRepository<Reservation> {
+public class FakeReservationRepository implements ReservationRepository {
 
     private static final Long INITIAL_ID = 1L;
 
@@ -57,6 +58,18 @@ public class FakeReservationRepository implements EntityRepository<Reservation> 
         }
 
         reservations.remove(id);
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+        return reservations.values()
+                .stream()
+                .anyMatch(reservation -> sameReservationDateTime(reservation, date, timeId));
+    }
+
+    private boolean sameReservationDateTime(Reservation reservation, LocalDate date, Long timeId) {
+        return reservation.getReservationDate().equals(date) &&
+               reservation.getReservationTime().getId().equals(timeId);
     }
 
     public void deleteAll() {

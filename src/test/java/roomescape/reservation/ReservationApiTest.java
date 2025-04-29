@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -19,17 +18,18 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.EntityRepository;
+import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 class ReservationApiTest {
 
     @Autowired
-    private EntityRepository<Reservation> reservationRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
-    private EntityRepository<ReservationTime> reservationTimeRepository;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -83,7 +83,6 @@ class ReservationApiTest {
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         LocalDate now = LocalDate.now();
-
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");

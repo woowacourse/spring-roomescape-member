@@ -11,13 +11,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.config.TestConfig;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.EntityRepository;
+import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.utils.JdbcTemplateUtils;
 
@@ -27,7 +29,7 @@ class ReservationDAOTest {
     private static final LocalTime RESERVATION_TIME_START_TIME = LocalTime.of(8, 0);
 
     private JdbcTemplate jdbcTemplate;
-    private EntityRepository<Reservation> reservationRepository;
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void init() {
@@ -170,6 +172,26 @@ class ReservationDAOTest {
         String sql = "select count(*) from reservation where id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, reservationId);
         assertThat(count).isZero();
+    }
+
+    @DisplayName("날짜와 시간으로 존재하는 예약인지 확인한다.")
+    @CsvSource(value = {
+            "29,29,true",
+            "28,29,false"
+    })
+    @ParameterizedTest
+    void test8(int day1, int day2, boolean expected) {
+        // given
+        Long reservationId = 2L;
+        String name = "꾹";
+        LocalDateTime now = LocalDateTime.of(2025, 4, day1, 10, 0);
+
+        saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
+        saveReservation(reservationId, name, now.toLocalDate(), RESERVATION_TIME_ID);
+
+        // when & then
+        assertThat(reservationRepository.existsByDateAndTimeId(LocalDate.of(2025, 4, day2), RESERVATION_TIME_ID))
+                .isEqualTo(expected);
     }
 
     private ReservationTime saveReservationTime(Long id, LocalTime time) {
