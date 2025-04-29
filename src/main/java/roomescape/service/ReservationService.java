@@ -7,7 +7,6 @@ import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.repository.H2ReservationDao;
 import roomescape.repository.H2ReservationTimeDao;
-import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
 
 @Service
