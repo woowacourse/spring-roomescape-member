@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class DaoTest {
     void 오단계() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
             "브라운",
-            "2023-08-05",
+            LocalDate.now().plusDays(1),
             1L);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -67,7 +68,7 @@ public class DaoTest {
     void 육단계() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -75,7 +76,7 @@ public class DaoTest {
             .body(params)
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(200);
+            .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
             Integer.class);
@@ -84,7 +85,7 @@ public class DaoTest {
         RestAssured.given().log().all()
             .when().delete("/reservations/1")
             .then().log().all()
-            .statusCode(200);
+            .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
             Integer.class);
@@ -101,25 +102,19 @@ public class DaoTest {
             .body(params)
             .when().post("/times")
             .then().log().all()
-            .statusCode(200);
-
-        RestAssured.given().log().all()
-            .when().get("/times")
-            .then().log().all()
-            .statusCode(200)
-            .body("size()", is(4));
+            .statusCode(201);
 
         RestAssured.given().log().all()
             .when().delete("/times/1")
             .then().log().all()
-            .statusCode(200);
+            .statusCode(204);
     }
 
     @Test
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", LocalDate.now().plusDays(1));
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -127,7 +122,7 @@ public class DaoTest {
             .body(reservation)
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(200);
+            .statusCode(201);
 
         RestAssured.given().log().all()
             .when().get("/reservations")

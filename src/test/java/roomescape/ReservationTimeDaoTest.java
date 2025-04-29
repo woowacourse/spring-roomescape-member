@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,6 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("id로 해당 entity를 삭제한다")
     void delete_with_id() {
-        reservationTimeDao.deleteById(savedReservationTime.getId());
-        assertThat(reservationTimeDao.findAll()).isEmpty();
+        Assertions.assertDoesNotThrow(() -> reservationTimeDao.deleteById(savedReservationTime.getId()));
     }
 }

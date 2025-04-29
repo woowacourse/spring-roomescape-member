@@ -1,1 +1,1 @@
-INSERT INTO reservation_time(id, start_at) values (1, '10:05');
+INSERT INTO reservation_time(start_at) values ('10:05');
