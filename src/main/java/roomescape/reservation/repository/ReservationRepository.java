@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.util.List;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservationTime.domain.ReservationTime;
 
 public interface ReservationRepository {
 
@@ -12,4 +13,6 @@ public interface ReservationRepository {
     Reservation add(Reservation reservation);
 
     void delete(Long id);
+
+    boolean existsByReservationTime(ReservationTime reservationTime);
 }

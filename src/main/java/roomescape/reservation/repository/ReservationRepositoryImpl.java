@@ -73,6 +73,13 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public boolean existsByReservationTime(ReservationTime reservationTime) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+
+        return jdbcTemplate.queryForObject(sql, Long.class, reservationTime.getId()) >= 1;
+    }
+
     private Long insertWithKeyHolder(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

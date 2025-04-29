@@ -1,5 +1,7 @@
 package roomescape.reservation.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -60,5 +62,21 @@ class ReservationRepositoryImplTest {
         Assertions.assertThatCode(
             () -> reservationTimeRepository.findByIdOrThrow(Long.MAX_VALUE)
         ).isInstanceOf(CustomException.class);
+    }
+
+    @DisplayName("예약 시간에 해당하는 예약의 존재 여부를 알 수 있다.")
+    @Test
+    void existsByReservationTime() {
+        // given
+        ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+
+        Reservation reservation = ReservationFixture.create("r1", LocalDate.now().plusMonths(2), reservationTime);
+        reservationRepository.add(reservation);
+
+        // when
+        boolean actual = reservationRepository.existsByReservationTime(reservationTime);
+
+        // then
+        assertThat(actual).isTrue();
     }
 }

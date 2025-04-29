@@ -3,6 +3,7 @@ package roomescape.reservationTime.service;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static roomescape.reservationTime.ReservationTimeTestDataConfig.DEFAULT_DUMMY_TIME;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -14,6 +15,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.globalException.CustomException;
+import roomescape.reservation.domain.dto.ReservationReqDto;
+import roomescape.reservation.repository.ReservationRepositoryImpl;
+import roomescape.reservation.service.ReservationService;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
@@ -21,11 +25,19 @@ import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
 
 @JdbcTest
-@Import({ReservationTimeRepositoryImpl.class, ReservationTimeService.class, ReservationTimeTestDataConfig.class})
+@Import({
+    ReservationTimeRepositoryImpl.class,
+    ReservationTimeService.class,
+    ReservationRepositoryImpl.class,
+    ReservationService.class,
+    ReservationTimeTestDataConfig.class
+})
 class ReservationTimeServiceTest {
 
     @Autowired
     private ReservationTimeService service;
+    @Autowired
+    private ReservationService reservationService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
@@ -131,6 +143,23 @@ class ReservationTimeServiceTest {
             // then
             Assertions.assertThatCode(
                 () -> service.delete(Long.MAX_VALUE)
+            ).isInstanceOf(CustomException.class);
+        }
+
+        @DisplayName("예약에서 사용 중인 시간 삭제 시 예외가 발생한다")
+        @Test
+        void delete_throwException_whenUsingInReservation() {
+            // given
+            reservationService.add(
+                new ReservationReqDto(
+                    "r1",
+                    LocalDate.now().plusMonths(3),
+                    testDataConfig.getDefaultDummyTimeId())
+            );
+
+            // when, then
+            Assertions.assertThatCode(
+                () -> service.delete(testDataConfig.getDefaultDummyTimeId())
             ).isInstanceOf(CustomException.class);
         }
     }
