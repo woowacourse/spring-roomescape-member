@@ -18,11 +18,16 @@ public class AdminController {
 
     @GetMapping("/admin/reservation")
     public String adminReservationDashboard() {
-        return "/admin/reservation";
+        return "/admin/reservation-new";
     }
 
     @GetMapping("/admin/time")
     public String adminReservationTimeDashboard() {
         return "admin/time";
+    }
+
+    @GetMapping("/admin/theme")
+    public String adminReservationThemeDashboard() {
+        return "admin/theme";
     }
 }
