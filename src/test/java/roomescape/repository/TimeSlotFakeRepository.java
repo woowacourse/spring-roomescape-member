@@ -17,18 +17,21 @@ public class TimeSlotFakeRepository implements TimeSlotRepository {
         return Optional.ofNullable(timeSlots.get(id));
     }
 
-    public long save(TimeSlot timeSlot) {
+    @Override
+    public long save(final TimeSlot timeSlot) {
         var id = index.getAndIncrement();
         var created = new TimeSlot(id, timeSlot.startAt());
         timeSlots.put(id, created);
         return id;
     }
 
-    public boolean removeById(long id) {
+    @Override
+    public boolean removeById(final long id) {
         TimeSlot removed = timeSlots.remove(id);
         return removed != null;
     }
 
+    @Override
     public List<TimeSlot> findAll() {
         return List.copyOf(timeSlots.values());
     }

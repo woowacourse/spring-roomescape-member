@@ -13,4 +13,6 @@ public interface ReservationRepository {
     boolean removeById(long id);
 
     List<Reservation> findAll();
+
+    List<Reservation> findByTimeSlotId(long id);
 }

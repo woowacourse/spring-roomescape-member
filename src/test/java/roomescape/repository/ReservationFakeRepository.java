@@ -17,7 +17,8 @@ public class ReservationFakeRepository implements ReservationRepository {
         return Optional.ofNullable(reservations.get(id));
     }
 
-    public long save(Reservation reservation) {
+    @Override
+    public long save(final Reservation reservation) {
         var id = index.getAndIncrement();
         var created = new Reservation(
             id,
@@ -29,12 +30,21 @@ public class ReservationFakeRepository implements ReservationRepository {
         return id;
     }
 
-    public boolean removeById(long id) {
+    @Override
+    public boolean removeById(final long id) {
         Reservation removed = reservations.remove(id);
         return removed != null;
     }
 
+    @Override
     public List<Reservation> findAll() {
         return List.copyOf(reservations.values());
+    }
+
+    @Override
+    public List<Reservation> findByTimeSlotId(final long id) {
+        return reservations.values().stream()
+            .filter(reservation -> reservation.timeSlot().id() == id)
+            .toList();
     }
 }

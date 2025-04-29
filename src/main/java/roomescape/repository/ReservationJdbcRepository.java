@@ -69,4 +69,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
+
+    public List<Reservation> findByTimeSlotId(long id) {
+        var sql = """
+            select R.id, R.name, R.date, R.time_id, RT.start_at from RESERVATION R
+            left join RESERVATION_TIME RT on R.time_id = RT.id
+            WHERE R.time_id = ?
+            """;
+
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+    }
 }
