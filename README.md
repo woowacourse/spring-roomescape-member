@@ -33,8 +33,8 @@
   PRIMARY KEY (id)
   ```
 - [x] 사용자 예약 시 원하는 테마를 선택할 수 있다.
-- [ ] 관리자가 테마를 관리할 수 있도록 기능을 추가한다
-    - [ ] 테마를 조회할 수 있다
+- [x] 관리자가 테마를 관리할 수 있도록 기능을 추가한다
+    - [x] 테마를 조회할 수 있다
   ```http request
   GET /themes HTTP/1.1
   ```
@@ -51,7 +51,7 @@
       }
   ]
   ```
-    - [ ] 테마를 생성할 수 있다.
+    - [x] 테마를 생성할 수 있다.
   ```http request
   POST /themes HTTP/1.1
   content-type: application/json
