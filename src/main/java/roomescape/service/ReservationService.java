@@ -7,6 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -27,7 +28,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.readReservationTime(createdReservation.getTimeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
 
-        return ReservationResponse.of(createdReservation, reservationTime);
+        return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime));
     }
 
     public List<ReservationResponse> readReservation() {
@@ -36,7 +37,7 @@ public class ReservationService {
             ReservationTime reservationTime = reservationTimeRepository.readReservationTime(reservation.getTimeId())
                     .orElseThrow(() -> new IllegalStateException("더 이상 유효하지 않은 시간 ID의 예약입니다. 관리자가 해당 시간을 삭제했을 수 있습니다."));
 
-            return ReservationResponse.of(reservation, reservationTime);
+            return ReservationResponse.of(reservation, ReservationTimeResponse.from(reservationTime));
         }).toList();
 
         return reservationResponses;

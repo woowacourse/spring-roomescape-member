@@ -9,15 +9,15 @@ public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
-        @JsonProperty("time") ReservationTime reservationTime
+        @JsonProperty("time") ReservationTimeResponse reservationTimeResponse
 ) {
 
-    public static ReservationResponse of(Reservation reservation, ReservationTime reservationTime) {
+    public static ReservationResponse of(Reservation reservation, ReservationTimeResponse reservationTimeResponse) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                reservationTime
+                reservationTimeResponse
         );
     }
 }
