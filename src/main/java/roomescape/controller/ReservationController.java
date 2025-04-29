@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,11 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @GetMapping
     public ResponseEntity<List<ReservationResponseDto>> reservations() {
         List<ReservationResponseDto> allReservation = reservationService.getAllReservations();
@@ -35,11 +41,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponseDto addReservation(
             @RequestBody ReservationRequestDto reservationRequestDto) {
-        try {
-            return reservationService.saveReservation(reservationRequestDto);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            return null;
-        }
+        return reservationService.saveReservation(reservationRequestDto);
     }
 
     @DeleteMapping("/{id}")
