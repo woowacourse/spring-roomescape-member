@@ -87,6 +87,13 @@ public class ThemeDAO implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
+        String deleteSql = "delete from theme where id = :id";
+        Map<String, Long> params = Map.of("id", id);
 
+        int deleteRowCount = jdbcTemplate.update(deleteSql, params);
+
+        if (deleteRowCount != 1) {
+            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
+        }
     }
 }

@@ -28,4 +28,8 @@ public class ThemeService {
         return ThemeResponse.from(theme);
     }
 
+    public void deleteById(Long id) {
+        themeRepository.deleteById(id);
+    }
+
 }

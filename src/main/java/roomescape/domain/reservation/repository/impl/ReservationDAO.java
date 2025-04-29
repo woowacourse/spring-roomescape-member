@@ -77,10 +77,10 @@ public class ReservationDAO implements ReservationRepository {
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
                 LocalDate.parse(resultSet.getString("date")),
-                parseReservationTime(resultSet));
+                reservationTimeOf(resultSet));
     }
 
-    private ReservationTime parseReservationTime(ResultSet resultSet) throws SQLException {
+    private ReservationTime reservationTimeOf(ResultSet resultSet) throws SQLException {
         return new ReservationTime(
                 resultSet.getLong("reservation_time_id"),
                 LocalTime.parse(resultSet.getString("start_at")
