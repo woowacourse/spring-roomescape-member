@@ -10,7 +10,7 @@ public class ReservationRequest {
     private final LocalDate date;
 
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 10)
     private final String name;
 
     private final Long timeId;

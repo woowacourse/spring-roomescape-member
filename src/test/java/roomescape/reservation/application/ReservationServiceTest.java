@@ -37,7 +37,7 @@ public class ReservationServiceTest {
         reservationTimeRepository.insert(reservationTimeRequest.getStartAt());
 
         ReservationRequest reservationRequest = new ReservationRequest(
-                LocalDate.of(2023, 8, 5),
+                LocalDate.of(2025, 8, 5),
                 "브라운",
                 1L
         );
@@ -47,7 +47,7 @@ public class ReservationServiceTest {
 
         // then
         assertThat(reservationResponse.getId()).isEqualTo(1L);
-        assertThat(reservationResponse.getDate()).isEqualTo(LocalDate.of(2023, 8, 5));
+        assertThat(reservationResponse.getDate()).isEqualTo(LocalDate.of(2025, 8, 5));
         assertThat(reservationResponse.getName()).isEqualTo("브라운");
         assertThat(reservationResponse.getTime().getId()).isEqualTo(1L);
     }
@@ -57,7 +57,7 @@ public class ReservationServiceTest {
     void createReservationExceptionTest(){
         // given
         ReservationRequest reservationRequest = new ReservationRequest(
-                LocalDate.of(2023, 8, 5),
+                LocalDate.of(2025, 8, 5),
                 "브라운",
                 1L
         );
@@ -76,7 +76,7 @@ public class ReservationServiceTest {
         reservationTimeRepository.insert(reservationTimeRequest.getStartAt());
 
         ReservationRequest reservationRequest = new ReservationRequest(
-                LocalDate.of(2023, 8, 5),
+                LocalDate.of(2025, 8, 5),
                 "브라운",
                 1L
         );
@@ -94,7 +94,7 @@ public class ReservationServiceTest {
         reservationTimeRepository.insert(reservationTimeRequest.getStartAt());
 
         ReservationRequest reservationRequest = new ReservationRequest(
-                LocalDate.of(2023, 8, 5),
+                LocalDate.of(2025, 8, 5),
                 "브라운",
                 1L
         );
@@ -112,7 +112,7 @@ public class ReservationServiceTest {
         reservationTimeRepository.insert(reservationTimeRequest.getStartAt());
 
         ReservationRequest reservationRequest = new ReservationRequest(
-                LocalDate.of(2023, 8, 5),
+                LocalDate.of(2025, 8, 5),
                 "브라운",
                 1L
         );

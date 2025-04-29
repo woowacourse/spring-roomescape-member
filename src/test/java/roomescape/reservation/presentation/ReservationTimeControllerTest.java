@@ -10,21 +10,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.presentation.fixture.ReservationFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
+    private ReservationFixture reservationFixture = new ReservationFixture();
     @Test
     @DisplayName("시간 추가 테스트")
     void createTimeTest() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
 
         // when-then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
@@ -34,13 +35,12 @@ public class ReservationTimeControllerTest {
     @DisplayName("시작 시간은 LocalTime 형식을 만족시켜야 한다.")
     void createTimeExceptionTest() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10-00");
+        Map<String, String> reservationTime = reservationFixture.createReservationTime("10-00");
 
         // when-then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
@@ -50,13 +50,12 @@ public class ReservationTimeControllerTest {
     @DisplayName("중복된 시간 추가는 불가능하다.")
     void createTimeDuplicateExceptionTest() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
 
         // when
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
@@ -64,7 +63,7 @@ public class ReservationTimeControllerTest {
         // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400);
@@ -74,12 +73,11 @@ public class ReservationTimeControllerTest {
     @DisplayName("시간 조회 테스트")
     void getTimeTest() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
@@ -96,12 +94,11 @@ public class ReservationTimeControllerTest {
     @DisplayName("시간 삭제 테스트")
     void deleteTimeTest() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
@@ -123,24 +120,17 @@ public class ReservationTimeControllerTest {
     @DisplayName("예약이 이미 존재하는 시간은 삭제할 수 없다.")
     void deleteTimeExceptionTest() {
         // given
-        Map<String, String> reservationTimeParams = new HashMap<>();
-        reservationTimeParams.put("startAt", "10:00");
+        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTime)
+                .when().post("/times");
 
-        Map<String, String> reservationParams = new HashMap<>();
-        reservationParams.put("name", "브라운");
-        reservationParams.put("date", "2025-08-05");
-        reservationParams.put("timeId", "1");
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationTimeParams)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationParams)
+                .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
