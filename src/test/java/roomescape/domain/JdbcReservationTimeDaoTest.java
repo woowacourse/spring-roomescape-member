@@ -27,6 +27,12 @@ class JdbcReservationTimeDaoTest {
         jdbcReservationTimeDao = new JdbcReservationTimeDao(jdbcTemplate);
     }
 
+    @AfterEach
+    void dropTable(){
+        String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
+        jdbcTemplate.execute(dropSql);
+    }
+
     @DisplayName("시간 데이터를 저장한다")
     @Test
     void save_time_test() {

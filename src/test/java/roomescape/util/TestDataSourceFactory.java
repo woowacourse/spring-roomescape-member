@@ -9,7 +9,7 @@ public class TestDataSourceFactory {
     public static DataSource getEmbeddedDataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("reset-table.sql")
+                .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
     }
