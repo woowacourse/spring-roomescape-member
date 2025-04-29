@@ -39,7 +39,6 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-
     public List<ReservationTime> findAllTimes() {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(
