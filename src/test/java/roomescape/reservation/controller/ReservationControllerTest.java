@@ -46,6 +46,12 @@ public class ReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static String formatStartAt(LocalTime time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        return time.format(formatter);
+    }
+
     @DisplayName("모든 예약 정보를 가져온다.")
     @Test
     void test1() throws Exception {
@@ -91,7 +97,7 @@ public class ReservationControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestContent))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(reservationId))
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.date").value(date.toString()))
@@ -179,12 +185,6 @@ public class ReservationControllerTest {
         }
 
         assertThat(isJdbcTemplateInjected).isFalse();
-    }
-
-    private static String formatStartAt(LocalTime time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        return time.format(formatter);
     }
 
 }

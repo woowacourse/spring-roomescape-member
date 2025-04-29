@@ -2,6 +2,7 @@ package roomescape.domain.reservation.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +34,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> save(@Valid @RequestBody ReservationRequest request) {
         ReservationResponse response = reservationService.save(request);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/reservations/{id}")
