@@ -1,6 +1,8 @@
 package roomescape.domain.reservation.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -17,7 +19,6 @@ public class Reservation {
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
         validateReservation();
-
     }
 
     public static Reservation withoutId(String name, LocalDate reservationDate, ReservationTime reservationTime) {
@@ -59,6 +60,10 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public LocalTime getReservationStratTime() {
+        return reservationTime.getStartAt();
     }
 
     @Override

@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -20,7 +22,9 @@ import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.service.ReservationService;
 import roomescape.reservation.repository.fake.FakeReservationRepository;
 import roomescape.reservation.repository.fake.FakeReservationTimeRepository;
+import roomescape.utils.FixedClock;
 
+// TODO 스프링 패키지로 테스트를 해야함
 class ReservationServiceTest {
 
     private static final LocalTime time = LocalTime.of(20, 0);
@@ -38,7 +42,9 @@ class ReservationServiceTest {
         reservationRepository.deleteAll();
         reservationTimeRepository.deleteAll();
 
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+        Clock clock = FixedClock.from(LocalDateTime.of(2024, 12, 18, 8, 0));
+
+        reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository);
 
         ReservationTime saved = reservationTimeRepository.save(ReservationTime.withoutId(time));
         reservationTimeId = saved.getId();
@@ -72,17 +78,17 @@ class ReservationServiceTest {
         assertThat(result).isEmpty();
     }
 
-    @DisplayName("예약 시간을 저장한다.")
+    @DisplayName("예약을 저장한다.")
     @Test
     void test3() {
         // given
         String name = "꾹";
-        LocalDate date = LocalDate.of(2020, 1, 1);
+        LocalDate date = LocalDate.of(2025, 1, 1);
 
         ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId);
 
         // when
-        ReservationResponse result = reservationService.save(requestDto);
+        ReservationResponse result = reservationService.create(requestDto);
 
         // then
         SoftAssertions softAssertions = new SoftAssertions();
@@ -97,10 +103,12 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
     @Test
     void test4() {
-        Long notExistId = 1000L;
-        ReservationRequest requestDto = new ReservationRequest("꾹", LocalDate.now(), notExistId);
+        LocalDate date = LocalDate.of(2025, 4, 29);
 
-        assertThatThrownBy(() -> reservationService.save(requestDto))
+        Long notExistId = 1000L;
+        ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId);
+
+        assertThatThrownBy(() -> reservationService.create(requestDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 

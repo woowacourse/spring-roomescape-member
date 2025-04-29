@@ -65,7 +65,7 @@ public class ReservationTimeServiceTest {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(localTime1);
 
         // when
-        ReservationTimeResponse result = reservationTimeService.save(reservationTimeRequest);
+        ReservationTimeResponse result = reservationTimeService.create(reservationTimeRequest);
 
         // then
         assertThat(result.id()).isNotNull();

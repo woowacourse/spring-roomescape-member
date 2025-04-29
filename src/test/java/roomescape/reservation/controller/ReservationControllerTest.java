@@ -82,8 +82,9 @@ public class ReservationControllerTest {
     void test2() throws Exception {
         Long reservationId = 1L;
         Long timeId = 1L;
-        LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.now();
+
+        LocalDate date = LocalDate.of(2025, 4, 29);
+        LocalTime time = LocalTime.of(8, 0);
         String name = "꾹이";
 
         ReservationRequest request = new ReservationRequest(name, date, timeId);
@@ -92,7 +93,7 @@ public class ReservationControllerTest {
 
         String requestContent = objectMapper.writeValueAsString(request);
 
-        when(reservationService.save(request)).thenReturn(response);
+        when(reservationService.create(request)).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -136,7 +137,7 @@ public class ReservationControllerTest {
         String requestContent = objectMapper.writeValueAsString(request);
 
         // when
-        when(reservationService.save(any())).thenThrow(EntityNotFoundException.class);
+        when(reservationService.create(any())).thenThrow(EntityNotFoundException.class);
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
@@ -150,6 +151,7 @@ public class ReservationControllerTest {
     void test5() throws Exception {
         // given
         long reservationId = 1;
+
         // when
         doNothing().when(reservationService).delete(any());
 

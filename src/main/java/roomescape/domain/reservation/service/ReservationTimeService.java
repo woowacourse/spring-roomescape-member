@@ -24,7 +24,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse save(ReservationTimeRequest request) {
+    public ReservationTimeResponse create(ReservationTimeRequest request) {
         ReservationTime reservationTime = ReservationTime.withoutId(request.startAt());
 
         ReservationTime saved = reservationTimeRepository.save(reservationTime);

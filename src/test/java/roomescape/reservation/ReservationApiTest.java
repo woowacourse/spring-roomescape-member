@@ -5,7 +5,9 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,10 +82,12 @@ class ReservationApiTest {
         // given
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        LocalDate now = LocalDate.now();
+
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", formatDateTime(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
 
         // when & then
@@ -92,15 +96,17 @@ class ReservationApiTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @DisplayName("존재하지 않는 예약 시간 ID 를 추가하면 예외를 반환한다.")
     @Test
     void test5() {
+        LocalDate now = LocalDate.now();
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", formatDateTime(now.plusDays(1)));
         reservation.put("timeId", 1);
 
         // when & then
@@ -142,7 +148,7 @@ class ReservationApiTest {
                 .statusCode(404);
     }
 
-    @DisplayName("시간 관리 페이지에 접근한다.")
+    @DisplayName("시간을 추가한다")
     @Test
     void test8() {
         Map<String, String> params = new HashMap<>();
@@ -153,6 +159,12 @@ class ReservationApiTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
+    }
+
+    public static String formatDateTime(LocalDate dateTime) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        return dateTimeFormatter.format(dateTime);
     }
 }

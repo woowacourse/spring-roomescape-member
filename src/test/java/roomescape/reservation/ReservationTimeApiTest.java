@@ -47,7 +47,7 @@ public class ReservationTimeApiTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @DisplayName("예약 시간 요청에 초가 있으면 Bad Request 반환")

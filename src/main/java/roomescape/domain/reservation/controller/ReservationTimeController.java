@@ -31,9 +31,9 @@ public class ReservationTimeController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> add(@Valid @RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> create(@Valid @RequestBody ReservationTimeRequest request) {
 
-        ReservationTimeResponse response = reservationTimeService.save(request);
+        ReservationTimeResponse response = reservationTimeService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
