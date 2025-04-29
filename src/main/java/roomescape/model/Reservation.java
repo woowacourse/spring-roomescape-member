@@ -10,19 +10,22 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = Objects.requireNonNull(id);
         this.name = validateNonBlank(name);
         this.date = Objects.requireNonNull(date);
         this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = null;
         this.name = validateNonBlank(name);
         this.date = Objects.requireNonNull(date);
         this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
     public void validateReservationDateInFuture() {
