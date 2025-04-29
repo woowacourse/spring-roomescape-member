@@ -3,6 +3,7 @@ package roomescape.fake;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,5 +54,11 @@ public class FakeReservationRepository implements ReservationRepository {
     public boolean existByTimeId(final Long reservationTimeId) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getTime().id() == reservationTimeId);
+    }
+
+    @Override
+    public boolean existByDateAndTimeId(final LocalDate reservationDate, final Long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getDate().equals(reservationDate) || reservation.getTime().id() == timeId);
     }
 }

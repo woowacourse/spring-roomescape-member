@@ -127,4 +127,20 @@ class ReservationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("2에 해당하는 reservation 튜플이 없습니다.");
     }
+
+    @Test
+    void 날짜와_시간이_중복된_예약이_있으면_예외가_발생한다() {
+        //given
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(13, 1));
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
+        LocalDate reservationDate = LocalDate.now().plusDays(1);
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
+                new Reservation(1L, "test1", reservationDate, reservationTime));
+        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test2", reservationDate, 1L)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("날짜와 시간이 중복된 예약이 존재합니다.");
+    }
 }

@@ -10,6 +10,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,5 +94,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existByTimeId(final Long reservationTimeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, reservationTimeId) > 0;
+    }
+
+    @Override
+    public boolean existByDateAndTimeId(final LocalDate reservationDate, final Long timeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, reservationDate, timeId) > 0;
     }
 }

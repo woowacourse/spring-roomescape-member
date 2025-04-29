@@ -28,7 +28,9 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
                 () -> new IllegalArgumentException(
                         createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
-
+        if (reservationRepository.existByDateAndTimeId(createReservationParam.date(), reservationTime.id())) {
+            throw new IllegalArgumentException("날짜와 시간이 중복된 예약이 존재합니다.");
+        }
         return reservationRepository.create(
                 new Reservation(
                         createReservationParam.name(),
