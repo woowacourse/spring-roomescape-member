@@ -1,10 +1,13 @@
 package roomescape.reservation.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -37,8 +40,20 @@ public class ReservationDao implements Dao<Reservation> {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        // 미사용
-        return Optional.empty();
+        String sql = "SELECT r.id as reservation_id, r.name, r.date, "
+                + "t.id AS time_id, "
+                + "t.start_at AS time_value "
+                + "FROM reservation AS r "
+                + "INNER JOIN reservation_time AS t "
+                + "ON r.time_id = t.id "
+                + "WHERE r.id = :id";
+        Map<String, Object> parameter = Map.of("id", id);
+        try {
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
+                    (resultSet, rowNum) -> createReservation(resultSet)));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -50,15 +65,7 @@ public class ReservationDao implements Dao<Reservation> {
                 + "INNER JOIN reservation_time AS t "
                 + "ON r.time_id = t.id";
 
-        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> new Reservation(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("time_value").toLocalTime()
-                )
-        ));
+        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> createReservation(resultSet));
     }
 
     @Override
@@ -67,5 +74,16 @@ public class ReservationDao implements Dao<Reservation> {
         Map<String, Object> parameter = Map.of("id", id);
 
         namedParameterJdbcTemplate.update(sql, parameter);
+    }
+
+    private Reservation createReservation(ResultSet resultSet) throws SQLException {
+        return new Reservation(
+                resultSet.getLong("reservation_id"),
+                resultSet.getString("name"),
+                resultSet.getDate("date").toLocalDate(),
+                new ReservationTime(
+                        resultSet.getLong("time_id"),
+                        resultSet.getTime("time_value").toLocalTime()
+                ));
     }
 }

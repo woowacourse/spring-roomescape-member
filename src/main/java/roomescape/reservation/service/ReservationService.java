@@ -46,6 +46,8 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
+        reservationDao.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] id에 해당하는 예약이 존재하지 않습니다"));
         reservationDao.deleteById(id);
     }
 
