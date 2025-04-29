@@ -27,7 +27,7 @@ class ReservationTimeCreateRequestTest {
         // when & then
         assertThatThrownBy(() -> new ReservationTimeCreateRequest(startAt))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("시간 형식이 올바르지 않습니다. HH:MM 형식으로 입력해주세요.");
+                .hasMessage("예약 시간 형식은 HH:mm 입니다.");
     }
 
 }

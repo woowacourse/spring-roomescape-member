@@ -1,6 +1,7 @@
 package roomescape.dto.request;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public record ReservationTimeCreateRequest(String startAt) {
@@ -23,9 +24,9 @@ public record ReservationTimeCreateRequest(String startAt) {
 
     private void validateTimeFormat(String startAt) {
         try {
-            LocalTime.parse(startAt);
+            LocalTime.parse(startAt, DateTimeFormatter.ofPattern("HH:mm"));
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("시간 형식이 올바르지 않습니다. HH:MM 형식으로 입력해주세요.");
+            throw new IllegalArgumentException("예약 시간 형식은 HH:mm 입니다.");
         }
     }
 }
