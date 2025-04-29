@@ -1,5 +1,7 @@
 package roomescape.business;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -10,35 +12,51 @@ import org.junit.jupiter.api.Test;
 import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationTimeRequestDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
-import roomescape.business.service.ReservationService;
-import roomescape.persistence.GeneralRepository;
 import roomescape.business.fakerepository.FakeReservationRepository;
 import roomescape.business.fakerepository.FakeReservationTimeRepository;
+import roomescape.business.service.ReservationService;
+import roomescape.persistence.ReservationRepository;
+import roomescape.persistence.ReservationTimeRepository;
 
 class ReservationServiceTest {
 
-    private GeneralRepository<ReservationTime> reservationTimeRepository;
+    private ReservationTimeRepository reservationTimeRepository;
     private ReservationService reservationService;
     private Long timeId;
 
     @BeforeEach
     void setUp() {
-        GeneralRepository<Reservation> reservationRepository = new FakeReservationRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
-
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
-
         timeId = reservationTimeRepository.add(new ReservationTime(1L, LocalTime.now()));
     }
 
-    @DisplayName("예약한다")
+    @DisplayName("예약한다.")
     @Test
     void createReservation() {
-        reservationService.createReservation(new ReservationRequestDto("예약자", LocalDate.now(), timeId));
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId));
         Assertions.assertThat(reservationService.readReservationAll()).isNotEmpty();
     }
 
-    @DisplayName("예약을 취소한다")
+    @DisplayName("이미 예약된 일시로 예약할 수 없다.")
+    @Test
+    void failCreateReservation() {
+        // given
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId));
+
+        // when
+        // then
+        assertThatCode(() ->
+                reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId))
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("이미 예약된 일시입니다.");
+    }
+
+    @DisplayName("예약을 취소한다.")
     @Test
     void deleteReservation() {
         // given
