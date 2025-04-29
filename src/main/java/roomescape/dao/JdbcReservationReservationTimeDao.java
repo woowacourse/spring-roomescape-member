@@ -9,14 +9,14 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
-import roomescape.mapper.TimeMapper;
+import roomescape.mapper.ReservationTimeMapper;
 
 @Component
-public class JdbcTimeDao implements TimeDao {
+public class JdbcReservationReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcTimeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -24,7 +24,7 @@ public class JdbcTimeDao implements TimeDao {
         String sql = "select id, start_at from reservation_time";
         return jdbcTemplate.query(
                 sql,
-                new TimeMapper()
+                new ReservationTimeMapper()
         );
     }
 
@@ -33,7 +33,7 @@ public class JdbcTimeDao implements TimeDao {
             String sql = "select id, start_at from reservation_time where id = ?";
             return jdbcTemplate.queryForObject(
                     sql,
-                    new TimeMapper(),
+                    new ReservationTimeMapper(),
                     id
             );
         } catch (EmptyResultDataAccessException e) {

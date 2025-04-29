@@ -17,10 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dao.JdbcReservationDao;
-import roomescape.dao.JdbcTimeDao;
 import roomescape.dao.ReservationDao;
-import roomescape.dao.TimeDao;
+import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
@@ -36,7 +34,7 @@ public class ReservationIntegratedTest {
     @Autowired
     private ReservationDao reservationDao;
     @Autowired
-    private TimeDao timeDao;
+    private ReservationTimeDao timeDao;
     @Autowired
     private ReservationTimeService reservationTimeService;
 
@@ -122,10 +120,10 @@ public class ReservationIntegratedTest {
     void retrieveReservationsWhenRead() {
         ReservationTime time = new ReservationTime(new Id(1L), LocalTime.of(10, 0, 0));
         timeDao.create(time);
-        reservationDao.create(new Reservation("브라운", LocalDate.of(2025,4,26), time));
+        reservationDao.create(new Reservation("브라운", LocalDate.of(2025, 4, 26), time));
 
         /**
-         * 에러 : Id는 레코드임에도 불구하고 역직렬화 시 1이 역직렬화되지 않음
+         * todo : Id는 레코드임에도 불구하고 역직렬화 시 1이 역직렬화되지 않음
          */
         List<Reservation> reservations = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

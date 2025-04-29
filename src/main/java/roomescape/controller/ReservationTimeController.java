@@ -13,17 +13,17 @@ import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
 @Controller
-public class TimeController {
+public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public TimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @GetMapping("/admin/time")
     public String displayAdminTime() {
-        return "/admin/time.html";
+        return "/admin/time";
     }
 
     @PostMapping("/times")

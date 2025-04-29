@@ -8,19 +8,19 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
-import roomescape.dao.TimeDao;
+import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.fake_dao.FakeReservationDao;
-import roomescape.service.fake_dao.FakeReservationTimeDao;
+import roomescape.service.fake_dao.FakeReservationReservationTimeDao;
 
 class ReservationServiceTest {
 
     private final ReservationDao reservationDao = new FakeReservationDao();
-    private final TimeDao timeDao = new FakeReservationTimeDao();
+    private final ReservationTimeDao timeDao = new FakeReservationReservationTimeDao();
     private final ReservationService reservationService = new ReservationService(reservationDao, timeDao);
 
     @Test

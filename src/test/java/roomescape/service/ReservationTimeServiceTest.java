@@ -6,14 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import roomescape.dao.TimeDao;
+import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
-import roomescape.service.fake_dao.FakeReservationTimeDao;
+import roomescape.service.fake_dao.FakeReservationReservationTimeDao;
 
 class ReservationTimeServiceTest {
 
-    private final TimeDao timeDao = new FakeReservationTimeDao();
+    private final ReservationTimeDao timeDao = new FakeReservationReservationTimeDao();
     private final ReservationTimeService timeService = new ReservationTimeService(timeDao);
 
     @Test
