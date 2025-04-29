@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.time.domain.ReservationTime;
+import roomescape.reservationTime.domain.ReservationTime;
 
 @Repository
 @Primary
