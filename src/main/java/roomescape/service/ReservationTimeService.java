@@ -4,17 +4,17 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
-import roomescape.repository.H2ReservationDao;
-import roomescape.repository.H2ReservationTimeDao;
+import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationTimeDao;
 import roomescape.service.reservation.ReservationTime;
 
 @Service
 public class ReservationTimeService {
 
-    private final H2ReservationTimeDao reservationTimeDao;
-    private final H2ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(final H2ReservationTimeDao reservationTimeDao, final H2ReservationDao reservationDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
     }
