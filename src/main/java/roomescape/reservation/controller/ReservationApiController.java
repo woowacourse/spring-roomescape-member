@@ -36,7 +36,7 @@ public class ReservationApiController {
         ReservationResponse response = reservationService.create(request);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(response);
     }
 
