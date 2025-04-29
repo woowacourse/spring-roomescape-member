@@ -21,10 +21,10 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
-        if (reservationDao.isExists(reservationRequest.date(), reservationRequest.timeId())) {
+        if (reservationDao.isExistsByDateAndTimeId(reservationRequest.date(), reservationRequest.timeId())) {
             throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다.");
         }
-        if (reservationTimeDao.isNotExists(reservationRequest.timeId())) {
+        if (reservationTimeDao.isNotExistsById(reservationRequest.timeId())) {
             throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
         }
         final ReservationTime reservationTime = reservationTimeDao.getReservationTimeById(reservationRequest.timeId());

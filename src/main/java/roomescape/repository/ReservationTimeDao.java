@@ -47,13 +47,13 @@ public class ReservationTimeDao {
         return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
 
-    public boolean isExists(final LocalTime reservationTime) {
+    public boolean isExistsByTime(final LocalTime reservationTime) {
         final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, reservationTime);
         return count > 0;
     }
 
-    public boolean isNotExists(final long id) {
+    public boolean isNotExistsById(final long id) {
         final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, id);
         return count == 0;

@@ -64,9 +64,15 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public boolean isExists(final LocalDate date, final long timeId) {
+    public boolean isExistsByDateAndTimeId(final LocalDate date, final long timeId) {
         final String sql = "SELECT count(*) FROM reservation WHERE date = ? AND time_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, date, timeId);
+        return count > 0;
+    }
+
+    public boolean isExistsByTimeId(final long timeId) {
+        final String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
         return count > 0;
     }
 
