@@ -13,10 +13,10 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class JdbcReservationDao implements ReservationDao {
+public class JdbcReservationRepository implements ReservationRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcReservationDao(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

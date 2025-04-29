@@ -5,7 +5,7 @@ import roomescape.theme.entity.ReservationThemeEntity;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReservationThemeDao {
+public interface ReservationThemeRepository {
     ReservationThemeEntity save(ReservationThemeEntity entity);
 
     List<ReservationThemeEntity> findAll();

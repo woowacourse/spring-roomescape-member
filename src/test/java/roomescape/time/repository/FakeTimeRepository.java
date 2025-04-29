@@ -1,14 +1,13 @@
 package roomescape.time.repository;
 
 import roomescape.time.entity.ReservationTimeEntity;
-import roomescape.time.repository.ReservationTimeDao;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class FakeTimeDao implements ReservationTimeDao {
+public class FakeTimeRepository implements ReservationTimeRepository {
     private final List<ReservationTimeEntity> entities = new ArrayList<>();
 
     @Override

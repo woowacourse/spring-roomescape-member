@@ -2,8 +2,8 @@ package roomescape.theme.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.theme.repository.FakeReservationThemeDao;
-import roomescape.theme.repository.ReservationThemeDao;
+import roomescape.theme.repository.FakeReservationThemeRepository;
+import roomescape.theme.repository.ReservationThemeRepository;
 import roomescape.theme.dto.ReservationThemeRequest;
 import roomescape.theme.entity.ReservationThemeEntity;
 import roomescape.exception.ConflictException;
@@ -13,15 +13,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationThemeServiceTest {
 
-    private final ReservationThemeDao themeDao = new FakeReservationThemeDao();
-    private final ReservationThemeService service = new ReservationThemeService(themeDao);
+    private final ReservationThemeRepository themeRepository = new FakeReservationThemeRepository();
+    private final ReservationThemeService service = new ReservationThemeService(themeRepository);
 
     @DisplayName("중복되는 테마 이름이 있을 경우 생성할 수 없다.")
     @Test
     void duplicateByName() {
         // given
         String name = "밍곰 테마";
-        themeDao.save(new ReservationThemeEntity(
+        themeRepository.save(new ReservationThemeEntity(
                 1L,
                 name,
                 "진격의 밍곰",

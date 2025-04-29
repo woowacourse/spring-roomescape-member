@@ -1,14 +1,13 @@
 package roomescape.theme.repository;
 
 import roomescape.theme.entity.ReservationThemeEntity;
-import roomescape.theme.repository.ReservationThemeDao;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class FakeReservationThemeDao implements ReservationThemeDao {
+public class FakeReservationThemeRepository implements ReservationThemeRepository {
 
     private final List<ReservationThemeEntity> entities = new ArrayList<>();
 

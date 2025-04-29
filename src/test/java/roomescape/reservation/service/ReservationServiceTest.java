@@ -2,10 +2,10 @@ package roomescape.reservation.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.repository.FakeReservationDao;
-import roomescape.time.repository.FakeTimeDao;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.time.repository.ReservationTimeDao;
+import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.time.repository.FakeTimeRepository;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.time.entity.ReservationTimeEntity;
@@ -16,9 +16,9 @@ import java.time.LocalTime;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationServiceTest {
-    private final ReservationDao reservationDao = new FakeReservationDao();
-    private final ReservationTimeDao timeDao = new FakeTimeDao();
-    private final ReservationService service = new ReservationService(reservationDao, timeDao);
+    private final ReservationRepository reservationRepository = new FakeReservationRepository();
+    private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
+    private final ReservationService service = new ReservationService(reservationRepository, timeRepository);
 
     @DisplayName("존재하지 않는 timeId로 생성할 수 없다.")
     @Test
@@ -55,8 +55,8 @@ class ReservationServiceTest {
 
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, LocalTime.of(12, 0));
         ReservationEntity reservationEntity = new ReservationEntity(1L, "test", date, timeEntity);
-        timeDao.save(timeEntity);
-        reservationDao.save(reservationEntity);
+        timeRepository.save(timeEntity);
+        reservationRepository.save(reservationEntity);
 
         ReservationRequest requestDto = new ReservationRequest(date, "test", timeEntity.getId());
 

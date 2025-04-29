@@ -1,8 +1,8 @@
 package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.time.repository.ReservationTimeDao;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.dto.ReservationTimeResponse;
 import roomescape.reservation.entity.ReservationEntity;
@@ -15,19 +15,19 @@ import java.util.List;
 
 @Service
 public class ReservationTimeService {
-    private final ReservationTimeDao timeDao;
-    private final ReservationDao reservationDao;
+    private final ReservationTimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeDao timeDao, ReservationDao reservationDao) {
-        this.timeDao = timeDao;
-        this.reservationDao = reservationDao;
+    public ReservationTimeService(ReservationTimeRepository timeRepository, ReservationRepository reservationRepository) {
+        this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest requestDto) {
         ReservationTimeEntity entity = requestDto.toEntity();
         validateOperatingTime(entity);
         validateDuplicated(entity);
-        ReservationTimeEntity saved = timeDao.save(entity);
+        ReservationTimeEntity saved = timeRepository.save(entity);
         return ReservationTimeResponse.from(saved);
     }
 
@@ -38,24 +38,24 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicated(ReservationTimeEntity entity) {
-        List<ReservationTimeEntity> times = timeDao.findAll();
+        List<ReservationTimeEntity> times = timeRepository.findAll();
         if (times.stream().anyMatch(time -> time.isDuplicatedWith(entity))) {
             throw new ConflictException("러닝 타임이 겹치는 시간이 존재합니다.");
         }
     }
 
     public List<ReservationTimeResponse> getAllTimes() {
-        return timeDao.findAll().stream()
+        return timeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     public void delete(final Long id) {
-        List<ReservationEntity> reservations = reservationDao.findAllByTimeId(id);
+        List<ReservationEntity> reservations = reservationRepository.findAllByTimeId(id);
         if (!reservations.isEmpty()) {
             throw new BadRequestException("해당 시간에 예약된 내역이 존재하므로 삭제할 수 없습니다.");
         }
-        final boolean deleted = timeDao.deleteById(id);
+        final boolean deleted = timeRepository.deleteById(id);
         if (!deleted) {
             throw new NotFoundException("존재하지 않는 id 입니다.");
         }

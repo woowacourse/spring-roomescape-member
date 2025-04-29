@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.reservation.repository.FakeReservationDao;
-import roomescape.time.repository.FakeTimeDao;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.time.repository.ReservationTimeDao;
+import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.time.repository.FakeTimeRepository;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.time.entity.ReservationTimeEntity;
@@ -21,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTimeServiceTest {
-    private final ReservationTimeDao timeDao = new FakeTimeDao();
-    private final ReservationDao reservationDao = new FakeReservationDao();
-    private final ReservationTimeService service = new ReservationTimeService(timeDao, reservationDao);
+    private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
+    private final ReservationRepository reservationRepository = new FakeReservationRepository();
+    private final ReservationTimeService service = new ReservationTimeService(timeRepository, reservationRepository);
 
     @DisplayName("예약 생성이 가능한 시간은 10:00 ~ 22:00 이다.")
     @ParameterizedTest
@@ -70,7 +70,7 @@ class ReservationTimeServiceTest {
         // given
         LocalTime time = LocalTime.of(10, 0);
         LocalTime duplicatedTime = time.plusHours(1);
-        timeDao.save(new ReservationTimeEntity(1L, time));
+        timeRepository.save(new ReservationTimeEntity(1L, time));
 
         ReservationTimeRequest requestDto = new ReservationTimeRequest(duplicatedTime);
 
@@ -86,9 +86,9 @@ class ReservationTimeServiceTest {
         // given
         LocalTime time = LocalTime.of(12, 0);
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
-        timeDao.save(timeEntity);
+        timeRepository.save(timeEntity);
         LocalDate date = LocalDate.of(2025, 1, 2);
-        reservationDao.save(new ReservationEntity(1L, "test1", date, timeEntity));
+        reservationRepository.save(new ReservationEntity(1L, "test1", date, timeEntity));
 
         // when & then
         assertThatThrownBy(() -> {

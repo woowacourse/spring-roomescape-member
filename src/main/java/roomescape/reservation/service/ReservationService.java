@@ -1,8 +1,8 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.time.repository.ReservationTimeDao;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.entity.ReservationEntity;
@@ -16,30 +16,30 @@ import java.util.List;
 
 @Service
 public class ReservationService {
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao timeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository timeRepository;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao timeDao) {
-        this.reservationDao = reservationDao;
-        this.timeDao = timeDao;
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository timeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.timeRepository = timeRepository;
     }
 
     public List<ReservationResponse> getAllReservation() {
-        return reservationDao.findAll()
+        return reservationRepository.findAll()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
-        ReservationTimeEntity timeEntity = timeDao.findById(request.timeId())
+        ReservationTimeEntity timeEntity = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 id 입니다."));
 
         ReservationEntity newReservation = request.toEntity(timeEntity);
         validateDateTime(newReservation);
         validateDuplicated(newReservation);
 
-        ReservationEntity saved = reservationDao.save(newReservation);
+        ReservationEntity saved = reservationRepository.save(newReservation);
         return ReservationResponse.from(saved);
     }
 
@@ -58,12 +58,12 @@ public class ReservationService {
     }
 
     private boolean isExistDuplicatedWith(ReservationEntity target) {
-        List<ReservationEntity> reservations = reservationDao.findAll();
+        List<ReservationEntity> reservations = reservationRepository.findAll();
         return reservations.stream().anyMatch(reservation -> reservation.isDuplicatedWith(target));
     }
 
     public void deleteReservation(final Long id) {
-        final boolean deleted = reservationDao.deleteById(id);
+        final boolean deleted = reservationRepository.deleteById(id);
         if (!deleted) {
             throw new NotFoundException("존재하지 않는 id 입니다.");
         }

@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JdbcReservationThemeDao implements ReservationThemeDao {
+public class JdbcReservationThemeRepository implements ReservationThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcReservationThemeDao(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationThemeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

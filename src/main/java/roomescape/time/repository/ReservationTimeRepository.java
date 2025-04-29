@@ -5,7 +5,7 @@ import roomescape.time.entity.ReservationTimeEntity;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReservationTimeDao {
+public interface ReservationTimeRepository {
     ReservationTimeEntity save(ReservationTimeEntity entity);
 
     List<ReservationTimeEntity> findAll();
