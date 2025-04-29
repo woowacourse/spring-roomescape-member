@@ -1,5 +1,6 @@
 package roomescape.presentation;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ReservationCommandController {
     }
 
     @PostMapping("reservations")
-    public ResponseEntity<ReservationResponseDto> create(@RequestBody ReservationRequestDto reservationDto) {
+    public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto reservationDto) {
         Long id = reservationService.createReservation(reservationDto);
         ReservationResponseDto reservation = reservationService.readReservationOne(id);
         String location = "/reservations/" + id;
@@ -40,7 +41,7 @@ public class ReservationCommandController {
 
     @PostMapping("times")
     public ResponseEntity<ReservationTimeResponseDto> create(
-            @RequestBody ReservationTimeRequestDto reservationTimeDto) {
+            @Valid @RequestBody ReservationTimeRequestDto reservationTimeDto) {
         Long id = reservationService.createTime(reservationTimeDto);
         ReservationTimeResponseDto reservationTime = reservationService.readTimeOne(id);
         String location = "/times/" + id;
