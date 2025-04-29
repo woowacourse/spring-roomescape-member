@@ -28,3 +28,70 @@
 - [X] 중복 예약은 불가능하다.
   - ex. 이미 4월 1일 10시에 예약이 되어있다면, 4월 1일 10시에 대한 예약을 생성할 수 없다.
 
+---
+
+## API 명세
+
+### 테마 조회
+
+- [ ] 테마 조회 API를 구현한다.
+  - Request
+    ```
+    GET /themes HTTP/1.1
+    ```
+  - Response
+    ```
+    HTTP/1.1 200
+    Content-Type: application/json
+    
+    [
+      {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+      }
+    ]
+    ```
+
+### 테마 추가
+
+- [ ] 테마 추가 API를 구현한다.
+  - Request
+    ```
+    POST /themes HTTP/1.1
+    content-type: application/json
+    
+    {
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 201
+    Location: /themes/1
+    Content-Type: application/json
+  
+    {
+      "id": 1,
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+    ```
+
+### 테마 삭제
+
+- [ ] 테마 삭제 API를 구현한다.
+  - Request
+    ```
+    DELETE /themes/1 HTTP/1.1
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 204
+    ```
