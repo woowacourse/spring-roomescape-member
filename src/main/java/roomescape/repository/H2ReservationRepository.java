@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,25 +24,26 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation findById(final Long id) {
-        final String sql = "SELECT r.id as reservation_id, r.name, r.date,"
-                + " t.id as time_id, t.start_at as time_value "
-                + " FROM reservation as r "
-                + " INNER JOIN reservation_time as t"
-                + " ON r.time_id = t.id "
-                + " WHERE r.id = ?";
-        return jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) -> {
-                    Reservation reservation = new Reservation(
+        try {
+            final String sql = "SELECT r.id as reservation_id, r.name, r.date,"
+                    + " t.id as time_id, t.start_at as time_value "
+                    + " FROM reservation as r "
+                    + " INNER JOIN reservation_time as t"
+                    + " ON r.time_id = t.id "
+                    + " WHERE r.id = ?";
+            return jdbcTemplate.queryForObject(sql,
+                    (resultSet, rowNum) -> Reservation.afterSave(
                             resultSet.getLong("reservation_id"),
                             resultSet.getString("name"),
                             resultSet.getDate("date").toLocalDate(),
-                            new ReservationTime(
+                            ReservationTime.afterSave(
                                     resultSet.getLong("time_id"),
                                     resultSet.getTime("time_value").toLocalTime()
                             )
-                    );
-                    return reservation;
-                }, id);
+                    ), id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -55,11 +57,11 @@ public class H2ReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
-                    Reservation reservation = new Reservation(
+                    Reservation reservation = Reservation.afterSave(
                             resultSet.getLong("reservation_id"),
                             resultSet.getString("name"),
                             resultSet.getDate("date").toLocalDate(),
-                            new ReservationTime(
+                            ReservationTime.afterSave(
                                     resultSet.getLong("time_id"),
                                     resultSet.getTime("time_value").toLocalTime()
                             )
@@ -83,7 +85,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
         long generatedId = keyHolder.getKey().longValue();
 
-        return new Reservation(
+        return Reservation.afterSave(
                 generatedId,
                 reservation.getName(),
                 reservation.getDate(),

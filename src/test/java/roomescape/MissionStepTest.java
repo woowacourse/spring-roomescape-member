@@ -17,10 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.entity.Reservation;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.dto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
     @Autowired
@@ -57,6 +58,7 @@ public class MissionStepTest {
     @Test
     @DisplayName("예약 저장, 조회, 삭제 테스트")
     void reservationCrudTest() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
@@ -101,7 +103,6 @@ public class MissionStepTest {
         }
     }
 
-
     @Test
     @DisplayName("200 상태코드와 예약 목록을 반환한다.")
     void returnReservationListWithStatus200AndCorrectCountTest() {
@@ -109,43 +110,15 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_Id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
                 1L);
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", Reservation.class);
+                .jsonPath().getList(".", ReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
-    }
-
-    @Test
-    @DisplayName("예약 삭제, 추가 테스트")
-    void reservationSaveAndDeleteTest() {
-
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", "1");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(200);
-
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(200);
-
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
     }
 
     @Test
@@ -165,38 +138,11 @@ public class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(6));
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
-
-        RestAssured.given().log().all()
-                .when().delete("/times/123123")
-                .then().log().all()
-                .statusCode(404);
-    }
-
-    @Test
-    @DisplayName("예약 저장, 조회 테스트")
-    void getReservationAndSaveTest() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 }

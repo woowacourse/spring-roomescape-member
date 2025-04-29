@@ -18,7 +18,7 @@ class ReservationTimeTest {
         //given
         //when
         //then
-        assertThatCode(() -> new ReservationTime(LocalTime.parse(timeStrValue)))
+        assertThatCode(() -> ReservationTime.beforeSave(LocalTime.parse(timeStrValue)))
                 .doesNotThrowAnyException();
     }
 
@@ -29,7 +29,7 @@ class ReservationTimeTest {
         //given
         //when
         //then
-        assertThatThrownBy(() -> new ReservationTime(LocalTime.parse(timeStrValue)))
+        assertThatThrownBy(() -> ReservationTime.beforeSave(LocalTime.parse(timeStrValue)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약할 수 없는 시간입니다.");
     }

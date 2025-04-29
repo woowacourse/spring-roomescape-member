@@ -9,14 +9,18 @@ import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository) {
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public List<ReservationResponse> getReservations() {
@@ -30,8 +34,8 @@ public class ReservationService {
         if (reservationRepository.isDuplicateDateAndTime(date, timeId)) {
             throw new IllegalArgumentException("해당 시간에는 예약이 존재합니다.");
         }
-
-        Reservation reservation = new Reservation(name, date, new ReservationTime(timeId));
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        Reservation reservation = Reservation.beforeSave(name, date, reservationTime);
 
         final Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);

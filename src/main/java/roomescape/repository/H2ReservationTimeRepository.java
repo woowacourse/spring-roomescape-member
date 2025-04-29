@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -22,16 +23,17 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime findById(Long timeId) {
-        final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(
-                sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
+        try {
+            final String sql = "SELECT * FROM reservation_time WHERE id = ?";
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    (resultSet, rowNum) -> ReservationTime.afterSave(
                             timeId,
                             resultSet.getTime("start_at").toLocalTime()
-                    );
-                    return reservationTime;
-                }, timeId);
+                    ), timeId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -53,7 +55,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         }, keyHolder);
         long generatedId = keyHolder.getKey().longValue();
 
-        return new ReservationTime(
+        return ReservationTime.afterSave(
                 generatedId,
                 reservationTime.getStartAt()
         );
@@ -65,7 +67,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
+                    ReservationTime reservationTime = ReservationTime.afterSave(
                             resultSet.getLong("id"),
                             resultSet.getTime("start_at").toLocalTime()
                     );

@@ -26,7 +26,7 @@ public class ReservationTimeService {
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
         LocalTime createTime = reservationTimeRequest.startAtToLocalTime();
         validateTime(createTime);
-        ReservationTime reservationTime = new ReservationTime(createTime);
+        ReservationTime reservationTime = ReservationTime.beforeSave(createTime);
         ReservationTime createdReservationTime = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(createdReservationTime);
     }
@@ -37,7 +37,7 @@ public class ReservationTimeService {
     }
 
     private void validateNoDuplication(LocalTime createTime) {
-        boolean  isExist = reservationTimeRepository.existByTime(createTime);
+        boolean isExist = reservationTimeRepository.existByTime(createTime);
         if (isExist) {
             throw new IllegalArgumentException("중복된 시간은 추가할 수 없습니다.");
         }
@@ -58,7 +58,9 @@ public class ReservationTimeService {
 
     public boolean delete(Long id) {
         boolean isReservationExistInTime = reservationRepository.existByTimeId(id);
-        if (isReservationExistInTime) throw new IllegalArgumentException("예약이 존재하는 예약 시간은 삭제할 수 없습니다.");
+        if (isReservationExistInTime) {
+            throw new IllegalArgumentException("예약이 존재하는 예약 시간은 삭제할 수 없습니다.");
+        }
         return reservationTimeRepository.deleteById(id);
     }
 

@@ -5,33 +5,30 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationTime {
-    public static final LocalTime START_RESERVATION_TIME = LocalTime.of(10, 0);
-    public static final LocalTime LAST_RESERVATION_TIME = LocalTime.of(23, 0);
+    private static final LocalTime START_RESERVATION_TIME = LocalTime.of(10, 0);
+    private static final LocalTime LAST_RESERVATION_TIME = LocalTime.of(23, 0);
 
-    private Long id;
-    private LocalTime startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
-    public ReservationTime() {
-    }
-
-    public ReservationTime(final LocalTime startAt) {
+    private ReservationTime(final Long id, final LocalTime startAt) {
         validateTime(startAt);
+        this.id = id;
         this.startAt = startAt;
-    }
-
-    public ReservationTime(final Long id) {
-        this.id = id;
-    }
-
-    public ReservationTime(final long id, final LocalTime startAt) {
-        this(startAt);
-        this.id = id;
     }
 
     private void validateTime(final LocalTime time) {
         if (time.isBefore(START_RESERVATION_TIME) || time.isAfter(LAST_RESERVATION_TIME)) {
             throw new IllegalArgumentException("예약할 수 없는 시간입니다.");
         }
+    }
+
+    public static ReservationTime afterSave(final Long id, final LocalTime startAt) {
+        return new ReservationTime(id, startAt);
+    }
+
+    public static ReservationTime beforeSave(final LocalTime startAt) {
+        return new ReservationTime(null, startAt);
     }
 
     public Long getId() {
