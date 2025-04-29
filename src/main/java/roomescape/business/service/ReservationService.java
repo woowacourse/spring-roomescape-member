@@ -27,13 +27,29 @@ public class ReservationService {
     public List<ReservationResponseDto> readReservationAll() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(ReservationResponseDto::from)
+                .map(reservation -> new ReservationResponseDto(
+                        reservation.getId(),
+                        reservation.getName(),
+                        reservation.getDate(),
+                        new ReservationTimeResponseDto(
+                                reservation.getTime().getId(),
+                                reservation.getTime().getStartAt()
+                        )
+                ))
                 .toList();
     }
 
     public ReservationResponseDto readReservationOne(Long id) {
         Reservation reservation = reservationRepository.findById(id);
-        return ReservationResponseDto.from(reservation);
+        return new ReservationResponseDto(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                new ReservationTimeResponseDto(
+                        reservation.getTime().getId(),
+                        reservation.getTime().getStartAt()
+                )
+        );
     }
 
     public Long createReservation(ReservationRequestDto reservationDto) {
@@ -53,13 +69,19 @@ public class ReservationService {
     public List<ReservationTimeResponseDto> readTimeAll() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream()
-                .map(ReservationTimeResponseDto::from)
+                .map(reservationTime -> new ReservationTimeResponseDto(
+                        reservationTime.getId(),
+                        reservationTime.getStartAt()
+                ))
                 .toList();
     }
 
     public ReservationTimeResponseDto readTimeOne(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id);
-        return ReservationTimeResponseDto.from(reservationTime);
+        return new ReservationTimeResponseDto(
+                reservationTime.getId(),
+                reservationTime.getStartAt()
+        );
     }
 
     public void deleteTime(Long id) {
