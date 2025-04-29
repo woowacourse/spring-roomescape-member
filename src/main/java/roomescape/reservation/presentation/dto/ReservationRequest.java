@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 public class ReservationRequest {
 
+//    @FutureOrPresent //todo: 여기서 검증하는 것이 맞을까?
     private final LocalDate date;
 
     @NotBlank

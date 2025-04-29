@@ -31,6 +31,11 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
+    @ExceptionHandler(PastTimeException.class)
+    public ResponseEntity<String> handlePastTimeException(PastTimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
