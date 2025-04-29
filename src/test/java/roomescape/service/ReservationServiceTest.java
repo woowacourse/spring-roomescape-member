@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.dto.request.CreateReservationRequest;
+import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.dao.InMemoryReservationDAO;
 import roomescape.dao.InMemoryReservationTimeDAO;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.service.dto.ReservationCreation;
 
 class ReservationServiceTest {
 
@@ -29,7 +29,7 @@ class ReservationServiceTest {
         long savedTimeId = reservationTimeDAO.insert(time);
         reservationService = new ReservationService(new InMemoryReservationDAO(new ArrayList<>()), reservationTimeDAO);
         reservationService.addReservation(
-                new CreateReservationRequest("reservation", LocalDate.of(2025, 1, 1), savedTimeId));
+                new ReservationCreation("reservation", LocalDate.of(2025, 1, 1), savedTimeId));
     }
 
     @Test
@@ -39,13 +39,13 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.of(2025, 4, 16);
 
         //when
-        CreateReservationRequest reservationRequest = new CreateReservationRequest("test", date, 1L);
-        Reservation actual = reservationService.addReservation(reservationRequest);
+        ReservationCreation creation = new ReservationCreation("test", date, 1L);
+        ReservationResponse actual = reservationService.addReservation(creation);
 
         //then
         assertAll(
                 () -> assertThat(reservationService.findAll()).hasSize(2),
-                () -> assertThat(actual.getId()).isEqualTo(2L)
+                () -> assertThat(actual.id()).isEqualTo(2L)
         );
 
     }
@@ -58,7 +58,7 @@ class ReservationServiceTest {
         long timeId = 1L;
 
         //when & then
-        CreateReservationRequest duplicated = new CreateReservationRequest("test", date, timeId);
+        ReservationCreation duplicated = new ReservationCreation("test", date, timeId);
         assertThatThrownBy(() -> reservationService.addReservation(duplicated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 같은 날짜/시간 예약이 존재합니다: date=%s, time=%s"
@@ -98,11 +98,11 @@ class ReservationServiceTest {
     void throwExceptionWhenNotExistTimeId() {
         //given
         long notExistTimeId = 100L;
-        CreateReservationRequest request = new CreateReservationRequest("test", LocalDate.of(2025, 1, 1),
+        ReservationCreation creation = new ReservationCreation("test", LocalDate.of(2025, 1, 1),
                 notExistTimeId);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.addReservation(request))
+        assertThatThrownBy(() -> reservationService.addReservation(creation))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 존재하지 않는 예약 가능 시간입니다: timeId=%d".formatted(notExistTimeId));
     }

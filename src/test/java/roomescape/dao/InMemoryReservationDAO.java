@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 
@@ -32,6 +33,14 @@ public class InMemoryReservationDAO implements ReservationDAO {
         reservations.add(saved);
         return saved.getId();
     }
+
+    @Override
+    public Optional<Reservation> findById(final long id) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getId() == id)
+                .findAny();
+    }
+
 
     @Override
     public boolean deleteById(final long id) {

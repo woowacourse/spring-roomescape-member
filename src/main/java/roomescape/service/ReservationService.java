@@ -2,11 +2,12 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.request.CreateReservationRequest;
+import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.service.dto.ReservationCreation;
 
 @Service
 public class ReservationService {
@@ -19,17 +20,19 @@ public class ReservationService {
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
-    public Reservation addReservation(final CreateReservationRequest reservationRequest) {
-        ReservationTime reservationTime = findReservationTimeByTimeId(reservationRequest.timeId());
-        Reservation reservation = new Reservation(reservationRequest.name(),
-                reservationRequest.date(),
-                reservationTime);
+    public ReservationResponse addReservation(final ReservationCreation creation) {
+        ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
+        Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime);
+
         if (existsSameDateTime(reservation)) {
             throw new IllegalArgumentException("[ERROR] 같은 날짜/시간 예약이 존재합니다: date=%s, time=%s"
                     .formatted(reservation.getDate(), reservation.getTime().getStartAt()));
         }
         long savedId = reservationDAO.insert(reservation);
-        return reservation.withId(savedId);
+        Reservation savedReservation = reservationDAO.findById(savedId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR]"));
+
+        return ReservationResponse.from(savedReservation);
     }
 
     private boolean existsSameDateTime(final Reservation reservation) {

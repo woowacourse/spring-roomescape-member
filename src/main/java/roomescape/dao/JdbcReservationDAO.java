@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -63,6 +64,14 @@ public class JdbcReservationDAO implements ReservationDAO {
                 on r.time_id = t.id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
+    }
+
+    @Override
+    public Optional<Reservation> findById(long id) {
+        String query = "SELECT * FROM reservation WHERE id = ?";
+        List<Reservation> reservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, id);
+        return reservations.stream()
+                .findFirst();
     }
 
     @Override

@@ -1,5 +1,8 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.InMemoryReservationTimeDAO;
 import roomescape.domain.ReservationTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import roomescape.service.dto.ReservationTimeCreation;
 
 class ReservationTimeServiceTest {
 
@@ -19,7 +20,7 @@ class ReservationTimeServiceTest {
         //given
         ReservationTimeService reservationTimeService = new ReservationTimeService(
                 new InMemoryReservationTimeDAO(new ArrayList<>()));
-        reservationTimeService.addReservationTime(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeService.addReservationTime(new ReservationTimeCreation(LocalTime.of(10, 0)));
 
         //when
         List<ReservationTime> actual = reservationTimeService.findAll();
@@ -36,8 +37,8 @@ class ReservationTimeServiceTest {
                 new InMemoryReservationTimeDAO(new ArrayList<>()));
 
         //when
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeService.addReservationTime(reservationTime);
+        ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(10, 0));
+        reservationTimeService.addReservationTime(creation);
 
         //then
         assertThat(reservationTimeService.findAll()).hasSize(1);
@@ -49,14 +50,14 @@ class ReservationTimeServiceTest {
         //given
         ReservationTimeService reservationTimeService = new ReservationTimeService(
                 new InMemoryReservationTimeDAO(new ArrayList<>()));
-        ReservationTime savedTime = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeService.addReservationTime(savedTime);
-        ReservationTime duplicatedTime = new ReservationTime(LocalTime.of(10, 0));
+        ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(10, 0));
+        reservationTimeService.addReservationTime(creation);
+        ReservationTimeCreation duplicatedTime = new ReservationTimeCreation(LocalTime.of(10, 0));
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(duplicatedTime))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 예약 가능 시간입니다: %s".formatted(duplicatedTime.getStartAt()));
+                .hasMessage("이미 존재하는 예약 가능 시간입니다: %s".formatted(duplicatedTime.startAt()));
     }
 
     @Test
@@ -65,7 +66,7 @@ class ReservationTimeServiceTest {
         //given
         ReservationTimeService reservationTimeService = new ReservationTimeService(
                 new InMemoryReservationTimeDAO(new ArrayList<>()));
-        reservationTimeService.addReservationTime(new ReservationTime(LocalTime.of(10, 0)));
+        reservationTimeService.addReservationTime(new ReservationTimeCreation(LocalTime.of(10, 0)));
         ReservationTime savedTime = reservationTimeService.findAll().getFirst();
 
         //when
