@@ -114,4 +114,25 @@ public class JdbcReservationDao implements ReservationDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+        String sql = "SELECT * FROM reservation as r INNER JOIN reservation_time as rt ON rt.id = r.id WHERE r.date = ? and rt.start_at = ?";
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> new Reservation(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getDate("date").toLocalDate(),
+                            new ReservationTime(rs.getLong("id"), rs.getTime("start_at").toLocalTime())
+                    ),
+                    date,
+                    time
+            );
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package roomescape.reservation.dao;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +48,14 @@ public class FakeReservationDao implements ReservationDao {
     public Optional<Reservation> findById(Long id) {
         return fakeReservations.stream()
                 .filter(reservation -> reservation.getId().equals(id))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+        return fakeReservations.stream()
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getReservationTime()
+                        .getStartAt().equals(time))
                 .findFirst();
     }
 }

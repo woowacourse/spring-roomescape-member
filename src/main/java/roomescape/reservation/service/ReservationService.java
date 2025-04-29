@@ -1,6 +1,9 @@
 package roomescape.reservation.service;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -37,7 +40,14 @@ public class ReservationService {
                 request.date(),
                 reservationTime
         );
+        validateDuplicate(request.date(), reservationTime.getStartAt());
         return reservationDao.create(reservation);
+    }
+
+    private void validateDuplicate(@NotNull LocalDate date, LocalTime startAt) {
+        if (reservationDao.findByDateTime(date, startAt).isPresent()) {
+            throw new IllegalStateException("중복 예약은 불가능합니다.");
+        }
     }
 
     public Integer delete(Long id) {

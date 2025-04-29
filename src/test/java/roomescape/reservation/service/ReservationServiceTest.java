@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -81,5 +82,16 @@ class ReservationServiceTest {
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.delete(10L))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 중복_예약하면_예외가_발생한다() {
+        // given
+        ReservationCreateRequest 리사 = new ReservationCreateRequest("리사", LocalDate.of(2025, 7, 25), 1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(리사))
+                .isInstanceOf(IllegalStateException.class);
+        assertThat(reservationService.findAll().size()).isEqualTo(2);
     }
 }
