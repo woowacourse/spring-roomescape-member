@@ -19,8 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -32,9 +34,13 @@ public class MissionStepTest {
     @Autowired
     private ReservationTimeDao reservationTimeDao;
 
+    @Autowired
+    private ThemeDao themeDao;
+
     @BeforeEach
     void beforeEachTest() {
         reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(10, 10)));
+        themeDao.saveTheme(new Theme("공포", "무서워요", "image"));
     }
 
     @DisplayName("관리자 페이지 GET 요청 시 200 OK를 반환한다")
@@ -68,6 +74,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -86,7 +93,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -113,8 +120,8 @@ public class MissionStepTest {
         reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(10, 10)));
 
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1");
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -134,6 +141,7 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -148,7 +156,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
@@ -176,7 +184,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @DisplayName("예약 추가 이후 예약 개수 확인 테스트")
@@ -186,6 +194,7 @@ public class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", String.valueOf(LocalDate.now().plusDays(1)));
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

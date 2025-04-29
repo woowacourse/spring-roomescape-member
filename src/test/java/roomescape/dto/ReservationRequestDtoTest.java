@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 class ReservationRequestDtoTest {
     private static Stream<Arguments> testCasesForDateFormat() {
@@ -23,10 +24,11 @@ class ReservationRequestDtoTest {
     @DisplayName("날짜 형식이 올바르지 않은 경우 예외 처리한다.")
     void test(String input) {
         //given
-        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("name", input, 1L);
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("name", input, 1L,  1L);
         // when & then
         assertThatThrownBy(
-                () -> reservationRequestDto.convertToReservation(new ReservationTime(1L, LocalTime.of(12, 30))))
+                () -> reservationRequestDto.convertToReservation(new ReservationTime(1L, LocalTime.of(12, 30)),
+                                new Theme(1L, "공포", "무서워요", "image")))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("날짜");
 

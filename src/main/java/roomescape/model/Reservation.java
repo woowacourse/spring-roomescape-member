@@ -60,4 +60,12 @@ public class Reservation {
     public Long getTimeId() {
         return reservationTime.getId();
     }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
 }

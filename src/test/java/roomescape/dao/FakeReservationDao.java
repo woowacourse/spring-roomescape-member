@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 public class FakeReservationDao extends ReservationDao {
 
@@ -26,7 +27,9 @@ public class FakeReservationDao extends ReservationDao {
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                new ReservationTime(reservation.getTimeId())
+                new ReservationTime(reservation.getTimeId(), reservation.getTime()),
+                new Theme(reservation.getThemeId(), reservation.getTheme().getName(),
+                        reservation.getTheme().getDescription(), reservation.getTheme().getThumbnail())
         );
         database.put(id, savedReservation);
         return id;

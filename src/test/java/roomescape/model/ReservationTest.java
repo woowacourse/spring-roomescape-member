@@ -19,7 +19,8 @@ class ReservationTest {
                         1L,
                         null,
                         dateTime.toLocalDate(),
-                        new ReservationTime(dateTime.toLocalTime()))
+                        new ReservationTime(dateTime.toLocalTime()),
+                        new Theme(1L, "공포", "무서워요", "image"))
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 null이거나 공백일 수 없습니다");
@@ -37,7 +38,8 @@ class ReservationTest {
                         1L,
                         "",
                         dateTime.toLocalDate(),
-                        new ReservationTime(dateTime.toLocalTime()))
+                        new ReservationTime(dateTime.toLocalTime()),
+                        new Theme(1L, "공포", "무서워요", "image"))
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 null이거나 공백일 수 없습니다");
@@ -52,7 +54,8 @@ class ReservationTest {
                 1L,
                 "히로",
                 dateTime.toLocalDate(),
-                new ReservationTime(dateTime.toLocalTime()));
+                new ReservationTime(dateTime.toLocalTime()),
+                new Theme(1L, "공포", "무서워요", "image"));
 
         // when & then
         assertThatThrownBy(reservation::validateReservationDateInFuture
@@ -70,7 +73,8 @@ class ReservationTest {
                 1L,
                 "히로",
                 dateTime.toLocalDate(),
-                new ReservationTime(dateTime.toLocalTime()));
+                new ReservationTime(dateTime.toLocalTime()),
+                new Theme(1L, "공포", "무서워요", "image"));
 
         // when & then
         assertThatThrownBy(reservation::validateReservationDateInFuture
