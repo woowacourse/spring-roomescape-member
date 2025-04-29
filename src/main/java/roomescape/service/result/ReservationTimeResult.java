@@ -6,4 +6,7 @@ public record ReservationTimeResult(
         Long id,
         LocalTime startAt
 ) {
+    public static ReservationTimeResult from(ReservationTimeResult reservationTimeResult) {
+        return new ReservationTimeResult(reservationTimeResult.id(), reservationTimeResult.startAt());
+    }
 }
