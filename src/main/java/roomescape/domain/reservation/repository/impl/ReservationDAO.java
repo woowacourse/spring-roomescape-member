@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 
 @Repository
@@ -38,9 +39,12 @@ public class ReservationDAO implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select rs.id as reservation_id, rs.name, rs.date, rst.id as reservation_time_id, rst.start_at
+                select rs.id as reservation_id, rs.name, rs.date, 
+                       rst.id as reservation_time_id, rst.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
                 from reservation rs
                 INNER JOIN reservation_time rst ON rs.time_id = rst.id
+                INNER JOIN theme th ON rs.theme_id = th.id
                 """;
 
         return jdbcTemplate.query(sql,
@@ -77,7 +81,9 @@ public class ReservationDAO implements ReservationRepository {
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
                 LocalDate.parse(resultSet.getString("date")),
-                reservationTimeOf(resultSet));
+                reservationTimeOf(resultSet),
+                themeOf(resultSet)
+        );
     }
 
     private ReservationTime reservationTimeOf(ResultSet resultSet) throws SQLException {
@@ -87,9 +93,17 @@ public class ReservationDAO implements ReservationRepository {
                 ));
     }
 
+    private Theme themeOf(ResultSet resultSet) throws SQLException {
+        return new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
+    }
+
     @Override
     public Reservation save(Reservation reservation) {
-
         if (reservation.existId()) {
             return update(reservation);
         }
@@ -101,23 +115,24 @@ public class ReservationDAO implements ReservationRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getReservationDate())
-                .addValue("time_id", reservation.getReservationTimeId());
+                .addValue("time_id", reservation.getReservationTimeId())
+                .addValue("theme_id", reservation.getThemeId());
 
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Reservation(id, reservation.getName(), reservation.getReservationDate(),
-                reservation.getReservationTime());
+                reservation.getReservationTime(), reservation.getTheme());
     }
 
     private Reservation update(Reservation reservation) {
-        String updateReservationSql = "update reservation set name = :name, date = :date, time_id = :time_id where id =:id";
-        checkReservationTime(reservation.getReservationTime());
+        String updateReservationSql = "update reservation set name = :name, date = :date, time_id = :time_id, theme_id = :theme_id where id =:id";
+        checkReservation(reservation);
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("id", reservation.getId());
+                .addValue("theme_id", reservation.getThemeId());
 
         int updatedRowCount = jdbcTemplate.update(updateReservationSql, params);
 
@@ -128,9 +143,9 @@ public class ReservationDAO implements ReservationRepository {
         return reservation;
     }
 
-    private void checkReservationTime(ReservationTime reservationTime) {
-        if (reservationTime == null) {
-            throw new EntityNotFoundException("reservationTime is null");
+    private void checkReservation(Reservation reservation) {
+        if (reservation.getReservationTime() == null || reservation.getTheme() == null) {
+            throw new EntityNotFoundException("reservation field is null");
         }
     }
 
