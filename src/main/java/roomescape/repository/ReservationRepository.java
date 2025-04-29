@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import roomescape.entity.Reservation;
 
@@ -14,7 +15,7 @@ public interface ReservationRepository {
 
     int deleteById(Long id);
 
-    boolean isDuplicateDateAndTime(LocalDate date, Long timeId);
+    boolean isDuplicateDateAndTime(LocalDate date, LocalTime time);
 
     boolean existByTimeId(Long id);
 }

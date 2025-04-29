@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -100,12 +101,12 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean isDuplicateDateAndTime(LocalDate date, Long timeId) {
+    public boolean isDuplicateDateAndTime(LocalDate date, LocalTime time) {
         final String sql = "SELECT COUNT(*) FROM reservation as r"
                 + " INNER JOIN reservation_time as t"
                 + " ON t.id = r.time_id"
-                + " WHERE r.date = ? and t.id =?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId);
+                + " WHERE r.date = ? and t.start_at =?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time);
         return count != null && count > 0;
     }
 

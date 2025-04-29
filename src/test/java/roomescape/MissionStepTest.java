@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", LocalDate.now().plusDays(3).toString());
         params.put("timeId", "1");
 
         RestAssured.given().log().all()

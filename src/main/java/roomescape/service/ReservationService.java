@@ -31,10 +31,10 @@ public class ReservationService {
         String name = reservationRequest.name();
         LocalDate date = reservationRequest.date();
         Long timeId = reservationRequest.timeId();
-        if (reservationRepository.isDuplicateDateAndTime(date, timeId)) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        if (reservationRepository.isDuplicateDateAndTime(date, reservationTime.getStartAt())) {
             throw new IllegalArgumentException("해당 시간에는 예약이 존재합니다.");
         }
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
         Reservation reservation = Reservation.beforeSave(name, date, reservationTime);
 
         final Reservation saved = reservationRepository.save(reservation);
