@@ -1,12 +1,14 @@
 package roomescape.controller.request;
 
-import java.time.LocalDate;
 import roomescape.service.param.CreateReservationParam;
+
+import java.time.LocalDate;
 
 public record CreateReservationRequest(
         String name,
         LocalDate date,
-        Long timeId
+        Long timeId,
+        Long themeId
 ) {
 
     private static final String ERROR_MESSAGE_FORMAT = "[ERROR]  예약 필수 정보가 누락되었습니다. %s: %s";
@@ -15,6 +17,7 @@ public record CreateReservationRequest(
         validateName(name);
         validateDate(date);
         validateTimeId(timeId);
+        validateThemeId(themeId);
     }
 
     private void validateName(String name) {
@@ -35,7 +38,13 @@ public record CreateReservationRequest(
         }
     }
 
+    private void validateThemeId(Long themeId) {
+        if (themeId == null) {
+            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_FORMAT, "themeId", themeId));
+        }
+    }
+
     public CreateReservationParam toServiceParam() {
-        return new CreateReservationParam(name, date, timeId);
+        return new CreateReservationParam(name, date, timeId, themeId);
     }
 }

@@ -3,8 +3,10 @@ package roomescape.service;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.fake.FakeThemeRepository;
 import roomescape.service.param.CreateReservationTimeParam;
 import roomescape.service.result.ReservationTimeResult;
 
@@ -95,9 +97,11 @@ class ReservationTimeServiceTest {
     @Test
     void time_id를_사용하는_예약이_존재하면_예외를_던진다() {
         //given
+        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(new Theme(1L, "name", "description", "thumbnail"));
         FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(
                 new ReservationTime(1L, LocalTime.of(12, 1)));
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(new Reservation(1L, "test1", LocalDate.of(2025, 4, 30), new ReservationTime(1L, LocalTime.of(12, 1))));
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
+                new Reservation(1L, "test1", LocalDate.of(2025, 4, 30), new ReservationTime(1L, LocalTime.of(12, 1)), new Theme(1L, "name", "description", "thumbnail")));
         ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeDao, fakeReservationDao);
 
         //when, then

@@ -31,7 +31,7 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Long create(Reservation reservation) {
         Reservation newReservation = new Reservation(++id, reservation.getName(), reservation.getDate(),
-                reservation.getTime());
+                reservation.getTime(), reservation.getTheme());
         reservations.add(newReservation);
         return id;
     }

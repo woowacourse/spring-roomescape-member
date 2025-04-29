@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -30,21 +31,28 @@ public class JdbcReservationRepository implements ReservationRepository {
                         + "    r.name, \n"
                         + "    r.date, \n"
                         + "    t.id as time_id, \n"
-                        + "    t.start_at as time_value \n"
+                        + "    t.start_at as time_value, \n"
+                        + "    r.theme_id, \n"
+                        + "    tm.name as theme_name, \n"
+                        + "    tm.description as theme_description, \n"
+                        + "    tm.thumbnail as theme_thumbnail \n"
                         + "FROM reservation as r \n"
                         + "inner join reservation_time as t \n"
-                        + "on r.time_id = t.id",
+                        + "on r.time_id = t.id \n"
+                        + "inner join theme as tm \n"
+                        + "on r.theme_id = tm.id",
                 (rs, rowNum) ->
                         new Reservation(
                                 rs.getLong("reservation_id"),
                                 rs.getString("name"),
                                 rs.getDate("date").toLocalDate(),
-                                new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime())));
+                                new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
+                                new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))));
     }
 
     @Override
     public Long create(Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
@@ -52,6 +60,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ps.setString(1, reservation.getName());
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservation.getTime().id());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
@@ -65,6 +74,9 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long reservationId) {
+        String sql = """
+                SELECT 
+                """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     "SELECT \n"
@@ -72,18 +84,25 @@ public class JdbcReservationRepository implements ReservationRepository {
                             + "    r.name, \n"
                             + "    r.date, \n"
                             + "    t.id as time_id, \n"
-                            + "    t.start_at as time_value \n"
+                            + "    t.start_at as time_value, \n"
+                            + "    r.theme_id, \n"
+                            + "    tm.name as theme_name, \n"
+                            + "    tm.description as theme_description,\n"
+                            + "    tm.thumbnail as theme_thumbnail \n"
                             + "FROM reservation as r \n"
                             + "inner join reservation_time as t \n"
                             + "on r.time_id = t.id \n"
+                            + "inner join theme as tm \n"
+                            + "on r.theme_id = tm.id \n"
                             + "WHERE r.id = ?",
                     (rs, rowNum) ->
                             new Reservation(
                                     rs.getLong("reservation_id"),
                                     rs.getString("name"),
                                     rs.getDate("date").toLocalDate(),
-                                    new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime())),
-                    reservationId);
+                                    new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
+                                    new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))
+                            ), reservationId);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();

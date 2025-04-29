@@ -65,12 +65,14 @@ public class MissionStepTest {
 
     @Test
     void 예약을_추가_또는_삭제_할_수_있다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", RESERVATION_DATE);
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -111,8 +113,9 @@ public class MissionStepTest {
 
     @Test
     void 데이터베이스에_추가한_reservation_모두를_응답할_수_있다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", RESERVATION_DATE, 1L);
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", RESERVATION_DATE, 1L, 1L);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -127,12 +130,14 @@ public class MissionStepTest {
 
     @Test
     void 데이터베이스를_이용해_예약을_추가_또는_삭제_할_수_있다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", RESERVATION_DATE);
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -179,11 +184,14 @@ public class MissionStepTest {
 
     @Test
     void 에약을_생성하거나_조회할_수_있다() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", RESERVATION_DATE);
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

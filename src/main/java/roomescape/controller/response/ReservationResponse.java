@@ -1,13 +1,15 @@
 package roomescape.controller.response;
 
-import java.time.LocalDate;
 import roomescape.service.result.ReservationResult;
+
+import java.time.LocalDate;
 
 public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
-        ReservationTimeResponse time
+        ReservationTimeResponse time,
+        ThemeResponse theme
 ) {
 
 
@@ -16,10 +18,8 @@ public record ReservationResponse(
                 reservationResult.id(),
                 reservationResult.name(),
                 reservationResult.date(),
-                new ReservationTimeResponse(
-                        reservationResult.time().id(),
-                        reservationResult.time().startAt()
-                )
+                ReservationTimeResponse.from(reservationResult.time()),
+                ThemeResponse.from(reservationResult.theme())
         );
     }
 }

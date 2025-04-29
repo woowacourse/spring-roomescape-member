@@ -1,13 +1,11 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.*;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
+import roomescape.service.result.ThemeResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,17 +15,21 @@ public class ReservationService {
 
     private final ReservationTimeRepository reservationTImeRepository;
     private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationTimeRepository reservationTImeRepository,
-                              ReservationRepository reservationRepository) {
+                              ReservationRepository reservationRepository, final ThemeRepository themeRepository) {
         this.reservationTImeRepository = reservationTImeRepository;
         this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
     }
 
     public Long create(CreateReservationParam createReservationParam) {
         ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
                 () -> new IllegalArgumentException(
                         createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
+        Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(() -> new IllegalArgumentException(
+                createReservationParam.themeId() + "에 해당하는 theme 튜플이 없습니다."));
         if (reservationRepository.existByDateAndTimeId(createReservationParam.date(), reservationTime.id())) {
             throw new IllegalArgumentException("날짜와 시간이 중복된 예약이 존재합니다.");
         }
@@ -36,7 +38,8 @@ public class ReservationService {
                         createReservationParam.name(),
                         LocalDateTime.now(),
                         createReservationParam.date(),
-                        reservationTime));
+                        reservationTime,
+                        theme));
     }
 
     public void deleteById(Long reservationId) {
@@ -61,8 +64,7 @@ public class ReservationService {
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                new ReservationTimeResult(
-                        reservation.getTime().id(),
-                        reservation.getTime().startAt()));
+                ReservationTimeResult.from(reservation.getTime()),
+                ThemeResult.from(reservation.getTheme()));
     }
 }
