@@ -2,6 +2,7 @@ package roomescape.reservation_time.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.application.usecase.ReservationQueryUseCase;
 import roomescape.reservation_time.application.converter.ReservationTimeConverter;
 import roomescape.reservation_time.application.dto.CreateReservationTimeServiceRequest;
 import roomescape.reservation_time.domain.ReservationTime;
@@ -15,6 +16,7 @@ import java.util.NoSuchElementException;
 public class ReservationTimeCommandUseCaseImpl implements ReservationTimeCommandUseCase {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationQueryUseCase reservationQueryUseCase;
 
     @Override
     public ReservationTime create(final CreateReservationTimeServiceRequest createReservationTimeServiceRequest) {
@@ -24,11 +26,12 @@ public class ReservationTimeCommandUseCaseImpl implements ReservationTimeCommand
 
     @Override
     public void delete(final ReservationTimeId id) {
-        if (reservationTimeRepository.existsById(id)) {
-            reservationTimeRepository.deleteById(id);
-            return;
+        if (!reservationTimeRepository.existsById(id)) {
+            throw new NoSuchElementException();
         }
-
-        throw new NoSuchElementException();
+        if (reservationQueryUseCase.existsByTimeId(id)) {
+            throw new IllegalStateException("예약에서 참조 중인 시간은 삭제할 수 없습니다.");
+        }
+        reservationTimeRepository.deleteById(id);
     }
 }

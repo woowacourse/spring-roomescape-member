@@ -5,11 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation_time.application.dto.CreateReservationTimeServiceRequest;
 import roomescape.reservation_time.domain.ReservationTime;
 import roomescape.reservation_time.domain.ReservationTimeId;
 import roomescape.reservation_time.domain.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
 
@@ -25,6 +30,9 @@ class ReservationTimeCommandUseCaseImplTest {
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Test
     @DisplayName("예약 시간을 생성할 수 있다")
@@ -67,5 +75,26 @@ class ReservationTimeCommandUseCaseImplTest {
         // then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(id))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    @DisplayName("참조 중인 예약 시간을 삭제하려 하면 예외가 발생한다")
+    void deleteRefReservationTime() {
+        // given
+        final ReservationTime savedTime =
+                reservationTimeRepository.save(ReservationTime.of(
+                        ReservationTimeId.unassigned(), LocalTime.of(14, 0)));
+
+        final Reservation reservation = reservationRepository.save(Reservation.withoutId(
+                ReserverName.from("브라운"),
+                ReservationDate.from(LocalDate.now().plusDays(1L)),
+                savedTime
+        ));
+
+        // when
+        // then
+        assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(savedTime.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("예약에서 참조 중인 시간은 삭제할 수 없습니다.");
     }
 }
