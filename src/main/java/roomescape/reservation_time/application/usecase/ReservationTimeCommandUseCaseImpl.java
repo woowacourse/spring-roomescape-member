@@ -17,15 +17,20 @@ public class ReservationTimeCommandUseCaseImpl implements ReservationTimeCommand
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationQueryUseCase reservationQueryUseCase;
+    private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
 
     @Override
     public ReservationTime create(final CreateReservationTimeServiceRequest createReservationTimeServiceRequest) {
+        if (reservationTimeQueryUseCase.existsByStartAt(createReservationTimeServiceRequest.startAt())) {
+            throw new IllegalStateException("추가하려는 시간이 이미 존재합니다.");
+        }
         return reservationTimeRepository.save(
                 ReservationTimeConverter.toDomain(createReservationTimeServiceRequest));
     }
 
     @Override
     public void delete(final ReservationTimeId id) {
+        // TODO 쿼리 유즈케이스에서 하면 더 좋을 듯
         if (!reservationTimeRepository.existsById(id)) {
             throw new NoSuchElementException();
         }

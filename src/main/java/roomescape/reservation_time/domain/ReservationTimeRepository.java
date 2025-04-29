@@ -1,11 +1,14 @@
 package roomescape.reservation_time.domain;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface ReservationTimeRepository {
 
     boolean existsById(ReservationTimeId id);
+
+    boolean existsByStartAt(LocalTime startAt);
 
     Optional<ReservationTime> findById(ReservationTimeId id);
 

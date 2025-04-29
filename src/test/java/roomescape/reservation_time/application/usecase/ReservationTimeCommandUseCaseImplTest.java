@@ -97,4 +97,24 @@ class ReservationTimeCommandUseCaseImplTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("예약에서 참조 중인 시간은 삭제할 수 없습니다.");
     }
+
+    @Test
+    @DisplayName("추가하려는 시간이 이미 존재한다면, 예외가 발생한다")
+    void existsTime() {
+        // given
+
+        final LocalTime time = LocalTime.of(14, 0);
+        final ReservationTime savedTime =
+                reservationTimeRepository.save(ReservationTime.of(
+                        ReservationTimeId.unassigned(), time));
+
+        final CreateReservationTimeServiceRequest sameTimeRequest = new CreateReservationTimeServiceRequest(time);
+
+        // when
+        // then
+        assertThatThrownBy(() -> reservationTimeCommandUseCase.create(sameTimeRequest))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("추가하려는 시간이 이미 존재합니다.");
+    }
+
 }

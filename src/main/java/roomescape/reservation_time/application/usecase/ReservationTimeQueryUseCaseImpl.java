@@ -6,6 +6,7 @@ import roomescape.reservation_time.domain.ReservationTime;
 import roomescape.reservation_time.domain.ReservationTimeId;
 import roomescape.reservation_time.domain.ReservationTimeRepository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -24,5 +25,10 @@ public class ReservationTimeQueryUseCaseImpl implements ReservationTimeQueryUseC
     @Override
     public List<ReservationTime> getAll() {
         return reservationTimeRepository.findAll();
+    }
+
+    @Override
+    public boolean existsByStartAt(final LocalTime startAt) {
+        return reservationTimeRepository.existsByStartAt(startAt);
     }
 }
