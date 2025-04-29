@@ -27,8 +27,9 @@ public class ReservationController {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleException(Exception ex) {
+        return ex.getMessage();
     }
 
     @GetMapping
