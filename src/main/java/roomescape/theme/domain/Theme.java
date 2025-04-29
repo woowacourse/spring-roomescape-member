@@ -17,23 +17,23 @@ public class Theme {
     private final ThemeThumbnail thumbnail;
 
     private static Theme of(final ThemeId id,
-                                  final ThemeName name,
-                                  final ThemeDescription description,
-                                  final ThemeThumbnail thumbnail) {
+                            final ThemeName name,
+                            final ThemeDescription description,
+                            final ThemeThumbnail thumbnail) {
         validate(id, name, description, thumbnail);
         return new Theme(id, name, description, thumbnail);
     }
 
     public static Theme withId(final ThemeId id,
-                                     final ThemeName name,
-                                     final ThemeDescription description,
-                                     final ThemeThumbnail thumbnail) {
+                               final ThemeName name,
+                               final ThemeDescription description,
+                               final ThemeThumbnail thumbnail) {
         return of(id, name, description, thumbnail);
     }
 
     public static Theme withoutId(final ThemeName name,
-                                        final ThemeDescription description,
-                                        final ThemeThumbnail thumbnail) {
+                                  final ThemeDescription description,
+                                  final ThemeThumbnail thumbnail) {
         return of(ThemeId.unassigned(), name, description, thumbnail);
     }
 

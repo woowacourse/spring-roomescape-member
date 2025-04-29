@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<String> handleIllegalArgumentException(final IllegalArgumentException e) {
         String message = e.getMessage();
         if (message == null) {
             message = "잘못된 입력입니다.";
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+    public ResponseEntity<String> handleIllegalStateException(final IllegalStateException e) {
         String message = e.getMessage();
         if (message == null) {
             message = "실행할 수 없는 상태입니다.";
