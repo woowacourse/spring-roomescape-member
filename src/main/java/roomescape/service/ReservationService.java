@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -9,6 +8,8 @@ import roomescape.persistence.ReservationTimeDao;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
+
+import java.util.List;
 
 @Service
 public class ReservationService {
@@ -47,7 +48,7 @@ public class ReservationService {
 
     public ReservationResult findById(Long reservationId) {
         Reservation reservation = reservationDao.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException(reservationId + "에 해당하는 reservation_time 튜플이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
         return toReservationResult(reservation);
     }
 
