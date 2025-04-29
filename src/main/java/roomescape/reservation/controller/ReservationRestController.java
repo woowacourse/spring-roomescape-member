@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +33,7 @@ public class ReservationRestController {
                 reservationRequest.timeId()
         );
         final Reservation found = reservationService.getById(id);
-
-        return ResponseEntity.ok(ReservationResponse.from(found));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(found));
     }
 
     @GetMapping

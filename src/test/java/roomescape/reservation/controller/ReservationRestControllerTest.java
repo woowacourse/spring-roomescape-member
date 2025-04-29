@@ -39,7 +39,7 @@ class ReservationRestControllerTest {
                     .body(params)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(HttpStatus.OK.value());
+                    .statusCode(HttpStatus.CREATED.value());
         }
     }
 
@@ -53,7 +53,7 @@ class ReservationRestControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value());
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
@@ -79,7 +79,7 @@ class ReservationRestControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
