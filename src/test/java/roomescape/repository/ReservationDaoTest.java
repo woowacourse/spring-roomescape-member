@@ -17,8 +17,8 @@ import roomescape.service.reservation.ReservationTime;
 @JdbcTest
 class ReservationDaoTest {
 
-    private ReservationDao reservationDao;
-    private ReservationTimeDao reservationTimeDao;
+    private H2ReservationDao reservationDao;
+    private H2ReservationTimeDao reservationTimeDao;
     private final LocalTime time = LocalTime.of(10, 0);
     private ReservationTime reservationTime;
 
@@ -30,8 +30,8 @@ class ReservationDaoTest {
 
     @BeforeEach
     void setUp() {
-        reservationDao = new ReservationDao(jdbcTemplate, dataSource);
-        reservationTimeDao = new ReservationTimeDao(jdbcTemplate, dataSource);
+        reservationDao = new H2ReservationDao(jdbcTemplate, dataSource);
+        reservationTimeDao = new H2ReservationTimeDao(jdbcTemplate, dataSource);
         jdbcTemplate.execute("DROP TABLE reservation IF EXISTS");
         jdbcTemplate.execute("DROP TABLE reservation_time IF EXISTS");
         jdbcTemplate.execute("""
@@ -52,7 +52,7 @@ class ReservationDaoTest {
                     FOREIGN KEY (time_id) REFERENCES reservation_time (id)
                 );
                 """);
-        reservationTime = reservationTimeDao.createReservationTime(new ReservationTime(time));
+        reservationTime = reservationTimeDao.save(new ReservationTime(time));
     }
 
     @DisplayName("새로운 예약을 생성할 수 있다.")
@@ -62,7 +62,7 @@ class ReservationDaoTest {
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
         // when
-        Reservation reservation = reservationDao.createReservation(
+        Reservation reservation = reservationDao.save(
                 new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
         // then
         assertThat(reservation).isEqualTo(
@@ -75,11 +75,11 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
-        reservationDao.createReservation(new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
+        reservationDao.save(new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
         // when
-        reservationDao.deleteReservationById(1L);
+        reservationDao.deleteById(1L);
         // then
-        assertThat(reservationDao.getReservations()).isEmpty();
+        assertThat(reservationDao.findAll()).isEmpty();
     }
 
     @DisplayName("예약 목록을 조회할 수 있다.")
@@ -88,10 +88,10 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
-        Reservation reservation = reservationDao.createReservation(
+        Reservation reservation = reservationDao.save(
                 new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
         // when
         // then
-        assertThat(reservationDao.getReservations()).containsExactly(reservation);
+        assertThat(reservationDao.findAll()).containsExactly(reservation);
     }
 }

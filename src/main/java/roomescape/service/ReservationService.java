@@ -5,18 +5,18 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.H2ReservationDao;
+import roomescape.repository.H2ReservationTimeDao;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
 
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
+    private final H2ReservationDao reservationDao;
+    private final H2ReservationTimeDao reservationTimeDao;
 
-    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao) {
+    public ReservationService(final H2ReservationDao reservationDao, final H2ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }
@@ -28,22 +28,22 @@ public class ReservationService {
         if (reservationTimeDao.isNotExistsById(reservationRequest.timeId())) {
             throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
         }
-        final ReservationTime reservationTime = reservationTimeDao.getReservationTimeById(reservationRequest.timeId());
+        final ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
         final Reservation reservation = reservationRequest.convertToReservation(reservationTime);
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }
-        final Reservation savedReservation = reservationDao.createReservation(reservation);
+        final Reservation savedReservation = reservationDao.save(reservation);
         return new ReservationResponse(savedReservation);
     }
 
     public List<ReservationResponse> getReservations() {
-        return reservationDao.getReservations().stream()
+        return reservationDao.findAll().stream()
                 .map(ReservationResponse::new)
                 .toList();
     }
 
     public void deleteReservation(final long id) {
-        reservationDao.deleteReservationById(id);
+        reservationDao.deleteById(id);
     }
 }

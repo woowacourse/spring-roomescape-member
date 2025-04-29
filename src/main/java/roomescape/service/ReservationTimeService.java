@@ -4,17 +4,17 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.H2ReservationDao;
+import roomescape.repository.H2ReservationTimeDao;
 import roomescape.service.reservation.ReservationTime;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeDao reservationTimeDao;
-    private final ReservationDao reservationDao;
+    private final H2ReservationTimeDao reservationTimeDao;
+    private final H2ReservationDao reservationDao;
 
-    public ReservationTimeService(final ReservationTimeDao reservationTimeDao, final ReservationDao reservationDao) {
+    public ReservationTimeService(final H2ReservationTimeDao reservationTimeDao, final H2ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
     }
@@ -24,12 +24,12 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
         final ReservationTime convertedRequest = reservationTimeRequest.converToReservationTime();
-        final ReservationTime reservationTime = reservationTimeDao.createReservationTime(convertedRequest);
+        final ReservationTime reservationTime = reservationTimeDao.save(convertedRequest);
         return new ReservationTimeResponse(reservationTime);
     }
 
     public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeDao.getReservationTimes().stream()
+        return reservationTimeDao.findAll().stream()
                 .map(ReservationTimeResponse::new)
                 .toList();
     }
@@ -38,6 +38,6 @@ public class ReservationTimeService {
         if (reservationDao.isExistsByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
-        reservationTimeDao.deleteReservationTimeById(id);
+        reservationTimeDao.deleteById(id);
     }
 }
