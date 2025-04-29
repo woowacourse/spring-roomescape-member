@@ -147,4 +147,16 @@ class ReservationServiceTest {
         // then
         verify(reservationDao, times(1)).deleteById(1L);
     }
+
+    @DisplayName("당일 예약을 한다면 예외를 던진다")
+    @Test
+    void test4() {
+        // given
+        ReservationRequestDto request = new ReservationRequestDto("다로", LocalDate.now().toString(), 1L);
+        // when && then
+        assertThatThrownBy(
+                () -> reservationService.saveReservation(request))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
 }
