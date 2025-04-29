@@ -44,7 +44,7 @@ public class ReservationService {
     }
 
     public void deleteReservation(long id) {
-        loadReservationById(id);
+        validateReservationById(id);
         reservationRepository.deleteById(id);
     }
 
@@ -65,6 +65,13 @@ public class ReservationService {
                 reservation.getDate(), reservation.getTime().getId());
         if (isAlreadyReserved) {
             throw new BadRequestException("[ERROR] 이미 예약이 완료된 날짜와 시간입니다.");
+        }
+    }
+
+    private void validateReservationById(long reservationId) {
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        if (reservation.isEmpty()) {
+            throw new NotFoundException("[ERROR] ID에 해당하는 예약이 존재하지 않습니다.");
         }
     }
 }

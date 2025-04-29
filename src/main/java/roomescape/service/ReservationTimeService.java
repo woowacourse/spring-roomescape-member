@@ -39,7 +39,7 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long reservationTimeID) {
-        loadReservationTimeById(reservationTimeID);
+        validateReservationTimeById(reservationTimeID);
         validateReservationsExistenceInTime(reservationTimeID);
         reservationTimeRepository.deleteById(reservationTimeID);
     }
@@ -61,6 +61,13 @@ public class ReservationTimeService {
         boolean isAlreadySaved = reservationTimeRepository.findByStartAt(time);
         if (isAlreadySaved) {
             throw new BadRequestException("[Error] 이미 추가가 완료된 예약 가능 시간입니다.");
+        }
+    }
+
+    private void validateReservationTimeById(long reservationId) {
+        Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(reservationId);
+        if (reservationTime.isEmpty()){
+            throw new NotFoundException("[ERROR] ID에 해당하는 예약 시간이 존재하지 않습니다.");
         }
     }
 }
