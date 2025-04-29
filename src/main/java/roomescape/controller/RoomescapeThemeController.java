@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.ThemeResponse;
+import roomescape.controller.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
