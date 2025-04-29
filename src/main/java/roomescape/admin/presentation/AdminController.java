@@ -11,18 +11,24 @@ public class AdminController {
     @GetMapping
     public String admin(
     ) {
-        return "/admin/index.html";
+        return "/admin/index";
     }
 
     @GetMapping("/reservation")
     public String reservation(
     ) {
-        return "/admin/reservation.html";
+        return "/admin/reservation-new";
     }
 
     @GetMapping("/time")
     public String time(
     ) {
-        return "/admin/time.html";
+        return "/admin/time";
+    }
+
+    @GetMapping("/theme")
+    public String theme(
+    ){
+        return "/admin/theme";
     }
 }
