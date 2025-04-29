@@ -1,5 +1,6 @@
 package roomescape.domain.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,5 +39,11 @@ public class ReservationFakeRepository implements ReservationRepository {
         return reservations.values().stream()
                 .filter(reservation -> reservation.getTime().getId() == timeId)
                 .toList();
+    }
+
+    @Override
+    public Boolean existByDateAndTimeId(LocalDate date, Long timeId) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> reservation.getDate().equals(date) && reservation.getTime().getId().equals(timeId));
     }
 }

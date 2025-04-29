@@ -32,6 +32,7 @@ public class ReservationService {
     public ReservationResponse add(ReservationRequest request) {
         ReservationTime findTime = reservationTimeRepository.findById(request.timeId());
         validateDateAndTime(request.date(),findTime.getStartAt());
+        validateDuplicateReservation(request.date(), request.timeId());
         Reservation reservation = request.toReservationWithoutId(findTime);
 
         Long id = reservationRepository.saveAndReturnId(reservation);
@@ -47,6 +48,12 @@ public class ReservationService {
             if(time.isBefore(LocalTime.now())){
                 throw new IllegalArgumentException("지난 시각은 예약할 수 없습니다.");
             }
+        }
+    }
+
+    private void validateDuplicateReservation(LocalDate localDate, Long timeId){
+        if(reservationRepository.existByDateAndTimeId(localDate, timeId)){
+            throw new IllegalArgumentException("해당 시간에 대한 예약이 존재합니다.");
         }
     }
 

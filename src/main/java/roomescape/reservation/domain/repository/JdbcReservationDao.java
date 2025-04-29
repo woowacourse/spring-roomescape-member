@@ -91,4 +91,18 @@ public class JdbcReservationDao implements ReservationRepository {
         return jdbcTemplate.query(sql, reservationMapper, timeId);
     }
 
+    @Override
+    public Boolean existByDateAndTimeId(LocalDate date, Long timeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation AS r
+                    INNER JOIN reservation_time AS t
+                    ON r.time_id = t.id
+                    WHERE r.date = ? AND t.id = ?  
+                );                  
+                """;
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
+    }
 }

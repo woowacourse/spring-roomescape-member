@@ -43,7 +43,7 @@ class ReservationServiceTest {
         List<Reservation> reservations = List.of(
                 new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L)),
                 new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L)),
-                new Reservation(null, "범블비", LocalDate.of(2025, 4, 23), reservationTimeRepository.findById(3L))
+                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L))
         );
 
         for (Reservation reservation : reservations) {
@@ -123,6 +123,18 @@ class ReservationServiceTest {
         assertThatCode(() -> reservationService.add(request))
                 .doesNotThrowAnyException();
 
+    }
+
+    @DisplayName("중복 예약을 하면 예외가 발생한다")
+    @Test
+    void reservation_duplicate_exception(){
+        // given
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 15), 3L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.add(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간에 대한 예약이 존재합니다.");
     }
 
 }
