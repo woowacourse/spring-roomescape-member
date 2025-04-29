@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
+import roomescape.exception.impl.ConnectedReservationExistException;
+import roomescape.exception.impl.HasDuplicatedTimeException;
+import roomescape.exception.impl.ReservationTimeIntervalException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -39,7 +42,7 @@ public class ReservationTimeService {
     private void validateNoDuplication(LocalTime createTime) {
         boolean isExist = reservationTimeRepository.existByTime(createTime);
         if (isExist) {
-            throw new IllegalArgumentException("중복된 시간은 추가할 수 없습니다.");
+            throw new HasDuplicatedTimeException();
         }
     }
 
@@ -47,7 +50,7 @@ public class ReservationTimeService {
         boolean hasLess30MinDifference = reservationTimeRepository.findAll().stream()
                 .anyMatch(reservationTime -> reservationTime.isInTimeInterval(createTime));
         if (hasLess30MinDifference) {
-            throw new IllegalArgumentException("예약 시간은 서로 30분 이상 차이가 나야 합니다.");
+            throw new ReservationTimeIntervalException();
         }
     }
 
@@ -59,7 +62,7 @@ public class ReservationTimeService {
     public boolean delete(Long id) {
         boolean isReservationExistInTime = reservationRepository.existByTimeId(id);
         if (isReservationExistInTime) {
-            throw new IllegalArgumentException("예약이 존재하는 예약 시간은 삭제할 수 없습니다.");
+            throw new ConnectedReservationExistException();
         }
         return reservationTimeRepository.deleteById(id);
     }

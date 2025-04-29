@@ -2,6 +2,11 @@ package roomescape.entity;
 
 import java.time.LocalDate;
 import java.time.Period;
+import roomescape.exception.impl.NameContainsNumberException;
+import roomescape.exception.impl.OverMaxNameLengthException;
+import roomescape.exception.impl.PastDateException;
+import roomescape.exception.impl.ReservationBeforeStartException;
+import roomescape.exception.impl.ReservationTimeNotFoundException;
 
 public class Reservation {
 
@@ -12,15 +17,15 @@ public class Reservation {
 
     private Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         if (name.length() > 10) {
-            throw new IllegalArgumentException("이름은 10자를 넘어갈 수 없습니다.");
+            throw new OverMaxNameLengthException();
         }
         for (char c : name.toCharArray()) {
             if (Character.isDigit(c)) {
-                throw new IllegalArgumentException("이름은 숫자를 포함할 수 없습니다.");
+                throw new NameContainsNumberException();
             }
         }
         if (time == null) {
-            throw new IllegalArgumentException("존재하지 않는 시간입니다.");
+            throw new ReservationTimeNotFoundException();
         }
         this.id = id;
         this.name = name;
@@ -30,11 +35,11 @@ public class Reservation {
 
     public static Reservation beforeSave(final String name, final LocalDate date, final ReservationTime time) {
         if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("지나간 날짜는 예약할 수 없습니다.");
+            throw new PastDateException();
         }
         long minusDays = Period.between(date, LocalDate.now()).getDays();
         if (minusDays > 7) {
-            throw new IllegalArgumentException("예약은 1주일 전부터 가능합니다.");
+            throw new ReservationBeforeStartException();
         }
         return new Reservation(null, name, date, time);
     }

@@ -3,6 +3,7 @@ package roomescape.entity;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.impl.InvalidReservationTimeException;
 
 public class ReservationTime {
     private static final LocalTime START_RESERVATION_TIME = LocalTime.of(10, 0);
@@ -19,7 +20,7 @@ public class ReservationTime {
 
     private void validateTime(final LocalTime time) {
         if (time.isBefore(START_RESERVATION_TIME) || time.isAfter(LAST_RESERVATION_TIME)) {
-            throw new IllegalArgumentException("예약할 수 없는 시간입니다.");
+            throw new InvalidReservationTimeException();
         }
     }
 
