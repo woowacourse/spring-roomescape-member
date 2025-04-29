@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.exception.DeleteReservationException;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.service.ReservationTimeService;
@@ -47,8 +48,8 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> error(IllegalArgumentException exception) {
+    @ExceptionHandler(value = DeleteReservationException.class)
+    public ResponseEntity<String> error(DeleteReservationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
