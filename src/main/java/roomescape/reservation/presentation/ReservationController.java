@@ -1,5 +1,6 @@
 package roomescape.reservation.presentation;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +32,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
         try {
             ReservationResponse response = reservationService.createReservation(request);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.created(URI.create("admin/reservation")).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
