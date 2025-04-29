@@ -26,6 +26,8 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalStateException("id 에 해당하는 reservation_time 이 존재하지 않습니다."));
 
         Reservation reservation = reservationRequestDto.convertToReservation(reservationTime);
+        reservation.validateReservationDateInFuture();
+
         reservationDao.findByDateAndTime(reservation)
                 .ifPresent(r -> {
                     throw new IllegalStateException("이미 예약이 존재합니다.");

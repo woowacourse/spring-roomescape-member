@@ -48,14 +48,14 @@ class ReservationTest {
     void test3() {
         // given
         LocalDateTime dateTime = LocalDateTime.now();
+        Reservation reservation = new Reservation(
+                1L,
+                "히로",
+                dateTime.toLocalDate(),
+                new ReservationTime(dateTime.toLocalTime()));
 
         // when & then
-        assertThatThrownBy(() ->
-                new Reservation(
-                        1L,
-                        "히로",
-                        dateTime.toLocalDate(),
-                        new ReservationTime(dateTime.toLocalTime()))
+        assertThatThrownBy(reservation::validateReservationDateInFuture
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과거 및 당일 예약은 불가능합니다.");
@@ -66,14 +66,14 @@ class ReservationTest {
     void test4() {
         // given
         LocalDateTime dateTime = LocalDateTime.now().minusDays(1);
+        Reservation reservation = new Reservation(
+                1L,
+                "히로",
+                dateTime.toLocalDate(),
+                new ReservationTime(dateTime.toLocalTime()));
 
         // when & then
-        assertThatThrownBy(() ->
-                new Reservation(
-                        1L,
-                        "히로",
-                        dateTime.toLocalDate(),
-                        new ReservationTime(dateTime.toLocalTime()))
+        assertThatThrownBy(reservation::validateReservationDateInFuture
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("과거 및 당일 예약은 불가능합니다.");
