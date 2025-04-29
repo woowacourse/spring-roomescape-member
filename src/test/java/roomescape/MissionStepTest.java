@@ -1,16 +1,7 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,10 +12,22 @@ import roomescape.controller.ReservationController;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.persistence.ReservationDao;
 
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
+    public static final String RESERVATION_DATE = LocalDate.now().plusDays(1).toString();
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -66,7 +69,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", RESERVATION_DATE);
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -109,7 +112,7 @@ public class MissionStepTest {
     @Test
     void 데이터베이스에_추가한_reservation_모두를_응답할_수_있다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1L);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", RESERVATION_DATE, 1L);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -128,7 +131,7 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", RESERVATION_DATE);
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -153,7 +156,7 @@ public class MissionStepTest {
     @Test
     void 예약_시간을_생성_조회_삭제할_수_있다() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "12:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -179,7 +182,7 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", RESERVATION_DATE);
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()

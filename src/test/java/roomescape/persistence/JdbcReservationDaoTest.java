@@ -42,7 +42,7 @@ class JdbcReservationDaoTest {
     @Test
     void 전체_예약을_조회할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES ('test1', '2025-04-21', 1)");
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES ('test2', '2025-04-22', 1)");
 
@@ -51,15 +51,15 @@ class JdbcReservationDaoTest {
 
         //then
         assertThat(reservations).isEqualTo(List.of(
-                new Reservation(1L, "test1", LocalDate.of(2025, 4, 21), new ReservationTime(1L, LocalTime.of(11, 0))),
-                new Reservation(2L, "test2", LocalDate.of(2025, 4, 22), new ReservationTime(1L, LocalTime.of(11, 0)))
+                new Reservation(1L, "test1", LocalDate.of(2025, 4, 21), new ReservationTime(1L, LocalTime.of(12, 0))),
+                new Reservation(2L, "test2", LocalDate.of(2025, 4, 22), new ReservationTime(1L, LocalTime.of(12, 0)))
         ));
     }
 
     @Test
     void id값으로_예약을_찾을_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES ('test1', '2025-04-21', 1)");
 
         //when
@@ -68,7 +68,7 @@ class JdbcReservationDaoTest {
         //then
         assertThat(reservation).hasValue(
                 new Reservation(1L, "test1", LocalDate.of(2025, 4, 21),
-                        new ReservationTime(1L, LocalTime.of(11, 0))));
+                        new ReservationTime(1L, LocalTime.of(12, 0))));
     }
 
     @Test
@@ -83,9 +83,9 @@ class JdbcReservationDaoTest {
     @Test
     void 예약을_생성할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
         Reservation reservation = new Reservation("test", LocalDateTime.of(2025, 3, 3, 1, 1), LocalDate.of(2025, 4, 21),
-                new ReservationTime(1L, LocalTime.of(11, 0)));
+                new ReservationTime(1L, LocalTime.of(12, 0)));
 
         //when
         Long createdId = reservationDao.create(reservation);
@@ -93,13 +93,13 @@ class JdbcReservationDaoTest {
         //then
         assertThat(reservationDao.findById(createdId))
                 .hasValue(new Reservation(1L, "test", LocalDate.of(2025, 4, 21),
-                        new ReservationTime(1L, LocalTime.of(11, 0))));
+                        new ReservationTime(1L, LocalTime.of(12, 0))));
     }
 
     @Test
     void 예약을_삭제할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES ('test1', '2025-04-21', 1)");
 
         //when

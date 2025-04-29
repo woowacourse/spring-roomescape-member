@@ -1,11 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -15,7 +9,16 @@ import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 class ReservationServiceTest {
+
+    public static final LocalDate RESERVATION_DATE = LocalDate.now().plusDays(1);
 
     @Test
     void 예약을_생성한다() {
@@ -24,7 +27,7 @@ class ReservationServiceTest {
         FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
         FakeReservationDao fakeReservationDao = new FakeReservationDao();
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
-        CreateReservationParam createReservationParam = new CreateReservationParam("test", LocalDate.of(2025, 4, 25),
+        CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE,
                 1L);
 
         //when
@@ -32,7 +35,7 @@ class ReservationServiceTest {
 
         //then
         assertThat(fakeReservationDao.findById(createdId))
-                .hasValue(new Reservation(1L, "test", LocalDate.of(2025, 4, 25), reservationTime));
+                .hasValue(new Reservation(1L, "test", RESERVATION_DATE, reservationTime));
     }
 
     @Test
@@ -41,7 +44,7 @@ class ReservationServiceTest {
         FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
         FakeReservationDao fakeReservationDao = new FakeReservationDao();
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
-        CreateReservationParam createReservationParam = new CreateReservationParam("test", LocalDate.of(2025, 4, 25),
+        CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE,
                 1L);
 
         //when & then
@@ -69,11 +72,13 @@ class ReservationServiceTest {
     @Test
     void 전체_예약을_조회할_수_있다() {
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(11, 1));
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(12, 1));
+        ReservationTime reservationTime2 = new ReservationTime(1L, LocalTime.of(13, 1));
+
+        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime1, reservationTime2);
         FakeReservationDao fakeReservationDao = new FakeReservationDao(
-                new Reservation(1L, "test1", LocalDate.of(2025, 4, 26), reservationTime),
-                new Reservation(2L, "test2", LocalDate.of(2025, 4, 27), reservationTime)
+                new Reservation(1L, "test1", RESERVATION_DATE, reservationTime1),
+                new Reservation(2L, "test2", RESERVATION_DATE, reservationTime2)
         );
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
 
@@ -82,20 +87,20 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationResults).isEqualTo(List.of(
-                new ReservationResult(1L, "test1", LocalDate.of(2025, 4, 26),
-                        new ReservationTimeResult(1L, LocalTime.of(11, 1))),
-                new ReservationResult(2L, "test2", LocalDate.of(2025, 4, 27),
-                        new ReservationTimeResult(1L, LocalTime.of(11, 1)))
+                new ReservationResult(1L, "test1", RESERVATION_DATE,
+                        new ReservationTimeResult(1L, LocalTime.of(12, 1))),
+                new ReservationResult(2L, "test2", RESERVATION_DATE,
+                        new ReservationTimeResult(1L, LocalTime.of(13, 1)))
         ));
     }
 
     @Test
     void id_로_예약을_찾을_수_있다() {
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(11, 1));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 1));
         FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
         FakeReservationDao fakeReservationDao = new FakeReservationDao(
-                new Reservation(1L, "test1", LocalDate.of(2025, 4, 26), reservationTime));
+                new Reservation(1L, "test1", RESERVATION_DATE, reservationTime));
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
 
         //when
@@ -103,23 +108,23 @@ class ReservationServiceTest {
 
         //then
         assertThat(reservationResult).isEqualTo(
-                new ReservationResult(1L, "test1", LocalDate.of(2025, 4, 26),
-                        new ReservationTimeResult(1L, LocalTime.of(11, 1)))
+                new ReservationResult(1L, "test1", RESERVATION_DATE,
+                        new ReservationTimeResult(1L, LocalTime.of(12, 1)))
         );
     }
 
     @Test
     void id에_해당하는_예약이_없는경우_예외가_발생한다() {
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(11, 1));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(13, 1));
         FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
         FakeReservationDao fakeReservationDao = new FakeReservationDao(
-                new Reservation(1L, "test1", LocalDate.of(2025, 4, 26), reservationTime));
+                new Reservation(1L, "test1", LocalDate.now().plusDays(1), reservationTime));
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
 
         //when & then
         assertThatThrownBy(() -> reservationService.findById(2L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("2에 해당하는 reservation_time 튜플이 없습니다.");
+                .hasMessage("2에 해당하는 reservation 튜플이 없습니다.");
     }
 }

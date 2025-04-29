@@ -1,11 +1,5 @@
 package roomescape.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
@@ -13,6 +7,13 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
+
+import javax.sql.DataSource;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JdbcReservationTimeDaoTest {
 
@@ -39,23 +40,23 @@ class JdbcReservationTimeDaoTest {
     @Test
     void 예약_시간을_저장할_수_있다() {
         //when
-        Long createdId = reservationTimeDao.create(new ReservationTime(LocalTime.of(11, 1)));
+        Long createdId = reservationTimeDao.create(new ReservationTime(LocalTime.of(12, 1)));
 
         //then
         assertThat(reservationTimeDao.findById(createdId))
-                .hasValue(new ReservationTime(1L, LocalTime.of(11, 1)));
+                .hasValue(new ReservationTime(1L, LocalTime.of(12, 1)));
     }
 
     @Test
     void id로_예약_시간을_조회할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
 
         //when
         Optional<ReservationTime> reservationTime = reservationTimeDao.findById(1L);
 
         //then
-        assertThat(reservationTime).hasValue(new ReservationTime(1L, LocalTime.of(11, 0)));
+        assertThat(reservationTime).hasValue(new ReservationTime(1L, LocalTime.of(12, 0)));
     }
 
     @Test
@@ -70,23 +71,23 @@ class JdbcReservationTimeDaoTest {
     @Test
     void 전체_예약_시간을_조회할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:01')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:01')");
 
         //when
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
 
         //then
         assertThat(reservationTimes).isEqualTo(List.of(
-                new ReservationTime(1L, LocalTime.of(11, 0)),
-                new ReservationTime(2L, LocalTime.of(11, 1))
+                new ReservationTime(1L, LocalTime.of(12, 0)),
+                new ReservationTime(2L, LocalTime.of(12, 1))
         ));
     }
 
     @Test
     void id값으로_예약_시간을_삭제한다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
 
         //when
         reservationTimeDao.deleteById(1L);
