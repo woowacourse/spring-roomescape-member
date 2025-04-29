@@ -9,7 +9,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleMappingException(IllegalArgumentException exception){
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException exception){
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException exception){
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
 

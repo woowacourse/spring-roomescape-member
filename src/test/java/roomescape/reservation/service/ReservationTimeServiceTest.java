@@ -2,16 +2,21 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.repository.ReservationFakeRepository;
 import roomescape.domain.repository.ReservationTimeFakeRepository;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 
 class ReservationTimeServiceTest {
@@ -33,7 +38,13 @@ class ReservationTimeServiceTest {
             reservationTimeRepository.saveAndReturnId(time);
         }
 
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        ReservationRepository reservationRepository = new ReservationFakeRepository();
+
+        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29), reservationTimeRepository.findById(1L));
+
+        reservationRepository.saveAndReturnId(reservation);
+
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
     @DisplayName("에약 시간 정보를 추가한다")
@@ -65,10 +76,22 @@ class ReservationTimeServiceTest {
     @Test
     void get_times_test() {
         // when
-        List<ReservationTimeResponse> reservationTimeRespons = reservationTimeService.getTimes();
+        List<ReservationTimeResponse> reservationTimeResponse = reservationTimeService.getTimes();
 
         // then
-        assertThat(reservationTimeRespons).hasSize(4);
+        assertThat(reservationTimeResponse).hasSize(4);
+    }
+
+    @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하면 예외가 발생한다")
+    @Test
+    void delete_exception(){
+        // given
+        Long deleteId = 1L;
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.remove(deleteId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("해당 시간에 대한 예약이 존재합니다.");
     }
 
 }

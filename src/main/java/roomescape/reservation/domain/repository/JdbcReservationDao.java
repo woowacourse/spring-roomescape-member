@@ -74,4 +74,21 @@ public class JdbcReservationDao implements ReservationRepository {
         return jdbcTemplate.query(sql, reservationMapper);
     }
 
+    @Override
+    public List<Reservation> findAllByTimeId(Long timeId) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t
+                ON r.time_id = t.id
+                WHERE t.id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationMapper, timeId);
+    }
+
 }

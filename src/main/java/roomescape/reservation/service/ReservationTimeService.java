@@ -5,16 +5,21 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse add(ReservationTimeRequest request) {
@@ -24,7 +29,11 @@ public class ReservationTimeService {
     }
 
     public void remove(Long id) {
-        reservationTimeRepository.deleteById(id);
+        List<Reservation> reservations = reservationRepository.findAllByTimeId(id);
+        if (reservations.isEmpty()){
+            reservationTimeRepository.deleteById(id);
+        }
+        throw new IllegalStateException("해당 시간에 대한 예약이 존재합니다.");
     }
 
     public List<ReservationTimeResponse> getTimes() {

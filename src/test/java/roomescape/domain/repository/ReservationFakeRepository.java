@@ -32,4 +32,11 @@ public class ReservationFakeRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return reservations.values().stream().toList();
     }
+
+    @Override
+    public List<Reservation> findAllByTimeId(Long timeId) {
+        return reservations.values().stream()
+                .filter(reservation -> reservation.getTime().getId() == timeId)
+                .toList();
+    }
 }

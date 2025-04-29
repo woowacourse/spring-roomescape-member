@@ -11,4 +11,5 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findAllByTimeId(Long timeId);
 }

@@ -41,9 +41,9 @@ class ReservationServiceTest {
         }
 
         List<Reservation> reservations = List.of(
-                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), times.get(0)),
-                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), times.get(1)),
-                new Reservation(null, "범블비", LocalDate.of(2025, 4, 23), times.get(2))
+                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L)),
+                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L)),
+                new Reservation(null, "범블비", LocalDate.of(2025, 4, 23), reservationTimeRepository.findById(3L))
         );
 
         for (Reservation reservation : reservations) {
@@ -124,4 +124,5 @@ class ReservationServiceTest {
                 .doesNotThrowAnyException();
 
     }
+
 }
