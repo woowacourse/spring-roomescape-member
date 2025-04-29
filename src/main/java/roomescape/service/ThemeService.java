@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
@@ -16,5 +17,9 @@ public class ThemeService {
 
     public Theme save(Theme theme) {
         return themeRepository.save(theme);
+    }
+
+    public List<Theme> read() {
+        return themeRepository.read();
     }
 }
