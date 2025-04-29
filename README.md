@@ -56,7 +56,7 @@
 
 ### 테마 추가
 
-- [ ] 테마 추가 API를 구현한다.
+- [X] 테마 추가 API를 구현한다.
   - Request
     ```
     POST /themes HTTP/1.1
