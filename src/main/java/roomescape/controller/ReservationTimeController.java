@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +37,7 @@ public class ReservationTimeController {
 
     @GetMapping
     ResponseEntity<List<ReservationTime>> read() {
-        List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
+         List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
         return ResponseEntity.ok(reservationTimes);
     }
 
@@ -44,5 +45,10 @@ public class ReservationTimeController {
     ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> error(IllegalArgumentException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -46,6 +46,18 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     }
 
+    public boolean existsByTimeId(Long timeId) {
+        final String query = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
+                """;
+
+        return jdbcTemplate.queryForObject(query, Boolean.class, timeId);
+    }
+
     public Reservation saveReservation(Reservation reservation) {
         Map<String, Object> parameters = Map.ofEntries(
                 Map.entry("name", reservation.getName()),
