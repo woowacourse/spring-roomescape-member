@@ -1,5 +1,6 @@
 package roomescape.reservation.infrastructure.fake;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,5 +39,10 @@ public class FakeReservationDao implements ReservationRepository {
     @Override
     public boolean existsByTimeId(Long timeId) {
         return false; //todo : 구현
+    }
+
+    @Override
+    public boolean existsByDateTime(LocalDateTime reservationDateTime) {
+        return false; //todo: 구현
     }
 }

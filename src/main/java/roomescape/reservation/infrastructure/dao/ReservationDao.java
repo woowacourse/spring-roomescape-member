@@ -1,6 +1,9 @@
 package roomescape.reservation.infrastructure.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -92,6 +95,25 @@ public class ReservationDao implements ReservationRepository {
                 )
                 """;
         int result = jdbcTemplate.queryForObject(sql,Integer.class, timeId);
+        return result == 1;
+    }
+
+    @Override
+    public boolean existsByDateTime(LocalDateTime reservationDateTime) {
+        LocalDate date = reservationDateTime.toLocalDate();
+        LocalTime time = reservationDateTime.toLocalTime();
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation r
+                    INNER JOIN reservation_time rt
+                    ON r.time_id = rt.id
+                    WHERE r.date = ?
+                    AND rt.start_at = ?
+                )
+                """;
+
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, date.toString(), time.toString());
         return result == 1;
     }
 }

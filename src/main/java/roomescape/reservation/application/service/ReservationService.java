@@ -3,6 +3,7 @@ package roomescape.reservation.application.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.DuplicateReservationException;
 import roomescape.global.exception.GetTimeException;
 import roomescape.global.exception.PastTimeException;
 import roomescape.reservation.application.dto.CreateReservationRequest;
@@ -59,8 +60,19 @@ public class ReservationService {
         LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate.getReservationDate(),
                 reservationTime.getStartAt());
 
+        validateIsPast(reservationDateTime);
+        validateIsDuplicate(reservationDateTime);
+    }
+
+    private static void validateIsPast(LocalDateTime reservationDateTime) {
         if (reservationDateTime.isBefore(LocalDateTime.now())) {
             throw new PastTimeException("[ERROR] 지난 일시에 대한 예약 생성은 불가능합니다.");
+        }
+    }
+
+    private void validateIsDuplicate(LocalDateTime reservationDateTime) {
+        if(reservationRepository.existsByDateTime(reservationDateTime)){
+            throw new DuplicateReservationException("[ERROR] 중복된 일시의 예약은 불가능합니다.");
         }
     }
 }
