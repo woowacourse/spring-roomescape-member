@@ -7,15 +7,15 @@ import roomescape.model.ReservationTime;
 
 public record ReservationRequestDto(
         String name,
-        String rawDate,
+        String date,
         Long timeId
 ) {
     public Reservation convertToReservation() {
         try {
-            LocalDate date = LocalDate.parse(rawDate);
+            LocalDate parsedDate = LocalDate.parse(date);
             return new Reservation(
                     this.name,
-                    date,
+                    parsedDate,
                     new ReservationTime(timeId)
             );
         } catch (DateTimeParseException e) {
