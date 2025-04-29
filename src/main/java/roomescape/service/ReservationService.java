@@ -8,6 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.DuplicateReservationException;
 
 @Service
 public class ReservationService {
@@ -32,7 +33,7 @@ public class ReservationService {
 
     private void validateDuplicateReservation(ReservationRequest reservationRequest) {
         if (reservationDao.existReservationByDateAndTime(reservationRequest.date(), reservationRequest.timeId())) {
-            throw new IllegalArgumentException("해당 시간에는 이미 예약이 존재한다.");
+            throw new DuplicateReservationException();
         }
     }
 

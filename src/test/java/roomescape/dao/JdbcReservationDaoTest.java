@@ -44,9 +44,9 @@ public class JdbcReservationDaoTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('16:40')");
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id) VALUES ('사나', '2025-04-22', 1)");
+            "INSERT INTO reservation (name, date, time_id) VALUES ('사나', '3000-04-22', 1)");
         jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id) VALUES ('앤지', '2025-04-23', 2)");
+            "INSERT INTO reservation (name, date, time_id) VALUES ('앤지', '3000-04-23', 2)");
 
         List<Reservation> reservations = jdbcReservationDao.findAllReservations();
 
@@ -57,7 +57,7 @@ public class JdbcReservationDaoTest {
     @DisplayName("예약을 추가할 수 있다.")
     void addReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
-        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22), time);
+        Reservation reservation = new Reservation(null, "사나", LocalDate.of(3000, 4, 22), time);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
 
@@ -68,7 +68,7 @@ public class JdbcReservationDaoTest {
     @DisplayName("ID로 예약을 삭제할 수 있다.")
     void removeReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
-        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2025, 4, 22), time);
+        Reservation reservation = new Reservation(null, "사나", LocalDate.of(3000, 4, 22), time);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
         jdbcReservationDao.removeReservationById(newReservation.getId());

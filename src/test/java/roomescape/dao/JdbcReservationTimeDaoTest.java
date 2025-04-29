@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.jdbc.JdbcReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.TimeDoesNotExistException;
 
 @JdbcTest
 @Import(JdbcReservationTimeDao.class)
@@ -53,8 +54,8 @@ public class JdbcReservationTimeDaoTest {
     @DisplayName("ID로 시간이 존재하지 않는다면 예외가 발생한다.")
     void findTimeByNotExistedTime() {
         assertThatThrownBy(() -> jdbcReservationTimeDao.findTimeById(1L))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("예약 가능한 시간이 아닙니다.");
+            .isInstanceOf(TimeDoesNotExistException.class)
+            .hasMessage("예약 시간을 찾을 수 없다.");
     }
 
     @Test

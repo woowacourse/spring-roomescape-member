@@ -2,7 +2,7 @@
 
 ## 요구사항 분석
 
-### 1. 예외 처리와 응답
+### 1. 예외 처리
 
 - [x] 시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때
   - [x] null이 들어오면 예외가 발생한다.
@@ -14,6 +14,14 @@
   - [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능하다.
   - [x] 중복 예약은 불가능하다.
   - [x] 특정 시간에 대한 예약이 존재하면 그 시간은 삭제가 불가능하다.
+
+### 2. 예외 응답
+
+- [x] null, 생성할 때의 예외는 BadRequest로 응답한다.
+  - null InvalidInputException
+  - 생성 TimeDoesNotExistException, NotCorrectDateTimeException
+- [x] 중복, 삭제할 때의 예외는 Conflict로 응답한다.
+  - 중복 DuplicateTimeException, DuplicateReservationException
 
 ---
 

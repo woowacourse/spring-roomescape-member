@@ -6,6 +6,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
+import roomescape.exception.DuplicateTimeException;
 
 @Service
 public class TimeService {
@@ -25,7 +26,7 @@ public class TimeService {
 
     private void validateExistedTime(TimeRequest timeRequest) {
         if(reservationTimeDao.existTimeByStartAt(timeRequest.startAt())) {
-            throw new IllegalArgumentException("이미 존재하는 시간이다.");
+            throw new DuplicateTimeException();
         }
     }
 

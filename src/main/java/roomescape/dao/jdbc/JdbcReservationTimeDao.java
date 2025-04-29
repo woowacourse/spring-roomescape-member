@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.TimeDoesNotExistException;
 
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
@@ -36,7 +37,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, createReservationMapper(), id);
         } catch (DataAccessException e) {
-            throw new IllegalArgumentException("예약 가능한 시간이 아닙니다.");
+            throw new TimeDoesNotExistException();
         }
     }
 
