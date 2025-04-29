@@ -3,6 +3,9 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalLong;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -59,16 +62,21 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                (rs, rowNum) -> {
-                  return new ReservationTime(
-                          rs.getLong("id"),
-                          rs.getTime("start_at").toLocalTime()
-                  );
-                },
-                id
-        );
+    public Optional<ReservationTime> findById(Long id) {
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(
+                    "SELECT id, start_at FROM reservation_time WHERE id = ?",
+                    (rs, rowNum) -> {
+                        return new ReservationTime(
+                                rs.getLong("id"),
+                                rs.getTime("start_at").toLocalTime()
+                        );
+                    },
+                    id
+            );
+            return Optional.ofNullable(reservationTime);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 }
