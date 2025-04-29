@@ -14,7 +14,7 @@ class ReservationTest {
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
                                 null,
-                                LocalDate.of(2025, 1, 1),
+                                LocalDate.now().plusDays(1),
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0))))
                 .isInstanceOf(NullPointerException.class);
 
@@ -42,4 +42,14 @@ class ReservationTest {
                 .isInstanceOf(NullPointerException.class);
     }
 
+    @Test
+    void 지나간_시간에_예약을_생성할_경우_예외가_발생한다() {
+        // when & then
+        Assertions.assertThatThrownBy(
+                        () -> Reservation.createWithoutId(
+                                "짱구",
+                                LocalDate.of(2024, 1, 1),
+                                new ReservationTime(1L, LocalTime.of(9, 0))))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

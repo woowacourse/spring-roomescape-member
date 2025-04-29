@@ -2,14 +2,16 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
@@ -17,12 +19,12 @@ import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.FakeReservationTimeDao;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationServiceTest {
 
     private FakeReservationDao fakeReservationDao;
     private FakeReservationTimeDao fakeReservationTimeDao;
     private ReservationService reservationService;
+    private Clock clock;
 
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
     private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
@@ -33,9 +35,11 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
+        LocalDateTime fixedDateTime = LocalDateTime.of(2025, 1, 1, 0, 0);
+        clock = Clock.fixed(fixedDateTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
         fakeReservationTimeDao = new FakeReservationTimeDao(fakeReservationTime1, fakeReservationTime2);
         fakeReservationDao = new FakeReservationDao(fakeReservation1, fakeReservation2);
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao);
+        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, clock);
     }
 
     @Test
@@ -52,7 +56,7 @@ class ReservationServiceTest {
     @Test
     void 예약을_추가할_수_있다() {
         // given & when
-        ReservationCreateRequest 포비 = new ReservationCreateRequest("포비", LocalDate.of(2025, 1, 1), 1L);
+        ReservationCreateRequest 포비 = new ReservationCreateRequest("포비", LocalDate.now().plusDays(1), 1L);
         reservationService.create(포비);
         List<ReservationResponse> all = reservationService.findAll();
 
