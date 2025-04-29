@@ -14,4 +14,10 @@ public class GlobalExceptionHandler {
     public ExceptionResponse handleHttpMessageNotReadableException() {
         return new ExceptionResponse("잘못된 요청 형식입니다.");
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ExceptionResponse(ex.getMessage());
+    }
 }
