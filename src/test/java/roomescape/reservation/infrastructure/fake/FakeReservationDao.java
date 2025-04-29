@@ -34,4 +34,9 @@ public class FakeReservationDao implements ReservationRepository {
     public void delete(Long reservationId) {
         store.remove(reservationId);
     }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        return false;
+    }
 }

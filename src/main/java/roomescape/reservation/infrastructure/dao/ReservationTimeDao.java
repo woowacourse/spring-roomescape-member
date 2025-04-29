@@ -76,4 +76,16 @@ public class ReservationTimeDao implements ReservationTimeRepository {
             throw new IllegalArgumentException("[ERROR] 삭제하지 못했습니다.");
         }
     }
+
+    public List<ReservationTime> existsByTime(ReservationTime reservationTime){
+        String sql = "select id, start_at from reservation_time where start_at = ?";
+        return jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> {
+                    return new ReservationTime(
+                            resultSet.getLong("id"),
+                            resultSet.getTime("start_at").toLocalTime()
+                    );
+                }, reservationTime.getStartAt());
+    }
 }

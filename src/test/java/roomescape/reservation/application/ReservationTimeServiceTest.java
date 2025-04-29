@@ -6,8 +6,10 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.service.ReservationTimeService;
+import roomescape.reservation.infrastructure.fake.FakeReservationDao;
 import roomescape.reservation.infrastructure.fake.FakeReservationTimeDao;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeResponse;
@@ -18,7 +20,8 @@ public class ReservationTimeServiceTest {
     @BeforeEach
     void init(){
         ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeDao();
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        ReservationRepository reservationRepository = new FakeReservationDao();
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
     @Test

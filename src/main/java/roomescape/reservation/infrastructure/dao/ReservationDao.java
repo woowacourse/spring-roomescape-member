@@ -80,4 +80,28 @@ public class ReservationDao implements ReservationRepository {
             throw new IllegalArgumentException("[ERROR] 삭제하지 못했습니다.");
         }
     }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
+                """;
+        int result = jdbcTemplate.queryForObject(sql,Integer.class, timeId);
+        return result == 1;
+    }
 }
+
+/*
+SELECT product_name
+FROM products AS p
+WHERE EXISTS (
+    SELECT 1
+    FROM inventory AS i
+    WHERE i.product_id = p.product_id
+    AND i.quantity > 0
+);
+ */

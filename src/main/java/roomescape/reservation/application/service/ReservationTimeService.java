@@ -2,16 +2,21 @@ package roomescape.reservation.application.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
+import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
@@ -25,6 +30,9 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(final Long id) {
+        if(reservationRepository.existsByTimeId(id)){
+            throw new IllegalArgumentException("[ERROR] 예약이 이미 존재하는 시간입니다.");
+        }
         reservationTimeRepository.delete(id);
     }
 }
