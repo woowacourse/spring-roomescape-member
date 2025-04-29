@@ -44,7 +44,7 @@ class ReservationControllerTest {
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         // when-then
         RestAssured.given().log().all()
@@ -63,7 +63,7 @@ class ReservationControllerTest {
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         // when
         RestAssured.given().log().all()
@@ -88,7 +88,7 @@ class ReservationControllerTest {
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         // when-then
         RestAssured.given().log().all()

@@ -42,7 +42,7 @@ public class ReservationTimeControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         // when-then
         RestAssured.given().log().all()
@@ -64,7 +64,7 @@ public class ReservationTimeControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")

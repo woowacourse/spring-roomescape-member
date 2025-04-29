@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.GetTimeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.service.ReservationService;
@@ -63,7 +64,7 @@ public class ReservationServiceTest {
 
         // when - then
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(GetTimeException.class)
                 .hasMessage("[ERROR] 예약 시간 정보를 찾을 수 없습니다.");
     }
 

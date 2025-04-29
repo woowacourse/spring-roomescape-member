@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.DeleteTimeException;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.domain.aggregate.ReservationTime;
 
@@ -73,19 +74,8 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         String sql = "delete from reservation_time where id = ?";
         int rows = jdbcTemplate.update(sql, id);
         if (rows != 1) {
-            throw new IllegalArgumentException("[ERROR] 삭제하지 못했습니다.");
+            throw new DeleteTimeException("[ERROR] 삭제하지 못했습니다.");
         }
     }
 
-    public List<ReservationTime> existsByTime(ReservationTime reservationTime){
-        String sql = "select id, start_at from reservation_time where start_at = ?";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> {
-                    return new ReservationTime(
-                            resultSet.getLong("id"),
-                            resultSet.getTime("start_at").toLocalTime()
-                    );
-                }, reservationTime.getStartAt());
-    }
 }

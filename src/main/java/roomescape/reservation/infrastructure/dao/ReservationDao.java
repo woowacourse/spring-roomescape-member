@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.DeleteReservationException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.domain.aggregate.Reservation;
@@ -77,7 +78,7 @@ public class ReservationDao implements ReservationRepository {
         String sql = "delete from reservation where id = ?";
         int rows = jdbcTemplate.update(sql, id);
         if (rows != 1) {
-            throw new IllegalArgumentException("[ERROR] 삭제하지 못했습니다.");
+            throw new DeleteReservationException("[ERROR] 삭제하지 못했습니다.");
         }
     }
 

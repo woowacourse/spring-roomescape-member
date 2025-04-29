@@ -2,6 +2,7 @@ package roomescape.reservation.application.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.GetTimeException;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
@@ -35,7 +36,7 @@ public class ReservationService {
 
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 예약 시간 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GetTimeException("[ERROR] 예약 시간 정보를 찾을 수 없습니다."));
     }
 
     public List<ReservationResponse> getReservations() {

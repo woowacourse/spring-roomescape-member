@@ -15,8 +15,8 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body("시간 형식이 잘못되었습니다.");
     }
 
-    @ExceptionHandler(DeleteTimeException.class)
-    public ResponseEntity<String> handleDeleteTimeException(DeleteTimeException e) {
+    @ExceptionHandler({DeleteTimeException.class, DeleteReservationException.class})
+    public ResponseEntity<String> handleDeleteException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

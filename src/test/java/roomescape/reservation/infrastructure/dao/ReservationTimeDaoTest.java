@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.global.exception.DeleteTimeException;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 
 @JdbcTest
@@ -60,7 +61,7 @@ public class ReservationTimeDaoTest {
     @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
     void deleteExceptionTest() {
         assertThatThrownBy(() -> reservationTimeDao.delete(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DeleteTimeException.class)
                 .hasMessage("[ERROR] 삭제하지 못했습니다.");
     }
 
