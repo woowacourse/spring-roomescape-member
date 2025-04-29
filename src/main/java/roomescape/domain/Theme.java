@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.exception.custom.InvalidInputException;
 
 public class Theme {
     private final long id;
@@ -23,13 +24,13 @@ public class Theme {
 
     private void validate(String name, String description, String thumbnail) {
         if (Objects.isNull(name) || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR]");
+            throw new InvalidInputException("테마 명은 빈 값이 입력될 수 없습니다");
         }
         if (Objects.isNull(description) || description.isBlank()) {
-            throw new IllegalArgumentException("[ERROR]");
+            throw new InvalidInputException("테마 상세 설명은 빈 값이 입력될 수 없습니다");
         }
         if (Objects.isNull(thumbnail) || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("[ERROR]");
+            throw new InvalidInputException("섬네일 주소는 빈 값이 입력될 수 없습니다");
         }
     }
 

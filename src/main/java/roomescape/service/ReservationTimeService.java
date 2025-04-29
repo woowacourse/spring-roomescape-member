@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.exception.custom.NotExistedValueException;
 import roomescape.service.dto.ReservationTimeCreation;
 
 @Service
@@ -19,13 +21,13 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse addReservationTime(final ReservationTimeCreation creation) {
         if (reservationTimeDAO.existsByStartAt(creation.startAt())) {
-            throw new IllegalArgumentException("이미 존재하는 예약 가능 시간입니다: %s".formatted(creation.startAt()));
+            throw new ExistedDuplicateValueException("이미 존재하는 예약 가능 시간입니다: %s".formatted(creation.startAt()));
         }
         ReservationTime reservationTime = new ReservationTime(creation.startAt());
         long id = reservationTimeDAO.insert(reservationTime);
 
         ReservationTime savedReservationTime = reservationTimeDAO.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR]"));
+                .orElseThrow(NotExistedValueException::new);
 
         return ReservationTimeResponse.from(savedReservationTime);
 
