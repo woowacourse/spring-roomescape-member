@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.repository.JdbcReservationDao;
+import roomescape.reservation.domain.repository.ReservationTimeRepository;
 import roomescape.util.TestDataSourceFactory;
 
 class JdbcReservationDaoTest {
@@ -67,5 +68,23 @@ class JdbcReservationDaoTest {
 
         // then
         assertThat(reservations).hasSize(5);
+    }
+
+    @DisplayName("시간 id 일치 여부를 반환한다")
+    @Test
+    void same_time_id_test() {
+        // when
+        Boolean actual = jdbcReservationDao.existReservationByTimeId(1L);
+        // then
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("시간과 날짜 일치 여부를 반환한다")
+    @Test
+    void same_time_id_and_date_test(){
+        // when
+        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeId(LocalDate.of(2025,3,24),1L);
+        // then
+        assertThat(actual).isTrue();
     }
 }
