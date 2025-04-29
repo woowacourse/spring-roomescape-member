@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -179,4 +178,37 @@ class ReservationApiTest {
             .then().log().all()
             .statusCode(400);
     }
+
+    @Test
+    void 예약이_존재할_때_예약시간을_제거하면_에러를_반환한다() {
+        Map<String, Object> timeParams = new HashMap<>();
+        timeParams.put("startAt", "09:00");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(timeParams)
+            .when().post("/times")
+            .then().log().all()
+            .statusCode(201);
+
+        Map<String, Object> reservationParams = new HashMap<>();
+        reservationParams.put("name", "브라운");
+        reservationParams.put("date", LocalDate.now().plusDays(10));
+        reservationParams.put("timeId", "1");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservationParams)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(201)
+            .body("id", is(1));
+
+        // TODO: 예외 메시지 테스트 추가
+        RestAssured.given().log().all()
+            .when().delete("/times/1")
+            .then().log().all()
+            .statusCode(400);
+    }
+
 }

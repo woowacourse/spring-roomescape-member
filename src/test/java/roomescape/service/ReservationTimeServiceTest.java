@@ -18,7 +18,7 @@ class ReservationTimeServiceTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeService = new ReservationTimeService(new ReservationTimeInMemoryDao());
+        reservationTimeService = new ReservationTimeService(new ReservationInMemoryDao(), new ReservationTimeInMemoryDao());
     }
 
     @Test

@@ -5,6 +5,8 @@ import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.entity.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.ReservationExistException;
+import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.List;
 @Service
 public class ReservationTimeService {
 
+    private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+        this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }
 
@@ -32,6 +36,10 @@ public class ReservationTimeService {
     }
 
     public void deleteById(Long id) {
+        if (reservationDao.findByTimeId(id).isPresent()) {
+            throw new ReservationExistException("이 시간의 예약이 존재합니다.");
+        }
+
         reservationTimeDao.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("삭제할 예약시간이 없습니다."));
 

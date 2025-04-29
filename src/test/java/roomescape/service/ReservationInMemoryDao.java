@@ -40,4 +40,9 @@ public class ReservationInMemoryDao implements ReservationDao {
             .filter(reservation -> reservation.isSameId(id))
             .findFirst();
     }
+
+    @Override
+    public Optional<Reservation> findByTimeId(Long timeId) {
+        return Optional.empty();
+    }
 }

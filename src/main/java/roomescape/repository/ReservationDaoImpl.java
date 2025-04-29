@@ -53,9 +53,18 @@ public class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT r.id AS id, r.name AS name, r.date AS date, t.id AS time_id, t.start_at AS time_value FROM reservation r JOIN reservation_time t ON r.time_id = t.id";
+        String sql = "SELECT r.id AS id, r.name AS name, r.date AS date, t.id AS time_id, t.start_at AS time_value FROM reservation r JOIN reservation_time t ON r.time_id = t.id where r.id = :id ";
         List<Reservation> findReservation = jdbcTemplate.query(
             sql, new MapSqlParameterSource("id", id), getReservationRowMapper());
+
+        return findReservation.stream().findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findByTimeId(Long timeId) {
+        String sql = "SELECT r.id AS id, r.name AS name, r.date AS date, t.id AS time_id, t.start_at AS time_value FROM reservation r JOIN reservation_time t ON r.time_id = t.id where t.id = :id";
+        List<Reservation> findReservation = jdbcTemplate.query(
+            sql, new MapSqlParameterSource("id", timeId), getReservationRowMapper());
 
         return findReservation.stream().findFirst();
     }
