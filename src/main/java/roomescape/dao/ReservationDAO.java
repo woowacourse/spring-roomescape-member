@@ -9,7 +9,7 @@ public interface ReservationDAO {
 
     long insert(Reservation reservation);
 
-    boolean existsByDateAndTimeId(LocalDate date, long time_id);
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
 
     List<Reservation> findAll();
 

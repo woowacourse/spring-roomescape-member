@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class JdbcReservationDAO implements ReservationDAO {
@@ -22,7 +23,11 @@ public class JdbcReservationDAO implements ReservationDAO {
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(resultSet.getLong("time_id"),
-                    resultSet.getTime("time_value").toLocalTime()));
+                    resultSet.getTime("time_value").toLocalTime()),
+            new Theme(resultSet.getString("theme_name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail"))
+    );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -45,23 +50,28 @@ public class JdbcReservationDAO implements ReservationDAO {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
-        String query = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?) AS exist";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId));
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
+        String query = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?) AS exist";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId));
     }
 
     @Override
     public List<Reservation> findAll() {
         String query = """
                 SELECT
-                    r.id as reservation_id,
+                    r.id AS reservation_id,
                     r.name,
                     r.date,
-                    t.id as time_id,
-                    t.start_at as time_value
-                FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
+                    rt.id AS time_id,
+                    rt.start_at AS time_value,
+                    t.theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t 
+                ON r.theme_id = t.id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
     }

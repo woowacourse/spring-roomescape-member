@@ -8,20 +8,29 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(final long id, final String name, final LocalDate date, final ReservationTime time) {
+    public Reservation(final long id,
+                       final String name,
+                       final LocalDate date,
+                       final ReservationTime time,
+                       final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime reservationTime) {
-        this(0, name, date, reservationTime);
+    public Reservation(final String name,
+                       final LocalDate date,
+                       final ReservationTime reservationTime,
+                       final Theme theme) {
+        this(0, name, date, reservationTime, theme);
     }
 
     public Reservation withId(final long id) {
-        return new Reservation(id, this.name, this.date, this.time);
+        return new Reservation(id, this.name, this.date, this.time, this.theme);
     }
 
     public boolean isSameDateTime(LocalDate date, long timeId) {
@@ -42,5 +51,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

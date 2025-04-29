@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -43,6 +44,14 @@ public class JdbcThemeDAO implements ThemeDAO {
     public List<Theme> findAll() {
         String query = "SELECT * FROM theme";
         return jdbcTemplate.query(query, THEME_ROW_MAPPER);
+    }
+
+    @Override
+    public Optional<Theme> findById(final long id) {
+        String query = "SELECT * FROM theme WHERE id = ?";
+        return jdbcTemplate.query(query, THEME_ROW_MAPPER, id)
+                .stream()
+                .findFirst();
     }
 
     @Override
