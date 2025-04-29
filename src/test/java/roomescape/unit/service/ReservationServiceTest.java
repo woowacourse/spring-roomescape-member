@@ -1,10 +1,11 @@
 package roomescape.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -44,8 +45,8 @@ class ReservationServiceTest {
     void 이전_날짜에_예약할_수_없다() {
         Long reservationTimeId = reservationTimeRepository.add(
                 new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
-        Assertions.assertThatThrownBy(() -> reservationService.addReservation(
-                        new AddReservationDto("투다", LocalDate.now().minusDays(1), reservationTimeId)))
+        assertThatThrownBy(() -> reservationService.addReservation(
+                new AddReservationDto("투다", LocalDate.now().minusDays(1), reservationTimeId)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -53,8 +54,8 @@ class ReservationServiceTest {
     void 같은날짜일시_이전_시간에_예약할_수_없다() {
         Long reservationTimeId = reservationTimeRepository.add(
                 new AddReservationTimeDto(LocalTime.now().minusHours(1L)).toEntity());
-        Assertions.assertThatThrownBy(() -> reservationService.addReservation(
-                        new AddReservationDto("투다", LocalDate.now(), reservationTimeId)))
+        assertThatThrownBy(() -> reservationService.addReservation(
+                new AddReservationDto("투다", LocalDate.now(), reservationTimeId)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -62,8 +63,8 @@ class ReservationServiceTest {
     void 이후_날짜에_예약할_수_있다() {
         Long reservationTimeId = reservationTimeRepository.add(
                 new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
-        Assertions.assertThatCode(() -> reservationService.addReservation(
-                        new AddReservationDto("투다", LocalDate.now().plusDays(1), reservationTimeId)))
+        assertThatCode(() -> reservationService.addReservation(
+                new AddReservationDto("투다", LocalDate.now().plusDays(1), reservationTimeId)))
                 .doesNotThrowAnyException();
     }
 
@@ -71,8 +72,8 @@ class ReservationServiceTest {
     void 같은날짜일시_이후_시간_예약할_수_있다() {
         Long reservationTimeId = reservationTimeRepository.add(
                 new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
-        Assertions.assertThatCode(() -> reservationService.addReservation(
-                        new AddReservationDto("투다", LocalDate.now(), reservationTimeId)))
+        assertThatCode(() -> reservationService.addReservation(
+                new AddReservationDto("투다", LocalDate.now(), reservationTimeId)))
                 .doesNotThrowAnyException();
     }
 
@@ -86,5 +87,19 @@ class ReservationServiceTest {
         assertThat(reservationService.allReservations().size()).isEqualTo(1);
         reservationService.deleteReservation(id);
         assertThat(reservationService.allReservations().size()).isEqualTo(0);
+    }
+
+    @Test
+    void 중복_예약은_불가능하다() {
+        LocalTime localTime = LocalTime.now().plusHours(1L);
+        AddReservationTimeDto addReservationTimeDto = new AddReservationTimeDto(localTime);
+        Long reservationTimeId = reservationTimeRepository.add(addReservationTimeDto.toEntity());
+
+        reservationService.addReservation(
+                new AddReservationDto("투다", LocalDate.now(), reservationTimeId));
+
+        assertThatThrownBy(() -> reservationService.addReservation(
+                new AddReservationDto("투다", LocalDate.now(), reservationTimeId)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

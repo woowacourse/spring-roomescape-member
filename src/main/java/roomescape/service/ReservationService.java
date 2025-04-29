@@ -34,10 +34,20 @@ public class ReservationService {
     public long addReservation(AddReservationDto newReservation) {
         ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 id입니다."));
+
         Reservation reservation = newReservation.toReservation(reservationTime);
+
+        validateSameReservation(reservation);
         LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
         validateAddReservationDateTime(reservation, currentDateTime);
         return reservationRepository.add(reservation);
+    }
+
+
+    private void validateSameReservation(Reservation reservation) {
+        if (reservationRepository.existByDateAndTimeId(reservation)) {
+            throw new IllegalArgumentException("중복된 예약신청입니다");
+        }
     }
 
     private void validateAddReservationDateTime(Reservation newReservation, LocalDateTime currentDateTime) {
