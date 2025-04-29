@@ -12,9 +12,9 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
         this.id = id;
-        this.name = Objects.requireNonNull(name);
-        this.date = Objects.requireNonNull(date);
-        this.time = Objects.requireNonNull(time);
+        this.name = Objects.requireNonNull(name, "[ERROR] 이름은 null이 될 수 없습니다.");
+        this.date = Objects.requireNonNull(date, "[ERROR] 날짜는 null이 될 수 없습니다.");
+        this.time = Objects.requireNonNull(time, "[ERROR] 시간은 null이 될 수 없습니다.");
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time) {
