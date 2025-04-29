@@ -1,7 +1,9 @@
 package roomescape.reservation.application.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.application.repository.ThemeRepository;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.dto.ThemeResponse;
 
@@ -22,5 +24,12 @@ public class ThemeService {
                 themeRequest.getDescription(),
                 themeRequest.getThumbnail()
         );
+    }
+
+    public List<ThemeResponse> getThemes() {
+        List<Theme> themes = themeRepository.findAllThemes();
+        return themes.stream()
+                .map(ThemeResponse::new)
+                .toList();
     }
 }

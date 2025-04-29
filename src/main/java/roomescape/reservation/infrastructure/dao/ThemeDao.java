@@ -1,10 +1,12 @@
 package roomescape.reservation.infrastructure.dao;
 
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.application.repository.ThemeRepository;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
 @Repository
@@ -29,5 +31,20 @@ public class ThemeDao implements ThemeRepository {
                 .addValue("thumbnail", themeRequest.getThumbnail());
 
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    @Override
+    public List<Theme> findAllThemes() {
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                """;
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        ));
     }
 }

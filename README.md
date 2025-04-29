@@ -184,7 +184,7 @@ Content-Type: application/json
 ```
 
 ### 테마 조회 API
-- [ ] 테마 조회 API 구현
+- [x] 테마 조회 API 구현
 #### Request
 ```
 GET /themes HTTP/1.1

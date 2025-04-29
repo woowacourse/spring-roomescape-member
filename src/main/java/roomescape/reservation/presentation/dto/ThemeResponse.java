@@ -1,5 +1,7 @@
 package roomescape.reservation.presentation.dto;
 
+import roomescape.reservation.domain.Theme;
+
 public class ThemeResponse {
     private Long id;
     private String name;
@@ -14,6 +16,13 @@ public class ThemeResponse {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public ThemeResponse(Theme theme) {
+        this.id = theme.getId();
+        this.name = theme.getName();
+        this.description = theme.getDescription();
+        this.thumbnail = theme.getThumbnail();
     }
 
     public Long getId() {
