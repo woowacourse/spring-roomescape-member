@@ -24,7 +24,8 @@ public class Reservation {
     }
 
     public static Reservation assignId(Long id, Reservation reservation) {
-        return new Reservation(id, reservation.getName(), reservation.getReservationDate(), reservation.getReservationTime());
+        return new Reservation(id, reservation.getName(), reservation.getReservationDate(),
+                reservation.getReservationTime());
     }
 
     public Long getId() {
@@ -41,5 +42,9 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public boolean isDuplicated(Reservation other) {
+        return this.reservationDate.equals(other.reservationDate) && this.reservationTime.equals(other.reservationTime);
     }
 }

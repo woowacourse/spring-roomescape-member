@@ -299,4 +299,30 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(404);
     }
+
+    @DisplayName("중복된 일시로 예약 생성 시 예외 발생")
+    @Test
+    void error_when_duplicateReservation() {
+        // given
+        Long timeId = 1L;
+        ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
+        timeRepository.save(reservationTime);
+        LocalDate date = LocalDate.now().plusDays(1);
+        reservationRepository.save(Reservation.of(1L, "testName", date, reservationTime));
+
+        // when
+        String requestDate = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", date);
+        reservation.put("timeId", timeId);
+
+        // then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
 }

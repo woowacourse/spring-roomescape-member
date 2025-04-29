@@ -73,6 +73,29 @@ class ReservationServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
+    @DisplayName("중복된 일시에 예약 생성 시 예외 발생")
+    @Test
+    void error_when_dateTime_Duplicate() {
+        // given
+        LocalTime time = LocalTime.of(10, 0);
+        timeRepository.save(ReservationTime.withoutId(time));
+
+        LocalDate date = LocalDate.now().plusDays(1);
+        String name = "멍구";
+        Long timeId = 1L;
+
+        ReservationTime reservationTime = ReservationTime.of(1L, time);
+        Reservation reservation = Reservation.of(1L, name, date, reservationTime);
+        reservationRepository.save(reservation);
+
+        // when
+        ReservationRequest reservationRequest = new ReservationRequest(date, "아이나", timeId);
+
+        // then
+        assertThatThrownBy(() -> reservationService.registerReservation(reservationRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("모든 예약을 조회할 수 있다.")
     @Test
     void getAllReservations() {

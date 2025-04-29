@@ -28,9 +28,19 @@ public class ReservationService {
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
         validateNotPast(request.date(), reservationTime.getStartAt());
         Reservation reservation = ReservationMapper.toDomain(request, reservationTime);
+        validteNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);
 
         return ReservationMapper.toDto(Reservation.assignId(id, reservation));
+    }
+
+    private void validteNotDuplicate(Reservation reservation) {
+        List<Reservation> allReservations = reservationRepository.findAll();
+        boolean duplicated = allReservations.stream()
+                .anyMatch(r -> r.isDuplicated(reservation));
+        if(duplicated) {
+            throw new IllegalArgumentException("이미 예약된 일시입니다");
+        }
     }
 
     private void validateNotPast(LocalDate date, LocalTime startAt) {
