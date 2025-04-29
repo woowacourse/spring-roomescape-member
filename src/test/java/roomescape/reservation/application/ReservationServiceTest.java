@@ -48,7 +48,7 @@ public class ReservationServiceTest {
         assertThat(reservationResponse.getId()).isEqualTo(1L);
         assertThat(reservationResponse.getDate()).isEqualTo(LocalDate.of(2023, 8, 5));
         assertThat(reservationResponse.getName()).isEqualTo("브라운");
-        assertThat(reservationResponse.getReservationTimeResponse().getId()).isEqualTo(1L);
+        assertThat(reservationResponse.getTime().getId()).isEqualTo(1L);
     }
 
     @Test

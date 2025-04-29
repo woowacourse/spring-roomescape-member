@@ -1,5 +1,6 @@
 package roomescape.reservation.presentation;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.application.service.ReservationService;
@@ -27,9 +29,10 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             final @RequestBody ReservationRequest reservationRequest
     ) {
-        return ResponseEntity.ok().body(
-                reservationService.createReservation(reservationRequest)
-        );
+        ReservationResponse reservation = reservationService.createReservation(reservationRequest);
+
+        return ResponseEntity.created(createUri(reservation.getId()))
+                .body(reservation);
     }
 
     @GetMapping
@@ -46,5 +49,12 @@ public class ReservationController {
     ) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private URI createUri(Long reservationId){
+        return ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(reservationId)
+                .toUri();
     }
 }

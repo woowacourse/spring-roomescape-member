@@ -7,7 +7,7 @@ public class ReservationResponse {
     private Long id;
     private String name;
     private LocalDate date;
-    private ReservationTimeResponse reservationTimeResponse;
+    private ReservationTimeResponse time;
 
     private ReservationResponse() {
     }
@@ -16,7 +16,7 @@ public class ReservationResponse {
         this.id = reservation.getId();
         this.name = reservation.getName().getName();
         this.date = reservation.getDate().getReservationDate();
-        this.reservationTimeResponse = new ReservationTimeResponse(reservation.getReservationTime());
+        this.time = new ReservationTimeResponse(reservation.getReservationTime());
     }
 
     public Long getId() {
@@ -31,8 +31,8 @@ public class ReservationResponse {
         return date;
     }
 
-    public ReservationTimeResponse getReservationTimeResponse() {
-        return reservationTimeResponse;
+    public ReservationTimeResponse getTime() {
+        return time;
     }
 
 }
