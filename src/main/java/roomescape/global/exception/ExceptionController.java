@@ -32,7 +32,6 @@ public class ExceptionController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return new ResponseEntity<>(e.getBindingResult().getFieldErrors().get(0).getDefaultMessage(),
-                HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body("[ERROR] " + e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
 }
