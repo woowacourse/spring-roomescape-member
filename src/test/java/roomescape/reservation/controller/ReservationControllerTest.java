@@ -105,7 +105,7 @@ public class ReservationControllerTest {
                 .andExpect(jsonPath("$.time.startAt").value(formatStartAt(time)));
     }
 
-    @DisplayName("잘못된 정보가 입력되면 400 상태 코드를 반환한다.")
+    @DisplayName("이름이 존재하지 않을 경우 400 상태 코드를 반환한다.")
     @Test
     void test3() throws Exception {
         // given
@@ -123,7 +123,7 @@ public class ReservationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("존재하지 않는 TimeId면 404를 반환한다.")
+    @DisplayName("존재하지 않는 TimeId면 404 상태 코드를 반환한다.")
     @Test
     void test4() throws Exception {
         // given
@@ -158,7 +158,7 @@ public class ReservationControllerTest {
                 .andExpect(status().is(204));
     }
 
-    @DisplayName("삭제할 예약 정보가 존재하지 않는다면 404 에러를 반환한다.")
+    @DisplayName("삭제할 예약 정보가 존재하지 않는다면 404 상태 코드를 반환한다.")
     @Test
     void test6() throws Exception {
         // given
@@ -187,4 +187,20 @@ public class ReservationControllerTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
+    @DisplayName("이름이 공백일 경우 400 상태 코드를 반환한다.")
+    @Test
+    void test7() throws Exception {
+        // given
+        String name = "";
+        LocalDate date = LocalDate.now();
+        Long timeId = 1L;
+        ReservationRequest request = new ReservationRequest(name, date, timeId);
+        String content = objectMapper.writeValueAsString(request);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content)
+        ).andExpect(status().isBadRequest());
+    }
 }
