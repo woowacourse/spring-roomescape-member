@@ -24,7 +24,7 @@
 
 - [x] 테마 도메인을 추가한다
     - [x] 테마는 이름, 설명, 썸네일을 가진다
-    - [ ] db의 theme 테이블 구조는 다음과 같다
+    - [x] db의 theme 테이블 구조는 다음과 같다
   ```angular2html
   id          BIGINT       NOT NULL AUTO_INCREMENT,
   name        VARCHAR(255) NOT NULL,
