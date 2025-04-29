@@ -24,7 +24,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -36,7 +36,7 @@ public class ReservationControllerTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -61,7 +61,7 @@ public class ReservationControllerTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")

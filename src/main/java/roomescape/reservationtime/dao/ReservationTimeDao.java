@@ -9,7 +9,7 @@ public interface ReservationTimeDao {
 
     Long create(ReservationTime reservationTime);
 
-    int delete(Long id);
+    Integer delete(Long id);
 
     Optional<ReservationTime> findById(Long id);
 }

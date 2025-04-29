@@ -39,7 +39,7 @@ public class ReservationService {
         return reservationDao.create(reservation);
     }
 
-    public int delete(Long id) {
+    public Integer delete(Long id) {
         return reservationDao.delete(id);
     }
 }

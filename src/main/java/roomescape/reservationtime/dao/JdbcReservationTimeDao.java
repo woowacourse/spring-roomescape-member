@@ -52,7 +52,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public int delete(Long id) {
+    public Integer delete(Long id) {
         String sql = "delete from reservation_time where id = ?";
         return this.jdbcTemplate.update(sql, id);
     }

@@ -8,6 +8,6 @@ public interface ReservationDao {
 
     Long create(Reservation reservation);
 
-    int delete(Long id);
+    Integer delete(Long id);
 }
 

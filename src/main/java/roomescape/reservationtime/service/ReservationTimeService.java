@@ -34,7 +34,7 @@ public class ReservationTimeService {
         return reservationTimeDao.create(reservationTime);
     }
 
-    public int delete(@PathVariable Long id) {
+    public Integer delete(@PathVariable Long id) {
         return reservationTimeDao.delete(id);
     }
 }
