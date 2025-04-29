@@ -1,0 +1,36 @@
+package roomescape.dto;
+
+import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.model.Reservation;
+
+class ReservationTimeRequestDtoTest {
+
+    private static Stream<Arguments> testCasesFor() {
+        return Stream.of(
+                Arguments.of("answkduf"),
+                Arguments.of("00:61"),
+                Arguments.of("25:00")
+
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("testCasesFor")
+    @DisplayName("시간 형식이 올바르지 않은 경우 예외 처리한다.")
+    void test(String input) {
+        //given
+        ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(input);
+        // when & then
+        assertThatThrownBy(reservationTimeRequestDto::convertToTime)
+                        .isInstanceOf(IllegalStateException.class)
+                        .hasMessageContaining("시간");
+
+    }
+
+}
