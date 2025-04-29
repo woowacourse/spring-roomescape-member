@@ -15,7 +15,6 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
-
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
                                   ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
@@ -24,6 +23,9 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse add(ReservationTimeRequest request) {
         ReservationTime newTime = request.toTimeWithoutId();
+        if (reservationTimeRepository.existSameStartAt(request.startAt())) {
+            throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
+        }
         Long id = reservationTimeRepository.saveAndReturnId(request.toTimeWithoutId());
         return ReservationTimeResponse.from(newTime.withId(id));
     }
@@ -41,5 +43,6 @@ public class ReservationTimeService {
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
+
 
 }

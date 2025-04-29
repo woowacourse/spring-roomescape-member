@@ -1,5 +1,6 @@
 package roomescape.domain.repository;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,4 +39,9 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
         return times.get(id);
     }
 
+    @Override
+    public Boolean existSameStartAt(LocalTime time) {
+        return times.values().stream()
+                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(time));
+    }
 }

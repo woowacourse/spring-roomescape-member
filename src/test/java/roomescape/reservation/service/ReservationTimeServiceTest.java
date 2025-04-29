@@ -12,7 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.repository.ReservationFakeRepository;
 import roomescape.domain.repository.ReservationTimeFakeRepository;
-import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.domain.Reservation;
@@ -85,7 +84,7 @@ class ReservationTimeServiceTest {
 
     @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하면 예외가 발생한다")
     @Test
-    void delete_exception(){
+    void delete_exception() {
         // given
         Long deleteId = 1L;
 
@@ -95,4 +94,14 @@ class ReservationTimeServiceTest {
                 .hasMessage("해당 시간에 대한 예약이 존재합니다.");
     }
 
+    @DisplayName("동일한 시간을 생성하는 경우 예외가 발생한다")
+    @Test
+    void duplicate_time_test() {
+        // given
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(3, 12));
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.add(reservationTimeRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간은 이미 존재합니다.");
+    }
 }

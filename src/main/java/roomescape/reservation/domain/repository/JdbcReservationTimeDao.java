@@ -50,9 +50,21 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    public ReservationTime findById(Long id){
+    public ReservationTime findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
+    @Override
+    public Boolean existSameStartAt(LocalTime time) {
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 
+                    FROM reservation_time 
+                    WHERE start_at =  ?
+                )
+                """;
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, time);
+    }
 }

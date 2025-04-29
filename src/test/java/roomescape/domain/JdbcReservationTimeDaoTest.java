@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,4 +79,19 @@ class JdbcReservationTimeDaoTest {
         assertThat(findTime.getId()).isEqualTo(1L);
         assertThat(findTime.getStartAt()).isEqualTo(LocalTime.of(10, 0));
     }
+
+    @DisplayName("같은 시간이 있는지 확인한다")
+    @Test
+    void exist_same_start_at_test() {
+        // given
+        LocalTime time = LocalTime.of(10, 10);
+
+        // when
+        Boolean actual = jdbcReservationTimeDao.existSameStartAt(time);
+
+        // then
+        Assertions.assertThat(actual).isTrue();
+    }
+
+
 }
