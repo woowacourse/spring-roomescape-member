@@ -15,6 +15,11 @@ public class RoomescapeAdminController {
 
     @GetMapping("/reservation")
     public String getReservationPage() {
-        return "admin/reservation";
+        return "admin/reservation-new";
+    }
+
+    @GetMapping("/time")
+    public String getTimePage() {
+        return "admin/time";
     }
 }
