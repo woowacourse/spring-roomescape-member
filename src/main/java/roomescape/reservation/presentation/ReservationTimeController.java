@@ -1,5 +1,6 @@
 package roomescape.reservation.presentation;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,9 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.reservation.application.service.ReservationTimeService;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeResponse;
-import roomescape.reservation.application.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
@@ -27,9 +29,10 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> createTime(
             final @RequestBody ReservationTimeRequest reservationTimeRequest
     ) {
-        return ResponseEntity.ok().body(
-                reservationTimeService.createReservationTime(reservationTimeRequest)
-        );
+        ReservationTimeResponse reservationTime = reservationTimeService.createReservationTime(reservationTimeRequest);
+
+        return ResponseEntity.created(createUri(reservationTime.getId()))
+                .body(reservationTime);
     }
 
     @GetMapping
@@ -46,5 +49,12 @@ public class ReservationTimeController {
     ) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private URI createUri(Long timeId) {
+        return ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(timeId)
+                .toUri();
     }
 }
