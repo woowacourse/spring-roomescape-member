@@ -1,25 +1,33 @@
 package roomescape.business;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
     private Long id;
     private final String name;
     private final LocalDate date;
-    private ReservationTime time;
+    private final ReservationTime time;
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        validatePastDateTime(date, time);
+        this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
     }
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
+    public Reservation(String name, LocalDate date, ReservationTime time) {
+        this(null, name, date, time);
+    }
+
+    private void validatePastDateTime(LocalDate date, ReservationTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("과거 일시로 예약을 생성할 수 없습니다.");
+        }
     }
 
     public Long getId() {
