@@ -3,20 +3,23 @@ package roomescape.reservation.controller.response;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 
 public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
-        ReservationTimeResponse time
+        ReservationTimeResponse time,
+        ThemeResponse theme
 ) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getReserverName(),
                 reservation.getDate(),
-                ReservationTimeResponse.from(reservation.getReservationTime())
+                ReservationTimeResponse.from(reservation.getReservationTime()),
+                ThemeResponse.from(reservation.getTheme())
         );
     }
 

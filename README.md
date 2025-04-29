@@ -18,7 +18,7 @@
 
 ## 2단계
 >클라이언트 코드를 수정해야 한다.
-> 
+ 
 - 테마 entity가 추가된다.
   - 테마 table추가 및 reservation테이블 수정(제공되는 sql이용)
   - 기존 reservation entity 코드에 theme 추가

@@ -7,6 +7,10 @@ import roomescape.reservation.controller.request.ReservationCreateRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationDateTime;
+import roomescape.reservation.domain.ReserverName;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
@@ -15,11 +19,14 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeService reservationTimeService) {
+                              ReservationTimeService reservationTimeService,
+                              ThemeService themeService) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     public List<ReservationResponse> getAll() {
@@ -36,9 +43,11 @@ public class ReservationService {
             throw new IllegalArgumentException("[ERROR] 이미 예약이 찼습니다.");
         }
 
+        ReserverName reserverName = new ReserverName(request.name());
         ReservationTime reservationTime = reservationTimeService.getReservationTime(request.timeId());
-        Reservation reservation = Reservation.create(request.name(), request.date(), reservationTime);
-        Reservation created = reservationRepository.save(reservation);
+        ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime);
+        Theme theme = themeService.getTheme(request.themeId());
+        Reservation created = reservationRepository.save(reserverName, reservationDateTime, theme);
 
         return ReservationResponse.from(created);
     }
