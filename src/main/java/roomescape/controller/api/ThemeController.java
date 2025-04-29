@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,11 @@ import roomescape.service.dto.ThemeCreation;
 
 @RestController
 @RequestMapping("/theme")
-public class RoomescapeThemeController {
+public class ThemeController {
 
     private final ThemeService themeService;
 
-    public RoomescapeThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
