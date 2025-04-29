@@ -1,6 +1,7 @@
 package roomescape.service.reservation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public final class Reservation {
@@ -22,6 +23,16 @@ public final class Reservation {
         if (name == null || name.isBlank() || name.length() > 5) {
             throw new IllegalArgumentException("예약자명은 최소 1글자, 최대 5글자여야합니다.");
         }
+    }
+
+    public boolean isBefore(final LocalDateTime dateTime) {
+        if (date.isBefore(dateTime.toLocalDate())) {
+            return true;
+        }
+        if (date.equals(dateTime.toLocalDate())) {
+            return time.isBefore(dateTime.toLocalTime());
+        }
+        return false;
     }
 
     public Long getTimeId() {
