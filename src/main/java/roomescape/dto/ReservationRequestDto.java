@@ -16,7 +16,8 @@ public record ReservationRequestDto(
             return new Reservation(
                     this.name,
                     parsedDate,
-                    reservationTime
+                    reservationTime,
+                    null
             );
         } catch (DateTimeParseException e) {
             throw new IllegalStateException("날짜형식이 잘못되었습니다");
