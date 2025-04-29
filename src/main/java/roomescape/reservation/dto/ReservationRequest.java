@@ -1,9 +1,9 @@
 package roomescape.reservation.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
-public record ReservationRequest(String name, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, Long timeId) {
+public record ReservationRequest(String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date, Long timeId) {
 
     public ReservationRequest {
         if (name == null || name.isBlank()) {
