@@ -3,6 +3,9 @@ package roomescape;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -99,5 +102,81 @@ class ReservationApiTest {
             .then().log().all()
             .statusCode(200)
             .body("size()", is(1));
+    }
+
+    @Test
+    void 예약날짜는_null을_받을_수_없다() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", null);
+        reservation.put("timeId", 1);
+
+        Map<Object, Object> reservationTime = new HashMap<>();
+        reservationTime.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservationTime)
+            .when().post("/times")
+            .then().log().all()
+            .statusCode(201);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservation)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "abcdefghijk"})
+    void 예약자_이름은_빈_값을_받을_수_없다(String name) {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", name);
+        reservation.put("date", "2023-08-05");
+        reservation.put("timeId", 1);
+
+        Map<Object, Object> reservationTime = new HashMap<>();
+        reservationTime.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservationTime)
+            .when().post("/times")
+            .then().log().all()
+            .statusCode(201);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservation)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @Test
+    void 예약_시간_id는_null을_받을_수_없다() {
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2023-08-05");
+        reservation.put("timeId", null);
+
+        Map<Object, Object> reservationTime = new HashMap<>();
+        reservationTime.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservationTime)
+            .when().post("/times")
+            .then().log().all()
+            .statusCode(201);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservation)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
     }
 }

@@ -46,4 +46,17 @@ public class ReservationTimeApiTest {
             .statusCode(200)
             .body("size()", is(1));
     }
+
+    @Test
+    void 시간은_null값을_받을_수_없다() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", null);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/times")
+            .then().log().all()
+            .statusCode(400);
+    }
 }
