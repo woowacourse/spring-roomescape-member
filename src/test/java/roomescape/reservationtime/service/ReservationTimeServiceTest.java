@@ -1,12 +1,16 @@
 package roomescape.reservationtime.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import roomescape.reservation.Reservation;
+import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.FakeReservationTimeDao;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
@@ -16,16 +20,22 @@ import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 class ReservationTimeServiceTest {
 
     private FakeReservationTimeDao fakeReservationTimeDao;
+    private FakeReservationDao fakeReservationDao;
     private ReservationTimeService reservationTimeService;
 
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
     private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
+    private final Reservation fakeReservation1 = new Reservation(1L, "포라", LocalDate.of(2025, 7, 25),
+            fakeReservationTime1);
+    private final Reservation fakeReservation2 = new Reservation(2L, "널안보면내마음에멍", LocalDate.of(2025, 12, 25),
+            fakeReservationTime1);
 
 
     @BeforeEach
     void setUp() {
         fakeReservationTimeDao = new FakeReservationTimeDao(fakeReservationTime1, fakeReservationTime2);
-        reservationTimeService = new ReservationTimeService(fakeReservationTimeDao);
+        fakeReservationDao = new FakeReservationDao(fakeReservation1, fakeReservation2);
+        reservationTimeService = new ReservationTimeService(fakeReservationTimeDao, fakeReservationDao);
     }
 
     @Test
@@ -54,11 +64,18 @@ class ReservationTimeServiceTest {
     @Test
     void 예약_시간을_삭제할_수_있다() {
         // given & when
-        reservationTimeService.delete(fakeReservationTime1.getId());
+        reservationTimeService.delete(2L);
         List<ReservationTimeResponse> all = reservationTimeService.findAll();
 
         // then
         assertThat(all.size()).isEqualTo(1);
-        assertThat(all.getFirst().startAt()).isEqualTo(LocalTime.of(11, 0));
+        assertThat(all.getFirst().startAt()).isEqualTo(LocalTime.of(10, 0));
+    }
+
+    @Test
+    void 특정_시간에_대한_예약이_존재하면_예약시간을_삭제할_수_없다() {
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isInstanceOf(IllegalStateException.class);
     }
 }

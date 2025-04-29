@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,5 +70,12 @@ class ReservationServiceTest {
         // then
         assertThat(all.size()).isEqualTo(1);
         assertThat(all.getFirst().name()).isEqualTo("널안보면내마음에멍");
+    }
+
+    @Test
+    void id에_대한_예약이_없을_경우_예외가_발생한다() {
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationService.delete(10L))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -72,5 +73,35 @@ class JdbcReservationDaoTest {
         // then
         assertThat(beforeSize).isEqualTo(1);
         assertThat(afterSize).isEqualTo(0);
+    }
+
+    @Test
+    void timeId로_예약을_조회한다() {
+        // given
+        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+        Long id = reservationTimeDao.create(reservationTime);
+        Reservation reservation = Reservation.createWithoutId("포라", LocalDate.now(),
+                new ReservationTime(id, reservationTime.getStartAt()));
+        reservationDao.create(reservation);
+        // when
+        Optional<Reservation> foundReservation = reservationDao.findByTimeId(id);
+        // then
+        assertThat(foundReservation.isPresent()).isTrue();
+        assertThat(foundReservation.get().getName()).isEqualTo("포라");
+    }
+
+    @Test
+    void id로_예약을_조회한다() {
+        // given
+        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+        Long id = reservationTimeDao.create(reservationTime);
+        Reservation reservation = Reservation.createWithoutId("포라", LocalDate.now(),
+                new ReservationTime(id, reservationTime.getStartAt()));
+        reservationDao.create(reservation);
+        // when
+        Optional<Reservation> foundReservation = reservationDao.findById(1L);
+        // then
+        assertThat(foundReservation.isPresent()).isTrue();
+        assertThat(foundReservation.get().getName()).isEqualTo("포라");
     }
 }

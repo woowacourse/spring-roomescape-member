@@ -40,6 +40,7 @@ public class ReservationService {
     }
 
     public Integer delete(Long id) {
+        reservationDao.findById(id).orElseThrow(() -> new NoSuchElementException("예약이 존재하지 않습니다."));
         return reservationDao.delete(id);
     }
 }

@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -71,5 +73,45 @@ public class JdbcReservationDao implements ReservationDao {
     public Integer delete(Long id) {
         String sql = "delete from reservation where id = ?";
         return this.jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Optional<Reservation> findByTimeId(Long id) {
+        String sql = "SELECT * FROM reservation as r INNER JOIN reservation_time as rt ON rt.id = r.id WHERE r.time_id = ?";
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> new Reservation(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getDate("date").toLocalDate(),
+                            new ReservationTime(rs.getLong("id"), rs.getTime("start_at").toLocalTime())
+                    ),
+                    id
+            );
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = "SELECT * FROM reservation as r INNER JOIN reservation_time as rt ON rt.id = r.id WHERE r.id= ?";
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    sql,
+                    (rs, rowNum) -> new Reservation(
+                            rs.getLong("id"),
+                            rs.getString("name"),
+                            rs.getDate("date").toLocalDate(),
+                            new ReservationTime(rs.getLong("id"), rs.getTime("start_at").toLocalTime())
+                    ),
+                    id
+            );
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

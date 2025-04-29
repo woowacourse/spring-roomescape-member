@@ -3,6 +3,7 @@ package roomescape.reservation.dao;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservation.Reservation;
 
@@ -32,5 +33,19 @@ public class FakeReservationDao implements ReservationDao {
     public Integer delete(Long id) {
         fakeReservations.removeIf(reservation -> reservation.getId().equals(id));
         return fakeReservations.size();
+    }
+
+    @Override
+    public Optional<Reservation> findByTimeId(Long id) {
+        return fakeReservations.stream()
+                .filter(reservation -> reservation.getReservationTime().getId().equals(id))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return fakeReservations.stream()
+                .filter(reservation -> reservation.getId().equals(id))
+                .findFirst();
     }
 }
