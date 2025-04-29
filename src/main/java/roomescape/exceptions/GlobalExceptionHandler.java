@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException exception) {
-        ErrorResponse error = ErrorResponse.create(exception, HttpStatus.NOT_FOUND, exception.getMessage());
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException e) {
+        ErrorResponse error = ErrorResponse.create(e, HttpStatus.NOT_FOUND, e.getMessage());
+        e.printStackTrace();
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception exception) {
-        ErrorResponse error = ErrorResponse.create(exception, HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다");
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        ErrorResponse error = ErrorResponse.create(e, HttpStatus.BAD_REQUEST, e.getMessage());
+        e.printStackTrace();
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }
