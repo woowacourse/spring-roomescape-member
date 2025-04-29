@@ -1,7 +1,6 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTest {
 
@@ -18,7 +16,7 @@ class ReservationTest {
     void isDuplicated() {
         // given
         LocalDate date = LocalDate.of(2025, 1, 1);
-        ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10,0));
+        ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
         Reservation reservation1 = Reservation.of(1L, "멍구", date, reservationTime);
 
         // when
@@ -38,7 +36,7 @@ class ReservationTest {
     void isNotduplicated(String date, String time, Long timeId) {
         // given
         LocalDate date1 = LocalDate.of(2025, 1, 1);
-        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10,0));
+        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
         Reservation reservation1 = Reservation.of(1L, "멍구", date1, time1);
 
         // when

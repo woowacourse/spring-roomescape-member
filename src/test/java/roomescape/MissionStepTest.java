@@ -311,7 +311,6 @@ public class MissionStepTest {
         reservationRepository.save(Reservation.of(1L, "testName", date, reservationTime));
 
         // when
-        String requestDate = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", date);

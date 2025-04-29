@@ -1,17 +1,16 @@
 package roomescape.application;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.mapper.ReservationMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.repository.ReservationRepository;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
-import roomescape.application.mapper.ReservationMapper;
-import roomescape.domain.repository.ReservationRepository;
 
 @Service
 public class ReservationService {
@@ -38,7 +37,7 @@ public class ReservationService {
         List<Reservation> allReservations = reservationRepository.findAll();
         boolean duplicated = allReservations.stream()
                 .anyMatch(r -> r.isDuplicated(reservation));
-        if(duplicated) {
+        if (duplicated) {
             throw new IllegalArgumentException("이미 예약된 일시입니다");
         }
     }

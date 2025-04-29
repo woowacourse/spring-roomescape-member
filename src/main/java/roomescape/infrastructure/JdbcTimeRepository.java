@@ -1,6 +1,5 @@
 package roomescape.infrastructure;
 
-import java.sql.SQLException;
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
