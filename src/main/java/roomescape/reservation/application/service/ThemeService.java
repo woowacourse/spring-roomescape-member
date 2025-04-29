@@ -32,4 +32,8 @@ public class ThemeService {
                 .map(ThemeResponse::new)
                 .toList();
     }
+
+    public void deleteTheme(final Long id) {
+        themeRepository.delete(id);
+    }
 }

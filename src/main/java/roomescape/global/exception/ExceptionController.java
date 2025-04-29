@@ -26,7 +26,7 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler({DeleteTimeException.class, DeleteReservationException.class})
+    @ExceptionHandler({DeleteTimeException.class, DeleteReservationException.class, DeleteThemeException.class})
     public ResponseEntity<String> handleDeleteException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }

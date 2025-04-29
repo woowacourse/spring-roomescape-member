@@ -206,7 +206,7 @@ Content-Type: application/json
 ```
 
 ### 테마 삭제 API
-- [ ] 테마 삭제 API 구현
+- [x] 테마 삭제 API 구현
 #### Request
 ```
 DELETE /themes/1 HTTP/1.1

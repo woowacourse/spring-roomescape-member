@@ -8,4 +8,6 @@ public interface ThemeRepository {
     Long insert(ThemeRequest themeRequest);
 
     List<Theme> findAllThemes();
+
+    void delete(Long id);
 }

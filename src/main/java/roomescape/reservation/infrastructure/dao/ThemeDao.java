@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.global.exception.DeleteThemeException;
 import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
@@ -46,5 +47,16 @@ public class ThemeDao implements ThemeRepository {
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         ));
+    }
+
+    @Override
+    public void delete(Long id) {
+        String sql = """
+                DELETE FROM theme WHERE id = ?
+                """;
+        int result = jdbcTemplate.update(sql, id);
+        if(result != 1){
+            throw new DeleteThemeException("[ERROR] 삭제하지 못했습니다.");
+        }
     }
 }
