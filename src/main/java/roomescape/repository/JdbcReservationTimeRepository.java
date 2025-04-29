@@ -64,4 +64,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             return Optional.empty();
         }
     }
+
+    @Override
+    public boolean existByTime(LocalTime time) {
+        String sql = "select count(*) from reservation_time where start_at = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, time) > 0;
+    }
 }

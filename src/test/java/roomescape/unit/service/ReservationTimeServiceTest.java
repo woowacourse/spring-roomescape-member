@@ -69,4 +69,16 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(id))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 중복_시간을_설정할_수_없다() {
+        LocalTime startAt = LocalTime.now().plusMinutes(30L);
+        AddReservationTimeDto initialReservationTime = new AddReservationTimeDto(startAt);
+        reservationTimeService.addReservationTime(initialReservationTime);
+
+        AddReservationTimeDto duplicateAddReservationTime = new AddReservationTimeDto(startAt);
+
+        assertThatThrownBy(() -> reservationTimeService.addReservationTime(duplicateAddReservationTime))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

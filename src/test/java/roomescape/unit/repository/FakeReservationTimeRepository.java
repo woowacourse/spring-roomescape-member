@@ -1,5 +1,6 @@
 package roomescape.unit.repository;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,5 +40,11 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         return reservationTimes.stream()
                 .filter(reservation -> reservation.getId().equals(id))
                 .findAny();
+    }
+
+    @Override
+    public boolean existByTime(LocalTime time) {
+        return reservationTimes.stream()
+                .anyMatch((reservationTime) -> reservationTime.getTime().equals(time));
     }
 }
