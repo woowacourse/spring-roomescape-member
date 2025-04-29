@@ -133,5 +133,84 @@ class RoomescapeApplicationTest {
                         .statusCode(204);
         }
 
+        @DisplayName("예약 가능한 시간을 추가할 수 있다.")
+        @Test
+        void canCreateReservationTime() {
+                Map<String, String> params = new HashMap<>();
+                params.put("startAt", "10:00");
 
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .body(params)
+                        .when().post("/times")
+                        .then().log().all()
+                        .statusCode(201)
+                        .header("location", "times/1");
+        }
+
+        @DisplayName("이미 존재하는 예약 가능 시간은 추가할 수 없다.")
+        @Test
+        void cannotCreateReservationTimeWhenExist() {
+                jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+
+                Map<String, String> params = new HashMap<>();
+                params.put("startAt", "10:00");
+
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .body(params)
+                        .when().post("/times")
+                        .then().log().all()
+                        .statusCode(400);
+        }
+
+        @DisplayName("유요하지 않은 요청을 예약 가능 시간을 추가할 수 없다")
+        @Test
+        void cannotCreateReservationTimeWhenInvalidRequest() {
+                Map<String, String> params = new HashMap<>();
+                params.put("startAt", "");
+
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .body(params)
+                        .when().post("/times")
+                        .then().log().all()
+                        .statusCode(400);
+        }
+
+        @DisplayName("예약 가능 시간을 조회할 수 있다")
+        @Test
+        void canResponseAllReservationTimes() {
+                jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+                jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "11:00");
+
+                RestAssured.given().log().all()
+                        .when().get("/times")
+                        .then().log().all()
+                        .statusCode(200)
+                        .body("size()", is(2));
+        }
+
+        @DisplayName("예약 가능한 시간을 삭제할 수 있다")
+        @Test
+        void canDeleteReservationTime() {
+                jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+
+                RestAssured.given().log().all()
+                        .when().delete("/times/1")
+                        .then().log().all()
+                        .statusCode(204);
+        }
+
+        @DisplayName("이미 해당 시간에 대해 예약 데이터가 존재한다면 삭제가 불가능하다")
+        @Test
+        void cannotDeleteReservationTimeWhenExistReservation() {
+                jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+                jdbcTemplate.update("insert into reservation (id, name, date, time_id) values (?, ?, ?, ?)", 1, "랜디", FUTURE_DATE_TEXT, "1");
+
+                RestAssured.given().log().all()
+                        .when().delete("/times/1")
+                        .then().log().all()
+                        .statusCode(400);
+        }
 }
