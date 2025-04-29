@@ -1,14 +1,15 @@
 package roomescape.persistence;
 
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
@@ -19,6 +20,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Long create(ReservationTime reservationTime) {
         String sql = "INSERT INTO reservation_time(start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -32,6 +34,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public Optional<ReservationTime> findById(Long reservationTimeId) {
         try {
             String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
@@ -45,6 +48,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         }
     }
 
+    @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new ReservationTime(
@@ -53,6 +57,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         );
     }
 
+    @Override
     public void deleteById(Long reservationTimeId) {
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", reservationTimeId);
     }
