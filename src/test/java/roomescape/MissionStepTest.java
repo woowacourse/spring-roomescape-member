@@ -176,6 +176,28 @@ public class MissionStepTest {
     }
 
     @Test
+    void 팔단계() {
+        insertOneReservationTimeSlot();
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2023-08-05");
+        reservation.put("timeId", 1);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservation)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.CREATED.value());
+
+        RestAssured.given().log().all()
+            .when().get("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", is(1));
+    }
+    
+    @Test
     void 구단계() {
         boolean isJdbcTemplateInjected = false;
 
