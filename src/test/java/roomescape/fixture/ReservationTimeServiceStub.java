@@ -19,7 +19,7 @@ public class ReservationTimeServiceStub extends ReservationTimeService {
 
     @Override
     public ReservationTimeResponse create(ReservationTimeRequest request) {
-        ReservationTime time = new ReservationTime(id, request.getStartAt());
+        ReservationTime time = new ReservationTime(id, request.startAt());
         times.put(id++, time);
         return ReservationTimeResponse.from(time);
     }

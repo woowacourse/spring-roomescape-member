@@ -20,8 +20,8 @@ public class ReservationServiceStub extends ReservationService {
 
     @Override
     public ReservationResponse create(ReservationRequest request) {
-        Reservation reservation = new Reservation(request.getName(), request.getDate(),
-                new ReservationTime(request.getTimeId(), LocalTime.now()));
+        Reservation reservation = new Reservation(request.name(), request.date(),
+                new ReservationTime(request.timeId(), LocalTime.now()));
         Reservation saved = reservation.withId(id++);
         reservations.put(reservation.getId(), saved);
         return ReservationResponse.from(saved);

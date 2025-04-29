@@ -17,7 +17,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
-        ReservationTime newReservationTime = new ReservationTime(request.getStartAt());
+        ReservationTime newReservationTime = new ReservationTime(request.startAt());
         return ReservationTimeResponse.from(timeRepository.add(newReservationTime));
     }
 
