@@ -1,6 +1,7 @@
 package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.sql.Time;
@@ -74,9 +75,9 @@ class JdbcTimeRepositoryTest {
         assertThat(times)
                 .extracting(ReservationTime::getStartAt)
                 .containsExactly(
-                        LocalTime.of(10,0),
-                        LocalTime.of(11,0),
-                        LocalTime.of(12,0)
+                        LocalTime.of(10, 0),
+                        LocalTime.of(11, 0),
+                        LocalTime.of(12, 0)
                 );
     }
 
@@ -93,5 +94,17 @@ class JdbcTimeRepositoryTest {
 
         // then
         assertThat(timeRepository.findAll()).hasSize(0);
+    }
+
+    @DisplayName("다른 테이블에서 참조되고 있는 시간 삭제 시 예외 발생")
+    @Test
+    void error_when_delete_referencedTime() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1L, '10:00:00')");
+        jdbcTemplate.update("INSERT INTO reservation (name, date,time_id) VALUES ('브라운', '2025-01-01', 1)");
+
+        // when & then
+        assertThatThrownBy(() -> timeRepository.deleteById(1L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

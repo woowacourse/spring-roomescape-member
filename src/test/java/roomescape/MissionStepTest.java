@@ -279,7 +279,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete(String.format("/times/%d", timeId))
                 .then().log().all()
-                .statusCode(405);
+                .statusCode(400);
     }
 
     @DisplayName("존재하지 않는 id로 조회 시 예외 발생")
