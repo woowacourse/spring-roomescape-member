@@ -12,21 +12,23 @@ public class Reservation {
     private final String name;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate reservationDate, ReservationTime reservationTime) {
+    public Reservation(Long id, String name, LocalDate reservationDate, ReservationTime reservationTime, Theme theme) {
         this.id = id;
         this.name = name;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
+        this.theme = theme;
         validateReservation();
     }
 
-    public static Reservation withoutId(String name, LocalDate reservationDate, ReservationTime reservationTime) {
-        return new Reservation(null, name, reservationDate, reservationTime);
+    public static Reservation withoutId(String name, LocalDate reservationDate, ReservationTime reservationTime, Theme theme) {
+        return new Reservation(null, name, reservationDate, reservationTime, theme);
     }
 
     private void validateReservation() {
-        if (name == null || reservationDate == null || reservationTime == null) {
+        if (name == null || reservationDate == null || reservationTime == null || theme == null) {
             throw new IllegalArgumentException("Reservation field cannot be null");
         }
         validateName();
@@ -64,6 +66,10 @@ public class Reservation {
 
     public LocalTime getReservationStratTime() {
         return reservationTime.getStartAt();
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override
