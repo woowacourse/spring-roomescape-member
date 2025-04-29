@@ -43,4 +43,5 @@ class ReservationRequestTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시간 ID는 필수입니다.");
     }
+
 }

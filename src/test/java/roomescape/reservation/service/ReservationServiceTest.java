@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -88,4 +89,39 @@ class ReservationServiceTest {
                 .doesNotThrowAnyException();
     }
 
+    @DisplayName("지난 날짜인 경우 예외가 발생한다")
+    @Test
+    void past_day_exception_test() {
+        // given
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.now().minusDays(1), 4L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.add(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 날짜는 예약할 수 없습니다.");
+    }
+
+    @DisplayName("지난 시각인 경우 예외가 발생한다")
+    @Test
+    void past_time_exception_test() {
+        // given
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(), 1L);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.add(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 시각은 예약할 수 없습니다.");
+    }
+
+    @DisplayName("미래 날짜인데 시간이 현재보다 과거인 경우 예외가 발생하지 않는다")
+    @Test
+    void future_test() {
+        // given
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.now().plusDays(3), 1L);
+
+        // when & then
+        assertThatCode(() -> reservationService.add(request))
+                .doesNotThrowAnyException();
+
+    }
 }
