@@ -1,6 +1,9 @@
 package roomescape.reservation.infrastructure;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +95,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existByReservationTimeId(final Long timeId){
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
+        return count != 0;
+    }
+
+    @Override
+    public boolean existByDateTime(LocalDate date, LocalTime time) {
+        String sql = """               
+                SELECT COUNT(*)
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                ON r.time_id = t.id
+                WHERE r.date = ? and t.start_at = ?
+                """;
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, Date.valueOf(date), Time.valueOf(time));
         return count != 0;
     }
 }

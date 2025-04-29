@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.util.DateTime;
-import roomescape.common.util.SystemDateTime;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.dto.ReservationRequest;
@@ -36,7 +35,11 @@ public class ReservationService {
         LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 
         if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("예약할 수 없는 시간입니다.");
+            throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
+        }
+
+        if (reservationRepository.existByDateTime(request.date(), time.getStartAt())) {
+            throw new IllegalArgumentException("이미 예약이 존재합니다.");
         }
 
         Long id = reservationRepository.save(new Reservation(null, request.name(), request.date(), time));
