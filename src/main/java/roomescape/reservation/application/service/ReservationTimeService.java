@@ -2,6 +2,7 @@ package roomescape.reservation.application.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.DeleteTimeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.presentation.dto.ReservationResponse;
@@ -31,7 +32,7 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(final Long id) {
         if(reservationRepository.existsByTimeId(id)){
-            throw new IllegalArgumentException("[ERROR] 예약이 이미 존재하는 시간입니다.");
+            throw new DeleteTimeException("[ERROR] 예약이 이미 존재하는 시간입니다.");
         }
         reservationTimeRepository.delete(id);
     }

@@ -94,14 +94,3 @@ public class ReservationDao implements ReservationRepository {
         return result == 1;
     }
 }
-
-/*
-SELECT product_name
-FROM products AS p
-WHERE EXISTS (
-    SELECT 1
-    FROM inventory AS i
-    WHERE i.product_id = p.product_id
-    AND i.quantity > 0
-);
- */
