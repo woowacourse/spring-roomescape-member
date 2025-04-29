@@ -156,7 +156,7 @@ HTTP/1.1 200
 
 ## 테마 API
 ### 테마 추가 API
-- [ ] 테마 추가 API 구현
+- [x] 테마 추가 API 구현
 #### Request
 ```
 POST /themes HTTP/1.1
