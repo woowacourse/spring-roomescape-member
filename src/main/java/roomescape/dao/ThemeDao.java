@@ -50,4 +50,9 @@ public class ThemeDao {
         String sql = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.query(sql, themeRowMapper, id).stream().findFirst();
     }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

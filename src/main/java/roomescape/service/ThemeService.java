@@ -28,4 +28,8 @@ public class ThemeService {
         Long savedId = themeDao.saveTheme(theme);
         return new ThemeResponseDto(savedId, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
+
+    public void deleteTheme(Long id) {
+        themeDao.deleteById(id);
+    }
 }
