@@ -1,20 +1,20 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.dto.ReservationRequest;
+import roomescape.controller.dto.request.ReservationRequest;
 import roomescape.dao.InMemoryReservationDAO;
 import roomescape.dao.InMemoryReservationTimeDAO;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ReservationServiceTest {
 
