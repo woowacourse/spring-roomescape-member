@@ -14,6 +14,7 @@ import roomescape.time.service.ReservationTimeService;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    //TODO : ReservationTimeRepository에 의존하도록 수정해야함.
     private final ReservationTimeService reservationTimeService;
 
     public Long save(final String name, final LocalDate date, final Long time_id) {

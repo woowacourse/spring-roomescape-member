@@ -78,6 +78,19 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Long countByTimeId(Long timeId) {
+        final String sql = """
+                SELECT COUNT(*) AS count
+                FROM reservations
+                WHERE time_id = ?
+                """;
+
+        final Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
+
+        return count;
+    }
+
+    @Override
     public List<Reservation> findAll() {
         final String sql = """
                 SELECT 

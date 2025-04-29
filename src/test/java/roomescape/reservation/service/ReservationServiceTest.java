@@ -88,17 +88,18 @@ class ReservationServiceTest {
         }
 
         @Bean
-        public ReservationTimeService reservationTimeService(
-                final ReservationTimeRepository reservationTimeRepository
-        ) {
-            return new ReservationTimeService(reservationTimeRepository);
-        }
-
-        @Bean
         public ReservationRepository reservationRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
             return new H2ReservationRepository(jdbcTemplate);
+        }
+
+        @Bean
+        public ReservationTimeService reservationTimeService(
+                final ReservationTimeRepository reservationTimeRepository,
+                final ReservationRepository reservationRepository
+        ) {
+            return new ReservationTimeService(reservationTimeRepository, reservationRepository);
         }
 
         @Bean
