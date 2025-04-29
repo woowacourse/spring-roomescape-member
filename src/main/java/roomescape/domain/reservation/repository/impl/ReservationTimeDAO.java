@@ -85,7 +85,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     private ReservationTime update(ReservationTime reservationTime) {
         String sql = "update reservation_time set start_at = :start_at where id = :id";
 
-        HashMap<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("start_at", reservationTime.getStartAt());
         params.put("id", reservationTime.getId());
 
