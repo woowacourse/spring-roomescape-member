@@ -2,6 +2,7 @@ package roomescape.repository.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -37,14 +38,24 @@ public class JdbcThemeRepository implements ThemeRepository {
         final String query = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(query, (resultSet, rowNum) ->
                 new Theme(resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail"))
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail"))
         );
+    }
+
+    public Optional<Theme> findById(Long id) {
+        final String query = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(query, (resultSet, rowNum) ->
+                        new Theme(resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("description"),
+                                resultSet.getString("thumbnail"))
+                , id));
     }
 
     public void delete(Long id) {
         final String query = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(query,id);
+        jdbcTemplate.update(query, id);
     }
 }

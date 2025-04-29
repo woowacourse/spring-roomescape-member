@@ -5,42 +5,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse saveReservation(ReservationRequest request) {
-        Reservation createdReservation = reservationRepository.saveReservation(request.toReservation());
-        ReservationTime reservationTime = reservationTimeRepository.readReservationTime(createdReservation.getTimeId())
+        ReservationTime reservationTime = reservationTimeRepository.readReservationTime(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
+        Theme theme = themeRepository.findById(request.themeId())
+                // TODO: Custom Exception 만들기
+                .orElseThrow(() -> new IllegalArgumentException("올바른 방탈출 테마가 없습니다."));
+        Reservation createdReservation = reservationRepository.saveReservation(request.toReservation(reservationTime, theme));
 
-        return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime));
+        // TODO: themeId name 읽기
+        return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime), ThemeResponse.from(theme));
     }
 
     public List<ReservationResponse> readReservation() {
         List<Reservation> reservations = reservationRepository.readReservations();
-        List<ReservationResponse> reservationResponses = reservations.stream().map(reservation -> {
-            ReservationTime reservationTime = reservationTimeRepository.readReservationTime(reservation.getTimeId())
-                    .orElseThrow(() -> new IllegalStateException("더 이상 유효하지 않은 시간 ID의 예약입니다. 관리자가 해당 시간을 삭제했을 수 있습니다."));
-
-            return ReservationResponse.of(reservation, ReservationTimeResponse.from(reservationTime));
-        }).toList();
-
-        return reservationResponses;
+        return reservations.stream().map(ReservationResponse::from).toList();
     }
 
     public void delete(Long id) {

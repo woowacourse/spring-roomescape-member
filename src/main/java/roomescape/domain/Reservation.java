@@ -7,18 +7,20 @@ public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
-    private final Long timeId;
+    private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, Long timeId) {
-        validate(name, date, timeId);
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
-        this.timeId = timeId;
+        this.time = time;
+        this.theme = theme;
     }
 
     public static Reservation generateWithPrimaryKey(Reservation reservation, Long newPrimaryKey) {
-        return new Reservation(newPrimaryKey, reservation.name, reservation.date, reservation.timeId);
+        return new Reservation(newPrimaryKey, reservation.name, reservation.date, reservation.time, reservation.theme);
     }
 
     public boolean isSameId(Long id) {
@@ -37,12 +39,17 @@ public class Reservation {
         return date;
     }
 
-    public Long getTimeId() {
-        return timeId;
+    public ReservationTime getTime() {
+        return time;
     }
 
-    private void validate(String name, LocalDate date, Long timeId) {
-        if (name == null || date == null || timeId == null) {
+    public Theme getTheme() {
+        return theme;
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        // TODO: 예외 분기 처리 좀 더 자세히
+        if (name == null || date == null || time == null || theme == null) {
             throw new NullPointerException("예약 정보가 비어있습니다.");
         }
         if (name.isBlank()) {
