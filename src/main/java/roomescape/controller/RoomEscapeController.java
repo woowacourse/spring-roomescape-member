@@ -20,6 +20,9 @@ public class RoomEscapeController {
 
     @GetMapping("/reservation")
     public String adminReservationDashboard() {
-        return "admin/reservation";
+        return "admin/reservation-new";
     }
+
+    @GetMapping("/theme")
+    public String adminThemeDashboard() { return "admin/theme"; }
 }
