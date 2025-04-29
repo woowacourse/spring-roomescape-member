@@ -1,9 +1,11 @@
 package roomescape.infrastructure;
 
+import java.sql.SQLException;
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -63,6 +65,10 @@ public class JdbcTimeRepository implements TimeRepository {
     @Override
     public void deleteById(Long id) {
         String deleteSql = "DELETE FROM reservation_time WHERE id=?";
-        jdbcTemplate.update(deleteSql, id);
+        try {
+            jdbcTemplate.update(deleteSql, id);
+        } catch (DataAccessException e) {
+            throw new IllegalStateException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
     }
 }
