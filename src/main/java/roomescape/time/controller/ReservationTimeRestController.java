@@ -1,7 +1,9 @@
 package roomescape.time.controller;
 
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +31,7 @@ public class ReservationTimeRestController {
         final Long id = reservationTimeService.save(request.startAt());
         final ReservationTime found = reservationTimeService.getById(id);
 
-        return ResponseEntity.ok(ReservationTimeResponse.from(found));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationTimeResponse.from(found));
     }
 
     @GetMapping
