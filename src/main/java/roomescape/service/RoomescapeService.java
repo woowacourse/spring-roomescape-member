@@ -1,0 +1,79 @@
+package roomescape.service;
+
+import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.repository.RoomescapeRepository;
+import roomescape.repository.RoomescapeTimeRepository;
+
+@Service
+public class RoomescapeService {
+
+    public static final int DELETE_FAILED_COUNT = 0;
+
+    private final RoomescapeRepository roomescapeRepository;
+    private final RoomescapeTimeRepository roomescapeTimeRepository;
+
+    public RoomescapeService(final RoomescapeRepository roomescapeRepository,
+                             final RoomescapeTimeRepository roomescapeTimeRepository) {
+        this.roomescapeRepository = roomescapeRepository;
+        this.roomescapeTimeRepository = roomescapeTimeRepository;
+    }
+
+    public List<ReservationResponse> findReservations() {
+        List<Reservation> reservations = roomescapeRepository.findAll();
+        return reservations.stream().map(ReservationResponse::of).toList();
+    }
+
+    public List<ReservationTimeResponse> findReservationTimes() {
+        List<ReservationTime> reservationTimes = roomescapeTimeRepository.findAll();
+        return reservationTimes.stream().map(ReservationTimeResponse::of).toList();
+    }
+
+    public ReservationResponse addReservation(final ReservationRequest request) {
+        long timeId = request.timeId();
+        ReservationTime time = roomescapeTimeRepository.findById(timeId);
+        Reservation reservation = new Reservation(request.name(), request.date(), time);
+
+        if (existsSameReservation(reservation)) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
+        }
+
+        Reservation saved = roomescapeRepository.save(reservation);
+        return ReservationResponse.of(saved);
+    }
+
+    public ReservationTimeResponse addReservationTime(final ReservationTimeRequest request) {
+        ReservationTime reservationTime = new ReservationTime(request.startAt());
+        ReservationTime saved = roomescapeTimeRepository.save(reservationTime);
+        return ReservationTimeResponse.of(saved);
+    }
+
+    public void removeReservation(final long id) {
+        int deleteCounts = roomescapeRepository.deleteById(id);
+        if (deleteCounts == DELETE_FAILED_COUNT) {
+            throw new IllegalArgumentException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
+        }
+    }
+
+    public void removeReservationTime(final long id) {
+        int deleteCounts = roomescapeTimeRepository.deleteById(id);
+        if (deleteCounts == DELETE_FAILED_COUNT) {
+            throw new IllegalArgumentException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", id));
+        }
+    }
+
+    private boolean existsSameReservation(final Reservation reservation) {
+        // 방법1
+        // return roomescapeRepository.existsByDateAndTime(reservation.getDate(), reservation.getTime());
+        // 방법2
+        List<Reservation> reservations = roomescapeRepository.findByDate(reservation.getDate());
+        return reservations.stream()
+                .anyMatch(candidate -> candidate.isDuplicateReservation(reservation));
+    }
+}
