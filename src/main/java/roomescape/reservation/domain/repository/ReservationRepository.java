@@ -12,7 +12,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    List<Reservation> findAllByTimeId(Long timeId);
+    Boolean existReservationByTimeId(Long timeId);
 
-    Boolean existByDateAndTimeId(LocalDate date, Long timeId);
+    Boolean existReservationByDateAndTimeId(LocalDate date, Long timeId);
 }

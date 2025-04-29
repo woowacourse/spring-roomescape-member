@@ -75,24 +75,20 @@ public class JdbcReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllByTimeId(Long timeId) {
+    public Boolean existReservationByTimeId(Long timeId) {
         String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t
-                ON r.time_id = t.id
-                WHERE t.id = ?
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ?
+                )
                 """;
-        return jdbcTemplate.query(sql, reservationMapper, timeId);
+
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
     @Override
-    public Boolean existByDateAndTimeId(LocalDate date, Long timeId) {
+    public Boolean existReservationByDateAndTimeId(LocalDate date, Long timeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
