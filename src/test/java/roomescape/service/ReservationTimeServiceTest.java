@@ -1,9 +1,8 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalTime;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ class ReservationTimeServiceTest {
     @Test
     void 시간을_저장한다() {
         // given
-        ReservationTimeRequestDto request = new ReservationTimeRequestDto(LocalTime.of(10, 0));
+        ReservationTimeRequestDto request = new ReservationTimeRequestDto(LocalTime.of(10, 0).toString());
 
         // when
         ReservationTimeResponseDto response = reservationTimeService.saveTime(request);
@@ -41,8 +40,8 @@ class ReservationTimeServiceTest {
     @Test
     void 모든_시간을_조회한다() {
         // given
-        reservationTimeService.saveTime(new ReservationTimeRequestDto(LocalTime.of(10, 0)));
-        reservationTimeService.saveTime(new ReservationTimeRequestDto(LocalTime.of(12, 0)));
+        reservationTimeService.saveTime(new ReservationTimeRequestDto(LocalTime.of(10, 0).toString()));
+        reservationTimeService.saveTime(new ReservationTimeRequestDto(LocalTime.of(12, 0).toString()));
 
         // when
         List<ReservationTimeResponseDto> times = reservationTimeService.getAllTimes();
@@ -57,7 +56,7 @@ class ReservationTimeServiceTest {
     void 시간을_삭제한다() {
         // given
         ReservationTimeResponseDto saved = reservationTimeService.saveTime(
-                new ReservationTimeRequestDto(LocalTime.of(10, 0))
+                new ReservationTimeRequestDto(LocalTime.of(10, 0).toString())
         );
 
         // when

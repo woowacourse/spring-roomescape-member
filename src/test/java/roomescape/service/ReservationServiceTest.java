@@ -1,9 +1,8 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,7 @@ class ReservationServiceTest {
 
     private ReservationService reservationService;
     private FakeReservationDao fakeReservationDao;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -30,7 +30,7 @@ class ReservationServiceTest {
     @Test
     void test() {
         // given
-        ReservationRequestDto request = new ReservationRequestDto("다로", LocalDate.now().plusDays(1), 1L);
+        ReservationRequestDto request = new ReservationRequestDto("다로", LocalDate.now().plusDays(1).toString(), 1L);
 
         // when
         ReservationResponseDto response = reservationService.saveReservation(request);
@@ -46,8 +46,8 @@ class ReservationServiceTest {
     @Test
     void test1() {
         // given
-        ReservationRequestDto request1 = new ReservationRequestDto("다로", LocalDate.now().plusDays(1), 1L);
-        ReservationRequestDto request2 = new ReservationRequestDto("에러", LocalDate.now().plusDays(2), 2L);
+        ReservationRequestDto request1 = new ReservationRequestDto("다로", LocalDate.now().plusDays(1).toString(), 1L);
+        ReservationRequestDto request2 = new ReservationRequestDto("에러", LocalDate.now().plusDays(2).toString(), 2L);
         reservationService.saveReservation(request1);
         reservationService.saveReservation(request2);
 
@@ -64,7 +64,7 @@ class ReservationServiceTest {
     @Test
     void test2() {
         // given
-        ReservationRequestDto request = new ReservationRequestDto("다로", LocalDate.now().plusDays(1), 1L);
+        ReservationRequestDto request = new ReservationRequestDto("다로", LocalDate.now().plusDays(1).toString(), 1L);
         ReservationResponseDto saved = reservationService.saveReservation(request);
 
         // when
