@@ -15,9 +15,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
+import roomescape.controller.dto.ReservationResponse;
 import roomescape.model.Reservation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -32,7 +34,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value());
     }
 
     @Test
@@ -40,12 +42,12 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value());
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .contentType("application/json")
                 .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
     }
@@ -64,25 +66,25 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(HttpStatus.CREATED.value())
                 .body("id", is(1));
 
-//        RestAssured.given().log().all()
-//                .when().get("/reservations")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(1));
-//
-//        RestAssured.given().log().all()
-//                .when().delete("/reservations/1")
-//                .then().log().all()
-//                .statusCode(204);
-//
-//        RestAssured.given().log().all()
-//                .when().get("/reservations")
-//                .then().log().all()
-//                .statusCode(200)
-//                .body("size()", is(0));
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1));
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(0));
     }
 
     @Test
@@ -103,11 +105,11 @@ public class MissionStepTest {
         insertOneReservationTimeSlot();
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1);
 
-        List<Reservation> reservations = RestAssured.given().log().all()
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
             .when().get("/reservations")
             .then().log().all()
-            .statusCode(200).extract()
-            .jsonPath().getList(".", Reservation.class);
+            .statusCode(HttpStatus.OK.value()).extract()
+            .jsonPath().getList(".", ReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
@@ -128,7 +130,7 @@ public class MissionStepTest {
             .body(params)
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(200);
+            .statusCode(HttpStatus.CREATED.value());
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);
@@ -136,7 +138,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
             .when().delete("/reservations/1")
             .then().log().all()
-            .statusCode(204);
+            .statusCode(HttpStatus.NO_CONTENT.value());
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
@@ -152,18 +154,18 @@ public class MissionStepTest {
             .body(params)
             .when().post("/times")
             .then().log().all()
-            .statusCode(200);
+            .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
             .when().get("/times")
             .then().log().all()
-            .statusCode(200)
+            .statusCode(HttpStatus.OK.value())
             .body("size()", is(1));
 
         RestAssured.given().log().all()
             .when().delete("/times/1")
             .then().log().all()
-            .statusCode(204);
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Autowired

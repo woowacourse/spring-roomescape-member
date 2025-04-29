@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,7 @@ public class ReservationController {
         try {
             var reservation = service.reserve(request.name(), request.date(), request.timeSlotId());
             var response = ReservationResponse.from(reservation);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }

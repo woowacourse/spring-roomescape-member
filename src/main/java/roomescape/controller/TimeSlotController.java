@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class TimeSlotController {
     public ResponseEntity<TimeSlotResponse> add(@RequestBody CreateTimeSlotRequest request) {
         var timeSlot = service.add(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);
     }
 
     @GetMapping
