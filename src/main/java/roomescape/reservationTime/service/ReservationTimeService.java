@@ -18,13 +18,13 @@ public class ReservationTimeService {
     public ReservationTimeResponse add(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime newReservationTime = new ReservationTime(null, reservationTimeRequest.startAt());
         ReservationTime savedReservationTime = reservationTimeDao.add(newReservationTime);
-        return new ReservationTimeResponse(savedReservationTime.id(), savedReservationTime.startAt());
+        return new ReservationTimeResponse(savedReservationTime.getId(), savedReservationTime.getStartAt());
     }
 
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeDao.findAll().stream()
                 .map(reservationTime -> new ReservationTimeResponse(
-                        reservationTime.id(), reservationTime.startAt()))
+                        reservationTime.getId(), reservationTime.getStartAt()))
                 .toList();
     }
 

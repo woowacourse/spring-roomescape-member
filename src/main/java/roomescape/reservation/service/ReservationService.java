@@ -24,13 +24,13 @@ public class ReservationService {
                 null, reservationRequest.name(), reservationRequest.date(), findReservationTime);
         Reservation savedReservation = reservationDao.add(newReservation);
         return new ReservationResponse(
-                savedReservation.id(), savedReservation.name(), savedReservation.date(), savedReservation.time());
+                savedReservation.getId(), savedReservation.getName(), savedReservation.getDate(), savedReservation.getTime());
     }
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
                 .map(reservation -> new ReservationResponse(
-                        reservation.id(), reservation.name(), reservation.date(), reservation.time()))
+                        reservation.getId(), reservation.getName(), reservation.getDate(), reservation.getTime()))
                 .toList();
     }
 

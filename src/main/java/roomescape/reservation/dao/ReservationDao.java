@@ -28,11 +28,11 @@ public class ReservationDao implements Dao<Reservation> {
     @Override
     public Reservation add(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>(3);
-        parameters.put("name", reservation.name());
-        parameters.put("date", reservation.date());
-        parameters.put("time_id", reservation.time().id());
+        parameters.put("name", reservation.getName());
+        parameters.put("date", reservation.getDate());
+        parameters.put("time_id", reservation.getTime().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Reservation(id, reservation.name(), reservation.date(), reservation.time());
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ReservationDao implements Dao<Reservation> {
                 resultSet.getDate("date").toLocalDate(),
                 new ReservationTime(
                         resultSet.getLong("time_id"),
-                        resultSet.getString("time_value")
+                        resultSet.getTime("time_value").toLocalTime()
                 )
         ));
     }

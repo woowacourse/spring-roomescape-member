@@ -1,7 +1,46 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import roomescape.reservationTime.domain.ReservationTime;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+public class Reservation {
+
+    private Long id;
+    private String name;
+    private LocalDate date;
+    private ReservationTime time;
+
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+        this.id = id;
+        this.name = name;
+        validateDateAndTime(date, time.getStartAt());
+        this.date = date;
+        this.time = time;
+    }
+
+    private void validateDateAndTime(LocalDate date, LocalTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
+        }
+        if(date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
+        }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public ReservationTime getTime() {
+        return time;
+    }
 }

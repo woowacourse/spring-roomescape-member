@@ -29,9 +29,9 @@ public class ReservationTimeDao implements Dao<ReservationTime> {
     @Override
     public ReservationTime add(ReservationTime time) {
         Map<String, Object> parameters = new HashMap<>(1);
-        parameters.put("start_at", time.startAt());
+        parameters.put("start_at", time.getStartAt());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new ReservationTime(id, time.startAt());
+        return new ReservationTime(id, time.getStartAt());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ReservationTimeDao implements Dao<ReservationTime> {
     private ReservationTime createReservationTime(ResultSet resultSet) throws SQLException {
         return new ReservationTime(
                 resultSet.getLong("id"),
-                resultSet.getString("start_at")
+                resultSet.getTime("start_at").toLocalTime()
         );
     }
 }

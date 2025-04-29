@@ -1,4 +1,6 @@
 package roomescape.reservationTime.dto;
 
-public record ReservationTimeRequest(String startAt) {
+import java.time.LocalTime;
+
+public record ReservationTimeRequest(LocalTime startAt) {
 }
