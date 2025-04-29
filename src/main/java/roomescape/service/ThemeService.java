@@ -28,4 +28,8 @@ public class ThemeService {
                 .map(ThemeResponse::from)
                 .toList();
     }
+
+    public boolean deleteTheme(final long id) {
+        return themeDAO.deleteById(id);
+    }
 }

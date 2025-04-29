@@ -44,4 +44,10 @@ public class JdbcThemeDAO implements ThemeDAO {
         String query = "SELECT * FROM theme";
         return jdbcTemplate.query(query, THEME_ROW_MAPPER);
     }
+
+    @Override
+    public boolean deleteById(long id) {
+        String query = "DELETE FROM theme WHERE id = ?";
+        return jdbcTemplate.update(query, id) > 0;
+    }
 }
