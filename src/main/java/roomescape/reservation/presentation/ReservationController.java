@@ -42,7 +42,7 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservationById(@PathVariable("id") final Long id) {
         try {
             reservationService.deleteReservationById(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
