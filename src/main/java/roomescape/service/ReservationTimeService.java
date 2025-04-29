@@ -1,9 +1,11 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.entity.ReservationEntity;
 import roomescape.entity.ReservationTimeEntity;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
@@ -14,9 +16,11 @@ import java.util.List;
 @Service
 public class ReservationTimeService {
     private final ReservationTimeDao timeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao timeDao) {
+    public ReservationTimeService(ReservationTimeDao timeDao, ReservationDao reservationDao) {
         this.timeDao = timeDao;
+        this.reservationDao = reservationDao;
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest requestDto) {
@@ -47,6 +51,10 @@ public class ReservationTimeService {
     }
 
     public void delete(final Long id) {
+        List<ReservationEntity> reservations = reservationDao.findAllByTimeId(id);
+        if (!reservations.isEmpty()) {
+            throw new BadRequestException("해당 시간에 예약된 내역이 존재하므로 삭제할 수 없습니다.");
+        }
         final boolean deleted = timeDao.deleteById(id);
         if (!deleted) {
             throw new NotFoundException("존재하지 않는 id 입니다.");

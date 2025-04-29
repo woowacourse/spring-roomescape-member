@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ReservationTimeServiceTest {
     private final ReservationTimeDao timeDao = new FakeTimeDao();
     private final ReservationDao reservationDao = new FakeReservationDao();
-    private final ReservationTimeService service = new ReservationTimeService(timeDao);
+    private final ReservationTimeService service = new ReservationTimeService(timeDao, reservationDao);
 
     @DisplayName("예약 생성이 가능한 시간은 10:00 ~ 22:00 이다.")
     @ParameterizedTest

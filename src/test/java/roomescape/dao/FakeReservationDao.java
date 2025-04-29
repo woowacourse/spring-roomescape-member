@@ -24,4 +24,11 @@ public class FakeReservationDao implements ReservationDao {
     public List<ReservationEntity> findAll() {
         return Collections.unmodifiableList(entities);
     }
+
+    @Override
+    public List<ReservationEntity> findAllByTimeId(Long id) {
+        return entities.stream()
+                .filter(reservation -> reservation.getTimeId().equals(id))
+                .toList();
+    }
 }

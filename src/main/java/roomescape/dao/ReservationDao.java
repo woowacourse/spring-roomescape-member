@@ -10,4 +10,6 @@ public interface ReservationDao {
     boolean deleteById(Long id);
 
     List<ReservationEntity> findAll();
+
+    List<ReservationEntity> findAllByTimeId(Long id);
 }

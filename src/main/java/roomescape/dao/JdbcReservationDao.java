@@ -70,4 +70,29 @@ public class JdbcReservationDao implements ReservationDao {
             );
         });
     }
+
+    @Override
+    public List<ReservationEntity> findAllByTimeId(Long id) {
+        String query = """
+                SELECT r.id, r.name, r.date, rt.start_at
+                FROM reservation as r
+                INNER JOIN reservation_time as rt
+                ON r.time_id = rt.id
+                WHERE rt.id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
+            long reservationId = resultSet.getLong("id");
+            String name = resultSet.getString("name");
+            LocalDate date = resultSet.getObject("date", LocalDate.class);
+            LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+            return new ReservationEntity(
+                    reservationId,
+                    name,
+                    date,
+                    new ReservationTimeEntity(id, startAt)
+            );
+        });
+    }
 }
