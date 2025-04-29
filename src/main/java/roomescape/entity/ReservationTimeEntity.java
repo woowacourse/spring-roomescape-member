@@ -7,7 +7,7 @@ public class ReservationTimeEntity {
     private static final LocalTime OPERATING_START = LocalTime.of(10, 0);
     private static final LocalTime OPERATING_END = LocalTime.of(22, 0);
 
-    private Long id;
+    private final Long id;
     private LocalTime startAt;
 
     public ReservationTimeEntity(Long id, LocalTime startAt) {
