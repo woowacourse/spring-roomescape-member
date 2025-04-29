@@ -1,5 +1,8 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
 import java.util.List;
@@ -11,9 +14,11 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     private final List<ReservationTime> reservationTimes;
     private final AtomicLong reservationTimeId = new AtomicLong(1);
+    private final FakeReservationRepository fakeReservationRepository;
 
     public FakeReservationTimeRepository(final List<ReservationTime> reservationTimes) {
         this.reservationTimes = reservationTimes;
+        fakeReservationRepository = new FakeReservationRepository(new ArrayList<>());
     }
 
     @Override
@@ -32,16 +37,26 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public int deleteById(long id) {
         ReservationTime deleteReservation = reservationTimes.stream()
                 .filter(reservationTime -> Objects.equals(reservationTime.id(), id))
-                .findFirst().orElse(null);
+                .findFirst().orElse(new ReservationTime(null, LocalTime.now()));
 
-        if (deleteReservation != null) {
+        if (deleteReservation.id() != null) {
+            if (fakeReservationRepository.findAll().stream()
+                    .filter(reservation -> reservation.time().equals(deleteReservation))
+                    .count() != 0) {
+                throw new IllegalStateException();
+            }
             int affectedRows = (int) reservationTimes.stream()
                     .filter(reservationTime -> Objects.equals(reservationTime.id(), id))
                     .count();
             reservationTimes.remove(deleteReservation);
             return affectedRows;
         }
+
         return 0;
+    }
+
+    public void addReservation(Reservation reservation) {
+        fakeReservationRepository.save(reservation);
     }
 
     @Override

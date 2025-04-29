@@ -1,9 +1,13 @@
 package roomescape.service;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationCreateRequestDto;
@@ -68,6 +72,27 @@ class ReservationServiceTest {
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now(), 1L);
 
             assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+        }
+
+        @DisplayName("이름이 공백이거나 존재하지 않으면 Reservation을 생성할 수 없다")
+        @ParameterizedTest
+        @MethodSource("invalidNames")
+        void createInvalidNameTest(String name) {
+            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
+            ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, LocalTime.now())));
+            reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto(name, LocalDate.now(), 1L);
+
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalArgumentException.class);
+        }
+
+        static Stream<Arguments> invalidNames() {
+            return Stream.of(
+                    Arguments.of(" "),
+                    Arguments.of(""),
+                    Arguments.of((String) null)
+            );
         }
     }
 

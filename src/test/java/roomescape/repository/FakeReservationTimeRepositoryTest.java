@@ -1,9 +1,11 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
 import java.time.LocalTime;
@@ -12,12 +14,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class FakeReservationTimeRepositoryTest {
 
-    ReservationTimeRepository reservationTimeRepository;
+    FakeReservationTimeRepository reservationTimeRepository;
 
     @DisplayName("Reservation Time을 저장할 수 있다")
     @Test
@@ -111,6 +114,21 @@ class FakeReservationTimeRepositoryTest {
             int deletedCount = reservationTimeRepository.deleteById(deleteId);
 
             Assertions.assertThat(deletedCount).isEqualTo(0);
+        }
+
+        @DisplayName("이미 예약이 존재하는 경우 예약시간을 삭제할 수 없다")
+        @Test
+        void deleteReservationTimeOfExistingReservationTest() {
+            ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+            Reservation reservation = new Reservation(1L, "가이온", LocalDate.now(), reservationTime);
+            List<ReservationTime> reservationTimes = new ArrayList<>();
+            reservationTimes.add(reservationTime);
+
+            reservationTimeRepository = new FakeReservationTimeRepository(reservationTimes);
+            reservationTimeRepository.addReservation(reservation);
+
+            assertThatThrownBy(() -> reservationTimeRepository.deleteById(1L))
+                    .isInstanceOf(IllegalStateException.class);
         }
     }
 }

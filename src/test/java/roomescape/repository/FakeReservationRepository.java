@@ -1,5 +1,8 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.stream.Collectors;
 import roomescape.domain.Reservation;
 
 import java.util.List;
@@ -9,8 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class FakeReservationRepository implements ReservationRepository {
 
-    private List<Reservation> reservations;
-    AtomicLong reservationId = new AtomicLong(1);
+    private final List<Reservation> reservations;
+    private final AtomicLong reservationId = new AtomicLong(1);
 
     public FakeReservationRepository(final List<Reservation> reservations) {
         this.reservations = reservations;
@@ -50,5 +53,12 @@ public class FakeReservationRepository implements ReservationRepository {
             return affectedRows;
         }
         return 0;
+    }
+
+    @Override
+    public List<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+        return reservations.stream()
+                .filter(reservation -> reservation.date().equals(date) && reservation.time().equals(time))
+                .collect(Collectors.toList());
     }
 }
