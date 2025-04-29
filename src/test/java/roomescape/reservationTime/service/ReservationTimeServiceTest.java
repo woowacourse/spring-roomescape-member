@@ -31,6 +31,23 @@ class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeTestDataConfig testDataConfig;
 
+    @DisplayName("ReservationTime 객체를 ReservationTimeResDto로 변환할 수 있다")
+    @Test
+    void convertToReservationTimeResDto() {
+        // given
+        ReservationTime reservationTime = ReservationTimeFixture.create(DEFAULT_DUMMY_TIME);
+
+        // when
+        ReservationTimeResDto resDto = service.convertToReservationTimeResDto(reservationTime);
+
+        // then
+        Assertions.assertThat(resDto.startAt()).isEqualTo(DEFAULT_DUMMY_TIME);
+    }
+
+    private void deleteAll() {
+        jdbcTemplate.update("delete from reservation_time");
+    }
+
     @Nested
     @DisplayName("저장된 모든 예약 시간 불러오는 기능")
     class readAll {
@@ -44,13 +61,13 @@ class ReservationTimeServiceTest {
 
             // then
             assertSoftly(s -> {
-                        s.assertThat(resDtos).hasSize(1);
-                        s.assertThat(resDtos)
-                                .extracting(ReservationTimeResDto::startAt)
-                                .contains(DEFAULT_DUMMY_TIME);
-                        resDtos.forEach(resDto ->
-                                s.assertThat(resDto.id()).isNotNull());
-                    }
+                    s.assertThat(resDtos).hasSize(1);
+                    s.assertThat(resDtos)
+                        .extracting(ReservationTimeResDto::startAt)
+                        .contains(DEFAULT_DUMMY_TIME);
+                    resDtos.forEach(resDto ->
+                        s.assertThat(resDto.id()).isNotNull());
+                }
             );
         }
 
@@ -84,8 +101,8 @@ class ReservationTimeServiceTest {
             // then
             List<ReservationTimeResDto> resDtos = service.readAll();
             Assertions.assertThat(resDtos)
-                    .extracting(ReservationTimeResDto::startAt)
-                    .contains(dummyTime1);
+                .extracting(ReservationTimeResDto::startAt)
+                .contains(dummyTime1);
         }
     }
 
@@ -113,25 +130,8 @@ class ReservationTimeServiceTest {
             // when
             // then
             Assertions.assertThatCode(
-                    () -> service.delete(Long.MAX_VALUE)
+                () -> service.delete(Long.MAX_VALUE)
             ).isInstanceOf(CustomException.class);
         }
-    }
-
-    @DisplayName("ReservationTime 객체를 ReservationTimeResDto로 변환할 수 있다")
-    @Test
-    void convertToReservationTimeResDto() {
-        // given
-        ReservationTime reservationTime = ReservationTimeFixture.create(DEFAULT_DUMMY_TIME);
-
-        // when
-        ReservationTimeResDto resDto = service.convertToReservationTimeResDto(reservationTime);
-
-        // then
-        Assertions.assertThat(resDto.startAt()).isEqualTo(DEFAULT_DUMMY_TIME);
-    }
-
-    private void deleteAll() {
-        jdbcTemplate.update("delete from reservation_time");
     }
 }

@@ -9,11 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @TestConfiguration
 public class ReservationTimeTestDataConfig {
 
+    public static final LocalTime DEFAULT_DUMMY_TIME = LocalTime.of(2, 40);
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    public static final LocalTime DEFAULT_DUMMY_TIME = LocalTime.of(2, 40);
-
     private Long defaultDummyTimeId;
 
     @PostConstruct
@@ -21,7 +19,7 @@ public class ReservationTimeTestDataConfig {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", DEFAULT_DUMMY_TIME.toString());
 
         defaultDummyTimeId = jdbcTemplate.queryForObject(
-                "SELECT id FROM reservation_time WHERE start_at = ?", Long.class, DEFAULT_DUMMY_TIME.toString());
+            "SELECT id FROM reservation_time WHERE start_at = ?", Long.class, DEFAULT_DUMMY_TIME.toString());
     }
 
     public Long getDefaultDummyTimeId() {

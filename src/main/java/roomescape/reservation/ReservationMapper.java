@@ -13,6 +13,7 @@ public class ReservationMapper {
     }
 
     public static ReservationResDto toResDto(Reservation reservation, ReservationTimeResDto reservationTimeResDto) {
-        return new ReservationResDto(reservation.getId(), reservation.getName(), reservation.getDate(), reservationTimeResDto);
+        return new ReservationResDto(reservation.getId(), reservation.getName(), reservation.getDate(),
+            reservationTimeResDto);
     }
 }

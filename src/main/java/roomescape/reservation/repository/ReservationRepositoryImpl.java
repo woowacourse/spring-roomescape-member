@@ -20,7 +20,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationRepositoryImpl(final JdbcTemplate jdbcTemplate, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationRepositoryImpl(final JdbcTemplate jdbcTemplate,
+                                     ReservationTimeRepository reservationTimeRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -28,36 +29,36 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = "SELECT \n" +
-                "    r.id as reservation_id, \n" +
-                "    r.name, \n" +
-                "    r.date, \n" +
-                "    t.id as time_id, \n" +
-                "    t.start_at as time_value \n" +
-                "FROM reservation as r \n" +
-                "inner join reservation_time as t \n" +
-                "on r.time_id = t.id\n";
+            "    r.id as reservation_id, \n" +
+            "    r.name, \n" +
+            "    r.date, \n" +
+            "    t.id as time_id, \n" +
+            "    t.start_at as time_value \n" +
+            "FROM reservation as r \n" +
+            "inner join reservation_time as t \n" +
+            "on r.time_id = t.id\n";
         return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime time = new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            resultSet.getTime("time_value").toLocalTime()
-                    );
+            sql,
+            (resultSet, rowNum) -> {
+                ReservationTime time = new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("time_value").toLocalTime()
+                );
 
-                    Reservation reservation = new Reservation(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getDate("date").toLocalDate(),
-                            time
-                    );
-                    return reservation;
-                });
+                Reservation reservation = new Reservation(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getDate("date").toLocalDate(),
+                    time
+                );
+                return reservation;
+            });
     }
 
     @Override
     public Reservation findByIdOrThrow(Long id) {
         return findById(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "해당 예약 id가 존재하지 않습니다."));
+            .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "해당 예약 id가 존재하지 않습니다."));
     }
 
     @Override
@@ -69,7 +70,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void delete(Long id) {
         String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, Long.valueOf(id));
+        jdbcTemplate.update(sql, id);
     }
 
     private Long insertWithKeyHolder(Reservation reservation) {
@@ -80,8 +81,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"});
+                sql,
+                new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservationTimeId);
@@ -96,12 +97,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                    (resultSet, rowNum) -> new Reservation(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getDate("date").toLocalDate(),
-                            reservationTimeRepository.findByIdOrThrow(resultSet.getLong("time_id"))
-                    ), id));
+                (resultSet, rowNum) -> new Reservation(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getDate("date").toLocalDate(),
+                    reservationTimeRepository.findByIdOrThrow(resultSet.getLong("time_id"))
+                ), id));
 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

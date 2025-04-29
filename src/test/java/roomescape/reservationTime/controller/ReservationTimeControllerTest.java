@@ -22,7 +22,8 @@ import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ReservationTimeTestDataConfig.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
+    ReservationTimeTestDataConfig.class})
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ExtendWith({SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -43,10 +44,10 @@ public class ReservationTimeControllerTest {
 
             // when & then
             List<ReservationTimeResDto> resDtos = RestAssured.given().log().all()
-                    .when().get("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.OK.value()).extract()
-                    .jsonPath().getList(".", ReservationTimeResDto.class);
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value()).extract()
+                .jsonPath().getList(".", ReservationTimeResDto.class);
 
             Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
             assertThat(resDtos.size()).isEqualTo(count);
@@ -57,10 +58,10 @@ public class ReservationTimeControllerTest {
         void readAll_success_whenNoData() {
             // when & then
             List<ReservationTimeResDto> resDtos = RestAssured.given().log().all()
-                    .when().get("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.OK.value()).extract()
-                    .jsonPath().getList(".", ReservationTimeResDto.class);
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value()).extract()
+                .jsonPath().getList(".", ReservationTimeResDto.class);
 
             Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
             assertThat(resDtos.size()).isEqualTo(count);
@@ -82,11 +83,11 @@ public class ReservationTimeControllerTest {
 
             // then
             RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(dto)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
         }
 
         @DisplayName("중복된 예약 시간 입력 시 409 Conflict를 반환한다")
@@ -101,11 +102,11 @@ public class ReservationTimeControllerTest {
 
             // then
             RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(dto)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CONFLICT.value());
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.CONFLICT.value());
         }
     }
 
@@ -117,9 +118,9 @@ public class ReservationTimeControllerTest {
         @Test
         void delete_success_withExistId() {
             RestAssured.given().log().all()
-                    .when().delete("/times/1")
-                    .then().log().all()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
             Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
             assertThat(countAfterDelete).isEqualTo(0);
@@ -130,9 +131,9 @@ public class ReservationTimeControllerTest {
         void delete_failure_byNonExistenceId() {
             Long maxValue = Long.MAX_VALUE;
             RestAssured.given().log().all()
-                    .when().delete("/times/" + maxValue)
-                    .then().log().all()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                .when().delete("/times/" + maxValue)
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
         }
     }
 }

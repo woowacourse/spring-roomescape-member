@@ -24,14 +24,14 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query(
-                "select id, start_at from reservation_time",
-                (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
-                            resultSet.getLong("id"),
-                            resultSet.getTime("start_at").toLocalTime()
-                    );
-                    return reservationTime;
-                });
+            "select id, start_at from reservation_time",
+            (resultSet, rowNum) -> {
+                ReservationTime reservationTime = new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+                );
+                return reservationTime;
+            });
     }
 
     @Override
@@ -43,13 +43,13 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     @Override
     public ReservationTime findByIdOrThrow(Long id) {
         return findById(id)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "해당 예약시간 id가 존재하지 않습니다."));
+            .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "해당 예약시간 id가 존재하지 않습니다."));
     }
 
     @Override
     public void delete(Long id) {
         String sql = "delete from reservation_time where id = ?";
-        jdbcTemplate.update(sql, Long.valueOf(id));
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"});
+                sql,
+                new String[]{"id"});
             ps.setString(1, reservationTime.getStartAt().toString());
             return ps;
         }, keyHolder);
@@ -73,11 +73,11 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                    (resultSet, rowNum) ->
-                            new ReservationTime(
-                                    resultSet.getLong("id"),
-                                    resultSet.getTime("start_at").toLocalTime()
-                            ), id));
+                (resultSet, rowNum) ->
+                    new ReservationTime(
+                        resultSet.getLong("id"),
+                        resultSet.getTime("start_at").toLocalTime()
+                    ), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

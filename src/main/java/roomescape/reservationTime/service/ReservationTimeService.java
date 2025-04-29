@@ -24,8 +24,8 @@ public class ReservationTimeService {
     public List<ReservationTimeResDto> readAll() {
         List<ReservationTime> reservationTimes = repository.findAll();
         return reservationTimes.stream()
-                .map(this::convertToReservationTimeResDto)
-                .toList();
+            .map(this::convertToReservationTimeResDto)
+            .toList();
     }
 
     public ReservationTimeResDto add(ReservationTimeReqDto dto) {

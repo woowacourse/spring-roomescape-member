@@ -49,10 +49,10 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", "1");
 
         List<ReservationResDto> resDtos = RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract()
-                .jsonPath().getList(".", ReservationResDto.class);
+            .when().get("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value()).extract()
+            .jsonPath().getList(".", ReservationResDto.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
@@ -71,11 +71,11 @@ public class MissionStepTest {
         ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L);
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
+            .contentType(ContentType.JSON)
+            .body(dto)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
@@ -90,16 +90,16 @@ public class MissionStepTest {
         ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L);
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
+            .contentType(ContentType.JSON)
+            .body(dto)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            .when().delete("/reservations/1")
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);

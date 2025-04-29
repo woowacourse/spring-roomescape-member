@@ -58,7 +58,7 @@ class ReservationRepositoryImplTest {
 
         // when & then
         Assertions.assertThatCode(
-                () -> reservationTimeRepository.findByIdOrThrow(Long.MAX_VALUE)
+            () -> reservationTimeRepository.findByIdOrThrow(Long.MAX_VALUE)
         ).isInstanceOf(CustomException.class);
     }
 }

@@ -29,6 +29,21 @@ class ReservationServiceTest {
     @Autowired
     private ReservationTimeRepositoryImpl reservationTimeRepository;
 
+    private ReservationTime createAndSaveReservationTime(LocalTime time) {
+        ReservationTime reservationTime = ReservationTimeFixture.create(time);
+        return reservationTimeRepository.add(reservationTime);
+    }
+
+    private Reservation createReservation(String name, int plusDays, ReservationTime time) {
+        LocalDate date = LocalDate.now().plusDays(plusDays);
+        return Reservation.of(name, date, time);
+    }
+
+    private ReservationReqDto createReqDto(String name, int plusDays, Long timeId) {
+        LocalDate date = LocalDate.now().plusDays(plusDays);
+        return ReservationFixture.createReqDto(name, date, timeId);
+    }
+
     @Nested
     @DisplayName("예약 추가하기 기능")
     class add {
@@ -49,10 +64,11 @@ class ReservationServiceTest {
             // when & then
             LocalDate duplicateDate = reservation1.getDate();
             Long duplicateReservationTimeId = reservationTime1.getId();
-            ReservationReqDto reqDto = ReservationFixture.createReqDto("jason", duplicateDate, duplicateReservationTimeId);
+            ReservationReqDto reqDto = ReservationFixture.createReqDto("jason", duplicateDate,
+                duplicateReservationTimeId);
 
             Assertions.assertThatThrownBy(
-                    () -> service.add(reqDto)
+                () -> service.add(reqDto)
             ).isInstanceOf(CustomException.class);
         }
 
@@ -74,23 +90,8 @@ class ReservationServiceTest {
             ReservationReqDto reqDto = createReqDto("jason", 3, duplicateReservationTimeId);
 
             Assertions.assertThatCode(
-                    () -> service.add(reqDto)
+                () -> service.add(reqDto)
             ).doesNotThrowAnyException();
         }
-    }
-
-    private ReservationTime createAndSaveReservationTime(LocalTime time) {
-        ReservationTime reservationTime = ReservationTimeFixture.create(time);
-        return reservationTimeRepository.add(reservationTime);
-    }
-
-    private Reservation createReservation(String name, int plusDays, ReservationTime time) {
-        LocalDate date = LocalDate.now().plusDays(plusDays);
-        return Reservation.of(name, date, time);
-    }
-
-    private ReservationReqDto createReqDto(String name, int plusDays, Long timeId) {
-        LocalDate date = LocalDate.now().plusDays(plusDays);
-        return ReservationFixture.createReqDto(name, date, timeId);
     }
 }

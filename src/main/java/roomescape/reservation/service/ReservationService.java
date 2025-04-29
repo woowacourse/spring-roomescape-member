@@ -21,7 +21,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -29,8 +30,8 @@ public class ReservationService {
     public List<ReservationResDto> readAll() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(this::convertReservationResDto)
-                .collect(Collectors.toList());
+            .map(this::convertReservationResDto)
+            .collect(Collectors.toList());
     }
 
     public ReservationResDto add(ReservationReqDto dto) {

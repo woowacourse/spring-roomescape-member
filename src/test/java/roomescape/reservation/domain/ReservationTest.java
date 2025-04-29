@@ -29,7 +29,7 @@ class ReservationTest {
 
             // when & then
             Assertions.assertThatThrownBy(
-                    () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime)
+                () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime)
             ).isInstanceOf(CustomException.class);
         }
 
@@ -45,7 +45,7 @@ class ReservationTest {
 
             // when & then
             Assertions.assertThatCode(
-                    () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime)
+                () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime)
             ).doesNotThrowAnyException();
         }
 
@@ -57,11 +57,13 @@ class ReservationTest {
             LocalDateTime dummyDateTime1 = LocalDateTime.now().plusDays(1);
             ReservationTime duplicateReservationTime = ReservationTimeFixture.create(dummyDateTime1.toLocalTime());
 
-            Reservation reservation1 = ReservationFixture.create(dummyName1, dummyDateTime1.toLocalDate(), duplicateReservationTime);
+            Reservation reservation1 = ReservationFixture.create(dummyName1, dummyDateTime1.toLocalDate(),
+                duplicateReservationTime);
 
             String dummyName2 = "pobi";
             LocalDateTime dummyDateTime2 = LocalDateTime.now().plusDays(2);
-            Reservation reservation2 = ReservationFixture.create(dummyName2, dummyDateTime2.toLocalDate(), duplicateReservationTime);
+            Reservation reservation2 = ReservationFixture.create(dummyName2, dummyDateTime2.toLocalDate(),
+                duplicateReservationTime);
 
             // when
             Assertions.assertThat(reservation1.isSameDateTime(reservation2)).isFalse();
