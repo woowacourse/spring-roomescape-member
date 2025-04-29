@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -46,7 +45,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         final int rowsAffected = template.update(sql, id);
 
         if (rowsAffected != 1) {
-            throw new EmptyResultDataAccessException("삭제할 예약 시간이 없습니다. id=" + id, 1);
+            throw new IllegalArgumentException("삭제할 예약 시간이 없습니다. id=" + id);
         }
     }
 

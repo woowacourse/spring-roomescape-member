@@ -56,6 +56,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByReservationTimeId(final Long reservationTimeId) {
+        final String sql = """
+                        select count(*) 
+                        from reservation as r
+                        where r.time_id = ?
+                """;
+        final Integer count = template.queryForObject(sql, Integer.class, reservationTimeId);
+        return count != null && count > 0;
+    }
+
+    @Override
     public Reservation save(final Reservation reservation) {
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())

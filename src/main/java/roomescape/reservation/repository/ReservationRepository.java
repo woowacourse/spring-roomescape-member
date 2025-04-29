@@ -12,6 +12,8 @@ public interface ReservationRepository {
 
     boolean existsByDateAndTime(final LocalDate date, final LocalTime time);
 
+    boolean existsByReservationTimeId(final Long id);
+
     Reservation save(final Reservation reservation);
 
     Optional<Reservation> findById(final Long id);
