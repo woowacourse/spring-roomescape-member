@@ -60,14 +60,14 @@ class DomainIdTest {
         final ReservationId sameId1 = ReservationId.from(sameIdValue);
         final ReservationId sameId2 = ReservationId.from(sameIdValue);
 
-        final Reservation sameReservation1 = Reservation.of(
+        final Reservation sameReservation1 = Reservation.withId(
                 sameId1,
                 ReserverName.from("일번입니다"),
                 ReservationDate.from(LocalDate.now()),
                 ReservationTime.of(ReservationTimeId.unassigned(), LocalTime.now())
         );
 
-        final Reservation sameReservation2 = Reservation.of(
+        final Reservation sameReservation2 = Reservation.withId(
                 sameId2,
                 ReserverName.from("이번입니다 위와 다릅니다"),
                 ReservationDate.from(LocalDate.now()),

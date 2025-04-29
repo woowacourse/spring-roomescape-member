@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation_time.domain.ReservationTime;
@@ -43,14 +42,12 @@ class ReservationQueryUseCaseImplTest {
                         ReservationTimeId.unassigned(),
                         LocalTime.of(10, 0)));
 
-        final Reservation given1 = Reservation.of(
-                ReservationId.unassigned(),
+        final Reservation given1 = Reservation.withoutId(
                 ReserverName.from("강산"),
                 ReservationDate.from(LocalDate.now()),
                 reservationTime);
 
-        final Reservation given2 = Reservation.of(
-                ReservationId.unassigned(),
+        final Reservation given2 = Reservation.withoutId(
                 ReserverName.from("강산2"),
                 ReservationDate.from(LocalDate.now()),
                 reservationTime);

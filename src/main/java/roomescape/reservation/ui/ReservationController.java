@@ -1,6 +1,5 @@
 package roomescape.reservation.ui;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,7 +35,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(
-            @RequestBody @Valid final CreateReservationWebRequest createReservationWebRequest) {
+            @RequestBody final CreateReservationWebRequest createReservationWebRequest) {
         final ReservationResponse reservationResponse = reservationService.create(createReservationWebRequest);
         final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationResponse.id()));
         return ResponseEntity.created(location)

@@ -106,7 +106,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
         final long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return Reservation.of(
+        return Reservation.withId(
                 ReservationId.from(generatedId),
                 reservation.getName(),
                 reservation.getDate(),

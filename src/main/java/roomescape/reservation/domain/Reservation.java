@@ -19,12 +19,27 @@ public class Reservation {
     private final ReservationDate date;
     private final ReservationTime time;
 
-    public static Reservation of(final ReservationId id,
-                                 final ReserverName name,
-                                 final ReservationDate date,
-                                 final ReservationTime time) {
+    private static Reservation of(final ReservationId id,
+                                  final ReserverName name,
+                                  final ReservationDate date,
+                                  final ReservationTime time) {
         validate(id, name, date, time);
         return new Reservation(id, name, date, time);
+    }
+
+    public static Reservation withId(final ReservationId id,
+                                     final ReserverName name,
+                                     final ReservationDate date,
+                                     final ReservationTime time) {
+
+        return of(id, name, date, time);
+    }
+
+    public static Reservation withoutId(final ReserverName name,
+                                        final ReservationDate date,
+                                        final ReservationTime time) {
+        validatePast(date, time);
+        return of(ReservationId.unassigned(), name, date, time);
     }
 
     private static void validate(final ReservationId id,

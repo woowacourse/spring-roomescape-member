@@ -73,12 +73,11 @@ class ReservationCommandUseCaseImplTest {
                         ReservationTimeId.unassigned(),
                         LocalTime.of(10, 0)));
 
-        final Reservation reservation = reservationRepository.save(Reservation.of(
-                ReservationId.unassigned(),
-                ReserverName.from("브라운"),
-                ReservationDate.from(LocalDate.of(2023, 8, 5)),
-                reservationTime
-        ));
+        final Reservation reservation = reservationRepository.save(
+                Reservation.withoutId(
+                        ReserverName.from("브라운"),
+                        ReservationDate.from(LocalDate.of(2023, 8, 5)),
+                        reservationTime));
 
         // when
         reservationCommandUseCase.delete(reservation.getId());

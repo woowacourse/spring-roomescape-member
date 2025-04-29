@@ -14,7 +14,7 @@ import java.util.List;
 public class ReservationConverter {
 
     public static Reservation toDomain(final ReservationEntity reservationEntity) {
-        return Reservation.of(
+        return Reservation.withId(
                 ReservationId.from(reservationEntity.getId()),
                 ReserverName.from(reservationEntity.getName()),
                 ReservationDate.from(reservationEntity.getDate().toLocalDate()),
@@ -22,8 +22,7 @@ public class ReservationConverter {
     }
 
     public static Reservation toDomain(final CreateReservationServiceRequest request) {
-        return Reservation.of(
-                ReservationId.unassigned(),
+        return Reservation.withoutId(
                 ReserverName.from(request.name()),
                 ReservationDate.from(request.date()),
                 request.time());
