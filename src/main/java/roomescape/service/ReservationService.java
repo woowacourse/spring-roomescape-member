@@ -9,6 +9,7 @@ import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,6 +32,7 @@ public class ReservationService {
         return reservationDao.create(
                 new Reservation(
                         createReservationParam.name(),
+                        LocalDateTime.now(),
                         createReservationParam.date(),
                         reservationTime));
     }

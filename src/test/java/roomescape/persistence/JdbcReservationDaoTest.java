@@ -1,12 +1,5 @@
 package roomescape.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
@@ -15,6 +8,15 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+
+import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JdbcReservationDaoTest {
 
@@ -82,7 +84,7 @@ class JdbcReservationDaoTest {
     void 예약을_생성할_수_있다() {
         //given
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('11:00')");
-        Reservation reservation = new Reservation("test", LocalDate.of(2025, 4, 21),
+        Reservation reservation = new Reservation("test", LocalDateTime.of(2025, 3, 3, 1, 1), LocalDate.of(2025, 4, 21),
                 new ReservationTime(1L, LocalTime.of(11, 0)));
 
         //when
