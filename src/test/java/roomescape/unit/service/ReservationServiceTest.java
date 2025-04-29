@@ -11,8 +11,8 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.AddReservationDto;
 import roomescape.dto.AddReservationTimeDto;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.ReservationService;
-import roomescape.service.ReservationTimeService;
 import roomescape.unit.repository.FakeReservationRepository;
 import roomescape.unit.repository.FakeReservationTimeRepository;
 
@@ -21,29 +21,29 @@ import roomescape.unit.repository.FakeReservationTimeRepository;
 class ReservationServiceTest {
 
     static ReservationService reservationService;
-    static ReservationTimeService reservationTimeService;
+    static ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setup() {
-        reservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository());
-        reservationService = new ReservationService(new FakeReservationRepository(), reservationTimeService);
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        reservationService = new ReservationService(new FakeReservationRepository(), reservationTimeRepository);
     }
 
     @Test
     void 예약을_추가하고_조회할_수_있다() {
-        Long reservationTimeId = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(LocalTime.now().plusHours(1L)));
+        Long reservationTimeId = reservationTimeRepository.add(
+                new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
+        AddReservationDto request = new AddReservationDto("praisebak", LocalDate.now().plusDays(1L),
+                reservationTimeId);
+        reservationService.addReservation(request);
 
-        assertThat(reservationService.allReservations().size()).isEqualTo(0);
-        reservationService.addReservation(
-                new AddReservationDto("praisebak", LocalDate.now().plusDays(1L), reservationTimeId));
         assertThat(reservationService.allReservations().size()).isEqualTo(1);
     }
 
     @Test
     void 이전_날짜에_예약할_수_없다() {
-        Long reservationTimeId = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(LocalTime.now().plusHours(1L)));
+        Long reservationTimeId = reservationTimeRepository.add(
+                new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
         Assertions.assertThatThrownBy(() -> reservationService.addReservation(
                         new AddReservationDto("투다", LocalDate.now().minusDays(1), reservationTimeId)))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -51,8 +51,8 @@ class ReservationServiceTest {
 
     @Test
     void 같은날짜일시_이전_시간에_예약할_수_없다() {
-        Long reservationTimeId = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(LocalTime.now().minusHours(1L)));
+        Long reservationTimeId = reservationTimeRepository.add(
+                new AddReservationTimeDto(LocalTime.now().minusHours(1L)).toEntity());
         Assertions.assertThatThrownBy(() -> reservationService.addReservation(
                         new AddReservationDto("투다", LocalDate.now(), reservationTimeId)))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -60,8 +60,8 @@ class ReservationServiceTest {
 
     @Test
     void 이후_날짜에_예약할_수_있다() {
-        Long reservationTimeId = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(LocalTime.now().plusHours(1L)));
+        Long reservationTimeId = reservationTimeRepository.add(
+                new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
         Assertions.assertThatCode(() -> reservationService.addReservation(
                         new AddReservationDto("투다", LocalDate.now().plusDays(1), reservationTimeId)))
                 .doesNotThrowAnyException();
@@ -69,8 +69,8 @@ class ReservationServiceTest {
 
     @Test
     void 같은날짜일시_이후_시간_예약할_수_있다() {
-        Long reservationTimeId = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(LocalTime.now().plusHours(1L)));
+        Long reservationTimeId = reservationTimeRepository.add(
+                new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
         Assertions.assertThatCode(() -> reservationService.addReservation(
                         new AddReservationDto("투다", LocalDate.now(), reservationTimeId)))
                 .doesNotThrowAnyException();
@@ -78,8 +78,8 @@ class ReservationServiceTest {
 
     @Test
     void 예약을_삭제하고_조회할_수_있다() {
-        Long reservationTimeId = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(LocalTime.now().plusHours(1L)));
+        Long reservationTimeId = reservationTimeRepository.add(
+                new AddReservationTimeDto(LocalTime.now().plusHours(1L)).toEntity());
 
         long id = reservationService.addReservation(
                 new AddReservationDto("praisebak", LocalDate.now().plusDays(1L), reservationTimeId));

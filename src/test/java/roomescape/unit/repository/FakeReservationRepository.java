@@ -35,4 +35,10 @@ public class FakeReservationRepository implements ReservationRepository {
         findReservation.orElseThrow(() -> new InvalidReservationException("존재하지 않는 id입니다." + id));
         reservations.remove(findReservation.get());
     }
+
+    @Override
+    public boolean existsByTimeId(Long id) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getReservationTime().getId().equals(id));
+    }
 }

@@ -10,30 +10,34 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AddReservationDto;
 import roomescape.exception.InvalidReservationException;
+import roomescape.exception.InvalidReservationTimeException;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationDao;
-    private final ReservationTimeService reservationTimeService;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationDao, ReservationTimeService reservationTimeService) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeService = reservationTimeService;
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public void deleteReservation(Long id) {
-        reservationDao.deleteById(id);
+        reservationRepository.deleteById(id);
     }
 
     @Transactional
     public long addReservation(AddReservationDto newReservation) {
-        ReservationTime reservationTime = reservationTimeService.findReservationTimeById(newReservation.timeId());
+        ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
+                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 id입니다."));
         Reservation reservation = newReservation.toReservation(reservationTime);
         LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
         validateAddReservationDateTime(reservation, currentDateTime);
-        return reservationDao.add(reservation);
+        return reservationRepository.add(reservation);
     }
 
     private void validateAddReservationDateTime(Reservation newReservation, LocalDateTime currentDateTime) {
@@ -44,6 +48,6 @@ public class ReservationService {
     }
 
     public List<Reservation> allReservations() {
-        return reservationDao.findAll();
+        return reservationRepository.findAll();
     }
 }
