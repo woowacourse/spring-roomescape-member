@@ -21,7 +21,7 @@ public class ReservationTimeServiceTest {
     @DisplayName("시간을 저장한다.")
     void createReservationTime() {
         // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
         // when
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.createReservationTime(
                 reservationTimeRequest);
@@ -34,8 +34,8 @@ public class ReservationTimeServiceTest {
     @DisplayName("중복된 시간을 저장시 예외가 발생한다..")
     void throwExceptionWhenCreateDuplicatedReservationTime() {
         // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
-        ReservationTimeRequest duplicatedReservationTimeRequest = new ReservationTimeRequest(LocalTime.of(10, 0));
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
+        ReservationTimeRequest duplicatedReservationTimeRequest = new ReservationTimeRequest("10:00");
         // when
         reservationTimeService.createReservationTime(reservationTimeRequest);
 

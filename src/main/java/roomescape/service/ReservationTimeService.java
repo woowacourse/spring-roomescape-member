@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationTimeRequest;
@@ -18,13 +19,17 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        reservationTimes
-                .forEach(reservationTime -> reservationTime.validateDuplicatedTime(reservationTimeRequest.startAt()));
-
-        ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
+        LocalTime createTime = reservationTimeRequest.startAtToLocalTime();
+        validateNoDuplication(createTime);
+        ReservationTime reservationTime = new ReservationTime(createTime);
         ReservationTime createdReservationTime = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(createdReservationTime);
+    }
+
+    private void validateNoDuplication(LocalTime createTime) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        reservationTimes
+                .forEach(reservationTime -> reservationTime.validateDuplicatedTime(createTime));
     }
 
     public List<ReservationTimeResponse> getAllReservationTime() {
