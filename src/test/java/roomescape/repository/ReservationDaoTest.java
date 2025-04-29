@@ -59,7 +59,7 @@ class ReservationDaoTest {
     @Test
     void testCreateReservation() {
         // given
-        String name = "norang";
+        String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
         // when
         Reservation reservation = reservationDao.createReservation(new Reservation(name, date, 1L));
@@ -72,7 +72,7 @@ class ReservationDaoTest {
     @Test
     void testDeleteReservation() {
         // given
-        String name = "norang";
+        String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
         reservationDao.createReservation(new Reservation(name, date, 1L));
         // when
@@ -85,7 +85,7 @@ class ReservationDaoTest {
     @Test
     void testGetReservations() {
         // given
-        String name = "norang";
+        String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
         Reservation reservation = reservationDao.createReservation(new Reservation(name, date, 1L));
         // when

@@ -11,6 +11,7 @@ public final class Reservation {
     private final ReservationTime time;
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+        validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -19,6 +20,12 @@ public final class Reservation {
 
     public Reservation(final String name, final LocalDate date, final Long timeId) {
         this(null, name, date, new ReservationTime(timeId));
+    }
+
+    private void validateName(final String name) {
+        if (name == null || name.isBlank() || name.length() > 5) {
+            throw new IllegalArgumentException("예약자명은 최소 1글자, 최대 5글자여야합니다.");
+        }
     }
 
     public Long getTimeId() {
