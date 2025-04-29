@@ -3,25 +3,29 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import roomescape.reservation.service.config.ReservationTestConfig;
+import roomescape.reservation.common.BaseTest;
+import roomescape.reservation.controller.request.ReservationCreateRequest;
 import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.ReservationTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.service.ReservationTimeRepository;
 import roomescape.time.service.ReservationTimeService;
 
-@SpringJUnitConfig(classes = ReservationTestConfig.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationTimeServiceTest {
+public class ReservationTimeServiceTest  extends BaseTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+    @Autowired
+    private ReservationService reservationService;
 
     @Test
     void 예약시간을_생성한다() {
@@ -29,30 +33,61 @@ public class ReservationTimeServiceTest {
 
         ReservationTimeResponse response = reservationTimeService.create(request);
 
-        assertThat(response.id()).isEqualTo(3L);
+        assertThat(response.id()).isEqualTo(1L);
         assertThat(response.startAt()).isEqualTo("10:00");
     }
 
     @Test
     void 예약시간을_모두_조회한다() {
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+
+        reservationTimeService.create(request);
         List<ReservationTimeResponse> responses = reservationTimeService.getAll();
 
         assertThat(responses.get(0).startAt()).isEqualTo("10:00");
-        assertThat(responses.get(1).startAt()).isEqualTo("11:00");
     }
 
     @Test
     void 예약시간을_삭제한다() {
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+        reservationTimeService.create(request);
+
         reservationTimeService.deleteById(1L);
 
         List<ReservationTimeResponse> responses = reservationTimeService.getAll();
 
-        assertThat(responses).hasSize(1);
+        assertThat(responses).hasSize(0);
     }
 
     @Test
     void 존재하지_않는_예약시간을_삭제할_수_없다() {
         assertThatThrownBy(() -> reservationTimeService.deleteById(3L))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 이미_해당_시간의_예약이_존재한다면_삭제할_수_없다() {
+        createTime(ReservationTime.create(LocalTime.of(10, 0)));
+        reservationService.create(new ReservationCreateRequest(
+                "폰트",
+                LocalDate.of(2025, 4, 30),
+                1L
+        ));
+
+        assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 이미_존재하는_시간은_추가할_수_없다() {
+        createTime(ReservationTime.create(LocalTime.of(10, 0)));
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(
+                LocalTime.of(10, 0));
+        assertThatThrownBy(() -> reservationTimeService.create(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private ReservationTime createTime(ReservationTime reservationTime) {
+        return reservationTimeRepository.save(reservationTime);
     }
 }

@@ -64,4 +64,11 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
 
         return Optional.of(Objects.requireNonNull(reservationTime));
     }
+
+    @Override
+    public boolean existByStartAt(LocalTime startAt) {
+        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
+        return count > 0;
+    }
 }

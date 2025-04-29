@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.service.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 
@@ -87,4 +88,19 @@ public class ReservationJdbcRepository implements ReservationRepository {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, reservationDate.getDate(), timeId);
+        return count > 0;
+    }
+
+    @Override
+    public boolean existReservationByTimeId(Long timeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return count > 0;
+    }
+
 }

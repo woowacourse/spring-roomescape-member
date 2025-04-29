@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.controller.request.ReservationCreateRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
@@ -28,6 +29,13 @@ public class ReservationService {
     }
 
     public ReservationResponse create(ReservationCreateRequest request) {
+        Long timeId = request.timeId();
+        ReservationDate reservationDate = new ReservationDate(request.date());
+
+        if (reservationRepository.existSameDateTime(reservationDate, timeId)) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약이 찼습니다.");
+        }
+
         ReservationTime reservationTime = reservationTimeService.getReservationTime(request.timeId());
         Reservation reservation = Reservation.create(request.name(), request.date(), reservationTime);
         Reservation created = reservationRepository.save(reservation);

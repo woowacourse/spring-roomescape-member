@@ -1,8 +1,10 @@
 package roomescape.time.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.service.ReservationRepository;
 import roomescape.time.controller.request.ReservationTimeCreateRequest;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
@@ -11,12 +13,21 @@ import roomescape.time.domain.ReservationTime;
 public class ReservationTimeServiceImpl implements ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeServiceImpl(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeServiceImpl(ReservationTimeRepository reservationTimeRepository,
+                                      ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse create(ReservationTimeCreateRequest request) {
+
+        LocalTime startAt = request.startAt();
+        if (reservationTimeRepository.existByStartAt(startAt)) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 시간입니다.");
+        }
+
         ReservationTime reservationTime = ReservationTime.create(request.startAt());
         ReservationTime created = reservationTimeRepository.save(reservationTime);
 
@@ -30,6 +41,10 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public void deleteById(Long id) {
+        if (reservationRepository.existReservationByTimeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 해당 시간에 이미 예약이 존재하여 삭제할 수 없습니다.");
+        }
+
         ReservationTime reservationTime = getReservationTime(id);
         reservationTimeRepository.deleteById(reservationTime.getId());
     }
