@@ -16,6 +16,7 @@ public class Reservation {
     }
 
     public Reservation(Id id, String name, LocalDate date, ReservationTime time) {
+        validateMaxLength(name);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -24,6 +25,12 @@ public class Reservation {
 
     public Reservation copyWithId(Id id) {
         return new Reservation(id, name, date, time);
+    }
+
+    private void validateMaxLength(String name) {
+        if (name.length() > 255) {
+            throw new IllegalArgumentException("요청 필드가 최대 제한 길이를 초과했습니다.");
+        }
     }
 
     public long getId() {
