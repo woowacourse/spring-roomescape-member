@@ -20,6 +20,15 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse add(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime newReservationTime = new ReservationTime(null, reservationTimeRequest.startAt());
+
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        boolean isAlreadyExisted = reservationTimes.stream()
+                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(reservationTimeRequest.startAt()));
+
+        if(isAlreadyExisted) {
+            throw new IllegalArgumentException("[ERROR] 이미 해당 시간이 존재합니다");
+        }
+
         ReservationTime savedReservationTime = reservationTimeDao.add(newReservationTime);
         return new ReservationTimeResponse(savedReservationTime.getId(), savedReservationTime.getStartAt());
     }
