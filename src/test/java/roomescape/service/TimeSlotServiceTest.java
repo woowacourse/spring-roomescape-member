@@ -53,19 +53,7 @@ class TimeSlotServiceTest {
 
         // when
         boolean isRemoved = service.removeById(target.id());
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", "1");
 
-        // when & then
-        RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body(is("예약 정보를 잘못 입력했습니다."));
         // then
         var timeSlots = service.allTimeSlots();
         assertAll(
