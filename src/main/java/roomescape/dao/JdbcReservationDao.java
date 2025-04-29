@@ -19,13 +19,14 @@ public class JdbcReservationDao implements ReservationDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Reservation> findAll() {
         String sql = """
-        select r.id as id, r.name, r.date, rt.id as time_id, rt.start_at
-        from reservation as r 
-        inner join reservation_time as rt 
-        on r.time_id = rt.id
-        """;
+                select r.id as id, r.name, r.date, rt.id as time_id, rt.start_at
+                from reservation as r 
+                inner join reservation_time as rt 
+                on r.time_id = rt.id
+                """;
         List<Reservation> reservations = jdbcTemplate.query(
                 sql,
                 new ReservationMapper()
@@ -33,6 +34,7 @@ public class JdbcReservationDao implements ReservationDao {
         return reservations;
     }
 
+    @Override
     public long create(Reservation newReservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
@@ -52,11 +54,18 @@ public class JdbcReservationDao implements ReservationDao {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public void deleteById(Id id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(
                 sql,
                 id.value()
         );
+    }
+
+    @Override
+    public Boolean existByTimeId(Id timeId) {
+        String sql = "select exists(select 1 from reservation where time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId.value());
     }
 }

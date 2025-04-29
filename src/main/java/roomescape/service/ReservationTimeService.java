@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
@@ -11,9 +12,11 @@ import roomescape.dto.ReservationTimeResponseDto;
 @Component
 public class ReservationTimeService {
 
+    private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
+        this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }
 
@@ -31,6 +34,12 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(long id) {
+        Boolean hasTime = reservationDao.existByTimeId(new Id(id));
+
+        if (hasTime) {
+            throw new IllegalArgumentException("예약 시간에 존재하는 예약 정보가 있습니다.");
+        }
+
         reservationTimeDao.deleteById(new Id(id));
     }
 }
