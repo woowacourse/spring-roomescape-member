@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import roomescape.business.ReservationTime;
-import roomescape.persistence.GeneralRepository;
+import roomescape.persistence.ReservationTimeRepository;
 
-public class FakeReservationTimeRepository implements GeneralRepository<ReservationTime> {
+public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
 

@@ -22,6 +22,7 @@ public class Reservation {
         this(null, name, date, time);
     }
 
+    // TODO: 정말 여기에 있어야 하는가..
     private void validatePastDateTime(LocalDate date, ReservationTime time) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());

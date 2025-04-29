@@ -12,11 +12,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.business.ReservationTime;
 
 @JdbcTest
-@Import(ReservationTimeRepository.class)
-class ReservationTimeRepositoryTest {
+@Import(H2ReservationTimeRepository.class)
+class H2ReservationTimeRepositoryTest {
 
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private H2ReservationTimeRepository h2ReservationTimeRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -28,7 +28,7 @@ class ReservationTimeRepositoryTest {
         jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.now().plusMinutes(1));
 
         // when
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        List<ReservationTime> reservationTimes = h2ReservationTimeRepository.findAll();
 
         // then
         Assertions.assertThat(reservationTimes).hasSize(2);
@@ -39,10 +39,10 @@ class ReservationTimeRepositoryTest {
     void findById() {
         // given
         LocalTime now = LocalTime.now();
-        Long timeId = reservationTimeRepository.add(new ReservationTime(now));
+        Long timeId = h2ReservationTimeRepository.add(new ReservationTime(now));
 
         // when
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        ReservationTime reservationTime = h2ReservationTimeRepository.findById(timeId);
 
         // then
         Assertions.assertThat(reservationTime.getId()).isEqualTo(timeId);
@@ -56,10 +56,10 @@ class ReservationTimeRepositoryTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.now());
 
         // when
-        Long timeId = reservationTimeRepository.add(reservationTime);
+        Long timeId = h2ReservationTimeRepository.add(reservationTime);
 
         // then
-        Assertions.assertThat(timeId).isEqualTo(reservationTimeRepository.findById(timeId).getId());
+        Assertions.assertThat(timeId).isEqualTo(h2ReservationTimeRepository.findById(timeId).getId());
     }
 
     @DisplayName("시간을 삭제한다")
@@ -69,9 +69,9 @@ class ReservationTimeRepositoryTest {
         jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.now());
 
         // when
-        reservationTimeRepository.delete(1L);
+        h2ReservationTimeRepository.delete(1L);
 
         // then
-        Assertions.assertThat(reservationTimeRepository.findAll()).isEmpty();
+        Assertions.assertThat(h2ReservationTimeRepository.findAll()).isEmpty();
     }
 }

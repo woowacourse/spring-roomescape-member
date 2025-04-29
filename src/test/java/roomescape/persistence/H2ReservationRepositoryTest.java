@@ -14,20 +14,20 @@ import roomescape.business.Reservation;
 import roomescape.business.ReservationTime;
 
 @JdbcTest
-@Import({ReservationRepository.class, ReservationTimeRepository.class})
-class ReservationRepositoryTest {
+@Import({H2ReservationRepository.class, H2ReservationTimeRepository.class})
+class H2ReservationRepositoryTest {
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private H2ReservationRepository h2ReservationRepository;
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private H2ReservationTimeRepository h2ReservationTimeRepository;
 
     private ReservationTime reservationTime;
 
     @BeforeEach
     void setUp() {
-        Long reservationTimeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
-        reservationTime = reservationTimeRepository.findById(reservationTimeId);
+        Long reservationTimeId = h2ReservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        reservationTime = h2ReservationTimeRepository.findById(reservationTimeId);
     }
 
     @DisplayName("예약 객체를 추가한다")
@@ -37,20 +37,20 @@ class ReservationRepositoryTest {
         Reservation reservation = new Reservation("예약자", LocalDate.now(), reservationTime);
 
         // when
-        Long id = reservationRepository.add(reservation);
+        Long id = h2ReservationRepository.add(reservation);
 
         // then
-        Assertions.assertThat(id).isEqualTo(reservationRepository.findById(id).getId());
+        Assertions.assertThat(id).isEqualTo(h2ReservationRepository.findById(id).getId());
     }
 
     @DisplayName("모든 예약 객체를 반환한다")
     @Test
     void findAll() {
         // given
-        reservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
+        h2ReservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
 
         // when
-        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = h2ReservationRepository.findAll();
 
         // then
         Assertions.assertThat(reservations).hasSize(1);
@@ -60,10 +60,10 @@ class ReservationRepositoryTest {
     @Test
     void findById() {
         // given
-        Long id = reservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
+        Long id = h2ReservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
 
         // when
-        Reservation findReservation = reservationRepository.findById(id);
+        Reservation findReservation = h2ReservationRepository.findById(id);
 
         // then
         Assertions.assertThat(findReservation.getId()).isEqualTo(id);
@@ -73,12 +73,12 @@ class ReservationRepositoryTest {
     @Test
     void delete() {
         // given
-        Long id = reservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
+        Long id = h2ReservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
 
         // when
-        reservationRepository.delete(id);
+        h2ReservationRepository.delete(id);
 
         // then
-        Assertions.assertThat(reservationRepository.findAll()).isEmpty();
+        Assertions.assertThat(h2ReservationRepository.findAll()).isEmpty();
     }
 }
