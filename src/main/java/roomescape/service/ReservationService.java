@@ -45,4 +45,8 @@ public class ReservationService {
     public void delete(final Long id) {
         reservationDao.delete(id);
     }
+
+    public int countByTimeId(final long id) {
+        return reservationDao.countByTimeId(id);
+    }
 }

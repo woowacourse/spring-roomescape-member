@@ -44,4 +44,11 @@ public class InMemoryReservationDao implements ReservationDao {
                 .orElseThrow(NoSuchElementException::new);
         reservations.remove(reservation);
     }
+
+    @Override
+    public int countByTimeId(final long timeId) {
+        return (int) reservations.stream()
+                .filter(reservation -> reservation.getTime().getId().equals(timeId))
+                .count();
+    }
 }

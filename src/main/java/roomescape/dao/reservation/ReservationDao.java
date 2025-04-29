@@ -10,4 +10,6 @@ public interface ReservationDao {
     Reservation create(Reservation reservation);
 
     void delete(long id);
+
+    int countByTimeId(long timeId);
 }

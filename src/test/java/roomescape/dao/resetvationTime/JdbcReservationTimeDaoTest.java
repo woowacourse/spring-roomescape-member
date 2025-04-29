@@ -2,6 +2,7 @@ package roomescape.dao.resetvationTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -9,14 +10,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import roomescape.dao.reservation.JdbcReservationDao;
+import roomescape.dao.reservation.ReservationDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
 @JdbcTest
-@Import(JdbcReservationTimeDao.class)
+@Import({JdbcReservationTimeDao.class, JdbcReservationDao.class})
 class JdbcReservationTimeDaoTest {
 
     @Autowired
     private JdbcReservationTimeDao jdbcReservationTimeDao;
+    @Autowired
+    private JdbcReservationDao jdbcReservationDao;
 
     @DisplayName("예약 시간을 데이터베이스에 추가한다.")
     @Test
@@ -63,5 +69,18 @@ class JdbcReservationTimeDaoTest {
 
         // then
         assertThat(reservationTimes.size()).isEqualTo(0);
+    }
+
+    @Autowired
+    ReservationDao reservationDao;
+
+    @Test
+    void 삭제() {
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime1 = jdbcReservationTimeDao.create(reservationTime);
+        jdbcReservationDao.create(new Reservation("test", LocalDate.of(2024, 12, 1), reservationTime1));
+
+        jdbcReservationTimeDao.delete(reservationTime1.getId());
+
     }
 }
