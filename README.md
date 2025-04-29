@@ -33,7 +33,24 @@
 
 - [x] `DELETE /times/{id}`  
   예약 시간 삭제
+
 ---
+
+
+### 예약 시간 관련
+- [x] `GET /themes`  
+  모든 테마 목록 조회
+
+
+- [x] `POST /themes`  
+  테마 생성
+
+
+- [x] `DELETE /themes/{id}`  
+  테마 삭제
+
+---
+
 
 ### 관리자 페이지
 
@@ -48,3 +65,7 @@
 
 - [x] `GET /admin/time`  
   예약 시간 관리 페이지  
+
+
+- [x] `GET /admin/theme`  
+  테마 관리 페이지  
