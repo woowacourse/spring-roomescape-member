@@ -1,4 +1,4 @@
-package roomescape.reservationTime.application;
+package roomescape.reservationTime.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
