@@ -134,4 +134,37 @@ class ReservationServiceTest {
         // then
         assertThat(reservationRepository.findAll()).hasSize(0);
     }
+
+    @DisplayName("과거 일시로 예약할 수 없다.")
+    @Test
+    void cannot_register_when_past() {
+        // given
+        LocalDate date = LocalDate.now().minusDays(1);
+        Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
+
+        // when
+        ReservationRequest request = new ReservationRequest(date, "멍구", timeId);
+
+        // then
+        assertThatThrownBy(() -> reservationService.registerReservation(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("중복된 일시로 예약할 수 없다.")
+    @Test
+    void cannot_register_when_duplicate() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
+        ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
+        Reservation reservation = Reservation.of(1L, "아이나", date, reservationTime);
+        reservationRepository.save(reservation);
+
+        // when
+        ReservationRequest request = new ReservationRequest(date, "멍구", timeId);
+
+        // then
+        assertThatThrownBy(() -> reservationService.registerReservation(request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
