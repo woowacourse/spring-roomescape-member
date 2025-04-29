@@ -28,6 +28,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
+        validateDuplicate(dto.date(), reservationTime.startAt());
         validateReservationDateTime(dto.date(), reservationTime.startAt());
 
         Reservation requestReservation = dto.createWithoutId(reservationTime);
@@ -36,6 +37,13 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약 생성을 실패하였습니다."));
 
         return ReservationResponseDto.from(newReservation, newReservation.time());
+    }
+
+    private void validateDuplicate(LocalDate date, LocalTime time) {
+        List<Reservation> reservations = reservationRepository.findByDateTime(date, time);
+        if (!reservations.isEmpty()) {
+            throw new IllegalStateException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
+        }
     }
 
     private void validateReservationDateTime(LocalDate date, LocalTime time) {

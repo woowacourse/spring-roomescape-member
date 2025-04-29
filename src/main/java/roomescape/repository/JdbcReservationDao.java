@@ -92,4 +92,20 @@ public class JdbcReservationDao implements ReservationRepository {
         String sql = "delete from reservation where id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+        String sql = """
+                SELECT *
+                FROM reservation as r
+                inner join reservation_time as t
+                on r.time_id = t.id
+                where r.date = ? and t.start_at = ?
+                """;
+        try {
+            return jdbcTemplate.query(sql, rowMapper, date, time);
+        } catch (EmptyResultDataAccessException e) {
+            return List.of();
+        }
+    }
 }
