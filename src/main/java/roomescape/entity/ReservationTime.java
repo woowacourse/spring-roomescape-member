@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class ReservationTime {
 
-    private Long id;
+    private final Long id;
     private final LocalTime startAt;
 
     public ReservationTime(Long id, LocalTime startAt) {
@@ -14,7 +14,7 @@ public class ReservationTime {
     }
 
     public ReservationTime(LocalTime startAt) {
-        this.startAt = startAt;
+        this(null, startAt);
     }
 
     public Long getId() {
