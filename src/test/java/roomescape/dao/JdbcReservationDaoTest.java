@@ -75,4 +75,16 @@ public class JdbcReservationDaoTest {
 
         assertThat(jdbcReservationDao.findAllReservations()).isEmpty();
     }
+
+    @Test
+    @DisplayName("날짜와 시간에 해당되는 예약이 존재하는지 확인할 수 있다.")
+    void existTimeByStartAt() {
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
+        LocalDate date = LocalDate.of(5000, 12, 31);
+
+        Reservation reservation = new Reservation(null, "사나", date, time);
+        jdbcReservationDao.addReservation(reservation);
+
+        assertThat(jdbcReservationDao.existReservationByDateAndTime(date, 1L)).isTrue();
+    }
 }

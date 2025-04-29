@@ -22,11 +22,18 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+        validateDuplicateReservation(reservationRequest);
         ReservationTime time = reservationTimeDao.findTimeById(reservationRequest.timeId());
         Reservation reservation = reservationDao.addReservation(
             ReservationRequest.toEntity(reservationRequest, time));
 
         return ReservationResponse.from(reservation);
+    }
+
+    private void validateDuplicateReservation(ReservationRequest reservationRequest) {
+        if (reservationDao.existReservationByDateAndTime(reservationRequest.date(), reservationRequest.timeId())) {
+            throw new IllegalArgumentException("해당 시간에는 이미 예약이 존재한다.");
+        }
     }
 
     public List<ReservationResponse> findAllReservations() {

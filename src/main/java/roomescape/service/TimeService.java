@@ -17,8 +17,16 @@ public class TimeService {
     }
 
     public TimeResponse addReservationTime(TimeRequest timeRequest) {
+        validateExistedTime(timeRequest);
+
         ReservationTime time = reservationTimeDao.addTime(TimeRequest.toEntity(timeRequest));
         return TimeResponse.from(time);
+    }
+
+    private void validateExistedTime(TimeRequest timeRequest) {
+        if(reservationTimeDao.existTimeByStartAt(timeRequest.startAt())) {
+            throw new IllegalArgumentException("이미 존재하는 시간이다.");
+        }
     }
 
     public List<TimeResponse> findAllReservationTimes() {

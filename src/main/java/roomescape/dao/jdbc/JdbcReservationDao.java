@@ -1,6 +1,7 @@
 package roomescape.dao.jdbc;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,11 @@ public class JdbcReservationDao implements ReservationDao {
 
         return new Reservation(key.longValue(), reservation.getName(), reservation.getDate(),
             reservation.getTime());
+    }
+
+    public boolean existReservationByDateAndTime(LocalDate date, Long timeId) {
+        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId);
     }
 
     public void removeReservationById(Long id) {

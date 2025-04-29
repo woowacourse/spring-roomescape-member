@@ -76,4 +76,13 @@ public class JdbcReservationTimeDaoTest {
 
         assertThat(jdbcReservationTimeDao.findAllTimes()).isEmpty();
     }
+
+    @Test
+    @DisplayName("시간이 존재하는지 확인할 수 있다.")
+    void existTimeByStartAt() {
+        LocalTime startAt = LocalTime.of(12, 0);
+        ReservationTime reservationTime = new ReservationTime(null, startAt);
+        jdbcReservationTimeDao.addTime(reservationTime);
+        assertThat(jdbcReservationTimeDao.existTimeByStartAt(startAt)).isTrue();
+    }
 }

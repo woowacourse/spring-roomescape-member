@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -33,5 +34,11 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
 
     public void removeTimeById(Long id) {
         times.removeIf(time -> time.getId().equals(id));
+    }
+
+    @Override
+    public boolean existTimeByStartAt(LocalTime startAt) {
+        return times.stream()
+            .anyMatch(time -> time.getStartAt().equals(startAt));
     }
 }

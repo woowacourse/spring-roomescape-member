@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,5 +29,12 @@ public class FakeReservationDao implements ReservationDao {
 
     public void removeReservationById(Long id) {
         reservations.removeIf(reservation -> reservation.getId().equals(id));
+    }
+
+    @Override
+    public boolean existReservationByDateAndTime(LocalDate date, Long timeId) {
+        return reservations.stream()
+            .anyMatch(reservation -> reservation.getDate().isEqual(date)
+                && reservation.getTime().getId().equals(timeId));
     }
 }
