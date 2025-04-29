@@ -2,13 +2,19 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationFakeRepository;
@@ -20,19 +26,20 @@ class TimeSlotServiceTest {
 
     @BeforeEach
     void setUp() {
-         service = new TimeSlotService(new ReservationFakeRepository(), new TimeSlotFakeRepository());
+        service = new TimeSlotService(new ReservationFakeRepository(),
+            new TimeSlotFakeRepository());
     }
 
     @Test
     @DisplayName("예약 시간을 추가할 수 있다.")
     void addTimeSlot() {
-        //given
+        // given
         var startAt = LocalTime.of(10, 0);
 
-        //when
+        // when
         TimeSlot created = service.add(startAt);
 
-        //then
+        // then
         var timeSlots = service.allTimeSlots();
         assertThat(timeSlots).contains(created);
     }
@@ -40,14 +47,26 @@ class TimeSlotServiceTest {
     @Test
     @DisplayName("예약 시간을 삭제할 수 있다.")
     void deleteTimeSlot() {
-        //given
+        // given
         var startAt = LocalTime.of(10, 0);
         var target = service.add(startAt);
 
-        //when
+        // when
         boolean isRemoved = service.removeById(target.id());
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", "2023-08-05");
+        params.put("timeId", "1");
 
-        //then
+        // when & then
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .body(is("예약 정보를 잘못 입력했습니다."));
+        // then
         var timeSlots = service.allTimeSlots();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
@@ -58,9 +77,10 @@ class TimeSlotServiceTest {
     @Test
     @DisplayName("예약 시간을 삭제할 때 해당 시간에 대한 예약이 존재하면 예외 발생")
     void deleteTimeSlotWithReservation() {
-        //given
+        // given
         var reservationRepository = new ReservationFakeRepository();
-        var timeSlotService = new TimeSlotService(reservationRepository, new TimeSlotFakeRepository());
+        var timeSlotService = new TimeSlotService(reservationRepository,
+            new TimeSlotFakeRepository());
 
         var startAt = LocalTime.of(10, 0);
         var timeSlot = timeSlotService.add(startAt);
@@ -70,7 +90,7 @@ class TimeSlotServiceTest {
         var reservation = new Reservation(null, name, date, timeSlot);
         reservationRepository.save(reservation);
 
-        //when & then
+        // when & then
         assertThatThrownBy(() -> timeSlotService.removeById(timeSlot.id()))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("삭제하려는 예약 시간을 사용하는 예약이 있습니다.");

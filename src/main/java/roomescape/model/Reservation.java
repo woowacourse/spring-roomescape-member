@@ -19,7 +19,8 @@ public class Reservation {
     private final LocalDate date;
     private final TimeSlot timeSlot;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot) {
+    public Reservation(final Long id, final String name, final LocalDate date,
+        final TimeSlot timeSlot) {
         validateNotNull(name, date, timeSlot);
         validateNameLength(name);
         this.id = id;

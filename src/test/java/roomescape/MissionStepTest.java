@@ -20,7 +20,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.ReservationController;
 import roomescape.controller.dto.ReservationResponse;
-import roomescape.model.Reservation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -28,28 +27,31 @@ public class MissionStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private ReservationController reservationController;
 
     @Test
     void 일단계() {
         RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
+            .when().get("/admin")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
     }
 
     @Test
     void 이단계() {
         RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
+            .when().get("/admin/reservation")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .contentType("application/json")
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+            .when().get("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .contentType("application/json")
+            .body("size()",
+                is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
     }
 
     @Test
@@ -62,29 +64,29 @@ public class MissionStepTest {
         insertOneReservationTimeSlot();
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("id", is(1));
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.CREATED.value())
+            .body("id", is(1));
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .body("size()", is(1));
+            .when().get("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", is(1));
 
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            .when().delete("/reservations/1")
+            .then().log().all()
+            .statusCode(HttpStatus.NO_CONTENT.value());
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .body("size()", is(0));
+            .when().get("/reservations")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", is(0));
     }
 
     @Test
@@ -93,7 +95,8 @@ public class MissionStepTest {
             assertAll(
                 () -> assertThat(connection).isNotNull(),
                 () -> assertThat(connection.getCatalog()).isEqualTo("DATABASE-TEST"),
-                () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue()
+                () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
+                    .next()).isTrue()
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -103,7 +106,8 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         insertOneReservationTimeSlot();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운",
+            "2023-08-05", 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
             .when().get("/reservations")
@@ -111,7 +115,8 @@ public class MissionStepTest {
             .statusCode(HttpStatus.OK.value()).extract()
             .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
+            Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
     }
@@ -132,7 +137,8 @@ public class MissionStepTest {
             .then().log().all()
             .statusCode(HttpStatus.CREATED.value());
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
+            Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -140,7 +146,8 @@ public class MissionStepTest {
             .then().log().all()
             .statusCode(HttpStatus.NO_CONTENT.value());
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
+            Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
 
@@ -167,9 +174,6 @@ public class MissionStepTest {
             .then().log().all()
             .statusCode(HttpStatus.NO_CONTENT.value());
     }
-
-    @Autowired
-    private ReservationController reservationController;
 
     @Test
     void 구단계() {

@@ -38,15 +38,15 @@ public class ReservationJdbcRepositoryTest {
     @Test
     @DisplayName("예약을 아이디로 조회한다.")
     void findReservation() {
-        //given
+        // given
         var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
         var savedId = repository.save(reservation);
 
-        //when
+        // when
         Optional<Reservation> found = repository.findById(savedId);
 
-        //then
+        // then
         assertThat(found).isPresent();
     }
 
@@ -89,8 +89,7 @@ public class ReservationJdbcRepositoryTest {
         repository.save(reservation1);
         repository.save(reservation2);
 
-        // when
-        // then
+        // when & then
         assertThat(repository.findAll()).hasSize(2);
     }
 

@@ -31,15 +31,15 @@ public class ReservationServiceTest {
     @Test
     @DisplayName("예약을 추가할 수 있다.")
     void reserve() {
-        //given
+        // given
         var name = "포포";
         var date = LocalDate.of(2024, 4, 18);
         var timeSlotId = JUNK_TIME_SLOT.id();
 
-        //when
+        // when
         Reservation reserved = service.reserve(name, date, timeSlotId);
 
-        //then
+        // then
         var reservations = service.allReservations();
         assertThat(reservations).contains(reserved);
     }
@@ -47,16 +47,16 @@ public class ReservationServiceTest {
     @Test
     @DisplayName("예약을 삭제할 수 있다.")
     void deleteReservation() {
-        //given
+        // given
         var name = "포포";
         var date = LocalDate.of(2024, 4, 18);
         var timeSlotId = JUNK_TIME_SLOT.id();
         var reserved = service.reserve(name, date, timeSlotId);
 
-        //when
+        // when
         boolean isRemoved = service.removeById(reserved.id());
 
-        //then
+        // then
         var reservations = service.allReservations();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
