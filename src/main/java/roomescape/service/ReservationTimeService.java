@@ -7,14 +7,19 @@ import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
+import roomescape.exception.reservationtime.UsingReservationTimeException;
+import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
     private final ReservationTimeRepository timeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository timeRepository) {
+    public ReservationTimeService(ReservationTimeRepository timeRepository,
+                                  ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
@@ -31,14 +36,17 @@ public class ReservationTimeService {
     }
 
     public void deleteById(Long id) {
+        if (isReservationExists(id)) {
+            throw new UsingReservationTimeException();
+        }
+
         int affectedCount = timeRepository.deleteById(id);
         if (affectedCount == 0) {
             throw new ReservationTimeNotFoundException(id);
         }
     }
 
-    public ReservationTime getById(Long id) {
-        return timeRepository.findById(id)
-                .orElseThrow(() -> new ReservationTimeNotFoundException(id));
+    private boolean isReservationExists(Long id) {
+        return reservationRepository.existsByTimeId(id);
     }
 }

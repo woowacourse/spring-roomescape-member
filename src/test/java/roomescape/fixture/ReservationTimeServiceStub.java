@@ -1,6 +1,5 @@
 package roomescape.fixture;
 
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,7 @@ public class ReservationTimeServiceStub extends ReservationTimeService {
     private long id = 1L;
 
     public ReservationTimeServiceStub() {
-        super(null);
+        super(null, null);
     }
 
     @Override
@@ -27,11 +26,6 @@ public class ReservationTimeServiceStub extends ReservationTimeService {
     @Override
     public List<ReservationTimeResponse> getAll() {
         return ReservationTimeResponse.from(times.values().stream().toList());
-    }
-
-    @Override
-    public ReservationTime getById(Long timeId) {
-        return times.getOrDefault(timeId, new ReservationTime(1L, LocalTime.now().plusHours(1)));
     }
 
     @Override

@@ -4,32 +4,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.fixture.ReservationRepositoryStub;
-import roomescape.fixture.ReservationTimeServiceStub;
+import roomescape.fixture.ReservationTimeRepositoryStub;
 
 class ReservationServiceTest {
     private ReservationService reservationService;
+    private ReservationTimeRepositoryStub timeRepository;
 
     @BeforeEach
     void setUp() {
+        timeRepository = new ReservationTimeRepositoryStub();
         reservationService = new ReservationService(
                 new ReservationRepositoryStub(),
-                new ReservationTimeServiceStub()
+                timeRepository
         );
     }
 
     @DisplayName("예약을 생성한다")
     @Test
     void create() {
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.now(), 1L);
+        timeRepository.add(new ReservationTime(LocalTime.now()));
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.now().plusDays(1), 1L);
 
         ReservationResponse response = reservationService.create(request);
 
@@ -40,8 +45,9 @@ class ReservationServiceTest {
     @DisplayName("전체 예약 목록을 조회한다")
     @Test
     void getAll() {
-        reservationService.create(new ReservationRequest("A", LocalDate.now(), 1L));
-        reservationService.create(new ReservationRequest("B", LocalDate.now(), 1L));
+        timeRepository.add(new ReservationTime(LocalTime.now()));
+        reservationService.create(new ReservationRequest("A", LocalDate.now().plusDays(1), 1L));
+        reservationService.create(new ReservationRequest("B", LocalDate.now().plusDays(1), 1L));
 
         List<ReservationResponse> responses = reservationService.getAll();
 
@@ -59,7 +65,8 @@ class ReservationServiceTest {
     @Test
     void alreadyExists() {
         // given
-        LocalDate now = LocalDate.now();
+        timeRepository.add(new ReservationTime(LocalTime.now()));
+        LocalDate now = LocalDate.now().plusDays(1);
         ReservationRequest request = new ReservationRequest("브라운", now, 1L);
         reservationService.create(request);
 

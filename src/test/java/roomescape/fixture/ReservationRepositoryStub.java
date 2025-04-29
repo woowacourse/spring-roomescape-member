@@ -38,4 +38,9 @@ public class ReservationRepositoryStub implements ReservationRepository {
         return reservations.values().stream()
                 .anyMatch(reservation -> reservation.getId() == id && reservation.getDate() == date);
     }
+
+    @Override
+    public boolean existsByTimeId(Long id) {
+        return reservations.values().stream().anyMatch(reservation -> reservation.getId() == id);
+    }
 }
