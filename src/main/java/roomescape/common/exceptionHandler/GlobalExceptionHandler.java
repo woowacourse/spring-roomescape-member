@@ -17,4 +17,14 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<ExceptionResponse> illegalArgument(
+            final IllegalArgumentException exception, final HttpServletRequest request
+    ) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                400, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(exceptionResponse);
+    }
 }
