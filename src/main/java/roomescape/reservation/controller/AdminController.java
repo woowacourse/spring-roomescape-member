@@ -16,12 +16,12 @@ public class AdminController {
         return "admin/index";
     }
 
-    @GetMapping("/reservation")
+    @GetMapping("/admin/reservation")
     public String reservation() {
         return "admin/reservation";
     }
 
-    @GetMapping("/time")
+    @GetMapping("/admin/time")
     public String time(){
         return "admin/time";
     }
