@@ -15,7 +15,7 @@ public class JdbcThemeDAO implements ThemeDAO {
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNumber) ->
             new Theme(resultSet.getLong("id"),
-                    resultSet.getString("name"),
+                    resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail"));
 
@@ -32,7 +32,7 @@ public class JdbcThemeDAO implements ThemeDAO {
     @Override
     public long insert(final Theme theme) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", theme.getName())
+                .addValue("theme_name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);

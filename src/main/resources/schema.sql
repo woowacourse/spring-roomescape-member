@@ -8,7 +8,7 @@ CREATE TABLE reservation_time
 CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
-    name        VARCHAR(255) NOT NULL,
+    theme_name  VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail   VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
