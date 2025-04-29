@@ -1,0 +1,29 @@
+package roomescape.reservation.domain;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.experimental.FieldNameConstants;
+import roomescape.common.validate.Validator;
+
+import java.time.LocalDate;
+
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@FieldNameConstants(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode
+public final class ReservationDate {
+
+    private final LocalDate value;
+
+    public static ReservationDate from(final LocalDate date) {
+        validate(date);
+        return new ReservationDate(date);
+    }
+
+    private static void validate(final LocalDate value) {
+        Validator.of(ReservationDate.class)
+                .notNullField(Fields.value, value);
+    }
+}
