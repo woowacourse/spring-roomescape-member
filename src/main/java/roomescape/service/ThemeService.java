@@ -3,10 +3,29 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.dao.ThemeDAO;
+import roomescape.domain.Theme;
+import roomescape.service.dto.ThemeCreation;
 
 @Service
 public class ThemeService {
-    public List<ThemeResponse> findAllThemes() {
 
+    private final ThemeDAO themeDAO;
+
+    public ThemeService(final ThemeDAO themeDAO) {
+        this.themeDAO = themeDAO;
+    }
+
+    public List<ThemeResponse> findAllThemes() {
+        return themeDAO.findAll()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
+    public ThemeResponse addTheme(final ThemeCreation themeCreation) {
+        Theme theme = new Theme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
+        long id = themeDAO.insert(theme);
+        return ThemeResponse.from(theme.withId(id));
     }
 }
