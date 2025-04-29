@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,5 +81,20 @@ class ReservationServiceTest {
         // then
         List<ReservationResponseDto> reservations = reservationService.getAllReservations();
         assertThat(reservations).isEmpty();
+    }
+
+    @DisplayName("이미 존재하는 예약 시간에 예약한다면 예외를 던진다")
+    @Test
+    void test3() {
+        // given
+        ReservationRequestDto request = new ReservationRequestDto("다로", LocalDate.now().plusDays(1).toString(), 1L);
+        reservationService.saveReservation(request);
+        ReservationRequestDto savedRequest = new ReservationRequestDto("히로", LocalDate.now().plusDays(1).toString(),
+                1L);
+
+        // when && then
+        assertThatThrownBy(
+                () -> reservationService.saveReservation(savedRequest))
+                .isInstanceOf(IllegalStateException.class);
     }
 }

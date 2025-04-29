@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.model.Reservation;
@@ -39,5 +40,13 @@ public class FakeReservationDao extends ReservationDao {
     @Override
     public void deleteById(Long id) {
         database.remove(id);
+    }
+
+    @Override
+    public Optional<Reservation> findByDateAndTime(Reservation reservation) {
+        return database.values().stream()
+                .filter(reservation1 -> reservation1.getDate().equals(reservation.getDate()))
+                .filter(reservation1 -> reservation1.getTimeId().equals(reservation.getTimeId()))
+                .findAny();
     }
 }

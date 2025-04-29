@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -62,5 +63,12 @@ public class ReservationDao {
     public void deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public Optional<Reservation> findByDateAndTime(Reservation reservation) {
+        String sql = "SELECT id, name, date, time_id FROM reservation WHERE date = ? AND time_id = ?";
+        return jdbcTemplate.query(sql, actorRowMapper, reservation.getDate(), reservation.getTimeId())
+                .stream()
+                .findFirst();
     }
 }
