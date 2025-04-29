@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.entity.ReservationTime;
+import roomescape.exception.impl.InvalidReservationTimeException;
 
 class ReservationTimeTest {
 
@@ -30,7 +31,7 @@ class ReservationTimeTest {
         //when
         //then
         assertThatThrownBy(() -> ReservationTime.beforeSave(LocalTime.parse(timeStrValue)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약할 수 없는 시간입니다.");
+                .isInstanceOf(InvalidReservationTimeException.class)
+                .hasMessage("예약은 10시~23시로만 가능합니다.");
     }
 }

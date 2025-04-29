@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,12 +33,12 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody @Valid ReservationRequest reservationRequest) {
         ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
-        return ResponseEntity.ok(reservationResponse);
+        return ResponseEntity.created(URI.create("/reservations")).body(reservationResponse);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
