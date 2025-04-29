@@ -1,11 +1,10 @@
-package roomescape.persistence;
+package roomescape.domain;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.Reservation;
 
 
-public interface ReservationDao {
+public interface ReservationRepository {
 
     List<Reservation> findAll();
 
@@ -14,4 +13,6 @@ public interface ReservationDao {
     void deleteById(Long reservationId);
 
     Optional<Reservation> findById(Long reservationId);
+
+    boolean existByTimeId(Long reservationTimeId);
 }

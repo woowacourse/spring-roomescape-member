@@ -6,17 +6,18 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JdbcReservationTimeDao implements ReservationTimeDao {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

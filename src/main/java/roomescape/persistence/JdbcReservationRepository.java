@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 
 import java.sql.PreparedStatement;
@@ -13,11 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JdbcReservationDao implements ReservationDao {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -86,5 +87,11 @@ public class JdbcReservationDao implements ReservationDao {
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean existByTimeId(final Long reservationTimeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, reservationTimeId) > 0;
     }
 }

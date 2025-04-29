@@ -1,22 +1,23 @@
 package roomescape.fake;
 
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import roomescape.domain.ReservationTime;
-import roomescape.persistence.ReservationTimeDao;
 
-public class FakeReservationTimeDao implements ReservationTimeDao {
+public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private List<ReservationTime> reservationTimes = new ArrayList<>();
     private Long id = 0L;
 
-    public FakeReservationTimeDao(ReservationTime... reservationTimes) {
+    public FakeReservationTimeRepository(ReservationTime... reservationTimes) {
         this((long) reservationTimes.length, new ArrayList<>(List.of(reservationTimes)));
     }
 
-    private FakeReservationTimeDao(Long id, List<ReservationTime> reservationTimes) {
+    private FakeReservationTimeRepository(Long id, List<ReservationTime> reservationTimes) {
         this.id = id;
         this.reservationTimes = reservationTimes;
     }

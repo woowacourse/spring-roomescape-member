@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JdbcReservationTimeDaoTest {
+class JdbcReservationTimeRepositoryTest {
 
     private static final DataSource TEST_DATASOURCE = DataSourceBuilder.create()
             .driverClassName("org.h2.Driver")
@@ -25,7 +25,7 @@ class JdbcReservationTimeDaoTest {
 
 
     private final JdbcTemplate jdbcTemplate = new JdbcTemplate(TEST_DATASOURCE);
-    private final JdbcReservationTimeDao reservationTimeDao = new JdbcReservationTimeDao(jdbcTemplate);
+    private final JdbcReservationTimeRepository reservationTimeDao = new JdbcReservationTimeRepository(jdbcTemplate);
 
 
     @BeforeEach

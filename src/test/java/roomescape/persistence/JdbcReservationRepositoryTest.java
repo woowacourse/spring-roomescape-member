@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JdbcReservationDaoTest {
+class JdbcReservationRepositoryTest {
 
     private static final DataSource TEST_DATASOURCE = DataSourceBuilder.create()
             .driverClassName("org.h2.Driver")
@@ -28,7 +28,7 @@ class JdbcReservationDaoTest {
 
 
     private final JdbcTemplate jdbcTemplate = new JdbcTemplate(TEST_DATASOURCE);
-    private final JdbcReservationDao reservationDao = new JdbcReservationDao(jdbcTemplate);
+    private final JdbcReservationRepository reservationDao = new JdbcReservationRepository(jdbcTemplate);
 
     @BeforeEach
     void setUp() {
@@ -107,5 +107,18 @@ class JdbcReservationDaoTest {
 
         //then
         assertThat(reservationDao.findById(1L)).isEmpty();
+    }
+
+    @Test
+    void 특정_time_id를_사용하는_예약이_존재하는지_알_수_있다() {
+        //given
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES ('test1', '2025-04-21', 1)");
+
+        //when
+        boolean result = reservationDao.existByTimeId(1L);
+
+        //then
+        assertThat(result).isTrue();
     }
 }

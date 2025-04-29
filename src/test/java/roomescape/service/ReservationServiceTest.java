@@ -3,8 +3,8 @@ package roomescape.service;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.fake.FakeReservationDao;
-import roomescape.fake.FakeReservationTimeDao;
+import roomescape.fake.FakeReservationRepository;
+import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
@@ -24,8 +24,8 @@ class ReservationServiceTest {
     void 예약을_생성한다() {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
-        FakeReservationDao fakeReservationDao = new FakeReservationDao();
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository();
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
         CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE,
                 1L);
@@ -41,8 +41,8 @@ class ReservationServiceTest {
     @Test
     void 예약을_생성할때_timeId가_데이터베이스에_존재하지_않는다면_예외가_발생한다() {
         //give
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
-        FakeReservationDao fakeReservationDao = new FakeReservationDao();
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository();
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository();
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
         CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE,
                 1L);
@@ -58,8 +58,8 @@ class ReservationServiceTest {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Reservation reservation = new Reservation(1L, "test", LocalDate.now(), reservationTime);
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
-        FakeReservationDao fakeReservationDao = new FakeReservationDao(reservation);
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(reservation);
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
 
         //when
@@ -75,8 +75,8 @@ class ReservationServiceTest {
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(12, 1));
         ReservationTime reservationTime2 = new ReservationTime(1L, LocalTime.of(13, 1));
 
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime1, reservationTime2);
-        FakeReservationDao fakeReservationDao = new FakeReservationDao(
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime1, reservationTime2);
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
                 new Reservation(1L, "test1", RESERVATION_DATE, reservationTime1),
                 new Reservation(2L, "test2", RESERVATION_DATE, reservationTime2)
         );
@@ -98,8 +98,8 @@ class ReservationServiceTest {
     void id_로_예약을_찾을_수_있다() {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 1));
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
-        FakeReservationDao fakeReservationDao = new FakeReservationDao(
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
                 new Reservation(1L, "test1", RESERVATION_DATE, reservationTime));
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
 
@@ -117,8 +117,8 @@ class ReservationServiceTest {
     void id에_해당하는_예약이_없는경우_예외가_발생한다() {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(13, 1));
-        FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao(reservationTime);
-        FakeReservationDao fakeReservationDao = new FakeReservationDao(
+        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
+        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
                 new Reservation(1L, "test1", LocalDate.now().plusDays(1), reservationTime));
         ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao);
 

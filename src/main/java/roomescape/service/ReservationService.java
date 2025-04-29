@@ -2,9 +2,9 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.persistence.ReservationDao;
-import roomescape.persistence.ReservationTimeDao;
+import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
@@ -15,21 +15,21 @@ import java.util.List;
 @Service
 public class ReservationService {
 
-    private final ReservationTimeDao reservationTImeDao;
-    private final ReservationDao reservationDao;
+    private final ReservationTimeRepository reservationTImeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationService(ReservationTimeDao reservationTImeDao,
-                              ReservationDao reservationDao) {
-        this.reservationTImeDao = reservationTImeDao;
-        this.reservationDao = reservationDao;
+    public ReservationService(ReservationTimeRepository reservationTImeRepository,
+                              ReservationRepository reservationRepository) {
+        this.reservationTImeRepository = reservationTImeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public Long create(CreateReservationParam createReservationParam) {
-        ReservationTime reservationTime = reservationTImeDao.findById(createReservationParam.timeId()).orElseThrow(
+        ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
                 () -> new IllegalArgumentException(
                         createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
 
-        return reservationDao.create(
+        return reservationRepository.create(
                 new Reservation(
                         createReservationParam.name(),
                         LocalDateTime.now(),
@@ -38,18 +38,18 @@ public class ReservationService {
     }
 
     public void deleteById(Long reservationId) {
-        reservationDao.deleteById(reservationId);
+        reservationRepository.deleteById(reservationId);
     }
 
     public List<ReservationResult> findAll() {
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(this::toReservationResult)
                 .toList();
     }
 
     public ReservationResult findById(Long reservationId) {
-        Reservation reservation = reservationDao.findById(reservationId)
+        Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
         return toReservationResult(reservation);
     }
