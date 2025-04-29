@@ -2,6 +2,7 @@ package roomescape.time.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,19 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
             return Optional.of(reservationTimes.getFirst());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<ReservationTime> findAllByStartAt(final LocalTime startAt) {
+        final String sql = """
+                SELECT
+                    id,
+                    start_at
+                FROM reservation_times 
+                WHERE start_at = ?
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, startAt);
     }
 
     @Override

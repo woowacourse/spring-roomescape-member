@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -16,6 +17,11 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     public Long save(final LocalTime startAt) {
+        final List<ReservationTime> foundReservationTimes = reservationTimeRepository.findAllByStartAt(startAt);
+        if (!foundReservationTimes.isEmpty()) {
+            throw new DataExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
+        }
+
         final ReservationTime reservationTime = new ReservationTime(startAt);
 
         return reservationTimeRepository.save(reservationTime);
