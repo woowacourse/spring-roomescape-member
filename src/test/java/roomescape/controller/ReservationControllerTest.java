@@ -53,7 +53,7 @@ class ReservationControllerTest {
         void addReservationTest() {
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
-            params.put("date", "2023-08-05");
+            params.put("date", "2030-08-05");
             params.put("timeId", 1);
 
             RestAssured.given().log().all()
@@ -76,7 +76,7 @@ class ReservationControllerTest {
         void reservationResponseTest() {
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
-            params.put("date", "2023-08-05");
+            params.put("date", "2030-08-05");
             params.put("timeId", 1);
 
             RestAssured.given().log().all()
@@ -111,7 +111,7 @@ class ReservationControllerTest {
 
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
-            params.put("date", "2023-08-05");
+            params.put("date", "2030-08-05");
             params.put("timeId", 1);
 
             RestAssured.given().log().all()

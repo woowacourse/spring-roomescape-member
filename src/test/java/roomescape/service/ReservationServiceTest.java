@@ -43,7 +43,7 @@ class ReservationServiceTest {
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, startTime)));
             reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
 
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now(), 1L);
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L);
             ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
 
             Long id = responseDto.id();
