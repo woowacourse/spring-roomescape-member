@@ -82,7 +82,7 @@ public class ReservationControllerMockMvcTest {
                 .body(dto)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", is(expectedId.intValue()))
                 .body("name", is("브라운"))
                 .body("date", is(fixedDate.toString()))
