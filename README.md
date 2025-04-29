@@ -13,6 +13,7 @@
 - [x] `/admin/reservation` 요청 시 예약 관리 페이지 응답
 
 ## API 명세서
+## 예약 API
 ### 예약 조회 API
 - [x] 예약 조회 API 구현
 #### Request
@@ -74,6 +75,63 @@ Content-Type: application/json
 ```
 DELETE /reservations/1 HTTP/1.1
 ```
+#### Response
+```
+HTTP/1.1 200
+```
+
+## 예약 시간 API
+### 예약 시간 추가 API
+- [x] 예약 시간 추가 API 구현
+#### Request
+```
+POST /times HTTP/1.1
+content-type: application/json
+
+{
+    "startAt": "10:00"
+}
+
+```
+
+#### Response
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+    "id": 1,
+    "startAt": "10:00"
+}
+```
+
+### 예약 시간 조회 API
+- [x] 예약 시간 조회 API 구현
+#### Request
+```
+GET /times HTTP/1.1
+```
+
+#### Response
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "startAt": "10:00"
+    }
+]
+```
+
+### 예약 시간 삭제 API
+- [x] 예약 시간 삭제 API 구현
+#### Request
+```
+DELETE /times/1 HTTP/1.1
+```
+
 #### Response
 ```
 HTTP/1.1 200
