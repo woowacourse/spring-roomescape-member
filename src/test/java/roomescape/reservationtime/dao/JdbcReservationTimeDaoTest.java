@@ -22,7 +22,7 @@ class JdbcReservationTimeDaoTest {
     void 예약_시간을_추가할_수_있다() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
 
         // when
         reservationTimeDao.create(reservationTime);
@@ -35,7 +35,7 @@ class JdbcReservationTimeDaoTest {
     @Test
     void 예약_시간을_조회할_수_있다() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
 
         // when
         reservationTimeDao.create(reservationTime);
@@ -48,7 +48,7 @@ class JdbcReservationTimeDaoTest {
     @Test
     void 예약_시간을_삭제할_수_있다() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
         int beforeSize = reservationTimeDao.findAll().size();
 

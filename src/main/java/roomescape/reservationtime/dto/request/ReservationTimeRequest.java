@@ -8,6 +8,6 @@ public record ReservationTimeRequest(
         @NotNull LocalTime startAt
 ) {
     public ReservationTime toTime() {
-        return new ReservationTime(startAt);
+        return ReservationTime.createWithoutId(startAt);
     }
 }
