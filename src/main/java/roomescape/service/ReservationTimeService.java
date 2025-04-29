@@ -1,0 +1,44 @@
+package roomescape.service;
+
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
+import roomescape.entity.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
+
+@Service
+public class ReservationTimeService {
+
+    private final ReservationTimeRepository reservationTimeRepository;
+
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
+        this.reservationTimeRepository = reservationTimeRepository;
+    }
+
+    public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        reservationTimes
+                .forEach(reservationTime -> reservationTime.validateDuplicatedTime(reservationTimeRequest.startAt()));
+
+        ReservationTime reservationTime = new ReservationTime(reservationTimeRequest.startAt());
+        ReservationTime createdReservationTime = reservationTimeRepository.save(reservationTime);
+        return ReservationTimeResponse.from(createdReservationTime);
+    }
+
+    public List<ReservationTimeResponse> getAllReservationTime() {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        return ReservationTimeResponse.from(reservationTimes);
+    }
+
+    public Boolean delete(Long id) {
+        int deletedRows = reservationTimeRepository.deleteById(id);
+        return deletedRows > 0;
+    }
+
+    public ReservationTimeResponse getReservationTime(@NotNull Long timeId) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        return ReservationTimeResponse.from(reservationTime);
+    }
+}
