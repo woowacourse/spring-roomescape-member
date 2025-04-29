@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
         Reservation reservation = reservationRequest.toEntityWithReservationTime(reservationTime);
+        if (reservation.isPast(LocalDate.now())) {
+            throw new IllegalArgumentException("하루 전 까지 예약 가능합니다.");
+        }
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromEntity(savedReservation);
     }
