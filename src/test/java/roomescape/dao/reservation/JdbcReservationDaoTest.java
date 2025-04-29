@@ -29,9 +29,9 @@ class JdbcReservationDaoTest {
     void addTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Reservation reservation = new Reservation("체체", LocalDate.of(2024, 10, 10),
+        Reservation reservation = new Reservation("체체", LocalDate.now(),
                 savedReservationTime);
 
         // when
@@ -46,11 +46,11 @@ class JdbcReservationDaoTest {
     void findAllTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Reservation reservation1 = new Reservation("체체", LocalDate.of(2024, 10, 10),
+        Reservation reservation1 = new Reservation("체체", LocalDate.now(),
                 savedReservationTime);
-        Reservation reservation2 = new Reservation("체체", LocalDate.of(2024, 10, 10),
+        Reservation reservation2 = new Reservation("체체", LocalDate.now(),
                 savedReservationTime);
         jdbcReservationDao.create(reservation1);
         jdbcReservationDao.create(reservation2);
@@ -68,9 +68,9 @@ class JdbcReservationDaoTest {
     void deleteTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Reservation reservation = new Reservation("체체", LocalDate.of(2024, 10, 10),
+        Reservation reservation = new Reservation("체체", LocalDate.now(),
                 savedReservationTime);
         Reservation savedReservation = jdbcReservationDao.create(reservation);
 

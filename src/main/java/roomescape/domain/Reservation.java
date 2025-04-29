@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Reservation {
 
@@ -11,6 +12,7 @@ public class Reservation {
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
         validateNameLength(name);
+        validateDateTime(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -19,14 +21,24 @@ public class Reservation {
 
     public Reservation(final String name, final LocalDate date, final ReservationTime time) {
         validateNameLength(name);
+        validateDateTime(date, time);
         this.name = name;
         this.date = date;
         this.time = time;
     }
 
     private void validateNameLength(final String name) {
-        if (name.length() > 255) {
-            throw new IllegalArgumentException("이름은 255자 이하로 입력해야 합니다.");
+        if (name.length() > 10) {
+            throw new IllegalArgumentException("예약자명은 10자 이하여야합니다.");
+        }
+    }
+
+    private void validateDateTime(final LocalDate localDate, final ReservationTime reservationTime) {
+        if (localDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("예약은 미래만 가능합니다.");
+        }
+        if (localDate.isEqual(LocalDate.now()) && reservationTime.isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("예약은 미래만 가능합니다.");
         }
     }
 
