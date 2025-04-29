@@ -5,11 +5,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.dao.FakeReservationDao;
 import roomescape.dao.FakeTimeDao;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequest;
+import roomescape.entity.ReservationEntity;
 import roomescape.entity.ReservationTimeEntity;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.stream.Stream;
 
@@ -18,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTimeServiceTest {
     private final ReservationTimeDao timeDao = new FakeTimeDao();
+    private final ReservationDao reservationDao = new FakeReservationDao();
     private final ReservationTimeService service = new ReservationTimeService(timeDao);
 
     @DisplayName("예약 생성이 가능한 시간은 10:00 ~ 22:00 이다.")
@@ -73,5 +78,22 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> {
             service.create(requestDto);
         }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("예약 내역이 존재하는 시간은 삭제할 수 없다.")
+    @Test
+    void deleteExistReservationTime() {
+        // given
+        LocalTime time = LocalTime.of(12, 0);
+        ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
+        timeDao.save(timeEntity);
+        LocalDate date = LocalDate.of(2025, 1, 2);
+        reservationDao.save(new ReservationEntity(1L, "test1", date, timeEntity));
+
+        // when & then
+        assertThatThrownBy(() -> {
+            service.delete(1L);
+        }).isInstanceOf(IllegalArgumentException.class);
+        // TODO: Custom Exception으로 변경
     }
 }
