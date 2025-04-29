@@ -25,13 +25,13 @@ public class ReservationService {
 
     public ReservationResponse addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다."));
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 시간입니다."));
         Reservation reservation = reservationRequest.toEntityWithReservationTime(reservationTime);
         if (reservation.isPast(LocalDate.now())) {
-            throw new IllegalArgumentException("하루 전 까지 예약 가능합니다.");
+            throw new IllegalStateException("하루 전 까지 예약 가능합니다.");
         }
         if (reservationDao.isExistByTimeIdAndDate(reservationRequest.timeId(), reservationRequest.date())) {
-            throw new IllegalArgumentException("이미 해당 시간에 예약이 존재합니다.");
+            throw new IllegalStateException("이미 해당 시간에 예약이 존재합니다.");
         }
         Reservation savedReservation = reservationDao.save(reservation);
         return ReservationResponse.fromEntity(savedReservation);
@@ -40,7 +40,7 @@ public class ReservationService {
     public void deleteReservation(Long id) {
         boolean isDeleted = reservationDao.deleteById(id);
         if (!isDeleted) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 id가 없습니다");
+            throw new IllegalArgumentException("해당하는 id가 없습니다");
         }
     }
 

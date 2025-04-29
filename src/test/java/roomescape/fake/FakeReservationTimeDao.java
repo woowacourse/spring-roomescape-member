@@ -3,6 +3,7 @@ package roomescape.fake;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationTimeDao;
@@ -33,7 +34,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(Long id) {
-        return reservationTimes.get(id);
+    public Optional<ReservationTime> findById(Long id) {
+        return Optional.of(reservationTimes.get(id));
     }
 }

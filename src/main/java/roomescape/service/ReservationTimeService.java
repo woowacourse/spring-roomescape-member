@@ -32,7 +32,7 @@ public class ReservationTimeService {
         }
         boolean isDeleted = reservationTimeDao.deleteById(id);
         if (!isDeleted) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 id가 없습니다");
+            throw new IllegalArgumentException("해당하는 ID가 없습니다.");
         }
     }
 
