@@ -56,13 +56,13 @@ class ReservationControllerTest {
         ResponseEntity<ReservationResponse> response = reservationController.createReservation(request);
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().getName()).isEqualTo(name);
         assertThat(response.getBody().getDate()).isEqualTo(date);
         assertThat(response.getBody().getTime().getId()).isEqualTo(timeId);
     }
 
-    @DisplayName("DELETE /reservations/{id} 요청시 200 상태코드를 받는다")
+    @DisplayName("DELETE /reservations/{id} 요청시 204 상태코드를 받는다")
     @Test
     void deleteReservation() {
         // given
@@ -76,6 +76,6 @@ class ReservationControllerTest {
         ResponseEntity<Void> response = reservationController.deleteReservation(timeId);
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 }
