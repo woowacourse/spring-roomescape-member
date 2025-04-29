@@ -88,4 +88,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
+
+    public boolean existByReservationTimeId(final Long timeId){
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
+        return count != 0;
+    }
 }
