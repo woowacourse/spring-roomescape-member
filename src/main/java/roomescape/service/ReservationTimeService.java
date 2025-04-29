@@ -20,16 +20,29 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
         LocalTime createTime = reservationTimeRequest.startAtToLocalTime();
-        validateNoDuplication(createTime);
+        validateTime(createTime);
         ReservationTime reservationTime = new ReservationTime(createTime);
         ReservationTime createdReservationTime = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(createdReservationTime);
+    }
+
+    private void validateTime(LocalTime createTime) {
+        validateNoDuplication(createTime);
+        validateTimeInterval(createTime);
     }
 
     private void validateNoDuplication(LocalTime createTime) {
         boolean  isExist = reservationTimeRepository.existByTime(createTime);
         if (isExist) {
             throw new IllegalArgumentException("중복된 시간은 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateTimeInterval(LocalTime createTime) {
+        boolean hasLess30MinDifference = reservationTimeRepository.findAll().stream()
+                .anyMatch(reservationTime -> reservationTime.isInTimeInterval(createTime));
+        if (hasLess30MinDifference) {
+            throw new IllegalArgumentException("예약 시간은 서로 30분 이상 차이가 나야 합니다.");
         }
     }
 

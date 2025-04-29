@@ -1,5 +1,6 @@
 package roomescape.entity;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -56,5 +57,10 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public boolean isInTimeInterval(LocalTime otherTime) {
+        long minuteDifference = Duration.between(startAt, otherTime).abs().toMinutes();
+        return minuteDifference < 30;
     }
 }

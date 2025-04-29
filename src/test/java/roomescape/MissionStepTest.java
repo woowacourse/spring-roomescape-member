@@ -27,7 +27,7 @@ public class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    @DisplayName("200상태코드와 관리자 페이지를 반환한다.")
+    @DisplayName("200 상태코드와 관리자 페이지를 반환한다.")
     void returnAdminPageWithStatus200Test() {
         RestAssured.given().log().all()
                 .when().get("/admin")
@@ -36,7 +36,7 @@ public class MissionStepTest {
     }
 
     @Test
-    @DisplayName("200상태코와 예약 페이지을 반환한다")
+    @DisplayName("200 상태코드와 예약 페이지를 반환한다")
     void returnReservationPageWithStatus200Test() {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")
@@ -55,7 +55,7 @@ public class MissionStepTest {
     }
 
     @Test
-    @DisplayName("예약 저장,조회,삭제 테스트")
+    @DisplayName("예약 저장, 조회, 삭제 테스트")
     void reservationCrudTest() {
 
         Map<String, String> params = new HashMap<>();
@@ -103,7 +103,7 @@ public class MissionStepTest {
 
 
     @Test
-    @DisplayName("상태코드 200과 예약 목록을 반환한다.")
+    @DisplayName("200 상태코드와 예약 목록을 반환한다.")
     void returnReservationListWithStatus200AndCorrectCountTest() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_Id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
@@ -121,7 +121,7 @@ public class MissionStepTest {
     }
 
     @Test
-    @DisplayName("예약 삭제,추가 테스트")
+    @DisplayName("예약 삭제, 추가 테스트")
     void reservationSaveAndDeleteTest() {
 
         Map<String, String> params = new HashMap<>();
@@ -179,7 +179,7 @@ public class MissionStepTest {
     }
 
     @Test
-    @DisplayName("예약 저장,조회 테스트")
+    @DisplayName("예약 저장, 조회 테스트")
     void getReservationAndSaveTest() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");

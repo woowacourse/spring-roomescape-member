@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationTimeRequest;
@@ -16,6 +17,11 @@ public class ReservationTimeServiceTest {
 
     FakeReservationTimeRepository fakeReservationTimeRepository = new FakeReservationTimeRepository();
     ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeRepository);
+
+    @AfterEach
+    void tearDown() {
+        fakeReservationTimeRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("시간을 저장한다.")
@@ -46,10 +52,24 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("기존 예약 시간과 30분 이하의 차이인 경우 예외가 발생한다.")
+    void less30() {
+        // given
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest("10:00");
+        ReservationTimeRequest less30MinDifferenceTimeRequest = new ReservationTimeRequest("10:29");
+        // when
+        reservationTimeService.createReservationTime(reservationTimeRequest);
+
+        // then
+        Assertions.assertThatThrownBy(() -> reservationTimeService.createReservationTime(less30MinDifferenceTimeRequest))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("전체 시간 목록을 가져온다")
     void getAllReservationTime() {
-
         // given
+        fakeReservationTimeRepository.save(new ReservationTime(1, LocalTime.of(22, 0)));
         // when
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getAllReservationTime();
         // then
@@ -63,6 +83,7 @@ public class ReservationTimeServiceTest {
     @DisplayName("아이디를 통해 예약 시간을 삭제한다")
     void deleteReservationTimeById() {
         // given
+        fakeReservationTimeRepository.save(new ReservationTime(1, LocalTime.of(22, 0)));
         long id = 1;
 
         // when
@@ -74,10 +95,6 @@ public class ReservationTimeServiceTest {
     static class FakeReservationTimeRepository implements ReservationTimeRepository {
 
         List<ReservationTime> reservationTimes = new ArrayList<>();
-
-        public FakeReservationTimeRepository() {
-            reservationTimes.add(new ReservationTime(1, LocalTime.of(22, 0)));
-        }
 
         @Override
         public ReservationTime save(ReservationTime reservationTime) {
@@ -114,6 +131,10 @@ public class ReservationTimeServiceTest {
         public boolean existByTime(LocalTime createTime) {
             return reservationTimes.stream()
                     .anyMatch(reservationTime -> reservationTime.getStartAt().equals(createTime));
+        }
+
+        public void deleteAll() {
+            reservationTimes.clear();
         }
     }
 }
