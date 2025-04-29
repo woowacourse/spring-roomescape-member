@@ -1,0 +1,34 @@
+package roomescape.fake;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import roomescape.dao.ReservationDao;
+import roomescape.model.Reservation;
+
+public class FakeReservaionDao implements ReservationDao {
+
+    private final Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
+    private final AtomicLong id = new AtomicLong(1L);
+
+    @Override
+    public Reservation save(Reservation reservation) {
+        Long id = this.id.getAndIncrement();
+        Reservation saved = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getReservationTime());
+        this.reservations.put(id, saved);
+
+        return saved;
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        return this.reservations.remove(id) != null;
+    }
+
+    @Override
+    public List<Reservation> findAll() {
+        return new ArrayList<>(reservations.values());
+    }
+}
