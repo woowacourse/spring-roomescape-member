@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.request.ReservationRequest;
+import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
@@ -33,7 +33,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody CreateReservationRequest request) {
         Reservation reservation = reservationService.addReservation(request);
         return ResponseEntity.ok(ReservationResponse.from(reservation));
     }

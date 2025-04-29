@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.dto.request.ReservationRequest;
+import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.dao.InMemoryReservationDAO;
 import roomescape.dao.InMemoryReservationTimeDAO;
 import roomescape.domain.Reservation;
@@ -28,7 +28,8 @@ class ReservationServiceTest {
         reservationTimeService = new ReservationTimeService(reservationTimeDAO);
         long savedTimeId = reservationTimeDAO.insert(time);
         reservationService = new ReservationService(new InMemoryReservationDAO(new ArrayList<>()), reservationTimeDAO);
-        reservationService.addReservation(new ReservationRequest("reservation", LocalDate.of(2025, 1, 1), savedTimeId));
+        reservationService.addReservation(
+                new CreateReservationRequest("reservation", LocalDate.of(2025, 1, 1), savedTimeId));
     }
 
     @Test
@@ -38,7 +39,7 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.of(2025, 4, 16);
 
         //when
-        ReservationRequest reservationRequest = new ReservationRequest("test", date, 1L);
+        CreateReservationRequest reservationRequest = new CreateReservationRequest("test", date, 1L);
         Reservation actual = reservationService.addReservation(reservationRequest);
 
         //then
@@ -57,7 +58,7 @@ class ReservationServiceTest {
         long timeId = 1L;
 
         //when & then
-        ReservationRequest duplicated = new ReservationRequest("test", date, timeId);
+        CreateReservationRequest duplicated = new CreateReservationRequest("test", date, timeId);
         assertThatThrownBy(() -> reservationService.addReservation(duplicated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 같은 날짜/시간 예약이 존재합니다: date=%s, time=%s"
@@ -97,7 +98,8 @@ class ReservationServiceTest {
     void throwExceptionWhenNotExistTimeId() {
         //given
         long notExistTimeId = 100L;
-        ReservationRequest request = new ReservationRequest("test", LocalDate.of(2025, 1, 1), notExistTimeId);
+        CreateReservationRequest request = new CreateReservationRequest("test", LocalDate.of(2025, 1, 1),
+                notExistTimeId);
 
         //when & then
         assertThatThrownBy(() -> reservationService.addReservation(request))

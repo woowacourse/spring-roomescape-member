@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.request.ReservationTimeRequest;
+import roomescape.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
@@ -33,7 +33,8 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> addReservationTime(@RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> addReservationTime(
+            @RequestBody CreateReservationTimeRequest request) {
         ReservationTime reservationTime = request.toReservationTime();
         long savedId = reservationTimeService.addReservationTime(reservationTime);
         if (savedId > 0) {

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.request.ReservationTimeRequest;
+import roomescape.controller.dto.request.CreateReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -18,7 +18,7 @@ public class ReservationTimeApiE2ETest {
     @Test
     @DisplayName("시간 관리 데이터를 추가/삭제할 수 있다")
     void level7() {
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.parse("10:00"));
+        CreateReservationTimeRequest request = new CreateReservationTimeRequest(LocalTime.parse("10:00"));
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.request.ThemeRequest;
+import roomescape.controller.dto.request.CreateThemeRequest;
 import roomescape.controller.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 import roomescape.service.dto.ThemeCreation;
@@ -28,7 +28,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> addTheme(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> addTheme(@RequestBody CreateThemeRequest request) {
         ThemeResponse response = themeService.addTheme(
                 new ThemeCreation(request.name(), request.description(), request.thumbnail()));
         return ResponseEntity.ok(response);

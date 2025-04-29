@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.request.ReservationRequest;
+import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -38,7 +38,7 @@ public class ReservationApiE2ETest {
     @DisplayName("예약 추가 시 예약 정보를 저장하고 200 OK를, 삭제 시 id에 해당하는 예약을 제거하고 200 OK를 응답해야 한다")
     void level3() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) values (?)", "11:00");
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.parse("2023-08-05"), 2L);
+        CreateReservationRequest request = new CreateReservationRequest("브라운", LocalDate.parse("2023-08-05"), 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -84,7 +84,7 @@ public class ReservationApiE2ETest {
     @DisplayName("DB에 저장된 예약 정보를 추가/삭제 할 수 있어야 한다")
     void level6() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) values (?)", "11:00");
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.parse("2023-08-05"), 2L);
+        CreateReservationRequest request = new CreateReservationRequest("브라운", LocalDate.parse("2023-08-05"), 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -109,7 +109,7 @@ public class ReservationApiE2ETest {
     @DisplayName("주어진 API 구조를 기반으로 예약 데이터를 추가해야 한다")
     void level8() {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) values (?)", "11:00");
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.parse("2023-08-05"), 2L);
+        CreateReservationRequest request = new CreateReservationRequest("브라운", LocalDate.parse("2023-08-05"), 2L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

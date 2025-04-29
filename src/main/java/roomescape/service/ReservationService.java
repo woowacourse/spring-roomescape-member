@@ -2,7 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.request.ReservationRequest;
+import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.domain.Reservation;
@@ -23,7 +23,7 @@ public class ReservationService {
         return reservationDAO.findAll();
     }
 
-    public Reservation addReservation(final ReservationRequest reservationRequest) {
+    public Reservation addReservation(final CreateReservationRequest reservationRequest) {
         ReservationTime reservationTime = findReservationTimeByTimeId(reservationRequest.timeId());
         Reservation reservation = new Reservation(reservationRequest.name(),
                 reservationRequest.date(),
