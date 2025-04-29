@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import roomescape.domain.Reservation;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.exception.NotFoundException;
 
 public class FakeReservationRepository implements ReservationRepository {
     private final List<Reservation> reservations = new ArrayList<>();
@@ -32,6 +33,6 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .filter(reservation -> reservation.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 Reservation이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("id에 해당하는 Reservation이 존재하지 않습니다."));
     }
 }

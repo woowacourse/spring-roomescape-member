@@ -1,5 +1,9 @@
 package roomescape.application;
 
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -22,10 +26,19 @@ public class ReservationService {
 
     public ReservationResponse registerReservation(ReservationRequest request) {
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
+        validateNotPast(request.date(), reservationTime.getStartAt());
         Reservation reservation = ReservationMapper.toDomain(request, reservationTime);
         Long id = reservationRepository.save(reservation);
 
         return ReservationMapper.toDto(Reservation.assignId(id, reservation));
+    }
+
+    private void validateNotPast(LocalDate date, LocalTime startAt) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("과거 일시로 예약할 수 없습니다.");
+        }
     }
 
     public List<ReservationResponse> getAllReservations() {

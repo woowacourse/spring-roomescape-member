@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
+import roomescape.exception.NotFoundException;
 
 public class FakeTimeRepository implements TimeRepository {
 
@@ -34,7 +35,7 @@ public class FakeTimeRepository implements TimeRepository {
     @Override
     public void deleteById(Long id) {
         ReservationTime reservationTime = findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("FakeTimeRepository: 삭제하려는 id 없음"));
+                .orElseThrow(() -> new NotFoundException("FakeTimeRepository: 삭제하려는 id 없음"));
         reservationTimes.remove(reservationTime);
     }
 }

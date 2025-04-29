@@ -10,7 +10,9 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +110,8 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        params.put("date", date);
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -172,7 +175,8 @@ public class MissionStepTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        params.put("date", date);
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -229,7 +233,8 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        reservation.put("date", date);
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -275,5 +280,23 @@ public class MissionStepTest {
                 .when().delete(String.format("/times/%d", timeId))
                 .then().log().all()
                 .statusCode(405);
+    }
+
+    @DisplayName("존재하지 않는 id로 조회 시 예외 발생")
+    @Test
+    void error_when_id_notFound() {
+        Long timeId = 999L;
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        reservation.put("date", date);
+        reservation.put("timeId", timeId);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
     }
 }

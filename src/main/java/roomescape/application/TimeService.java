@@ -3,6 +3,7 @@ package roomescape.application;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.TimeRequest;
 import roomescape.presentation.dto.response.TimeResponse;
 import roomescape.application.mapper.ReservationTimeMapper;
@@ -37,6 +38,6 @@ public class TimeService {
 
     public ReservationTime getTimeById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 id가 존재하지 않습니다, id: " + id));
+                .orElseThrow(() -> new NotFoundException("삭제하려는 id가 존재하지 않습니다, id: " + id));
     }
 }

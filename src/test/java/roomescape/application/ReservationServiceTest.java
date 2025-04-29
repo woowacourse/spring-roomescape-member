@@ -1,6 +1,7 @@
 package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 import roomescape.presentation.dto.response.TimeResponse;
@@ -38,7 +40,7 @@ class ReservationServiceTest {
         LocalTime time = LocalTime.of(10, 0);
         timeRepository.save(ReservationTime.withoutId(time));
 
-        LocalDate date = LocalDate.of(2025, 4, 1);
+        LocalDate date = LocalDate.now().plusDays(1);
         String name = "멍구";
         Long timeId = 1L;
 
@@ -51,9 +53,24 @@ class ReservationServiceTest {
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(1),
                 () -> assertThat(response.name()).isEqualTo("멍구"),
-                () -> assertThat(response.date()).isEqualTo("2025-04-01"),
+                () -> assertThat(response.date()).isEqualTo(date),
                 () -> assertThat(response.time()).isEqualTo(new TimeResponse(1L, time))
         );
+    }
+
+    @DisplayName("존재하지 않는 timeId로 예약 생성 시 예외 발생")
+    @Test
+    void error_when_timeId_notExist() {
+        // given
+        LocalDate date = LocalDate.now().plusDays(1);
+        String name = "멍구";
+        Long timeId = 999L;
+
+        ReservationRequest reservationRequest = new ReservationRequest(date, name, timeId);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.registerReservation(reservationRequest))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("모든 예약을 조회할 수 있다.")
