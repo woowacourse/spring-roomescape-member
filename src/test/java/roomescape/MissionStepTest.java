@@ -52,7 +52,7 @@ class MissionStepTest {
     @Test
     void reservation_request_test() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
 
@@ -68,7 +68,7 @@ class MissionStepTest {
     void reservation_delete_test() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2026-08-05");
         params.put("timeId", "6");
 
         RestAssured.given().log().all()
@@ -76,7 +76,7 @@ class MissionStepTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(201)
                 .body("id", is(6));
 
         RestAssured.given().log().all()
@@ -139,14 +139,14 @@ class MissionStepTest {
     @Test
     void time_test() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "10:20");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
