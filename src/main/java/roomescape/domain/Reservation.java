@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -15,6 +16,14 @@ public class Reservation {
         this.name = Objects.requireNonNull(name, "[ERROR] 이름은 null이 될 수 없습니다.");
         this.date = Objects.requireNonNull(date, "[ERROR] 날짜는 null이 될 수 없습니다.");
         this.time = Objects.requireNonNull(time, "[ERROR] 시간은 null이 될 수 없습니다.");
+        validateDateTime(date, time);
+    }
+
+    private void validateDateTime(LocalDate date, ReservationTime time) {
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
+        if(dateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 현재보다 과거 시간에는 예약이 불가능합니다.");
+        }
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time) {
