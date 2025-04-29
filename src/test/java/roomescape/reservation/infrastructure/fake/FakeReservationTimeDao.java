@@ -42,4 +42,9 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
             System.out.println("allTime.getId() = " + allTime.getId());
         }
     }
+
+    @Override
+    public boolean isExists(LocalTime startAt) {
+        return false; // todo: 구현
+    }
 }

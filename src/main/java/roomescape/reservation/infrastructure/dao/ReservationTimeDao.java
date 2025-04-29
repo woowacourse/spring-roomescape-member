@@ -78,4 +78,17 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         }
     }
 
+    @Override
+    public boolean isExists(LocalTime startAt) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation_time
+                    WHERE start_at = ?
+                )
+                """;
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
+        return result == 1;
+    }
+
 }

@@ -3,6 +3,7 @@ package roomescape.reservation.application.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.DeleteTimeException;
+import roomescape.global.exception.DuplicateTimeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.presentation.dto.ReservationResponse;
@@ -21,6 +22,10 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
+        if(reservationTimeRepository.isExists(reservationTimeRequest.getStartAt())){
+            throw new DuplicateTimeException("[ERROR] 중복된 시간은 추가할 수 없습니다.");
+        }
+
         return new ReservationTimeResponse(reservationTimeRepository.insert(reservationTimeRequest.getStartAt()));
     }
 

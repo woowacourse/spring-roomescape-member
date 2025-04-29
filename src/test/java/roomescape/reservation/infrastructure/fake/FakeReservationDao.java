@@ -37,6 +37,6 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(Long timeId) {
-        return false;
+        return false; //todo : 구현
     }
 }

@@ -15,6 +15,16 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body("시간 형식이 잘못되었습니다.");
     }
 
+    @ExceptionHandler(DuplicateTimeException.class)
+    public ResponseEntity<String> handleDuplicateTimeException(DuplicateTimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(GetTimeException.class)
+    public ResponseEntity<String> handleGetTimeException(GetTimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
     @ExceptionHandler({DeleteTimeException.class, DeleteReservationException.class})
     public ResponseEntity<String> handleDeleteException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
