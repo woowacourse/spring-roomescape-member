@@ -34,8 +34,8 @@ public class Reservation {
         return name;
     }
 
-    private void validateReservationDateInFuture(LocalDate localDate){
-        if(!localDate.isAfter(LocalDate.now())){
+    private void validateReservationDateInFuture(LocalDate localDate) {
+        if (!localDate.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("과거 및 당일 예약은 불가능합니다.");
         }
     }

@@ -1,0 +1,31 @@
+package roomescape.dto;
+
+import java.util.stream.Stream;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+class ReservationRequestDtoTest {
+    private static Stream<Arguments> testCasesForDateFormat() {
+        return Stream.of(
+                Arguments.of("invalidInput"),
+                Arguments.of("2023-10-32"),
+                Arguments.of("2023-13-23")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("testCasesForDateFormat")
+    @DisplayName("날짜 형식이 올바르지 않은 경우 예외 처리한다.")
+    void test(String input) {
+        //given
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("name", input, 1L);
+        // when & then
+        assertThatThrownBy(reservationRequestDto::convertToReservation)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("날짜");
+
+    }
+}
