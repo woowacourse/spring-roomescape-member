@@ -18,15 +18,19 @@ import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepositoryImpl;
 
 @JdbcTest
-@Import({ReservationRepositoryImpl.class, ReservationTimeRepositoryImpl.class})
+@Import({ReservationRepositoryImpl.class, ReservationTimeRepositoryImpl.class, ThemeRepositoryImpl.class})
 class ReservationRepositoryImplTest {
 
     @Autowired
     private ReservationRepositoryImpl reservationRepository;
     @Autowired
     private ReservationTimeRepositoryImpl reservationTimeRepository;
+    @Autowired
+    private ThemeRepositoryImpl themeRepository;
 
     @DisplayName("존재하지 않는 예약 ID로 조회하면 예외가 발생한다.")
     @Test
@@ -40,7 +44,10 @@ class ReservationRepositoryImplTest {
         ReservationTime reservationTime1 = ReservationTimeFixture.create(dummyTime);
         ReservationTime savedReservationTime1 = reservationTimeRepository.add(reservationTime1);
 
-        Reservation reservation1 = ReservationFixture.create(dummyName1, dummyDate, savedReservationTime1);
+        Theme theme = new Theme("name1", "dd", "tt");
+        Theme savedTheme = themeRepository.add(theme);
+
+        Reservation reservation1 = ReservationFixture.create(dummyName1, dummyDate, savedReservationTime1, savedTheme);
 
         String dummyName2 = "kali";
         LocalDateTime future2 = LocalDateTime.now().plusDays(2);
@@ -50,7 +57,7 @@ class ReservationRepositoryImplTest {
         ReservationTime reservationTime2 = ReservationTimeFixture.create(dummyTime2);
         ReservationTime savedReservationTime2 = reservationTimeRepository.add(reservationTime2);
 
-        Reservation reservation2 = ReservationFixture.create(dummyName2, dummyDate2, savedReservationTime2);
+        Reservation reservation2 = ReservationFixture.create(dummyName2, dummyDate2, savedReservationTime2, savedTheme);
 
         List<Reservation> reservations = List.of(reservation1, reservation2);
 
@@ -70,7 +77,11 @@ class ReservationRepositoryImplTest {
         // given
         ReservationTime reservationTime = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
 
-        Reservation reservation = ReservationFixture.create("r1", LocalDate.now().plusMonths(2), reservationTime);
+        Theme theme = new Theme("name1", "dd", "tt");
+        Theme savedTheme = themeRepository.add(theme);
+
+        Reservation reservation = ReservationFixture.create("r1", LocalDate.now().plusMonths(2), reservationTime,
+            savedTheme);
         reservationRepository.add(reservation);
 
         // when

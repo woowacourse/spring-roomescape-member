@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import roomescape.globalException.CustomException;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 public class Reservation {
 
@@ -16,24 +17,24 @@ public class Reservation {
 
     private final ReservationTime reservationTime;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
+    private final Theme theme;
+
+    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
-    private Reservation(String name, LocalDate date, ReservationTime reservationTime) {
-        this.id = null;
-        this.name = name;
-        this.date = date;
-        this.reservationTime = reservationTime;
+    private Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        this(null, name, date, reservationTime, theme);
     }
 
-    public static Reservation of(String name, LocalDate date, ReservationTime reservationTime) {
+    public static Reservation of(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
         validateTense(dateTime);
-        return new Reservation(name, date, reservationTime);
+        return new Reservation(name, date, reservationTime, theme);
     }
 
     private static void validateTense(LocalDateTime dateTime) {
@@ -69,5 +70,9 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

@@ -12,31 +12,32 @@ import org.springframework.stereotype.Repository;
 import roomescape.globalException.CustomException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationRepositoryImpl(final JdbcTemplate jdbcTemplate,
-                                     ReservationTimeRepository reservationTimeRepository) {
+    public ReservationRepositoryImpl(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT \n" +
-            "    r.id as reservation_id, \n" +
-            "    r.name, \n" +
-            "    r.date, \n" +
-            "    t.id as time_id, \n" +
-            "    t.start_at as time_value \n" +
-            "FROM reservation as r \n" +
-            "inner join reservation_time as t \n" +
-            "on r.time_id = t.id\n";
+        String sql = "SELECT r.id AS reservation_id,\n" +
+            "       r.name,\n" +
+            "       r.date,\n" +
+            "       time.id AS time_id,\n" +
+            "       time.start_at AS time_value,\n" +
+            "       theme.id AS theme_id,\n" +
+            "       theme.name AS theme_name,\n" +
+            "       theme.description AS theme_description,\n" +
+            "       theme.thumbnail AS theme_thumbnail\n" +
+            "FROM reservation AS r INNER JOIN reservation_time AS time\n" +
+            "    ON r.time_id = time.id\n" +
+            "    INNER JOIN theme AS theme\n" +
+            "    ON r.theme_id = theme.id";
         return jdbcTemplate.query(
             sql,
             (resultSet, rowNum) -> {
@@ -45,11 +46,19 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     resultSet.getTime("time_value").toLocalTime()
                 );
 
+                Theme theme = new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
+                );
+
                 Reservation reservation = new Reservation(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
-                    time
+                    time,
+                    theme
                 );
                 return reservation;
             });
@@ -64,7 +73,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Reservation add(Reservation reservation) {
         Long id = insertWithKeyHolder(reservation);
-        return findById(id).get();
+        return findByIdOrThrow(id);
     }
 
     @Override
@@ -81,10 +90,11 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     private Long insertWithKeyHolder(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         Long reservationTimeId = reservation.getReservationTime().getId();
+        Long themeId = reservation.getTheme().getId();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
@@ -93,6 +103,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
             ps.setString(1, reservation.getName());
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservationTimeId);
+            ps.setLong(4, themeId);
             return ps;
         }, keyHolder);
 
@@ -100,17 +111,47 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     private Optional<Reservation> findById(Long id) {
-        String sql = "select id, name, date, time_id from reservation where id = ?";
+        String sql = "SELECT r.id AS reservation_id,\n" +
+            "       r.name,\n" +
+            "       r.date,\n" +
+            "       time.id AS time_id,\n" +
+            "       time.start_at AS time_value,\n" +
+            "       theme.id AS theme_id,\n" +
+            "       theme.name AS theme_name,\n" +
+            "       theme.description AS theme_description,\n" +
+            "       theme.thumbnail AS theme_thumbnail\n" +
+            "FROM reservation AS r\n" +
+            "    INNER JOIN reservation_time AS time\n" +
+            "    ON r.time_id = time.id\n" +
+            "    INNER JOIN theme AS theme\n" +
+            "    ON r.theme_id = theme.id\n" +
+            "WHERE r.id = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) -> new Reservation(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getDate("date").toLocalDate(),
-                    reservationTimeRepository.findByIdOrThrow(resultSet.getLong("time_id"))
-                ), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (resultSet, rowNum) -> {
+                    ReservationTime time = new ReservationTime(
+                        resultSet.getLong("time_id"),
+                        resultSet.getTime("time_value").toLocalTime()
+                    );
 
+                    Theme theme = new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("theme_description"),
+                        resultSet.getString("theme_thumbnail")
+                    );
+
+                    return new Reservation(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getDate("date").toLocalDate(),
+                        time,
+                        theme
+                    );
+                }, id)
+            );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

@@ -46,7 +46,9 @@ public class MissionStepTest {
     @Test
     void findAll() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", "1");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "name1", "dd", "hh");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+            "2023-08-05", "1", "1");
 
         List<ReservationResDto> resDtos = RestAssured.given().log().all()
             .when().get("/reservations")
@@ -64,11 +66,12 @@ public class MissionStepTest {
         LocalDateTime localDateTime = LocalDateTime.now().plusDays(1);
         LocalTime dummyTime = localDateTime.toLocalTime();
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", dummyTime.toString());
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "r1", "lala", "rara");
 
         String dummyName = "브라운";
         LocalDate dummyDate = localDateTime.toLocalDate();
 
-        ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L);
+        ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L, 1L);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -83,11 +86,12 @@ public class MissionStepTest {
         LocalDateTime localDateTime = LocalDateTime.now().plusDays(1);
         LocalTime dummyTime = localDateTime.toLocalTime();
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", dummyTime.toString());
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "r1", "lala", "rara");
 
         String dummyName = "브라운";
         LocalDate dummyDate = localDateTime.toLocalDate();
 
-        ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L);
+        ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L, 1L);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

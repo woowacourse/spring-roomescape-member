@@ -23,6 +23,9 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.repository.ThemeRepositoryImpl;
 
 @JdbcTest
 @Import({
@@ -30,6 +33,7 @@ import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
     ReservationTimeService.class,
     ReservationRepositoryImpl.class,
     ReservationService.class,
+    ThemeRepositoryImpl.class,
     ReservationTimeTestDataConfig.class
 })
 class ReservationTimeServiceTest {
@@ -38,6 +42,8 @@ class ReservationTimeServiceTest {
     private ReservationTimeService service;
     @Autowired
     private ReservationService reservationService;
+    @Autowired
+    private ThemeRepository themeRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
@@ -150,12 +156,15 @@ class ReservationTimeServiceTest {
         @Test
         void delete_throwException_whenUsingInReservation() {
             // given
+
+            Theme theme = themeRepository.add(new Theme("name1", "dd", "tt"));
             reservationService.add(
                 new ReservationReqDto(
                     "r1",
                     LocalDate.now().plusMonths(3),
-                    testDataConfig.getDefaultDummyTimeId())
-            );
+                    testDataConfig.getDefaultDummyTimeId(),
+                    theme.getId()
+                ));
 
             // when, then
             Assertions.assertThatCode(

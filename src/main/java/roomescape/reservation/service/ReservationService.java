@@ -14,17 +14,21 @@ import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResDto> readAll() {
@@ -57,7 +61,8 @@ public class ReservationService {
 
     private Reservation convertReservation(ReservationReqDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findByIdOrThrow(dto.timeId());
-        return ReservationMapper.toEntity(dto, reservationTime);
+        Theme theme = themeRepository.findByIdOrThrow(dto.themeId());
+        return ReservationMapper.toEntity(dto, reservationTime, theme);
     }
 
     private ReservationResDto convertReservationResDto(Reservation reservation) {
