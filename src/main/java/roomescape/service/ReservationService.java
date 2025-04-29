@@ -24,6 +24,9 @@ public class ReservationService {
         if (reservationDao.isExists(reservationRequest.date(), reservationRequest.timeId())) {
             throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다.");
         }
+        if (reservationTimeDao.isNotExists(reservationRequest.timeId())) {
+            throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
+        }
         final ReservationTime reservationTime = reservationTimeDao.getReservationTimeById(reservationRequest.timeId());
         final Reservation convertedRequest = reservationRequest.convertToReservation(reservationTime);
         final Reservation reservation = reservationDao.createReservation(convertedRequest);
