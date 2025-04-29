@@ -27,4 +27,8 @@ public class ThemeService {
             .map(ThemeResDto::from)
             .toList();
     }
+
+    public void deleteById(Long id) {
+        themeRepository.delete(id);
+    }
 }
