@@ -1,11 +1,13 @@
 package roomescape.dto;
 
+import java.time.LocalTime;
 import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.model.ReservationTime;
 
 class ReservationRequestDtoTest {
     private static Stream<Arguments> testCasesForDateFormat() {
@@ -23,7 +25,8 @@ class ReservationRequestDtoTest {
         //given
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("name", input, 1L);
         // when & then
-        assertThatThrownBy(reservationRequestDto::convertToReservation)
+        assertThatThrownBy(
+                () -> reservationRequestDto.convertToReservation(new ReservationTime(1L, LocalTime.of(12, 30))))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("날짜");
 

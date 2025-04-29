@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.model.ReservationTime;
@@ -31,4 +32,10 @@ public class FakeReservationTimeDao extends ReservationTimeDao {
         times.removeIf(time -> time.getId().equals(id));
     }
 
+    @Override
+    public Optional<ReservationTime> findById(Long id) {
+        return times.stream()
+                .filter(time -> time.getId().equals(id))
+                .findFirst();
+    }
 }

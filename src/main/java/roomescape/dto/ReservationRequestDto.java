@@ -10,13 +10,13 @@ public record ReservationRequestDto(
         String date,
         Long timeId
 ) {
-    public Reservation convertToReservation() {
+    public Reservation convertToReservation(ReservationTime reservationTime) {
         try {
             LocalDate parsedDate = LocalDate.parse(date);
             return new Reservation(
                     this.name,
                     parsedDate,
-                    new ReservationTime(timeId)
+                    reservationTime
             );
         } catch (DateTimeParseException e) {
             throw new IllegalStateException("날짜형식이 잘못되었습니다");
