@@ -69,4 +69,8 @@ public class ThemeService {
             throw new DuplicatedException("중복된 테마는 등록할 수 없습니다.");
         }
     }
+
+    public void deleteTheme(Long id) {
+        themeDao.deleteById(id);
+    }
 }
