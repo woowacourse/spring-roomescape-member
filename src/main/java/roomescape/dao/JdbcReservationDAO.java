@@ -44,7 +44,8 @@ public class JdbcReservationDAO implements ReservationDAO {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", Date.valueOf(reservation.getDate()))
-                .addValue("time_id", reservation.getTime().getId());
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
         return newId.longValue();
     }
@@ -78,7 +79,23 @@ public class JdbcReservationDAO implements ReservationDAO {
 
     @Override
     public Optional<Reservation> findById(long id) {
-        String query = "SELECT * FROM reservation WHERE id = ?";
+        String query = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    rt.id AS time_id,
+                    rt.start_at AS time_value,
+                    t.theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t 
+                ON r.theme_id = t.id
+                WHERE r.id = ?
+                """;
         List<Reservation> reservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, id);
         return reservations.stream()
                 .findFirst();
