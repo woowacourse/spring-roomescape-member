@@ -1,7 +1,6 @@
 package roomescape.global.exception;
 
 import java.time.format.DateTimeParseException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,9 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionController {
 
+    private static final String PREFIX = "[ERROR] ";
+
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<String> handleDateTimeParseException() {
-        return ResponseEntity.badRequest().body("시간 형식이 잘못되었습니다.");
+        return ResponseEntity.badRequest().body(PREFIX + "시간 형식이 잘못되었습니다.");
     }
 
     @ExceptionHandler(DuplicateTimeException.class)
@@ -32,6 +33,7 @@ public class ExceptionController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body("[ERROR] " + e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
+        return ResponseEntity.badRequest()
+                .body(PREFIX + e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
 }

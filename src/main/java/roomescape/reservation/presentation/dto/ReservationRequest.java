@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public class ReservationRequest {
+
     private final LocalDate date;
 
     @NotBlank
