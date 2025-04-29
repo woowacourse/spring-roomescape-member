@@ -17,4 +17,11 @@ public record ReservationRequestDto(@JsonProperty(value = "name", defaultValue =
                 new UserName(name()),
                 new ReservationDateTime(new ReservationDate(date()), reservationTime));
     }
+
+    public ReservationRequestDto(String name, LocalDate date, Long timeId){
+        if (name == null || date == null || timeId == null) throw new IllegalArgumentException();
+        this.name = name;
+        this.date = date;
+        this.timeId = timeId;
+    }
 }
