@@ -8,6 +8,8 @@ import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 import roomescape.reservation_time.domain.ReservationTime;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldNameConstants(level = AccessLevel.PRIVATE)
@@ -51,5 +53,18 @@ public class Reservation {
                 .notNullField(Fields.name, name)
                 .notNullField(Fields.date, date)
                 .notNullField(Fields.time, time);
+    }
+
+    public static void validatePast(final ReservationDate date, final ReservationTime time) {
+        final LocalDateTime now = LocalDateTime.now();
+        if (date.isAfter(now.toLocalDate())) {
+            return;
+        }
+        if (date.isBefore(now.toLocalDate())) {
+            throw new IllegalArgumentException();
+        }
+        if (time.isBefore(now.toLocalTime())) {
+            throw new IllegalArgumentException();
+        }
     }
 }

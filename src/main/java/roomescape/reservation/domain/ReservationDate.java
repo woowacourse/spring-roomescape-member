@@ -26,4 +26,12 @@ public final class ReservationDate {
         Validator.of(ReservationDate.class)
                 .notNullField(Fields.value, value);
     }
+
+    public boolean isBefore(final LocalDate date) {
+        return value.isBefore(date);
+    }
+
+    public boolean isAfter(final LocalDate date) {
+        return value.isAfter(date);
+    }
 }

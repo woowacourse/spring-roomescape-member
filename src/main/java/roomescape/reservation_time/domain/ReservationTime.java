@@ -28,4 +28,8 @@ public class ReservationTime {
                 .notNullField(Fields.id, id)
                 .notNullField(Fields.value, value);
     }
+
+    public boolean isBefore(final LocalTime time) {
+        return value.isBefore(time);
+    }
 }
