@@ -17,16 +17,22 @@ public class ReservationTime {
         this(null, startAt);
     }
 
+    public boolean hasConflict(Theme theme, LocalTime anotherTime) {
+        LocalTime max = startAt.plusHours(theme.getDuringTime());
+        LocalTime min = startAt.minusHours(theme.getDuringTime());
+        return anotherTime.isAfter(min) && anotherTime.isBefore(max);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id == id;
+    }
+
     public Long getId() {
         return id;
     }
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id == id;
     }
 
     @Override

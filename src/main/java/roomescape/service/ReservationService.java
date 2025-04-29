@@ -10,6 +10,7 @@ import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.ReservationTimeConflictException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
@@ -45,6 +46,13 @@ public class ReservationService {
 
         if (reservationDao.isExist(requestDto.date(), requestDto.timeId())) {
             throw new DuplicateReservationException("이미 예약이 존재합니다.");
+        }
+
+        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(), requestDto.themeId());
+        boolean isBooked = sameTimeReservations.stream()
+            .anyMatch(reservation -> reservation.isBooked(reservationTime, theme));
+        if (isBooked) {
+            throw new ReservationTimeConflictException("해당 테마 이용시간이 겹칩니다.");
         }
 
         Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), reservationTime, theme);

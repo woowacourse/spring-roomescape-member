@@ -36,7 +36,7 @@ public class ReservationTimeService {
     }
 
     public void deleteById(Long id) {
-        if (reservationDao.findByTimeId(id).isPresent()) {
+        if (reservationDao.isExistByTimeId(id)) {
             throw new ReservationExistException("이 시간의 예약이 존재합니다.");
         }
 

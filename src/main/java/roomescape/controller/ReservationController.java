@@ -8,6 +8,7 @@ import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.PastReservationException;
+import roomescape.exception.ReservationTimeConflictException;
 import roomescape.service.ReservationService;
 
 import java.util.List;
@@ -38,13 +39,8 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(PastReservationException.class)
-    public ResponseEntity<String> handlePastReservationException(final PastReservationException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(DuplicateReservationException.class)
-    public ResponseEntity<String> handleDuplicateReservationException(final DuplicateReservationException e) {
+    @ExceptionHandler({PastReservationException.class, DuplicateReservationException.class, ReservationTimeConflictException.class})
+    public ResponseEntity<String> handleCreateReservationException(final PastReservationException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

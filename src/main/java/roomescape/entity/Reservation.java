@@ -4,6 +4,7 @@ import roomescape.exception.PastReservationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -37,6 +38,11 @@ public class Reservation {
 
     public boolean isSameId(long id) {
         return this.id == id;
+    }
+
+    public boolean isBooked(ReservationTime reservationTime, Theme theme) {
+        LocalTime startAt = time.getStartAt();
+        return reservationTime.hasConflict(theme, startAt);
     }
 
     public long getId() {
