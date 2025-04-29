@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import java.util.List;
 import roomescape.theme.domain.Theme;
 
 public interface ThemeRepository {
@@ -9,4 +10,6 @@ public interface ThemeRepository {
     Theme findByIdOrThrow(Long id);
 
     void delete(Long id);
+
+    List<Theme> findAll();
 }

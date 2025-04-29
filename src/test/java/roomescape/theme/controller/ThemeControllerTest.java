@@ -21,12 +21,21 @@ class ThemeControllerTest {
     @Test
     public void createTheme() {
         ThemeReqDto dto = new ThemeReqDto("a", "b", "c");
-        
+
         RestAssured.given().port(port).log().all()
             .contentType(ContentType.JSON).body(dto)
             .when().post("/themes")
             .then().log().all()
             .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("전체 Theme를 조회한다.")
+    @Test
+    public void findAllTheme() {
+        RestAssured.given().port(port).log().all()
+            .when().get("/themes")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value());
     }
 
 }

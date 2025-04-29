@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -68,5 +69,17 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    public List<Theme> findAll() {
+        String sql = "SELECT * FROM theme";
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+            new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail"))
+        );
     }
 }
