@@ -17,6 +17,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
+        if (reservationTimeDao.isExists(reservationTimeRequest.startAt())) {
+            throw new IllegalArgumentException("이미 존재하는 시간입니다.");
+        }
         final ReservationTime convertedRequest = reservationTimeRequest.converToReservationTime();
         final ReservationTime reservationTime = reservationTimeDao.createReservationTime(convertedRequest);
         return new ReservationTimeResponse(reservationTime);

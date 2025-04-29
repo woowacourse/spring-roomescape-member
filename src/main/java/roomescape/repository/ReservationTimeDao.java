@@ -47,6 +47,12 @@ public class ReservationTimeDao {
         return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
 
+    public boolean isExists(final LocalTime reservationTime) {
+        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, reservationTime);
+        return count > 0;
+    }
+
     public void deleteReservationTimeById(final long id) {
         final String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
