@@ -24,7 +24,6 @@ import roomescape.reservation.repository.fake.FakeReservationRepository;
 import roomescape.reservation.repository.fake.FakeReservationTimeRepository;
 import roomescape.utils.FixedClock;
 
-// TODO 스프링 패키지로 테스트를 해야함
 class ReservationServiceTest {
 
     private static final LocalTime time = LocalTime.of(20, 0);
@@ -78,7 +77,7 @@ class ReservationServiceTest {
         assertThat(result).isEmpty();
     }
 
-    @DisplayName("예약을 저장한다.")
+    @DisplayName("예약을 추가한다.")
     @Test
     void test3() {
         // given
@@ -100,9 +99,25 @@ class ReservationServiceTest {
         softAssertions.assertAll();
     }
 
-    @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
+    @DisplayName("과거 날짜에 예약을 추가하면 예외가 발생한다.")
     @Test
     void test4() {
+        // given
+        String name = "꾹";
+        LocalDate date = LocalDate.of(2024, 12, 18);
+        ReservationTime pastTime = new ReservationTime(2L, LocalTime.of(7, 59));
+        reservationTimeRepository.add(pastTime);
+
+        ReservationRequest requestDto = new ReservationRequest(name, date, pastTime.getId());
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(requestDto))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
+    @Test
+    void test5() {
         LocalDate date = LocalDate.of(2025, 4, 29);
 
         Long notExistId = 1000L;
@@ -114,7 +129,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약 시간을 삭제한다")
     @Test
-    void test5() {
+    void test6() {
         // given
         Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), reservationTime);
         Reservation saved = reservationRepository.save(reservation);
@@ -128,7 +143,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약 시간이 존재하지 않으면 예외를 반환한다.")
     @Test
-    void test6() {
+    void test7() {
         Long id = 1L;
         assertThatThrownBy(() -> reservationService.delete(id))
                 .isInstanceOf(EntityNotFoundException.class);
