@@ -7,4 +7,6 @@ public interface ThemeRepository {
     Theme save(Theme theme);
 
     List<Theme> read();
+
+    void delete(Long id);
 }

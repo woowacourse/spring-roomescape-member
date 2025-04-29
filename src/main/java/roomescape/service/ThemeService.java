@@ -22,4 +22,8 @@ public class ThemeService {
     public List<Theme> read() {
         return themeRepository.read();
     }
+
+    public void delete(Long id) {
+        themeRepository.delete(id);
+    }
 }

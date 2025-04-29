@@ -42,4 +42,9 @@ public class JdbcThemeRepository implements ThemeRepository {
                     resultSet.getString("thumbnail"))
         );
     }
+
+    public void delete(Long id) {
+        final String query = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(query,id);
+    }
 }
