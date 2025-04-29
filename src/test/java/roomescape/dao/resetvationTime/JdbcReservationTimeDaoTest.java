@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.dao.reservation.JdbcReservationDao;
-import roomescape.dao.reservation.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -55,32 +54,34 @@ class JdbcReservationTimeDaoTest {
         assertThat(reservationTimes.size()).isEqualTo(2);
     }
 
-    @DisplayName("데이터이스에 있는 예약 시간 정보를 삭제한다.")
+    @DisplayName("데이터베이스에서 예약 시간이 삭제될 경우 true를 반환한다.")
     @Test
-    void deleteTest() {
+    void deleteIfNoExistReservationReturnTrueTest() {
 
         // given
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
 
         // when
-        jdbcReservationTimeDao.delete(savedReservationTime.getId());
-        List<ReservationTime> reservationTimes = jdbcReservationTimeDao.findAll();
+        boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
 
         // then
-        assertThat(reservationTimes.size()).isEqualTo(0);
+        assertThat(result).isTrue();
     }
 
-    @Autowired
-    ReservationDao reservationDao;
-
+    @DisplayName("데이터베이스에서 예약이 존재하여 예약 시간이 삭제되지 않을 경우 false를 반환한다.")
     @Test
-    void 삭제() {
+    void deleteIfExistReservationReturnFalseTest() {
+
+        // given
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
-        ReservationTime reservationTime1 = jdbcReservationTimeDao.create(reservationTime);
-        jdbcReservationDao.create(new Reservation("test", LocalDate.of(2024, 12, 1), reservationTime1));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        jdbcReservationDao.create(new Reservation("test", LocalDate.of(2025, 12, 1), savedReservationTime));
 
-        jdbcReservationTimeDao.delete(reservationTime1.getId());
+        // when
+        boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
 
+        // then
+        assertThat(result).isFalse();
     }
 }

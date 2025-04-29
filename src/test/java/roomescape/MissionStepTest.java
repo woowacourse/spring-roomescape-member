@@ -49,7 +49,7 @@ public class MissionStepTest {
     @Test
     void getReservationPageTest() {
         RestAssured.given().log().all()
-                .when().get("/reservation")
+                .when().get("/admin/reservation")
                 .then().log().all()
                 .statusCode(200);
     }

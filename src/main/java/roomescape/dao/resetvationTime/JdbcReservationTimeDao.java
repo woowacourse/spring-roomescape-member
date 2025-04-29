@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -43,14 +44,22 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public void delete(final long id) {
-        final String sql = "DELETE reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public boolean deleteIfNoReservation(long id) {
+        String sql = """
+                DELETE FROM reservation_time rt 
+                WHERE rt.id = ? 
+                AND NOT EXISTS (
+                    SELECT 1 
+                    FROM reservation r 
+                    WHERE r.time_id = rt.id
+                )
+                """;
+        return jdbcTemplate.update(sql, id) == 1;
     }
 
     @Override
-    public ReservationTime findById(final long id) {
+    public Optional<ReservationTime> findById(final long id) {
         final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationTimeMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeMapper, id));
     }
 }

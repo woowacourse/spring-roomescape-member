@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.dao.resetvationTime.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
@@ -13,12 +15,9 @@ import roomescape.exception.ReservationExistException;
 public class ReservationTimeService {
 
     private final ReservationTimeDao reservationTimeDao;
-    private final ReservationService reservationService;
 
-    public ReservationTimeService(final ReservationTimeDao reservationTimeDao,
-                                  final ReservationService reservationService) {
+    public ReservationTimeService(final ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
-        this.reservationService = reservationService;
     }
 
     public List<ReservationTimeResponse> findAll() {
@@ -33,10 +32,19 @@ public class ReservationTimeService {
         return new ReservationTimeCreateResponse(reservationTime);
     }
 
-    public void delete(final long id) {
-        if (reservationService.countByTimeId(id) != 0) {
-            throw new ReservationExistException("이 시간에 대한 예약이 존재합니다.");
+    public void deleteIfNoReservation(final long id) {
+        ReservationTime reservationTime = findById(id);
+        if (reservationTimeDao.deleteIfNoReservation(reservationTime.getId())) {
+            return;
         }
-        reservationTimeDao.delete(id);
+        throw new ReservationExistException("이 시간에 대한 예약이 존재합니다.");
+    }
+
+    public ReservationTime findById(final Long id) {
+        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
+        if (reservationTime.isEmpty()) {
+            throw new NoSuchElementException("예약 시간이 존재하지 않습니다.");
+        }
+        return reservationTime.get();
     }
 }
