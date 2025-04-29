@@ -1,0 +1,54 @@
+package roomescape.fake;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import roomescape.entity.ReservationTime;
+import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.ReservationTimeRepository;
+
+public class ReservationTimeFakeRepository implements ReservationTimeRepository {
+
+    private final Map<Long, ReservationTime> reservationTimes = new HashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
+
+    public ReservationTimeFakeRepository() {
+        ReservationTime defaultTime = new ReservationTime(idGenerator.getAndIncrement(), LocalTime.MIN);
+        reservationTimes.put(1L, defaultTime);
+    }
+
+    @Override
+    public boolean existsTimeById(Long id) {
+        return reservationTimes.containsKey(id);
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        return new ArrayList<>(reservationTimes.values());
+    }
+
+    @Override
+    public ReservationTime save(ReservationTime reservationTime) {
+        long newId = idGenerator.getAndIncrement();
+
+        ReservationTime savedTime = new ReservationTime(
+                newId,
+                reservationTime.startAt());
+
+        reservationTimes.put(newId, savedTime);
+
+        return savedTime;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        if (!reservationTimes.containsKey(id)) {
+            throw new EntityNotFoundException("예약 시간을 찾을 수 없습니다: " + id);
+        }
+
+        reservationTimes.remove(id);
+    }
+}
