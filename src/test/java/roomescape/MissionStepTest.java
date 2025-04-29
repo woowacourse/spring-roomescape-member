@@ -8,6 +8,7 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -104,7 +105,8 @@ public class MissionStepTest {
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        String date = LocalDate.now().plusDays(1).toString();
+        reservation.put("date", date);
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()

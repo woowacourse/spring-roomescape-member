@@ -29,30 +29,20 @@ public class ReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse createReservation(
+    public ReservationResponse create(
             @RequestBody final ReservationRequest reservationRequest
     ) {
         return reservationService.createReservation(reservationRequest);
     }
 
     @GetMapping
-    public List<ReservationResponse> getReservations() {
+    public List<ReservationResponse> findAll() {
         return reservationService.getReservations();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservation(@PathVariable("id") final long id) {
+    public void delete(@PathVariable("id") final long id) {
         reservationService.deleteReservation(id);
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    private ResponseEntity<String> handleJsonParseError(HttpMessageNotReadableException e) {
-        return ResponseEntity.badRequest().body("요청 형식이 올바르지 않습니다.");
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    private ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
