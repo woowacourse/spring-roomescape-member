@@ -31,4 +31,10 @@ public class FakeReservaionDao implements ReservationDao {
     public List<Reservation> findAll() {
         return new ArrayList<>(reservations.values());
     }
+
+    //TODO 수정
+    @Override
+    public int countByTimeId(Long timeId) {
+        return 0;
+    }
 }

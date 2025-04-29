@@ -67,4 +67,13 @@ public class JdbcReservationDao implements ReservationDao {
                 }
         );
     }
+
+    @Override
+    public int countByTimeId(Long timeId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM reservation WHERE time_id = ?",
+                Integer.class,
+                timeId
+        );
+    }
 }

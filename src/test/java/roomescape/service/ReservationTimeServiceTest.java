@@ -10,6 +10,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
+import roomescape.dao.ReservationDao;
+import roomescape.fake.FakeReservaionDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequest;
@@ -22,7 +24,8 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void setUp() {
         ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
-        reservationTimeService = new ReservationTimeService(reservationTimeDao);
+        ReservationDao reservationDao = new FakeReservaionDao();
+        reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao);
     }
 
     @Test
