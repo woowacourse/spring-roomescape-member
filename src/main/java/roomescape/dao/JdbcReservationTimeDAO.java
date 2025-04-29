@@ -1,0 +1,67 @@
+package roomescape.dao;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationTime;
+
+@Repository
+public class JdbcReservationTimeDAO implements ReservationTimeDAO {
+
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNumber) ->
+            new ReservationTime(resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime());
+
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public JdbcReservationTimeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        String query = "SELECT * FROM reservation_time";
+        return jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER);
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(final long id) {
+        String query = "SELECT * FROM reservation_time WHERE id = ?";
+        List<ReservationTime> reservationTimes = jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, id);
+        return reservationTimes.stream()
+                .findFirst();
+    }
+
+    @Override
+    public long insert(final ReservationTime reservationTime) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", reservationTime.getId())
+                .addValue("start_at", reservationTime.getStartAt());
+        Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
+        return newId.longValue();
+    }
+
+    @Override
+    public boolean existsByStartAt(final LocalTime startAt) {
+        String query = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, startAt));
+    }
+
+    @Override
+    public boolean deleteById(final long id) {
+        String query = "DELETE FROM reservation_time where id = ?";
+        int deleted = jdbcTemplate.update(query, id);
+        return deleted > 0;
+    }
+}
