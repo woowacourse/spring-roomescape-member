@@ -46,7 +46,7 @@ public class ReservationService {
 
     private void validateSameReservation(Reservation reservation) {
         if (reservationRepository.existByDateAndTimeId(reservation)) {
-            throw new IllegalArgumentException("중복된 예약신청입니다");
+            throw new InvalidReservationException("중복된 예약신청입니다");
         }
     }
 
