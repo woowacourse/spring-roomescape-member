@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservation.entity.Theme;
 
 class ReservationTest {
 
@@ -23,8 +24,10 @@ class ReservationTest {
     void test1(Long id, boolean expected) {
         // given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        Theme theme = new Theme(1L, "공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
-        Reservation reservation = new Reservation(id, "꾹이", LocalDate.now(), reservationTime);
+        Reservation reservation = new Reservation(id, "꾹이", LocalDate.now(), reservationTime, theme);
 
         // when
         boolean result = reservation.existId();
@@ -37,9 +40,11 @@ class ReservationTest {
     @Test
     void test2() {
         String nameLength25 = "aaaaaaaaaabbbbbbbbbbccc25";
+        Theme theme = new Theme(1L, "공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         assertThatCode(() ->
-                new Reservation(1L, nameLength25, LocalDate.now(), new ReservationTime(1L, LocalTime.now()))
+                new Reservation(1L, nameLength25, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), theme)
         ).doesNotThrowAnyException();
     }
 
@@ -48,8 +53,12 @@ class ReservationTest {
     @ValueSource(strings = {"  ", "aaaaaaaaaabbbbbbbbbbcccc26"})
     @ParameterizedTest
     void test3(String name) {
+        Theme theme = new Theme(1L, "공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
         // when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, LocalDate.now(), new ReservationTime(1L, LocalTime.now())))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() ->
+                new Reservation(1L, name, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), theme)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -10,7 +10,8 @@ import java.time.LocalDate;
 public record ReservationRequest(
         @NotBlank @Size(max = 25) String name,
         @FutureOrPresent @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
-        @NotNull Long timeId
+        @NotNull Long timeId,
+        @NotNull Long themeId
 ) {
 
 }

@@ -12,8 +12,10 @@ import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
+import roomescape.domain.reservation.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
@@ -21,12 +23,14 @@ public class ReservationService {
     private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(Clock clock, ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> getAll() {
@@ -45,8 +49,11 @@ public class ReservationService {
         Long timeId = request.timeId();
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
-
-        Reservation reservation = Reservation.withoutId(request.name(), request.date(), reservationTime);
+        Long themeId = request.themeId();
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+        
+        Reservation reservation = Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
 
         validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStratTime());
 

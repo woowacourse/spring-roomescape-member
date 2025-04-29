@@ -55,9 +55,13 @@ public class ReservationDAO implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
-                select rs.id as reservation_id, rs.name, rs.date, rst.id  as reservation_time_id, rst.start_at
+                select rs.id as reservation_id, rs.name, rs.date,
+                       rst.id as reservation_time_id, rst.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
                 from reservation rs
-                inner join reservation_time rst on rs.time_id = rst.id where rs.id = :reservation_id
+                INNER JOIN reservation_time rst ON rs.time_id = rst.id
+                INNER JOIN theme th ON rs.theme_id = th.id
+                WHERE rs.id = :reservation_id
                 """;
 
         Map<String, Long> params = Map.of("reservation_id", id);
@@ -132,7 +136,9 @@ public class ReservationDAO implements ReservationRepository {
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("theme_id", reservation.getThemeId());
+                .addValue("theme_id", reservation.getThemeId())
+                .addValue("id", reservation.getId());
+                ;
 
         int updatedRowCount = jdbcTemplate.update(updateReservationSql, params);
 

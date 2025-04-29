@@ -18,11 +18,14 @@ import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.service.ReservationService;
 import roomescape.reservation.repository.fake.FakeReservationRepository;
 import roomescape.reservation.repository.fake.FakeReservationTimeRepository;
+import roomescape.reservation.repository.fake.FakeThemeRepository;
 import roomescape.utils.FixedClock;
 
 class ReservationServiceTest {
@@ -31,24 +34,35 @@ class ReservationServiceTest {
 
     private final FakeReservationRepository reservationRepository = new FakeReservationRepository();
     private final FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+    private final FakeThemeRepository themeRepository = new FakeThemeRepository();
 
     private ReservationService reservationService;
     private ReservationTime reservationTime;
+    private Theme theme;
 
     private Long reservationTimeId;
+    private Long themeId;
 
     @BeforeEach
     void setUp() {
         reservationRepository.deleteAll();
         reservationTimeRepository.deleteAll();
+        themeRepository.deleteAll();
 
         Clock clock = FixedClock.from(LocalDateTime.of(2024, 12, 18, 8, 0));
 
-        reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository);
+        reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository,
+                themeRepository);
 
-        ReservationTime saved = reservationTimeRepository.save(ReservationTime.withoutId(time));
-        reservationTimeId = saved.getId();
-        reservationTime = new ReservationTime(saved.getId(), saved.getStartAt());
+        ReservationTime savedReservationTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        reservationTimeId = savedReservationTime.getId();
+        reservationTime = new ReservationTime(savedReservationTime.getId(), savedReservationTime.getStartAt());
+        Theme savedTheme = themeRepository.save(Theme.withoutId("공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+        themeId = savedTheme.getId();
+        theme = new Theme(savedTheme.getId(), savedTheme.getName(), savedTheme.getDescription(),
+                savedTheme.getThumbnail());
+
     }
 
     @DisplayName("모든 예약 정보를 가져온다.")
@@ -59,7 +73,7 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.of(2020, 1, 1);
 
         for (String name : names) {
-            Reservation reservation = Reservation.withoutId(name, date, reservationTime);
+            Reservation reservation = Reservation.withoutId(name, date, reservationTime, theme);
             reservationRepository.save(reservation);
         }
 
@@ -85,7 +99,7 @@ class ReservationServiceTest {
         String name = "꾹";
         LocalDate date = LocalDate.of(2025, 1, 1);
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId);
+        ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId, themeId);
 
         // when
         ReservationResponse result = reservationService.create(requestDto);
@@ -96,6 +110,8 @@ class ReservationServiceTest {
         softAssertions.assertThat(result.name()).isEqualTo(name);
         softAssertions.assertThat(result.date()).isEqualTo(date);
         softAssertions.assertThat(result.time()).isEqualTo(new ReservationTimeResponse(reservationTimeId, time));
+        softAssertions.assertThat(result.theme())
+                .isEqualTo(new ThemeResponse(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail()));
 
         softAssertions.assertAll();
     }
@@ -107,7 +123,7 @@ class ReservationServiceTest {
         String name = "꾹";
         LocalDate date = LocalDate.of(2025, 1, 1);
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId);
+        ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId, themeId);
         reservationService.create(requestDto);
 
         // when & then
@@ -124,7 +140,7 @@ class ReservationServiceTest {
         ReservationTime pastTime = new ReservationTime(2L, LocalTime.of(7, 59));
         reservationTimeRepository.add(pastTime);
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, pastTime.getId());
+        ReservationRequest requestDto = new ReservationRequest(name, date, pastTime.getId(), themeId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(requestDto))
@@ -137,17 +153,29 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.of(2025, 4, 29);
 
         Long notExistId = 1000L;
-        ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId);
+        ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId, themeId);
 
         assertThatThrownBy(() -> reservationService.create(requestDto))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
-    @DisplayName("예약 시간을 삭제한다")
+    @DisplayName("존재하지 않는 테마 ID로 저장하면 예외를 반환한다.")
+    @Test
+    void notExistThemeId(){
+        LocalDate date = LocalDate.of(2025, 4, 29);
+
+        Long notExistId = 1000L;
+        ReservationRequest requestDto = new ReservationRequest("꾹", date, reservationTimeId, notExistId);
+
+        assertThatThrownBy(() -> reservationService.create(requestDto))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("예약을 삭제한다")
     @Test
     void test7() {
         // given
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), reservationTime);
+        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), reservationTime, theme);
         Reservation saved = reservationRepository.save(reservation);
 
         Long id = saved.getId();
@@ -157,7 +185,7 @@ class ReservationServiceTest {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("예약 시간이 존재하지 않으면 예외를 반환한다.")
+    @DisplayName("예약이 존재하지 않으면 예외를 반환한다.")
     @Test
     void test8() {
         Long id = 1L;

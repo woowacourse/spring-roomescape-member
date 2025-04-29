@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -94,6 +96,21 @@ public class ThemeDAO implements ThemeRepository {
 
         if (deleteRowCount != 1) {
             throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
+        }
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String sql = "select id, name, description, thumbnail from theme where id = :id";
+
+        Map<String, Long> params = Map.of("id", id);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, params,
+                    (resultSet, rowNum) -> themeOf(resultSet)
+            );
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Theme with id " + id + " not found");
         }
     }
 }

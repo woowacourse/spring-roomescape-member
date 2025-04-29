@@ -17,8 +17,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
+import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ReservationTimeApiTest {
@@ -32,9 +35,12 @@ public class ReservationTimeApiTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("DELETE FROM reservation_time");
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
     @DisplayName("예약 시간을 추가한다.")
@@ -118,10 +124,14 @@ public class ReservationTimeApiTest {
         int conflictStatusCode = 409;
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
 
-        ReservationTime saved = reservationTimeRepository.save(reservationTime);
-        Long savedId = saved.getId();
+        ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
+        Long savedId = savedTime.getId();
 
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), saved);
+        Theme theme = Theme.withoutId("공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme savedTheme = themeRepository.save(theme);
+
+        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then

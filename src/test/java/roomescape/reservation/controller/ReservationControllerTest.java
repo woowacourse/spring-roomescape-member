@@ -29,6 +29,7 @@ import roomescape.domain.reservation.controller.ReservationController;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -60,12 +61,13 @@ public class ReservationControllerTest {
         LocalDate now = LocalDate.now();
         LocalTime time = LocalTime.now();
         Long timeId = 1L;
-
+        Long themeId = 1L;
         AtomicLong id = new AtomicLong(1L);
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
+        ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
 
         List<ReservationResponse> responses = names.stream()
-                .map(name -> new ReservationResponse(id.getAndIncrement(), name, now, timeResponse))
+                .map(name -> new ReservationResponse(id.getAndIncrement(), name, now, timeResponse, themeResponse))
                 .toList();
 
         // when
@@ -82,14 +84,16 @@ public class ReservationControllerTest {
     void test2() throws Exception {
         Long reservationId = 1L;
         Long timeId = 1L;
+        Long themeId = 1L;
 
         LocalDate date = LocalDate.of(2025, 4, 29);
         LocalTime time = LocalTime.of(8, 0);
         String name = "꾹이";
 
-        ReservationRequest request = new ReservationRequest(name, date, timeId);
+        ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
         ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
-        ReservationResponse response = new ReservationResponse(reservationId, name, date, timeResponse);
+        ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
+        ReservationResponse response = new ReservationResponse(reservationId, name, date, timeResponse, themeResponse);
 
         String requestContent = objectMapper.writeValueAsString(request);
 
@@ -111,9 +115,10 @@ public class ReservationControllerTest {
     void test3() throws Exception {
         // given
         Long timeId = 1L;
+        Long themeId = 1L;
         LocalDate date = LocalDate.now();
 
-        ReservationRequest request = new ReservationRequest(null, date, timeId);
+        ReservationRequest request = new ReservationRequest(null, date, timeId, themeId);
 
         String requestContent = objectMapper.writeValueAsString(request);
 
@@ -129,10 +134,11 @@ public class ReservationControllerTest {
     void test4() throws Exception {
         // given
         Long timeId = 1L;
+        Long themeId = 1L;
         LocalDate date = LocalDate.now();
         String name = "꾹이";
 
-        ReservationRequest request = new ReservationRequest(name, date, timeId);
+        ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
 
         String requestContent = objectMapper.writeValueAsString(request);
 
@@ -196,7 +202,9 @@ public class ReservationControllerTest {
         String name = "";
         LocalDate date = LocalDate.now();
         Long timeId = 1L;
-        ReservationRequest request = new ReservationRequest(name, date, timeId);
+        Long themeId = 1L;
+
+        ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
         String content = objectMapper.writeValueAsString(request);
 
         // when & then

@@ -12,6 +12,7 @@ public final class JdbcTemplateUtils {
         try {
             jdbcTemplate.update("truncate TABLE reservation");
             jdbcTemplate.update("delete from reservation_time");
+            jdbcTemplate.update("delete from theme");
         } catch (DataAccessException e) {
             throw new RuntimeException("테이블 삭제 중 오류 발생", e);
         }

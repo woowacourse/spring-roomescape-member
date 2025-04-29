@@ -1,6 +1,8 @@
 package roomescape.domain.reservation.repository;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.reservation.entity.Theme;
 
 public interface ThemeRepository {
@@ -10,4 +12,6 @@ public interface ThemeRepository {
     Theme save(Theme Theme);
 
     void deleteById(Long id);
+
+    Optional<Theme> findById(@NotNull Long id);
 }

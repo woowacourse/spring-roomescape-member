@@ -18,8 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
+import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
+import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -32,7 +34,16 @@ class ReservationApiTest {
     private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
+    private ThemeRepository themeRepository;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    public static String formatDateTime(LocalDate dateTime) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        return dateTimeFormatter.format(dateTime);
+    }
 
     @BeforeEach
     void init() {
@@ -64,8 +75,11 @@ class ReservationApiTest {
         LocalTime time = LocalTime.of(15, 0);
         ReservationTime reservationTime = ReservationTime.withoutId(time);
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+        Theme theme = Theme.withoutId("공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme savedTheme = themeRepository.save(theme);
 
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedReservationTime);
+        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedReservationTime, savedTheme);
         reservationRepository.save(reservation);
 
         // then
@@ -82,12 +96,18 @@ class ReservationApiTest {
         // given
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+
+        Theme theme = Theme.withoutId("공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme savedTheme = themeRepository.save(theme);
+
         LocalDate now = LocalDate.now();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", formatDateTime(now.plusDays(1)));
         reservation.put("timeId", savedReservationTime.getId());
+        reservation.put("themeId", savedTheme.getId());
 
         // when & then
         RestAssured.given().log().all()
@@ -101,12 +121,42 @@ class ReservationApiTest {
     @DisplayName("존재하지 않는 예약 시간 ID 를 추가하면 예외를 반환한다.")
     @Test
     void test5() {
+
+        Theme theme = Theme.withoutId("공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme savedTheme = themeRepository.save(theme);
+
         LocalDate now = LocalDate.now();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", formatDateTime(now.plusDays(1)));
         reservation.put("timeId", 1);
+        reservation.put("themeId", savedTheme.getId());
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(404);
+    }
+
+    @DisplayName("존재하지 않는 테마  ID 를 추가하면 예외를 반환한다.")
+    @Test
+    void notExistThemeId() {
+        // given
+        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
+
+        LocalDate now = LocalDate.now();
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", formatDateTime(now.plusDays(1)));
+        reservation.put("timeId", savedReservationTime.getId());
+        reservation.put("themeId", 1L);
 
         // when & then
         RestAssured.given().log().all()
@@ -127,7 +177,11 @@ class ReservationApiTest {
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        Reservation reservation = Reservation.withoutId(name, now, savedReservationTime);
+        Theme theme = Theme.withoutId("공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        Theme savedTheme = themeRepository.save(theme);
+
+        Reservation reservation = Reservation.withoutId(name, now, savedReservationTime, savedTheme);
         Reservation saved = reservationRepository.save(reservation);
         Long id = saved.getId();
 
@@ -159,11 +213,5 @@ class ReservationApiTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
-    }
-
-    public static String formatDateTime(LocalDate dateTime) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        return dateTimeFormatter.format(dateTime);
     }
 }
