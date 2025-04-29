@@ -34,6 +34,22 @@ public class JdbcReservationDAO implements ReservationDAO {
     }
 
     @Override
+    public long insert(final Reservation reservation) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", Date.valueOf(reservation.getDate()))
+                .addValue("time_id", reservation.getTime().getId());
+        Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
+        return newId.longValue();
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
+        String query = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?) AS exist";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId));
+    }
+
+    @Override
     public List<Reservation> findAll() {
         String query = """
                 SELECT
@@ -47,22 +63,6 @@ public class JdbcReservationDAO implements ReservationDAO {
                 on r.time_id = t.id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
-    }
-
-    @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
-        String query = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?) AS exist";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, timeId));
-    }
-
-    @Override
-    public long insert(final Reservation reservation) {
-        SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
-                .addValue("date", Date.valueOf(reservation.getDate()))
-                .addValue("time_id", reservation.getTime().getId());
-        Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
-        return newId.longValue();
     }
 
     @Override

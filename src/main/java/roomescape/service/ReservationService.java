@@ -19,10 +19,6 @@ public class ReservationService {
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
-    public List<Reservation> findAll() {
-        return reservationDAO.findAll();
-    }
-
     public Reservation addReservation(final CreateReservationRequest reservationRequest) {
         ReservationTime reservationTime = findReservationTimeByTimeId(reservationRequest.timeId());
         Reservation reservation = new Reservation(reservationRequest.name(),
@@ -36,6 +32,14 @@ public class ReservationService {
         return reservation.withId(savedId);
     }
 
+    private boolean existsSameDateTime(final Reservation reservation) {
+        return reservationDAO.existsByDateAndTimeId(reservation.getDate(), reservation.getTime().getId());
+    }
+
+    public List<Reservation> findAll() {
+        return reservationDAO.findAll();
+    }
+
     private ReservationTime findReservationTimeByTimeId(final long timeId) {
         return reservationTimeDAO.findById(timeId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 예약 가능 시간입니다: timeId=%d"
@@ -44,9 +48,5 @@ public class ReservationService {
 
     public boolean removeReservationById(final long id) {
         return reservationDAO.deleteById(id);
-    }
-
-    private boolean existsSameDateTime(final Reservation reservation) {
-        return reservationDAO.existsByDateAndTimeId(reservation.getDate(), reservation.getTime().getId());
     }
 }

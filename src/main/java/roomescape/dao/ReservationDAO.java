@@ -6,11 +6,11 @@ import roomescape.domain.Reservation;
 
 public interface ReservationDAO {
 
-    List<Reservation> findAll();
+    long insert(Reservation reservation);
 
     boolean existsByDateAndTimeId(LocalDate date, long time_id);
 
-    long insert(Reservation reservation);
+    List<Reservation> findAll();
 
     boolean deleteById(long id);
 }

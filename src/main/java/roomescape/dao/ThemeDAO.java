@@ -5,7 +5,7 @@ import roomescape.domain.Theme;
 
 public interface ThemeDAO {
 
-    List<Theme> findAll();
-
     long insert(Theme theme);
+
+    List<Theme> findAll();
 }

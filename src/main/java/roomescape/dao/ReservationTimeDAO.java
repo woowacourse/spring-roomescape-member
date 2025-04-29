@@ -6,13 +6,14 @@ import java.util.Optional;
 import roomescape.domain.ReservationTime;
 
 public interface ReservationTimeDAO {
-    List<ReservationTime> findAll();
-
-    Optional<ReservationTime> findById(long id);
 
     long insert(ReservationTime reservationTime);
 
     boolean existsByStartAt(LocalTime startAt);
+
+    List<ReservationTime> findAll();
+
+    Optional<ReservationTime> findById(long id);
 
     boolean deleteById(long id);
 }

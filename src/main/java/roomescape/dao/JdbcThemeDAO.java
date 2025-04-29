@@ -30,12 +30,6 @@ public class JdbcThemeDAO implements ThemeDAO {
     }
 
     @Override
-    public List<Theme> findAll() {
-        String query = "SELECT * FROM theme";
-        return jdbcTemplate.query(query, THEME_ROW_MAPPER);
-    }
-
-    @Override
     public long insert(final Theme theme) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
@@ -43,5 +37,11 @@ public class JdbcThemeDAO implements ThemeDAO {
                 .addValue("thumbnail", theme.getThumbnail());
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
         return newId.longValue();
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String query = "SELECT * FROM theme";
+        return jdbcTemplate.query(query, THEME_ROW_MAPPER);
     }
 }

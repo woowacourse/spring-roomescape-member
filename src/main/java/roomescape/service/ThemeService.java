@@ -16,16 +16,16 @@ public class ThemeService {
         this.themeDAO = themeDAO;
     }
 
+    public ThemeResponse addTheme(final ThemeCreation themeCreation) {
+        Theme theme = new Theme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
+        long id = themeDAO.insert(theme);
+        return ThemeResponse.from(theme.withId(id));
+    }
+
     public List<ThemeResponse> findAllThemes() {
         return themeDAO.findAll()
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
-    }
-
-    public ThemeResponse addTheme(final ThemeCreation themeCreation) {
-        Theme theme = new Theme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
-        long id = themeDAO.insert(theme);
-        return ThemeResponse.from(theme.withId(id));
     }
 }

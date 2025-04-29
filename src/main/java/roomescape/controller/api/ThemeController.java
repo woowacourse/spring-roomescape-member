@@ -22,15 +22,15 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
-    public List<ThemeResponse> findAllThemes() {
-        return themeService.findAllThemes();
-    }
-
     @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@RequestBody CreateThemeRequest request) {
         ThemeResponse response = themeService.addTheme(
                 new ThemeCreation(request.name(), request.description(), request.thumbnail()));
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public List<ThemeResponse> findAllThemes() {
+        return themeService.findAllThemes();
     }
 }

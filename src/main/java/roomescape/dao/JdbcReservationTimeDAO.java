@@ -30,20 +30,6 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        String query = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER);
-    }
-
-    @Override
-    public Optional<ReservationTime> findById(final long id) {
-        String query = "SELECT * FROM reservation_time WHERE id = ?";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, id);
-        return reservationTimes.stream()
-                .findFirst();
-    }
-
-    @Override
     public long insert(final ReservationTime reservationTime) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", reservationTime.getId())
@@ -56,6 +42,20 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
     public boolean existsByStartAt(final LocalTime startAt) {
         String query = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, startAt));
+    }
+
+    @Override
+    public List<ReservationTime> findAll() {
+        String query = "SELECT * FROM reservation_time";
+        return jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER);
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(final long id) {
+        String query = "SELECT * FROM reservation_time WHERE id = ?";
+        List<ReservationTime> reservationTimes = jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, id);
+        return reservationTimes.stream()
+                .findFirst();
     }
 
     @Override

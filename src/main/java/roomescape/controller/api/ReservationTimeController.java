@@ -24,14 +24,6 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping
-    public List<ReservationTimeResponse> findAll() {
-        return reservationTimeService.findAll()
-                .stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
-    }
-
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(
             @RequestBody CreateReservationTimeRequest request) {
@@ -41,6 +33,14 @@ public class ReservationTimeController {
             return ResponseEntity.ok(ReservationTimeResponse.from(reservationTime.withId(savedId)));
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping
+    public List<ReservationTimeResponse> findAll() {
+        return reservationTimeService.findAll()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
