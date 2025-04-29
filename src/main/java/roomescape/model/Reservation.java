@@ -85,4 +85,12 @@ public class Reservation {
     public Theme getTheme() {
         return theme;
     }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
 }
