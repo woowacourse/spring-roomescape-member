@@ -214,4 +214,41 @@ public class MissionStepTest {
             .statusCode(200)
             .body("size()", is(0));
     }
+
+    @Test
+    @DisplayName("/themes DELETE 요청에 정상적으로 응답한다")
+    void theme_delete_when_exist() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "레벨2 탈출");
+        params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/themes")
+            .then().log().all()
+            .statusCode(201)
+            .body("id", is(1));
+
+        RestAssured.given().log().all()
+            .when().delete("/themes/1")
+            .then().log().all()
+            .statusCode(204);
+
+        RestAssured.given().log().all()
+            .when().get("/themes")
+            .then().log().all()
+            .statusCode(200)
+            .body("size()", is(0));
+    }
+
+    @Test
+    @DisplayName("/themes DELETE 요청에 id가 존재하지 않는다면 404를 반환한다")
+    void theme_delete_when_not_exist() {
+        RestAssured.given().log().all()
+            .when().delete("/themes/1")
+            .then().log().all()
+            .statusCode(404);
+    }
 }

@@ -6,6 +6,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.exception.ResourceNotExistException;
 
 @Service
 public class ThemeService {
@@ -30,5 +31,12 @@ public class ThemeService {
             request.thumbnail()
         );
         return ThemeResponse.from(themeDao.save(theme));
+    }
+
+    public void deleteById(Long id) {
+        int count = themeDao.deleteById(id);
+        if (count == 0) {
+            throw new ResourceNotExistException();
+        }
     }
 }
