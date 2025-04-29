@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.service.ReservationService;
 
@@ -39,6 +40,11 @@ public class ReservationController {
 
     @ExceptionHandler(PastReservationException.class)
     public ResponseEntity<String> handlePastReservationException(final PastReservationException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DuplicateReservationException.class)
+    public ResponseEntity<String> handleDuplicateReservationException(final DuplicateReservationException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

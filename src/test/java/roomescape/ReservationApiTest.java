@@ -236,5 +236,40 @@ class ReservationApiTest {
             .statusCode(400);
     }
 
+    @Test
+    void 중복된_시간에_예약을_하면_에러가_발생한다() {
+        Map<String, Object> timeParams = new HashMap<>();
+        timeParams.put("startAt", "09:00");
 
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(timeParams)
+            .when().post("/times")
+            .then().log().all()
+            .statusCode(201);
+
+        Map<String, Object> reservationParams = new HashMap<>();
+        reservationParams.put("name", "브라운");
+        reservationParams.put("date", LocalDate.now().plusDays(10));
+        reservationParams.put("timeId", "1");
+
+        Map<String, Object> reservationParams2 = new HashMap<>();
+        reservationParams2.put("name", "드라고");
+        reservationParams2.put("date", LocalDate.now().plusDays(10));
+        reservationParams2.put("timeId", "1");
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservationParams)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(201);
+
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(reservationParams2)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(400);
+    }
 }

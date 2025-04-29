@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.repository.ReservationDao;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -14,11 +15,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTimeServiceTest {
 
+    private ReservationDao reservationDao;
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
-        reservationTimeService = new ReservationTimeService(new ReservationInMemoryDao(), new ReservationTimeInMemoryDao());
+        reservationDao = new ReservationInMemoryDao();
+        reservationTimeService = new ReservationTimeService(reservationDao, new ReservationTimeInMemoryDao());
     }
 
     @Test
@@ -74,4 +77,5 @@ class ReservationTimeServiceTest {
             .isInstanceOf(EntityNotFoundException.class)
             .hasMessage("삭제할 예약시간이 없습니다.");
     }
+    // TODO : 예약이 존재할때, 예약시간 삭제 검증 테스트 작성
 }

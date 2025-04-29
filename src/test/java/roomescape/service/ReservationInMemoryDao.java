@@ -4,6 +4,7 @@ import roomescape.entity.Reservation;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ReservationDao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,5 +45,10 @@ public class ReservationInMemoryDao implements ReservationDao {
     @Override
     public Optional<Reservation> findByTimeId(Long timeId) {
         return Optional.empty();
+    }
+
+    @Override
+    public boolean isExist(LocalDate date, Long timeId) {
+        return false;
     }
 }

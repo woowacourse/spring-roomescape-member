@@ -1,11 +1,12 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
@@ -33,8 +34,12 @@ public class ReservationService {
     public ReservationResponseDto add(ReservationRequestDto requestDto) {
         ReservationTime reservationTime = reservationTimeDao.findById(requestDto.timeId())
             .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
-        Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), reservationTime);
 
+        if (reservationDao.isExist(requestDto.date(), requestDto.timeId())) {
+            throw new DuplicateReservationException("이미 예약이 존재합니다.");
+        }
+
+        Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), reservationTime);
         Reservation saved = reservationDao.save(reservation);
         return createResponseDto(saved);
     }

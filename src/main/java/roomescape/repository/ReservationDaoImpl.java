@@ -69,6 +69,16 @@ public class ReservationDaoImpl implements ReservationDao {
         return findReservation.stream().findFirst();
     }
 
+    @Override
+    public boolean isExist(LocalDate date, Long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = :date AND time_id = :time_id)";
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("date", date)
+            .addValue("time_id", timeId);
+        return Boolean.TRUE == jdbcTemplate.queryForObject(sql, mapSqlParameterSource, Boolean.class);
+    }
+
     private RowMapper<Reservation> getReservationRowMapper() {
         return (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
