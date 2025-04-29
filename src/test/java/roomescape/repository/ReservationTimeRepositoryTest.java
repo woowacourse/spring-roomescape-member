@@ -58,10 +58,10 @@ public class ReservationTimeRepositoryTest {
         Long id = 1L;
 
         // when
-        int row = reservationTimeRepository.deleteById(id);
+        boolean row = reservationTimeRepository.deleteById(id);
 
         // then
-        Assertions.assertThat(row).isEqualTo(1);
+        Assertions.assertThat(row).isTrue();
     }
 
 }

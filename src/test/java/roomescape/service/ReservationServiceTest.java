@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicLong;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationRequest;
@@ -21,13 +22,17 @@ import roomescape.repository.ReservationRepository;
 
 class ReservationServiceTest {
 
-    private final ReservationRepository fakeReservationRepository = new FakeReservationRepository();
+    private final FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
     private final ReservationService reservationService = new ReservationService(fakeReservationRepository);
+
+    @AfterEach
+    void tearDown() {
+        fakeReservationRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("날짜와 시간이 모두 중복되면 예외가 발생한다.")
     void whenDuplicateDateAndTimeThrowException() {
-
         // given
         ReservationRequest existedRequest = new ReservationRequest("lemon", LocalDate.of(2025, 4, 18),
                 1L);
@@ -41,9 +46,18 @@ class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("전체 예약 목록을 가져온다..")
+    @DisplayName("전체 예약 목록을 가져온다.")
     void findAllReservations() {
         // given
+        fakeReservationRepository.save(
+                new Reservation(1L, "Lemon", LocalDate.of(2025, 4, 22),
+                        new ReservationTime(1L, LocalTime.of(10, 0)))
+        );
+        fakeReservationRepository.save(
+                new Reservation(2L, "DDingHwa", LocalDate.of(2025, 4, 22),
+                        new ReservationTime(2L, LocalTime.of(12, 0)))
+        );
+
         // when
         List<ReservationResponse> reservations = reservationService.getReservations();
 
@@ -61,6 +75,14 @@ class ReservationServiceTest {
     @DisplayName("아이디를 통해 예약을 삭제한다.")
     void deleteReservationById() {
         // given
+        fakeReservationRepository.save(
+                new Reservation(1L, "Lemon", LocalDate.of(2025, 4, 22),
+                        new ReservationTime(1L, LocalTime.of(10, 0)))
+        );
+        fakeReservationRepository.save(
+                new Reservation(2L, "DDingHwa", LocalDate.of(2025, 4, 22),
+                        new ReservationTime(2L, LocalTime.of(12, 0)))
+        );
         long validId = 1;
         // when
         reservationService.delete(validId);
@@ -88,10 +110,7 @@ class ReservationServiceTest {
         private final AtomicLong atomicLong = new AtomicLong(1);
 
         public FakeReservationRepository() {
-            reservations.add(new Reservation(atomicLong.getAndIncrement(),
-                    "Lemon", LocalDate.of(2025, 4, 22), new ReservationTime(1L, LocalTime.of(10, 0))));
-            reservations.add(new Reservation(atomicLong.getAndIncrement(), "DDingHwa", LocalDate.of(2025, 4, 22),
-                    new ReservationTime(2L, LocalTime.of(12, 0))));
+
         }
 
         @Override
@@ -128,6 +147,16 @@ class ReservationServiceTest {
             return reservations.stream().anyMatch(
                     reservation -> reservation.getDate().equals(date) && reservation.getTime().getId().equals(timeId)
             );
+        }
+
+        @Override
+        public boolean existByTimeId(Long id) {
+            return reservations.stream()
+                    .anyMatch(reservation -> reservation.getTime().getId().equals(id));
+        }
+
+        public void deleteAll() {
+            reservations.clear();
         }
     }
 }

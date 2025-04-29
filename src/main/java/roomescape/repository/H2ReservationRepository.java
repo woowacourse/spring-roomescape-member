@@ -106,4 +106,11 @@ public class H2ReservationRepository implements ReservationRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId);
         return count != null && count > 0;
     }
+
+    @Override
+    public boolean existByTimeId(Long id) {
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
 }

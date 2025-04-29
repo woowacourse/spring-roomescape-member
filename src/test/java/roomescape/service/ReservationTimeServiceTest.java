@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +11,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.ReservationServiceTest.FakeReservationRepository;
 
 public class ReservationTimeServiceTest {
 
     FakeReservationTimeRepository fakeReservationTimeRepository = new FakeReservationTimeRepository();
-    ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeRepository);
+    FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
+    ReservationTimeService reservationTimeService = new ReservationTimeService(fakeReservationTimeRepository, fakeReservationRepository);
 
     @AfterEach
     void tearDown() {
         fakeReservationTimeRepository.deleteAll();
+        fakeReservationRepository.deleteAll();
     }
 
     @Test
@@ -65,6 +70,7 @@ public class ReservationTimeServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+
     @Test
     @DisplayName("전체 시간 목록을 가져온다")
     void getAllReservationTime() {
@@ -91,6 +97,21 @@ public class ReservationTimeServiceTest {
         Assertions.assertThatNoException().isThrownBy(() -> reservationTimeService.delete(id));
     }
 
+    @Test
+    @DisplayName("예약이 존재하는 예약 시간을 삭제하면 예외가 발생한다.")
+    void deleteExistReservation() {
+        // given
+        ReservationTime reservationTime = new ReservationTime(1, LocalTime.of(22, 0));
+        fakeReservationTimeRepository.save(reservationTime);
+
+        fakeReservationRepository.save(
+                new Reservation("Lemon", LocalDate.now(), reservationTime));
+        // when
+        // then
+        Assertions.assertThatThrownBy(() -> reservationTimeService.delete(1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 
     static class FakeReservationTimeRepository implements ReservationTimeRepository {
 
@@ -108,13 +129,13 @@ public class ReservationTimeServiceTest {
         }
 
         @Override
-        public int deleteById(Long id) {
+        public boolean deleteById(Long id) {
             boolean existingId = reservationTimes.stream().anyMatch(reservation -> reservation.getId() == id);
             if (existingId) {
                 reservationTimes.removeIf(reservation -> reservation.getId() == id);
-                return 1;
+                return true;
             }
-            return 0;
+            return false;
         }
 
         @Override

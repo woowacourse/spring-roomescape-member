@@ -7,15 +7,20 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
+                                  final ReservationRepository reservationRepository) {
+
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
@@ -51,9 +56,10 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(reservationTimes);
     }
 
-    public Boolean delete(Long id) {
-        int deletedRows = reservationTimeRepository.deleteById(id);
-        return deletedRows > 0;
+    public boolean delete(Long id) {
+        boolean isReservationExistInTime = reservationRepository.existByTimeId(id);
+        if (isReservationExistInTime) throw new IllegalArgumentException("예약이 존재하는 예약 시간은 삭제할 수 없습니다.");
+        return reservationTimeRepository.deleteById(id);
     }
 
     public ReservationTimeResponse getReservationTime(@NotNull Long timeId) {

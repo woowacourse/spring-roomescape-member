@@ -15,4 +15,6 @@ public interface ReservationRepository {
     int deleteById(Long id);
 
     boolean isDuplicateDateAndTime(LocalDate date, Long timeId);
+
+    boolean existByTimeId(Long id);
 }
