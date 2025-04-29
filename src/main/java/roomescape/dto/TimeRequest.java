@@ -18,7 +18,7 @@ public record TimeRequest(
 
     private void validateTime(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidInputException("시간을 선택해야 합니다.");
+            throw new InvalidInputException("시간을 선택해라.");
         }
     }
 }

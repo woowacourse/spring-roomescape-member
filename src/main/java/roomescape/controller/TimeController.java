@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
+import roomescape.exception.DuplicateTimeException;
 import roomescape.service.TimeService;
 
 @RestController
@@ -45,6 +46,13 @@ public class TimeController {
 
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleSQLException(DataIntegrityViolationException exception) {
+    public String handleSQLException(DataIntegrityViolationException ex) {
+        return "예약이 존재하여 제거할 수 없다.";
+    }
+
+    @ExceptionHandler(value = DuplicateTimeException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleDuplicateException(DuplicateTimeException ex) {
+        return ex.getMessage();
     }
 }

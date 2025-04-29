@@ -22,13 +22,13 @@ public record ReservationRequest(
 
     private void validateNull(LocalDate date, String name, Long timeId) {
         if(date == null || name == null || timeId == null) {
-            throw new InvalidInputException("값을 모두 선택해야 합니다.");
+            throw new InvalidInputException("값을 모두 선택해라.");
         }
     }
 
     private void validateName(String name) {
         if (name.isBlank()) {
-            throw new InvalidInputException("이름은 한 글자 이상이어야 합니다.");
+            throw new InvalidInputException("이름은 한 글자 이상이어야 한다.");
         }
     }
 }

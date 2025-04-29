@@ -18,10 +18,10 @@
 ### 2. 예외 응답
 
 - [x] null, 생성할 때의 예외는 BadRequest로 응답한다.
-  - null InvalidInputException
-  - 생성 TimeDoesNotExistException, NotCorrectDateTimeException
+  - null: InvalidInputException
+  - 생성: TimeDoesNotExistException, NotCorrectDateTimeException -> ReservationC
 - [x] 중복, 삭제할 때의 예외는 Conflict로 응답한다.
-  - 중복 DuplicateTimeException, DuplicateReservationException
+  - 중복: DuplicateTimeException, DuplicateReservationException
 
 ---
 

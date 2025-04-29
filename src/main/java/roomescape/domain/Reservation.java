@@ -24,7 +24,7 @@ public class Reservation {
         LocalDateTime now = LocalDateTime.now();
         if (date.isBefore(now.toLocalDate()) ||
             (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
-            throw new NotCorrectDateTimeException("지나간 날짜와 시간에 대한 예약 생성은 불가능합니다.");
+            throw new NotCorrectDateTimeException("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.");
         }
     }
 
