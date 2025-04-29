@@ -1,5 +1,6 @@
 package roomescape.fixture;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import roomescape.repository.reservation.ReservationRepository;
 
 public class ReservationRepositoryStub implements ReservationRepository {
     private final Map<Long, Reservation> reservations = new HashMap<>();
+
     private Long id = 1L;
 
     @Override
@@ -29,5 +31,11 @@ public class ReservationRepositoryStub implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return reservations.values().stream().toList();
+    }
+
+    @Override
+    public boolean existsByDateAndTime(LocalDate date, Long id) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> reservation.getId() == id && reservation.getDate() == date);
     }
 }

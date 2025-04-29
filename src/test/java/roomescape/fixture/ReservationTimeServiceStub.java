@@ -31,7 +31,7 @@ public class ReservationTimeServiceStub extends ReservationTimeService {
 
     @Override
     public ReservationTime getById(Long timeId) {
-        return times.getOrDefault(timeId, new ReservationTime(1L, LocalTime.now()));
+        return times.getOrDefault(timeId, new ReservationTime(1L, LocalTime.now().plusHours(1)));
     }
 
     @Override

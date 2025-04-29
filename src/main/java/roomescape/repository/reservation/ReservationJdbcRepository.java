@@ -1,5 +1,6 @@
 package roomescape.repository.reservation;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,5 +55,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     return reservation.withId(resultSet.getLong("reservation_id"));
                 }
         );
+    }
+
+    @Override
+    public boolean existsByDateAndTime(LocalDate date, Long id) {
+        String sql = "select count(*) from reservation where date = ? and time_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, date, id);
+        return count != 0;
     }
 }

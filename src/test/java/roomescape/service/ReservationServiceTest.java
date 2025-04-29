@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.reservation.ReservationAlreadyExistsException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.fixture.ReservationRepositoryStub;
 import roomescape.fixture.ReservationTimeServiceStub;
@@ -52,5 +53,18 @@ class ReservationServiceTest {
     void deleteById() {
         assertThatThrownBy(() -> reservationService.deleteById(99L))
                 .isInstanceOf(ReservationNotFoundException.class);
+    }
+
+    @DisplayName("이미 같은 날짜, 시간에 예약이 존재할 시 예약을 생성하면 예외가 발생한다")
+    @Test
+    void alreadyExists() {
+        // given
+        LocalDate now = LocalDate.now();
+        ReservationRequest request = new ReservationRequest("브라운", now, 1L);
+        reservationService.create(request);
+
+        // when // then
+        assertThatThrownBy(() -> reservationService.create(request))
+                .isInstanceOf(ReservationAlreadyExistsException.class);
     }
 }

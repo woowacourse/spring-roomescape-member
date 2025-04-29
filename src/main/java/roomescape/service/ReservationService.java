@@ -6,6 +6,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.exception.reservation.ReservationAlreadyExistsException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 
@@ -22,6 +23,10 @@ public class ReservationService {
     public ReservationResponse create(ReservationRequest request) {
         ReservationTime time = timeService.getById(request.timeId());
         Reservation newReservation = new Reservation(request.name(), request.date(), time);
+        if (reservationRepository.existsByDateAndTime(request.date(), time.getId())) {
+            throw new ReservationAlreadyExistsException();
+        }
+
         return ReservationResponse.from(reservationRepository.add(newReservation));
     }
 
