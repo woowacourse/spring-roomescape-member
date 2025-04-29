@@ -42,4 +42,11 @@ class PageControllerTest {
         String timePageViewName = pageController.getTimePage();
         assertThat(timePageViewName).isEqualTo("admin/time");
     }
+
+    @DisplayName("테마페이지 요청시 테마페이지 뷰 이름을 리턴한다.")
+    @Test
+    void requestThemePage() {
+        String themePageViewName = pageController.getThemePage();
+        assertThat(themePageViewName).isEqualTo("admin/theme");
+    }
 }

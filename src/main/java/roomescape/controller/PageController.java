@@ -30,4 +30,9 @@ public class PageController {
     public String getTimePage() {
         return "admin/time";
     }
+
+    @GetMapping("/admin/theme")
+    public String getThemePage() {
+        return "admin/theme";
+    }
 }
