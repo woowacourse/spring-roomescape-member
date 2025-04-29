@@ -74,4 +74,9 @@ public class ReservationDao {
             id
         );
     }
+
+    public int getCountByDateAndTimeId(LocalDate date, Long timeId) {
+        String query = "SELECT count(*) FROM reservation WHERE date = ? and time_id = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, date, timeId);
+    }
 }
