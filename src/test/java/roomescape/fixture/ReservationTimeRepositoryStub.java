@@ -1,5 +1,6 @@
 package roomescape.fixture;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,5 +40,11 @@ public class ReservationTimeRepositoryStub implements ReservationTimeRepository 
             return Optional.empty();
         }
         return Optional.of(time);
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        return times.values().stream()
+                .anyMatch(time -> time.getStartAt() == startAt);
     }
 }

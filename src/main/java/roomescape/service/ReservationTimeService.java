@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
@@ -17,6 +18,10 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
+        if (timeRepository.existsByStartAt(request.startAt())) {
+            throw new ReservationTimeAlreadyExistsException();
+        }
+
         ReservationTime newReservationTime = new ReservationTime(request.startAt());
         return ReservationTimeResponse.from(timeRepository.add(newReservationTime));
     }

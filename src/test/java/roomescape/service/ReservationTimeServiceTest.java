@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.fixture.ReservationTimeRepositoryStub;
 
@@ -80,5 +81,20 @@ class ReservationTimeServiceTest {
         // when // then
         assertThatThrownBy(() -> timeService.getById(id))
                 .isInstanceOf(ReservationTimeNotFoundException.class);
+    }
+
+    @DisplayName("이미 있는 예약시간 추가시 예외를 발생시킨다")
+    @Test
+    void alreadyExists() {
+        //given
+        LocalTime now = LocalTime.parse("10:10");
+        timeService.create(new ReservationTimeRequest(now));
+
+        //when
+        ReservationTimeRequest request = new ReservationTimeRequest(now);
+
+        //then
+        assertThatThrownBy(() -> timeService.create(request))
+                .isInstanceOf(ReservationTimeAlreadyExistsException.class);
     }
 }

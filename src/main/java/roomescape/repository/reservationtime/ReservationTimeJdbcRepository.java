@@ -62,4 +62,12 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         );
         return time.stream().findFirst();
     }
+
+    @Override
+    public boolean existsByStartAt(LocalTime localTime) {
+        String sql = "select COUNT(*) from reservation_time where start_at=?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class);
+
+        return count != 0;
+    }
 }
