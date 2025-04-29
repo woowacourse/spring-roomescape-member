@@ -42,8 +42,9 @@ public class ReservationTimeService {
 
     // TODO 고민해보기 dao vs service
     public void deleteById(Long id) {
-        List<Reservation> reservations = reservationDao.findAll();
+        reservationTimeDao.findById(id).orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 id의 시간이 존재하지 않습니다"));
 
+        List<Reservation> reservations = reservationDao.findAll();
         boolean isOccupiedId = reservations.stream()
                         .anyMatch(reservation -> reservation.getTime().getId().equals(id));
         if (isOccupiedId) {
