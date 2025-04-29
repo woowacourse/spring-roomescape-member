@@ -1,10 +1,10 @@
-package roomescape.reservation.controller;
+package roomescape.ui;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class RoomEscapeController {
+public class AdminController {
 
     @GetMapping()
     public String index() {
@@ -14,5 +14,15 @@ public class RoomEscapeController {
     @GetMapping("/admin")
     public String dashboard() {
         return "admin/index";
+    }
+
+    @GetMapping("/admin/reservation")
+    public String adminReservationDashboard() {
+        return "/admin/reservation";
+    }
+
+    @GetMapping("/admin/time")
+    public String adminReservationTimeDashboard() {
+        return "admin/time";
     }
 }
