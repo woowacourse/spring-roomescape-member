@@ -17,7 +17,7 @@ class ReserverNameTest {
         assertAll(() -> {
             assertThatThrownBy(() -> ReserverName.from(null))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("ReserverName.value 은(는) 비어있을 수 없습니다.");
+                    .hasMessage("ReserverName.value 은(는) null일 수 없습니다.");
             assertThatThrownBy(() -> ReserverName.from(""))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("ReserverName.value 은(는) 비어있을 수 없습니다.");

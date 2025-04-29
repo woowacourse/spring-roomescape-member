@@ -22,6 +22,7 @@ public class ReserverName {
 
     private static void validate(final String value) {
         Validator.of(ReserverName.class)
-                .notBlankField(Fields.value, value.trim());
+                .notNullField(Fields.value, value)
+                .notBlankField(Fields.value, value.strip());
     }
 }

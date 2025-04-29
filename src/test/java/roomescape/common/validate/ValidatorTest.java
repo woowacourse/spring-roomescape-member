@@ -61,6 +61,7 @@ class ValidatorTest {
     }
 
     static class SampleClass {
+
         private String sampleField;
     }
 }
