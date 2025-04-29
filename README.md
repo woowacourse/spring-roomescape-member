@@ -16,6 +16,74 @@
         - [x] 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때 - Service
     - [x] 날짜와 시간이 중복되는 예약은 불가능하다. - Service
         - ex. 이미 4월 1일 10시에 예약이 되어있다면, 4월 1일 10시에 대한 예약을 생성할 수 없다.
+- [ ] 테마 관리 기능 추가
+
+---
+
+### API 명세
+
+- [GET] /themes
+  테마 조회
+  **응답 예시**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
+]
+```
+
+**id:** 식별자
+
+**name:** 이름
+
+**description:** 설명
+
+**thumbnail:** 썸네일 이미지 경로
+
+- [POST] /themes
+  테마 생성
+  **요청 예시**
+
+```json
+{
+  "name": "레벨2 탈출",
+  "description": "우테코 레벨2를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+**name:** 이름
+
+**description:** 설명
+
+**thumbnail:** 썸네일 이미지 경로
+
+**응답 예시**
+
+```json
+{
+  "id": 1,
+  "name": "레벨2 탈출",
+  "description": "우테코 레벨2를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+**id:** 식별자
+
+**name:** 이름
+
+**description:** 설명
+
+**thumbnail:** 썸네일 이미지 경로
+
+- [DELETE] /themes/{id}
+  테마 삭제
 
 ### 고민한 점
 
