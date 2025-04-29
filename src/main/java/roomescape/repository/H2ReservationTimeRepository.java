@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,6 +32,13 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                     );
                     return reservationTime;
                 }, timeId);
+    }
+
+    @Override
+    public boolean existByTime(LocalTime createTime) {
+        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ? ";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, createTime);
+        return count != null && count > 0;
     }
 
     @Override

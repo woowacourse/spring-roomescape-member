@@ -103,6 +103,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 + " INNER JOIN reservation_time as t"
                 + " ON t.id = r.time_id"
                 + " WHERE r.date = ? and t.id =?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, date, timeId) > 0;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId);
+        return count != null && count > 0;
     }
 }

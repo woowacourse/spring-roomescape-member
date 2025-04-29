@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalTime;
 import java.util.List;
 import roomescape.entity.ReservationTime;
 
@@ -12,4 +13,6 @@ public interface ReservationTimeRepository {
     int deleteById(Long id);
 
     ReservationTime findById(@NotNull Long timeId);
+
+    boolean existByTime(LocalTime createTime);
 }

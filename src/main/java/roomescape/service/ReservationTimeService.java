@@ -27,9 +27,10 @@ public class ReservationTimeService {
     }
 
     private void validateNoDuplication(LocalTime createTime) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        reservationTimes
-                .forEach(reservationTime -> reservationTime.validateDuplicatedTime(createTime));
+        boolean  isExist = reservationTimeRepository.existByTime(createTime);
+        if (isExist) {
+            throw new IllegalArgumentException("중복된 시간은 추가할 수 없습니다.");
+        }
     }
 
     public List<ReservationTimeResponse> getAllReservationTime() {

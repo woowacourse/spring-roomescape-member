@@ -109,5 +109,11 @@ public class ReservationTimeServiceTest {
                     .findFirst()
                     .orElse(null);
         }
+
+        @Override
+        public boolean existByTime(LocalTime createTime) {
+            return reservationTimes.stream()
+                    .anyMatch(reservationTime -> reservationTime.getStartAt().equals(createTime));
+        }
     }
 }
