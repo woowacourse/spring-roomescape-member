@@ -324,4 +324,13 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @DisplayName("/admin/theme 요청 시 200 OK 응답")
+    @Test
+    void request_adminThemePage_then_200() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
