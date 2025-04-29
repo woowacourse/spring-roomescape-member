@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,7 @@ public class TimeController {
     public ResponseEntity<ReservationTimeResponse> create(
         @RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(request);
-        return ResponseEntity.ok().body(reservationTimeResponse);
+        return ResponseEntity.created(URI.create("~/admin/time")).body(reservationTimeResponse);
     }
 
     @GetMapping
@@ -40,7 +41,7 @@ public class TimeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         boolean isDeleted = reservationTimeService.deleteReservationTime(id);
         if(isDeleted) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }

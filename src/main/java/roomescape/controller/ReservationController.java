@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,14 +33,14 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
         ReservationResponse response = reservationService.create(request);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.created(URI.create("~/admin/reservations")).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable(name = "id") Long id) {
         boolean isDeleted = reservationService.deleteReservation(id);
         if(isDeleted) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
