@@ -22,6 +22,17 @@ public class ReservationService {
         ReservationTime findReservationTime = getReservationTime(reservationRequest);
         Reservation newReservation = new Reservation(
                 null, reservationRequest.name(), reservationRequest.date(), findReservationTime);
+
+        List<Reservation> reservations = reservationDao.findAll();
+        boolean isAlreadyExisted = reservations.stream()
+                .anyMatch(
+                        reservation -> reservation.getDate().equals(reservationRequest.date())
+                                && reservation.getTime().equals(findReservationTime));
+        // TODO : 커스텀 예외 도입할 수도
+        if(isAlreadyExisted) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
+        }
+
         Reservation savedReservation = reservationDao.add(newReservation);
         return new ReservationResponse(
                 savedReservation.getId(), savedReservation.getName(), savedReservation.getDate(), savedReservation.getTime());
