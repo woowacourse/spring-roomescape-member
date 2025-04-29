@@ -35,8 +35,8 @@ public class FakeReservaionDao implements ReservationDao {
 
     //TODO 수정
     @Override
-    public int countByTimeId(Long timeId) {
-        return 0;
+    public boolean isExistByTimeId(Long timeId) {
+        return false;
     }
 
     @Override

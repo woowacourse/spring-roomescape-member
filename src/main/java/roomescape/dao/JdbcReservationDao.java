@@ -70,10 +70,10 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public int countByTimeId(Long timeId) {
+    public boolean isExistByTimeId(Long timeId) {
         return jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM reservation WHERE time_id = ?",
-                Integer.class,
+                "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)",
+                Boolean.class,
                 timeId
         );
     }

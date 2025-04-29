@@ -8,6 +8,6 @@ public interface ReservationDao {
     Reservation save(Reservation reservation);
     boolean deleteById(Long id);
     List<Reservation> findAll();
-    int countByTimeId(Long timeId);
+    boolean isExistByTimeId(Long timeId);
     boolean isExistByTimeIdAndDate(Long timeId, LocalDate date);
 }
