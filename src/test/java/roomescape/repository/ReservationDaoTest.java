@@ -62,7 +62,8 @@ class ReservationDaoTest {
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
         // when
-        Reservation reservation = reservationDao.createReservation(new Reservation(name, date, 1L));
+        Reservation reservation = reservationDao.createReservation(
+                new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
         // then
         assertThat(reservation).isEqualTo(
                 new Reservation(1L, name, date, new ReservationTime(1L, LocalTime.of(10, 0))));
@@ -74,7 +75,7 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
-        reservationDao.createReservation(new Reservation(name, date, 1L));
+        reservationDao.createReservation(new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
         // when
         reservationDao.deleteReservationById(1L);
         // then
@@ -87,7 +88,8 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
-        Reservation reservation = reservationDao.createReservation(new Reservation(name, date, 1L));
+        Reservation reservation = reservationDao.createReservation(
+                new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
         // when
         // then
         assertThat(reservationDao.getReservations()).containsExactly(reservation);

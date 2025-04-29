@@ -42,14 +42,14 @@ public class ReservationTimeDao {
         return jdbcTemplate.query(sql, reservationTimeRowMapper);
     }
 
+    public ReservationTime getReservationTimeById(final long id) {
+        final String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
+    }
+
     public void deleteReservationTimeById(final long id) {
         final String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    private ReservationTime getReservationTimeById(final long id) {
-        final String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
     }
 
     private long insertReservationTimeAndRetrieveKey(final ReservationTime reservationTime) {
