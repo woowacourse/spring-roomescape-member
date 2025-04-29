@@ -20,3 +20,64 @@
     - [x] 예약의 시간과 날짜가 같으면 중복으로 간주한다
 - [x] 특정 시간에 대한 예약이 존재한다면 그 시간은 삭제할 수 없다 (400 응답)
 
+# 2단계
+
+- [x] 테마 도메인을 추가한다
+    - [x] 테마는 이름, 설명, 썸네일을 가진다
+    - [ ] db의 theme 테이블 구조는 다음과 같다
+  ```angular2html
+  id          BIGINT       NOT NULL AUTO_INCREMENT,
+  name        VARCHAR(255) NOT NULL,
+  description VARCHAR(255) NOT NULL,
+  thumbnail VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+  ```
+- [ ] 사용자 예약 시 원하는 테마를 선택할 수 있다.
+- [ ] 관리자가 테마를 관리할 수 있도록 기능을 추가한다
+    - [ ] 테마를 조회할 수 있다
+  ```http request
+  GET /themes HTTP/1.1
+  ```
+  ```http request
+  HTTP/1.1 200 
+  Content-Type: application/json
+  
+  [
+     {
+          "id": 1,
+          "name": "레벨2 탈출",
+          "description": "우테코 레벨2를 탈출하는 내용입니다.",
+          "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+      }
+  ]
+  ```
+    - [ ] 테마를 생성할 수 있다.
+  ```http request
+  POST /themes HTTP/1.1
+  content-type: application/json
+  
+  {
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
+  ```
+  ```http request
+  HTTP/1.1 201
+  Location: /themes/1
+  Content-Type: application/json
+  
+  {
+      "id": 1,
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  }
+   ```
+    - [ ] 테마를 삭제할 수 있다
+  ```http request
+  DELETE /themes/1 HTTP/1.1
+  ```
+  ```http request
+  HTTP/1.1 204
+  ```
