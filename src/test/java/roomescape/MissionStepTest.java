@@ -64,7 +64,7 @@ class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/admin/times")
+                .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
 
