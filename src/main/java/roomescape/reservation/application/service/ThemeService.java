@@ -21,13 +21,7 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(final ThemeRequest themeRequest) {
-        Long themeId = themeRepository.insert(themeRequest);
-        return new ThemeResponse(
-                themeId,
-                themeRequest.getName(),
-                themeRequest.getDescription(),
-                themeRequest.getThumbnail()
-        );
+        return new ThemeResponse(themeRepository.insert(themeRequest));
     }
 
     public List<ThemeResponse> getThemes() {

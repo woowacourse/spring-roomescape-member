@@ -22,7 +22,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Long insert(ThemeRequest themeRequest) {
+    public Theme insert(ThemeRequest themeRequest) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("theme")
                 .usingColumns("name", "description", "thumbnail")
@@ -33,7 +33,9 @@ public class ThemeDao implements ThemeRepository {
                 .addValue("description", themeRequest.getDescription())
                 .addValue("thumbnail", themeRequest.getThumbnail());
 
-        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
+
+        return new Theme(id, themeRequest.getName(), themeRequest.getDescription(), themeRequest.getThumbnail());
     }
 
     @Override

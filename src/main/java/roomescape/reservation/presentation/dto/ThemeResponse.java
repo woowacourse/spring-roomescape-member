@@ -11,13 +11,6 @@ public class ThemeResponse {
     private ThemeResponse() {
     }
 
-    public ThemeResponse(Long id, String name, String description, String thumbnail) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
-    }
-
     public ThemeResponse(Theme theme) {
         this.id = theme.getId();
         this.name = theme.getName();

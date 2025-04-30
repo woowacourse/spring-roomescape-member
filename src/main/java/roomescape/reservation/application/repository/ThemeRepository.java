@@ -6,7 +6,7 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
 public interface ThemeRepository {
-    Long insert(ThemeRequest themeRequest);
+    Theme insert(ThemeRequest themeRequest);
 
     List<Theme> findAllThemes();
 
