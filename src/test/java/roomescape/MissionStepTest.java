@@ -38,6 +38,20 @@ public class MissionStepTest {
                 .statusCode(201);
     }
 
+    private static void Test_Theme_Post() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "Ddyong");
+        params.put("description", "살인마가 쫓아오는 느낌");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
     @Test
     void 일단계() {
         RestAssured.given().log().all()
@@ -63,11 +77,13 @@ public class MissionStepTest {
     @Test
     void 삼단계() {
         Test_ReservationTime_Post();
+        Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -110,9 +126,10 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         Test_ReservationTime_Post();
+        Test_Theme_Post();
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2025-08-05",
-                1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id,theme_id) VALUES (?, ?, ?,?)", "브라운",
+                "2025-08-05", 1, 1);
 
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -128,11 +145,13 @@ public class MissionStepTest {
     @Test
     void 육단계() {
         Test_ReservationTime_Post();
+        Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -172,11 +191,13 @@ public class MissionStepTest {
     @Test
     void 팔단계() {
         Test_ReservationTime_Post();
+        Test_Theme_Post();
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

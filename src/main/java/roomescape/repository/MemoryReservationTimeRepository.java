@@ -36,7 +36,7 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     }
 
     @Override
-    public ReservationTime getReservationTimeById(Long id) {
+    public ReservationTime findById(Long id) {
         for (ReservationTime reservationTime : reservationTimes) {
             if (reservationTime.getId().equals(id)) {
                 return reservationTime;

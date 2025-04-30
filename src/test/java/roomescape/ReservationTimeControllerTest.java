@@ -61,11 +61,24 @@ public class ReservationTimeControllerTest {
         // given
         Test_ReservationTime_Post();
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "Ddyong");
+        themeParams.put("description", "살인마가 쫓아오는 느낌");
+        themeParams.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
-
+        params.put("themeId", 1);
+        
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)

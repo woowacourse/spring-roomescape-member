@@ -8,17 +8,20 @@ import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeService reservationTimeService) {
+                              ReservationTimeService reservationTimeService, ThemeService themeService) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     public List<Reservation> getAllReservations() {
@@ -33,10 +36,14 @@ public class ReservationService {
                 reservationRequestDto.date(), reservationTime);
 
         validateFutureDateTime(reservationDateTime);
-        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId())){
+
+        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId())) {
             throw new IllegalArgumentException("Reservation already exists");
         }
-        return reservationRepository.addReservation(reservationRequestDto, reservationTime);
+
+        Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
+
+        return reservationRepository.addReservation(reservationRequestDto, reservationTime, theme);
     }
 
     public void deleteReservation(long id) {
@@ -44,7 +51,8 @@ public class ReservationService {
     }
 
     private void validateFutureDateTime(ReservationDateTime reservationDateTime) {
-        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate(),reservationDateTime.getTime().getStartAt());
+        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate(),
+                reservationDateTime.getTime().getStartAt());
         LocalDateTime now = LocalDateTime.now();
         if (dateTime.isBefore(now)) {
             throw new IllegalArgumentException("과거 예약은 불가능합니다.");
@@ -52,7 +60,7 @@ public class ReservationService {
     }
 
     private boolean isAlreadyExist(LocalDate reservationDate, Long timeId) {
-         return reservationRepository.contains(reservationDate, timeId);
+        return reservationRepository.contains(reservationDate, timeId);
     }
 
 }

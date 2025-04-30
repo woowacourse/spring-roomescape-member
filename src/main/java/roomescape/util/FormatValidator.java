@@ -9,6 +9,6 @@ public class FormatValidator {
         if (Pattern.matches(nameFormatRegex, name)) {
             return;
         }
-        throw new IllegalArgumentException("Invalid name format");
+        throw new IllegalArgumentException("이름이 잘못되었습니다." + name);
     }
 }

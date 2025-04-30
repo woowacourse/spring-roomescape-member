@@ -29,15 +29,30 @@ public class ReservationControllerTest {
                 .statusCode(201);
     }
 
+    private static void Test_Theme_Post() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "Ddyong");
+        params.put("description", "살인마가 쫓아오는 느낌");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
     @Test
     @DisplayName("필드값 null 검증")
     void test1() {
         Test_ReservationTime_Post();
-
+        Test_Theme_Post();
         Map<String, Object> params = new HashMap<>();
         params.put("name", null);
         params.put("date", "2025-08-05");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -52,10 +67,13 @@ public class ReservationControllerTest {
     @DisplayName("과거 예약을 생성하면 예외 처리한다. - 1일 전")
     void test2() {
         Test_ReservationTime_Post();
+        Test_Theme_Post();
+
         Map<String, Object> params = new HashMap<>();
         params.put("name", "띠용");
         params.put("date", String.valueOf(LocalDate.now().minusDays(1)));
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -69,6 +87,8 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("과거 예약을 생성하면 예외 처리한다. - 1시간 전")
     void test3() {
+        Test_Theme_Post();
+
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
@@ -83,6 +103,7 @@ public class ReservationControllerTest {
         reservationParams.put("name", "띠용");
         reservationParams.put("date", String.valueOf(LocalDate.now()));
         reservationParams.put("timeId", 1);
+        reservationParams.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -97,11 +118,13 @@ public class ReservationControllerTest {
     @DisplayName("중복 예약을 생성하면 예외 처리한다.")
     void test4() {
         Test_ReservationTime_Post();
+        Test_Theme_Post();
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "띠용");
         params.put("date", "2222-02-02");
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

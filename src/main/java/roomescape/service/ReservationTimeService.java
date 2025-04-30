@@ -35,6 +35,6 @@ public class ReservationTimeService {
     }
 
     public ReservationTime getReservationTimeById(Long id) {
-        return reservationTimeRepository.getReservationTimeById(id);
+        return reservationTimeRepository.findById(id);
     }
 }

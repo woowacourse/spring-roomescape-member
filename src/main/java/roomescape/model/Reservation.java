@@ -6,7 +6,6 @@ public class Reservation {
     private final ReservationDateTime reservationDateTime;
     private final Theme theme;
 
-
     public Reservation(Long id, UserName userName, ReservationDateTime reservationDateTime, Theme theme) {
         this.id = id;
         this.userName = userName;
@@ -24,5 +23,9 @@ public class Reservation {
 
     public ReservationDateTime getReservationDateTime() {
         return reservationDateTime;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }
