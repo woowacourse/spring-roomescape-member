@@ -109,4 +109,41 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
             return Optional.empty();
         }
     }
+
+    @Override
+    public List<ReservationThemeEntity> findPopularDescendingUpTo(int limit) {
+        String query = """
+                SELECT
+                    t.id as theme_id,
+                    t.name,
+                    t.description,
+                    t.thumbnail,
+                    r_stats.cnt
+                FROM theme t
+                JOIN (
+                    SELECT
+                        theme_id,
+                        COUNT(*) as cnt
+                    FROM reservation
+                    WHERE date >= DATEADD(DAY, -7, CURRENT_DATE)
+                    GROUP BY theme_id
+                ) as r_stats
+                ON t.id = r_stats.theme_id
+                ORDER BY cnt DESC
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("limit", limit);
+        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
+            long id = resultSet.getLong("theme_id");
+            String name = resultSet.getString("name");
+            String description = resultSet.getString("description");
+            String thumbnail = resultSet.getString("thumbnail");
+            return new ReservationThemeEntity(
+                    id,
+                    name,
+                    description,
+                    thumbnail
+            );
+        });
+    }
 }

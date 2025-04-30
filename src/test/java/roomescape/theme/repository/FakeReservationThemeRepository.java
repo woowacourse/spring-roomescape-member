@@ -40,4 +40,10 @@ public class FakeReservationThemeRepository implements ReservationThemeRepositor
                 .filter(entity -> entity.getName().equals(name))
                 .findFirst();
     }
+
+    @Override
+    public List<ReservationThemeEntity> findPopularDescendingUpTo(int count) {
+        // TODO: 테스트 로직 작성하기
+        return null;
+    }
 }

@@ -15,4 +15,6 @@ public interface ReservationThemeRepository {
     Optional<ReservationThemeEntity> findById(Long id);
 
     Optional<ReservationThemeEntity> findByName(String name);
+
+    List<ReservationThemeEntity> findPopularDescendingUpTo(int count);
 }
