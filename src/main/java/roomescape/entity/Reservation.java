@@ -7,6 +7,9 @@ import java.time.Period;
 
 public class Reservation {
 
+    private static final int MAX_NAME_LENGTH = 10;
+    private static final int RESERVATION_START_INTERVAL = 7;
+
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -20,7 +23,7 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        if (name.length() > 10) {
+        if (name.length() > MAX_NAME_LENGTH) {
             throw new OverMaxNameLengthException();
         }
         for (char c : name.toCharArray()) {
@@ -48,7 +51,7 @@ public class Reservation {
             throw new PastDateException();
         }
         long minusDays = Period.between(date, LocalDate.now()).getDays();
-        if (minusDays > 7) {
+        if (minusDays > RESERVATION_START_INTERVAL) {
             throw new ReservationBeforeStartException();
         }
         return new Reservation(null, name, date, time, theme);
