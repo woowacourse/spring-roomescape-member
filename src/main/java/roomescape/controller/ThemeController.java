@@ -1,8 +1,10 @@
 package roomescape.controller;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +21,18 @@ public class ThemeController {
     public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
-//    @PostMapping()
+
+    //    @PostMapping()
 //    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequestDto reservationRequestDto) {
 //        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.addReservation(reservationRequestDto));
 //    }
     @PostMapping
     public ResponseEntity<Theme> addTheme(@RequestBody ThemeRequestDto themeRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(themeService.addTheme(themeRequestDto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Theme>> getAllThemes() {
+        return ResponseEntity.status(HttpStatus.OK).body(themeService.getAllThemes());
     }
 }
