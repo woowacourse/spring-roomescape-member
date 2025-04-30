@@ -29,7 +29,7 @@ public class ThemeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
-        ThemeCreation creation = ThemeCreation.from(request);
+        final ThemeCreation creation = ThemeCreation.from(request);
         return themeService.addTheme(creation);
     }
 

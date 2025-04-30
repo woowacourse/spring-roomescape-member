@@ -19,7 +19,7 @@ public class ReservationTime {
         this(0, startAt);
     }
 
-    private void validate(LocalTime startAt) {
+    private void validate(final LocalTime startAt) {
         if (startAt == null) {
             throw new InvalidInputException("시간은 빈 값이 입력될 수 없습니다");
         }

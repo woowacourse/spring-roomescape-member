@@ -4,7 +4,7 @@ import roomescape.controller.dto.request.CreateThemeRequest;
 
 public record ThemeCreation(String name, String description, String thumbnail) {
 
-    public static ThemeCreation from(CreateThemeRequest request) {
+    public static ThemeCreation from(final CreateThemeRequest request) {
         return new ThemeCreation(request.name(), request.description(), request.thumbnail());
     }
 }

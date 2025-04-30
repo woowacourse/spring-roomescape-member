@@ -37,25 +37,25 @@ public class JdbcThemeDAO implements ThemeDAO {
                 .addValue("theme_name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
-        Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
+        final Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
         return newId.longValue();
     }
 
     @Override
     public boolean existsByName(String name) {
-        String query = "SELECT EXISTS (SELECT 1 FROM theme WHERE theme_name = ?)";
+        final String query = "SELECT EXISTS (SELECT 1 FROM theme WHERE theme_name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, name));
     }
 
     @Override
     public List<Theme> findAll() {
-        String query = "SELECT * FROM theme";
+        final String query = "SELECT * FROM theme";
         return jdbcTemplate.query(query, THEME_ROW_MAPPER);
     }
 
     @Override
     public Optional<Theme> findById(final long id) {
-        String query = "SELECT * FROM theme WHERE id = ?";
+        final String query = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.query(query, THEME_ROW_MAPPER, id)
                 .stream()
                 .findFirst();
@@ -64,7 +64,7 @@ public class JdbcThemeDAO implements ThemeDAO {
     @Override
     public List<Theme> findPopularThemes(LocalDate start, LocalDate end) {
 
-        String query = """
+        final String query = """
                         SELECT
                             t.id,
                             t.theme_name,
@@ -83,7 +83,7 @@ public class JdbcThemeDAO implements ThemeDAO {
 
     @Override
     public boolean deleteById(long id) {
-        String query = "DELETE FROM theme WHERE id = ?";
+        final String query = "DELETE FROM theme WHERE id = ?";
         return jdbcTemplate.update(query, id) > 0;
     }
 }

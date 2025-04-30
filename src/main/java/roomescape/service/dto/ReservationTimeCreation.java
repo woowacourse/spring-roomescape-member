@@ -5,7 +5,7 @@ import roomescape.controller.dto.request.CreateReservationTimeRequest;
 
 public record ReservationTimeCreation(LocalTime startAt) {
 
-    public static ReservationTimeCreation from(CreateReservationTimeRequest request) {
+    public static ReservationTimeCreation from(final CreateReservationTimeRequest request) {
         return new ReservationTimeCreation(request.startAt());
     }
 }

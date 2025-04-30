@@ -31,10 +31,10 @@ public class ReservationTimeService {
         if (reservationTimeDAO.existsByStartAt(creation.startAt())) {
             throw new ExistedDuplicateValueException("이미 존재하는 예약 가능 시간입니다: %s".formatted(creation.startAt()));
         }
-        ReservationTime reservationTime = new ReservationTime(creation.startAt());
-        long id = reservationTimeDAO.insert(reservationTime);
+        final ReservationTime reservationTime = new ReservationTime(creation.startAt());
+        final long id = reservationTimeDAO.insert(reservationTime);
 
-        ReservationTime savedReservationTime = reservationTimeDAO.findById(id)
+        final ReservationTime savedReservationTime = reservationTimeDAO.findById(id)
                 .orElseThrow(NotExistedValueException::new);
 
         return ReservationTimeResponse.from(savedReservationTime);
@@ -45,7 +45,7 @@ public class ReservationTimeService {
         return reservationTimeDAO.findAll();
     }
 
-    public Optional<ReservationTime> findById(long id) {
+    public Optional<ReservationTime> findById(final long id) {
         return reservationTimeDAO.findById(id);
     }
 

@@ -35,33 +35,33 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", reservationTime.getId())
                 .addValue("start_at", reservationTime.getStartAt());
-        Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
+        final Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
         return newId.longValue();
     }
 
     @Override
     public boolean existsByStartAt(final LocalTime startAt) {
-        String query = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        final String query = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, startAt));
     }
 
     @Override
     public List<ReservationTime> findAll() {
-        String query = "SELECT * FROM reservation_time";
+        final String query = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER);
     }
 
     @Override
     public Optional<ReservationTime> findById(final long id) {
-        String query = "SELECT * FROM reservation_time WHERE id = ?";
-        List<ReservationTime> reservationTimes = jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, id);
+        final String query = "SELECT * FROM reservation_time WHERE id = ?";
+        final List<ReservationTime> reservationTimes = jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, id);
         return reservationTimes.stream()
                 .findFirst();
     }
 
     @Override
     public List<ReservationTime> findAllBookedTime(final LocalDate date, final long themeId) {
-        String query = """
+        final String query = """
                 SELECT rt.id,
                 rt.start_at
                 FROM reservation_time as rt
@@ -74,8 +74,8 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
 
     @Override
     public boolean deleteById(final long id) {
-        String query = "DELETE FROM reservation_time where id = ?";
-        int deleted = jdbcTemplate.update(query, id);
+        final String query = "DELETE FROM reservation_time where id = ?";
+        final int deleted = jdbcTemplate.update(query, id);
         return deleted > 0;
     }
 }

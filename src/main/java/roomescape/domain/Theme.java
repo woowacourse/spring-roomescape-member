@@ -23,7 +23,7 @@ public class Theme {
         this(0, name, description, thumbnail);
     }
 
-    private void validate(String name, String description, String thumbnail) {
+    private void validate(final String name, final String description, final String thumbnail) {
         if (Objects.isNull(name) || name.isBlank()) {
             throw new InvalidInputException("테마 명은 빈 값이 입력될 수 없습니다");
         }

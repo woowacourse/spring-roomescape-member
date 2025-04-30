@@ -32,7 +32,7 @@ public class ReservationTimeController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationTimeResponse addReservationTime(
             @RequestBody CreateReservationTimeRequest request) {
-        ReservationTimeCreation creation = ReservationTimeCreation.from(request);
+        final ReservationTimeCreation creation = ReservationTimeCreation.from(request);
         return reservationTimeService.addReservationTime(creation);
     }
 

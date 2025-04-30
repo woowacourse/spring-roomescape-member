@@ -32,7 +32,8 @@ public class Reservation {
         this(0, name, date, reservationTime, theme);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    private void validate(final String name, final LocalDate date,
+                          final ReservationTime reservationTime, final Theme theme) {
         if (name == null || name.isBlank()) {
             throw new InvalidInputException("예약자 명은 빈 값이 입력될 수 없습니다");
         }
@@ -51,7 +52,7 @@ public class Reservation {
         return new Reservation(id, this.name, this.date, this.time, this.theme);
     }
 
-    public boolean isSameDateTime(LocalDate date, long timeId) {
+    public boolean isSameDateTime(final LocalDate date, final long timeId) {
         return this.date.equals(date) && this.time.getId() == timeId;
     }
 

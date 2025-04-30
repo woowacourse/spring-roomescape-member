@@ -29,8 +29,8 @@ public class ThemeService {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
 
-        Theme theme = new Theme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
-        long id = themeDAO.insert(theme);
+        final Theme theme = new Theme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
+        final long id = themeDAO.insert(theme);
 
         return ThemeResponse.from(theme.withId(id));
     }
@@ -43,9 +43,9 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> findPopularThemes() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate start = currentDate.minusDays(8);
-        LocalDate end = currentDate.minusDays(1);
+        final LocalDate currentDate = LocalDate.now();
+        final LocalDate start = currentDate.minusDays(8);
+        final LocalDate end = currentDate.minusDays(1);
 
         return themeDAO.findPopularThemes(start, end).stream()
                 .map(PopularThemeResponse::from)
@@ -57,7 +57,7 @@ public class ThemeService {
             throw new PharmaceuticalViolationException("사용 중인 테마입니다");
         }
 
-        boolean deleted = themeDAO.deleteById(id);
+        final boolean deleted = themeDAO.deleteById(id);
 
         if (!deleted) {
             throw new NotExistedValueException("존재하지 않는 테마입니다");
