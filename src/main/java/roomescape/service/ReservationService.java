@@ -31,6 +31,11 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
         Reservation reservationWithoutId = reservationRequest.toReservationWith(reservationTime);
         reservationWithoutId.validatePastDateTime();
+
+        if (reservationDao.existBySameDateTime(reservationWithoutId)) {
+            throw new IllegalArgumentException("중복된 예약은 생성이 불가능합니다.");
+        }
+
         long reservationId = reservationDao.create(reservationWithoutId);
 
         Reservation reservation = reservationWithoutId.copyWithId(new Id(reservationId));
