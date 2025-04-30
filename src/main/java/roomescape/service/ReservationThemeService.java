@@ -30,13 +30,8 @@ public class ReservationThemeService {
 
     public void delete(Long id) {
         // TODO: noContent vs IllegalArgumentException
-        ReservationTheme reservation = getById(id);
-        reservationThemeRepository.remove(reservation);
-    }
-
-    private ReservationTheme getById(Long id) {
-        return reservationThemeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 시간이 존재하지 않습니다."));
+        ReservationTheme reservationTheme = reservationThemeRepository.getById(id);
+        reservationThemeRepository.remove(reservationTheme);
     }
 
     public List<ReservationThemeServiceResponse> getPopularThemes(int limit) {

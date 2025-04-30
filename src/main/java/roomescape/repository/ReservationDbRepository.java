@@ -12,7 +12,7 @@ import roomescape.repository.dao.ReservationDao;
 
 @Repository
 @RequiredArgsConstructor
-public class ReservationRepositoryImpl implements ReservationRepository {
+public class ReservationDbRepository implements ReservationRepository {
 
     private final ReservationDao reservationDao;
 
@@ -29,6 +29,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long reservationId) {
         return reservationDao.selectById(reservationId);
+    }
+
+    @Override
+    public Reservation getById(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 예약이 존재하지 않습니다."));
     }
 
     @Override

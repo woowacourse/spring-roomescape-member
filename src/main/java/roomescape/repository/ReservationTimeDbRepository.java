@@ -12,7 +12,7 @@ import roomescape.repository.dao.ReservationTimeDao;
 
 @Repository
 @RequiredArgsConstructor
-public class ReservationTimeRepositoryImpl implements ReservationTimeRepository {
+public class ReservationTimeDbRepository implements ReservationTimeRepository {
 
     private final ReservationTimeDao reservationTimeDao;
 
@@ -31,12 +31,10 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         return reservationTimeDao.selectById(id);
     }
 
-    // TODO: getByXX 일관적으로 적용하기
-/*
     public ReservationTime getById(Long id) {
-        return findById(id).orElseThrow(() -> new IllegalArgumentException());
+        return findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 시간이 존재하지 않습니다."));
     }
-*/
 
     @Override
     public void remove(ReservationTime reservationTime) {

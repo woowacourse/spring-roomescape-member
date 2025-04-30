@@ -11,7 +11,7 @@ import roomescape.repository.dao.ReservationThemeDao;
 
 @Repository
 @RequiredArgsConstructor
-public class ReservationThemeRepositoryImpl implements ReservationThemeRepository {
+public class ReservationThemeDbRepository implements ReservationThemeRepository {
 
     private final ReservationThemeDao reservationThemeDao;
 
@@ -32,7 +32,8 @@ public class ReservationThemeRepositoryImpl implements ReservationThemeRepositor
 
     @Override
     public ReservationTheme getById(Long id) {
-        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+        return findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 테마가 존재하지 않습니다."));
     }
 
     @Override

@@ -24,7 +24,7 @@ public class ReservationService {
     private final ReservationThemeRepository reservationThemeRepository;
 
     public ReservationServiceResponse create(CreateReservationServiceRequest request) {
-        ReservationTime reservationTime = getReservationTimeById(request.timeId());
+        ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
         LocalDateTime requestedDateTime = LocalDateTime.of(request.date(), reservationTime.startAt());
         if (requestedDateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("이미 지나간 시간으로 예약할 수 없습니다.");
@@ -46,17 +46,7 @@ public class ReservationService {
     }
 
     public void delete(Long id) {
-        Reservation target = getById(id);
-        reservationRepository.remove(target);
-    }
-
-    private ReservationTime getReservationTimeById(Long timeId) {
-        return reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 시간이 존재하지 않습니다."));
-    }
-
-    private Reservation getById(Long reservationId) {
-        return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 예약이 존재하지 않습니다."));
+        Reservation reservation = reservationRepository.getById(id);
+        reservationRepository.remove(reservation);
     }
 }
