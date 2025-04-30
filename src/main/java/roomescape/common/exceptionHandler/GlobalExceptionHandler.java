@@ -1,8 +1,8 @@
 package roomescape.common.exceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.format.DateTimeParseException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.common.exceptionHandler.dto.ExceptionResponse;
@@ -10,20 +10,22 @@ import roomescape.common.exceptionHandler.dto.ExceptionResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = DateTimeParseException.class)
-    public ResponseEntity<ExceptionResponse> noMatchDateTimeType(final HttpServletRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(
-                400, "[ERROR] 날짜 또는 시간 타입이 맞지 않습니다.", request.getRequestURI()
-        );
-        return ResponseEntity.badRequest().body(exceptionResponse);
-    }
-
+    // TODO: IllegalArgumentException 예외 못잡는 문제 해결하기
+    // instanceof 쓰면 안될까?
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponse> illegalArgument(
             final IllegalArgumentException exception, final HttpServletRequest request
     ) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 400, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(exceptionResponse);
+    }
+
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponse> notReadable(final HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                400, "[ERROR] 요청 입력이 잘못되었습니다.", request.getRequestURI()
         );
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
