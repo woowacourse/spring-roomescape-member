@@ -1,7 +1,6 @@
 package roomescape.reservation.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 @Getter
-@AllArgsConstructor(onConstructor_ = @__(@JsonCreator))
+@AllArgsConstructor
 public class Reservation {
     private final Long id;
 

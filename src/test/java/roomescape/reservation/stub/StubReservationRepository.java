@@ -44,7 +44,8 @@ public class StubReservationRepository implements ReservationRepository {
                 newId,
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime()
+                reservation.getTime(),
+                reservation.getTheme()
         );
         data.add(newReservation);
         return newReservation;
@@ -65,6 +66,11 @@ public class StubReservationRepository implements ReservationRepository {
     @Override
     public boolean existsByReservationTimeId(final Long id) {
         return existsByReservationTimeId;
+    }
+
+    @Override
+    public boolean existsByThemeId(final Long id) {
+        return existsByThemeId;
     }
 
     public void setExistsByReservationTimeId(final boolean existsByReservationTimeId) {

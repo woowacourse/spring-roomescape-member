@@ -15,6 +15,7 @@ import roomescape.reservation.stub.StubReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.stub.StubReservationTimeRepository;
+import roomescape.theme.domain.Theme;
 
 class ReservationTimeServiceTest {
 
@@ -24,8 +25,11 @@ class ReservationTimeServiceTest {
     private final ReservationTime rt1 = new ReservationTime(1L, t1);
     private final ReservationTime rt2 = new ReservationTime(2L, t2);
 
-    private final Reservation r1 = new Reservation(1L, "테스트", LocalDate.of(2025, 5, 11), rt1);
-    private final Reservation r2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), rt2);
+    private final Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
+    private final Theme theme2 = new Theme(1L, "테마2", "설명2", "썸네일2");
+
+    private final Reservation r1 = new Reservation(1L, "테스트", LocalDate.of(2025, 5, 11), rt1, theme1);
+    private final Reservation r2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), rt2, theme2);
 
     private final StubReservationRepository stubReservationRepo = new StubReservationRepository(r1, r2);
     private final StubReservationTimeRepository stubReservationTimeRepo = new StubReservationTimeRepository(rt1, rt2);

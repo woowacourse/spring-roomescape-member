@@ -16,24 +16,31 @@ import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.stub.StubReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.stub.StubReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.stub.StubThemeRepository;
 
 class ReservationServiceTest {
 
     private final ReservationTime time1 = new ReservationTime(1L, LocalTime.of(14, 0));
     private final ReservationTime time2 = new ReservationTime(2L, LocalTime.of(13, 0));
 
-    private final Reservation r1 = new Reservation(1L, "테스트", LocalDate.of(2025, 5, 11), time1);
-    private final Reservation r2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), time2);
+    private final Theme theme1 = new Theme(1L, "테마1", "설명1", "썸네일1");
+    private final Theme theme2 = new Theme(1L, "테마2", "설명2", "썸네일2");
+
+    private final Reservation r1 = new Reservation(1L, "테스트", LocalDate.of(2025, 5, 11), time1, theme1);
+    private final Reservation r2 = new Reservation(2L, "테스트2", LocalDate.of(2025, 6, 11), time2, theme2);
 
     private StubReservationRepository repo;
     private StubReservationTimeRepository timeRepo;
+    private StubThemeRepository themeRepo;
     private ReservationService service;
 
     @BeforeEach
     void setUp() {
         repo = new StubReservationRepository(r1, r2);
         timeRepo = new StubReservationTimeRepository(time1, time2);
-        service = new ReservationService(repo, timeRepo);
+        themeRepo = new StubThemeRepository(theme1, theme2);
+        service = new ReservationService(repo, timeRepo, themeRepo);
     }
 
     @Test
@@ -54,7 +61,7 @@ class ReservationServiceTest {
     void 중복된_날짜와_시간이면_예외가_발생한다() {
         // given: r1과 동일한 date/time 요청
         ReservationRequest dupReq = new ReservationRequest(
-                r1.getName(), r1.getDate(), time1.getId()
+                r1.getName(), r1.getDate(), time1.getId(), theme1.getId()
         );
 
         // when
@@ -68,9 +75,9 @@ class ReservationServiceTest {
     void 지나간_날짜와_시간이면_예외가_발생한다() {
         // given: r1과 동일한 date/time 요청
         ReservationRequest dupReq = new ReservationRequest(
-                r1.getName(), LocalDate.of(2000, 10, 8), time1.getId()
+                r1.getName(), LocalDate.of(2000, 10, 8), time1.getId(), theme1.getId()
         );
-        
+
         // when
         // then
         assertThatThrownBy(() -> service.saveReservation(dupReq))
@@ -83,10 +90,10 @@ class ReservationServiceTest {
         // given
         repo = new StubReservationRepository();
         timeRepo = new StubReservationTimeRepository(time1);
-        service = new ReservationService(repo, timeRepo);
+        service = new ReservationService(repo, timeRepo, themeRepo);
 
         ReservationRequest req = new ReservationRequest(
-                "철원", LocalDate.of(2999, 4, 21), time1.getId()
+                "철원", LocalDate.of(2999, 4, 21), time1.getId(), theme1.getId()
         );
 
         // when
