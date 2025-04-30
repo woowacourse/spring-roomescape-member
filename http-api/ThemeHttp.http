@@ -1,0 +1,15 @@
+### GET request to example server
+GET localhost:8080/themes
+
+###
+GET localhost:8080/themes/1
+
+
+POST localhost:8080/themes
+content-type: application/json
+
+{
+  "thumbnail": "asdf",
+  "description": "asdf",
+  "name": "asdf"
+}
