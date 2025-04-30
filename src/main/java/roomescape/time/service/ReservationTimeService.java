@@ -4,10 +4,10 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.repository.entity.ReservationTimeEntity;
@@ -17,7 +17,6 @@ import roomescape.time.repository.entity.ReservationTimeEntity;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationRepository reservationRepository;
 
     public Long save(final LocalTime startAt) {
         final List<ReservationTime> foundReservationTimes = reservationTimeRepository.findAllByStartAt(startAt);
@@ -46,11 +45,11 @@ public class ReservationTimeService {
             throw new DataNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id);
         }
 
-        Long count = reservationRepository.countByTimeId(id);
-        if (count >= 1) {
+        try {
+            reservationTimeRepository.deleteById(id);
+        } catch (final DataIntegrityViolationException e) {
             throw new DataExistException("해당 예약 시간을 사용하고 있는 예약 정보가 존재합니다. id = " + id);
         }
 
-        reservationTimeRepository.deleteById(id);
     }
 }

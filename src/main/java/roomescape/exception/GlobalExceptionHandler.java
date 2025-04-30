@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,5 +16,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<Void> handleDataNotFoundException(final DataNotFoundException e) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(DataExistException.class)
+    public ResponseEntity<Void> handDataExistException(final DataExistException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }

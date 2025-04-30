@@ -2,10 +2,10 @@ package roomescape.theme.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.entity.ThemeEntity;
@@ -15,7 +15,6 @@ import roomescape.theme.repository.entity.ThemeEntity;
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
 
     public Long save(final String name, final String description, final String thumbnail) {
         final ThemeEntity themeEntity = new ThemeEntity(name, description, thumbnail);
@@ -36,11 +35,10 @@ public class ThemeService {
         themeRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
 
-        Long count = reservationRepository.countByTimeId(id);
-        if (count >= 1) {
+        try {
+            themeRepository.deleteById(id);
+        } catch (final DataIntegrityViolationException e) {
             throw new DataExistException("해당 테마를 사용하고 있는 예약 정보가 존재합니다. id = " + id);
         }
-        
-        themeRepository.deleteById(id);
     }
 }
