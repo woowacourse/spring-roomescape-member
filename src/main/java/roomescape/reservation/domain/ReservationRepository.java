@@ -3,7 +3,6 @@ package roomescape.reservation.domain;
 import roomescape.theme.domain.ThemeId;
 import roomescape.time.domain.ReservationTimeId;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +12,7 @@ public interface ReservationRepository {
 
     boolean existsByParams(ReservationTimeId timeId);
 
-    boolean existsByParams(LocalDate date, ReservationTimeId timeId, ThemeId themeId);
+    boolean existsByParams(ReservationDate date, ReservationTimeId timeId, ThemeId themeId);
 
     Optional<Reservation> findById(ReservationId id);
 

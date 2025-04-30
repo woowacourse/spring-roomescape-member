@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.application.converter.ReservationConverter;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.application.usecase.ThemeQueryUseCase;
@@ -28,7 +29,7 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
     @Override
     public Reservation create(final CreateReservationServiceRequest createReservationServiceRequest) {
         if (reservationQueryUseCase.existsByParams(
-                createReservationServiceRequest.date(),
+                ReservationDate.from(createReservationServiceRequest.date()),
                 ReservationTimeId.from(createReservationServiceRequest.timeId()),
                 ThemeId.from(createReservationServiceRequest.themeId()))) {
 
