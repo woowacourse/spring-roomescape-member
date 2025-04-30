@@ -30,4 +30,9 @@ public class ViewController {
     public String adminReservationThemeDashboard() {
         return "admin/theme";
     }
+
+    @GetMapping("/reservation")
+    public String reservation() {
+        return "reservation";
+    }
 }
