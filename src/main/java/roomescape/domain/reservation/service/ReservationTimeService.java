@@ -33,6 +33,8 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id){
+        // TODO 이미 예약에서 사용할 경우 AlreadyInuse 예외 발생
+
         reservationTimeRepository.deleteById(id);
     }
 }

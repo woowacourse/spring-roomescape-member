@@ -9,5 +9,4 @@ class RoomEscapeApplicationTest {
         @Test
         void contextLoads() {
         }
-
 }
