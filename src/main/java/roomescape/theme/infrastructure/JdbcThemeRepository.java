@@ -9,47 +9,52 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeRepository;
 
 @Repository
-public class ThemeRepository {
+public class JdbcThemeRepository implements ThemeRepository {
 
     private static RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
     );
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ThemeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
     }
 
-    public Long save(Theme theme){
-        Map<String,Object> params = new HashMap<>();
-        params.put("name",theme.getName());
-        params.put("description",theme.getDescription());
-        params.put("thumbnail",theme.getThumbnail());
+    @Override
+    public Long save(Theme theme) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", theme.getName());
+        params.put("description", theme.getDescription());
+        params.put("thumbnail", theme.getThumbnail());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public List<Theme> findAll(){
+    @Override
+    public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
 
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public int deleteById(Long id){
+    @Override
+    public int deleteById(Long id) {
         String sql = "DELETE FROM theme where id =?";
 
-        return jdbcTemplate.update(sql,id);
+        return jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public Theme findById(final Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
