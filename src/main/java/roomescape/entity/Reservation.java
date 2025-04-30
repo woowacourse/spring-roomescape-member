@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 public record Reservation(Long id, String name, LocalDate date, ReservationTime time) {
 
+    private static final int NAME_LENGTH = 10;
+
     public Reservation {
         validate(name, date, time);
     }
@@ -33,14 +35,21 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     }
 
     private void validate(String name, LocalDate date, ReservationTime time) {
-        validateName(name);
+        validateNameLength(name);
+        validateEmptyName(name);
         validateDate(date);
         validateTime(time);
     }
 
-    private void validateName(String name) {
+    private void validateEmptyName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 유효하지 않은 이름입니다.");
+        }
+    }
+
+    private void validateNameLength(String name) {
+        if (name.length() > NAME_LENGTH) {
+            throw new IllegalArgumentException("[ERROR] 이름 길이가 " + NAME_LENGTH + "자를 초과할 수 없습니다.");
         }
     }
 
