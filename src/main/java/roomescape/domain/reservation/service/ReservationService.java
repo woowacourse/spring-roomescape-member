@@ -10,6 +10,7 @@ import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
+import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -52,7 +53,7 @@ public class ReservationService {
         Long themeId = request.themeId();
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
-        
+
         Reservation reservation = Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
 
         validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStratTime());
@@ -76,5 +77,18 @@ public class ReservationService {
 
     private LocalDateTime now() {
         return LocalDateTime.now(clock);
+    }
+
+    public List<ReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
+        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
+        List<ReservationTime> bookedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
+                .stream()
+                .map(Reservation::getReservationTime)
+                .toList();
+
+        return allTimes.stream()
+                .filter(allTime -> !bookedTimes.contains(allTime))
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 }

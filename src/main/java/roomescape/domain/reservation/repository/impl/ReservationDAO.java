@@ -175,4 +175,23 @@ public class ReservationDAO implements ReservationRepository {
         int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != 0;
     }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                    select rs.id as reservation_id, rs.name, rs.date,
+                       rst.id as reservation_time_id, rst.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                from reservation rs
+                INNER JOIN reservation_time rst ON rs.time_id = rst.id
+                INNER JOIN theme th ON rs.theme_id = th.id
+                WHERE th.id = :theme_id and rs.date = :date
+                """;
+
+        Map<String, Object> params = Map.of("theme_id", themeId, "date", date);
+
+        return jdbcTemplate.query(sql, params,
+                (resultSet, rowNum) -> reservationOf(resultSet)
+        );
+    }
 }
