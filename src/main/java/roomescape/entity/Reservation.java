@@ -2,17 +2,17 @@ package roomescape.entity;
 
 import java.time.LocalDate;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
 
     private static final int NAME_LENGTH = 10;
 
     public Reservation {
-        validate(name, date, time);
+        validate(name, date, time, theme);
     }
 
-    public static Reservation createIfDateTimeValid(String name, LocalDate date, ReservationTime time) {
+    public static Reservation createIfDateTimeValid(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateDateTime(date, time);
-        return new Reservation(null, name, date, time);
+        return new Reservation(null, name, date, time, theme);
     }
 
     public boolean equalDateTime(Reservation reservation) {
@@ -34,11 +34,12 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         time.isBefore();
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time) {
-        validateNameLength(name);
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateEmptyName(name);
+        validateNameLength(name);
         validateDate(date);
         validateTime(time);
+        validateTheme(theme);
     }
 
     private void validateEmptyName(String name) {
@@ -62,6 +63,12 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     private void validateTime(ReservationTime time) {
         if (time == null) {
             throw new IllegalArgumentException("[ERROR] 유효하지 않은 예약 시간입니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 테마입니다.");
         }
     }
 }

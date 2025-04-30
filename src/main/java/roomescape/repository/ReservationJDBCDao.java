@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
 import roomescape.exceptions.EntityNotFoundException;
 
 @Repository
@@ -34,17 +35,18 @@ public class ReservationJDBCDao implements ReservationRepository {
     @Override
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into reservation (name, date, time_id) values (:name, :date, :timeId)";
+        String sql = "insert into reservation (name, date, time_id, them_id) values (:name, :date, :timeId, :themId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
                 .addValue("date", Date.valueOf(reservation.date()))
-                .addValue("timeId", reservation.time().id());
+                .addValue("timeId", reservation.time().id())
+                .addValue("themId", reservation.theme().id());
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Reservation(id, reservation.name(), reservation.date(), reservation.time());
+        return new Reservation(id, reservation.name(), reservation.date(), reservation.time(), reservation.theme());
     }
 
     @Override
@@ -65,6 +67,12 @@ public class ReservationJDBCDao implements ReservationRepository {
                 new ReservationTime(
                         resultSet.getLong("time_id"),
                         resultSet.getTime("start_at").toLocalTime()
+                ),
+                new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
                 )
         );
     }

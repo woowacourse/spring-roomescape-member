@@ -1,16 +1,17 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
 import roomescape.exceptions.ReservationDuplicateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-
-import java.util.List;
+import roomescape.repository.ThemeRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,11 +19,14 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> readReservation() {
@@ -34,9 +38,11 @@ public class ReservationService {
     @Transactional
     public ReservationResponse postReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
-        Reservation reservation = Reservation.createIfDateTimeValid(request.name(), request.date(), time);
+        Theme theme = themeRepository.findById(request.timeId());
+        Reservation reservation = Reservation.createIfDateTimeValid(request.name(), request.date(), time, theme);
         if (isAnyMatchDateTime(reservation)) {
-            throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.date(), reservation.time().startAt());
+            throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.date(),
+                    reservation.time().startAt());
         }
 
         Reservation newReservation = reservationRepository.save(reservation);

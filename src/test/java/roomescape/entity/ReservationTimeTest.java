@@ -12,6 +12,6 @@ class ReservationTimeTest {
     void error_validationTime() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 유효하지 않은 시간입니다.");
+                .hasMessage("[ERROR] 유효하지 않은 예약 시간입니다.");
     }
 }

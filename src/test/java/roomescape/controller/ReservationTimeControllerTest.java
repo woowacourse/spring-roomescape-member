@@ -135,7 +135,7 @@ public class ReservationTimeControllerTest {
         //when & then
         assertThatThrownBy(() -> controller.deleteReservationTime(nonExistingId))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("[ERROR] 예약 데이터를 찾을 수 없습니다:999");
+                .hasMessage("[ERROR] 예약 시간 데이터를 찾을 수 없습니다:999");
     }
 
     private static ReservationTime getReservationTime(ResultSet rs) throws SQLException {

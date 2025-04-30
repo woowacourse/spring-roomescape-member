@@ -13,15 +13,18 @@ import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.ReservationDuplicateException;
 import roomescape.fake.ReservationFakeRepository;
 import roomescape.fake.ReservationTimeFakeRepository;
+import roomescape.fake.ThemeFakeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 public class ReservationServiceTest {
 
     private final ReservationRepository reservationRepository = new ReservationFakeRepository();
     private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
+    private final ThemeRepository themeRepository = new ThemeFakeRepository();
     private final ReservationService reservationService = new ReservationService(reservationRepository,
-            reservationTimeRepository);
+            reservationTimeRepository, themeRepository);
 
     @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
