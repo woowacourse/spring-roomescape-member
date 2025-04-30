@@ -13,10 +13,12 @@ import roomescape.theme.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
+    private final Dao<Reservation> reservationDao;
     private final ThemeDao themeDao;
 
-    public ThemeService(ThemeDao themeDao) {
+    public ThemeService(ThemeDao themeDao, Dao<Reservation> reservationDao) {
         this.themeDao = themeDao;
+        this.reservationDao = reservationDao;
     }
 
     public List<ThemeResponse> findAll() {
@@ -52,6 +54,16 @@ public class ThemeService {
 
     public void deleteById(Long id) {
         themeDao.findById(id).orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 테마 아이디는 존재하지 않습니다"));
+
+        List<Reservation> reservations = reservationDao.findAll();
+        boolean isOccupiedThemeId = reservations.stream().anyMatch(
+                reservation -> reservation.getTheme().getId().equals(id)
+        );
+
+        if (isOccupiedThemeId) {
+            throw new IllegalArgumentException("[ERROR] 이미 예약된 테마 id는 삭제할 수 없습니다.");
+        }
+
         themeDao.deleteById(id);
     }
 

@@ -51,13 +51,12 @@ public class ReservationTimeService {
         reservationTimeDao.findById(id).orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 id의 시간이 존재하지 않습니다"));
 
         List<Reservation> reservations = reservationDao.findAll();
-        boolean isOccupiedId = reservations.stream()
+        boolean isOccupiedTimeId = reservations.stream()
                         .anyMatch(reservation -> reservation.getTime().getId().equals(id));
-        if (isOccupiedId) {
+
+        if (isOccupiedTimeId) {
             throw new IllegalArgumentException("[ERROR] 이미 예약된 시간은 삭제할 수 없습니다");
         }
-
-        reservationTimeDao.deleteById(id);
     }
 
     public List<AvailableReservationTimeResponse> findByDateAndTheme(
