@@ -1,17 +1,7 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +14,17 @@ import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.service.ReservationService;
-import roomescape.service.ReservationTimeService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @WebMvcTest(ReservationController.class)
 public class ReservationControllerMockMvcTest {
@@ -34,9 +34,6 @@ public class ReservationControllerMockMvcTest {
 
     @MockitoBean
     private ReservationService reservationService;
-
-    @MockitoBean
-    private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
