@@ -30,8 +30,20 @@ public class ThemeService {
         return loadThemeById(themeId);
     }
 
+    public void deleteThemeById(long themeId) {
+        validateThemeById(themeId);
+        themeRepository.deleteById(themeId);
+    }
+
     private Theme loadThemeById(long themeId) {
         Optional<Theme> theme = themeRepository.findById(themeId);
         return theme.orElseThrow(()-> new NotFoundException("[ERROR] ID에 해당하는 테마가 존재하지 않습니다."));
+    }
+
+    private void validateThemeById(long themeId) {
+        Optional<Theme> theme = themeRepository.findById(themeId);
+        if (theme.isEmpty()) {
+            throw new NotFoundException("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
+        }
     }
 }

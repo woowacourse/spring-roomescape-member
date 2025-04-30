@@ -3,7 +3,9 @@ package roomescape.controller;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +24,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<Theme> getReservationTimes() {
+    public List<Theme> getThemes() {
         return themeService.findAllTheme();
     }
 
@@ -31,5 +33,11 @@ public class ThemeController {
         long savedId = themeService.addTheme(request);
         Theme theme = themeService.findThemeById(savedId);
         return ResponseEntity.created(URI.create("theme/" + savedId)).body(theme);
+    }
+
+    @DeleteMapping("/{themeId}")
+    public ResponseEntity<Theme> deleteById(@PathVariable("themeId") long id) {
+        themeService.deleteThemeById(id);
+        return ResponseEntity.noContent().build();
     }
 }

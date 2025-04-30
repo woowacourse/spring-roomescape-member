@@ -22,12 +22,12 @@ class ThemeControllerTest {
 
     @DisplayName("모든 테마를 조회합니다.")
     @Test
-    void getReservationTimes() {
+    void getThemes() {
         themeRepository.addTheme(Theme.createWithoutId("theme1", "설명", "섬네일"));
         themeRepository.addTheme(Theme.createWithoutId("theme2", "설명", "섬네일"));
         themeRepository.addTheme(Theme.createWithoutId("theme3", "설명", "섬네일"));
 
-        List<Theme> themes = themeController.getReservationTimes();
+        List<Theme> themes = themeController.getThemes();
         assertThat(themes).hasSize(3);
     }
 
@@ -45,6 +45,20 @@ class ThemeControllerTest {
                 () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED),
                 () -> assertThat(response.getHeaders().getLocation().getPath()).isEqualTo("theme/1"),
                 () -> assertThat(response.getBody()).isEqualTo(expectedTheme)
+        );
+    }
+
+    @DisplayName("ID를 통해 테마를 삭제할 수 있다.")
+    @Test
+    void canDeleteThemeById() {
+        long id = themeRepository.addTheme(Theme.createWithoutId("이름", "설명", "썸네일"));
+
+        ResponseEntity<Theme> response = themeController.deleteById(id);
+
+        List<Theme> themes = themeRepository.findAll();
+        assertAll(
+                ()-> assertThat(themes).hasSize(0),
+                ()-> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT)
         );
     }
 }

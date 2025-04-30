@@ -40,7 +40,6 @@ class ThemeServiceTest {
         assertThat(themes).hasSize(3);
     }
 
-
     @DisplayName("ID를 통해 테마를 조회할 수 있다.")
     @Test
     void canFindThemeById() {
@@ -50,5 +49,15 @@ class ThemeServiceTest {
 
         Theme expectedTheme = new Theme(id, "theme", "description", "url");
         assertThat(actualTheme).isEqualTo(expectedTheme);
+    }
+
+    @DisplayName("ID를 통해 테마를 삭제할 수 있다.")
+    @Test
+    void canDeleteThemeById() {
+        long id = themeRepository.addTheme(Theme.createWithoutId("이름", "설명", "썸네일"));
+
+        themeService.deleteThemeById(id);
+        List<Theme> themes = themeService.findAllTheme();
+        assertThat(themes).hasSize(0);
     }
 }

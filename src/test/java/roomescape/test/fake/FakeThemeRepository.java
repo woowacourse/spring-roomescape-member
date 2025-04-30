@@ -32,4 +32,9 @@ public class FakeThemeRepository implements ThemeRepository {
     public List<Theme> findAll() {
         return themes.values().stream().toList();
     }
+
+    @Override
+    public void deleteById(final long id) {
+        themes.remove(id);
+    }
 }

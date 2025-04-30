@@ -16,4 +16,6 @@ public interface ThemeRepository {
     Optional<Theme> findById(long id);
 
     long addTheme(Theme theme);
+
+    void deleteById(long id);
 }
