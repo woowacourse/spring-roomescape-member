@@ -12,8 +12,14 @@ public record ReservationRequestDto(
     }
 
     private void validateNotNull(String name, LocalDate date, long timeId) {
-        if (name == null || date == null || timeId == 0) {
-            throw new IllegalArgumentException("요청 필드가 올바르지 않습니다.");
+        if (name == null) {
+            throw new IllegalArgumentException("잘못된 name 입력입니다.");
+        }
+        if (date == null) {
+            throw new IllegalArgumentException("잘못된 date 입력입니다.");
+        }
+        if (timeId < 1) {
+            throw new IllegalArgumentException("잘못된 timeId 입력입니다.");
         }
     }
 

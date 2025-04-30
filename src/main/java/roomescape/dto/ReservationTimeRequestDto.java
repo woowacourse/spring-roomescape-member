@@ -12,7 +12,7 @@ public record ReservationTimeRequestDto(
 
     private void validateNotNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("요청 필드가 올바르지 않습니다.");
+            throw new IllegalArgumentException("잘못된 startAt 입력입니다.");
         }
     }
 
