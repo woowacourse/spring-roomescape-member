@@ -1,17 +1,19 @@
 package roomescape.controller.api.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
 public record ReservationTimeResponse(
         Long id,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-        LocalTime startAt
+        LocalTime startAt,
+        boolean isBooked
 ) {
 
-    public static ReservationTimeResponse from(ReservationTimeServiceResponse query) {
-        return new ReservationTimeResponse(query.id(), query.startAt());
+    public static ReservationTimeResponse from(ReservationTimeServiceResponse response) {
+        return new ReservationTimeResponse(response.id(), response.startAt(), response.isBooked());
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,5 +46,14 @@ public class ReservationThemeController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
         reservationThemeService.delete(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/popular")
+    public List<ReservationThemeResponse> getHotThemes(@RequestParam(value = "limit", defaultValue = "10") int limit) {
+        List<ReservationThemeServiceResponse> responses = reservationThemeService.getPopularThemes(limit);
+        return responses.stream()
+                .map(ReservationThemeResponse::from)
+                .toList();
     }
 }

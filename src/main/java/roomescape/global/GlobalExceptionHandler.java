@@ -4,17 +4,13 @@ import java.time.DateTimeException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    /**
-     * 3단계 - 2시간 (12개)
-     * 남은 시간 2시간
-     */
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = IllegalArgumentException.class)
@@ -33,5 +29,11 @@ public class GlobalExceptionHandler {
             return "[ERROR] " + e.getMostSpecificCause().getMessage();
         }
         return "[ERROR] 잘못된 값이 입력되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public String handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        return "[ERROR] 필수 정보가 누락되었습니다.";
     }
 }

@@ -59,7 +59,7 @@ public class ReservationH2Dao implements ReservationDao {
             PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
             ps.setString(1, reservation.name());
             ps.setString(2, reservation.date().toString());
-            ps.setLong(3, reservation.time().getId());
+            ps.setLong(3, reservation.time().id());
             ps.setLong(4, reservation.theme().id());
             return ps;
         }, keyHolder);
@@ -91,14 +91,14 @@ public class ReservationH2Dao implements ReservationDao {
     }
 
     @Override
-    public boolean existDuplicatedDateTime(LocalDate date, Long timeId) {
+    public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
         String query = """
                 SELECT count(*)
-                FROM reservation r
-                WHERE time_id = ? AND date = ?
+                FROM reservation
+                WHERE time_id = ? AND date = ? AND theme_id = ?
                 """;
         // TODO : npe 가능성 점검
-        int duplicatedCount = jdbcTemplate.queryForObject(query, Integer.class, timeId, date);
+        int duplicatedCount = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
         return duplicatedCount > 0;
     }
 }

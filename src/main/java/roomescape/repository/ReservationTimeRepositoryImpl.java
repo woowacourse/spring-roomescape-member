@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,11 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
 
     @Override
     public void remove(ReservationTime reservationTime) {
-        reservationTimeDao.deleteById(reservationTime.getId());
+        reservationTimeDao.deleteById(reservationTime.id());
+    }
+
+    @Override
+    public List<ReservationTime> getAllByThemeIdAndDate(Long themeId, LocalDate date) {
+        return reservationTimeDao.selectAllByThemeIdAndDate(themeId, date);
     }
 }

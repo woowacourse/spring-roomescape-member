@@ -1,26 +1,19 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 // TODO: record로 변경?
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReservationTime {
+public record ReservationTime(
+        Long id,
+        LocalTime startAt
+) {
 
-    private Long id;
-    private LocalTime startAt;
-
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime {
         validateNotNull(startAt);
-        this.id = id;
-        this.startAt = startAt;
     }
 
     public ReservationTime(LocalTime startAt) {
-        this.startAt = startAt;
+        this(null, startAt);
     }
 
     private void validateNotNull(LocalTime startAt) {

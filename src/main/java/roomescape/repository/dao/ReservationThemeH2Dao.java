@@ -82,4 +82,17 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
             throw new IllegalArgumentException("삭제하려는 테마에 예약이 존재합니다.");
         }
     }
+
+    @Override
+    public List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit) {
+        String query = """
+                SELECT th.id, th.name, th.description, th.thumbnail
+                FROM reservation r
+                INNER JOIN theme th ON r.theme_id = th.id
+                GROUP BY r.theme_id
+                ORDER BY count(r.theme_id) DESC
+                LIMIT ?
+                """;
+        return jdbcTemplate.query(query, DEFAULT_ROW_MAPPER, limit);
+    }
 }

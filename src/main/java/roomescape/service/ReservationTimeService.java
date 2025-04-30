@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -18,13 +19,15 @@ public class ReservationTimeService {
 
     public ReservationTimeServiceResponse create(CreateReservationTimeServiceRequest command) {
         ReservationTime reservationTime = reservationTimeRepository.save(command.toReservationTime());
-        return ReservationTimeServiceResponse.from(reservationTime);
+        return ReservationTimeServiceResponse.withoutBook(reservationTime);
     }
 
-    public List<ReservationTimeServiceResponse> getAll() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.getAll();
-        return reservationTimes.stream()
-                .map(ReservationTimeServiceResponse::from)
+    public List<ReservationTimeServiceResponse> getAll(Long themeId, LocalDate date) {
+        List<ReservationTime> allTimes = reservationTimeRepository.getAll();
+        List<ReservationTime> bookedTimes = reservationTimeRepository.getAllByThemeIdAndDate(themeId, date);
+
+        return allTimes.stream()
+                .map(time -> ReservationTimeServiceResponse.of(time, bookedTimes.contains(time)))
                 .toList();
     }
 

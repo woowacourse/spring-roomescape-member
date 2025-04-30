@@ -16,4 +16,6 @@ public interface ReservationThemeRepository {
     Optional<ReservationTheme> findById(Long id);
 
     ReservationTheme getById(Long id);
+
+    List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit);
 }

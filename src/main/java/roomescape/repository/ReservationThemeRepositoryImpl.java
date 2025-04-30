@@ -39,4 +39,9 @@ public class ReservationThemeRepositoryImpl implements ReservationThemeRepositor
     public void remove(ReservationTheme reservationTime) {
         reservationThemeDao.deleteById(reservationTime.id());
     }
+
+    @Override
+    public List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit) {
+        return reservationThemeDao.orderByThemeBookedCountWithLimit(limit);
+    }
 }

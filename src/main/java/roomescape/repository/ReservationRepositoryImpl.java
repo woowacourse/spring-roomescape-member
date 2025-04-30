@@ -37,8 +37,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public boolean existDuplicatedDateTime(LocalDate date, Long timeId) {
+    public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
         // TODO: 시간만 확인하지 말고 테마까지 함께 확인
-        return reservationDao.existDuplicatedDateTime(date, timeId);
+        return reservationDao.existDuplicatedDateTime(date, timeId, themeId);
     }
 }

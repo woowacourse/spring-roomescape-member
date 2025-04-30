@@ -38,4 +38,11 @@ public class ReservationThemeService {
         return reservationThemeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 시간이 존재하지 않습니다."));
     }
+
+    public List<ReservationThemeServiceResponse> getPopularThemes(int limit) {
+        List<ReservationTheme> reservationThemes = reservationThemeRepository.orderByThemeBookedCountWithLimit(limit);
+        return reservationThemes.stream()
+                .map(ReservationThemeServiceResponse::from)
+                .toList();
+    }
 }

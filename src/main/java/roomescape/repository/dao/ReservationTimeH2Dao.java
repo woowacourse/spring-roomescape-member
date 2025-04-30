@@ -1,6 +1,7 @@
 package roomescape.repository.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,13 +43,13 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertQuery, new String[]{"id"});
-            ps.setString(1, reservationTime.getStartAt().toString());
+            PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
+            ps.setString(1, reservationTime.startAt().toString());
             return ps;
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return new ReservationTime(id, reservationTime.startAt());
     }
 
     @Override
@@ -76,5 +77,16 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("삭제하려는 시간을 사용중인 예약이 있습니다.");
         }
+    }
+
+    @Override
+    public List<ReservationTime> selectAllByThemeIdAndDate(Long themeId, LocalDate date) {
+        String query = """
+                SELECT  rt.id, rt.start_at
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                WHERE r.theme_id = ? AND r.date = ?
+                """;
+        return jdbcTemplate.query(query, DEFAULT_ROW_MAPPER, themeId, date);
     }
 }

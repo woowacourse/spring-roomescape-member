@@ -19,8 +19,8 @@ public record ReservationServiceResponse(
                 reservation.name(),
                 reservation.date(),
                 new InnerTime(
-                        reservation.time().getId(),
-                        reservation.time().getStartAt()
+                        reservation.time().id(),
+                        reservation.time().startAt()
                 ),
                 new InnerTheme(
                         reservation.theme().id(),

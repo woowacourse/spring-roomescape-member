@@ -25,11 +25,11 @@ public class ReservationService {
 
     public ReservationServiceResponse create(CreateReservationServiceRequest command) {
         ReservationTime reservationTime = getReservationTimeById(command.timeId());
-        LocalDateTime requestedDateTime = LocalDateTime.of(command.date(), reservationTime.getStartAt());
+        LocalDateTime requestedDateTime = LocalDateTime.of(command.date(), reservationTime.startAt());
         if (requestedDateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("이미 지나간 시간으로 예약할 수 없습니다.");
         }
-        if (reservationRepository.existDuplicatedDateTime(command.date(), command.timeId())) {
+        if (reservationRepository.existDuplicatedDateTime(command.date(), command.timeId(), command.themeId())) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
         ReservationTheme reservationTheme = reservationThemeRepository.getById(command.themeId());

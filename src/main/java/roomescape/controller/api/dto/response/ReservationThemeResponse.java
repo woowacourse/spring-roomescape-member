@@ -11,6 +11,6 @@ public record ReservationThemeResponse(
 
     public static ReservationThemeResponse from(ReservationThemeServiceResponse response) {
         return new ReservationThemeResponse(response.id(), response.name(), response.description(),
-                response.description());
+                response.thumbnail());
     }
 }
