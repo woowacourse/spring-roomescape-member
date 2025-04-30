@@ -13,23 +13,37 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
+import roomescape.common.BaseTest;
 import roomescape.reservation.controller.response.ReservationResponse;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.service.ThemeRepository;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReservationTest {
+public class ReservationTest extends BaseTest {
 
     @LocalServerPort
     private int port;
 
+    @Autowired
+    private ThemeRepository themeRepository;
+
+    private Theme theme;
+
+    private Map<String, Object> reservation;
+
+    private Map<String, String> reservationTime;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        theme = themeRepository.save("테마1", "설명1", "썸네일1");
+        reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2025-08-05");
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
+        reservationTime = Map.of("startAt", "10:00");
     }
 
     @Test
@@ -44,17 +58,12 @@ public class ReservationTest {
                 .then().log().all()
                 .statusCode(200);
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2025-08-05");
-        reservation.put("timeId", 1);
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -76,12 +85,10 @@ public class ReservationTest {
 
     @Test
     void 예약_시간을_생성_조회_삭제한다() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(200);
@@ -125,24 +132,18 @@ public class ReservationTest {
 
     @Test
     void 방탈출_예약_생성시_예약자_이름이_비어있으면_예외를_응답한다() {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("startAt", "10:00");
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params1)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(200);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "");
-        params.put("date", "2025-08-05");
-        params.put("timeId", "1");
+        reservation.remove("name");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -182,8 +183,8 @@ public class ReservationTest {
     void 방탈출_예약_목록을_조회한다() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 "10:00");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "브라운", "2025-08-05", 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2025-08-05", 1, 1);
 
         List<ReservationResponse> response = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -201,17 +202,12 @@ public class ReservationTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 "10:00");
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2025-08-05");
-        params.put("timeId", 1);
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(count).isEqualTo(1);

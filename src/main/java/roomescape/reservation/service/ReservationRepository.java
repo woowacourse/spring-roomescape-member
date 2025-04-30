@@ -7,7 +7,6 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
 
 public interface ReservationRepository {
 
@@ -24,4 +23,6 @@ public interface ReservationRepository {
     boolean existSameDateTime(ReservationDate reservationDate, Long timeId);
 
     boolean existReservationByTimeId(Long timeId);
+
+    boolean existReservationByThemeId(Long themeId);
 }

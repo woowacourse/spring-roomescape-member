@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,16 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeService reservationTimeService,
-                              ThemeService themeService) {
+                              ThemeService themeService,
+                              Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.clock = clock;
     }
 
     public List<ReservationResponse> getAll() {
@@ -45,7 +49,7 @@ public class ReservationService {
 
         ReserverName reserverName = new ReserverName(request.name());
         ReservationTime reservationTime = reservationTimeService.getReservationTime(request.timeId());
-        ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime);
+        ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime, clock);
         Theme theme = themeService.getTheme(request.themeId());
         Reservation created = reservationRepository.save(reserverName, reservationDateTime, theme);
 

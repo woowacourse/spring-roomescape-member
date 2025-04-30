@@ -3,9 +3,7 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -91,7 +89,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
         return new Reservation(id, reserverName.getName(), reservationDateTime.getReservationDate().getDate(),
-                new ReservationTime(reservationDateTime.getReservationTime().getId(), reservationDateTime.getReservationTime().getStartAt()),
+                new ReservationTime(reservationDateTime.getReservationTime().getId(),
+                        reservationDateTime.getReservationTime().getStartAt()),
                 theme);
     }
 
@@ -113,20 +112,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new Reservation(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        LocalDate.parse(resultSet.getString("date")),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                LocalTime.parse(resultSet.getString("time_value"))
-                        ),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("theme_description"),
-                                resultSet.getString("theme_thumbnail")
-                        )), id)
+                        new Reservation(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                LocalDate.parse(resultSet.getString("date")),
+                                new ReservationTime(
+                                        resultSet.getLong("time_id"),
+                                        LocalTime.parse(resultSet.getString("time_value"))
+                                ),
+                                new Theme(
+                                        resultSet.getLong("theme_id"),
+                                        resultSet.getString("theme_name"),
+                                        resultSet.getString("theme_description"),
+                                        resultSet.getString("theme_thumbnail")
+                                )), id)
                 .stream()
                 .findFirst();
     }
@@ -147,6 +146,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public boolean existReservationByTimeId(Long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return count > 0;
+    }
+
+    @Override
+    public boolean existReservationByThemeId(Long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return count > 0;
     }
 
