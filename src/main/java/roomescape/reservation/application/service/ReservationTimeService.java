@@ -1,11 +1,13 @@
 package roomescape.reservation.application.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.DeleteTimeException;
 import roomescape.global.exception.DuplicateTimeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
+import roomescape.reservation.presentation.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.presentation.dto.ReservationResponse;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeResponse;
@@ -40,5 +42,14 @@ public class ReservationTimeService {
             throw new DeleteTimeException("[ERROR] 예약이 이미 존재하는 시간입니다.");
         }
         reservationTimeRepository.delete(id);
+    }
+
+    public List<AvailableReservationTimeResponse> getReservationTimes(final LocalDate date, final Long themeId) {
+        return reservationTimeRepository.findAllTimes().stream()
+                .map(reservationTime -> {
+                    boolean alreadyBooked = reservationRepository.existsByDateAndThemeId(date, themeId);
+                    return new AvailableReservationTimeResponse(reservationTime, alreadyBooked);
+                })
+                .toList();
     }
 }

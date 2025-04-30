@@ -29,17 +29,23 @@
   - [x] Theme: name
 
 ##  화면 명세서
-###  1. 홈 화면
+###  1. 인기 테마 화면
+- [ ] `localhost:8080` 요청 시 인기 테마 랭킹 페이지 응답
+
+### 2. 관리자 화면
 - [x] `localhost:8080/admin` 요청 시 어드민 메인 페이지 응답
 
-### 2. 예약 화면
+### 3. 관리자 예약 화면
 - [x] `/admin/reservation` 요청 시 예약 관리 페이지 응답
 
-### 3. 예약 시간 화면
+### 4. 관리자 예약 시간 화면
 - [x] `/admin/time` 요청 시 예약 시간 관리 페이지 응답
 
-### 4. 테마 화면
+### 5. 관리자 테마 화면
 - [x] `/admin/theme` 요청 시 테마 관리 페이지 응답
+
+### 6. 사용자 예약 화면
+- [ ] `/reservation` 요청 시 사용자 예약 페이지 응답
 
 ## API 명세서
 ## 예약 API
@@ -160,7 +166,8 @@ Content-Type: application/json
 [
    {
         "id": 1,
-        "startAt": "10:00"
+        "startAt": "10:00",
+        "alreadyBookmarked": true
     }
 ]
 ```
