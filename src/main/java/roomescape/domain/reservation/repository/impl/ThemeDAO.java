@@ -2,6 +2,7 @@ package roomescape.domain.reservation.repository.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,5 +113,25 @@ public class ThemeDAO implements ThemeRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException("Theme with id " + id + " not found");
         }
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
+//        T.id, T.name, T.description, T.thumbnail
+        String sql = """
+                select T.*, count(R.id) as reservation_count
+                from theme T
+                inner join reservation R
+                ON T.id = R.theme_id AND R.date between :start_date and :end_date
+                group by T.id
+                order by reservation_count desc
+                limit 10
+                """;
+
+        Map<String, LocalDate> params = Map.of("start_date", startDate, "end_date", endDate);
+
+        return jdbcTemplate.query(sql,
+                params,
+                (resultSet, rowNum) -> themeOf(resultSet));
     }
 }

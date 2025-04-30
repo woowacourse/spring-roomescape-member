@@ -8,7 +8,7 @@ public class ViewController {
 
     @GetMapping()
     public String index() {
-        return "redirect:/admin";
+        return "index";
     }
 
     @GetMapping("/admin")
