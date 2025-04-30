@@ -2,6 +2,7 @@ package roomescape.theme.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
@@ -9,6 +10,7 @@ import roomescape.common.validate.Validator;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldNameConstants(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode(of = "id")
 public class Theme {
 
     private final ThemeId id;
