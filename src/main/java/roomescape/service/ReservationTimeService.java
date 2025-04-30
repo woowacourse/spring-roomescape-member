@@ -34,7 +34,7 @@ public class ReservationTimeService {
 
     public Long addReservationTime(AddReservationTimeDto addReservationTimeDto) {
         ReservationTime reservationTime = addReservationTimeDto.toEntity();
-        if (reservationTimeRepository.existByTime(reservationTime.getTime())) {
+        if (reservationTimeRepository.existsByTime(reservationTime.getTime())) {
             throw new InvalidReservationTimeException("중복된 예약시간입니다");
         }
         return reservationTimeRepository.add(reservationTime);

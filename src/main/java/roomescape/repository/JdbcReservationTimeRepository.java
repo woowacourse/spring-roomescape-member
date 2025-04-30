@@ -30,11 +30,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public long add(ReservationTime reservationTime) {
+        String sql = "insert into reservation_time (start_at) values(?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int update = jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into reservation_time (start_at) values(?)",
-                    new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setTime(1, Time.valueOf(reservationTime.getTime()));
             return ps;
         }, keyHolder);
@@ -66,7 +65,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existByTime(LocalTime time) {
+    public boolean existsByTime(LocalTime time) {
         String sql = "select count(*) from reservation_time where start_at = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, time) > 0;
     }

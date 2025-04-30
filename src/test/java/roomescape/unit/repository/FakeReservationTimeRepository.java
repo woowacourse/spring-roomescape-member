@@ -43,7 +43,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean existByTime(LocalTime time) {
+    public boolean existsByTime(LocalTime time) {
         return reservationTimes.stream()
                 .anyMatch((reservationTime) -> reservationTime.getTime().equals(time));
     }

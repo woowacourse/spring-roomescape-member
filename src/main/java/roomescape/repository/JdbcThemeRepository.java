@@ -1,0 +1,61 @@
+package roomescape.repository;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.Theme;
+
+@Repository
+public class JdbcThemeRepository implements ThemeRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNumber) -> {
+        long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        String description = resultSet.getString("description");
+        String thumbnail = resultSet.getString("thumbnail");
+
+        return new Theme(id, name, description, thumbnail);
+    };
+
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public long add(Theme theme) {
+        String sql = "insert into theme (name,description,thumbnail) values(?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int update = jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnail());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        return jdbcTemplate.query(sql, themeRowMapper);
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+
+    }
+}

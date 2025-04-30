@@ -43,7 +43,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateAndTimeId(Reservation reservation) {
+    public boolean existsByDateAndTimeId(Reservation reservation) {
         return reservations.stream()
                 .anyMatch(currentReservation -> currentReservation.getDate().isEqual(reservation.getDate())
                         && currentReservation.getReservationTime().getId()

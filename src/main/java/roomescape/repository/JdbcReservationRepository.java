@@ -36,11 +36,10 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public long add(Reservation reservation) {
+        String sql = "insert into reservation (name,date,time_id) values(?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int update = jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into reservation (name,date,time_id) values(?,?,?)",
-                    new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getReservationTime().getId());
@@ -79,7 +78,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateAndTimeId(Reservation reservation) {
+    public boolean existsByDateAndTimeId(Reservation reservation) {
         String sql = "select count(*) from reservation where date = ? and time_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, reservation.getDate(),
                 reservation.getReservationTime().getId()) > 0;
