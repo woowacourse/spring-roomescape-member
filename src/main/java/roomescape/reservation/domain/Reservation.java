@@ -68,6 +68,7 @@ public class Reservation {
         if (date.isAfter(now.toLocalDate())) {
             return;
         }
+        // TODO: 메시지 정의
         if (date.isBefore(now.toLocalDate())) {
             throw new IllegalArgumentException();
         }

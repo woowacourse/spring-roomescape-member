@@ -39,7 +39,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
         ThemeEntity theme = ThemeEntity.of(
                 resultSet.getLong("theme_id"),
-                resultSet.getString("name"),
+                resultSet.getString("theme_name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         );
@@ -98,7 +98,7 @@ public class H2ReservationRepository implements ReservationRepository {
                     rt.id as time_id,
                     rt.start_at as start_at,
                     t.id as theme_id,
-                    t.name as name,
+                    t.name as theme_name,
                     t.description as description,
                     t.thumbnail as thumbnail
                 from reservation r
@@ -123,7 +123,7 @@ public class H2ReservationRepository implements ReservationRepository {
                     rt.id as time_id,
                     rt.start_at as start_at,
                     t.id as theme_id,
-                    t.name as name,
+                    t.name as theme_name,
                     t.description as description,
                     t.thumbnail as thumbnail
                 from reservation r
