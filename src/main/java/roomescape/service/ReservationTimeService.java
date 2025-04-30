@@ -1,12 +1,16 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
 import roomescape.service.param.CreateReservationTimeParam;
+import roomescape.service.result.AvailableReservationTimeResult;
 import roomescape.service.result.ReservationTimeResult;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,6 +39,25 @@ public class ReservationTimeService {
         return reservationTimes.stream()
                 .map(this::toReservationResult)
                 .toList();
+    }
+
+    public List<AvailableReservationTimeResult> findAvailableTimes(Long themeId, LocalDate reservationDate) { //TODO: 메서드명 고민
+        List<ReservationTime> allReservationTimes = reservationTImeRepository.findAll();
+
+        List<Reservation> reservations = reservationRepository.findByThemeIdAndReservationDate(themeId, reservationDate);
+
+        List<AvailableReservationTimeResult> availableReservationTimeResults = new ArrayList<>();
+        for (ReservationTime reservationTime : allReservationTimes) {
+            boolean booked = false;
+            for (Reservation reservation : reservations) {
+                if(reservation.isStartAt(reservationTime)) {
+                    booked = true;
+                    break;
+                }
+            }
+            availableReservationTimeResults.add(new AvailableReservationTimeResult(reservationTime.id(), reservationTime.startAt(), booked));
+        }
+        return availableReservationTimeResults;
     }
 
     public void deleteById(Long reservationTimeId) {

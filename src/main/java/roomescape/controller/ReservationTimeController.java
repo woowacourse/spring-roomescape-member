@@ -4,10 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.request.CreateReservationTimeRequest;
+import roomescape.controller.response.AvailableReservationTimeResponse;
 import roomescape.controller.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
+import roomescape.service.result.AvailableReservationTimeResult;
 import roomescape.service.result.ReservationTimeResult;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -35,6 +38,15 @@ public class ReservationTimeController {
                 .map(ReservationTimeResponse::from)
                 .toList();
         return ResponseEntity.ok(reservationTimeResponses);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<AvailableReservationTimeResponse>> findAll(@RequestParam Long themeId, @RequestParam("date") LocalDate reservationDate) {
+        List<AvailableReservationTimeResult> availableTimes = reservationService.findAvailableTimes(themeId, reservationDate);
+        List<AvailableReservationTimeResponse> availableReservationTimeResponses = availableTimes.stream()
+                .map(AvailableReservationTimeResponse::from)
+                .toList();
+        return ResponseEntity.ok(availableReservationTimeResponses);
     }
 
     @DeleteMapping("/{reservationTimeId}")

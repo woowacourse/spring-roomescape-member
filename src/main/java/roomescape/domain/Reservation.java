@@ -37,6 +37,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public boolean isStartAt(ReservationTime reservationTime) {
+        return time.equals(reservationTime);
+    }
+
     public Long getId() {
         return id;
     }

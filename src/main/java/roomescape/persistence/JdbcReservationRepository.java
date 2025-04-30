@@ -2,6 +2,7 @@ package roomescape.persistence;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,15 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+
+    private static final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) ->
+            new Reservation(
+                    rs.getLong("reservation_id"),
+                    rs.getString("name"),
+                    rs.getDate("date").toLocalDate(),
+                    new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
+                    new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))
+            );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -41,13 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         + "on r.time_id = t.id \n"
                         + "inner join theme as tm \n"
                         + "on r.theme_id = tm.id",
-                (rs, rowNum) ->
-                        new Reservation(
-                                rs.getLong("reservation_id"),
-                                rs.getString("name"),
-                                rs.getDate("date").toLocalDate(),
-                                new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
-                                new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))));
+                reservationRowMapper);
     }
 
     @Override
@@ -95,14 +99,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                             + "inner join theme as tm \n"
                             + "on r.theme_id = tm.id \n"
                             + "WHERE r.id = ?",
-                    (rs, rowNum) ->
-                            new Reservation(
-                                    rs.getLong("reservation_id"),
-                                    rs.getString("name"),
-                                    rs.getDate("date").toLocalDate(),
-                                    new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
-                                    new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))
-                            ), reservationId);
+                    reservationRowMapper, reservationId);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -125,5 +122,27 @@ public class JdbcReservationRepository implements ReservationRepository {
     public boolean existByThemeId(final Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, themeId) > 0;
+    }
+
+    @Override //TODO: sql 수정 고려
+    public List<Reservation> findByThemeIdAndReservationDate(final Long themeId, final LocalDate reservationDate) {
+        String sql = "SELECT \n"
+                + "    r.id as reservation_id, \n"
+                + "    r.name, \n"
+                + "    r.date, \n"
+                + "    t.id as time_id, \n"
+                + "    t.start_at as time_value, \n"
+                + "    r.theme_id, \n"
+                + "    tm.name as theme_name, \n"
+                + "    tm.description as theme_description,\n"
+                + "    tm.thumbnail as theme_thumbnail \n"
+                + "FROM reservation as r \n"
+                + "inner join reservation_time as t \n"
+                + "on r.time_id = t.id \n"
+                + "inner join theme as tm \n"
+                + "on r.theme_id = tm.id \n"
+                + "WHERE r.theme_id = ? \n"
+                + "AND r.date = ?";
+        return jdbcTemplate.query(sql, reservationRowMapper, themeId, reservationDate);
     }
 }
