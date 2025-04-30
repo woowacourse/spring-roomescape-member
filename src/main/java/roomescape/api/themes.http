@@ -1,6 +1,6 @@
 ### 테마 조회 API request
 
-GET /themes HTTP/1.1
+GET http://localhost:8080/themes HTTP/1.1
 
 ### 테마 조회 API response
 #HTTP/1.1 200
@@ -19,7 +19,7 @@ GET /themes HTTP/1.1
 
 ### 테마 추가 API request
 
-POST /themes HTTP/1.1
+POST http://localhost:8080/themes HTTP/1.1
 content-type: application/json
 
 {
@@ -44,7 +44,7 @@ content-type: application/json
 
 ###테마 삭제 API request
 
-DELETE /themes/1 HTTP/1.1
+DELETE http://localhost:8080/themes/6 HTTP/1.1
 
 ### 테마 삭제 API response
 
