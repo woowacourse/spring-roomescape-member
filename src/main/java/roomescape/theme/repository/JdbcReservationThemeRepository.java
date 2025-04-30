@@ -22,7 +22,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
 
     @Override
     public ReservationThemeEntity save(ReservationThemeEntity entity) {
-        String query = "insert into reservation_theme (name, description, thumbnail) values (:name, :description, :thumbnail)";
+        String query = "insert into theme (name, description, thumbnail) values (:name, :description, :thumbnail)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", entity.getName())
                 .addValue("description", entity.getDescription())
@@ -40,7 +40,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
 
     @Override
     public List<ReservationThemeEntity> findAll() {
-        String query = "select * from reservation_theme";
+        String query = "select * from theme";
         return jdbcTemplate.query(query, (resultSet, rowNum) -> {
             long id = resultSet.getLong("id");
             String name = resultSet.getString("name");
@@ -57,7 +57,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
 
     @Override
     public boolean deleteById(Long id) {
-        String query = "delete from reservation_theme where id = :id";
+        String query = "delete from theme where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
         final int updated = jdbcTemplate.update(query, params);
@@ -66,7 +66,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
 
     @Override
     public Optional<ReservationThemeEntity> findById(Long id) {
-        String query = "select * from reservation_theme where id = :id";
+        String query = "select * from theme where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
         try {
@@ -89,7 +89,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
 
     @Override
     public Optional<ReservationThemeEntity> findByName(String name) {
-        String query = "SELECT * FROM reservation_time WHERE name = :name";
+        String query = "SELECT * FROM theme WHERE name = :name";
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", name);
         try {
