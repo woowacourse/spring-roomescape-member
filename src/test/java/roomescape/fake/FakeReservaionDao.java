@@ -17,7 +17,8 @@ public class FakeReservaionDao implements ReservationDao {
     @Override
     public Reservation save(Reservation reservation) {
         Long id = this.id.getAndIncrement();
-        Reservation saved = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
+        Reservation saved = new Reservation(id, reservation.getName(), reservation.getDate(),
+                reservation.getReservationTime(), reservation.getTheme());
         this.reservations.put(id, saved);
 
         return saved;
@@ -47,5 +48,10 @@ public class FakeReservaionDao implements ReservationDao {
     @Override
     public boolean isExistByThemeId(Long themeId) {
         return false;
+    }
+
+    @Override
+    public List<Reservation> findByThemeIdAndDate(Long themeId, LocalDate date) {
+        return List.of();
     }
 }

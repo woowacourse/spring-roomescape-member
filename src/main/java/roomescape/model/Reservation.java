@@ -31,6 +31,10 @@ public class Reservation {
         return date.isBefore(other);
     }
 
+    public boolean isSameTime(ReservationTime other) {
+        return reservationTime.isSameTime(other);
+    }
+
     public Long getId() {
         return id;
     }

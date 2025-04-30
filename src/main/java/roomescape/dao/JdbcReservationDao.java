@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,24 @@ public class JdbcReservationDao implements ReservationDao {
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private static RowMapper<Reservation> reservationRowMapper() {
+        return (rs, rowNum) -> new Reservation(
+                rs.getLong("reservation_id"),
+                rs.getString("name"),
+                rs.getDate("date").toLocalDate(),
+                new ReservationTime(
+                        rs.getLong("time_id"),
+                        rs.getTime("time_value").toLocalTime()
+                ),
+                new Theme(
+                        rs.getLong("theme_id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                )
+        );
     }
 
     @Override
@@ -76,23 +95,7 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
         return jdbcTemplate.query(
                 sql,
-                (rs, rowNum) -> {
-                    return new Reservation(
-                            rs.getLong("reservation_id"),
-                            rs.getString("name"),
-                            rs.getDate("date").toLocalDate(),
-                            new ReservationTime(
-                                    rs.getLong("time_id"),
-                                    rs.getTime("time_value").toLocalTime()
-                            ),
-                            new Theme(
-                                    rs.getLong("theme_id"),
-                                    rs.getString("name"),
-                                    rs.getString("description"),
-                                    rs.getString("thumbnail")
-                            )
-                    );
-                }
+                reservationRowMapper()
         );
     }
 
@@ -121,5 +124,29 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.queryForObject("SELECT EXISTS (SELECT 1 FROM RESERVATION WHERE theme_id = ?)",
                 Boolean.class,
                 themeId);
+    }
+
+    @Override
+    public List<Reservation> findByThemeIdAndDate(Long themeId, LocalDate date) {
+        String sql = """
+                SELECT r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name,
+                    th.description,
+                    th.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                ON r.time_id = t.id
+                INNER JOIN theme as th
+                ON r.theme_id = th.id
+                WHERE theme_id = ?
+                    AND
+                    date = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper(), themeId, date);
     }
 }
