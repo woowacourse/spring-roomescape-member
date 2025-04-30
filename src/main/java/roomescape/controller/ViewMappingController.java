@@ -20,4 +20,9 @@ public class ViewMappingController {
     public String time() {
         return "admin/time";
     }
+
+    @GetMapping("/admin/theme")
+    public String theme() {
+        return "admin/theme";
+    }
 }
