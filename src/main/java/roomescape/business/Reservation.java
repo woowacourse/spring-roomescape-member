@@ -8,16 +8,18 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final ReservationTheme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
+        this(null, name, date, time, theme);
     }
 
     public Long getId() {
@@ -34,6 +36,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public ReservationTheme getTheme() {
+        return theme;
     }
 
     public void setId(Long id) {

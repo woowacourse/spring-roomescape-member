@@ -6,6 +6,7 @@ public record ReservationResponseDto(
         long id,
         String name,
         LocalDate date,
-        ReservationTimeResponseDto time
+        ReservationTimeResponseDto time,
+        ReservationThemeResponseDto theme
 ) {
 }

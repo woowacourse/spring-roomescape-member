@@ -45,6 +45,12 @@ public class ReservationService {
                         new ReservationTimeResponseDto(
                                 reservation.getTime().getId(),
                                 reservation.getTime().getStartAt()
+                        ),
+                        new ReservationThemeResponseDto(
+                                reservation.getTheme().getId(),
+                                reservation.getTheme().getName(),
+                                reservation.getTheme().getDescription(),
+                                reservation.getTheme().getThumbnail()
                         )
                 ))
                 .toList();
@@ -59,16 +65,23 @@ public class ReservationService {
                 new ReservationTimeResponseDto(
                         reservation.getTime().getId(),
                         reservation.getTime().getStartAt()
+                ),
+                new ReservationThemeResponseDto(
+                        reservation.getTheme().getId(),
+                        reservation.getTheme().getName(),
+                        reservation.getTheme().getDescription(),
+                        reservation.getTheme().getThumbnail()
                 )
         );
     }
 
     public Long createReservation(ReservationRequestDto reservationDto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationDto.timeId());
+        ReservationTheme theme = reservationThemeRepository.findById(reservationDto.themeId());
         validatePastDateTime(reservationDto.date(), reservationTime.getStartAt());
         validateDuplicatedDateTime(reservationDto, reservationTime);
         return reservationRepository.add(
-                new Reservation(reservationDto.name(), reservationDto.date(), reservationTime));
+                new Reservation(reservationDto.name(), reservationDto.date(), reservationTime, theme));
     }
 
     private void validatePastDateTime(LocalDate date, LocalTime time) {
@@ -147,5 +160,12 @@ public class ReservationService {
                 reservationThemeDto.description(),
                 reservationThemeDto.thumbnail()
         );
+    }
+
+    public void deleteTheme(Long id) {
+        if (reservationRepository.existByThemeId(id)) {
+            throw new IllegalArgumentException("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
+        }
+        reservationThemeRepository.deleteById(id);
     }
 }

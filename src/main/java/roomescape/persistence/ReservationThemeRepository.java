@@ -10,4 +10,8 @@ public interface ReservationThemeRepository {
     Long add(ReservationTheme reservationTheme);
 
     boolean existByName(String name);
+
+    void deleteById(Long id);
+
+    ReservationTheme findById(Long aLong);
 }

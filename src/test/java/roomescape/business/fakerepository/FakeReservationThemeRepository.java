@@ -30,4 +30,17 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
         return themes.stream()
                 .anyMatch(theme -> theme.getName().equals(name));
     }
+
+    @Override
+    public void deleteById(Long id) {
+        themes.removeIf(theme -> theme.getId().equals(id));
+    }
+
+    @Override
+    public ReservationTheme findById(Long id) {
+        return themes.stream()
+                .filter(theme -> theme.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+    }
 }

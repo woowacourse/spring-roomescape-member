@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationThemeRequestDto;
+import roomescape.business.dto.ReservationThemeResponseDto;
 import roomescape.business.dto.ReservationTimeRequestDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
 import roomescape.business.fakerepository.FakeReservationRepository;
@@ -28,6 +29,7 @@ class ReservationServiceTest {
     private ReservationThemeRepository reservationThemeRepository;
     private ReservationService reservationService;
     private Long timeId;
+    private Long themeId;
 
     @BeforeEach
     void setUp() {
@@ -36,14 +38,15 @@ class ReservationServiceTest {
         reservationThemeRepository = new FakeReservationThemeRepository();
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
                 reservationThemeRepository);
-        timeId = reservationTimeRepository.add(new ReservationTime(1L, LocalTime.now()));
+        timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "그림"));
     }
 
     @DisplayName("예약한다.")
     @Test
     void createReservation() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId));
+        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
         Assertions.assertThat(reservationService.readReservationAll()).isNotEmpty();
     }
 
@@ -53,7 +56,7 @@ class ReservationServiceTest {
         // given
         LocalDateTime pastDateTime = LocalDateTime.now().minusDays(1);
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("벨로", pastDateTime.toLocalDate(),
-                timeId);
+                timeId, themeId);
 
         // when
         // then
@@ -67,12 +70,12 @@ class ReservationServiceTest {
     void failCreateReservation() {
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId));
+        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
 
         // when
         // then
         assertThatCode(() ->
-                reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId))
+                reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId))
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이미 예약된 일시입니다.");
@@ -83,7 +86,7 @@ class ReservationServiceTest {
     void deleteReservation() {
         // given
         Long id = reservationService.createReservation(
-                new ReservationRequestDto("예약자", LocalDate.now().plusDays(1), timeId));
+                new ReservationRequestDto("예약자", LocalDate.now().plusDays(1), timeId, themeId));
 
         // when
         reservationService.deleteReservation(id);
@@ -97,7 +100,7 @@ class ReservationServiceTest {
     void readReservationAll() {
         // given
         Long id = reservationService.createReservation(
-                new ReservationRequestDto("예약자", LocalDate.now().plusDays(1), timeId));
+                new ReservationRequestDto("예약자", LocalDate.now().plusDays(1), timeId, themeId));
 
         // when
         int firstReadSize = reservationService.readReservationAll().size();
@@ -147,7 +150,7 @@ class ReservationServiceTest {
     @Test
     void deleteReferencedTime() {
         // given
-        reservationService.createReservation(new ReservationRequestDto("수양", LocalDate.now().plusDays(1), timeId));
+        reservationService.createReservation(new ReservationRequestDto("수양", LocalDate.now().plusDays(1), timeId, themeId));
 
         // when
         // then
@@ -169,4 +172,33 @@ class ReservationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("동일한 이름의 테마를 추가할 수 없습니다.");
     }
+
+    @DisplayName("테마를 삭제한다.")
+    @Test
+    void deleteTheme() {
+        // given
+        ReservationThemeRequestDto reservationThemeRequest = new ReservationThemeRequestDto("수양", "수양테마", "수양썸네일");
+        ReservationThemeResponseDto theme = reservationService.createTheme(reservationThemeRequest);
+
+        // when
+        // then
+        assertThatCode(() -> reservationService.deleteTheme(theme.id()))
+                .doesNotThrowAnyException();
+    }
+
+
+    @DisplayName("예약이 참조하고 있는 테마를 삭제한다.")
+    @Test
+    void deleteReferencedTheme() {
+        // given
+        reservationService.createReservation(
+                new ReservationRequestDto("벨로", LocalDate.now().plusDays(1), timeId, themeId));
+
+        // when
+        // then
+        assertThatCode(() -> reservationService.deleteTheme(themeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
+    }
+
 }
