@@ -45,14 +45,4 @@ public class ReservationTimeController {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> notFoundExceptionHandler(NotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<String> badRequestExceptionHandler(BadRequestException exception) {
-        return ResponseEntity.badRequest().body(exception.getMessage());
-    }
 }
