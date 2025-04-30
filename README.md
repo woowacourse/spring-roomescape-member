@@ -54,6 +54,11 @@
     - [x] 날짜와 테마에 따라 가능한 예약 시간들을 조회하는 API 추가
     - [x] 예약 시각들을 보여주는 js 파일 수정
 
+5. 인기 테마 요구사항
+
+- [x] 최근 일주일 기준 예약이 많은 테마 10개를 확인하는 API 추가
+- [x] `/` 요청 시 `/templates/index.html` 을 응답하도록 한다
+
 ### 추후 고려 사항
 
 - FakeDao 를 사용하니 잡을 수 없는 예외(`DataIntegrityViolationException`) 가 있어 테스트 불가

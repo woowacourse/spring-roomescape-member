@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -59,5 +60,26 @@ public class ThemeDao {
     public boolean isDuplicatedNameExisted(String name) {
         String sql = "SELECT EXISTS (SELECT * FROM theme WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    public List<Theme> findPopularThemes(LocalDate today) {
+        LocalDate sevenDaysAgo = today.minusDays(7);
+
+        String sql = """
+                    SELECT theme.id AS id,
+                           theme.name AS name,
+                           theme.description AS description,
+                           theme.thumbnail AS thumbnail,
+                           COUNT(reservation.id) AS reservation_count
+                    FROM theme
+                    INNER JOIN reservation ON theme.id = reservation.theme_id
+                    WHERE reservation.date < ?
+                      AND reservation.date >= ?
+                    GROUP BY theme.id
+                    ORDER BY reservation_count DESC
+                    LIMIT 10
+                """;
+
+        return jdbcTemplate.query(sql, themeRowMapper, today.toString(), sevenDaysAgo.toString());
     }
 }

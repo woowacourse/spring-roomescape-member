@@ -1,6 +1,6 @@
 package roomescape.service;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -37,5 +37,11 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         themeDao.deleteById(id);
+    }
+
+    public List<ThemeResponseDto> findPopularThemes(final LocalDate today) {
+        return themeDao.findPopularThemes(today).stream()
+                .map(ThemeResponseDto::from)
+                .toList();
     }
 }

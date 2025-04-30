@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,4 +43,10 @@ public class ThemeController {
         themeService.deleteTheme(id);
     }
 
+    @GetMapping("/popular")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ThemeResponseDto> getPopularThemes() {
+        LocalDate today = LocalDate.now();
+        return themeService.findPopularThemes(today);
+    }
 }
