@@ -44,4 +44,16 @@ public class ThemeControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    @DisplayName("테마 삭제 요청")
+    void test3() {
+        Test_Theme_Post();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 }
