@@ -145,16 +145,17 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndThemeId(LocalDate date, Long themeId) {
+    public boolean existsByDateAndThemeIdAndTimeId(LocalDate date, Long timeId, Long themeId) {
         String sql = """
                 SELECT EXISTS (
                     SELECT 1
                     FROM reservation r
-                    WHERE r.theme_id = ?
-                    AND r.date = ?
+                    WHERE r.date = ?
+                    AND r.time_id = ?
+                    AND r.theme_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql,Integer.class, themeId, date.toString());
+        int result = jdbcTemplate.queryForObject(sql,Integer.class, date, timeId, themeId);
         return result == 1;
     }
 }

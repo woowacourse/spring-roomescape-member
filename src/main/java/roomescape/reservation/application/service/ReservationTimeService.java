@@ -47,7 +47,7 @@ public class ReservationTimeService {
     public List<AvailableReservationTimeResponse> getReservationTimes(final LocalDate date, final Long themeId) {
         return reservationTimeRepository.findAllTimes().stream()
                 .map(reservationTime -> {
-                    boolean alreadyBooked = reservationRepository.existsByDateAndThemeId(date, themeId);
+                    boolean alreadyBooked = reservationRepository.existsByDateAndThemeIdAndTimeId(date, reservationTime.getId(), themeId);
                     return new AvailableReservationTimeResponse(reservationTime, alreadyBooked);
                 })
                 .toList();
