@@ -2,6 +2,8 @@ package roomescape.reservation.application.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.DeleteThemeException;
+import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
@@ -10,9 +12,11 @@ import roomescape.reservation.presentation.dto.ThemeResponse;
 @Service
 public class ThemeService {
 
+    private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
     }
 
@@ -34,6 +38,10 @@ public class ThemeService {
     }
 
     public void deleteTheme(final Long id) {
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new DeleteThemeException("[ERROR] 예약이 이미 존재하는 테마입니다.");
+        }
+
         themeRepository.delete(id);
     }
 }
