@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.ReservationService;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
@@ -36,6 +37,8 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
         } catch (PlayTimeNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (DuplicateReservationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (InvalidReservationDateException e) {
             return ResponseEntity.unprocessableEntity().build();
         } catch (IllegalArgumentException e) {
