@@ -21,7 +21,6 @@ import roomescape.reservationTime.domain.ReservationTime;
 @Primary
 public class JdbcReservationRepository implements ReservationRepository {
 
-
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
             resultSet.getString("name"),
@@ -92,6 +91,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
+    @Override
     public boolean existByReservationTimeId(final Long timeId){
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
@@ -108,6 +108,13 @@ public class JdbcReservationRepository implements ReservationRepository {
                 WHERE r.date = ? and t.start_at = ?
                 """;
         Long count = jdbcTemplate.queryForObject(sql, Long.class, Date.valueOf(date), Time.valueOf(time));
+        return count != 0;
+    }
+
+    @Override
+    public boolean existByThemeId(final Long themeId){
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
         return count != 0;
     }
 }
