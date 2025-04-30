@@ -19,11 +19,13 @@ class ReservationTest {
                     ReserverName.from("시소"),
                     ReservationDate.from(LocalDate.now().minusDays(1L)),
                     ReservationTime.of(ReservationTimeId.unassigned(), LocalTime.now())
+                    ReservationTime.withoutId(LocalTime.now()),
             )).isInstanceOf(IllegalArgumentException.class);
             softAssertions.assertThatThrownBy(() -> Reservation.withoutId(
                     ReserverName.from("시소"),
                     ReservationDate.from(LocalDate.now()),
                     ReservationTime.of(ReservationTimeId.unassigned(), LocalTime.now().minusMinutes(1L))
+                    ReservationTime.withoutId(LocalTime.now().minusMinutes(1L)),
             )).isInstanceOf(IllegalArgumentException.class);
         });
     }

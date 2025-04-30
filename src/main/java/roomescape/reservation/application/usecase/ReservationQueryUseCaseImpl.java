@@ -22,11 +22,13 @@ public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
 
     @Override
     public boolean existsByTimeId(final ReservationTimeId timeId) {
-        return reservationRepository.existsByTimeId(timeId);
+        return reservationRepository.existsByParams(timeId);
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final ReservationTimeId timeId) {
-        return reservationRepository.existsByDateAndTimeId(date, timeId);
+    public boolean existsByParams(final LocalDate date,
+                                  final ReservationTimeId timeId,
+                                  final ThemeId themeId) {
+        return reservationRepository.existsByParams(date, timeId, themeId);
     }
 }

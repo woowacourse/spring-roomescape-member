@@ -11,13 +11,12 @@ import java.util.List;
 public class ReservationTimeConverter {
 
     public static ReservationTime toDomain(final CreateReservationTimeServiceRequest request) {
-        return ReservationTime.of(
-                ReservationTimeId.unassigned(),
+        return ReservationTime.withoutId(
                 request.startAt());
     }
 
     public static ReservationTime toDomain(final ReservationTimeEntity entity) {
-        return ReservationTime.of(
+        return ReservationTime.withId(
                 ReservationTimeId.from(entity.getId()),
                 entity.getTime().toLocalTime());
     }

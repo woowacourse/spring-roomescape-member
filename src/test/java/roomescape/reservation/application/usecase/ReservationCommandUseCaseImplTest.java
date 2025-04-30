@@ -40,9 +40,13 @@ class ReservationCommandUseCaseImplTest {
     void createAndFindReservation() {
         // given
         final ReservationTime reservationTime = reservationTimeRepository.save(
-                ReservationTime.of(
-                        ReservationTimeId.unassigned(),
+                ReservationTime.withoutId(
                         LocalTime.of(10, 0)));
+
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
 
         final CreateReservationServiceRequest requestDto = new CreateReservationServiceRequest(
                 "브라운",
@@ -78,6 +82,12 @@ class ReservationCommandUseCaseImplTest {
                 LocalDate.of(2025, 8, 5),
                 reservationTime.getId().getValue()
         ));
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
+
+
 
         // when
         // then
@@ -95,9 +105,13 @@ class ReservationCommandUseCaseImplTest {
     void deleteReservation() {
         // given
         final ReservationTime reservationTime = reservationTimeRepository.save(
-                ReservationTime.of(
-                        ReservationTimeId.unassigned(),
+                ReservationTime.withoutId(
                         LocalTime.of(10, 0)));
+
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
 
         final Reservation reservation = reservationRepository.save(
                 Reservation.withoutId(

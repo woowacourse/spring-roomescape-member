@@ -38,8 +38,7 @@ class ReservationQueryUseCaseImplTest {
     void createAndFindReservation() {
         // given
         final ReservationTime reservationTime = reservationTimeRepository.save(
-                ReservationTime.of(
-                        ReservationTimeId.unassigned(),
+                ReservationTime.withoutId(
                         LocalTime.of(10, 0)));
 
         final Reservation given1 = Reservation.withoutId(

@@ -1,6 +1,7 @@
 package roomescape.reservation.application.usecase;
 
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.ThemeId;
 import roomescape.time.domain.ReservationTimeId;
 
 import java.time.LocalDate;
@@ -12,5 +13,5 @@ public interface ReservationQueryUseCase {
 
     boolean existsByTimeId(ReservationTimeId timeId);
 
-    boolean existsByDateAndTimeId(LocalDate date, ReservationTimeId timeId);
+    boolean existsByParams(LocalDate date, ReservationTimeId timeId, ThemeId themeId);
 }

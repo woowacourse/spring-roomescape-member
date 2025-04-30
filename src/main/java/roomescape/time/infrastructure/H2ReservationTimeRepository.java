@@ -83,7 +83,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
         final long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return ReservationTime.of(ReservationTimeId.from(generatedId), reservationTime.getValue());
+        return ReservationTime.withId(ReservationTimeId.from(generatedId), reservationTime.getValue());
     }
 
     @Override

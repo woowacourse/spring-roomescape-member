@@ -54,8 +54,8 @@ class ReservationTimeCommandUseCaseImplTest {
     void deleteReservationTime() {
         // given
         final ReservationTime saved =
-                reservationTimeRepository.save(ReservationTime.of(
-                        ReservationTimeId.unassigned(), LocalTime.of(14, 0)));
+                reservationTimeRepository.save(
+                        ReservationTime.withoutId(LocalTime.of(14, 0)));
         final ReservationTimeId id = saved.getId();
 
         // when
@@ -84,6 +84,8 @@ class ReservationTimeCommandUseCaseImplTest {
         final ReservationTime savedTime =
                 reservationTimeRepository.save(ReservationTime.of(
                         ReservationTimeId.unassigned(), LocalTime.of(14, 0)));
+                reservationTimeRepository.save(ReservationTime.withoutId(
+                        LocalTime.of(14, 0)));
 
         final Reservation reservation = reservationRepository.save(Reservation.withoutId(
                 ReserverName.from("브라운"),
@@ -105,8 +107,7 @@ class ReservationTimeCommandUseCaseImplTest {
 
         final LocalTime time = LocalTime.of(14, 0);
         final ReservationTime savedTime =
-                reservationTimeRepository.save(ReservationTime.of(
-                        ReservationTimeId.unassigned(), time));
+                reservationTimeRepository.save(ReservationTime.withoutId(time));
 
         final CreateReservationTimeServiceRequest sameTimeRequest = new CreateReservationTimeServiceRequest(time);
 

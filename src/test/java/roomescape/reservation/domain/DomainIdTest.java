@@ -3,6 +3,10 @@ package roomescape.reservation.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.common.domain.DomainId;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
 
@@ -60,19 +64,24 @@ class DomainIdTest {
         final ReservationId sameId1 = ReservationId.from(sameIdValue);
         final ReservationId sameId2 = ReservationId.from(sameIdValue);
 
+        final Theme theme = Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com"));
+
+
         final Reservation sameReservation1 = Reservation.withId(
                 sameId1,
                 ReserverName.from("일번입니다"),
                 ReservationDate.from(LocalDate.now()),
-                ReservationTime.of(ReservationTimeId.unassigned(), LocalTime.now())
-        );
+                ReservationTime.withoutId(LocalTime.now()),
+                theme);
 
         final Reservation sameReservation2 = Reservation.withId(
                 sameId2,
                 ReserverName.from("이번입니다 위와 다릅니다"),
                 ReservationDate.from(LocalDate.now()),
-                ReservationTime.of(ReservationTimeId.unassigned(), LocalTime.now())
-        );
+                ReservationTime.withoutId(LocalTime.now()),
+                theme);
 
         // when
         // then
