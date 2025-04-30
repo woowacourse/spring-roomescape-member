@@ -64,4 +64,9 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
     }
+
+    @Override
+    public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start, LocalDate end, int limit) {
+        return themes;
+    }
 }

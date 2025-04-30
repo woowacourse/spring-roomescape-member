@@ -121,4 +121,29 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
                 id
         );
     }
+
+    @Override
+    public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start, LocalDate end,
+                                                                               int limit) {
+        String query = """
+                SELECT th.id, th.name, th.description, th.thumbnail
+                FROM theme th
+                JOIN reservation r
+                    ON th.id = r.theme_id
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY th.id
+                ORDER BY COUNT(th.id) DESC
+                LIMIT ?
+                """;
+        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                ),
+                start,
+                end,
+                limit
+        );
+    }
 }
