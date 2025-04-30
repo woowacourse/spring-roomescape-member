@@ -1,5 +1,6 @@
 package roomescape.domain.reservation;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -46,6 +48,7 @@ class ReservationApiTest {
 
     @BeforeEach
     void init() {
+
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
@@ -200,18 +203,27 @@ class ReservationApiTest {
                 .statusCode(404);
     }
 
-    @DisplayName("시간을 추가한다")
+    @DisplayName("예약 가능한 시간을 반환한다")
     @Test
-    void test8() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+    void test9() {
+        Theme theme = themeRepository.save(Theme.withoutId("공포", "공포", "www.m.com"));
+        ReservationTime time1 = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
+
+        LocalDate date = LocalDate.now();
+        reservationRepository.save(Reservation.withoutId("꾹", date, time1, theme));
+
+        String path = UriComponentsBuilder.fromUriString("/reservations/available")
+                .queryParam("date", formatDateTime(date))
+                .queryParam("themeId", theme.getId())
+                .build()
+                .toUriString();
 
         RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
+                .when().get(path)
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(200)
+                .body("size()", is(2))
+                .body("alreadyBooked", containsInAnyOrder(true, false));
     }
-
 }
