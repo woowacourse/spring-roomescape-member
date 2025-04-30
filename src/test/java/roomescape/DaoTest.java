@@ -31,6 +31,7 @@ public class DaoTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "탈출", "탈출하는 내용", "abc.jpg");
     }
 
     @Test
@@ -47,10 +48,12 @@ public class DaoTest {
 
     @Test
     void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
             "브라운",
             LocalDate.now().plusDays(1),
-            1L);
+            1L,
+            1L
+        );
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
             .when().get("/reservations")
@@ -70,6 +73,7 @@ public class DaoTest {
         params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -116,6 +120,7 @@ public class DaoTest {
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1));
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)

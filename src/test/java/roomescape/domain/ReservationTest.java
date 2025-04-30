@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.TestConstants.DEFAULT_THEME;
+import static roomescape.TestConstants.DEFAULT_TIME;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,9 +18,9 @@ class ReservationTest {
         assertThatThrownBy(() -> {
             new Reservation(
                 null,
-                LocalDate.of(2025, 10, 5),
-                new ReservationTime(LocalTime.of(10, 5))
-            );
+                LocalDate.now().plusDays(1),
+                DEFAULT_TIME,
+                DEFAULT_THEME);
         }).isInstanceOf(NullPointerException.class);
     }
 
@@ -29,8 +31,8 @@ class ReservationTest {
             new Reservation(
                 "두리",
                 null,
-                new ReservationTime(LocalTime.of(10, 5))
-            );
+                DEFAULT_TIME,
+                DEFAULT_THEME);
         }).isInstanceOf(NullPointerException.class);
     }
 
@@ -41,7 +43,8 @@ class ReservationTest {
             new Reservation(
                 "두리",
                 LocalDate.of(2025, 10, 5),
-                null
+                null,
+                DEFAULT_THEME
             );
         }).isInstanceOf(NullPointerException.class);
     }
@@ -51,7 +54,7 @@ class ReservationTest {
     void duplicate_reservation_validation_of_date() {
         ReservationTime time = new ReservationTime(LocalTime.now());
 
-        assertThatThrownBy(() -> new Reservation("두리", LocalDate.now().minusDays(1), time))
+        assertThatThrownBy(() -> new Reservation("두리", LocalDate.now().minusDays(1), time, DEFAULT_THEME))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -61,7 +64,7 @@ class ReservationTest {
         LocalDateTime dateTime = LocalDateTime.now().minusHours(1);
         ReservationTime time = new ReservationTime(dateTime.toLocalTime());
 
-        assertThatThrownBy(() -> new Reservation("두리", dateTime.toLocalDate(), time))
+        assertThatThrownBy(() -> new Reservation("두리", dateTime.toLocalDate(), time, DEFAULT_THEME))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

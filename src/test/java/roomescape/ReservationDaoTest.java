@@ -13,34 +13,46 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @JdbcTest
 class ReservationDaoTest {
 
     ReservationDao reservationDao;
     ReservationTimeDao reservationTimeDao;
+    ThemeDao themeDao;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     Reservation savedReservation;
 
+    //TODO: dao 테스트에서 dao 코드를 사용해도 될까?
     @BeforeEach
     void beforeEach() {
         reservationDao = new ReservationDao(jdbcTemplate);
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-
+        themeDao = new ThemeDao(jdbcTemplate);
         ReservationTime reservationTime = reservationTimeDao.create(
             new ReservationTime(
                 LocalTime.of(10, 5)
             )
         );
+        Theme savedTheme = themeDao.save(
+            new Theme(
+                "탈출",
+                "탈출하는 내용",
+                "abc.jpg"
+            )
+        );
         Reservation reservation = new Reservation(
             "두리",
             LocalDate.of(2025, 10, 5),
-            reservationTime
+            reservationTime,
+            savedTheme
         );
         savedReservation = reservationDao.save(reservation);
     }
@@ -53,6 +65,11 @@ class ReservationDaoTest {
             LocalDate.of(2025, 10, 5),
             new ReservationTime(
                 LocalTime.of(10, 5)
+            ),
+            new Theme(
+                "탈출",
+                "탈출하는 내용",
+                "abc.jpg"
             )
         );
         Reservation savedReservation = reservationDao.save(reservation);
