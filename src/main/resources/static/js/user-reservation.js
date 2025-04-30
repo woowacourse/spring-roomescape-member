@@ -36,8 +36,8 @@ function renderTheme(themes) {
   const themeSlots = document.getElementById('theme-slots');
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
-    const name = '';
-    const themeId = '';
+    const name = theme.name;
+    const themeId = theme.id;
     /*
     TODO: [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
