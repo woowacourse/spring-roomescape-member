@@ -13,11 +13,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.entity.ReservationTime;
 
 @Repository
-public class H2ReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public H2ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -31,6 +31,10 @@ public class Theme {
         return new Theme(id, name, description, thumbnail);
     }
 
+    public static Theme afterSave(Long id, Theme theme) {
+        return afterSave(id, theme.name, theme.description, theme.thumbnail);
+    }
+
     public Long getId() {
         return id;
     }

@@ -15,11 +15,11 @@ import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 
 @Repository
-public class H2ReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public H2ReservationRepository(final JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
