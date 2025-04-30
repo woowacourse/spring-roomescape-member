@@ -29,6 +29,7 @@ public class FakeThemeDao implements ThemeDao {
         return themes;
     }
 
+    @Override
     public Theme findById(final long id) {
         return themes.stream()
                 .filter(theme -> theme.getId() == id)

@@ -11,4 +11,6 @@ public interface ThemeDao {
     Theme save(Theme theme);
 
     List<Theme> findAll();
+
+    Theme findById(long id);
 }

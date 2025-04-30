@@ -13,14 +13,17 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
+import roomescape.service.reservation.Theme;
 
 @JdbcTest
 class ReservationDaoTest {
 
     private H2ReservationDao reservationDao;
     private H2ReservationTimeDao reservationTimeDao;
+    private H2ThemeDao themeDao;
     private final LocalTime time = LocalTime.of(10, 0);
     private ReservationTime reservationTime;
+    private Theme theme;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -32,27 +35,40 @@ class ReservationDaoTest {
     void setUp() {
         reservationDao = new H2ReservationDao(jdbcTemplate, dataSource);
         reservationTimeDao = new H2ReservationTimeDao(jdbcTemplate, dataSource);
+        themeDao = new H2ThemeDao(jdbcTemplate, dataSource);
         jdbcTemplate.execute("DROP TABLE reservation IF EXISTS");
         jdbcTemplate.execute("DROP TABLE reservation_time IF EXISTS");
-        jdbcTemplate.execute("""
+        jdbcTemplate.execute("DROP TABLE theme IF EXISTS");
+        jdbcTemplate.execute("""            
+                CREATE TABLE theme
+                (
+                    id          BIGINT       NOT NULL AUTO_INCREMENT,
+                    name        VARCHAR(255) NOT NULL,
+                    description VARCHAR(255) NOT NULL,
+                    thumbnail   VARCHAR(255) NOT NULL,
+                    PRIMARY KEY (id)
+                );
                 CREATE TABLE reservation_time
                 (
                     id       BIGINT       NOT NULL AUTO_INCREMENT,
                     start_at VARCHAR(255) NOT NULL,
                     PRIMARY KEY (id)
                 );
-
                 CREATE TABLE reservation
                 (
                     id      BIGINT       NOT NULL AUTO_INCREMENT,
                     name    VARCHAR(255) NOT NULL,
                     date    VARCHAR(255) NOT NULL,
                     time_id BIGINT,
+                    theme_id BIGINT,
                     PRIMARY KEY (id),
-                    FOREIGN KEY (time_id) REFERENCES reservation_time (id)
+                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
+                    FOREIGN KEY (theme_id) REFERENCES theme (id)
                 );
                 """);
         reservationTime = reservationTimeDao.save(new ReservationTime(time));
+        theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
+        themeDao.save(theme);
     }
 
     @DisplayName("새로운 예약을 생성할 수 있다.")
@@ -61,12 +77,13 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
+
         // when
         Reservation reservation = reservationDao.save(
-                new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
+                new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now()), theme));
         // then
         assertThat(reservation).isEqualTo(
-                new Reservation(1L, name, date, new ReservationTime(1L, LocalTime.of(10, 0))));
+                new Reservation(1L, name, date, new ReservationTime(1L, LocalTime.of(10, 0)), theme));
     }
 
     @DisplayName("예약을 삭제할 수 있다.")
@@ -75,7 +92,8 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
-        reservationDao.save(new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
+        Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
+        reservationDao.save(new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now()), theme));
         // when
         reservationDao.deleteById(1L);
         // then
@@ -88,8 +106,9 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
+        Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
         Reservation reservation = reservationDao.save(
-                new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now())));
+                new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now()), theme));
         // when
         // then
         assertThat(reservationDao.findAll()).containsExactly(reservation);

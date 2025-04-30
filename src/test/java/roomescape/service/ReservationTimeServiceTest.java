@@ -15,6 +15,7 @@ import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
+import roomescape.service.reservation.Theme;
 
 class ReservationTimeServiceTest {
 
@@ -86,7 +87,8 @@ class ReservationTimeServiceTest {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(11, 0));
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
         ReservationTime time = new ReservationTime(response.id(), response.startAt());
-        reservationDao.save(new Reservation(null, "노랑", LocalDate.now().plusDays(1), time));
+        Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
+        reservationDao.save(new Reservation(null, "노랑", LocalDate.now().plusDays(1), time, theme));
         // when
         // then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(response.id()))

@@ -12,14 +12,17 @@ import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
+import roomescape.fake.FakeThemeDao;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
+import roomescape.service.reservation.Theme;
 
 class ReservationServiceTest {
 
     FakeReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
     FakeReservationDao reservationDao = new FakeReservationDao();
-    ReservationService reservationService = new ReservationService(reservationDao, reservationTimeDao);
+    FakeThemeDao themeDao = new FakeThemeDao();
+    ReservationService reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     LocalDate tomorrow = LocalDate.now().plusDays(1);
 
     @DisplayName("중복 예약일 경우 예외가 발생한다.")
@@ -27,7 +30,9 @@ class ReservationServiceTest {
     void testValidateDuplication() {
         // given
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
-        ReservationRequest request = new ReservationRequest("leo", tomorrow, savedTime.getId());
+        Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
+        Theme savedTheme = themeDao.save(theme);
+        ReservationRequest request = new ReservationRequest("leo", tomorrow, savedTime.getId(), savedTheme.getId());
         reservationService.createReservation(request);
         // when
         // then
@@ -40,7 +45,9 @@ class ReservationServiceTest {
     @Test
     void testValidateTime() {
         // given
-        ReservationRequest request = new ReservationRequest("leo", tomorrow, 1L);
+        Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
+        Theme savedTheme = themeDao.save(theme);
+        ReservationRequest request = new ReservationRequest("leo", tomorrow, 1L, savedTheme.getId());
         // when
         // then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -53,8 +60,10 @@ class ReservationServiceTest {
     void testValidatePastTime() {
         // given
         reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
+        Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
+        Theme savedTheme = themeDao.save(theme);
         LocalDate yesterday = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest("leo", yesterday, 1L);
+        ReservationRequest request = new ReservationRequest("leo", yesterday, 1L, savedTheme.getId());
         // when
         // then
         assertThatThrownBy(() -> reservationService.createReservation(request))
@@ -68,7 +77,9 @@ class ReservationServiceTest {
         // given
         LocalTime time = LocalTime.of(11, 0);
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
-        ReservationRequest request = new ReservationRequest("leo", tomorrow, savedTime.getId());
+        Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
+        Theme savedTheme = themeDao.save(theme);
+        ReservationRequest request = new ReservationRequest("leo", tomorrow, savedTime.getId(), savedTheme.getId());
         // when
         ReservationResponse result = reservationService.createReservation(request);
         // then
@@ -79,10 +90,21 @@ class ReservationServiceTest {
                 () -> assertThat(result.date()).isEqualTo(request.date()),
                 () -> assertThat(result.time().startAt()).isEqualTo(time),
                 () -> assertThat(result.time().id()).isEqualTo(request.timeId()),
+
+                () -> assertThat(result.theme().id()).isEqualTo(savedTheme.getId()),
+                () -> assertThat(result.theme().name()).isEqualTo(savedTheme.getName()),
+                () -> assertThat(result.theme().description()).isEqualTo(savedTheme.getDescription()),
+                () -> assertThat(result.theme().thumbnail()).isEqualTo(savedTheme.getThumbnail()),
+
                 () -> assertThat(savedReservation.getName()).isEqualTo(request.name()),
                 () -> assertThat(savedReservation.getDate()).isEqualTo(request.date()),
                 () -> assertThat(savedReservation.getTime().getStartAt()).isEqualTo(time),
-                () -> assertThat(savedReservation.getTimeId()).isEqualTo(request.timeId())
+                () -> assertThat(savedReservation.getTimeId()).isEqualTo(request.timeId()),
+
+                () -> assertThat(savedReservation.getTheme().getId()).isEqualTo(savedTheme.getId()),
+                () -> assertThat(savedReservation.getTheme().getName()).isEqualTo(savedTheme.getName()),
+                () -> assertThat(savedReservation.getTheme().getDescription()).isEqualTo(savedTheme.getDescription()),
+                () -> assertThat(savedReservation.getTheme().getThumbnail()).isEqualTo(savedTheme.getThumbnail())
         );
     }
 
@@ -92,8 +114,11 @@ class ReservationServiceTest {
         // given
         LocalTime time = LocalTime.of(11, 0);
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
-        ReservationRequest request1 = new ReservationRequest("leo", tomorrow, savedTime.getId());
-        ReservationRequest request2 = new ReservationRequest("leo", tomorrow.plusDays(1), savedTime.getId());
+        Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
+        Theme savedTheme = themeDao.save(theme);
+        ReservationRequest request1 = new ReservationRequest("leo", tomorrow, savedTime.getId(), savedTheme.getId());
+        ReservationRequest request2 = new ReservationRequest("leo", tomorrow.plusDays(1), savedTime.getId(),
+                savedTheme.getId());
         reservationService.createReservation(request1);
         reservationService.createReservation(request2);
         // when
@@ -107,7 +132,9 @@ class ReservationServiceTest {
         // given
         LocalTime time = LocalTime.of(11, 0);
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
-        ReservationRequest request = new ReservationRequest("leo", tomorrow, savedTime.getId());
+        Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
+        Theme savedTheme = themeDao.save(theme);
+        ReservationRequest request = new ReservationRequest("leo", tomorrow, savedTime.getId(), savedTheme.getId());
         reservationService.createReservation(request);
         // when
         reservationService.cancelReservationById(1L);

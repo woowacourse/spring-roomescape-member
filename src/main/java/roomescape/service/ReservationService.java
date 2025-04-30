@@ -7,18 +7,23 @@ import roomescape.controller.dto.ReservationRequest;
 import roomescape.controller.dto.ReservationResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.ThemeDao;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
+import roomescape.service.reservation.Theme;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao) {
+    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao,
+                              final ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
@@ -28,8 +33,10 @@ public class ReservationService {
         if (reservationTimeDao.isNotExistsById(reservationRequest.timeId())) {
             throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
         }
+        // TODO 테마가 존재하지 않습니다
         final ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        final Reservation reservation = reservationRequest.convertToReservation(reservationTime);
+        final Theme theme = themeDao.findById(reservationRequest.themeId());
+        final Reservation reservation = reservationRequest.convertToReservation(reservationTime, theme);
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }

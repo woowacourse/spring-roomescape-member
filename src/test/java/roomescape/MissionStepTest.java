@@ -103,11 +103,24 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "우테코방탈출");
+        themeParams.put("description", "우테코방탈출출출");
+        themeParams.put("thumbnail", "우테코방탈출");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         String date = LocalDate.now().plusDays(1).toString();
         reservation.put("date", date);
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

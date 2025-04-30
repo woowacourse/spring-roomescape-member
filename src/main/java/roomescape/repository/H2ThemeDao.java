@@ -16,12 +16,12 @@ public class H2ThemeDao implements ThemeDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInserter;
     private final RowMapper<Theme> themeMapper = (resultSet, rowNum) ->
-        new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        );
+            new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            );
 
     public H2ThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -52,5 +52,11 @@ public class H2ThemeDao implements ThemeDao {
     public List<Theme> findAll() {
         final String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, themeMapper);
+    }
+
+    @Override
+    public Theme findById(final long id) {
+        final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, themeMapper, id);
     }
 }

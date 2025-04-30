@@ -9,11 +9,14 @@ public final class Reservation {
     private final Long id;
     private final MemberName name;
     private final ReservationDateTime dateTime;
+    private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
+                       final Theme theme) {
         this.id = id;
         this.name = new MemberName(name);
         this.dateTime = new ReservationDateTime(date, time);
+        this.theme = theme;
     }
 
     public boolean isBefore(final LocalDateTime other) {
@@ -38,6 +41,10 @@ public final class Reservation {
 
     public ReservationTime getTime() {
         return dateTime.getTime();
+    }
+
+    public Theme getTheme() {
+        return this.theme;
     }
 
     @Override

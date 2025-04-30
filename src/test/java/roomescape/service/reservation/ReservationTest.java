@@ -20,9 +20,10 @@ class ReservationTest {
         Long id = 1L;
         LocalDate date = LocalDate.now();
         ReservationTime time = new ReservationTime(1L, LocalTime.now());
+        Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
         // when
         // then
-        assertThatThrownBy(() -> new Reservation(id, name, date, time))
+        assertThatThrownBy(() -> new Reservation(id, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자명은 최소 1글자, 최대 5글자여야합니다.");
     }
