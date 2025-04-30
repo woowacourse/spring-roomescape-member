@@ -49,6 +49,21 @@ public class ReservationTimeService {
         return reservationTimeDAO.findById(id);
     }
 
+    public List<AvailableReservationTimeResponse> findAllAvailableTime(final LocalDate date, final long themeId) {
+        List<ReservationTime> totalReservationTime = reservationTimeDAO.findAll();
+        List<ReservationTime> bookedTime = reservationTimeDAO.findAllBookedTime(date, themeId);
+        List<AvailableReservationTimeResponse> responses = new ArrayList<>();
+
+        for (ReservationTime reservationTime : totalReservationTime) {
+            if (bookedTime.contains(reservationTime)) {
+                responses.add(AvailableReservationTimeResponse.from(reservationTime, true));
+                continue;
+            }
+            responses.add(AvailableReservationTimeResponse.from(reservationTime, false));
+        }
+        return responses;
+    }
+
     public void deleteById(final long id) {
         if (reservationDAO.existsByTimeId(id)) {
             throw new PharmaceuticalViolationException("사용 중인 예약 시간입니다");
@@ -59,20 +74,5 @@ public class ReservationTimeService {
         if (!deleted) {
             throw new NotExistedValueException("존재하지 않는 예약 시간입니다");
         }
-    }
-
-    public List<AvailableReservationTimeResponse> findAllAvailableTime(final LocalDate date, final long themeId) {
-        List<ReservationTime> totalReservationTime = reservationTimeDAO.findAll();
-        List<ReservationTime> bookedTime = reservationTimeDAO.findAllBookedTime(date, themeId);
-        List<AvailableReservationTimeResponse> responses = new ArrayList<>();
-        
-        for (ReservationTime reservationTime : totalReservationTime) {
-            if (bookedTime.contains(reservationTime)) {
-                responses.add(AvailableReservationTimeResponse.from(reservationTime, true));
-                continue;
-            }
-            responses.add(AvailableReservationTimeResponse.from(reservationTime, false));
-        }
-        return responses;
     }
 }

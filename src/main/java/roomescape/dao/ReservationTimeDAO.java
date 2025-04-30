@@ -16,7 +16,7 @@ public interface ReservationTimeDAO {
 
     Optional<ReservationTime> findById(long id);
 
-    boolean deleteById(long id);
-
     List<ReservationTime> findAllBookedTime(LocalDate date, long themeId);
+
+    boolean deleteById(long id);
 }

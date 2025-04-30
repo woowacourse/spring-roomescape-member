@@ -60,13 +60,6 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
     }
 
     @Override
-    public boolean deleteById(final long id) {
-        String query = "DELETE FROM reservation_time where id = ?";
-        int deleted = jdbcTemplate.update(query, id);
-        return deleted > 0;
-    }
-
-    @Override
     public List<ReservationTime> findAllBookedTime(final LocalDate date, final long themeId) {
         String query = """
                 SELECT rt.id,
@@ -77,5 +70,12 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
         return jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public boolean deleteById(final long id) {
+        String query = "DELETE FROM reservation_time where id = ?";
+        int deleted = jdbcTemplate.update(query, id);
+        return deleted > 0;
     }
 }
