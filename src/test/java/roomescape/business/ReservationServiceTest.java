@@ -61,7 +61,7 @@ class ReservationServiceTest {
     void deleteReservation() {
         // given
         Long id = reservationService.createReservation(
-                new ReservationRequestDto("예약자", LocalDate.now(), timeId));
+                new ReservationRequestDto("예약자", LocalDate.now().plusDays(1), timeId));
 
         // when
         reservationService.deleteReservation(id);
@@ -75,7 +75,7 @@ class ReservationServiceTest {
     void readReservationAll() {
         // given
         Long id = reservationService.createReservation(
-                new ReservationRequestDto("예약자", LocalDate.now(), timeId));
+                new ReservationRequestDto("예약자", LocalDate.now().plusDays(1), timeId));
 
         // when
         int firstReadSize = reservationService.readReservationAll().size();

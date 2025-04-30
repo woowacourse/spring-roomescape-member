@@ -69,7 +69,7 @@ class H2ReservationTimeRepositoryTest {
         jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.now());
 
         // when
-        h2ReservationTimeRepository.delete(1L);
+        h2ReservationTimeRepository.deleteById(1L);
 
         // then
         Assertions.assertThat(h2ReservationTimeRepository.findAll()).isEmpty();
