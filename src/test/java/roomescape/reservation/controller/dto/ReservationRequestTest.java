@@ -12,7 +12,7 @@ class ReservationRequestTest {
     @Test
     void name_null_exception() {
         // when && then
-        assertThatThrownBy(() -> new ReservationRequest(null, LocalDate.of(2025, 4, 25), 1L))
+        assertThatThrownBy(() -> new ReservationRequest(null, LocalDate.of(2025, 4, 25), 1L, 3L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 필수입니다.");
     }
@@ -21,7 +21,7 @@ class ReservationRequestTest {
     @Test
     void name_blank_exception() {
         // when && then
-        assertThatThrownBy(() -> new ReservationRequest(" ", LocalDate.of(2025, 4, 25), 1L))
+        assertThatThrownBy(() -> new ReservationRequest(" ", LocalDate.of(2025, 4, 25), 1L, 3L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("이름은 필수입니다.");
     }
@@ -30,7 +30,7 @@ class ReservationRequestTest {
     @Test
     void date_null_exception() {
         // when && then
-        assertThatThrownBy(() -> new ReservationRequest("루키", null, 1L))
+        assertThatThrownBy(() -> new ReservationRequest("루키", null, 1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 날짜는 필수입니다.");
     }
@@ -39,7 +39,7 @@ class ReservationRequestTest {
     @Test
     void time_id_null_exception() {
         // when && then
-        assertThatThrownBy(() -> new ReservationRequest("루키", LocalDate.of(2025, 4, 25), null))
+        assertThatThrownBy(() -> new ReservationRequest("루키", LocalDate.of(2025, 4, 25), null, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시간 ID는 필수입니다.");
     }

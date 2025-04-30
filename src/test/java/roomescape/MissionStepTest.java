@@ -70,6 +70,7 @@ class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", "2026-08-05");
         params.put("timeId", "6");
+        params.put("themeId", "2");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -121,8 +122,8 @@ class MissionStepTest {
     @DisplayName("전체 Reservation 객체를 조회한다")
     @Test
     void get_reservations_test() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05",
-                "1");
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+                "1", "1");
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")

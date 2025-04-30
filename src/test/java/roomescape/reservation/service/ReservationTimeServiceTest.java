@@ -12,12 +12,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.repository.ReservationFakeRepository;
 import roomescape.domain.repository.ReservationTimeFakeRepository;
+import roomescape.domain.repository.ThemeFakeRepository;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.repository.ThemeRepository;
 
 class ReservationTimeServiceTest {
 
@@ -26,6 +29,8 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void setup() {
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
+        ReservationRepository reservationRepository = new ReservationFakeRepository();
+        ThemeRepository themeRepository = new ThemeFakeRepository();
 
         List<ReservationTime> times = List.of(
                 new ReservationTime(null, LocalTime.of(3, 12)),
@@ -38,9 +43,21 @@ class ReservationTimeServiceTest {
             reservationTimeRepository.saveAndReturnId(time);
         }
 
-        ReservationRepository reservationRepository = new ReservationFakeRepository();
+        List<Theme> themes = List.of(
+                new Theme(null, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+                new Theme(null, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+                new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
 
-        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29), reservationTimeRepository.findById(1L));
+        for (Theme theme : themes) {
+            themeRepository.saveAndReturnId(theme);
+        }
+
+
+
+        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29), reservationTimeRepository.findById(1L), themeRepository.findById(1L).get());
 
         reservationRepository.saveAndReturnId(reservation);
 
