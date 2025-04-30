@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,16 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponseDto saveTime(ReservationTimeRequestDto reservationTimeRequestDto) {
+        LocalTime parsedStartAt = LocalTime.parse(reservationTimeRequestDto.startAt());
+        boolean duplicatedStartAtExisted = reservationTimeDao.isDuplicatedStartAtExisted(parsedStartAt);
+        if (duplicatedStartAtExisted) {
+            System.out.println("Duplicated start at: " + reservationTimeRequestDto.startAt());
+            throw new IllegalStateException("중복된 예약시각은 등록할 수 없습니다.");
+        }
+
         ReservationTime reservationTime = reservationTimeRequestDto.convertToTime();
         Long id = reservationTimeDao.saveTime(reservationTime);
+
         return new ReservationTimeResponseDto(id, reservationTime.getStartAt());
     }
 

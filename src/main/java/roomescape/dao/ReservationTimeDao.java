@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -52,5 +53,10 @@ public class ReservationTimeDao {
     public Optional<ReservationTime> findById(final Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.query(sql, actorRowMapper, id).stream().findFirst();
+    }
+
+    public boolean isDuplicatedStartAtExisted(LocalTime startAt) {
+        String sql = "SELECT EXISTS (SELECT * FROM reservation_time WHERE start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 }
