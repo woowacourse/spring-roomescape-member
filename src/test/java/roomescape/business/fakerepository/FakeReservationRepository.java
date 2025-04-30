@@ -47,4 +47,10 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(reservation -> LocalDateTime.of(reservation.getDate(), reservation.getTime().getStartAt())
                         .equals(LocalDateTime.of(date, time)));
     }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTime().getId().equals(timeId));
+    }
 }

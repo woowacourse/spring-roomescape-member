@@ -77,7 +77,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByDateTime(LocalDate date, LocalTime time) {
-        String a = """
+        String query = """
                 SELECT EXISTS (
                     SELECT 1
                     FROM reservation r
@@ -86,6 +86,18 @@ public class H2ReservationRepository implements ReservationRepository {
                     WHERE r.date = ? AND t.start_at = ?
                 )
                 """;
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(a, Boolean.class, date, time));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, time));
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String query = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation r
+                    WHERE r.time_id = ?
+                )
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, timeId));
     }
 }

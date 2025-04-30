@@ -104,7 +104,10 @@ public class ReservationService {
         );
     }
 
-    public void deleteTime(Long id) {
-        reservationTimeRepository.deleteById(id);
+    public void deleteTime(Long timeId) {
+        if (reservationRepository.existsByTimeId(timeId)) {
+            throw new IllegalArgumentException("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");
+        }
+        reservationTimeRepository.deleteById(timeId);
     }
 }

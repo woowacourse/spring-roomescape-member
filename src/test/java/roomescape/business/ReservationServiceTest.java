@@ -136,4 +136,17 @@ class ReservationServiceTest {
         reservationService.deleteTime(1L);
         Assertions.assertThat(reservationService.readTimeAll()).isEmpty();
     }
+
+    @DisplayName("예약이 참조하는 시간대 하나를 삭제한다")
+    @Test
+    void deleteReferencedTime() {
+        // given
+        reservationService.createReservation(new ReservationRequestDto("수양", LocalDate.now().plusDays(1), timeId));
+
+        // when
+        // then
+        assertThatCode(() -> reservationService.deleteTime(timeId) )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");
+    }
 }
