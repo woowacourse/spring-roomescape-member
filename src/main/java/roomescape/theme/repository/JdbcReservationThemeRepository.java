@@ -1,6 +1,6 @@
 package roomescape.theme.repository;
 
-import org.springframework.jdbc.IncorrectResultSetColumnCountException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -82,7 +82,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                 );
             });
             return Optional.of(themeEntity);
-        } catch (IncorrectResultSetColumnCountException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -105,7 +105,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                 );
             });
             return Optional.of(themeEntity);
-        } catch (IncorrectResultSetColumnCountException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
