@@ -27,4 +27,14 @@ public class ThemeService {
         themeDao.saveTheme(theme);
         return ThemeResponseDto.from(theme);
     }
+
+    public void deleteTheme(Long id) {
+        validateIsExistThemeBy(id);
+        themeDao.deleteTheme(id);
+    }
+
+    private void validateIsExistThemeBy(Long id) {
+        themeDao.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다: " + id));
+    }
 }

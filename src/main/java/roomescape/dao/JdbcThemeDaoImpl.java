@@ -3,6 +3,8 @@ package roomescape.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -45,6 +47,22 @@ public class JdbcThemeDaoImpl implements ThemeDao {
 
     @Override
     public void deleteTheme(Long id) {
+        String query = "delete from theme where id = ?";
+        jdbcTemplate.update(query, id);
+    }
 
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String query = "select * from theme where id = ?";
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) -> new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }
