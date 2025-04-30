@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @Getter
 @AllArgsConstructor(onConstructor_ = @__(@JsonCreator))
@@ -23,11 +24,16 @@ public class Reservation {
     @NonNull
     private final ReservationTime time;
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime reservationTime) {
+    @NonNull
+    private final Theme theme;
+
+    public Reservation(final String name, final LocalDate date, final ReservationTime reservationTime,
+                       final Theme theme) {
         this.id = null;
         this.name = name;
         this.date = date;
         this.time = reservationTime;
+        this.theme = theme;
     }
 
     public LocalTime extractTime() {

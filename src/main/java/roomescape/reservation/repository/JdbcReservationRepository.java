@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -34,10 +35,16 @@ public class JdbcReservationRepository implements ReservationRepository {
                     r.id as reservation_id, 
                     r.name, r.date, 
                     t.id as time_id, 
-                    t.start_at as time_value 
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
                 from reservation as r
                 inner join reservation_time as t 
                 on r.time_id = t.id
+                inner join theme as th
+                on r.theme_id = th.theme_id
                 """;
         return template.query(sql, reservationRowMapper);
     }
@@ -74,19 +81,27 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("time_id", reservation.getTime().getId());
 
         final long newId = inserter.executeAndReturnKey(params).longValue();
-        return new Reservation(newId, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(newId, reservation.getName(),
+                reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
 
     @Override
     public Optional<Reservation> findById(final Long id) {
         final String sql = """
-                 select 
+                select 
                     r.id as reservation_id, 
                     r.name, r.date, 
                     t.id as time_id, 
-                    t.start_at as time_value 
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
                 from reservation as r
-                inner join reservation_time as t on r.time_id = t.id
+                inner join reservation_time as t 
+                on r.time_id = t.id
+                inner join theme as th
+                on r.theme_id = th.theme_id
                 where r.id = ?
                 """;
         return template.query(sql, reservationRowMapper, id)
@@ -106,12 +121,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
         final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         final LocalTime time = LocalTime.parse(resultSet.getString("time_value"), timeFormatter);
-
         return new Reservation(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getObject("date", LocalDate.class),
-                new ReservationTime(resultSet.getLong("id"), time)
+                new ReservationTime(resultSet.getLong("time_id"), time),
+                new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                        resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
         );
     };
 }

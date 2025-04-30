@@ -14,6 +14,8 @@ import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public List<ReservationResponse> getReservations() {
         final List<Reservation> reservations = reservationRepository.findAll();
@@ -32,11 +35,13 @@ public class ReservationService {
     public ReservationResponse saveReservation(final @Valid ReservationRequest request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+        final Theme theme = themeRepository.findById(request.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         if (reservationRepository.existsByDateAndTime(request.date(), reservationTime.getStartAt())) {
             throw new ReservationException("해당 시간은 이미 예약되어있습니다.");
         }
 
-        final Reservation reservation = new Reservation(request.name(), request.date(), reservationTime);
+        final Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
         validateFutureOrPresent(reservation.getDate(), reservation.extractTime());
         final Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
