@@ -30,4 +30,7 @@ public class ThemeService {
                 .toList();
     }
 
+    public void remove(Long id) {
+        themeRepository.deleteById(id);
+    }
 }

@@ -53,8 +53,24 @@ public class JdbcThemeDaoTest {
     void find_all_test() {
         // when
         List<Theme> themes = jdbcThemeDao.findAll();
+
         // then
         assertThat(themes).hasSize(3);
+    }
+
+    @DisplayName("테마를 삭제한다")
+    @Test
+    void delete_test() {
+        // given
+        Long deleteId = 3L;
+
+        // when
+        jdbcThemeDao.deleteById(deleteId);
+
+        // then
+        String sql = "SELECT COUNT(*) FROM theme";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+        assertThat(count).isEqualTo(2);
     }
 
 }

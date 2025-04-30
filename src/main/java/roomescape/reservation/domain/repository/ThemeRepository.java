@@ -8,4 +8,7 @@ public interface ThemeRepository {
     Long saveAndReturnId(Theme theme);
 
     List<Theme> findAll();
+
+    int deleteById(Long id);
+
 }

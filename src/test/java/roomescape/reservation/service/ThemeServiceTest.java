@@ -2,6 +2,7 @@ package roomescape.reservation.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,5 +57,16 @@ public class ThemeServiceTest {
         List<ThemeResponse> actual = themeService.getThemes();
         // then
         assertThat(actual).hasSize(3);
+    }
+
+    @DisplayName("테마 데이터를 정상적으로 삭제하면 예외가 발생하지 않는다")
+    @Test
+    void delete_theme() {
+        // given
+        Long deleteId = 3L;
+
+        // when & then
+        assertThatCode(() -> themeService.remove(deleteId))
+                .doesNotThrowAnyException();
     }
 }

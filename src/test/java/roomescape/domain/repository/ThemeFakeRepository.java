@@ -26,4 +26,13 @@ public class ThemeFakeRepository implements ThemeRepository {
         return themes.values().stream()
                 .toList();
     }
+
+    @Override
+    public int deleteById(Long id) {
+        if (themes.containsKey(id)) {
+            themes.remove(id);
+            return 1;
+        }
+        return 0;
+    }
 }

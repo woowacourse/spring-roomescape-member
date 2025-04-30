@@ -48,4 +48,10 @@ public class JdbcThemeDao implements ThemeRepository {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, rowMapper);
     }
+
+    @Override
+    public int deleteById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
 }
