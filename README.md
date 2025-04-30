@@ -43,7 +43,6 @@
 
 ```
 POST /reservations HTTP/1.1
-Location: /reservations/1
 content-type: application/json
 
 {
@@ -59,6 +58,7 @@ content-type: application/json
 
 ```
 HTTP/1.1 201
+Location: /reservations/1
 Content-Type: application/json
 
 {
@@ -131,7 +131,6 @@ HTTP/1.1 204
 
 ```
 POST /times HTTP/1.1
-Location: /times/1
 content-type: application/json
 
 {
@@ -143,6 +142,7 @@ content-type: application/json
 
 ```
 HTTP/1.1 201
+Location: /times/1
 Content-Type: application/json
 
 {
