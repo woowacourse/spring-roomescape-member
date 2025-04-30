@@ -20,7 +20,7 @@ public class TimeSlot {
         this.startAt = startAt;
     }
 
-    public boolean isBefore(LocalTime time) {
+    public boolean isBefore(final LocalTime time) {
         return this.startAt.isBefore(time);
     }
 

@@ -14,9 +14,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class ReservationTest {
 
     @ParameterizedTest
-    @MethodSource("NullValues")
+    @MethodSource("nullValues")
     @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
-    void ExceptionAnyValueNull(String name, LocalDate date, TimeSlot timeSlot) {
+    void anyValueNullException(String name, LocalDate date, TimeSlot timeSlot) {
         // given & when & then
         assertThatThrownBy(() -> Reservation.register(1L, name, date, timeSlot))
             .isInstanceOf(IllegalArgumentException.class);
@@ -24,7 +24,7 @@ public class ReservationTest {
 
     @Test
     @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")
-    void ExceptionNameLength() {
+    void nameLengthException() {
         // given & when & then
         assertThatThrownBy(() -> Reservation.register(
             1L,
@@ -34,7 +34,7 @@ public class ReservationTest {
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
-    public static Stream<Arguments> NullValues() {
+    private static Stream<Arguments> nullValues() {
         return Stream.of(
             Arguments.of(
                 null,

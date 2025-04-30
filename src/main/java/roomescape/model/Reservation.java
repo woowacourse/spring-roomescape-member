@@ -30,7 +30,7 @@ public class Reservation {
         this.timeSlot = timeSlot;
     }
 
-    public boolean isBefore(LocalDateTime dateTime) {
+    public boolean isBefore(final LocalDateTime dateTime) {
         var date = dateTime.toLocalDate();
         var time = dateTime.toLocalTime();
         return this.date.isBefore(date)
