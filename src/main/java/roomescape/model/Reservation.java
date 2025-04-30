@@ -4,12 +4,14 @@ public class Reservation {
     private final Long id;
     private final UserName userName;
     private final ReservationDateTime reservationDateTime;
+    private final Theme theme;
 
 
-    public Reservation(Long id, UserName userName, ReservationDateTime reservationDateTime) {
+    public Reservation(Long id, UserName userName, ReservationDateTime reservationDateTime, Theme theme) {
         this.id = id;
         this.userName = userName;
         this.reservationDateTime = reservationDateTime;
+        this.theme = theme;
     }
 
     public Long getId() {

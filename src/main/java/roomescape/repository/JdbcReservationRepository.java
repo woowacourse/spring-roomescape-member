@@ -12,11 +12,13 @@ import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.model.UserName;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository, ReservedTimeChecker {
     private final JdbcTemplate jdbcTemplate;
+    public static Theme tempTheme = new Theme(1L,"임시", "임시", "임시");
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -32,7 +34,9 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                         LocalDate.parse(rs.getString("date")),
                         new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime())
                 )
-        ));
+        ,tempTheme
+                ));
+        //TODO:Reservation 마지막 인자인 Theme join으로 불러와서 제대로 값 넣어주기
     }
 
     @Override
@@ -47,7 +51,7 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
             ps.setLong(3, reservationRequestDto.timeId());
             return ps;
         }, keyHolder);
-        return reservationRequestDto.toEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservationTime);
+        return reservationRequestDto.toEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservationTime, tempTheme);
     }
 
     @Override

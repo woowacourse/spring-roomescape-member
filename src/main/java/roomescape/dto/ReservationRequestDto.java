@@ -5,22 +5,26 @@ import java.time.LocalDate;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 import roomescape.model.UserName;
 
 public record ReservationRequestDto(@JsonProperty(value = "name", defaultValue = "name") String name,
                                     @JsonProperty("date") LocalDate date,
-                                    @JsonProperty("timeId") Long timeId) {
+                                    @JsonProperty("timeId") Long timeId,
+                                    @JsonProperty("themeId") Long themeId
+                                    ) {
 
-    public Reservation toEntity(Long id, ReservationTime reservationTime) {
+    public Reservation toEntity(Long id, ReservationTime reservationTime, Theme theme) {
         return new Reservation(id,
                 new UserName(name()),
-                new ReservationDateTime(date(), reservationTime));
+                new ReservationDateTime(date(), reservationTime), theme);
     }
 
-    public ReservationRequestDto(String name, java.time.LocalDate date, Long timeId){
-        if (name == null || date == null || timeId == null) throw new IllegalArgumentException();
+    public ReservationRequestDto(String name, java.time.LocalDate date, Long timeId, Long themeId){
+        if (name == null || date == null || timeId == null || themeId == null) throw new IllegalArgumentException();
         this.name = name;
         this.date = date;
         this.timeId = timeId;
+        this.themeId = themeId;
     }
 }

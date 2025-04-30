@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import static roomescape.repository.JdbcReservationRepository.tempTheme;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class MemoryReservationRepository implements ReservationRepository{
 
     @Override
     public Reservation addReservation(ReservationRequestDto reservationRequestDto, ReservationTime reservationTime) {
-        Reservation reservation = reservationRequestDto.toEntity(id.getAndIncrement(), reservationTime);
+        Reservation reservation = reservationRequestDto.toEntity(id.getAndIncrement(), reservationTime, tempTheme);
         reservations.add(reservation);
         return reservation;
     }
