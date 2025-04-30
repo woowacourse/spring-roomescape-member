@@ -8,6 +8,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ThemeResponseDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -26,12 +27,12 @@ public class ReservationService {
     }
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequestDto.timeId())
+        ReservationTime foundTime = reservationTimeDao.findById(reservationRequestDto.timeId())
                 .orElseThrow(() -> new IllegalStateException("id 에 해당하는 예약 시각이 존재하지 않습니다."));
-        Theme theme = themeDao.findById(reservationRequestDto.themeId())
+        Theme foundTheme = themeDao.findById(reservationRequestDto.themeId())
                 .orElseThrow(() -> new IllegalStateException("id 에 해당하는 테마가 존재하지 않습니다."));
 
-        Reservation reservation = reservationRequestDto.convertToReservation(reservationTime, theme);
+        Reservation reservation = reservationRequestDto.convertToReservation(foundTime, foundTheme);
         reservation.validateReservationDateInFuture();
 
         reservationDao.findByDateAndTime(reservation)
@@ -40,11 +41,14 @@ public class ReservationService {
                 });
 
         Long id = reservationDao.saveReservation(reservation);
+        ReservationTime time = reservation.getTime();
+        Theme theme = reservation.getTheme();
         return new ReservationResponseDto(
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                new ReservationTimeResponseDto(reservation.getTimeId(), reservation.getTime())
+                new ReservationTimeResponseDto(time.getId(), time.getStartAt()),
+                new ThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail())
         );
     }
 

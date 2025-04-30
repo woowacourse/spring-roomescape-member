@@ -1,7 +1,6 @@
 package roomescape.model;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Objects;
 
 public class Reservation {
@@ -53,16 +52,8 @@ public class Reservation {
         return date;
     }
 
-    public LocalTime getTime() {
-        return reservationTime.getStartAt();
-    }
-
-    public Long getTimeId() {
-        return reservationTime.getId();
-    }
-
-    public Long getThemeId() {
-        return theme.getId();
+    public ReservationTime getTime() {
+        return this.reservationTime;
     }
 
     public Theme getTheme() {

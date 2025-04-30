@@ -66,8 +66,8 @@ public class ReservationDao {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTimeId());
-            ps.setLong(4, reservation.getThemeId());
+            ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();
@@ -96,7 +96,7 @@ public class ReservationDao {
                         INNER JOIN theme AS t ON t.id = r.theme_id
                         WHERE r.date = ? AND rt.id = ?
                         """;
-        return jdbcTemplate.query(sql, actorRowMapper, reservation.getDate(), reservation.getTimeId())
+        return jdbcTemplate.query(sql, actorRowMapper, reservation.getDate(), reservation.getTime().getId())
                 .stream()
                 .findFirst();
     }

@@ -117,8 +117,6 @@ public class MissionStepTest {
     @DisplayName("조회한 예약 수와 데이터베이스 쿼리를 통해 조회한 예약 수가 같은지 비교하는 테스트")
     @Test
     void 오단계() {
-        reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(10, 10)));
-
         jdbcTemplate.update(
                 "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
