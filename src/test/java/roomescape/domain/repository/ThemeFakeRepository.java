@@ -2,6 +2,7 @@ package roomescape.domain.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservation.domain.Theme;
@@ -34,5 +35,13 @@ public class ThemeFakeRepository implements ThemeRepository {
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        if(themes.containsKey(id)){
+            return Optional.of(themes.get(id));
+        }
+        return Optional.empty();
     }
 }

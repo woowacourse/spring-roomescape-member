@@ -8,18 +8,23 @@ import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> getAll() {
@@ -31,9 +36,14 @@ public class ReservationService {
 
     public ReservationResponse add(ReservationRequest request) {
         ReservationTime findTime = reservationTimeRepository.findById(request.timeId());
+
         validateDateAndTime(request.date(),findTime.getStartAt());
         validateDuplicateReservation(request.date(), request.timeId());
-        Reservation reservation = request.toReservationWithoutId(findTime);
+
+        Theme findTheme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
+        Reservation reservation = request.toReservationWithoutId(findTime, findTheme);
 
         Long id = reservationRepository.saveAndReturnId(reservation);
         return ReservationResponse.from(reservation.withId(id));

@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
 
 @Repository
 public class JdbcReservationDao implements ReservationRepository {
@@ -26,7 +27,14 @@ public class JdbcReservationDao implements ReservationRepository {
                 Long timeId = rs.getLong("time_id");
                 LocalTime startAt = LocalTime.parse(rs.getString("start_at"));
                 ReservationTime time = new ReservationTime(timeId, startAt);
-                return new Reservation(reservationId, name, date, time);
+
+                Long themeId = rs.getLong("theme_id");
+                String themeName = rs.getString("theme_name");
+                String themeDescription = rs.getString("theme_des");
+                String themeThumbnail = rs.getString("theme_thumb");
+                Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
+
+                return new Reservation(reservationId, name, date, time, theme);
             };
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
@@ -35,7 +43,7 @@ public class JdbcReservationDao implements ReservationRepository {
 
     @Override
     public Long saveAndReturnId(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
@@ -44,6 +52,7 @@ public class JdbcReservationDao implements ReservationRepository {
                     preparedStatement.setString(1, reservation.getName());
                     preparedStatement.setString(2, reservation.getDate().toString());
                     preparedStatement.setLong(3, reservation.getTime().getId());
+                    preparedStatement.setLong(4, reservation.getTheme().getId());
                     return preparedStatement;
                 },
                 keyHolder
@@ -66,10 +75,16 @@ public class JdbcReservationDao implements ReservationRepository {
                     r.name,
                     r.date,
                     t.id AS time_id,
-                    t.start_at AS time_value
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_des,
+                    th.thumbnail AS theme_thumb
                 FROM reservation AS r
-                INNER JOIN reservation_time AS t
+                INNER JOIN reservation_time AS t 
                 ON r.time_id = t.id
+                INNER JOIN theme AS th
+                ON r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, reservationMapper);
     }

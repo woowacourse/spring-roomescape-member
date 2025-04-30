@@ -73,4 +73,19 @@ public class JdbcThemeDaoTest {
         assertThat(count).isEqualTo(2);
     }
 
+    @DisplayName("특정 ID의 테마를 조회한다")
+    @Test
+    void find_by_id_test() {
+        // given
+        Long id = 3L;
+
+        // when & then
+        Theme theme = jdbcThemeDao.findById(id).get();
+        assertThat(theme.getId()).isEqualTo(3L);
+        assertThat(theme.getName()).isEqualTo("레벨3 탈출");
+        assertThat(theme.getDescription()).isEqualTo("우테코 레벨3를 탈출하는 내용입니다.");
+        assertThat(theme.getThumbnail()).isEqualTo(
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    }
+
 }
