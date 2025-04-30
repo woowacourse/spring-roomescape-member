@@ -7,9 +7,9 @@ import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation_time.application.usecase.ReservationTimeQueryUseCase;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.domain.ReservationTimeId;
+import roomescape.time.application.usecase.ReservationTimeQueryUseCase;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.domain.ReservationTimeId;
 
 import java.util.NoSuchElementException;
 

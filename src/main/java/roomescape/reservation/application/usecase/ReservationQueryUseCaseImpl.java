@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation_time.domain.ReservationTimeId;
+import roomescape.time.domain.ReservationTimeId;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -12,8 +12,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.infrastructure.entity.ReservationEntity;
-import roomescape.reservation_time.domain.ReservationTimeId;
-import roomescape.reservation_time.infrastructure.entity.ReservationTimeEntity;
+import roomescape.time.domain.ReservationTimeId;
+import roomescape.time.infrastructure.entity.ReservationTimeEntity;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;

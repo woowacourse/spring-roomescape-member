@@ -3,7 +3,7 @@ package roomescape.reservation.infrastructure.entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import roomescape.reservation_time.infrastructure.entity.ReservationTimeEntity;
+import roomescape.time.infrastructure.entity.ReservationTimeEntity;
 
 import java.sql.Date;
 

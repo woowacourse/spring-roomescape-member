@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
-import roomescape.reservation_time.domain.ReservationTime;
+import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDateTime;
 

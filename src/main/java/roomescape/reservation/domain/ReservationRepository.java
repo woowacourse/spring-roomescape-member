@@ -1,6 +1,6 @@
 package roomescape.reservation.domain;
 
-import roomescape.reservation_time.domain.ReservationTimeId;
+import roomescape.time.domain.ReservationTimeId;
 
 import java.time.LocalDate;
 import java.util.List;

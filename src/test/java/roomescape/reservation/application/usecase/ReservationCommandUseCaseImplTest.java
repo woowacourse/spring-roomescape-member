@@ -11,9 +11,9 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.domain.ReservationTimeId;
-import roomescape.reservation_time.domain.ReservationTimeRepository;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.domain.ReservationTimeId;
+import roomescape.time.domain.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
