@@ -43,13 +43,13 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
 
     private void validateEmptyName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 이름입니다.");
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 예약자명입니다.");
         }
     }
 
     private void validateNameLength(String name) {
         if (name.length() > NAME_LENGTH) {
-            throw new IllegalArgumentException("[ERROR] 이름 길이가 " + NAME_LENGTH + "자를 초과할 수 없습니다.");
+            throw new IllegalArgumentException("[ERROR] 예약자명의 길이가 " + NAME_LENGTH + "자를 초과할 수 없습니다.");
         }
     }
 

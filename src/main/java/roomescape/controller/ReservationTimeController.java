@@ -23,7 +23,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public List<ReservationTimeResponse> readReservationTime() {
+    public List<ReservationTimeResponse> readAllReservationTime() {
         return service.readAllReservationTime();
     }
 

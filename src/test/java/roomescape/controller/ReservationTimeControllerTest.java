@@ -55,7 +55,7 @@ public class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("예약 시간 목록을 조회한다.")
-    void readReservationTime() {
+    void readAllReservationTime() {
         //given
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(15, 0));
         ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(16, 0));
@@ -70,7 +70,7 @@ public class ReservationTimeControllerTest {
         namedJdbcTemplate.batchUpdate(sql, batch);
 
         //when
-        List<ReservationTimeResponse> result = controller.readReservationTime();
+        List<ReservationTimeResponse> result = controller.readAllReservationTime();
 
         //then
         assertThat(result.size()).isEqualTo(2);
