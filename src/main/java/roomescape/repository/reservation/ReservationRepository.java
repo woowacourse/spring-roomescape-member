@@ -12,7 +12,9 @@ public interface ReservationRepository {
 
     List<ReservationEntity> findAll();
 
-    boolean existsByDateAndTime(LocalDate date, Long id);
+    boolean existsByDateAndTime(LocalDate date, Long timeId);
 
     boolean existsByTimeId(Long id);
+
+    List<Long> findTimeIdsByDateAndTheme(LocalDate date, Long themeId);
 }

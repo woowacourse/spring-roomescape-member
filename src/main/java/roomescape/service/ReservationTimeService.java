@@ -1,10 +1,13 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.entity.ReservationTimeEntity;
 import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.reservationtime.UsingReservationTimeException;
@@ -48,5 +51,19 @@ public class ReservationTimeService {
 
     private boolean isReservationExists(Long id) {
         return reservationRepository.existsByTimeId(id);
+    }
+
+    public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
+        List<Long> reservedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
+        List<ReservationTimeEntity> reservationTimeEntities = timeRepository.findAll();
+
+        List<AvailableTimeResponse> availableTimeResponses = reservationTimeEntities.stream()
+                .map(timeEntity -> {
+                    boolean alreadyBooked = reservedTimeIds.contains(timeEntity.id());
+                    return AvailableTimeResponse.of(timeEntity, alreadyBooked);
+                })
+                .toList();
+
+        return availableTimeResponses;
     }
 }

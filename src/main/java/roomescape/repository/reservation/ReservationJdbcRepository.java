@@ -101,4 +101,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return count != 0;
     }
 
+    @Override
+    public List<Long> findTimeIdsByDateAndTheme(LocalDate date, Long themeId) {
+        String sql = "SELECT time_id from reservation where date=? and theme_id=?";
+        List<Long> timeIds = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> resultSet.getLong("time_id"),
+                date,
+                themeId);
+        return timeIds;
+    }
 }

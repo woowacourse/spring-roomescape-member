@@ -11,7 +11,6 @@ import roomescape.repository.theme.ThemeRepository;
 
 @Service
 public class ThemeServiceImpl implements ThemeService {
-
     private final ThemeRepository themeRepository;
 
     public ThemeServiceImpl(ThemeRepository themeRepository) {
