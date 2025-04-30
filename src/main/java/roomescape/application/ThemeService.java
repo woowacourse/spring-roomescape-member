@@ -10,7 +10,6 @@ import roomescape.domain.Theme;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ThemeRequest;
-import roomescape.presentation.dto.response.AdminThemeResponse;
 
 @Service
 public class ThemeService {

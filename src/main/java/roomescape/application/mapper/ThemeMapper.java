@@ -5,7 +5,6 @@ import java.util.List;
 import roomescape.application.dto.ThemeDto;
 import roomescape.domain.Theme;
 import roomescape.presentation.dto.request.ThemeRequest;
-import roomescape.presentation.dto.response.AdminThemeResponse;
 
 public class ThemeMapper {
     public static ThemeDto toDto(Theme theme) {
