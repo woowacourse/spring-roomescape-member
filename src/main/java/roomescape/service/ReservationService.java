@@ -1,18 +1,22 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.*;
+import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
-import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.EntityNotFoundException;
+import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeConflictException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,24 +41,14 @@ public class ReservationService {
     }
 
     public ReservationResponse add(ReservationRequest requestDto) {
-        ReservationTime reservationTime = reservationTimeDao.findById(requestDto.timeId())
-            .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
-
-        Theme theme = themeDao.findById(requestDto.themeId())
-            .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
-
-        if (reservationDao.isExist(requestDto.date(), requestDto.timeId(), requestDto.themeId())) {
-            throw new DuplicateReservationException("이미 예약이 존재합니다.");
-        }
-
+        ReservationTime reservationTime = getReservationTime(requestDto);
+        Theme theme = getTheme(requestDto);
         List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(), requestDto.themeId());
-        boolean isBooked = sameTimeReservations.stream()
-            .anyMatch(reservation -> reservation.isBooked(reservationTime, theme));
-        if (isBooked) {
-            throw new ReservationTimeConflictException("해당 테마 이용시간이 겹칩니다.");
-        }
 
-        Reservation reservation = Reservation.create(requestDto.name(), requestDto.date(), reservationTime, theme);
+        validateIsBooked(sameTimeReservations, reservationTime, theme);
+        validatePastDateTime(requestDto.date(), reservationTime.getStartAt());
+
+        Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), reservationTime, theme);
         Reservation saved = reservationDao.save(reservation);
         return ReservationResponse.of(saved);
     }
@@ -70,6 +64,36 @@ public class ReservationService {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         Theme selectedTheme = themeDao.findById(themeId).orElseThrow(RuntimeException::new);
         List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(LocalDate.parse(date), themeId);
+        return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
+    }
+
+    private ReservationTime getReservationTime(ReservationRequest requestDto) {
+        return reservationTimeDao.findById(requestDto.timeId())
+            .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
+    }
+
+    private Theme getTheme(ReservationRequest requestDto) {
+        return themeDao.findById(requestDto.themeId())
+            .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
+    }
+
+    private void validateIsBooked(List<Reservation> sameTimeReservations, ReservationTime reservationTime, Theme theme) {
+        boolean isBooked = sameTimeReservations.stream()
+            .anyMatch(reservation -> reservation.isBooked(reservationTime, theme));
+        if (isBooked) {
+            throw new ReservationTimeConflictException("해당 테마 이용시간이 겹칩니다.");
+        }
+    }
+
+    private void validatePastDateTime(LocalDate date, LocalTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+        if (reservationDateTime.isBefore(now)) {
+            throw new PastReservationException("현재보다 과거의 날짜로 예약 할 수 없습니다.");
+        }
+    }
+
+    private List<AvailableReservationTimeResponse> getAvailableReservationTimeResponses(List<ReservationTime> reservationTimes, List<Reservation> bookedReservations, Theme selectedTheme) {
         List<AvailableReservationTimeResponse> responses = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             boolean isBooked = bookedReservations.stream()

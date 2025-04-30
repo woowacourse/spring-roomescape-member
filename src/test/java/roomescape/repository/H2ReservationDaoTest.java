@@ -85,14 +85,6 @@ class H2ReservationDaoTest {
     }
 
     @Test
-    void date와_time_id가_존재하는지_확인한다() {
-        assertAll(
-            () -> assertThat(reservationDao.isExist(LocalDate.of(2025, 4, 24), 1L, 2L)).isTrue(),
-            () -> assertThat(reservationDao.isExist(LocalDate.of(2026, 4, 24), 1L, 2L)).isFalse()
-        );
-    }
-
-    @Test
     void date와_theme_id가_일치하는_예약을_조회한다() {
         List<Reservation> findReservation = reservationDao.findByDateAndThemeId(LocalDate.of(2025, 4, 25), 2L);
 

@@ -62,9 +62,9 @@ class H2ReservationTimeDaoTest {
 
     @Test
     void id로_시간을_조회한다() {
-        ReservationTime expected = new ReservationTime(LocalTime.of(12, 0));
+        ReservationTime expected = new ReservationTime(2L, LocalTime.of(12, 0));
 
-        assertThat(reservationTimeDao.findById(3L).get())
+        assertThat(reservationTimeDao.findById(2L).get())
             .isEqualTo(expected);
     }
 }

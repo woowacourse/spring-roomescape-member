@@ -105,17 +105,6 @@ public class H2ReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean isExist(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = :date AND time_id = :time_id AND theme_id = :theme_id)";
-
-        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("date", date)
-            .addValue("time_id", timeId)
-            .addValue("theme_id", themeId);
-        return Boolean.TRUE == jdbcTemplate.queryForObject(sql, mapSqlParameterSource, Boolean.class);
-    }
-
-    @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
             SELECT
