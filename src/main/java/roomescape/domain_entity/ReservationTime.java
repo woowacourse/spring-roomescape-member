@@ -26,16 +26,16 @@ public class ReservationTime {
         return new ReservationTime(id, startAt);
     }
 
+    public boolean isPastTime() {
+        LocalTime now = LocalTime.now().withNano(0);
+        return startAt.isBefore(now);
+    }
+
     public long getId() {
         return id.value();
     }
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    public boolean isPastTime() {
-        LocalTime now = LocalTime.now().withNano(0);
-        return startAt.isBefore(now);
     }
 }
