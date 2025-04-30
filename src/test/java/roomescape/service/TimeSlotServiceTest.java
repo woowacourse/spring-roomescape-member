@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.Fixtures.JUNK_THEME;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,12 +70,12 @@ class TimeSlotServiceTest {
 
         var name = "포포";
         var date = Fixtures.ofTomorrow();
-        var reservation = Reservation.create(name, date, timeSlot);
+        var reservation = Reservation.create(name, date, timeSlot, JUNK_THEME);
         reservationRepository.save(reservation);
 
         // when & then
         assertThatThrownBy(() -> timeSlotService.removeById(timeSlot.id()))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("삭제하려는 예약 시간을 사용하는 예약이 있습니다.");
+            .hasMessage("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다.");
     }
 }

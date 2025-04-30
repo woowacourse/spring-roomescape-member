@@ -19,14 +19,16 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final TimeSlot timeSlot;
+    private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot) {
-        validateNotNull(name, date, timeSlot);
+    private Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        validateNotNull(name, date, timeSlot, theme);
         validateNameLength(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.timeSlot = timeSlot;
+        this.theme = theme;
     }
 
     public boolean isBefore(final LocalDateTime dateTime) {
@@ -41,27 +43,28 @@ public class Reservation {
     }
 
     // TODO : 메서드명
-    public static Reservation register(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot) {
-        return new Reservation(id, name, date, timeSlot);
+    public static Reservation register(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        return new Reservation(id, name, date, timeSlot, theme);
     }
 
-    public static Reservation create(final String name, final LocalDate date, final TimeSlot timeSlot) {
-        return new Reservation(null, name, date, timeSlot);
+    public static Reservation create(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        return new Reservation(null, name, date, timeSlot, theme);
     }
 
     private void validateNotNull(
         final String name,
         final LocalDate date,
-        final TimeSlot timeSlot
+        final TimeSlot timeSlot,
+        final Theme theme
     ) {
-        if (name == null || date == null || timeSlot == null) {
+        if (name == null || date == null || timeSlot == null || theme == null) {
             throw new IllegalArgumentException("모든 값들이 존재해야 합니다.");
         }
     }
 
     private void validateNameLength(final String name) {
         if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException("이름은 5자를 넘길 수 없습니다.");
+            throw new IllegalArgumentException(String.format("이름은 %d자를 넘길 수 없습니다.", NAME_MAX_LENGTH));
         }
     }
 }

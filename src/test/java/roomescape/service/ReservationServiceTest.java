@@ -4,20 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.Fixtures.JUNK_THEME;
+import static roomescape.Fixtures.JUNK_TIME_SLOT;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.Fixtures;
 import roomescape.model.Reservation;
-import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationFakeRepository;
+import roomescape.repository.ThemeFakeRepository;
 import roomescape.repository.TimeSlotFakeRepository;
 
 public class ReservationServiceTest {
-
-    private static final TimeSlot JUNK_TIME_SLOT = TimeSlot.register(1L, LocalTime.of(10, 0));
 
     private ReservationService service;
 
@@ -25,9 +24,11 @@ public class ReservationServiceTest {
     void setUp() {
         var reservationRepository = new ReservationFakeRepository();
         var timeSlotRepository = new TimeSlotFakeRepository();
+        var themeRepository = new ThemeFakeRepository();
         timeSlotRepository.save(JUNK_TIME_SLOT);
+        themeRepository.save(JUNK_THEME);
 
-        service = new ReservationService(reservationRepository, timeSlotRepository);
+        service = new ReservationService(reservationRepository, timeSlotRepository, themeRepository);
     }
 
     @Test
@@ -37,9 +38,10 @@ public class ReservationServiceTest {
         var name = "포포";
         var date = Fixtures.ofTomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
+        var themeId = JUNK_THEME.id();
 
         // when
-        Reservation reserved = service.reserve(name, date, timeSlotId);
+        Reservation reserved = service.reserve(name, date, timeSlotId, themeId);
 
         // then
         var reservations = service.allReservations();
@@ -53,7 +55,8 @@ public class ReservationServiceTest {
         var name = "포포";
         var date = Fixtures.ofTomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
-        var reserved = service.reserve(name, date, timeSlotId);
+        var themeId = JUNK_THEME.id();
+        var reserved = service.reserve(name, date, timeSlotId, themeId);
 
         // when
         boolean isRemoved = service.removeById(reserved.id());
@@ -73,9 +76,10 @@ public class ReservationServiceTest {
         var name = "포포";
         var date = Fixtures.ofYesterday();
         var timeSlotId = JUNK_TIME_SLOT.id();
+        var themeId = JUNK_THEME.id();
 
         // when & then
-        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId))
+        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId, themeId))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -86,9 +90,10 @@ public class ReservationServiceTest {
         var name = "포포";
         var date = Fixtures.ofTomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
+        var themeId = JUNK_THEME.id();
 
         // when & then
-        assertThatCode(() -> service.reserve(name, date, timeSlotId))
+        assertThatCode(() -> service.reserve(name, date, timeSlotId, themeId))
             .doesNotThrowAnyException();
     }
 
@@ -99,12 +104,13 @@ public class ReservationServiceTest {
         var name = "포포";
         var date = Fixtures.ofTomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
+        var themeId = JUNK_THEME.id();
 
         // when
-        service.reserve(name, date, timeSlotId);
+        service.reserve(name, date, timeSlotId, themeId);
 
         // then
-        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId))
+        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId, themeId))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import roomescape.Fixtures;
 import roomescape.model.Reservation;
+import roomescape.model.Theme;
 import roomescape.model.TimeSlot;
 
 @JdbcTest
@@ -22,17 +24,16 @@ public class ReservationJdbcRepositoryTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private Long timeSlotId;
-
-    @DisplayName("예약 시간을 미리 세팅")
+    @DisplayName("타임 슬롯과 테마를 미리 세팅")
     @BeforeEach
     void setUp() {
-        var insert = new SimpleJdbcInsert(jdbcTemplate);
-        var generatedId = insert
-            .withTableName("RESERVATION_TIME")
-            .usingGeneratedKeyColumns("id")
-            .executeAndReturnKey(Map.of("start_at", "10:00"));
-        timeSlotId = generatedId.longValue();
+        jdbcTemplate.update("insert into RESERVATION_TIME (id, start_at) values (?, ?)", 1, "10:00");
+        jdbcTemplate.update("insert into THEME (id, name, description, thumbnail) values (?, ?, ?, ?)",
+            1,
+            "레벨2 탈출",
+            "우테코 레벨2를 탈출하는 내용입니다.",
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        );
     }
 
     @Test
@@ -97,7 +98,8 @@ public class ReservationJdbcRepositoryTest {
         return Reservation.create(
             "브라운",
             LocalDate.of(2023, 12, 1),
-            TimeSlot.register(timeSlotId, LocalTime.of(10, 0))
+            Fixtures.JUNK_TIME_SLOT,
+            Fixtures.JUNK_THEME
         );
     }
 }

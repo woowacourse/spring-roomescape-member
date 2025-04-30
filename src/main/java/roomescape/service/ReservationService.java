@@ -6,8 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.model.Reservation;
+import roomescape.model.Theme;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.repository.TimeSlotRepository;
 
 @Service
@@ -15,25 +17,29 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final TimeSlotRepository timeSlotRepository;
+    private final ThemeRepository themeRepository;
 
     @Autowired
     public ReservationService(
         final ReservationRepository reservationRepository,
-        final TimeSlotRepository timeSlotRepository
+        final TimeSlotRepository timeSlotRepository,
+        final ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.timeSlotRepository = timeSlotRepository;
+        this.themeRepository = themeRepository;
     }
 
-    public Reservation reserve(String name, LocalDate date, Long timeId) {
+    public Reservation reserve(final String name, final LocalDate date, final Long timeId, final Long themeId) {
         var timeSlot = findTimeSlot(timeId);
+        var theme = findTheme(themeId);
         // TODO : 정적 팩토리 메서드로 임시 예약 생성하기
-        var reservation = Reservation.create(name, date, timeSlot);
+        var reservation = Reservation.create(name, date, timeSlot, theme);
         // TODO : now 테스트 어려움 해결하기
         validatePastDateTime(reservation);
         validateDuplicateReservation(reservation);
         var id = reservationRepository.save(reservation);
-        return Reservation.register(id, name, date, timeSlot);
+        return Reservation.register(id, name, date, timeSlot, theme);
     }
 
     private void validatePastDateTime(final Reservation reservation) {
@@ -53,7 +59,13 @@ public class ReservationService {
 
     private TimeSlot findTimeSlot(final Long timeId) {
         return timeSlotRepository.findById(timeId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타임 슬롯입니다."));
+    }
+
+    private Theme findTheme(final Long themeId) {
+        return themeRepository.findById(themeId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
     }
 
     public List<Reservation> allReservations() {

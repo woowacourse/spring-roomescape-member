@@ -15,4 +15,6 @@ public interface ReservationRepository {
     List<Reservation> findAll();
 
     List<Reservation> findByTimeSlotId(long id);
+
+    List<Reservation> findByThemeId(long id);
 }

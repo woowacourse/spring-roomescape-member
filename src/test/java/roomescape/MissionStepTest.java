@@ -60,8 +60,10 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", Fixtures.ofTomorrow().toString());
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         insertOneReservationTimeSlot();
+        insertOneReservationTheme();
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -106,8 +108,9 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         insertOneReservationTimeSlot();
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운",
-            Fixtures.ofTomorrow().toString(), 1);
+        insertOneReservationTheme();
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+            Fixtures.ofTomorrow().toString(), 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
             .when().get("/reservations")
@@ -127,8 +130,10 @@ public class MissionStepTest {
         params.put("name", "브라운");
         params.put("date", Fixtures.ofTomorrow().toString());
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         insertOneReservationTimeSlot();
+        insertOneReservationTheme();
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -178,14 +183,16 @@ public class MissionStepTest {
     @Test
     void 팔단계() {
         insertOneReservationTimeSlot();
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", Fixtures.ofTomorrow().toString());
-        reservation.put("timeId", 1);
+        insertOneReservationTheme();
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", Fixtures.ofTomorrow().toString());
+        params.put("timeId", 1);
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .body(reservation)
+            .body(params)
             .when().post("/reservations")
             .then().log().all()
             .statusCode(HttpStatus.CREATED.value());
@@ -214,4 +221,7 @@ public class MissionStepTest {
     private void insertOneReservationTimeSlot() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
     }
-}
+
+    private void insertOneReservationTheme() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    }}

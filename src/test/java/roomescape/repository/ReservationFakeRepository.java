@@ -24,7 +24,8 @@ public class ReservationFakeRepository implements ReservationRepository {
             id,
             reservation.name(),
             reservation.date(),
-            reservation.timeSlot()
+            reservation.timeSlot(),
+            reservation.theme()
         );
         reservations.put(id, created);
         return id;
@@ -45,6 +46,13 @@ public class ReservationFakeRepository implements ReservationRepository {
     public List<Reservation> findByTimeSlotId(final long id) {
         return reservations.values().stream()
             .filter(reservation -> reservation.timeSlot().id() == id)
+            .toList();
+    }
+
+    @Override
+    public List<Reservation> findByThemeId(final long id) {
+        return reservations.values().stream()
+            .filter(reservation -> reservation.theme().id() == id)
             .toList();
     }
 }

@@ -12,15 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.Fixtures;
 
 public class ReservationTest {
 
     @ParameterizedTest
     @MethodSource("nullValues")
     @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
-    void anyValueNullException(String name, LocalDate date, TimeSlot timeSlot) {
+    void anyValueNullException(String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
         // given & when & then
-        assertThatThrownBy(() -> Reservation.register(1L, name, date, timeSlot))
+        assertThatThrownBy(() -> Reservation.register(1L, name, date, timeSlot, theme))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -32,7 +33,8 @@ public class ReservationTest {
             1L,
             "여섯글자이름",
             LocalDate.of(2023, 12, 1),
-            TimeSlot.register(1L, LocalTime.of(10, 0)))
+            TimeSlot.register(1L, LocalTime.of(10, 0)),
+            Fixtures.JUNK_THEME)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -44,7 +46,7 @@ public class ReservationTest {
         var reserveTime = LocalTime.of(10, 0);
         var compareDateTime = LocalDateTime.of(reserveDate, reserveTime).plusDays(1);
         var reservation = Reservation.register(1L, "리버", reserveDate,
-            TimeSlot.register(1L, reserveTime));
+            TimeSlot.register(1L, reserveTime), Fixtures.JUNK_THEME);
 
         // when
         boolean isBefore = reservation.isBefore(compareDateTime);
@@ -60,9 +62,9 @@ public class ReservationTest {
         var reserveDate = LocalDate.of(2023, 12, 1);
         var reserveTime = LocalTime.of(10, 0);
         var reservation = Reservation.register(1L, "리버", reserveDate,
-            TimeSlot.register(1L, reserveTime));
+            TimeSlot.register(1L, reserveTime), Fixtures.JUNK_THEME);
         var otherReservation = Reservation.register(2L, "포포", reserveDate,
-            TimeSlot.register(1L, reserveTime));
+            TimeSlot.register(1L, reserveTime), Fixtures.JUNK_THEME);
 
         // when
         boolean isSameDateTime = reservation.isSameDateTime(otherReservation);
@@ -76,16 +78,25 @@ public class ReservationTest {
             Arguments.of(
                 null,
                 LocalDate.of(2023, 12, 1),
-                TimeSlot.register(1L, LocalTime.of(10, 0))
+                TimeSlot.register(1L, LocalTime.of(10, 0)),
+                Fixtures.JUNK_THEME
             ),
             Arguments.of(
                 "brown",
                 null,
-                TimeSlot.register(1L, LocalTime.of(10, 0))
+                TimeSlot.register(1L, LocalTime.of(10, 0)),
+                Fixtures.JUNK_THEME
             ),
             Arguments.of(
                 "brown",
                 LocalDate.of(2023, 12, 1),
+                null,
+                Fixtures.JUNK_THEME
+            ),
+            Arguments.of(
+                "brown",
+                LocalDate.of(2023, 12, 1),
+                TimeSlot.register(1L, LocalTime.of(10, 0)),
                 null
             )
         );
