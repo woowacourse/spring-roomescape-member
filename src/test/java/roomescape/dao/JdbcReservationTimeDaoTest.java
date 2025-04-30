@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,8 +53,9 @@ class JdbcReservationTimeDaoTest {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10,0));
         ReservationTime saved = dao.save(reservationTime);
 
-        ReservationTime foundReservationTime = dao.findById(saved.getId());
-        assertThat(foundReservationTime.getId()).isEqualTo(saved.getId());
-        assertThat(foundReservationTime.getStartAt()).isEqualTo(saved.getStartAt());
+        Optional<ReservationTime> foundReservationTime = dao.findById(saved.getId());
+        assertThat(foundReservationTime).isPresent();
+        assertThat(foundReservationTime.get().getId()).isEqualTo(saved.getId());
+        assertThat(foundReservationTime.get().getStartAt()).isEqualTo(saved.getStartAt());
     }
 }

@@ -17,7 +17,7 @@ public class FakeReservaionDao implements ReservationDao {
     @Override
     public Reservation save(Reservation reservation) {
         Long id = this.id.getAndIncrement();
-        Reservation saved = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getReservationTime());
+        Reservation saved = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
         this.reservations.put(id, saved);
 
         return saved;

@@ -9,30 +9,36 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
+import roomescape.dao.ThemeDao;
 import roomescape.fake.FakeReservaionDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.fake.FakeThemeDao;
 import roomescape.model.ReservationTime;
+import roomescape.model.Theme;
 
 class ReservationServiceTest {
 
     private ReservationService reservationService;
     private ReservationTimeDao reservationTimeDao;
+    private ThemeDao themeDao;
 
     @BeforeEach
     void setUp() {
         ReservationDao reservationDao = new FakeReservaionDao();
         reservationTimeDao = new FakeReservationTimeDao();
-        reservationService = new ReservationService(reservationDao, reservationTimeDao);
+        themeDao = new FakeThemeDao();
+        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     }
 
     @Test
     void 예약을_정상적으로_추가() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025,12,16),savedTime.getId());
+        Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
+        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025,12,16),savedTime.getId(), savedTheme.getId());
 
         ReservationResponse response = reservationService.addReservation(request);
 
@@ -44,7 +50,9 @@ class ReservationServiceTest {
     @Test
     void 예약_리스트를_정상적으로_조회() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025,12,16),savedTime.getId());
+        Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
+        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025,12,16),savedTime.getId(),
+                savedTheme.getId());
 
         reservationService.addReservation(request);
         List<ReservationResponse> reservations = reservationService.getReservations();
@@ -54,7 +62,8 @@ class ReservationServiceTest {
     @Test
     void 예약을_정상적으로_삭제() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025,12,16),savedTime.getId());
+        Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
+        ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025,12,16),savedTime.getId(), savedTheme.getId());
         ReservationResponse response = reservationService.addReservation(request);
 
         reservationService.deleteReservation(response.id());
@@ -66,6 +75,6 @@ class ReservationServiceTest {
     @Test
     void 예약이_존재하지_않으면_예외발생() {
         assertThatThrownBy(() -> reservationService.deleteReservation(999L))
-                .isInstanceOf(ResponseStatusException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -7,13 +7,15 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this.id = id;
         validateName(name);
         this.name = name;
         this.date = date;
         this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
     public void validateName(String name) {
@@ -43,5 +45,9 @@ public class Reservation {
 
     public ReservationTime getReservationTime() {
         return reservationTime;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

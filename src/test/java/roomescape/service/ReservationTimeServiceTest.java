@@ -62,6 +62,6 @@ class ReservationTimeServiceTest {
     @Test
     void 삭제하려는_예약시간이_존재하지_않으면_예외() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(999L))
-                .isInstanceOf(ResponseStatusException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
