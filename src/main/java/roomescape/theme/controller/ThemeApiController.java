@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.dto.BestThemeResponse;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -27,7 +27,8 @@ public class ThemeApiController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> add(@RequestBody ThemeRequest themeRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(themeService.add(themeRequest));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(themeService.add(themeRequest));
     }
 
     @GetMapping
@@ -35,9 +36,9 @@ public class ThemeApiController {
         return ResponseEntity.ok(themeService.findAll());
     }
 
-    @GetMapping("/best")
-    public ResponseEntity<List<BestThemeResponse>> findBest() {
-        return ResponseEntity.ok(themeService.findBest());
+    @GetMapping("/popular/weekly")
+    public ResponseEntity<List<PopularThemeResponse>> findTop10MostReservedLastWeek() {
+        return ResponseEntity.ok(themeService.findTop10MostReservedLastWeek());
     }
 
     @DeleteMapping("/{id}")

@@ -13,5 +13,4 @@ public record ThemeRequest(String name, String description, String thumbnail) {
             throw new IllegalArgumentException("[ERROR] 썸네일을 입력해주세요.");
         }
     }
-
 }

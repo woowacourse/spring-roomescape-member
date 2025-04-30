@@ -17,6 +17,7 @@ import roomescape.reservation.service.ReservationService;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationApiController {
+
     private final ReservationService reservationService;
 
     public ReservationApiController(ReservationService reservationService) {
@@ -25,7 +26,8 @@ public class ReservationApiController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> add(@RequestBody ReservationRequest reservationRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.add(reservationRequest));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservationService.add(reservationRequest));
     }
 
     @GetMapping
@@ -34,7 +36,7 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

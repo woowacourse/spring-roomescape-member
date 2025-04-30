@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /*
     [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
     */
-    const url = `/themes/best`;
+    const url = `/themes/popular/weekly`;
 
     requestRead(url) // 인기 테마 목록 조회 API endpoint
         .then(render)

@@ -1,46 +1,11 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Objects;
-import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.time.domain.Time;
 import roomescape.theme.domain.Theme;
 
-public class Reservation {
-
-    private Long id;
-    private String name;
-    private LocalDate date;
-    private ReservationTime time;
-    private Theme theme;
-
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTime getTime() {
-        return time;
-    }
-
-    public Theme getTheme() {
-        return theme;
-    }
+public record Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
 
     @Override
     public boolean equals(Object other) {

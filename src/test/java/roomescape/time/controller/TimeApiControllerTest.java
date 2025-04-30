@@ -1,4 +1,4 @@
-package roomescape.reservationTime.controller;
+package roomescape.time.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,16 +10,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import roomescape.reservationTime.service.ReservationTimeService;
+import roomescape.time.service.TimeService;
 
-@WebMvcTest(ReservationTimeApiController.class)
-class ReservationTimeApiControllerTest {
+@WebMvcTest(TimeApiController.class)
+class TimeApiControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ReservationTimeService reservationTimeService;
+    private TimeService timeService;
 
     @DisplayName("시간이 빈 값일 경우 예외가 발생한다")
     @Test

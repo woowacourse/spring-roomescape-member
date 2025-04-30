@@ -1,6 +1,5 @@
-package roomescape.theme.dao;
+package roomescape.theme.repository;
 
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -16,11 +15,12 @@ import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
 @Repository
-public class ThemeDao {
+public class ThemeRepository {
+
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public ThemeDao(DataSource dataSource) {
+    public ThemeRepository(DataSource dataSource) {
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
@@ -29,25 +29,37 @@ public class ThemeDao {
 
     public Theme add(Theme theme) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", theme.getName());
-        parameters.put("description", theme.getDescription());
-        parameters.put("thumbnail", theme.getThumbnail());
+        parameters.put("name", theme.name());
+        parameters.put("description", theme.description());
+        parameters.put("thumbnail", theme.thumbnail());
+
         long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+
+        return new Theme(
+                id,
+                theme.name(),
+                theme.description(),
+                theme.thumbnail());
     }
 
     public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail from theme where id = :id";
+        String sql = "SELECT id, name, description, thumbnail "
+                + "FROM theme "
+                + "WHERE id = :id";
+
         Map<String, Object> parameter = Map.of("id", id);
+
         try {
-            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(
+                    sql, parameter,
                     (resultSet, rowNum) -> createTheme(resultSet)));
-        } catch (EmptyResultDataAccessException e) {
+        }
+        catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public List<Theme> findBest(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findTop10MostReservedLastWeek(LocalDate startDate, LocalDate endDate) {
         String sql = "SELECT t.id, t.name, t.description, t.thumbnail "
                 + "FROM theme AS t "
                 + "INNER JOIN reservation AS r ON r.theme_id = t.id "
@@ -66,13 +78,25 @@ public class ThemeDao {
 
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
+
         return namedParameterJdbcTemplate.query(sql,
                 (resultSet, rowNum) -> createTheme(resultSet));
     }
 
+    public boolean existsByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name = :name)";
+
+        Map<String, Object> parameter = Map.of("name", name);
+
+        return Boolean.TRUE.equals(
+                namedParameterJdbcTemplate.queryForObject(sql, parameter, Boolean.class));
+    }
+
     public void deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
+
         Map<String, Object> parameter = Map.of("id", id);
+
         namedParameterJdbcTemplate.update(sql, parameter);
     }
 

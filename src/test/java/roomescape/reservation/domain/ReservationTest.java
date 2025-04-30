@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.time.domain.Time;
 
 class ReservationTest {
 
@@ -13,11 +13,11 @@ class ReservationTest {
     @Test
     void test1() {
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        Time time = new Time(1L, LocalTime.now());
 
         //when&then
         Assertions.assertThatThrownBy(() -> new Reservation(
-                1L, "riwon", LocalDate.now().minusDays(1), reservationTime))
+                1L, "riwon", LocalDate.now().minusDays(1), time))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
     }
@@ -26,10 +26,10 @@ class ReservationTest {
     @Test
     void test2() {
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().minusMinutes(1));
+        Time time = new Time(1L, LocalTime.now().minusMinutes(1));
 
         //when&then
-        Assertions.assertThatThrownBy(() -> new Reservation(1L, "riwon", LocalDate.now(), reservationTime))
+        Assertions.assertThatThrownBy(() -> new Reservation(1L, "riwon", LocalDate.now(), time))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
     }
