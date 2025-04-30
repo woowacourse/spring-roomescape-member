@@ -69,8 +69,20 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        // TODO 해야함
-        return List.of();
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> reservation.getReservationTimeId().equals(timeId));
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> reservation.getThemeId().equals(themeId));
+
     }
 
     private boolean sameReservationDateTime(Reservation reservation, LocalDate date, Long timeId) {

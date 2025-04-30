@@ -35,8 +35,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
-        // TODO 구현해야함
-        return List.of();
+        throw new UnsupportedOperationException();
     }
 
     @Override

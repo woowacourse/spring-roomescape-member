@@ -4,27 +4,49 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationTimeRequest;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
-import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
+import roomescape.domain.reservation.entity.Theme;
+import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.reservation.repository.ReservationTimeRepository;
+import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.domain.reservation.repository.impl.ReservationDAO;
+import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
+import roomescape.domain.reservation.repository.impl.ThemeDAO;
 
-public class ReservationTimeServiceTest {
+@ActiveProfiles("test")
+@JdbcTest
+@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
+class ReservationTimeServiceIntegrationTest {
 
-    private final FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    private final FakeReservationRepository reservationRepository = new FakeReservationRepository();
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
+
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository.deleteAll();
+
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
@@ -87,9 +109,27 @@ public class ReservationTimeServiceTest {
     @DisplayName("예약 시간이 존재하지 않으면 예외를 반환한다.")
     @Test
     void test5() {
+        // given
         Long id = 1L;
 
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(id))
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(id))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("예약이 존재할 때 예약을 삭제하면 예외를 반환한다.")
+    @Test
+    void test6() {
+        // given
+        Theme theme = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
+
+        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
+
+        reservationRepository.save(Reservation.withoutId("꾹", LocalDate.now(), reservationTime, theme));
+        Long timeId = reservationTime.getId();
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
+                .isInstanceOf(AlreadyInUseException.class);
     }
 }
