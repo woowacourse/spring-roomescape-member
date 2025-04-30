@@ -27,6 +27,13 @@ public class Reservation {
         return new Reservation(id, name, date, time);
     }
 
+    public void validatePastDateTime() {
+        LocalDate now = LocalDate.now();
+        if (date.isBefore(now)) {
+            throw new IllegalArgumentException("지난 날짜와 시간의 예약은 생성 불가능합니다.");
+        }
+    }
+
     private void validateMaxLength(String name) {
         if (name.length() > 255) {
             throw new IllegalArgumentException("요청 필드가 최대 제한 길이를 초과했습니다.");
