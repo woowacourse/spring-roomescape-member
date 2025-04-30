@@ -16,8 +16,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.service.dto.command.CreateReservationCommand;
-import roomescape.service.dto.query.ReservationQuery;
+import roomescape.service.dto.request.CreateReservationServiceRequest;
+import roomescape.service.dto.response.ReservationServiceResponse;
 
 class ReservationServiceTest {
 
@@ -40,15 +40,15 @@ class ReservationServiceTest {
         String name = "이름";
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = 1L;
-        CreateReservationCommand command = new CreateReservationCommand(name, date, timeId);
+        CreateReservationServiceRequest command = new CreateReservationServiceRequest(name, date, timeId);
 
         // when
-        ReservationQuery reservationQuery = reservationService.create(command);
+        ReservationServiceResponse reservationServiceResponse = reservationService.create(command);
 
         // then
         assertSoftly(softly -> {
-            assertThat(reservationQuery.id()).isEqualTo(1);
-            assertThat(reservationQuery.name()).isEqualTo(name);
+            assertThat(reservationServiceResponse.id()).isEqualTo(1);
+            assertThat(reservationServiceResponse.name()).isEqualTo(name);
             assertThat(fakeReservationRepository.getAll()).hasSize(1);
         });
     }
@@ -67,7 +67,7 @@ class ReservationServiceTest {
         fakeReservationRepository.save(new Reservation(name2, date2, savedTime));
 
         // when
-        List<ReservationQuery> queries = reservationService.getAll();
+        List<ReservationServiceResponse> queries = reservationService.getAll();
 
         // then
         assertThat(queries).hasSize(2);

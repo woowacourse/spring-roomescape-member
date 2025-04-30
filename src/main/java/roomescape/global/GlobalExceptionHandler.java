@@ -12,12 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     /**
-     *
-     * 1단계 - 30분
-     * 2단계 - 30분
      * 3단계 - 2시간 (12개)
-     * 3:00
-     * 남은 시간 1시간
+     * 남은 시간 2시간
      */
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

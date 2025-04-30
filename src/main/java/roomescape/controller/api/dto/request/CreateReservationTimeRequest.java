@@ -2,7 +2,7 @@ package roomescape.controller.api.dto.request;
 
 import java.time.LocalTime;
 
-import roomescape.service.dto.command.CreateReservationTimeCommand;
+import roomescape.service.dto.request.CreateReservationTimeServiceRequest;
 
 public record CreateReservationTimeRequest(
         LocalTime startAt
@@ -14,7 +14,7 @@ public record CreateReservationTimeRequest(
         }
     }
 
-    public CreateReservationTimeCommand toCommand() {
-        return new CreateReservationTimeCommand(startAt);
+    public CreateReservationTimeServiceRequest toServiceRequest() {
+        return new CreateReservationTimeServiceRequest(startAt);
     }
 }

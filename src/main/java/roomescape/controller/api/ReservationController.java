@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import roomescape.controller.api.dto.request.CreateReservationRequest;
 import roomescape.controller.api.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.query.ReservationQuery;
+import roomescape.service.dto.response.ReservationServiceResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +28,8 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationResponse> getAll() {
-        List<ReservationQuery> queries = reservationService.getAll();
-        return queries.stream()
+        List<ReservationServiceResponse> responses = reservationService.getAll();
+        return responses.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
@@ -37,8 +37,8 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ReservationResponse create(@RequestBody CreateReservationRequest request) {
-        ReservationQuery query = reservationService.create(request.toCommand());
-        return ReservationResponse.from(query);
+        ReservationServiceResponse response = reservationService.create(request.toCommand());
+        return ReservationResponse.from(response);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

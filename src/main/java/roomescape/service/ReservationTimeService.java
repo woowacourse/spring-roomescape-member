@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.command.CreateReservationTimeCommand;
-import roomescape.service.dto.query.ReservationTimeQuery;
+import roomescape.service.dto.request.CreateReservationTimeServiceRequest;
+import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -16,15 +16,15 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeQuery create(CreateReservationTimeCommand command) {
+    public ReservationTimeServiceResponse create(CreateReservationTimeServiceRequest command) {
         ReservationTime reservationTime = reservationTimeRepository.save(command.toReservationTime());
-        return ReservationTimeQuery.from(reservationTime);
+        return ReservationTimeServiceResponse.from(reservationTime);
     }
 
-    public List<ReservationTimeQuery> getAll() {
+    public List<ReservationTimeServiceResponse> getAll() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.getAll();
         return reservationTimes.stream()
-                .map(ReservationTimeQuery::from)
+                .map(ReservationTimeServiceResponse::from)
                 .toList();
     }
 

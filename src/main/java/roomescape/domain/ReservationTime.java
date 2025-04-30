@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+// TODO: record로 변경?
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationTime {

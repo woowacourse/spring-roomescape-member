@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.command.CreateReservationCommand;
-import roomescape.service.dto.query.ReservationQuery;
+import roomescape.service.dto.request.CreateReservationServiceRequest;
+import roomescape.service.dto.response.ReservationServiceResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -19,8 +21,9 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationThemeRepository reservationThemeRepository;
 
-    public ReservationQuery create(CreateReservationCommand command) {
+    public ReservationServiceResponse create(CreateReservationServiceRequest command) {
         ReservationTime reservationTime = getReservationTimeById(command.timeId());
         LocalDateTime requestedDateTime = LocalDateTime.of(command.date(), reservationTime.getStartAt());
         if (requestedDateTime.isBefore(LocalDateTime.now())) {
@@ -29,15 +32,16 @@ public class ReservationService {
         if (reservationRepository.existDuplicatedDateTime(command.date(), command.timeId())) {
             throw new IllegalArgumentException("이미 예약된 시간입니다.");
         }
-        Reservation reservation = command.toReservation(reservationTime);
+        ReservationTheme reservationTheme = reservationThemeRepository.getById(command.themeId());
+        Reservation reservation = command.toReservation(reservationTime, reservationTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationQuery.from(savedReservation);
+        return ReservationServiceResponse.from(savedReservation);
     }
 
-    public List<ReservationQuery> getAll() {
+    public List<ReservationServiceResponse> getAll() {
         List<Reservation> reservations = reservationRepository.getAll();
         return reservations.stream()
-                .map(ReservationQuery::from)
+                .map(ReservationServiceResponse::from)
                 .toList();
     }
 

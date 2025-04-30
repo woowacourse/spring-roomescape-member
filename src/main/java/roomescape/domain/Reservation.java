@@ -6,15 +6,20 @@ public record Reservation(
         Long id,
         String name,
         LocalDate date,
-        ReservationTime time
+        ReservationTime time,
+        ReservationTheme theme
 ) {
 
     public Reservation {
         validate(name, date);
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
+        this(null, name, date, time, theme);
+    }
+
+    public Reservation withId(Long id) {
+        return new Reservation(id, name, date, time, theme);
     }
 
     private void validate(String name, LocalDate date) {

@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import roomescape.domain.ReservationTime;
 import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.service.dto.command.CreateReservationTimeCommand;
-import roomescape.service.dto.query.ReservationTimeQuery;
+import roomescape.service.dto.request.CreateReservationTimeServiceRequest;
+import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
 class ReservationTimeServiceTest {
 
@@ -31,14 +31,14 @@ class ReservationTimeServiceTest {
     void create() {
         // given
         LocalTime startAt = LocalTime.now().plusHours(1);
-        CreateReservationTimeCommand command = new CreateReservationTimeCommand(startAt);
+        CreateReservationTimeServiceRequest command = new CreateReservationTimeServiceRequest(startAt);
         // when
-        ReservationTimeQuery reservationTimeQuery = service.create(command);
+        ReservationTimeServiceResponse reservationTimeServiceResponse = service.create(command);
 
         // then
         assertSoftly(softly -> {
-            assertThat(reservationTimeQuery.id()).isEqualTo(1);
-            assertThat(reservationTimeQuery.startAt()).isEqualTo(startAt);
+            assertThat(reservationTimeServiceResponse.id()).isEqualTo(1);
+            assertThat(reservationTimeServiceResponse.startAt()).isEqualTo(startAt);
             assertThat(fakeRepository.getAll()).hasSize(1);
         });
     }
@@ -51,7 +51,7 @@ class ReservationTimeServiceTest {
         fakeRepository.save(new ReservationTime(startAt));
 
         // when
-        List<ReservationTimeQuery> queries = service.getAll();
+        List<ReservationTimeServiceResponse> queries = service.getAll();
 
         // then
         assertThat(queries).hasSize(1);

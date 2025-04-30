@@ -2,12 +2,13 @@ package roomescape.controller.api.dto.request;
 
 import java.time.LocalDate;
 
-import roomescape.service.dto.command.CreateReservationCommand;
+import roomescape.service.dto.request.CreateReservationServiceRequest;
 
 public record CreateReservationRequest(
         String name,
         LocalDate date,
-        Long timeId
+        Long timeId,
+        Long themeId
 ) {
 
     public CreateReservationRequest {
@@ -25,7 +26,7 @@ public record CreateReservationRequest(
         }
     }
 
-    public CreateReservationCommand toCommand() {
-        return new CreateReservationCommand(name, date, timeId);
+    public CreateReservationServiceRequest toCommand() {
+        return new CreateReservationServiceRequest(name, date, timeId, themeId);
     }
 }
