@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import java.util.Objects;
 import roomescape.exception.custom.InvalidInputException;
 
 public class ReservationTime {
@@ -34,5 +35,19 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return startAt;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTime that = (ReservationTime) o;
+        return getId() == that.getId() && Objects.equals(getStartAt(), that.getStartAt());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getStartAt());
     }
 }

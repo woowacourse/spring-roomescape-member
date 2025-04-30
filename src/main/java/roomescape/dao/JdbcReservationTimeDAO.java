@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -63,5 +64,18 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
         String query = "DELETE FROM reservation_time where id = ?";
         int deleted = jdbcTemplate.update(query, id);
         return deleted > 0;
+    }
+
+    @Override
+    public List<ReservationTime> findAllBookedTime(final LocalDate date, final long themeId) {
+        String query = """
+                SELECT rt.id,
+                rt.start_at
+                FROM reservation_time as rt
+                JOIN reservation AS r
+                ON r.time_id = rt.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(query, RESERVATION_TIME_ROW_MAPPER, date, themeId);
     }
 }

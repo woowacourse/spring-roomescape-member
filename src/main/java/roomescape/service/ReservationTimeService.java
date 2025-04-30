@@ -1,8 +1,11 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
@@ -56,5 +59,20 @@ public class ReservationTimeService {
         if (!deleted) {
             throw new NotExistedValueException("존재하지 않는 예약 시간입니다");
         }
+    }
+
+    public List<AvailableReservationTimeResponse> findAllAvailableTime(final LocalDate date, final long themeId) {
+        List<ReservationTime> totalReservationTime = reservationTimeDAO.findAll();
+        List<ReservationTime> bookedTime = reservationTimeDAO.findAllBookedTime(date, themeId);
+        List<AvailableReservationTimeResponse> responses = new ArrayList<>();
+        
+        for (ReservationTime reservationTime : totalReservationTime) {
+            if (bookedTime.contains(reservationTime)) {
+                responses.add(AvailableReservationTimeResponse.from(reservationTime, true));
+                continue;
+            }
+            responses.add(AvailableReservationTimeResponse.from(reservationTime, false));
+        }
+        return responses;
     }
 }
