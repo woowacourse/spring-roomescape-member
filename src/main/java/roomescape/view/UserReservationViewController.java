@@ -9,4 +9,9 @@ public class UserReservationViewController {
     public String showUserReservation() {
         return "reservation";
     }
+
+    @GetMapping
+    public String showMain() {
+        return "index";
+    }
 }
