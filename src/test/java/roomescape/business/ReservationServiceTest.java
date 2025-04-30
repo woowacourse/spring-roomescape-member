@@ -1,12 +1,12 @@
 package roomescape.business;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ class ReservationServiceTest {
     void createReservation() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
-        Assertions.assertThat(reservationService.readReservationAll()).isNotEmpty();
+        assertThat(reservationService.readReservationAll()).isNotEmpty();
     }
 
     @DisplayName("과거 일시로 예약을 생성할 경우 예외가 발생한다.")
@@ -92,7 +92,7 @@ class ReservationServiceTest {
         reservationService.deleteReservation(id);
 
         // then
-        Assertions.assertThat(reservationService.readReservationAll()).isEmpty();
+        assertThat(reservationService.readReservationAll()).isEmpty();
     }
 
     @DisplayName("예약 목록을 불러온다")
@@ -108,15 +108,15 @@ class ReservationServiceTest {
         int secondReadSize = reservationService.readReservationAll().size();
 
         // then
-        Assertions.assertThat(firstReadSize).isEqualTo(1);
-        Assertions.assertThat(secondReadSize).isEqualTo(0);
+        assertThat(firstReadSize).isEqualTo(1);
+        assertThat(secondReadSize).isEqualTo(0);
     }
 
     @DisplayName("아이디로 예약 가능한 시간을 조회한다")
     @Test
     void readTimeOne() {
         ReservationTimeResponseDto reservationTime = reservationService.readTimeOne(1L);
-        Assertions.assertThat(reservationTime).isNotNull();
+        assertThat(reservationTime).isNotNull();
     }
 
     @DisplayName("모든 시간을 조회한다")
@@ -129,28 +129,29 @@ class ReservationServiceTest {
         List<ReservationTimeResponseDto> reservationTimes = reservationService.readTimeAll();
 
         // then
-        Assertions.assertThat(reservationTimes).hasSize(2);
+        assertThat(reservationTimes).hasSize(2);
     }
 
     @DisplayName("예약 가능한 시간을 추가한다")
     @Test
     void createTime() {
         Long timeId = reservationService.createTime(new ReservationTimeRequestDto(LocalTime.now()));
-        Assertions.assertThat(timeId).isEqualTo(1L);
+        assertThat(timeId).isEqualTo(1L);
     }
 
     @DisplayName("예약 시간대 하나를 삭제한다")
     @Test
     void deleteTime() {
         reservationService.deleteTime(1L);
-        Assertions.assertThat(reservationService.readTimeAll()).isEmpty();
+        assertThat(reservationService.readTimeAll()).isEmpty();
     }
 
     @DisplayName("예약이 참조하는 시간대 하나를 삭제한다")
     @Test
     void deleteReferencedTime() {
         // given
-        reservationService.createReservation(new ReservationRequestDto("수양", LocalDate.now().plusDays(1), timeId, themeId));
+        reservationService.createReservation(
+                new ReservationRequestDto("수양", LocalDate.now().plusDays(1), timeId, themeId));
 
         // when
         // then
@@ -200,5 +201,4 @@ class ReservationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
     }
-
 }

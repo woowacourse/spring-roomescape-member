@@ -55,4 +55,10 @@ public class ReservationQueryController {
         List<ReservationThemeResponseDto> reservationThemes = reservationService.readThemeAll();
         return ResponseEntity.ok(reservationThemes);
     }
+
+    @GetMapping("ranks")
+    public ResponseEntity<List<ReservationThemeResponseDto>> readBestReservedReservationThemes() {
+        List<ReservationThemeResponseDto> bestReservedThemes = reservationService.readBestReservedThemes();
+        return ResponseEntity.ok(bestReservedThemes);
+    }
 }

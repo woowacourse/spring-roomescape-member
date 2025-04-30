@@ -168,4 +168,29 @@ public class ReservationService {
         }
         reservationThemeRepository.deleteById(id);
     }
+
+    public List<ReservationThemeResponseDto> readBestReservedThemes() {
+        LocalDate now = LocalDate.now();
+        LocalDate start = calculateStartDate(now);
+        LocalDate end = calculateEndDate(now);
+        List<ReservationTheme> bestReservedReservationThemes = reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(
+                start, end, 10);
+        return bestReservedReservationThemes.stream()
+                .map(bestTheme -> new ReservationThemeResponseDto(
+                                bestTheme.getId(),
+                                bestTheme.getName(),
+                                bestTheme.getDescription(),
+                                bestTheme.getThumbnail()
+                        )
+                )
+                .toList();
+    }
+
+    private static LocalDate calculateEndDate(LocalDate nowDate) {
+        return nowDate.minusDays(1);
+    }
+
+    private static LocalDate calculateStartDate(LocalDate nowDate) {
+        return nowDate.minusDays(7);
+    }
 }
