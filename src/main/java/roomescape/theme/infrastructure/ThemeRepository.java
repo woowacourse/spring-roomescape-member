@@ -13,7 +13,7 @@ import roomescape.theme.domain.Theme;
 @Repository
 public class ThemeRepository {
 
-    private static RowMapper<Theme> rowMapper = (resultSet, rowNum) -> new Theme(
+    private static RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
@@ -41,12 +41,17 @@ public class ThemeRepository {
     public List<Theme> findAll(){
         String sql = "SELECT * FROM theme";
 
-        return jdbcTemplate.query(sql,rowMapper);
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     public int deleteById(Long id){
         String sql = "DELETE FROM theme where id =?";
 
         return jdbcTemplate.update(sql,id);
+    }
+
+    public Theme findById(final Long id) {
+        String sql = "SELECT * FROM theme WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 }
