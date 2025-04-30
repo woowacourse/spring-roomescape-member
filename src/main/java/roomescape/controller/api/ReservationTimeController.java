@@ -45,7 +45,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/avaliable")
-    public List<AvailableReservationTimeResponse> findAvaliableTime(@RequestParam(value = "date") LocalDate date,
+    public List<AvailableReservationTimeResponse> findAvailableTime(@RequestParam(value = "date") LocalDate date,
                                                                     @RequestParam(value = "themeId") long themeId) {
         return reservationTimeService.findAllAvailableTime(date, themeId);
     }
