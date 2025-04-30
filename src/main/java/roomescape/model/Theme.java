@@ -21,4 +21,20 @@ public class Theme {
             throw new IllegalArgumentException("테마 이름은 1자에서 10자 이내여야 합니다.");
         }
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
 }
