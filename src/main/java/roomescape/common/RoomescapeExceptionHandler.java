@@ -22,6 +22,11 @@ public class RoomescapeExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DataFormatException.class)
+    public ResponseEntity<String> handleException(DataFormatException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleException(NotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -35,10 +40,5 @@ public class RoomescapeExceptionHandler {
     @ExceptionHandler(ResourceInUseException.class)
     public ResponseEntity<String> handleException(ResourceInUseException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    @ExceptionHandler(DataFormatException.class)
-    public ResponseEntity<String> handleException(DataFormatException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
