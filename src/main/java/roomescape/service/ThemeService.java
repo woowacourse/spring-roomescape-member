@@ -9,6 +9,9 @@ import roomescape.dto.ThemeRequest;
 @Service
 public class ThemeService {
 
+    public static final int TOP_RANK_PERIOD_DAYS = 7;
+    public static final int TOP_RANK_THRESHOLD = 10;
+
     private final ThemeDao themeDao;
 
     public ThemeService(ThemeDao themeDao) {
@@ -17,6 +20,11 @@ public class ThemeService {
 
     public List<Theme> findAllThemes() {
         return themeDao.findAllThemes();
+    }
+
+    public List<Theme> findTopReservedThemes() {
+        return themeDao.findTopReservedThemesInPeriodWithLimit(TOP_RANK_PERIOD_DAYS,
+            TOP_RANK_THRESHOLD);
     }
 
     public Theme addTheme(ThemeRequest request) {

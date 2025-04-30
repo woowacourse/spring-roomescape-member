@@ -40,4 +40,10 @@ public class ThemeController {
     public void deleteTheme(@PathVariable Long id) {
         themeService.removeTheme(id);
     }
+
+    @GetMapping("/top-rank")
+    public List<Theme> readTopRankTheme() {
+        return themeService.findTopReservedThemes();
+    }
+
 }

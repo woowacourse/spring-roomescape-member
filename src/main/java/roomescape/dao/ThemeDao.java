@@ -12,4 +12,6 @@ public interface ThemeDao {
     void removeThemeById(Long id);
 
     Theme findThemeById(Long id);
+
+    List<Theme> findTopReservedThemesInPeriodWithLimit(int period, int limitCount);
 }

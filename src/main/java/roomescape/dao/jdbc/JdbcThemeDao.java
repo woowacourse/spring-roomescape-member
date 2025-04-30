@@ -56,6 +56,30 @@ public class JdbcThemeDao implements ThemeDao {
         }
     }
 
+    @Override
+    public List<Theme> findTopReservedThemesInPeriodWithLimit(int period, int limitCount) {
+        String sql = """
+            SELECT
+              t.id,
+              t.name,
+              t.description,
+              t.thumbnail
+            FROM
+              reservation as r
+              INNER JOIN theme as t
+              ON r.theme_id = t.id
+            WHERE
+              PARSEDATETIME(r.date, 'yyyy-MM-dd') >= DATEADD('DAY', -?, NOW())
+                AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < NOW()
+            GROUP BY
+              theme_id
+            ORDER BY
+              COUNT(theme_id) DESC
+            LIMIT ?;
+        """;
+        return jdbcTemplate.query(sql, createThemeMapper(), period, limitCount);
+    }
+
     private RowMapper<Theme> createThemeMapper() {
         return (rs, rowNum) -> new Theme(
             rs.getLong("id"),
