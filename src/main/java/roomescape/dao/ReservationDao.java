@@ -95,4 +95,9 @@ public class ReservationDao {
         String query = "SELECT count(*) FROM reservation WHERE date = ? and time_id = ?";
         return jdbcTemplate.queryForObject(query, Integer.class, date, timeId);
     }
+
+    public int getCountByThemeId(Long themeId) {
+        String query = "SELECT count(*) FROM reservation WHERE theme_id = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, themeId);
+    }
 }
