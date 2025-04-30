@@ -8,6 +8,8 @@ public interface ThemeDAO {
 
     long insert(Theme theme);
 
+    boolean existsByName(String name);
+
     List<Theme> findAll();
 
     Optional<Theme> findById(long id);
