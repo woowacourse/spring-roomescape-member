@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationResponseDto;
+import roomescape.business.dto.ReservationThemeRequestDto;
+import roomescape.business.dto.ReservationThemeResponseDto;
 import roomescape.business.dto.ReservationTimeRequestDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
 import roomescape.business.service.ReservationService;
@@ -53,5 +55,13 @@ public class ReservationCommandController {
     public ResponseEntity<Void> deleteReservationTime(@PathVariable("timeId") Long id) {
         reservationService.deleteTime(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("themes")
+    public ResponseEntity<ReservationThemeResponseDto> create(
+            @Valid @RequestBody ReservationThemeRequestDto reservationThemeDto) {
+        ReservationThemeResponseDto reservationTheme = reservationService.createTheme(reservationThemeDto);
+        String location = "/themes/" + reservationTheme.id();
+        return ResponseEntity.created(URI.create(location)).body(reservationTheme);
     }
 }
