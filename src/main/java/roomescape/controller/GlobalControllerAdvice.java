@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import java.net.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalControllerAdvice {
 
     @ExceptionHandler(exception = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e, HttpHeaders httpHeaders) {
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

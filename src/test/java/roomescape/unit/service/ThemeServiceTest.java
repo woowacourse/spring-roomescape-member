@@ -36,4 +36,12 @@ class ThemeServiceTest {
 
         assertThat(themeService.findAll()).hasSize(1);
     }
+
+    @Test
+    void 테마를_삭제할_수_있다() {
+        Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
+        themeRepository.add(theme);
+        themeService.deleteThemeById(1L);
+        assertThat(themeRepository.findAll()).hasSize(0);
+    }
 }

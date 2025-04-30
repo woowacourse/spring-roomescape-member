@@ -23,4 +23,8 @@ public class ThemeService {
     public List<Theme> findAll() {
         return themeRepository.findAll();
     }
+
+    public void deleteThemeById(long id) {
+        themeRepository.deleteById(id);
+    }
 }

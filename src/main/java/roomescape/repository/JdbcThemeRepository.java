@@ -45,7 +45,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        String sql = "select id, name, description, thumbnail from theme";
         return jdbcTemplate.query(sql, themeRowMapper);
     }
 
@@ -56,6 +56,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public void deleteById(Long id) {
-
+        String sql = "delete from theme where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
