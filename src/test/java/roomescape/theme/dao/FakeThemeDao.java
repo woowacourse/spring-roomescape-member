@@ -44,4 +44,9 @@ public class FakeThemeDao implements ThemeDao {
                 .filter(theme -> theme.getName().equals(name))
                 .findFirst();
     }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        return fakeThemes.stream().filter(theme -> theme.getId().equals(id)).findFirst();
+    }
 }

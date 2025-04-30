@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.exception.ArgumentNullException;
 import roomescape.exception.PastDateTimeReservationException;
 import roomescape.reservationtime.ReservationTime;
+import roomescape.theme.Theme;
 
 class ReservationTest {
 
@@ -17,7 +18,9 @@ class ReservationTest {
                         () -> Reservation.createWithoutId(
                                 null,
                                 LocalDate.now().plusDays(1),
-                                ReservationTime.createWithoutId(LocalTime.of(9, 0))))
+                                ReservationTime.createWithoutId(LocalTime.of(9, 0)),
+                                Theme.createWithoutId("themeName", "des", "th")
+                        ))
                 .isInstanceOf(ArgumentNullException.class);
 
     }
@@ -29,7 +32,9 @@ class ReservationTest {
                         () -> Reservation.createWithoutId(
                                 "짱구",
                                 null,
-                                ReservationTime.createWithoutId(LocalTime.of(9, 0))))
+                                ReservationTime.createWithoutId(LocalTime.of(9, 0)),
+                                Theme.createWithoutId("themeName", "des", "th")
+                        ))
                 .isInstanceOf(ArgumentNullException.class);
     }
 
@@ -40,7 +45,9 @@ class ReservationTest {
                         () -> Reservation.createWithoutId(
                                 "짱구",
                                 LocalDate.of(2025, 1, 1),
-                                null))
+                                null,
+                                Theme.createWithoutId("themeName", "des", "th")
+                        ))
                 .isInstanceOf(ArgumentNullException.class);
     }
 
@@ -51,7 +58,23 @@ class ReservationTest {
                         () -> Reservation.createWithoutId(
                                 "짱구",
                                 LocalDate.of(2024, 1, 1),
-                                new ReservationTime(1L, LocalTime.of(9, 0))))
+                                new ReservationTime(1L, LocalTime.of(9, 0)),
+                                Theme.createWithoutId("themeName", "des", "th")
+                        ))
                 .isInstanceOf(PastDateTimeReservationException.class);
+    }
+
+    @Test
+    void 테마가_null일_경우_예외가_발생한다() {
+        // when & then
+        Assertions.assertThatThrownBy(
+                        () -> Reservation.createWithoutId(
+                                "name",
+                                LocalDate.now().plusDays(1),
+                                ReservationTime.createWithoutId(LocalTime.of(9, 0)),
+                                null
+                        ))
+                .isInstanceOf(ArgumentNullException.class);
+
     }
 }

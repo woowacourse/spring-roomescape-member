@@ -77,4 +77,26 @@ public class JdbcThemeDao implements ThemeDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String sql = "select * from theme where id = ?";
+
+        try {
+            Theme theme = this.jdbcTemplate.queryForObject(sql,
+                    (resultSet, rowNum) -> {
+                        Theme foundTheme = new Theme(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("description"),
+                                resultSet.getString("thumbnail")
+                        );
+                        return foundTheme;
+                    }, id
+            );
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

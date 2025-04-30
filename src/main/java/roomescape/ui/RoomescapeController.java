@@ -5,26 +5,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(value = "/admin")
+@RequestMapping
 public class RoomescapeController {
 
-    @GetMapping()
+    @GetMapping("/admin")
     public String home() {
         return "admin/index";
     }
 
-    @GetMapping("/reservation")
-    public String getReservationPage() {
+    @GetMapping("/admin/reservation")
+    public String getAdminReservationPage() {
         return "admin/reservation-new";
     }
 
-    @GetMapping("/time")
+    @GetMapping("/admin/time")
     public String getReservationTimePage() {
         return "admin/time";
     }
 
-    @GetMapping("/theme")
+    @GetMapping("/admin/theme")
     public String getThemePage() {
         return "admin/theme";
+    }
+
+    @GetMapping("/reservation")
+    public String getReservationPage() {
+        return "reservation";
     }
 }

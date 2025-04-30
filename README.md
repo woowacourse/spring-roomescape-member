@@ -22,6 +22,17 @@
 - [x] 테마를 조회할 수 있다.
 - [x] 테마를 삭제할 수 있다.
 
+## 3단계 - 사용자 기능
+
+- [ ] 사용자가 예약을 생성한다.
+    - [ ] 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있습니다.
+    - [ ] 사용자는 예약 가능한 시간을 확인하고, 원하는 시간에 예약을 할 수 있습니다.
+    - [ ] /reservation 요청 시 사용자 예약 페이지를 응답합니다.
+- [ ] 인기 테마를 조회한다.
+    - [ ] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인하려 합니다.
+    - [ ] 예를 들어 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회할 수 있어야 합니다.
+    - [ ] / 요청 시 인기 테마 페이지를 응답합니다
+
 # API 명세
 
 ### 예약 목록 조회
@@ -38,16 +49,11 @@ Content-Type: application/json
         "id": "Long",
         "name": String,
         "date": LocalDate (YYYY-MM-DD),
-        "reservationTime": LocalTime (HH:mm)
-    },
-    {
-        "id": "Long",
-        "name": String,
-        "date": LocalDate (YYYY-MM-DD),
         "reservationTime": {
             "id": Long,
             "startAt" : LocalTime (HH:mm)
-        }
+        },
+        "themeName": String
     }
 ]
 ```
@@ -61,7 +67,8 @@ POST /reservations
 {
     "name": String,
     "date": LocalDate (YYYY-MM-DD),
-    "timeId": Long
+    "timeId": Long,
+    "themeId": Long
 }
 
 Response
@@ -74,7 +81,8 @@ HTTP/1.1 200
     "reservationTime": {
         "id": Long,
         "startAt" : LocalTime (HH:mm)
-    }
+    },
+    "themeName" : String
 }
 
 ```

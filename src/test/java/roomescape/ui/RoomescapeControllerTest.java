@@ -31,4 +31,12 @@ class RoomescapeControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @Test
+    void 사용자_예약_화면_요청을_성공한다() {
+        RestAssured.given().log().all()
+                .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
+    }
 }

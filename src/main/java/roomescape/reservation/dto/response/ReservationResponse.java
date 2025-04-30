@@ -8,10 +8,12 @@ public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
-        ReservationTimeResponse time
+        ReservationTimeResponse time,
+        String themeName
 ) {
     public static ReservationResponse toDto(Reservation reservation) {
         ReservationTimeResponse dto = ReservationTimeResponse.toDto(reservation.getReservationTime());
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(), dto);
+        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(), dto,
+                reservation.getTheme().getName());
     }
 }

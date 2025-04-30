@@ -26,7 +26,7 @@ public class FakeReservationDao implements ReservationDao {
     @Override
     public Long create(Reservation reservation) {
         Reservation reservationWithId = Reservation.of(index.getAndIncrement(), reservation.getName(),
-                reservation.getDate(), reservation.getReservationTime());
+                reservation.getDate(), reservation.getReservationTime(), reservation.getTheme());
         fakeReservations.add(reservationWithId);
         return reservationWithId.getId();
     }

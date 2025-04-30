@@ -26,10 +26,23 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "레벨1");
+        themeParams.put("description", "레벨1 성공하자");
+        themeParams.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2026-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -51,10 +64,23 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, String> themeParams = new HashMap<>();
+        themeParams.put("name", "레벨1");
+        themeParams.put("description", "레벨1 성공하자");
+        themeParams.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2026-08-05");
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

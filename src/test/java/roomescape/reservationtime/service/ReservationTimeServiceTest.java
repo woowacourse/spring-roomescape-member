@@ -16,6 +16,7 @@ import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.FakeReservationTimeDao;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
+import roomescape.theme.Theme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest {
@@ -26,10 +27,11 @@ class ReservationTimeServiceTest {
 
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
     private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
+    private final Theme theme = new Theme(1L, "themeName1", "des", "th");
     private final Reservation fakeReservation1 = Reservation.of(1L, "포라", LocalDate.of(2025, 7, 25),
-            fakeReservationTime1);
+            fakeReservationTime1, theme);
     private final Reservation fakeReservation2 = Reservation.of(2L, "널안보면내마음에멍", LocalDate.of(2025, 12, 25),
-            fakeReservationTime1);
+            fakeReservationTime1, theme);
 
 
     @BeforeEach
