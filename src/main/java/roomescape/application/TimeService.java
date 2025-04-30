@@ -2,10 +2,10 @@ package roomescape.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.TimeRequest;
-import roomescape.presentation.dto.response.TimeResponse;
 import roomescape.application.mapper.ReservationTimeMapper;
 import roomescape.domain.repository.TimeRepository;
 
@@ -18,12 +18,12 @@ public class TimeService {
         this.repository = repository;
     }
 
-    public List<TimeResponse> getAllTimes() {
+    public List<TimeDto> getAllTimes() {
         List<ReservationTime> reservationTimes = repository.findAll();
         return ReservationTimeMapper.toDtos(reservationTimes);
     }
 
-    public TimeResponse registerNewTime(TimeRequest request) {
+    public TimeDto registerNewTime(TimeRequest request) {
         ReservationTime newReservationTime = ReservationTimeMapper.toDomain(request);
         Long id = repository.save(newReservationTime);
 

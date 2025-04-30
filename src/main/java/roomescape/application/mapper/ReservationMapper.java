@@ -1,11 +1,12 @@
 package roomescape.application.mapper;
 
 import java.util.List;
+import roomescape.application.dto.ReservationDto;
+import roomescape.application.dto.ThemeDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.presentation.dto.request.ReservationRequest;
-import roomescape.presentation.dto.response.ReservationResponse;
 
 public class ReservationMapper {
 
@@ -13,8 +14,9 @@ public class ReservationMapper {
         return Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
     }
 
-    public static ReservationResponse toDto(Reservation reservation) {
-        return new ReservationResponse(
+    public static ReservationDto toDto(Reservation reservation) {
+        ThemeDto dto = ThemeMapper.toDto(reservation.getTheme());
+        return new ReservationDto(
                 reservation.getId(),
                 reservation.getName(),
                 ThemeMapper.toDto(reservation.getTheme()),
@@ -23,7 +25,7 @@ public class ReservationMapper {
         );
     }
 
-    public static List<ReservationResponse> toDtos(List<Reservation> reservations) {
+    public static List<ReservationDto> toDtos(List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationMapper::toDto)
                 .toList();

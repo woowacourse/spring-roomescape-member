@@ -9,10 +9,11 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.presentation.dto.request.ReservationRequest;
-import roomescape.presentation.dto.response.ReservationResponse;
+import roomescape.presentation.dto.response.AdminReservationResponse;
 
 class ReservationMapperTest {
 
@@ -48,14 +49,14 @@ class ReservationMapperTest {
         Reservation reservation = Reservation.of(timeId, name, THEME_1, reservationDate, reservationTime);
 
         // when
-        ReservationResponse response = ReservationMapper.toDto(reservation);
+        ReservationDto dto = ReservationMapper.toDto(reservation);
 
         // then
         assertAll(
-                () -> assertThat(response.id()).isEqualTo(timeId),
-                () -> assertThat(response.name()).isEqualTo(name),
-                () -> assertThat(response.date()).isEqualTo(reservationDate),
-                () -> assertThat(response.time().id()).isEqualTo(timeId)
+                () -> assertThat(dto.id()).isEqualTo(timeId),
+                () -> assertThat(dto.name()).isEqualTo(name),
+                () -> assertThat(dto.date()).isEqualTo(reservationDate),
+                () -> assertThat(dto.time().id()).isEqualTo(timeId)
         );
     }
 
@@ -73,13 +74,13 @@ class ReservationMapperTest {
         List<Reservation> reservations = List.of(reservation1, reservation2, reservation3);
 
         // when
-        List<ReservationResponse> responses = ReservationMapper.toDtos(reservations);
+        List<ReservationDto> dtos = ReservationMapper.toDtos(reservations);
 
         // then
         assertAll(
-                () -> assertThat(responses).hasSize(3),
-                () -> assertThat(responses)
-                        .extracting(ReservationResponse::name)
+                () -> assertThat(dtos).hasSize(3),
+                () -> assertThat(dtos)
+                        .extracting(ReservationDto::name)
                         .containsExactly("브라운", "솔라", "브리")
         );
     }

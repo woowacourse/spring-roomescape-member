@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ThemeService;
+import roomescape.application.dto.ThemeDto;
 import roomescape.presentation.dto.request.ThemeRequest;
-import roomescape.presentation.dto.response.ThemeResponse;
+import roomescape.presentation.dto.response.AdminThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -26,21 +27,21 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponse> getAllThemes() {
-        return themeService.getAllThemes();
+    public List<AdminThemeResponse> getAllThemes() {
+        List<ThemeDto> themes = themeService.getAllThemes();
+        return AdminThemeResponse.from(themes);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
-        ThemeResponse themeResponse = themeService.registerTheme(themeRequest);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(themeResponse);
+    public ResponseEntity<AdminThemeResponse> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
+        ThemeDto themeDto = themeService.registerTheme(themeRequest);
+        AdminThemeResponse adminThemeResponse = AdminThemeResponse.from(themeDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminThemeResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ThemeResponse> deleteTheme(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
-
 }

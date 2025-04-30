@@ -28,7 +28,7 @@ import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.presentation.controller.ReservationController;
-import roomescape.presentation.dto.response.ReservationResponse;
+import roomescape.presentation.dto.response.AdminReservationResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MissionStepTest {
@@ -155,11 +155,11 @@ public class MissionStepTest {
                 "브라운", "2023-08-05", 1L, 1L
         );
 
-        List<ReservationResponse> reservations = RestAssured.given().log().all()
+        List<AdminReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationResponse.class);
+                .jsonPath().getList(".", AdminReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 

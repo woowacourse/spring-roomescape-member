@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.presentation.dto.request.TimeRequest;
 import roomescape.presentation.dto.response.TimeResponse;
@@ -37,12 +38,12 @@ class ReservationTimeMapperTest {
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
 
         // when
-        TimeResponse response = ReservationTimeMapper.toDto(reservationTime);
+        TimeDto dto = ReservationTimeMapper.toDto(reservationTime);
 
         // then
         assertAll(
-                () -> assertThat(response.id()).isEqualTo(1L),
-                () -> assertThat(response.startAt()).isEqualTo("10:00")
+                () -> assertThat(dto.id()).isEqualTo(1L),
+                () -> assertThat(dto.startAt()).isEqualTo("10:00")
         );
     }
 
@@ -61,13 +62,13 @@ class ReservationTimeMapperTest {
         List<ReservationTime> reservationTimes = List.of(reservationTime1, reservationTime2, reservationTime3);
 
         // when
-        List<TimeResponse> responses = ReservationTimeMapper.toDtos(reservationTimes);
+        List<TimeDto> dtos = ReservationTimeMapper.toDtos(reservationTimes);
 
         // then
         assertAll(
-                () -> assertThat(responses).hasSize(3),
-                () -> assertThat(responses)
-                        .extracting(TimeResponse::startAt)
+                () -> assertThat(dtos).hasSize(3),
+                () -> assertThat(dtos)
+                        .extracting(TimeDto::startAt)
                         .containsExactly(time1, time2, time3)
         );
     }

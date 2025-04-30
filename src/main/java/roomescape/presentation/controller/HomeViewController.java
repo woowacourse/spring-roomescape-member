@@ -9,4 +9,9 @@ public class HomeViewController {
     public String redirectReservationPage() {
         return "redirect:/admin/reservation";
     }
+
+    @GetMapping("/reservation")
+    public String reservationPage() {
+        return "reservation";
+    }
 }

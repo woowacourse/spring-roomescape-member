@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.dto.ReservationDto;
 import roomescape.application.mapper.ReservationMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.presentation.dto.request.ReservationRequest;
-import roomescape.presentation.dto.response.ReservationResponse;
 
 @Service
 public class ReservationService {
@@ -27,7 +27,7 @@ public class ReservationService {
         this.themeService = themeService;
     }
 
-    public ReservationResponse registerReservation(ReservationRequest request) {
+    public ReservationDto registerReservation(ReservationRequest request) {
         Theme theme = themeService.getThemeById(request.themeId());
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
         validateNotPast(request.date(), reservationTime.getStartAt());
@@ -55,7 +55,7 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationResponse> getAllReservations() {
+    public List<ReservationDto> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         return ReservationMapper.toDtos(reservations);
     }

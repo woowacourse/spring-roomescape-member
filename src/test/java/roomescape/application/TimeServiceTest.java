@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.presentation.dto.request.TimeRequest;
@@ -39,13 +40,13 @@ class TimeServiceTest {
         timeRepository.save(ReservationTime.of(3L, time3));
 
         // when
-        List<TimeResponse> allTimes = timeService.getAllTimes();
+        List<TimeDto> allTimes = timeService.getAllTimes();
 
         // then
         assertAll(
                 () -> assertThat(allTimes).hasSize(3),
                 () -> assertThat(allTimes)
-                        .extracting(TimeResponse::startAt)
+                        .extracting(TimeDto::startAt)
                         .containsExactly(time1, time2, time3)
         );
     }
@@ -58,12 +59,12 @@ class TimeServiceTest {
         TimeRequest timeRequest = new TimeRequest(time);
 
         // when
-        TimeResponse timeResponse = timeService.registerNewTime(timeRequest);
+        TimeDto timeDto = timeService.registerNewTime(timeRequest);
 
         // then
         assertAll(
-                () -> assertThat(timeResponse.id()).isEqualTo(1L),
-                () -> assertThat(timeResponse.startAt()).isEqualTo(time)
+                () -> assertThat(timeDto.id()).isEqualTo(1L),
+                () -> assertThat(timeDto.startAt()).isEqualTo(time)
         );
     }
 

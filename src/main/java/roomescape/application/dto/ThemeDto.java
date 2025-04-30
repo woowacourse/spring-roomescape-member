@@ -1,6 +1,6 @@
-package roomescape.presentation.dto.response;
+package roomescape.application.dto;
 
-public record ThemeResponse(
+public record ThemeDto(
         Long id,
         String name,
         String description,

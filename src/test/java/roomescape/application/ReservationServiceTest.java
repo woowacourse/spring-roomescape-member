@@ -11,11 +11,13 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.ReservationDto;
+import roomescape.application.dto.TimeDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ReservationRequest;
-import roomescape.presentation.dto.response.ReservationResponse;
+import roomescape.presentation.dto.response.AdminReservationResponse;
 import roomescape.presentation.dto.response.TimeResponse;
 import roomescape.testRepository.FakeReservationRepository;
 import roomescape.testRepository.FakeThemeRepository;
@@ -52,14 +54,14 @@ class ReservationServiceTest {
         ReservationRequest reservationRequest = new ReservationRequest(1L, date, name, timeId);
 
         // when
-        ReservationResponse response = reservationService.registerReservation(reservationRequest);
+        ReservationDto reservationDto = reservationService.registerReservation(reservationRequest);
 
         // then
         assertAll(
-                () -> assertThat(response.id()).isEqualTo(1),
-                () -> assertThat(response.name()).isEqualTo("멍구"),
-                () -> assertThat(response.date()).isEqualTo(date),
-                () -> assertThat(response.time()).isEqualTo(new TimeResponse(1L, time))
+                () -> assertThat(reservationDto.id()).isEqualTo(1),
+                () -> assertThat(reservationDto.name()).isEqualTo("멍구"),
+                () -> assertThat(reservationDto.date()).isEqualTo(date),
+                () -> assertThat(reservationDto.time()).isEqualTo(new TimeDto(1L, time))
         );
     }
 
@@ -113,13 +115,13 @@ class ReservationServiceTest {
         reservationRepository.save(Reservation.of(3L, "브리", THEME_1, LocalDate.of(2024, 4, 2), time1));
 
         // when
-        List<ReservationResponse> allReservations = reservationService.getAllReservations();
+        List<ReservationDto> allReservations = reservationService.getAllReservations();
 
         // then
         assertAll(
                 () -> assertThat(allReservations).hasSize(3),
                 () -> assertThat(allReservations)
-                        .extracting(ReservationResponse::name)
+                        .extracting(ReservationDto::name)
                         .containsExactly("브라운", "솔라", "브리")
         );
     }
