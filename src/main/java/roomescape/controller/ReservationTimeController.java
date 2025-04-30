@@ -47,9 +47,4 @@ public class ReservationTimeController {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ExceptionHandler(value = DeleteReservationException.class)
-    public ResponseEntity<String> error(DeleteReservationException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
 }

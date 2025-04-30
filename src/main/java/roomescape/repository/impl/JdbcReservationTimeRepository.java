@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -41,9 +42,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public Optional<ReservationTime> readReservationTime(Long timeId) {
         final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
 
-        return Optional.ofNullable(jdbcTemplate.queryForObject(query,
-                (resultSet, rowNum) -> new ReservationTime(resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()), timeId));
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(query,
+                            (resultSet, rowNum) -> new ReservationTime(resultSet.getLong("id"),
+                            resultSet.getTime("start_at").toLocalTime()), timeId));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public void deleteReservationTime(Long id) {

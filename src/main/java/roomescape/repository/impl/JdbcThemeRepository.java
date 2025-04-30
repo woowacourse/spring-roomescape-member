@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -46,12 +47,16 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     public Optional<Theme> findById(Long id) {
         final String query = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(query, (resultSet, rowNum) ->
-                        new Theme(resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("description"),
-                                resultSet.getString("thumbnail"))
-                , id));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, (resultSet, rowNum) ->
+                            new Theme(resultSet.getLong("id"),
+                                    resultSet.getString("name"),
+                                    resultSet.getString("description"),
+                                    resultSet.getString("thumbnail"))
+                    , id));
+        } catch (DataAccessException exception) {
+            return Optional.empty();
+        }
     }
 
     public void delete(Long id) {
