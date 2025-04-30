@@ -38,7 +38,7 @@ public class ReservationTest {
     @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
     void ExceptionAnyValueNull(String name, LocalDate date, TimeSlot timeSlot) {
         // given & when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, timeSlot))
+        assertThatThrownBy(() -> Reservation.register(1L, name, date, timeSlot))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -46,7 +46,7 @@ public class ReservationTest {
     @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")
     void ExceptionNameLength() {
         // given & when & then
-        assertThatThrownBy(() -> new Reservation(
+        assertThatThrownBy(() -> Reservation.register(
             1L,
             "여섯글자이름",
             LocalDate.of(2023, 12, 1),

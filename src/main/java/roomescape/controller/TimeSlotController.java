@@ -30,6 +30,7 @@ public class TimeSlotController {
 
     @PostMapping
     public ResponseEntity<TimeSlotResponse> add(@RequestBody CreateTimeSlotRequest request) {
+        // TODO : 시간 바인딩 예외 응답 처리하기
         var timeSlot = service.add(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);

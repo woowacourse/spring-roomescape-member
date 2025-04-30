@@ -1,6 +1,8 @@
 package roomescape.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -19,14 +21,28 @@ public class Reservation {
     private final LocalDate date;
     private final TimeSlot timeSlot;
 
-    public Reservation(final Long id, final String name, final LocalDate date,
-        final TimeSlot timeSlot) {
+    private Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot) {
         validateNotNull(name, date, timeSlot);
         validateNameLength(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.timeSlot = timeSlot;
+    }
+
+    public boolean isBefore(LocalDateTime dateTime) {
+        var date = dateTime.toLocalDate();
+        var time = dateTime.toLocalTime();
+        return this.date.isBefore(date)
+            || (this.date.isEqual(date) && this.timeSlot.isBefore(time));
+    }
+
+    public static Reservation register(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot) {
+        return new Reservation(id, name, date, timeSlot);
+    }
+
+    public static Reservation create(final String name, final LocalDate date, final TimeSlot timeSlot) {
+        return new Reservation(null, name, date, timeSlot);
     }
 
     private void validateNotNull(

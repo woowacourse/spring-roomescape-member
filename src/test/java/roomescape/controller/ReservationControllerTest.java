@@ -41,7 +41,7 @@ public class ReservationControllerTest {
 
     @DisplayName("예약 생성 시 유효하지 않은 이름이 입력 되었을 때 Bad Request")
     @Test
-    void createReservationInvalidName() {
+    void createInvalidName() {
         // given
         addOneTimeSlot();
 
@@ -62,7 +62,7 @@ public class ReservationControllerTest {
 
     @DisplayName("예약 생성 시 유효하지 않은 시간이 입력 되었을 때 Bad Request")
     @Test
-    void createReservationInvalidTimeSlot() {
+    void createInvalidTimeSlot() {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");

@@ -5,16 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationFakeRepository;
@@ -75,7 +70,7 @@ class TimeSlotServiceTest {
 
         var name = "포포";
         var date = LocalDate.of(2024, 4, 18);
-        var reservation = new Reservation(null, name, date, timeSlot);
+        var reservation = Reservation.create(name, date, timeSlot);
         reservationRepository.save(reservation);
 
         // when & then

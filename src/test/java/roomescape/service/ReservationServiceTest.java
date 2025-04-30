@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -62,5 +64,31 @@ public class ReservationServiceTest {
             () -> assertThat(isRemoved).isTrue(),
             () -> assertThat(reservations).doesNotContain(reserved)
         );
+    }
+
+    @Test
+    @DisplayName("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.")
+    void cannotReservePastDateTime() {
+        // given
+        var name = "포포";
+        var date = LocalDate.of(2024, 5, 31);
+        var timeSlotId = JUNK_TIME_SLOT.id();
+
+        // when & then
+        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("지나가지 않은 날짜와 시간에 대한 예약 생성은 가능하다.")
+    void canReserveFutureDateTime() {
+        // given
+        var name = "포포";
+        var date = LocalDate.of(2025, 5, 1);
+        var timeSlotId = JUNK_TIME_SLOT.id();
+
+        // when & then
+        assertThatCode(() -> service.reserve(name, date, timeSlotId))
+            .doesNotThrowAnyException();
     }
 }

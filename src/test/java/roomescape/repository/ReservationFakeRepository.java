@@ -20,7 +20,7 @@ public class ReservationFakeRepository implements ReservationRepository {
     @Override
     public long save(final Reservation reservation) {
         var id = index.getAndIncrement();
-        var created = new Reservation(
+        var created = Reservation.register(
             id,
             reservation.name(),
             reservation.date(),

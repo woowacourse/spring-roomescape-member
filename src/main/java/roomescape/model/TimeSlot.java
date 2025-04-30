@@ -19,4 +19,8 @@ public class TimeSlot {
         this.id = id;
         this.startAt = startAt;
     }
+
+    public boolean isBefore(LocalTime time) {
+        return this.startAt.isBefore(time);
+    }
 }
