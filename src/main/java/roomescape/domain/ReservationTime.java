@@ -35,4 +35,21 @@ public class ReservationTime {
             throw new NullPointerException("startAt(시작 시간)은 비어있을 수 없습니다.");
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTime that = (ReservationTime) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
+    }
 }

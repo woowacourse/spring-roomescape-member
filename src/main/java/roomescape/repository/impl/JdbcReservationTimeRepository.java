@@ -1,5 +1,6 @@
 package roomescape.repository.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(query,
                             (resultSet, rowNum) -> new ReservationTime(resultSet.getLong("id"),
-                            resultSet.getTime("start_at").toLocalTime()), timeId));
+                                    resultSet.getTime("start_at").toLocalTime()), timeId));
         } catch (DataAccessException exception) {
             return Optional.empty();
         }
@@ -55,5 +56,29 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public void deleteReservationTime(Long id) {
         final String query = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    public List<ReservationTime> findAvailableTimesBy(LocalDate localDate, Long themeId) {
+        final String query = """
+                SELECT id, start_at
+                FROM reservation_time
+                WHERE id NOT IN (
+                    SELECT rt.id
+                    FROM reservation r
+                    INNER JOIN reservation_time rt ON r.time_id = rt.id
+                    WHERE r.date = ? AND r.theme_id = ?
+                )
+                """;
+
+        List<ReservationTime> reservationTimes = jdbcTemplate.query(
+                query,
+                (resultSet, rowNum) -> new ReservationTime(
+                        resultSet.getLong("id"),
+                        resultSet.getTime("start_at").toLocalTime()
+                ),
+                localDate, themeId
+        );
+
+        return reservationTimes;
     }
 }

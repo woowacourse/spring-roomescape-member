@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.service.ThemeService;
@@ -41,5 +42,18 @@ public class ThemeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/lists")
+    public ResponseEntity<List<Theme>> readLists(
+            @RequestParam(value = "order_type", required = false) String order_type,
+            @RequestParam(value = "list_num", required = false) Long list_num
+            ) {
+        // TODO: 리스트를 생성하는 필터 조건을 파라미터로 전달할 수 있도록 설계함. (프론트엔드와의 협업 필요)
+        // TODO: 정렬 조건을 ENUM으로 관리하기.
+        order_type = "desc"; // 현재는 내림차순으로 고정
+        list_num = 10L;
+        List<Theme> listedTheme = themeService.readLists(order_type, list_num);
+        return ResponseEntity.ok(listedTheme);
     }
 }

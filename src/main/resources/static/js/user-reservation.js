@@ -36,10 +36,10 @@ function renderTheme(themes) {
   const themeSlots = document.getElementById('theme-slots');
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
-    const name = '';
-    const themeId = '';
+    const name = theme.name;
+    const themeId = theme.id;
     /*
-    TODO: [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
+    TODO: 완료[3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
           createSlot('theme', theme name, theme id) 형태로 호출
     */
@@ -88,10 +88,11 @@ function checkDateAndTheme() {
 
 function fetchAvailableTimes(date, themeId) {
   /*
-  TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
+  TODO: 완료[3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 가능 시간 조회 API endpoint
+  const url = `/times/search?date=${encodeURIComponent(date)}&themeId=${encodeURIComponent(themeId)}`;
+  fetch(url, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -117,12 +118,12 @@ function renderAvailableTimes(times) {
   }
   times.forEach(time => {
     /*
-    TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
+    TODO: 완료[3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
     */
-    const startAt = '';
-    const timeId = '';
-    const alreadyBooked = false;
+    const startAt = time.startAt;
+    const timeId = time.id;
+    const alreadyBooked = time.booked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);

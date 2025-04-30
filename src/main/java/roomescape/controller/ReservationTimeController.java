@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -34,7 +37,7 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTime>> read() {
-         List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
+        List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
         return ResponseEntity.ok(reservationTimes);
     }
 
@@ -44,4 +47,11 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ReservationTimeResponseWithBookedStatus>> read(@RequestParam(required = false) LocalDate date,
+                                 @RequestParam(required = false) Long themeId) {
+        List<ReservationTimeResponseWithBookedStatus> response = reservationTimeService.readAvailableTimesBy(
+                date, themeId);
+        return ResponseEntity.ok(response);
+    }
 }

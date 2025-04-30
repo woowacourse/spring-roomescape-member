@@ -12,4 +12,7 @@ public interface ThemeRepository {
     void delete(Long id);
 
     Optional<Theme> findById(Long id);
+
+    List<Theme> readByAsc(Long listNum);
+    List<Theme> readByDesc(Long listNum);
 }

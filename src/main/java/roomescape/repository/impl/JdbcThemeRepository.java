@@ -45,6 +45,62 @@ public class JdbcThemeRepository implements ThemeRepository {
         );
     }
 
+    public List<Theme> readByAsc(Long listNum) {
+        final String query = """
+                SELECT t.id, t.name, t.description, t.thumbnail, rc.reservation_count
+                FROM (
+                    SELECT r.theme_id, COUNT(*) AS reservation_count
+                    FROM reservation r
+                    WHERE r.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND DATEADD('DAY', -1, CURRENT_DATE)
+                    GROUP BY r.theme_id
+                    ORDER BY reservation_count ASC
+                    LIMIT ?
+                ) rc
+                INNER JOIN theme t ON rc.theme_id = t.id
+                """;
+
+        List<Theme> listedTheme = jdbcTemplate.query(
+                query,
+                (resultSet, rowNum) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ),
+                listNum
+        );
+
+        return listedTheme;
+    }
+
+    public List<Theme> readByDesc(Long listNum) {
+        final String query = """
+                SELECT t.id, t.name, t.description, t.thumbnail, rc.reservation_count
+                FROM (
+                    SELECT r.theme_id, COUNT(*) AS reservation_count
+                    FROM reservation r
+                    WHERE r.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND DATEADD('DAY', -1, CURRENT_DATE)
+                    GROUP BY r.theme_id
+                    ORDER BY reservation_count DESC
+                    LIMIT ?
+                ) rc
+                INNER JOIN theme t ON rc.theme_id = t.id
+                """;
+
+        List<Theme> listedTheme = jdbcTemplate.query(
+                query,
+                (resultSet, rowNum) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ),
+                listNum
+        );
+
+        return listedTheme;
+    }
+
     public Optional<Theme> findById(Long id) {
         final String query = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {

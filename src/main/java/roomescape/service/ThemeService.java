@@ -26,4 +26,12 @@ public class ThemeService {
     public void delete(Long id) {
         themeRepository.delete(id);
     }
+
+    public List<Theme> readLists(String orderType, Long listNum) {
+        if (orderType.equals("desc")) {
+            return themeRepository.readByDesc(listNum);
+        }
+
+        return themeRepository.readByAsc(listNum);
+    }
 }

@@ -1,14 +1,13 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.common.exception.DeleteReservationException;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -18,7 +17,8 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
-    public ReservationTimeService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationRepository reservationRepository,
+                                  ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
@@ -38,5 +38,15 @@ public class ReservationTimeService {
         }
 
         reservationTimeRepository.deleteReservationTime(id);
+    }
+
+    public List<ReservationTimeResponseWithBookedStatus> readAvailableTimesBy(LocalDate date, Long themeId) {
+        List<ReservationTime> allTimes = reservationTimeRepository.readReservationTimes();
+        List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(date, themeId);
+
+        return allTimes.stream()
+                .map(time ->
+                        ReservationTimeResponseWithBookedStatus.of(time, !availableTimes.contains(time))
+                ).toList();
     }
 }
