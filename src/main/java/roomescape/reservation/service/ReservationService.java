@@ -11,7 +11,7 @@ import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.infrastructure.ThemeRepository;
+import roomescape.theme.domain.ThemeRepository;
 
 @Service
 public class ReservationService {
@@ -48,8 +48,9 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약이 존재합니다.");
         }
 
+        // TODO: save -> findById 흐름의 아이디 부여 로직 변경
         Long id = reservationRepository.save(new Reservation(null, request.name(), request.date(), time, theme));
-        Reservation findReservation = reservationRepository.findById(id);
+        Reservation findReservation = new Reservation(id, request.name(), request.date(), time, theme);
 
         return ReservationResponse.from(findReservation);
     }
