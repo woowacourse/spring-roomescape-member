@@ -14,8 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.common.exception.handler.dto.ExceptionResponse;
-import roomescape.theme.presentation.dto.ThemeResponse;
+import roomescape.common.exceptionHandler.dto.ExceptionResponse;
+import roomescape.theme.dto.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -67,7 +67,7 @@ public class ThemeIntegrationTest {
         params.put("description", "hi");
         params.put("thumbnail", "http");
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 테마 이름이 비어있을 수 없습니다.", "/themes");
+        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/themes");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -90,7 +90,7 @@ public class ThemeIntegrationTest {
         params.put("description", null);
         params.put("thumbnail", "http");
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 테마 설명이 비어있을 수 없습니다.", "/themes");
+        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/themes");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -113,7 +113,7 @@ public class ThemeIntegrationTest {
         params.put("description", "hi");
         params.put("thumbnail", null);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 테마 썸네일이 비어있을 수 없습니다.", "/themes");
+        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/themes");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
