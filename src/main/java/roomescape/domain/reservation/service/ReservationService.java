@@ -5,9 +5,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
@@ -79,16 +84,32 @@ public class ReservationService {
         return LocalDateTime.now(clock);
     }
 
-    public List<ReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
-        List<ReservationTime> bookedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
+    public List<BookedReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
+        Map<ReservationTime, Boolean> allTimes = processAlreadyBookedTimesMap(
+                date, themeId);
+
+        return allTimes.entrySet()
+                .stream()
+                .map(this::bookedReservationTimeResponseOf)
+                .toList();
+    }
+
+    private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(LocalDate date, Long themeId) {
+        Map<ReservationTime, Boolean> allTimes = reservationTimeRepository.findAll()
+                .stream()
+                .collect(Collectors.toMap(Function.identity(), t -> false));
+
+        reservationRepository.findByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getReservationTime)
-                .toList();
+                .forEach(bookedTime -> allTimes.put(bookedTime, true));
 
-        return allTimes.stream()
-                .filter(allTime -> !bookedTimes.contains(allTime))
-                .map(ReservationTimeResponse::from)
-                .toList();
+        return allTimes;
+    }
+
+    private BookedReservationTimeResponse bookedReservationTimeResponseOf(
+            Entry<ReservationTime, Boolean> entry) {
+        return new BookedReservationTimeResponse(
+                ReservationTimeResponse.from(entry.getKey()), entry.getValue());
     }
 }
