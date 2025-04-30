@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import java.util.Objects;
 import roomescape.exception.InvalidReservationTimeException;
 
 public class ReservationTime {
@@ -26,5 +27,19 @@ public class ReservationTime {
 
     public LocalTime getTime() {
         return time;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTime that = (ReservationTime) o;
+        return Objects.equals(id, that.id) && Objects.equals(time, that.time);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, time);
     }
 }

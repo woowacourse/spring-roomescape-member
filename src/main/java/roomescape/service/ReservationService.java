@@ -53,6 +53,7 @@ public class ReservationService {
     }
 
 
+    //TODO 테마 추가 테마 삭제할떄도 예약있는지 확인해야함
     private void validateSameReservation(Reservation reservation) {
         if (reservationRepository.existsByDateAndTimeId(reservation)) {
             throw new InvalidReservationException("중복된 예약신청입니다");
@@ -77,5 +78,10 @@ public class ReservationService {
                 availableTimeRequestDto.date(), availableTimeRequestDto.themeId());
 
         return new ReservationSlotTimes(times, alreadyReservedReservations);
+    }
+
+    public Reservation getReservationById(long addedReservationId) {
+        return reservationRepository.findById(addedReservationId)
+                .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약입니다."));
     }
 }

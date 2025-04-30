@@ -38,9 +38,13 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addReservationTime(@RequestBody @Valid AddReservationTimeDto newReservationTimeDto) {
-        reservationTimeService.addReservationTime(newReservationTimeDto);
-        return ResponseEntity.created(URI.create("/times/")).build();
+    public ResponseEntity<ReservationTimeResponseDto> addReservationTime(
+            @RequestBody @Valid AddReservationTimeDto newReservationTimeDto) {
+        long id = reservationTimeService.addReservationTime(newReservationTimeDto);
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(id);
+        ReservationTimeResponseDto reservationTimeResponseDto = new ReservationTimeResponseDto(reservationTime.getId(),
+                reservationTime.getTime());
+        return ResponseEntity.created(URI.create("/times/")).body(reservationTimeResponseDto);
     }
 
     @DeleteMapping("/{id}")

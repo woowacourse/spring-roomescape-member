@@ -143,9 +143,9 @@ class MissionStep2Test {
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
-        Map<String, String> timeParm = new HashMap<>();
+        Map<String, String> timeParam = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParm.put("startAt", afterTime.toString());
+        timeParam.put("startAt", afterTime.toString());
 
         Map<String, String> themeParam = new HashMap<>();
         themeParam.put("name", "테마 명");
@@ -154,7 +154,7 @@ class MissionStep2Test {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(timeParm)
+                .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);

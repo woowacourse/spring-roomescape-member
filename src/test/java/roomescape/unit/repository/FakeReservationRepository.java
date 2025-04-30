@@ -59,4 +59,11 @@ public class FakeReservationRepository implements ReservationRepository {
                 .filter((reservation) -> reservation.getTheme().getId().equals(themeId))
                 .toList();
     }
+
+    @Override
+    public Optional<Reservation> findById(long id) {
+        return reservations.stream()
+                .filter((reservation) -> reservation.getId().equals(id))
+                .findAny();
+    }
 }
