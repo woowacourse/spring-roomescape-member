@@ -23,9 +23,10 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
 
     @Override
     public Reservation create(final CreateReservationServiceRequest createReservationServiceRequest) {
-        if (reservationQueryUseCase.existsByDateAndTimeId(
+        if (reservationQueryUseCase.existsByParams(
                 createReservationServiceRequest.date(),
-                ReservationTimeId.from(createReservationServiceRequest.timeId()))) {
+                ReservationTimeId.from(createReservationServiceRequest.timeId()),
+                ThemeId.from(createReservationServiceRequest.themeId()))) {
 
             throw new IllegalStateException("추가하려는 예약이 이미 존재합니다.");
         }
@@ -39,7 +40,7 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
 
     @Override
     public void delete(final ReservationId id) {
-        if (reservationRepository.existsById(id)) {
+        if (reservationRepository.existsByParams(id)) {
             reservationRepository.deleteById(id);
             return;
         }

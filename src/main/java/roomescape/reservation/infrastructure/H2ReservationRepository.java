@@ -44,7 +44,7 @@ public class H2ReservationRepository implements ReservationRepository {
     };
 
     @Override
-    public boolean existsById(final ReservationId id) {
+    public boolean existsByParams(final ReservationId id) {
         final String sql = """
                 select exists 
                     (select 1 from reservation where id = ?)
@@ -55,7 +55,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByTimeId(final ReservationTimeId timeId) {
+    public boolean existsByParams(final ReservationTimeId timeId) {
         final String sql = """
                 select exists 
                     (select 1 from reservation where time_id = ?)
@@ -66,14 +66,16 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final ReservationTimeId timeId) {
+    public boolean existsByParams(final LocalDate date,
+                                  final ReservationTimeId timeId,
+                                  final ThemeId themeId) {
         final String sql = """
                 select exists 
-                    (select 1 from reservation where date = ? and time_id = ?)
+                    (select 1 from reservation where date = ? and time_id = ? and theme_id = ?)
                 """;
 
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId.getValue()));
+                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId.getValue(), themeId.getValue()));
     }
 
     @Override
