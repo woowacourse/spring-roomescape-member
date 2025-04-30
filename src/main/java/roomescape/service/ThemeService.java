@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 
@@ -10,4 +11,6 @@ public interface ThemeService {
     List<ThemeResponse> getAll();
 
     void deleteById(Long id);
+
+    List<PopularThemeResponse> getPopularThemes();
 }

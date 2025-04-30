@@ -111,4 +111,21 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 themeId);
         return timeIds;
     }
+
+    @Override
+    public List<Long> findTopThemesByReservationCountBetween(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT theme_id
+                FROM reservation
+                WHERE date BETWEEN ? AND ?
+                GROUP BY theme_id
+                ORDER BY COUNT(*) DESC
+                LIMIT 10
+                """;
+        List<Long> themeIds = jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            Long themeId = resultSet.getLong("theme_id");
+            return themeId;
+        }, startDate, endDate);
+        return themeIds;
+    }
 }
