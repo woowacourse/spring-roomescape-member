@@ -16,6 +16,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.exception.CannotCreatedException;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.NotCorrectDateTimeException;
+import roomescape.exception.ThemeDoesNotExistException;
 import roomescape.exception.TimeDoesNotExistException;
 import roomescape.service.ReservationService;
 
@@ -46,7 +47,7 @@ public class ReservationController {
         reservationService.removeReservation(id);
     }
 
-    @ExceptionHandler(value = {TimeDoesNotExistException.class, NotCorrectDateTimeException.class})
+    @ExceptionHandler(value = {TimeDoesNotExistException.class, ThemeDoesNotExistException.class, NotCorrectDateTimeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleCreatedException(CannotCreatedException ex) {
         return ex.getMessage();

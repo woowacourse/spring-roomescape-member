@@ -4,24 +4,26 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.exception.InvalidInputException;
 
 public record ReservationRequest(
     @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
     String name,
-    Long timeId) {
+    Long timeId,
+    Long themeId) {
 
     public ReservationRequest {
-        validateNull(date, name, timeId);
+        validateNull(date, name, timeId, themeId);
         validateName(name);
     }
 
-    public static Reservation toEntity(ReservationRequest request, ReservationTime time) {
-        return new Reservation(null, request.name(), request.date(), time);
+    public static Reservation toEntity(ReservationRequest request, ReservationTime time, Theme theme) {
+        return new Reservation(null, request.name(), request.date(), time, theme);
     }
 
-    private void validateNull(LocalDate date, String name, Long timeId) {
-        if(date == null || name == null || timeId == null) {
+    private void validateNull(LocalDate date, String name, Long timeId, Long themeId) {
+        if(date == null || name == null || timeId == null || themeId == null) {
             throw new InvalidInputException("값을 모두 선택해라.");
         }
     }

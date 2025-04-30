@@ -10,4 +10,6 @@ public interface ThemeDao {
     Theme addTheme(Theme theme);
 
     void removeThemeById(Long id);
+
+    Theme findThemeById(Long id);
 }
