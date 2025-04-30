@@ -25,7 +25,7 @@ public class JDBCThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> getAll() {
         return jdbcTemplate.query(
-                "SELECT id, name, desciption, thumbnail FROM theme",
+                "SELECT id, name, description, thumbnail FROM theme",
                 (resultSet, rowNum) -> {
                     ThemeEntity entity = new ThemeEntity(
                             resultSet.getLong("id"),
