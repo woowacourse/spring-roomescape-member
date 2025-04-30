@@ -37,14 +37,11 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
     @Override
     public void delete(Long timeId) {
         store.remove(timeId);
-
-        for (ReservationTime allTime : findAllTimes()) {
-            System.out.println("allTime.getId() = " + allTime.getId());
-        }
     }
 
     @Override
     public boolean isExists(LocalTime startAt) {
-        return false; // todo: 구현
+        return store.values().stream()
+                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(startAt));
     }
 }

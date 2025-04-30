@@ -16,12 +16,14 @@ import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
+import roomescape.reservation.presentation.dto.ThemeRequest;
 
 @JdbcTest
 public class ReservationDaoTest {
 
     private ReservationDao reservationDao;
     private ReservationTimeDao reservationTimeDao;
+    private ThemeDao themeDao;
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -29,6 +31,7 @@ public class ReservationDaoTest {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationDao = new ReservationDao(jdbcTemplate);
         this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
+        this.themeDao = new ThemeDao(jdbcTemplate);
     }
 
     @BeforeEach
@@ -42,8 +45,14 @@ public class ReservationDaoTest {
     void insertTest() {
         // given
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        ThemeRequest themeRequest = new ThemeRequest(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        );
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 new ReservationName("브라운"),
+                themeDao.insert(themeRequest),
                 new ReservationDate(LocalDate.of(2023, 8, 5)),
                 reservationTimeDao.insert(reservationTimeRequest.getStartAt())
         );
@@ -60,8 +69,14 @@ public class ReservationDaoTest {
     void deleteTest() {
         // given
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        ThemeRequest themeRequest = new ThemeRequest(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        );
         CreateReservationRequest createReservationRequest = new CreateReservationRequest(
                 new ReservationName("브라운"),
+                themeDao.insert(themeRequest),
                 new ReservationDate(LocalDate.of(2023, 8, 5)),
                 reservationTimeDao.insert(reservationTimeRequest.getStartAt())
         );

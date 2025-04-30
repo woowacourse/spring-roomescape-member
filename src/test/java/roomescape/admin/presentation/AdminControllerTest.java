@@ -28,4 +28,22 @@ class AdminControllerTest {
                 .statusCode(200);
     }
 
+    @Test
+    @DisplayName("예약 시간 페이지 테스트")
+    void reservationTimePageTest() {
+        RestAssured.given().log().all()
+                .when().get("/admin/time")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("테마 페이지 테스트")
+    void themePageTest() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
+
 }

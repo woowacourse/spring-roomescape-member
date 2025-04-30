@@ -31,7 +31,14 @@ class ReservationControllerTest {
                 .body(reservationTime)
                 .when().post("/times");
 
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1");
+        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes");
+
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -52,15 +59,9 @@ class ReservationControllerTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "aaaaaaaaaaa"})
     @DisplayName("예약자명이 존재하지 않거나, 10자를 초과할 수 없다.")
-    void createReservationNameExceptionTest(String name){
+    void createReservationNameExceptionTest(String name) {
         // given
-        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times");
-
-        Map<String, String> reservation = reservationFixture.createReservation(name, "2025-08-05", "1");
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         // when - then
         RestAssured.given().log().all()
@@ -73,15 +74,9 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("날짜는 LocalDate 형식을 만족시켜야 한다.")
-    void createReservationDateExceptionTest(){
+    void createReservationDateExceptionTest() {
         // given
-        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times");
-
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-0805", "1");
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         // when - then
         RestAssured.given().log().all()
@@ -94,7 +89,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.")
-    void createReservationIsPastDateExceptionTest(){
+    void createReservationIsPastDateExceptionTest() {
         // given
         Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
         RestAssured.given().log().all()
@@ -102,7 +97,7 @@ class ReservationControllerTest {
                 .body(reservationTime)
                 .when().post("/times");
 
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2024-08-05", "1");
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         // when - then
         RestAssured.given().log().all()
@@ -115,7 +110,7 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("중복된 일시의 예약은 불가능하다.")
-    void createReservationIsDuplicateDateExceptionTest(){
+    void createReservationIsDuplicateDateExceptionTest() {
         // given
         Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
         RestAssured.given().log().all()
@@ -123,7 +118,14 @@ class ReservationControllerTest {
                 .body(reservationTime)
                 .when().post("/times");
 
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1");
+        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes");
+
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         // when
         RestAssured.given().log().all()
@@ -144,9 +146,37 @@ class ReservationControllerTest {
 
     @Test
     @DisplayName("존재하지 않는 예약 시간 ID를 이용하여 예약할 수 없다.")
-    void createReservationInvalidTimeIdExceptionTest(){
+    void createReservationInvalidTimeIdExceptionTest() {
         // given
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1");
+        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes");
+
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+
+        // when - then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 테마 ID를 이용하여 예약할 수 없다.")
+    void createReservationInvalidThemeIdExceptionTest() {
+        // given
+        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTime)
+                .when().post("/times");
+
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         // when - then
         RestAssured.given().log().all()
@@ -167,7 +197,14 @@ class ReservationControllerTest {
                 .body(reservationTime)
                 .when().post("/times");
 
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1");
+        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes");
+
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -200,7 +237,14 @@ class ReservationControllerTest {
                 .body(reservationTime)
                 .when().post("/times");
 
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1");
+        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes");
+
+        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
