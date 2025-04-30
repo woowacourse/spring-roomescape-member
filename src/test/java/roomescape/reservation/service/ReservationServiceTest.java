@@ -14,11 +14,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.common.util.DateTime;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeRepository;
 
 class ReservationServiceTest {
 
@@ -32,26 +30,18 @@ class ReservationServiceTest {
                 return LocalDateTime.of(2025, 10, 5, 10, 0);
             }
         };
-        ThemeRepository themeRepository = new FakeThemeRepository(null);
-        Theme theme = Theme.createWithId(1L, "테스트1", "설명", "localhost:8080");
-        themeRepository.save(theme);
 
-        ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(9, 0));
+        ReservationTime reservationTime1 = new ReservationTime(null, LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = new ReservationTime(null, LocalTime.of(9, 0));
 
         ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
         ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
+        reservationRepository.save(new Reservation(null, "홍길동", LocalDate.of(2024, 10, 6), reservationTime1));
 
-        reservationService = new ReservationService(
-                dateTime,
-                reservationRepository,
-                reservationTimeRepository,
-                themeRepository
-        );
+        reservationService = new ReservationService(dateTime, reservationRepository, reservationTimeRepository);
     }
 
     @DisplayName("지나간 날짜와 시간에 대한 예약을 생성할 수 없다.")
@@ -59,7 +49,7 @@ class ReservationServiceTest {
     @MethodSource
     void cant_not_reserve_before_now(final LocalDate date, final Long timeId) {
         Assertions.assertThatThrownBy(
-                        () -> reservationService.createReservation(new ReservationRequest("홍길동", date, timeId, 1L)))
+                        () -> reservationService.createReservation(new ReservationRequest("홍길동", date, timeId)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -76,7 +66,7 @@ class ReservationServiceTest {
     @Test
     void cant_not_reserve_duplicate() {
         Assertions.assertThatThrownBy(() -> reservationService.createReservation(
-                        new ReservationRequest("홍길동", LocalDate.of(2024, 10, 6), 1L, 1L)))
+                        new ReservationRequest("홍길동", LocalDate.of(2024, 10, 6), 1L)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -28,51 +28,44 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean existByReservationTimeId(Long timeId) {
         return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), timeId));
+                .anyMatch(reservation -> reservation.getTime().getId() == timeId);
     }
 
     @Override
-    public boolean existBy(Long themeId, LocalDate date, LocalTime time) {
+    public boolean existByDateTime(LocalDate date, LocalTime time) {
         return reservations.stream()
                 .anyMatch(reservation ->
                         reservation.getTime().getStartAt().equals(time)
-                                && reservation.getDate().equals(date)
-                                && reservation.getTheme().getId().equals(themeId));
-    }
-
-    @Override
-    public boolean existBy(Long themeId) {
-        return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), themeId));
+                && reservation.getDate().equals(date));
     }
 
     @Override
     public Long save(Reservation reservation) {
         long currentIndex = index.incrementAndGet();
-
-        reservations.add(reservation.assignId(currentIndex));
+        reservations.add(new Reservation(currentIndex, reservation.getName(), reservation.getDate(), reservation.getTime()));
         return currentIndex;
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public int deleteById(Long id) {
         Optional<Reservation> findReservation = reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findAny();
 
-        if (findReservation.isEmpty()) {
-            return false;
+        if(findReservation.isEmpty()){
+            return 0;
         }
 
         Reservation reservation = findReservation.get();
         reservations.remove(reservation);
-        return true;
+        return 1;
     }
 
     @Override
-    public List<Reservation> findBy(LocalDate date, Long themeId) {
+    public Reservation findById(Long id) {
         return reservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId().equals(themeId))
-                .toList();
+                .filter(reservation -> Objects.equals(reservation.getId(), id))
+                .findAny()
+                .orElseThrow();
     }
 }

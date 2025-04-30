@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
 
@@ -21,7 +22,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Long save(ReservationTime reservationTime) {
         long currentIndex = index.incrementAndGet();
-        reservationTimes.add(ReservationTime.createWithId(currentIndex, reservationTime.getStartAt()));
+        reservationTimes.add(new ReservationTime(currentIndex, reservationTime.getStartAt()));
         return currentIndex;
     }
 
@@ -39,17 +40,17 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public int deleteById(Long id) {
         Optional<ReservationTime> findReservationTime = reservationTimes.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findAny();
 
         if(findReservationTime.isEmpty()){
-            return false;
+            return 0;
         }
 
         ReservationTime reservationTime = findReservationTime.get();
         reservationTimes.remove(reservationTime);
-        return true;
+        return 1;
     }
 }
