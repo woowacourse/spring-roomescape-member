@@ -1,5 +1,14 @@
 package roomescape.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
+@EqualsAndHashCode(of = {"id"})
+@Getter
+@Accessors(fluent = true)
+@ToString
 public class Theme {
 
     private static final int NAME_MAX_LENGTH = 10;
