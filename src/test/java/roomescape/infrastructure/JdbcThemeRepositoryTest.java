@@ -49,4 +49,17 @@ class JdbcThemeRepositoryTest {
         // then
         assertThat(themes).hasSize(2);
     }
+
+    @DisplayName("테마 생성 후 id를 반환한다")
+    @Test
+    void save() {
+        //given
+        Theme themeWithoutId = Theme.withoutId("테마1", "테마 1입니다.", "썸네일");
+
+        //when
+        Long id = jdbcThemeRepository.save(themeWithoutId);
+
+        //then
+        assertThat(id).isEqualTo(1);
+    }
 }

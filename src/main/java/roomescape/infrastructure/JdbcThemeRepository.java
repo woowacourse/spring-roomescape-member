@@ -1,8 +1,10 @@
 package roomescape.infrastructure;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ThemeRepository;
@@ -10,7 +12,7 @@ import roomescape.domain.repository.ThemeRepository;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
-    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> new Theme(
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) -> Theme.of(
             rs.getLong("id"),
             rs.getString("name"),
             rs.getString("description"),
@@ -24,8 +26,19 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void save(Theme theme) {
+    public Long save(Theme theme) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
 
+        Map<String, Object> params = Map.of(
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail", theme.getThumbnail()
+        );
+
+        Number key = simpleJdbcInsert.executeAndReturnKey(params);
+        return key.longValue();
     }
 
     @Override

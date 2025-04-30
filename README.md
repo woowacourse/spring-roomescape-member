@@ -17,6 +17,6 @@
         - 페이지는 templates/admin/theme.html 파일을 이용하세요.
         - 모든 테마는 시작 시간과 소요 시간이 동일하다고 가정합니다.
     - [X] `GET - /themes` API 호출 시 모든 테마를 응답합니다.
-    - [ ] `POST - /themes` API 호출 시 테마를 생성하고 저장합니다.
+    - [X] `POST - /themes` API 호출 시 테마를 생성하고 저장합니다.
     - [ ] `DELETE - /themes/{id}` API 호출 시 해당 id의 테마를 삭제합니다.
  

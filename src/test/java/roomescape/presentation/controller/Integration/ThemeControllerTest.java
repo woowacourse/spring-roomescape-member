@@ -1,8 +1,15 @@
 package roomescape.presentation.controller.Integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.application.ThemeService;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 
@@ -52,4 +58,28 @@ public class ThemeControllerTest {
                 .body("size()", is(themesCount));
     }
 
+    @DisplayName("테마 생성 요청 시 생성된 테마 정보를 응답한다")
+    @Test
+    void createTheme() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "레벨2 탈출");
+        params.put("description", "레벨2 탈출입니다.");
+        params.put("thumbnail", "썸네일");
+
+        // when & then
+        ExtractableResponse<Response> extractedResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201).extract();
+
+        assertAll(
+                () -> assertThat(extractedResponse.jsonPath().getString("name")).isEqualTo(params.get("name")),
+                () -> assertThat(extractedResponse.jsonPath().getString("description")).isEqualTo(
+                        params.get("description")),
+                () -> assertThat(extractedResponse.jsonPath().getString("thumbnail")).isEqualTo(params.get("thumbnail"))
+        );
+    }
 }
