@@ -70,7 +70,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         String query = "delete from RESERVATION where id=?";
         jdbcTemplate.update(query, id);
     }

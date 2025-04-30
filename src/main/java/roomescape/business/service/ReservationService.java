@@ -63,7 +63,7 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.delete(id);
+        reservationRepository.deleteById(id);
     }
 
     public Long createTime(ReservationTimeRequestDto reservationTimeRequestDto) {
@@ -89,6 +89,6 @@ public class ReservationService {
     }
 
     public void deleteTime(Long id) {
-        reservationTimeRepository.delete(id);
+        reservationTimeRepository.deleteById(id);
     }
 }

@@ -34,7 +34,7 @@ class H2ReservationRepositoryTest {
     @Test
     void add() {
         // given
-        Reservation reservation = new Reservation("예약자", LocalDate.now(), reservationTime);
+        Reservation reservation = new Reservation("예약자", LocalDate.now().plusDays(1), reservationTime);
 
         // when
         Long id = h2ReservationRepository.add(reservation);
@@ -47,7 +47,7 @@ class H2ReservationRepositoryTest {
     @Test
     void findAll() {
         // given
-        h2ReservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
+        h2ReservationRepository.add(new Reservation("예약자", LocalDate.now().plusDays(1), reservationTime));
 
         // when
         List<Reservation> reservations = h2ReservationRepository.findAll();
@@ -60,7 +60,7 @@ class H2ReservationRepositoryTest {
     @Test
     void findById() {
         // given
-        Long id = h2ReservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
+        Long id = h2ReservationRepository.add(new Reservation("예약자", LocalDate.now().plusDays(1), reservationTime));
 
         // when
         Reservation findReservation = h2ReservationRepository.findById(id);
@@ -71,12 +71,12 @@ class H2ReservationRepositoryTest {
 
     @DisplayName("예약 객체를 삭제한다")
     @Test
-    void delete() {
+    void deleteById() {
         // given
-        Long id = h2ReservationRepository.add(new Reservation("예약자", LocalDate.now(), reservationTime));
+        Long id = h2ReservationRepository.add(new Reservation("예약자", LocalDate.now().plusDays(1), reservationTime));
 
         // when
-        h2ReservationRepository.delete(id);
+        h2ReservationRepository.deleteById(id);
 
         // then
         Assertions.assertThat(h2ReservationRepository.findAll()).isEmpty();

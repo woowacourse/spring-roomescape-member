@@ -33,7 +33,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         ReservationTime reservationTime = findById(id);
         reservationTimes.remove(reservationTime);
     }
