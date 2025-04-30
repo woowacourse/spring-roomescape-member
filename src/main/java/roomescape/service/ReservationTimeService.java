@@ -32,6 +32,7 @@ public class ReservationTimeService {
 
     @Transactional
     public void deleteReservationTime(long id) {
+        
         repository.deleteById(id);
     }
 }

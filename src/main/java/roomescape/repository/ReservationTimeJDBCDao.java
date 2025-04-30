@@ -1,5 +1,8 @@
 package roomescape.repository;
 
+import java.sql.Time;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -8,10 +11,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.ReservationTime;
 import roomescape.exceptions.EntityNotFoundException;
-
-import java.sql.Time;
-import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class ReservationTimeJDBCDao implements ReservationTimeRepository {
@@ -26,7 +25,7 @@ public class ReservationTimeJDBCDao implements ReservationTimeRepository {
     public ReservationTime findById(Long id) {
         String sql = "select * from reservation_time where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-        return namedJdbcTemplate.queryForObject(sql, params, ReservationTime.class);
+        return namedJdbcTemplate.queryForObject(sql, params, getReservationRowMapper());
     }
 
     @Override
@@ -38,7 +37,7 @@ public class ReservationTimeJDBCDao implements ReservationTimeRepository {
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into  reservation_time (start_at) values (:startAt)";
+        String sql = "insert into reservation_time (start_at) values (:startAt)";
         MapSqlParameterSource params = new MapSqlParameterSource("startAt", Time.valueOf(reservationTime.startAt()));
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
