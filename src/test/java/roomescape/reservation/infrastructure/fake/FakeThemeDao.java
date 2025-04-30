@@ -24,12 +24,12 @@ public class FakeThemeDao implements ThemeRepository {
 
     @Override
     public List<Theme> findAllThemes() {
-        return List.of(); // todo
+        return store.values().stream().toList();
     }
 
     @Override
     public void delete(Long id) {
-        // todo
+        store.remove(id);
     }
 
     @Override
