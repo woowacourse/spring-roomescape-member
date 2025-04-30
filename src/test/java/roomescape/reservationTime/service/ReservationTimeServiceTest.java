@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,8 @@ class ReservationTimeServiceTest {
     @Mock
     private Dao<Reservation> reservationDao;
 
+    private final ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
+
 //    @InjectMocks
 //    private ReservationTimeService reservationTimeService;
 
@@ -35,8 +38,6 @@ class ReservationTimeServiceTest {
     void test1() {
         Long id = 1L;
         LocalTime time = LocalTime.of(10, 0);
-
-        ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
 
         when(reservationTimeDao.findById(id)).thenReturn(Optional.of(new ReservationTime(id, time)));
         when(reservationDao.findAll()).thenReturn(List.of(new Reservation(1L, "riwon", LocalDate.now().plusDays(1), new ReservationTime(id, time))));
