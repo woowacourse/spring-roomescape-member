@@ -40,4 +40,10 @@ public class ThemeController {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/top10")
+    public ResponseEntity<List<ThemeResponse>> getTop10() {
+        List<ThemeResponse> themes = themeService.getTop10();
+        return ResponseEntity.ok().body(themes);
+    }
 }

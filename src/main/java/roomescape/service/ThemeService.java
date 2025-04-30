@@ -58,4 +58,11 @@ public class ThemeService {
             throw new ResourceNotExistException();
         }
     }
+
+    public List<ThemeResponse> getTop10() {
+        List<Theme> themes = themeDao.findTop10();
+        return themes.stream()
+            .map(ThemeResponse::from)
+            .toList();
+    }
 }

@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserController {
 
     @GetMapping("/reservation")
-    public String reservations2() {
+    public String reservations() {
         return "reservation";
     }
+//
+//    @GetMapping
+//    public String home() {
+//        return ""
+//    }
 }
