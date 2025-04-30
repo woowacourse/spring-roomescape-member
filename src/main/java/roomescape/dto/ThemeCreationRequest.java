@@ -13,6 +13,7 @@ public record ThemeCreationRequest(String name, String description, String thumb
         validateDescription(description);
         validateThumbnail(thumbnail);
     }
+
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름은 빈 값이나 공백값을 허용하지 않습니다.");
