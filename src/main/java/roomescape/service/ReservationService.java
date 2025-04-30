@@ -12,6 +12,7 @@ import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
+import roomescape.exception.InvalidReservationException;
 
 @Service
 public class ReservationService {
@@ -43,6 +44,7 @@ public class ReservationService {
         Reservation reservation = new Reservation(person, date, reservationTime);
         reservation.validateDateTime(date, reservationTime, currentDateTime);
 
+        validateAlreadyExistDateTime(reservationRequestDto, date);
         reservationDao.saveReservation(reservation);
 
         return ReservationResponseDto.from(reservation);
@@ -50,5 +52,12 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationDao.deleteReservation(id);
+    }
+
+    private void validateAlreadyExistDateTime(ReservationRequestDto reservationRequestDto,
+        ReservationDate date) {
+        if (reservationDao.findByDateAndTime(date, reservationRequestDto.timeId()) != 0) {
+            throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
+        }
     }
 }

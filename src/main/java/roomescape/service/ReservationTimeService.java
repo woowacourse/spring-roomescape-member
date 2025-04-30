@@ -7,7 +7,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
-import roomescape.exception.ReservationTimeException;
+import roomescape.exception.InvalidReservationException;
 
 @Service
 public class ReservationTimeService {
@@ -36,7 +36,7 @@ public class ReservationTimeService {
 
     public void deleteReservationTime(Long id) {
         if (reservationDao.findByTimeId(id) != 0) {
-            throw new ReservationTimeException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
+            throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteReservationTime(id);
     }

@@ -64,4 +64,10 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         String query = "select count(*) from reservation where time_id = ?";
         return jdbcTemplate.queryForObject(query, Integer.class, id);
     }
+
+    @Override
+    public int findByDateAndTime(ReservationDate date, Long timeId) {
+        String query = "select count(*) from reservation where date = ? AND time_id = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, date.getDate(), timeId);
+    }
 }
