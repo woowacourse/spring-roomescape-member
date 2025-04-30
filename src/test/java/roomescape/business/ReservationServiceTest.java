@@ -65,7 +65,7 @@ class ReservationServiceTest {
                 .hasMessage("과거 일시로 예약을 생성할 수 없습니다.");
     }
 
-    @DisplayName("이미 예약된 일시로 예약할 수 없다.")
+    @DisplayName("이미 예약된 경우 예약할 수 없다.")
     @Test
     void failCreateReservation() {
         // given
@@ -78,7 +78,7 @@ class ReservationServiceTest {
                 reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId))
         )
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 예약된 일시입니다.");
+                .hasMessage("이미 예약되었습니다.");
     }
 
     @DisplayName("예약을 취소한다.")

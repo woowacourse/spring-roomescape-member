@@ -22,6 +22,12 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
+    public boolean isSameReservation(Reservation otherReservation) {
+        return this.date.equals(otherReservation.date)
+                && this.time.getId().equals(otherReservation.time.getId())
+                && this.theme.getId().equals(otherReservation.theme.getId());
+    }
+
     public Long getId() {
         return id;
     }

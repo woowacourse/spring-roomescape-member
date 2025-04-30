@@ -33,7 +33,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 SELECT
                     r.id as reservation_id, r.name, r.date,
                     t.id as time_id, t.start_at,
-                    th.id as theme_id, th.name, th.description, th.thumbnail
+                    th.id as theme_id, th.name AS theme_name, th.description, th.thumbnail
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                 INNER JOIN theme as th
@@ -49,7 +49,7 @@ public class H2ReservationRepository implements ReservationRepository {
                         ),
                         new ReservationTheme(
                                 rs.getLong("theme_id"),
-                                rs.getString("name"),
+                                rs.getString("theme_name"),
                                 rs.getString("description"),
                                 rs.getString("thumbnail")
                         )
@@ -63,7 +63,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 SELECT
                     r.id as reservation_id, r.name, r.date,
                     t.id as time_id, t.start_at,
-                    th.id as theme_id, th.name, th.description, th.thumbnail
+                    th.id as theme_id, th.name AS theme_name, th.description, th.thumbnail
                 FROM reservation as r
                 INNER JOIN reservation_time as t
                 INNER JOIN theme as th
@@ -81,7 +81,7 @@ public class H2ReservationRepository implements ReservationRepository {
                         ),
                         new ReservationTheme(
                                 rs.getLong("theme_id"),
-                                rs.getString("name"),
+                                rs.getString("theme_name"),
                                 rs.getString("description"),
                                 rs.getString("thumbnail")
                         )
@@ -107,17 +107,25 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateTime(LocalDate date, LocalTime time) {
+    public boolean existsByReservation(Reservation reservation) {
         String query = """
                 SELECT EXISTS (
                     SELECT 1
                     FROM reservation r
                     JOIN reservation_time t
-                        ON r.time_id = t.id
-                    WHERE r.date = ? AND t.start_at = ?
+                    JOIN theme th
+                        ON r.time_id = t.id AND r.theme_id = th.id
+                    WHERE r.date = ? AND t.start_at = ? AND r.theme_id = ?
                 )
                 """;
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, date, time));
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                        query,
+                        Boolean.class,
+                        reservation.getDate(),
+                        reservation.getTime().getStartAt(),
+                        reservation.getTheme().getId()
+                )
+        );
     }
 
     @Override

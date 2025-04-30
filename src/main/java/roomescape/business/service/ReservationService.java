@@ -79,9 +79,9 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationDto.timeId());
         ReservationTheme theme = reservationThemeRepository.findById(reservationDto.themeId());
         validatePastDateTime(reservationDto.date(), reservationTime.getStartAt());
-        validateDuplicatedDateTime(reservationDto, reservationTime);
-        return reservationRepository.add(
-                new Reservation(reservationDto.name(), reservationDto.date(), reservationTime, theme));
+        Reservation reservation = new Reservation(reservationDto.name(), reservationDto.date(), reservationTime, theme);
+        validateDuplicatedReservation(reservation);
+        return reservationRepository.add(reservation);
     }
 
     private void validatePastDateTime(LocalDate date, LocalTime time) {
@@ -92,9 +92,9 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicatedDateTime(ReservationRequestDto reservationDto, ReservationTime reservationTime) {
-        if (reservationRepository.existsByDateTime(reservationDto.date(), reservationTime.getStartAt())) {
-            throw new IllegalArgumentException("이미 예약된 일시입니다.");
+    private void validateDuplicatedReservation(Reservation reservation) {
+        if (reservationRepository.existsByReservation(reservation)) {
+            throw new IllegalArgumentException("이미 예약되었습니다.");
         }
     }
 

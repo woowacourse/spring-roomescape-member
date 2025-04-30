@@ -1,7 +1,5 @@
 package roomescape.persistence;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import roomescape.business.Reservation;
 
@@ -15,7 +13,7 @@ public interface ReservationRepository {
 
     void deleteById(Long id);
 
-    boolean existsByDateTime(LocalDate date, LocalTime time);
+    boolean existsByReservation(Reservation reservation);
 
     boolean existsByTimeId(Long timeId);
 
