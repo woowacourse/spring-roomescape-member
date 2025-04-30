@@ -1,5 +1,6 @@
 package roomescape.dao.theme;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Theme;
@@ -13,4 +14,6 @@ public interface ThemeDao {
     Theme create(Theme theme);
 
     boolean deleteIfNoReservation(long id);
+
+    List<Theme> findPopularThemesInLastWeek(LocalDate startDate, LocalDate endDate);
 }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -46,5 +47,12 @@ public class ThemeService {
             return;
         }
         throw new ReservationExistException("이 시간에 대한 예약이 존재합니다.");
+    }
+
+    public List<ThemeResponse> findPopularThemesInLastWeek() {
+        LocalDate today = LocalDate.now();
+        return themeDao.findPopularThemesInLastWeek(today.minusDays(7), today.minusDays(1)).stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

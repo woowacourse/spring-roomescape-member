@@ -1,5 +1,6 @@
 package roomescape.dao.theme;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public boolean deleteIfNoReservation(long id) {
-        String sql = """
+        final String sql = """
                 DELETE FROM theme t 
                 WHERE t.id = ? 
                 AND NOT EXISTS (
@@ -65,5 +66,22 @@ public class JdbcThemeDao implements ThemeDao {
                 )
                 """;
         return jdbcTemplate.update(sql, id) == 1;
+    }
+
+    @Override
+    public List<Theme> findPopularThemesInLastWeek(LocalDate startDate, LocalDate endDate) {
+        final String sql = """
+                SELECT th.id, th.name, th.description, th.thumbnail
+                FROM theme th
+                INNER JOIN (
+                    SELECT theme_id, COUNT(*) AS cnt
+                    FROM reservation as rs
+                    WHERE rs.date BETWEEN ? AND ?
+                    GROUP BY theme_id
+                    ORDER BY cnt DESC
+                    LIMIT 10
+                ) r ON th.id = r.theme_id;
+                """;
+        return jdbcTemplate.query(sql, themeMapper, startDate, endDate);
     }
 }
