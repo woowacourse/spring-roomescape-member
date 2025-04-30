@@ -23,13 +23,15 @@ public class FakeReservationDao extends ReservationDao {
     @Override
     public Long saveReservation(Reservation reservation) {
         Long id = nextId.getAndIncrement();
+        ReservationTime time = reservation.getTime();
+        Theme theme = reservation.getTheme();
         Reservation savedReservation = new Reservation(
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                new ReservationTime(reservation.getTimeId(), reservation.getTime()),
-                new Theme(reservation.getThemeId(), reservation.getTheme().getName(),
-                        reservation.getTheme().getDescription(), reservation.getTheme().getThumbnail())
+                new ReservationTime(time.getId(), time.getStartAt()),
+                new Theme(theme.getId(), theme.getName(),
+                        theme.getDescription(), theme.getThumbnail())
         );
         database.put(id, savedReservation);
         return id;
@@ -49,7 +51,7 @@ public class FakeReservationDao extends ReservationDao {
     public Optional<Reservation> findByDateAndTime(Reservation reservation) {
         return database.values().stream()
                 .filter(reservation1 -> reservation1.getDate().equals(reservation.getDate()))
-                .filter(reservation1 -> reservation1.getTimeId().equals(reservation.getTimeId()))
+                .filter(reservation1 -> reservation1.getTime().getId().equals(reservation.getTime().getId()))
                 .findAny();
     }
 }
