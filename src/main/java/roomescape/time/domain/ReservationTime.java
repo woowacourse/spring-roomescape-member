@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode(of = {"id"})
 public class ReservationTime {
+
     private static final LocalTime OPEN_TIME = LocalTime.of(10, 0);
     private static final LocalTime CLOSE_TIME = LocalTime.of(22, 0);
 
@@ -15,7 +16,6 @@ public class ReservationTime {
 
     public ReservationTime(final Long id, final LocalTime startAt) {
         validateStartAt(startAt);
-        validateTimeRange(startAt);
         this.id = id;
         this.startAt = startAt;
     }
@@ -25,6 +25,11 @@ public class ReservationTime {
     }
 
     private void validateStartAt(final LocalTime startAt) {
+        validateNull(startAt);
+        validateTimeRange(startAt);
+    }
+
+    private void validateNull(LocalTime startAt) {
         if (startAt == null) {
             throw new IllegalArgumentException("time cannot be null");
         }
