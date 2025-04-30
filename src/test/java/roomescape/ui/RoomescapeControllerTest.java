@@ -26,7 +26,6 @@ class RoomescapeControllerTest {
 
     @Test
     void 예약_시간_화면_요청을_성공한다() {
-
         RestAssured.given().log().all()
                 .when().get("/admin/time")
                 .then().log().all()
