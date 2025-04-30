@@ -23,6 +23,13 @@
 - [x] 중복, 삭제할 때의 예외는 Conflict로 응답한다.
   - 중복: DuplicateTimeException, DuplicateReservationException
 
+### 3. 테마 선택 기능
+
+- [ ] `/admin/theme` 요청 시 테마 관리 페이지를 응답
+- [ ] 테마 조회 기능 응답
+- [ ] 테마 추가 기능 응답
+- [ ] 테마 삭제 기능 응답
+
 ---
 
 ## CRUD API 명세
@@ -141,4 +148,63 @@
 * Response
     ```
     HTTP/1.1 200
+    ```
+
+### 테마 추가
+
+* Request
+    ```
+    POST /themes HTTP/1.1
+    content-type: application/json
+
+    {
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+    ```
+* Response
+    ```
+    HTTP/1.1 201
+    Location: /themes/1
+    Content-Type: application/json
+
+    {
+      "id": 1,
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+    ```
+
+### 테마 조회
+
+* Request
+    ```
+    GET /themes HTTP/1.1
+    ```
+* Response
+    ```
+    HTTP/1.1 200 
+    Content-Type: application/json
+
+    [
+      {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+      }
+    ]
+    ```
+
+### 테마 삭제
+
+* Request
+    ```
+    DELETE /themes/1 HTTP/1.1
+    ```
+* Response
+    ```
+    HTTP/1.1 204
     ```
