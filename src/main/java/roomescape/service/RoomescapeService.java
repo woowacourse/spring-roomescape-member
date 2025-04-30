@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -36,16 +37,30 @@ public class RoomescapeService {
     }
 
     public ReservationResponse addReservation(final ReservationRequest request) {
+        LocalDateTime now = LocalDateTime.now();
         long timeId = request.timeId();
+
         ReservationTime time = roomescapeTimeRepository.findById(timeId);
         Reservation reservation = new Reservation(request.name(), request.date(), time);
+        LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 
-        if (existsSameReservation(reservation)) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
-        }
+        validateFutureDateTime(requestDateTime, now);
+        validateUniqueReservation(reservation);
 
         Reservation saved = roomescapeRepository.save(reservation);
         return ReservationResponse.of(saved);
+    }
+
+    private void validateFutureDateTime(final LocalDateTime requestDateTime, final LocalDateTime now) {
+        if (requestDateTime.isBefore(now) || requestDateTime.isEqual(now)) {
+            throw new IllegalArgumentException("[ERROR] 이전 시각으로 예약할 수 없습니다.");
+        }
+    }
+
+    private void validateUniqueReservation(final Reservation reservation) {
+        if (existsSameReservation(reservation)) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
+        }
     }
 
     public ReservationTimeResponse addReservationTime(final ReservationTimeRequest request) {

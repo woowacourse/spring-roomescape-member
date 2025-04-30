@@ -17,7 +17,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 class ReservationControllerTest {
 
     @Nested
-    class FailureTest{
+    class FailureTest {
         @DisplayName("존재하지 않는 예약을 삭제하려는 경우 404 Not Found를 던진다")
         @Test
         void reservationRemoveTest() {
@@ -28,6 +28,35 @@ class ReservationControllerTest {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .when().delete("/reservations/" + notExistId)
+                    .then().log().all()
+                    .statusCode(404);
+        }
+
+        @DisplayName("이전 시각으로 예약을 요청하는 경우 404 Not Found를 던진다")
+        @Test
+        void reservationAddBeforeCurrentDateTime() {
+            Map<String, String> timeParams = Map.of(
+                    "startAt", "15:40"
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(timeParams)
+                    .when().post("/times")
+                    .then().log().all()
+                    .statusCode(201)
+                    .body("id", is(1));
+
+            Map<String, String> params = Map.of(
+                    "name", "브라운",
+                    "date", "2023-08-05",
+                    "timeId", "1"
+            );
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/reservations")
                     .then().log().all()
                     .statusCode(404);
         }

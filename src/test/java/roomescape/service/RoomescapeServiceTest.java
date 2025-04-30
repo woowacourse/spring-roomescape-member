@@ -1,8 +1,9 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,10 @@ class RoomescapeServiceTest {
 
     @DisplayName("같은 날짜 및 시간 예약이 존재하면 예외를 던진다")
     @Test
-    void addReservation() {
+    void addReservationWithDuplicatedReservation() {
         //given
-        LocalDate date = LocalDate.of(2025, 4, 16);
-
+        LocalDate date = LocalDate.now().plusDays(1);
+        
         ReservationTimeResponse response = service.addReservationTime(
                 new ReservationTimeRequest(LocalTime.parse("10:10")));
 
@@ -32,9 +33,24 @@ class RoomescapeServiceTest {
 
         //when & then
         ReservationRequest duplicated = new ReservationRequest("test2", date, response.id());
-        Assertions.assertThatThrownBy(() -> service.addReservation(duplicated))
+        assertThatThrownBy(() -> service.addReservation(duplicated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약시간입니다.");
+
+    }
+
+    @DisplayName("현재 시점 이전의 예약을 생성할 시 예외를 던진다")
+    @Test
+    void addReservationBeforeCurrentDateTime() {
+        // given
+        service.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
+        LocalDate date = LocalDate.now().minusDays(1);
+        ReservationRequest request = new ReservationRequest("호떡", date, 1L);
+
+        // then & when
+        assertThatThrownBy(() -> service.addReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 이전 시각으로 예약할 수 없습니다.");
     }
 
     @DisplayName("존재하지 않는 예약을 삭제하려는 경우 예외를 던진다")
@@ -44,7 +60,7 @@ class RoomescapeServiceTest {
         long notExistId = 999;
 
         //when & then
-        Assertions.assertThatThrownBy(() -> service.removeReservation(notExistId))
+        assertThatThrownBy(() -> service.removeReservation(notExistId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 예약번호 999번은 존재하지 않습니다.");
     }
