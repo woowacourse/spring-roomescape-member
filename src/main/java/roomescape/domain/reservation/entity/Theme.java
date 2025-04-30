@@ -12,10 +12,17 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+        validateTheme();
     }
 
     public static Theme withoutId(String name, String description, String thumbnail) {
         return new Theme(null, name, description, thumbnail);
+    }
+
+    public void validateTheme() {
+        if (name == null || description == null || thumbnail == null) {
+            throw new IllegalArgumentException("Theme field cannot be null");
+        }
     }
 
     public boolean existId() {
