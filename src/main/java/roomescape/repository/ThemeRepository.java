@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,4 +19,6 @@ public interface ThemeRepository {
     long addTheme(Theme theme);
 
     void deleteById(long id);
+
+    List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate);
 }

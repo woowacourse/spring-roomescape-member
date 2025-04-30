@@ -9,13 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
-    @GetMapping("/")
-    public ResponseEntity<Void> getWelcomePage() {
-        return ResponseEntity
-                .status(HttpStatus.PERMANENT_REDIRECT.value())
-                .location(URI.create("/admin")).build();
-    }
-
     @GetMapping("/admin")
     public String getMainPage() {
         return "admin/index";

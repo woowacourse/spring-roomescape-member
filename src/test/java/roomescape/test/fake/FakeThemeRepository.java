@@ -1,5 +1,6 @@
 package roomescape.test.fake;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,5 +37,10 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public void deleteById(final long id) {
         themes.remove(id);
+    }
+
+    @Override
+    public List<Theme> getTopThemesByCount(final LocalDate startDate, final LocalDate endDate) {
+        return List.of();
     }
 }

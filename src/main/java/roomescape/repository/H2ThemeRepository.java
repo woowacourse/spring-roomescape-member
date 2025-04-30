@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
 @Repository
@@ -61,5 +63,17 @@ public class H2ThemeRepository implements ThemeRepository{
     public void deleteById(long id) {
         String sql = "DELETE FROM theme where theme.id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate) {
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail "
+                + "FROM reservation AS r "
+                + "INNER JOIN theme AS t ON r.theme_id = t.id "
+                + "WHERE r.date >= ? AND r.date <= ? "
+                + "GROUP BY r.theme_id "
+                + "ORDER BY COUNT(r.theme_id) DESC "
+                + "LIMIT 10";
+
+        return jdbcTemplate.query(sql, mapper, startDate, endDate);
     }
 }

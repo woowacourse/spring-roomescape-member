@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,11 @@ public class ThemeService {
 
     public Theme findThemeById(long themeId) {
         return loadThemeById(themeId);
+    }
+
+    public List<Theme> findTopThemes() {
+        LocalDate endDate = LocalDate.now();
+        return themeRepository.getTopThemesByCount(endDate.minusDays(7L), endDate);
     }
 
     public void deleteThemeById(long themeId) {

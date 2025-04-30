@@ -29,6 +29,11 @@ public class ThemeController {
         return themeService.findAllTheme();
     }
 
+    @GetMapping("/top")
+    public List<Theme> getTopThemes() {
+        return themeService.findTopThemes();
+    }
+
     @PostMapping
     public ResponseEntity<Theme> createTheme(@RequestBody ThemeCreationRequest request) {
         long savedId = themeService.addTheme(request);
