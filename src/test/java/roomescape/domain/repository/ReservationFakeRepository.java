@@ -38,7 +38,7 @@ public class ReservationFakeRepository implements ReservationRepository {
     public Boolean existReservationByTimeId(Long timeId) {
         return reservations.values().stream()
                 .map(reservation -> reservation.getTime().getId())
-                .anyMatch(id -> id == timeId);
+                .anyMatch(id -> id.equals(timeId));
     }
 
     @Override
@@ -48,4 +48,12 @@ public class ReservationFakeRepository implements ReservationRepository {
                         && reservation.getTime().getId().equals(timeId)
                         && reservation.getTheme().getId().equals(themeId));
     }
+
+    @Override
+    public Boolean existReservationByThemeId(Long themeId) {
+        return reservations.values().stream()
+                .map(reservation -> reservation.getTheme().getId())
+                .anyMatch(id -> id.equals(themeId));
+    }
+
 }
