@@ -49,7 +49,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("과거 예약을 생성하면 예외 처리한다.")
+    @DisplayName("과거 예약을 생성하면 예외 처리한다. - 1일 전")
     void test2() {
         Test_ReservationTime_Post();
         Map<String, Object> params = new HashMap<>();
@@ -67,7 +67,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("과거 예약을 생성하면 예외 처리한다.")
+    @DisplayName("과거 예약을 생성하면 예외 처리한다. - 1시간 전")
     void test3() {
         Map<String, String> timeParams = new HashMap<>();
         timeParams.put("startAt", LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
@@ -82,7 +82,7 @@ public class ReservationControllerTest {
         Map<String, Object> reservationParams = new HashMap<>();
         reservationParams.put("name", "띠용");
         reservationParams.put("date", String.valueOf(LocalDate.now()));
-        reservationParams.put("timeId", 2);
+        reservationParams.put("timeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -94,7 +94,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("과거 예약을 생성하면 예외 처리한다.")
+    @DisplayName("중복 예약을 생성하면 예외 처리한다.")
     void test4() {
         Test_ReservationTime_Post();
 

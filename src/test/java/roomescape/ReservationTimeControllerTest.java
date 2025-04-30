@@ -64,7 +64,7 @@ public class ReservationTimeControllerTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2025-08-05");
-        params.put("timeId", 2);
+        params.put("timeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -79,7 +79,7 @@ public class ReservationTimeControllerTest {
         // then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().delete("/times/2")
+                .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(400);
     }
