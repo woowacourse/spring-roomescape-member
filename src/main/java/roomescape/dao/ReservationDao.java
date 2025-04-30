@@ -13,4 +13,6 @@ public interface ReservationDao {
     void deleteById(Id id);
 
     Boolean existByTimeId(Id timeId);
+
+    Boolean existBySameDateTime(Reservation reservation);
 }
