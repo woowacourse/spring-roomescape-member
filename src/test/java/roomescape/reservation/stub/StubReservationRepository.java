@@ -13,6 +13,7 @@ public class StubReservationRepository implements ReservationRepository {
 
     private final List<Reservation> data = new ArrayList<>();
     private final AtomicLong atomicLong = new AtomicLong();
+    private boolean existsByReservationTimeId = false;
 
     public StubReservationRepository(Reservation... inputReservations) {
         data.addAll(List.of(inputReservations));
@@ -58,5 +59,14 @@ public class StubReservationRepository implements ReservationRepository {
         return data.stream()
                 .filter(r -> r.getId().equals(id))
                 .findFirst();
+    }
+
+    @Override
+    public boolean existsByReservationTimeId(final Long id) {
+        return existsByReservationTimeId;
+    }
+
+    public void setExistsByReservationTimeId(final boolean existsByReservationTimeId) {
+        this.existsByReservationTimeId = existsByReservationTimeId;
     }
 }

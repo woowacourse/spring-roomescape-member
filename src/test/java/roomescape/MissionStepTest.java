@@ -92,7 +92,7 @@ class MissionStepTest {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 
     @Test
@@ -126,7 +126,7 @@ class MissionStepTest {
     void 육단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", "2999-08-05");
         params.put("timeId", "1");
 
         RestAssured.given().log().all()
@@ -166,7 +166,7 @@ class MissionStepTest {
     void 팔단계() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", "2999-08-05");
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()

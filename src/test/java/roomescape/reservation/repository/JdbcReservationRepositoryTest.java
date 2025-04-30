@@ -105,4 +105,19 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(reservations).hasSize(2);
     }
+
+    @Test
+    void 예약에_예약_시간이_존재하는지_확인() {
+        // given
+        LocalTime localTime = LocalTime.of(10, 0);
+        ReservationTime reservationTime = new ReservationTime(1L, localTime);
+        Reservation reservation = new Reservation("테스트", LocalDate.of(2999, 7, 1), reservationTime);
+        repository.save(reservation);
+
+        // when
+        boolean exists = repository.existsByReservationTimeId(reservationTime.getId());
+
+        // then
+        assertThat(exists).isTrue();
+    }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.error.ReservationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -59,7 +60,7 @@ class ReservationServiceTest {
         // when
         // then
         assertThatThrownBy(() -> service.saveReservation(dupReq))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationException.class)
                 .hasMessage("해당 시간은 이미 예약되어있습니다.");
     }
 
@@ -71,7 +72,7 @@ class ReservationServiceTest {
         service = new ReservationService(repo, timeRepo);
 
         ReservationRequest req = new ReservationRequest(
-                "철원", LocalDate.of(2025, 4, 21), time1.getId()
+                "철원", LocalDate.of(2999, 4, 21), time1.getId()
         );
 
         // when
@@ -82,7 +83,7 @@ class ReservationServiceTest {
         SoftAssertions.assertSoftly(soft -> {
             soft.assertThat(result.id()).isEqualTo(1L);
             soft.assertThat(result.name()).isEqualTo("철원");
-            soft.assertThat(result.date()).isEqualTo(LocalDate.of(2025, 4, 21));
+            soft.assertThat(result.date()).isEqualTo(LocalDate.of(2999, 4, 21));
             soft.assertThat(result.time())
                     .satisfies(rt -> {
                         assertThat(rt.id()).isEqualTo(time1.getId());
