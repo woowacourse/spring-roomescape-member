@@ -10,6 +10,7 @@ import roomescape.exception.DataNotFoundException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.time.repository.entity.ReservationTimeEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +25,9 @@ public class ReservationTimeService {
             throw new DataExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
         }
 
-        final ReservationTime reservationTime = new ReservationTime(startAt);
+        final ReservationTimeEntity reservationTimeEntity = new ReservationTimeEntity(startAt);
 
-        return reservationTimeRepository.save(reservationTime);
+        return reservationTimeRepository.save(reservationTimeEntity);
     }
 
     public ReservationTime getById(final Long id) {
@@ -50,6 +51,6 @@ public class ReservationTimeService {
             throw new DataExistException("해당 예약 시간을 사용하고 있는 예약 정보가 존재합니다. id = " + id);
         }
 
-        reservationTimeRepository.delete(found.get());
+        reservationTimeRepository.deleteById(id);
     }
 }

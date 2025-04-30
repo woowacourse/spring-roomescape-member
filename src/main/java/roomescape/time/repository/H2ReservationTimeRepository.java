@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.entity.ReservationTimeEntity;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,13 +25,13 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Long save(final ReservationTime reservationTime) {
+    public Long save(final ReservationTimeEntity reservationTimeEntity) {
         final String sql = "INSERT INTO reservation_times (start_at) VALUES (?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         final int rowAffected = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+            ps.setTime(1, Time.valueOf(reservationTimeEntity.startAt()));
             return ps;
         }, keyHolder);
 
@@ -88,8 +89,8 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public void delete(final ReservationTime reservationTime) {
-        String sql = "DELETE FROM reservation_times WHERE id = ?";
-        jdbcTemplate.update(sql, reservationTime.getId());
+    public void deleteById(final Long id) {
+        final String sql = "DELETE FROM reservation_times WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

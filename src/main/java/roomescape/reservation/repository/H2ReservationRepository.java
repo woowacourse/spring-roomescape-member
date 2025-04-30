@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.entity.ReservationEntity;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
@@ -32,15 +33,15 @@ public class H2ReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Long save(Reservation reservation) {
+    public Long save(ReservationEntity reservationEntity) {
         String sql = "INSERT INTO reservations (name, date, time_id) VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         final int rowAffected = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setDate(2, Date.valueOf(reservation.getDate()));
-            ps.setLong(3, reservation.getTime().getId());
+            ps.setString(1, reservationEntity.name());
+            ps.setDate(2, Date.valueOf(reservationEntity.date()));
+            ps.setLong(3, reservationEntity.timeId());
             return ps;
         }, keyHolder);
 
@@ -85,9 +86,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 WHERE time_id = ?
                 """;
 
-        final Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
-
-        return count;
+        return jdbcTemplate.queryForObject(sql, Long.class, timeId);
     }
 
     @Override
@@ -108,8 +107,8 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void delete(Reservation reservation) {
+    public void deleteById(Long id) {
         final String sql = "DELETE FROM reservations WHERE id = ?";
-        jdbcTemplate.update(sql, reservation.getId());
+        jdbcTemplate.update(sql, id);
     }
 }

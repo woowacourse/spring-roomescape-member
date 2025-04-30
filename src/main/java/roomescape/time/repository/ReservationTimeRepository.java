@@ -4,10 +4,11 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.entity.ReservationTimeEntity;
 
 public interface ReservationTimeRepository {
 
-    Long save(ReservationTime reservationTime);
+    Long save(ReservationTimeEntity reservationTimeEntity);
 
     Optional<ReservationTime> findById(Long id);
 
@@ -15,5 +16,5 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    void delete(ReservationTime reservationTime);
+    void deleteById(Long id);
 }

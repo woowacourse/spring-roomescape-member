@@ -3,10 +3,11 @@ package roomescape.reservation.repository;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.entity.ReservationEntity;
 
 public interface ReservationRepository {
 
-    Long save(Reservation reservation);
+    Long save(ReservationEntity reservationEntity);
 
     Optional<Reservation> findById(Long id);
 
@@ -14,5 +15,5 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    void delete(Reservation reservation);
+    void deleteById(Long id);
 }
