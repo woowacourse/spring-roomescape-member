@@ -7,7 +7,7 @@ import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.theme.application.ThemeQueryUseCase;
+import roomescape.theme.application.usecase.ThemeQueryUseCase;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
 import roomescape.time.application.usecase.ReservationTimeQueryUseCase;

@@ -3,6 +3,8 @@ package roomescape.theme.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.theme.application.converter.ThemeConverter;
+import roomescape.theme.application.usecase.ThemeCommandUseCase;
+import roomescape.theme.application.usecase.ThemeQueryUseCase;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.ui.dto.CreateThemeWebRequest;
 import roomescape.theme.ui.dto.ThemeResponse;

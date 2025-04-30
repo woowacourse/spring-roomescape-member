@@ -1,4 +1,4 @@
-package roomescape.theme.application;
+package roomescape.theme.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

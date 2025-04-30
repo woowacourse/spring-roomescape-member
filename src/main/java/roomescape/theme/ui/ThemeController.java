@@ -18,14 +18,14 @@ import roomescape.theme.ui.dto.ThemeResponse;
 import java.net.URI;
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping(ThemeController.BASE_PATH)
+@RequiredArgsConstructor
 public class ThemeController {
 
-    public static final String BASE_PATH = "/theme";
+    public static final String BASE_PATH = "/themes";
 
-    public ThemeService themeService;
+    private final ThemeService themeService;
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAll() {
