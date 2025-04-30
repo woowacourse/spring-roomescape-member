@@ -3,6 +3,7 @@ package roomescape.business;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -38,6 +39,21 @@ class ReservationServiceTest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId));
         Assertions.assertThat(reservationService.readReservationAll()).isNotEmpty();
+    }
+
+    @DisplayName("과거 일시로 예약을 생성할 경우 예외가 발생한다.")
+    @Test
+    void createPastReservation() {
+        // given
+        LocalDateTime pastDateTime = LocalDateTime.now().minusDays(1);
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto("벨로", pastDateTime.toLocalDate(),
+                timeId);
+
+        // when
+        // then
+        assertThatCode(() -> reservationService.createReservation(reservationRequestDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("과거 일시로 예약을 생성할 수 없습니다.");
     }
 
     @DisplayName("이미 예약된 일시로 예약할 수 없다.")

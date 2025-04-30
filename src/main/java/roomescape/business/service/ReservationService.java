@@ -1,5 +1,8 @@
 package roomescape.business.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,11 +58,24 @@ public class ReservationService {
 
     public Long createReservation(ReservationRequestDto reservationDto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationDto.timeId());
+        validatePastDateTime(reservationDto.date(), reservationTime.getStartAt());
+        validateDuplicatedDateTime(reservationDto, reservationTime);
+        return reservationRepository.add(
+                new Reservation(reservationDto.name(), reservationDto.date(), reservationTime));
+    }
+
+    private void validatePastDateTime(LocalDate date, LocalTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("과거 일시로 예약을 생성할 수 없습니다.");
+        }
+    }
+
+    private void validateDuplicatedDateTime(ReservationRequestDto reservationDto, ReservationTime reservationTime) {
         if (reservationRepository.existsByDateTime(reservationDto.date(), reservationTime.getStartAt())) {
             throw new IllegalArgumentException("이미 예약된 일시입니다.");
         }
-        return reservationRepository.add(
-                new Reservation(reservationDto.name(), reservationDto.date(), reservationTime));
     }
 
     public void deleteReservation(Long id) {
