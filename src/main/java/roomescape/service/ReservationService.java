@@ -30,6 +30,7 @@ public class ReservationService {
     public ReservationResponseDto createReservation(ReservationRequestDto reservationRequest) {
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
         Reservation reservationWithoutId = reservationRequest.toReservationWith(reservationTime);
+        reservationWithoutId.validatePastDateTime();
         long reservationId = reservationDao.create(reservationWithoutId);
 
         Reservation reservation = reservationWithoutId.copyWithId(new Id(reservationId));

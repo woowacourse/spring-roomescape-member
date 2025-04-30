@@ -3,6 +3,7 @@ package roomescape.domain_entity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class ReservationTimeTest {
 
     static Stream<Arguments> isFutureReservationTimeReturnsFalse() {
         return Stream.of(
-                Arguments.of(LocalTime.now()),
+                Arguments.of(LocalTime.now().truncatedTo(ChronoUnit.MINUTES)),
                 Arguments.of(LocalTime.now().plusMinutes(1))
         );
     }

@@ -1,6 +1,7 @@
 package roomescape.domain_entity;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 public class ReservationTime {
     private Id id;
@@ -27,7 +28,7 @@ public class ReservationTime {
     }
 
     public boolean isPastTime() {
-        LocalTime now = LocalTime.now().withNano(0);
+        LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
         return startAt.isBefore(now);
     }
 
