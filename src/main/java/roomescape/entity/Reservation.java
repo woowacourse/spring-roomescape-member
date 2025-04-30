@@ -23,14 +23,8 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new OverMaxNameLengthException();
-        }
-        for (char c : name.toCharArray()) {
-            if (Character.isDigit(c)) {
-                throw new NameContainsNumberException();
-            }
-        }
+        validateMaxNameLength(name);
+        validateNameDoesNotContainsNumber(name);
         if (time == null) {
             throw new ReservationTimeNotFoundException();
         }
@@ -41,24 +35,46 @@ public class Reservation {
         this.theme = theme;
     }
 
+    private void validateNameDoesNotContainsNumber(final String name) {
+        for (char c : name.toCharArray()) {
+            if (Character.isDigit(c)) {
+                throw new NameContainsNumberException();
+            }
+        }
+    }
+
+    private void validateMaxNameLength(final String name) {
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new OverMaxNameLengthException();
+        }
+    }
+
     public static Reservation beforeSave(
             final String name,
             final LocalDate date,
             final ReservationTime time,
             final Theme theme
     ) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new PastDateException();
-        }
+        validateDateIsNotPast(date);
+        validateDateInterval(date);
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validateDateInterval(final LocalDate date) {
         long minusDays = Period.between(date, LocalDate.now()).getDays();
         if (minusDays > RESERVATION_START_INTERVAL) {
             throw new ReservationBeforeStartException();
         }
-        return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validateDateIsNotPast(final LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new PastDateException();
+        }
     }
 
     public static Reservation afterSave(
-            final Long id,
+            final long id,
             final String name,
             final LocalDate date,
             final ReservationTime time,

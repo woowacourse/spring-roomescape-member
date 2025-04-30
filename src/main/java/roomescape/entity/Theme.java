@@ -1,6 +1,5 @@
 package roomescape.entity;
 
-import roomescape.exception.impl.IdCannotBeNullException;
 import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
 
 public class Theme {
@@ -18,13 +17,17 @@ public class Theme {
             final String description,
             final String thumbnail
     ) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new ThemeNameMaxLengthExceedException();
-        }
+        validateMaxNameLength(name);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validateMaxNameLength(final String name) {
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new ThemeNameMaxLengthExceedException();
+        }
     }
 
     public static Theme beforeSave(
@@ -36,18 +39,15 @@ public class Theme {
     }
 
     public static Theme afterSave(
-            final Long id,
+            final long id,
             final String name,
             final String description,
             final String thumbnail
     ) {
-        if (id == null) {
-            throw new IdCannotBeNullException();
-        }
         return new Theme(id, name, description, thumbnail);
     }
 
-    public static Theme afterSave(final Long id, final Theme theme) {
+    public static Theme afterSave(final long id, final Theme theme) {
         return afterSave(id, theme.name, theme.description, theme.thumbnail);
     }
 

@@ -15,23 +15,23 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     private ReservationTime(final Long id, final LocalTime startAt) {
-        validateTime(startAt);
+        validateTimeAvailable(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
-    private void validateTime(final LocalTime time) {
+    private void validateTimeAvailable(final LocalTime time) {
         if (time.isBefore(START_RESERVATION_TIME) || time.isAfter(LAST_RESERVATION_TIME)) {
             throw new InvalidReservationTimeException();
         }
     }
 
-    public static ReservationTime afterSave(final Long id, final LocalTime startAt) {
-        return new ReservationTime(id, startAt);
-    }
-
     public static ReservationTime beforeSave(final LocalTime startAt) {
         return new ReservationTime(null, startAt);
+    }
+
+    public static ReservationTime afterSave(final long id, final LocalTime startAt) {
+        return new ReservationTime(id, startAt);
     }
 
     public boolean isInTimeInterval(LocalTime otherTime) {
