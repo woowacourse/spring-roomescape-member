@@ -3,14 +3,14 @@ package roomescape.domain;
 import java.util.Objects;
 import roomescape.exception.custom.InvalidInputException;
 
-public class Theme {
+public class RoomTheme {
 
     private final long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
-    public Theme(final long id, final String name, final String description, final String thumbnail) {
+    public RoomTheme(final long id, final String name, final String description, final String thumbnail) {
         validate(name, description, thumbnail);
 
         this.id = id;
@@ -19,7 +19,7 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public Theme(final String name, final String description, final String thumbnail) {
+    public RoomTheme(final String name, final String description, final String thumbnail) {
         this(0, name, description, thumbnail);
     }
 
@@ -35,8 +35,8 @@ public class Theme {
         }
     }
 
-    public Theme withId(final long id) {
-        return new Theme(id, this.name, this.description, this.thumbnail);
+    public RoomTheme withId(final long id) {
+        return new RoomTheme(id, this.name, this.description, this.thumbnail);
     }
 
     public long getId() {

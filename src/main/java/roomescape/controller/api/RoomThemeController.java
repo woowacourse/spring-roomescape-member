@@ -14,22 +14,22 @@ import roomescape.controller.dto.request.CreateThemeRequest;
 import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
-import roomescape.service.dto.ThemeCreation;
+import roomescape.service.dto.RoomThemeCreation;
 
 @RequestMapping("/themes")
 @RestController
-public class ThemeController {
+public class RoomThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public RoomThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
-        final ThemeCreation creation = ThemeCreation.from(request);
+        final RoomThemeCreation creation = RoomThemeCreation.from(request);
         return themeService.addTheme(creation);
     }
 

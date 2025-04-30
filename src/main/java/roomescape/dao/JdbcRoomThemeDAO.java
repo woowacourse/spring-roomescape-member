@@ -10,13 +10,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Theme;
+import roomescape.domain.RoomTheme;
 
 @Repository
-public class JdbcThemeDAO implements ThemeDAO {
+public class JdbcRoomThemeDAO implements RoomThemeDAO {
 
-    private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNumber) ->
-            new Theme(resultSet.getLong("id"),
+    private static final RowMapper<RoomTheme> THEME_ROW_MAPPER = (resultSet, rowNumber) ->
+            new RoomTheme(resultSet.getLong("id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail"));
@@ -24,7 +24,7 @@ public class JdbcThemeDAO implements ThemeDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcThemeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcRoomThemeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
@@ -32,7 +32,7 @@ public class JdbcThemeDAO implements ThemeDAO {
     }
 
     @Override
-    public long insert(final Theme theme) {
+    public long insert(final RoomTheme theme) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("theme_name", theme.getName())
                 .addValue("description", theme.getDescription())
@@ -48,13 +48,13 @@ public class JdbcThemeDAO implements ThemeDAO {
     }
 
     @Override
-    public List<Theme> findAll() {
+    public List<RoomTheme> findAll() {
         final String query = "SELECT * FROM theme";
         return jdbcTemplate.query(query, THEME_ROW_MAPPER);
     }
 
     @Override
-    public Optional<Theme> findById(final long id) {
+    public Optional<RoomTheme> findById(final long id) {
         final String query = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.query(query, THEME_ROW_MAPPER, id)
                 .stream()
@@ -62,7 +62,7 @@ public class JdbcThemeDAO implements ThemeDAO {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate start, LocalDate end) {
+    public List<RoomTheme> findPopularThemes(LocalDate start, LocalDate end) {
 
         final String query = """
                         SELECT

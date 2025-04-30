@@ -6,30 +6,31 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.ThemeResponse;
 import roomescape.dao.ReservationDAO;
-import roomescape.dao.ThemeDAO;
-import roomescape.domain.Theme;
+import roomescape.dao.RoomThemeDAO;
+import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.exception.custom.PharmaceuticalViolationException;
-import roomescape.service.dto.ThemeCreation;
+import roomescape.service.dto.RoomThemeCreation;
 
 @Service
 public class ThemeService {
 
     private final ReservationDAO reservationDAO;
-    private final ThemeDAO themeDAO;
+    private final RoomThemeDAO themeDAO;
 
-    public ThemeService(final ReservationDAO reservationDAO, final ThemeDAO themeDAO) {
+    public ThemeService(final ReservationDAO reservationDAO, final RoomThemeDAO themeDAO) {
         this.reservationDAO = reservationDAO;
         this.themeDAO = themeDAO;
     }
 
-    public ThemeResponse addTheme(final ThemeCreation themeCreation) {
+    public ThemeResponse addTheme(final RoomThemeCreation themeCreation) {
         if (themeDAO.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
 
-        final Theme theme = new Theme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
+        final RoomTheme theme = new RoomTheme(themeCreation.name(), themeCreation.description(),
+                themeCreation.thumbnail());
         final long id = themeDAO.insert(theme);
 
         return ThemeResponse.from(theme.withId(id));

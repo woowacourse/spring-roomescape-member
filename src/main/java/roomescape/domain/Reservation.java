@@ -9,13 +9,13 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
-    private final Theme theme;
+    private final RoomTheme theme;
 
     public Reservation(final long id,
                        final String name,
                        final LocalDate date,
                        final ReservationTime time,
-                       final Theme theme) {
+                       final RoomTheme theme) {
         validate(name, date, time, theme);
 
         this.id = id;
@@ -28,12 +28,12 @@ public class Reservation {
     public Reservation(final String name,
                        final LocalDate date,
                        final ReservationTime reservationTime,
-                       final Theme theme) {
+                       final RoomTheme theme) {
         this(0, name, date, reservationTime, theme);
     }
 
     private void validate(final String name, final LocalDate date,
-                          final ReservationTime reservationTime, final Theme theme) {
+                          final ReservationTime reservationTime, final RoomTheme theme) {
         if (name == null || name.isBlank()) {
             throw new InvalidInputException("예약자 명은 빈 값이 입력될 수 없습니다");
         }
@@ -72,7 +72,7 @@ public class Reservation {
         return time;
     }
 
-    public Theme getTheme() {
+    public RoomTheme getTheme() {
         return theme;
     }
 }

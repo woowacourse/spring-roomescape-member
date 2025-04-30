@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
-import roomescape.dao.ThemeDAO;
+import roomescape.dao.RoomThemeDAO;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.exception.custom.PharmaceuticalViolationException;
@@ -21,11 +21,11 @@ public class ReservationService {
 
     private final ReservationDAO reservationDAO;
     private final ReservationTimeDAO reservationTimeDAO;
-    private final ThemeDAO themeDAO;
+    private final RoomThemeDAO themeDAO;
 
     public ReservationService(final ReservationDAO reservationDAO,
                               final ReservationTimeDAO reservationTimeDAO,
-                              final ThemeDAO themeDAO) {
+                              final RoomThemeDAO themeDAO) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
         this.themeDAO = themeDAO;
@@ -33,7 +33,7 @@ public class ReservationService {
 
     public ReservationResponse addReservation(final ReservationCreation creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
-        final Theme theme = findThemeByThemeId(creation);
+        final RoomTheme theme = findThemeByThemeId(creation);
         final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
 
         validatePastDateAndTime(reservation.getDate(), reservation.getTime());
@@ -46,7 +46,7 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
-    private Theme findThemeByThemeId(final ReservationCreation creation) {
+    private RoomTheme findThemeByThemeId(final ReservationCreation creation) {
         return themeDAO.findById(creation.themeId())
                 .orElseThrow(NotExistedValueException::new);
     }
