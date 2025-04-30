@@ -124,7 +124,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Long.class, themeId) > 0;
     }
 
-    @Override //TODO: sql 수정 고려
+    @Override
     public List<Reservation> findByThemeIdAndReservationDate(final Long themeId, final LocalDate reservationDate) {
         String sql = "SELECT \n"
                 + "    r.id as reservation_id, \n"

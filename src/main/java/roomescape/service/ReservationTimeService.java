@@ -42,7 +42,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResult> findAvailableTimesByThemeIdAndDate(Long themeId, LocalDate reservationDate) { //TODO: 메서드명 고민
+    public List<AvailableReservationTimeResult> findAvailableTimesByThemeIdAndDate(Long themeId, LocalDate reservationDate) {
         List<ReservationTime> reservationTimes = reservationTImeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findByThemeIdAndReservationDate(themeId, reservationDate);
 

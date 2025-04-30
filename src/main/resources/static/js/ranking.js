@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     /*
-    TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출
+    TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출 - 완료
     */
     requestRead('/themes/rank') // 인기 테마 목록 조회 API endpoint
         .then(render)
@@ -12,7 +12,7 @@ function render(data) {
 
     /*
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출 후 렌더링
-          response 명세에 맞춰 name, thumbnail, description 값 설정
+          response 명세에 맞춰 name, thumbnail, description 값 설정 - 완료
     */
     data.forEach(theme => {
         const name = theme.name;
