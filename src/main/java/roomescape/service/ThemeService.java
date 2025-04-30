@@ -73,4 +73,10 @@ public class ThemeService {
     public void deleteTheme(Long id) {
         themeDao.deleteById(id);
     }
+
+    public List<ThemeResponseDto> findPopularThemes(final LocalDate today) {
+        return themeDao.findPopularThemes(today).stream()
+                .map(ThemeResponseDto::from)
+                .toList();
+    }
 }

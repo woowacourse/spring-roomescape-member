@@ -30,4 +30,9 @@ public class AdminController {
     public String reservationNew() {
         return "/reservation";
     }
+
+    @GetMapping("/")
+    public String home() {
+        return "/index";
+    }
 }
