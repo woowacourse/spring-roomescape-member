@@ -2,7 +2,9 @@ package roomescape.time.service;
 
 
 import java.util.List;
+import roomescape.time.controller.request.AvailableReservationTimeRequest;
 import roomescape.time.controller.request.ReservationTimeCreateRequest;
+import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 
@@ -15,4 +17,6 @@ public interface ReservationTimeService {
     ReservationTime getReservationTime(Long id);
 
     void deleteById(Long id);
+
+    List<AvailableReservationTimeResponse> getAvailableReservationTimes(AvailableReservationTimeRequest request);
 }
