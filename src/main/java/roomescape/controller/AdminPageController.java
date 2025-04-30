@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
-public class RoomEscapeController {
+public class AdminPageController {
 
     @GetMapping
     public String dashboard() {
@@ -24,5 +24,7 @@ public class RoomEscapeController {
     }
 
     @GetMapping("/theme")
-    public String adminThemeDashboard() { return "admin/theme"; }
+    public String adminThemeDashboard() {
+        return "admin/theme";
+    }
 }
