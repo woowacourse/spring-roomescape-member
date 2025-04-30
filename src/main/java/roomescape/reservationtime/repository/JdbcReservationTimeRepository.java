@@ -1,5 +1,6 @@
 package roomescape.reservationtime.repository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -37,6 +39,32 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAll() {
         final String sql = "select id, start_at from reservation_time";
         return template.query(sql, actorRowMapper);
+    }
+
+    // and rt.start_at >= current_time
+    @Override
+    public List<AvailableReservationTimeResponse> findAllAvailable(LocalDate date, Long themeId) {
+        String sql = """
+                select
+                    rt.id,
+                    rt.start_at,
+                    (r.id is not null) as alreadyBooked
+                from reservation_time rt
+                left join reservation r
+                    on rt.id = r.time_id
+                    and r.date = ?
+                    and r.theme_id = ?
+                order by rt.start_at
+                """;
+
+        return template.query(sql, (rs, rowNum) ->
+                        new AvailableReservationTimeResponse(
+                                rs.getLong("id"),
+                                rs.getTime("start_at").toLocalTime(),
+                                rs.getBoolean("alreadyBooked")
+                        ),
+                date, themeId
+        );
     }
 
     @Override

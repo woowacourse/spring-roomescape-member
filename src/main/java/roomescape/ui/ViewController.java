@@ -25,4 +25,9 @@ public class ViewController {
     public String getThemePage() {
         return "admin/theme";
     }
+
+    @GetMapping("/reservation")
+    public String getUserReservationPage() {
+        return "reservation";
+    }
 }

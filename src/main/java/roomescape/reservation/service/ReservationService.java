@@ -35,7 +35,7 @@ public class ReservationService {
     public ReservationResponse saveReservation(final @Valid ReservationRequest request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
-        final Theme theme = themeRepository.findById(request.timeId())
+        final Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
         if (reservationRepository.existsByDateAndTime(request.date(), reservationTime.getStartAt())) {
             throw new ReservationException("해당 시간은 이미 예약되어있습니다.");
