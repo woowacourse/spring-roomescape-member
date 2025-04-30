@@ -6,12 +6,11 @@ import java.util.List;
 import roomescape.dao.ReservationDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.Reservation;
-import roomescape.domain_entity.ReservationTime;
 
 public class FakeReservationDao implements ReservationDao {
 
-    private long id = 1L;
     private final List<Reservation> fakeMemory = new ArrayList<>();
+    private long id = 1L;
 
     @Override
     public List<Reservation> findAll() {
@@ -28,5 +27,10 @@ public class FakeReservationDao implements ReservationDao {
     @Override
     public void deleteById(Id id) {
         fakeMemory.removeIf(reservation -> reservation.getId() == id.value());
+    }
+
+    @Override
+    public Boolean existByTimeId(Id timeId) {
+        return true;
     }
 }
