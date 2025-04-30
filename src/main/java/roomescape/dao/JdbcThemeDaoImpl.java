@@ -1,6 +1,8 @@
 package roomescape.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -33,7 +35,12 @@ public class JdbcThemeDaoImpl implements ThemeDao {
 
     @Override
     public void saveTheme(Theme theme) {
-
+        Map<String, Object> parameters = new HashMap<>(3);
+        parameters.put("name", theme.getName());
+        parameters.put("description", theme.getDescription());
+        parameters.put("thumbnail", theme.getThumbnail());
+        Number newId = insertActor.executeAndReturnKey(parameters);
+        theme.setId(newId.longValue());
     }
 
     @Override
