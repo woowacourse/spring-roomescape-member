@@ -97,4 +97,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(sql, Integer.class, reservation.getDate(),
                 reservation.getReservationTime().getId()) > 0;
     }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
+        return List.of();
+        
+    }
 }

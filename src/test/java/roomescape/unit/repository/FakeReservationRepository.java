@@ -1,5 +1,6 @@
 package roomescape.unit.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,5 +50,13 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(currentReservation -> currentReservation.getDate().isEqual(reservation.getDate())
                         && currentReservation.getReservationTime().getId()
                         .equals(reservation.getReservationTime().getId()));
+    }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
+        return reservations.stream()
+                .filter((reservation) -> reservation.getDate().isEqual(date))
+                .filter((reservation) -> reservation.getTheme().getId().equals(themeId))
+                .toList();
     }
 }

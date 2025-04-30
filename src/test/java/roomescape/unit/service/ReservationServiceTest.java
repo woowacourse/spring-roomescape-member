@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.dto.AddReservationDto;
 import roomescape.dto.AddReservationTimeDto;
 import roomescape.dto.AddThemeDto;
+import roomescape.dto.AvailableTimeRequestDto;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
@@ -117,5 +118,21 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.addReservation(
                 new AddReservationDto("투다", LocalDate.now(), reservationTimeId, themeId)))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 선택된_테마와_날짜에_대해서_가능한_시간들을_확인할_수_있다() {
+        LocalTime firstTime = LocalTime.now().plusHours(1L);
+        LocalTime secondTime = LocalTime.now().plusHours(2L);
+
+        LocalDate today = LocalDate.now();
+        Long firstReservationTimeId = reservationTimeRepository.add(new AddReservationTimeDto(firstTime).toEntity());
+        Long secondReservationTimeId = reservationTimeRepository.add(new AddReservationTimeDto(secondTime).toEntity());
+        Long themeId = themeRepository.add(new AddThemeDto("테마", "테마2", "unique.png").toEntity());
+        reservationService.addReservation(
+                new AddReservationDto("투다", today, firstReservationTimeId, themeId));
+
+        AvailableTimeRequestDto availableTimeRequestDto = new AvailableTimeRequestDto(today, themeId);
+        assertThat(reservationService.availableReservationTimes(availableTimeRequestDto)).hasSize(1);
     }
 }

@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.AddReservationDto;
+import roomescape.dto.AvailableTimeRequestDto;
 import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -46,5 +48,17 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservations(@PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/available-times")
+    public ResponseEntity<List<ReservationTimeResponseDto>> availableReservationTimes(
+            @Valid @RequestBody AvailableTimeRequestDto availableTimeRequestDto) {
+        List<ReservationTimeResponseDto> reservationTimeResponseDtos = reservationService.availableReservationTimes(
+                        availableTimeRequestDto)
+                .stream()
+                .map(reservationTime -> new ReservationTimeResponseDto(reservationTime.getId(),
+                        reservationTime.getTime()))
+                .toList();
+        return ResponseEntity.ok(reservationTimeResponseDtos);
     }
 }

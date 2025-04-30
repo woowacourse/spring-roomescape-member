@@ -6,10 +6,12 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.AvailableBookTimes;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AddReservationDto;
+import roomescape.dto.AvailableTimeRequestDto;
 import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidReservationTimeException;
 import roomescape.exception.InvalidThemeException;
@@ -66,5 +68,14 @@ public class ReservationService {
 
     public List<Reservation> allReservations() {
         return reservationRepository.findAll();
+    }
+
+    public AvailableBookTimes availableReservationTimes(AvailableTimeRequestDto availableTimeRequestDto) {
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+
+        List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
+                availableTimeRequestDto.date(), availableTimeRequestDto.themeId());
+
+        return new AvailableBookTimes(times, alreadyReservedReservations);
     }
 }
