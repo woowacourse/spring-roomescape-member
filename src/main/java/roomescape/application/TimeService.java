@@ -1,13 +1,14 @@
 package roomescape.application;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.TimeDto;
+import roomescape.application.mapper.ReservationTimeMapper;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.repository.TimeRepository;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.TimeRequest;
-import roomescape.application.mapper.ReservationTimeMapper;
-import roomescape.domain.repository.TimeRepository;
 
 @Service
 public class TimeService {
@@ -39,5 +40,10 @@ public class TimeService {
     public ReservationTime getTimeById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("삭제하려는 id가 존재하지 않습니다, id: " + id));
+    }
+
+    public List<TimeDto> getTimesBy(LocalDate date, Long themeId) {
+        List<ReservationTime> bookedTimes = repository.getTimesBy(date, themeId);
+        return TimeDto.from(bookedTimes);
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.testRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,5 +38,10 @@ public class FakeTimeRepository implements TimeRepository {
         ReservationTime reservationTime = findById(id)
                 .orElseThrow(() -> new NotFoundException("FakeTimeRepository: 삭제하려는 id 없음"));
         reservationTimes.remove(reservationTime);
+    }
+
+    @Override
+    public List<ReservationTime> getTimesBy(LocalDate date, Long themeId) {
+        return List.of();
     }
 }

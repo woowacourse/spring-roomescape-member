@@ -1,6 +1,7 @@
 package roomescape.infrastructure;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,17 +17,17 @@ import roomescape.domain.repository.TimeRepository;
 @Repository
 public class JdbcTimeRepository implements TimeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public JdbcTimeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final static RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER =
             (rs, rowNum) -> ReservationTime.of(
                     rs.getLong("id"),
                     rs.getTime("start_at").toLocalTime()
             );
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcTimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Long save(ReservationTime reservationTime) {
@@ -69,5 +70,18 @@ public class JdbcTimeRepository implements TimeRepository {
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
+    }
+
+    @Override
+    public List<ReservationTime> getTimesBy(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT t.id, t.start_at
+                FROM reservation_time as t
+                JOIN reservation as r on r.time_id=t.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
+
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER,
+                date, themeId);
     }
 }
