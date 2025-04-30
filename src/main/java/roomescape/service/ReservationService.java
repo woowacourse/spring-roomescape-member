@@ -8,6 +8,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
+import roomescape.exception.DuplicateContentException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -42,7 +43,7 @@ public class ReservationService {
     private void validateDuplicate(LocalDate date, LocalTime time) {
         List<Reservation> reservations = reservationRepository.findByDateTime(date, time);
         if (!reservations.isEmpty()) {
-            throw new IllegalStateException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
+            throw new DuplicateContentException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
         }
     }
 

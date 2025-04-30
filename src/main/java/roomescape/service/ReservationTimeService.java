@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeCreateRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.DuplicateContentException;
 import roomescape.repository.ReservationTimeRepository;
 
 import java.util.List;
@@ -19,10 +20,14 @@ public class ReservationTimeService {
 
     public ReservationTimeResponseDto createReservationTime(final ReservationTimeCreateRequestDto requestDto) {
         ReservationTime requestTime = requestDto.createWithoutId();
-        ReservationTime savedTime = reservationTimeRepository.save(requestTime)
-                .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약시간을 생성 실패하였습니다."));
+        try {
+            ReservationTime savedTime = reservationTimeRepository.save(requestTime)
+                    .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약시간을 생성 실패하였습니다."));
 
-        return ReservationTimeResponseDto.from(savedTime);
+            return ReservationTimeResponseDto.from(savedTime);
+        } catch (IllegalArgumentException e) {
+            throw new DuplicateContentException(e.getMessage());
+        }
     }
 
     public List<ReservationTimeResponseDto> findAllReservationTimes() {
