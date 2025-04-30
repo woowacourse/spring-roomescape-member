@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -68,6 +69,29 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public Reservation findByIdOrThrow(Long id) {
         return findById(id)
             .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "해당 예약 id가 존재하지 않습니다."));
+    }
+
+    @Override
+    public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date) {
+        String sql = "SELECT r.id AS id, r.name AS name, r.date AS date, t.id AS time_id, t.start_at AS time_value "
+            + "FROM reservation AS r INNER JOIN reservation_time AS t "
+            + "ON r.time_id = t.id "
+            + "WHERE r.date = ? AND r.theme_id = ?";
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
+            ReservationTime time = new ReservationTime(
+                resultSet.getLong("time_id"),
+                resultSet.getTime("time_value").toLocalTime()
+            );
+
+            return new Reservation(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getDate("date").toLocalDate(),
+                time,
+                theme
+            );
+        }, date, theme.getId());
     }
 
     @Override
