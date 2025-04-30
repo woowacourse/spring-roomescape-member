@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.Fixtures;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationFakeRepository;
@@ -69,7 +70,7 @@ class TimeSlotServiceTest {
         var timeSlot = timeSlotService.add(startAt);
 
         var name = "포포";
-        var date = LocalDate.of(2024, 4, 18);
+        var date = Fixtures.ofTomorrow();
         var reservation = Reservation.create(name, date, timeSlot);
         reservationRepository.save(reservation);
 

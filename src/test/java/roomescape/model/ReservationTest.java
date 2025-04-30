@@ -13,26 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ReservationTest {
 
-    public static Stream<Arguments> NullValues() {
-        return Stream.of(
-            Arguments.of(
-                null,
-                LocalDate.of(2023, 12, 1),
-                new TimeSlot(1L, LocalTime.of(10, 0))
-            ),
-            Arguments.of(
-                "brown",
-                null,
-                new TimeSlot(1L, LocalTime.of(10, 0))
-            ),
-            Arguments.of(
-                "brown",
-                LocalDate.of(2023, 12, 1),
-                null
-            )
-        );
-    }
-
     @ParameterizedTest
     @MethodSource("NullValues")
     @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
@@ -52,5 +32,25 @@ public class ReservationTest {
             LocalDate.of(2023, 12, 1),
             new TimeSlot(1L, LocalTime.of(10, 0)))
         ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    public static Stream<Arguments> NullValues() {
+        return Stream.of(
+            Arguments.of(
+                null,
+                LocalDate.of(2023, 12, 1),
+                new TimeSlot(1L, LocalTime.of(10, 0))
+            ),
+            Arguments.of(
+                "brown",
+                null,
+                new TimeSlot(1L, LocalTime.of(10, 0))
+            ),
+            Arguments.of(
+                "brown",
+                LocalDate.of(2023, 12, 1),
+                null
+            )
+        );
     }
 }

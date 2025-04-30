@@ -58,7 +58,7 @@ public class MissionStepTest {
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", Fixtures.ofTomorrow().toString());
         params.put("timeId", "1");
 
         insertOneReservationTimeSlot();
@@ -107,7 +107,7 @@ public class MissionStepTest {
     void 오단계() {
         insertOneReservationTimeSlot();
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운",
-            "2023-08-05", 1);
+            Fixtures.ofTomorrow().toString(), 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
             .when().get("/reservations")
@@ -125,7 +125,7 @@ public class MissionStepTest {
     void 육단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", Fixtures.ofTomorrow().toString());
         params.put("timeId", "1");
 
         insertOneReservationTimeSlot();
@@ -180,7 +180,7 @@ public class MissionStepTest {
         insertOneReservationTimeSlot();
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
+        reservation.put("date", Fixtures.ofTomorrow().toString());
         reservation.put("timeId", 1);
 
         RestAssured.given().log().all()
@@ -210,7 +210,6 @@ public class MissionStepTest {
 
         assertThat(isJdbcTemplateInjected).isFalse();
     }
-
 
     private void insertOneReservationTimeSlot() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");

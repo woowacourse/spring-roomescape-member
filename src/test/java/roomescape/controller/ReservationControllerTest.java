@@ -12,32 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.Fixtures;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationControllerTest {
-
-    private static void addOneReservation() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", "2023-08-05");
-        params.put("timeId", "1");
-
-        RestAssured.given()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .post("/reservations");
-    }
-
-    private static void addOneTimeSlot() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .post("/times");
-    }
 
     @DisplayName("예약 생성 시 유효하지 않은 이름이 입력 되었을 때 Bad Request")
     @Test
@@ -47,7 +26,7 @@ public class ReservationControllerTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", Fixtures.ofTomorrow().toString());
         params.put("timeId", "1");
 
         // when & then
@@ -66,7 +45,7 @@ public class ReservationControllerTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", "2023-08-05");
+        params.put("date", Fixtures.ofTomorrow().toString());
         params.put("timeId", "1");
 
         // when & then
@@ -91,5 +70,27 @@ public class ReservationControllerTest {
             .when().delete("/times/1")
             .then().log().all()
             .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private static void addOneReservation() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", Fixtures.ofTomorrow().toString());
+        params.put("timeId", "1");
+
+        RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .post("/reservations");
+    }
+
+    private static void addOneTimeSlot() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        RestAssured.given()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .post("/times");
     }
 }

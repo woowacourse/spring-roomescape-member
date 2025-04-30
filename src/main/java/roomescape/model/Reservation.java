@@ -45,6 +45,10 @@ public class Reservation {
         return new Reservation(null, name, date, timeSlot);
     }
 
+    public boolean isSameDateTime(final Reservation reservation) {
+        return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
+    }
+
     private void validateNotNull(
         final String name,
         final LocalDate date,

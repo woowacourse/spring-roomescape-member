@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.Fixtures;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationFakeRepository;
@@ -35,7 +36,7 @@ public class ReservationServiceTest {
     void reserve() {
         // given
         var name = "포포";
-        var date = LocalDate.of(2024, 4, 18);
+        var date = Fixtures.ofTomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
 
         // when
@@ -51,7 +52,7 @@ public class ReservationServiceTest {
     void deleteReservation() {
         // given
         var name = "포포";
-        var date = LocalDate.of(2024, 4, 18);
+        var date = Fixtures.ofTomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var reserved = service.reserve(name, date, timeSlotId);
 
@@ -71,7 +72,7 @@ public class ReservationServiceTest {
     void cannotReservePastDateTime() {
         // given
         var name = "포포";
-        var date = LocalDate.of(2024, 5, 31);
+        var date = Fixtures.ofYesterday();
         var timeSlotId = JUNK_TIME_SLOT.id();
 
         // when & then
@@ -84,11 +85,27 @@ public class ReservationServiceTest {
     void canReserveFutureDateTime() {
         // given
         var name = "포포";
-        var date = LocalDate.of(2025, 5, 1);
+        var date = Fixtures.ofTomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
 
         // when & then
         assertThatCode(() -> service.reserve(name, date, timeSlotId))
             .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("이미 예약된 날짜와 시간에 대한 예약 생성은 불가능하다.")
+    void cannotReserveIdenticalDateTimeMultipleTimes() {
+        // given
+        var name = "포포";
+        var date = Fixtures.ofTomorrow();
+        var timeSlotId = JUNK_TIME_SLOT.id();
+
+        // when
+        service.reserve(name, date, timeSlotId);
+
+        // then
+        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }

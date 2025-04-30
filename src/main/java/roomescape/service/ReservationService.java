@@ -30,11 +30,25 @@ public class ReservationService {
         // TODO: 정적 팩토리 메서드로 임시 예약 생성하기
         var reservation = Reservation.create(name, date, timeSlot);
         // TODO : now 테스트 어려움 해결하기
+        validatePastDateTime(reservation);
+        validateDuplicateReservation(reservation);
+        var id = reservationRepository.save(reservation);
+        return Reservation.register(id, name, date, timeSlot);
+    }
+
+    private void validatePastDateTime(final Reservation reservation) {
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
         }
-        var id = reservationRepository.save(reservation);
-        return Reservation.register(id, name, date, timeSlot);
+    }
+
+    private void validateDuplicateReservation(final Reservation reservation) {
+        var reservations = allReservations();
+        var hasDuplicate = reservations.stream()
+            .anyMatch(r -> r.isSameDateTime(reservation));
+        if (hasDuplicate) {
+            throw new IllegalArgumentException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다.");
+        }
     }
 
     private TimeSlot findTimeSlot(final Long timeId) {
