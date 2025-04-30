@@ -6,6 +6,7 @@ import roomescape.reservation.domain.dto.ReservationResDto;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.dto.ThemeResDto;
 
 public class ReservationMapper {
 
@@ -13,8 +14,17 @@ public class ReservationMapper {
         return Reservation.of(reqDto.name(), reqDto.date(), reservationTime, theme);
     }
 
-    public static ReservationResDto toResDto(Reservation reservation, ReservationTimeResDto reservationTimeResDto) {
-        return new ReservationResDto(reservation.getId(), reservation.getName(), reservation.getDate(),
-            reservationTimeResDto);
+    public static ReservationResDto toResDto(
+        Reservation reservation,
+        ReservationTimeResDto reservationTimeResDto,
+        ThemeResDto themeResDto
+    ) {
+        return new ReservationResDto(
+            reservation.getId(),
+            reservation.getName(),
+            reservation.getDate(),
+            reservationTimeResDto,
+            themeResDto
+        );
     }
 }

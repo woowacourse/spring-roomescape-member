@@ -15,6 +15,7 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.dto.ThemeResDto;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -67,6 +68,7 @@ public class ReservationService {
 
     private ReservationResDto convertReservationResDto(Reservation reservation) {
         ReservationTimeResDto reservationTimeResDto = ReservationTimeMapper.toResDto(reservation.getReservationTime());
-        return ReservationMapper.toResDto(reservation, reservationTimeResDto);
+        ThemeResDto themeResDto = ThemeResDto.from(reservation.getTheme());
+        return ReservationMapper.toResDto(reservation, reservationTimeResDto, themeResDto);
     }
 }
