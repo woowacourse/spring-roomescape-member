@@ -92,7 +92,7 @@ class JdbcReservationDaoTest {
     @Test
     void same_time_id_and_date_test(){
         // when
-        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeId(LocalDate.of(2025,3,24),1L);
+        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 5, 5), 1L, 1L);
         // then
         assertThat(actual).isTrue();
     }

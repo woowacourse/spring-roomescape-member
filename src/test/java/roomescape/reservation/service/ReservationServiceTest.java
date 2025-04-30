@@ -145,16 +145,16 @@ class ReservationServiceTest {
 
     }
 
-    @DisplayName("중복 예약을 하면 예외가 발생한다")
+    @DisplayName("동일한 날짜, 시간, 테마에 대한 중복 예약을 하면 예외가 발생한다")
     @Test
     void reservation_duplicate_exception(){
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 15), 3L, 2L);
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 15), 3L, 3L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 시간에 대한 예약이 존재합니다.");
+                .hasMessage("해당 날짜, 시간, 테마에 대한 동일한 예약이 존재합니다.");
     }
 
 }
