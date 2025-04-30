@@ -1,6 +1,7 @@
 package roomescape.presentation.controller;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,7 @@ public class ReservationController {
     ) {
         try {
             final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
-            return ResponseEntity.ok(reservationResponse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
         } catch (PlayTimeNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (InvalidReservationDateException e) {
