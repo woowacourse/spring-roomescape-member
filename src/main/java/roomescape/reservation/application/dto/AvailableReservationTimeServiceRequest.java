@@ -1,0 +1,27 @@
+package roomescape.reservation.application.dto;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldNameConstants;
+import roomescape.common.validate.Validator;
+import roomescape.theme.domain.ThemeId;
+
+import java.time.LocalDate;
+
+@FieldNameConstants(level = AccessLevel.PRIVATE)
+public record AvailableReservationTimeServiceRequest(
+        LocalDate date,
+        ThemeId themeId
+) {
+
+    public AvailableReservationTimeServiceRequest(final LocalDate date, final ThemeId themeId) {
+        validate(date, themeId);
+        this.date = date;
+        this.themeId = themeId;
+    }
+
+    private void validate(final LocalDate date, final ThemeId themeId) {
+        Validator.of(AvailableReservationTimeServiceRequest.class)
+                .notNullField(Fields.date, date)
+                .notNullField(Fields.themeId, themeId);
+    }
+}

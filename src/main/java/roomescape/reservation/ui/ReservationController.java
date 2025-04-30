@@ -8,14 +8,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.uri.UriFactory;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.domain.ReservationId;
+import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.theme.domain.ThemeId;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,6 +34,15 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getAll() {
         final List<ReservationResponse> reservations = reservationService.getAll();
+        return ResponseEntity.ok(reservations);
+    }
+
+    @GetMapping("/times")
+    public ResponseEntity<List<AvailableReservationTimeWebResponse>> getAvailable(
+            @RequestParam final LocalDate date,
+            @RequestParam final Long themeId) {
+        final List<AvailableReservationTimeWebResponse> reservations = reservationService.getAvailable(date,
+                ThemeId.from(themeId));
         return ResponseEntity.ok(reservations);
     }
 

@@ -1,10 +1,13 @@
 package roomescape.reservation.application.usecase;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.reservation.application.dto.AvailableReservationTimeServiceRequest;
+import roomescape.reservation.application.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
@@ -79,6 +82,53 @@ class ReservationQueryUseCaseImplTest {
         assertAll(() -> {
             assertThat(found1).isEqualTo(saved1);
             assertThat(found2).isEqualTo(saved2);
+        });
+    }
+
+    @Test
+    @DisplayName("특정 날짜와 테마에 대한 예약 가능 여부가 포함된 시간 정보를 받을 수 있다")
+    void getTimesWithAvailability() {
+        // given
+        final ReservationTime booked = reservationTimeRepository.save(
+                ReservationTime.withoutId(
+                        LocalTime.of(10, 0)));
+
+        final ReservationTime unbooked = reservationTimeRepository.save(
+                ReservationTime.withoutId(
+                        LocalTime.of(11, 0)));
+
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
+
+        final ReservationDate date = ReservationDate.from(LocalDate.now().plusDays(1));
+
+        final Reservation reservation = reservationRepository.save(Reservation.withoutId(
+                ReserverName.from("강산"),
+                date,
+                booked,
+                theme));
+
+        // when
+        final List<AvailableReservationTimeServiceResponse> timesWithAvailability = reservationQueryUseCase.getTimesWithAvailability(
+                new AvailableReservationTimeServiceRequest(date.getValue(), theme.getId()));
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+
+            assertThat(timesWithAvailability)
+                    .hasSize(2);
+
+            assertThat(timesWithAvailability.stream().filter(AvailableReservationTimeServiceResponse::isBooked))
+                    .hasSize(1);
+
+            assertThat(timesWithAvailability.stream()
+                    .filter(AvailableReservationTimeServiceResponse::isBooked)
+                    .map(AvailableReservationTimeServiceResponse::startAt)
+                    .findFirst()
+                    .orElseThrow()
+            ).isEqualTo(booked.getValue());
         });
     }
 }

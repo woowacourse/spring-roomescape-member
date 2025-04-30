@@ -11,6 +11,8 @@ public interface ReservationQueryUseCase {
 
     List<Reservation> getAll();
 
+    List<AvailableReservationTimeServiceResponse> getTimesWithAvailability(AvailableReservationTimeServiceRequest availableReservationTimeServiceRequest);
+
     boolean existsByTimeId(ReservationTimeId timeId);
 
     boolean existsByParams(LocalDate date, ReservationTimeId timeId, ThemeId themeId);

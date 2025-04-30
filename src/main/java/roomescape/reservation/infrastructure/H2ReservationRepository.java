@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.jdbc.JdbcUtils;
 import roomescape.reservation.application.converter.ReservationConverter;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.infrastructure.entity.ReservationEntity;
@@ -20,7 +21,6 @@ import roomescape.time.infrastructure.entity.ReservationTimeEntity;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -76,7 +76,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByParams(final LocalDate date,
+    public boolean existsByParams(final ReservationDate date,
                                   final ReservationTimeId timeId,
                                   final ThemeId themeId) {
         final String sql = """
@@ -85,7 +85,8 @@ public class H2ReservationRepository implements ReservationRepository {
                 """;
 
         return Boolean.TRUE.equals(
-                jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId.getValue(), themeId.getValue()));
+                jdbcTemplate.queryForObject(sql, Boolean.class, date.getValue(), timeId.getValue(), themeId.getValue()));
+
     }
 
     @Override
@@ -111,6 +112,30 @@ public class H2ReservationRepository implements ReservationRepository {
 
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationMapper, id.getValue())
                 .map(ReservationConverter::toDomain);
+    }
+
+    @Override
+    public List<ReservationTimeId> findTimeIdByParams(final ReservationDate date, final ThemeId themeId) {
+        final String sql = """
+                select
+                    r.time_id
+                from reservation r
+                join reservation_time rt
+                    on r.time_id = rt.id
+                join theme t
+                    on r.theme_id = t.id
+                where
+                    r.date = ? and t.id = ?
+                """;
+
+        // TODO DB entity 필드에 대해서 생각해보고 수정
+        return jdbcTemplate.query(
+                        sql,
+                        (rs, rowNum) -> rs.getLong("time_id"),
+                        date.getValue(),
+                        themeId.getValue()).stream()
+                .map(ReservationTimeId::from)
+                .toList();
     }
 
     @Override

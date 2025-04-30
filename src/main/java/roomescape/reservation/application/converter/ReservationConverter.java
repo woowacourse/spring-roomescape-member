@@ -1,11 +1,13 @@
 package roomescape.reservation.application.converter;
 
+import roomescape.reservation.application.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation.infrastructure.entity.ReservationEntity;
+import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.application.converter.ThemeConverter;
 import roomescape.theme.domain.Theme;
@@ -48,5 +50,13 @@ public class ReservationConverter {
         return reservations.stream()
                 .map(ReservationConverter::toDto)
                 .toList();
+    }
+
+    public static AvailableReservationTimeWebResponse toWebDto(final AvailableReservationTimeServiceResponse availableReservationTimeServiceResponse) {
+        return new AvailableReservationTimeWebResponse(
+                availableReservationTimeServiceResponse.startAt(),
+                availableReservationTimeServiceResponse.timeId(),
+                availableReservationTimeServiceResponse.isBooked()
+        );
     }
 }

@@ -17,6 +17,8 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(ReservationId id);
 
+    List<ReservationTimeId> findTimeIdByParams(ReservationDate date, ThemeId themeId);
+
     List<Reservation> findAll();
 
     Reservation save(Reservation reservation);
