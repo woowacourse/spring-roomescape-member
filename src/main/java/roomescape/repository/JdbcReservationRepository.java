@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -31,18 +32,25 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         ReservationTime reservationTime = new ReservationTime(timeId, timeValue);
 
-        return new Reservation(reservationId, name, date, reservationTime);
+        long themeId = resultSet.getLong("theme_id");
+        String themeName = resultSet.getString("theme_name");
+        String themeDescription = resultSet.getString("theme_description");
+        String themeThumbnail = resultSet.getString("theme_thumbnail");
+        Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
+
+        return new Reservation(reservationId, name, date, reservationTime, theme);
     };
 
     @Override
     public long add(Reservation reservation) {
-        String sql = "insert into reservation (name,date,time_id) values(?,?,?)";
+        String sql = "insert into reservation (name,date,time_id, theme_id) values(?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int update = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getReservationTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
@@ -52,15 +60,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                SELECT
+                select 
                     r.id as reservation_id,
                         r.name,
                         r.date,
-                        t.id as time_id,
-                        t.start_at as time_value
-                    FROM reservation as r
-                    inner join reservation_time as t
-                    on r.time_id = t.id
+                        rt.id as time_id,
+                        rt.start_at as time_value,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_description,
+                        t.thumbnail as theme_thumbnail
+                    from reservation as r
+                    inner join reservation_time as rt
+                    on r.time_id = rt.id
+                    inner join theme as t
+                    on r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
     }

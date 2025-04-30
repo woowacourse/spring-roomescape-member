@@ -141,15 +141,28 @@ class MissionStep2Test {
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         Map<String, String> timeParm = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
         timeParm.put("startAt", afterTime.toString());
 
+        Map<String, String> themeParam = new HashMap<>();
+        themeParam.put("name", "테마 명");
+        themeParam.put("description", "description");
+        themeParam.put("thumbnail", "thumbnail");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParm)
                 .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParam)
+                .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
 

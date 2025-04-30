@@ -8,22 +8,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.AddReservationDto;
 import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidReservationTimeException;
+import roomescape.exception.InvalidThemeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public void deleteReservation(Long id) {
@@ -33,9 +38,11 @@ public class ReservationService {
     @Transactional
     public long addReservation(AddReservationDto newReservation) {
         ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
-                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 id입니다."));
+                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
+        Theme theme = themeRepository.findById(newReservation.themeId())
+                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
 
-        Reservation reservation = newReservation.toReservation(reservationTime);
+        Reservation reservation = newReservation.toReservation(reservationTime, theme);
 
         validateSameReservation(reservation);
         LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());

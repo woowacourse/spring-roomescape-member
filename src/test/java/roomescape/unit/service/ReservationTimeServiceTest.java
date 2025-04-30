@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.AddReservationTimeDto;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -63,7 +64,9 @@ class ReservationTimeServiceTest {
         Long id = reservationTimeService.addReservationTime(
                 new AddReservationTimeDto(startAt));
         ReservationTime reservationTime = new ReservationTime(id, startAt);
-        Reservation reservation = new Reservation(null, "praisebak", LocalDate.now().plusDays(1), reservationTime);
+        Theme theme = new Theme(0L, "공포", "공포테마입니다.", "ㅁㄴㅇㄹ");
+        Reservation reservation = new Reservation(null, "praisebak", LocalDate.now().plusDays(1), reservationTime,
+                theme);
         reservationRepository.add(reservation);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(id))
