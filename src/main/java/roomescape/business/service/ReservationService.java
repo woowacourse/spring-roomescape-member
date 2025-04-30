@@ -1,13 +1,15 @@
 package roomescape.business.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
-import roomescape.persistence.dao.ReservationDao;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.persistence.dao.ReservationDao;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -24,6 +26,7 @@ public class ReservationService {
 
     public ReservationResponse create(final ReservationRequest reservationRequest) {
         final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
+        validateIsDuplicate(reservationRequest.date(), playTime);
 
         final Reservation reservation = reservationRequest.toDomain(playTime);
         validateIsFuture(reservation);
@@ -31,6 +34,12 @@ public class ReservationService {
         final Long id = reservationDao.save(reservation);
 
         return ReservationResponse.withId(reservation, id);
+    }
+
+    private void validateIsDuplicate(final LocalDate date, final PlayTime playTime) {
+        if (reservationDao.existsByDateAndTime(date, playTime)) {
+            throw new DuplicateReservationException(date, playTime);
+        }
     }
 
     private void validateIsFuture(final Reservation reservation) {

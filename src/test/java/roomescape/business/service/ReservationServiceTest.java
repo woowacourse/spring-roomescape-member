@@ -11,9 +11,10 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.persistence.entity.PlayTimeEntity;
-import roomescape.fake.FakeReservationDao;
+import roomescape.exception.DuplicateReservationException;
 import roomescape.fake.FakePlayTimeDao;
+import roomescape.fake.FakeReservationDao;
+import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -65,6 +66,20 @@ public class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("해당하는 방탈출 시간 id를 찾을 수 없습니다. id : 2");
+    }
+
+    @DisplayName("저장하려는 방탈출 예약 날짜 및 시간이 이미 존재한다면 예외가 발생한다.")
+    @Test
+    void createOrThrowIfDateAndTimeDuplicate() {
+        // given
+        final ReservationRequest reservationRequest = new ReservationRequest(
+                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L
+        );
+        reservationService.create(reservationRequest);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(DuplicateReservationException.class);
     }
 
     @DisplayName("저장하려는 예약이 현재 날짜/시간보다 과거라면 예외가 발생한다.")
