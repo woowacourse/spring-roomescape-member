@@ -14,11 +14,11 @@ import roomescape.reservation.domain.dto.ReservationResDto;
 import roomescape.reservation.service.ReservationService;
 
 @RestController
-public class ReservationUserApiController {
+public class ReservationApiController {
 
     private final ReservationService service;
 
-    public ReservationUserApiController(ReservationService service) {
+    public ReservationApiController(ReservationService service) {
         this.service = service;
     }
 
