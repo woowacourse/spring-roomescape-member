@@ -30,7 +30,8 @@ public class ReservationRestController {
         final Long id = reservationService.save(
                 reservationRequest.name(),
                 reservationRequest.date(),
-                reservationRequest.timeId()
+                reservationRequest.timeId(),
+                reservationRequest.themeId()
         );
         final Reservation found = reservationService.getById(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(found));

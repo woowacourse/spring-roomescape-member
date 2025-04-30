@@ -1,0 +1,46 @@
+package roomescape.theme.service;
+
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import roomescape.exception.DataExistException;
+import roomescape.exception.DataNotFoundException;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.repository.entity.ThemeEntity;
+
+@RequiredArgsConstructor
+@Service
+public class ThemeService {
+
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
+
+    public Long save(final String name, final String description, final String thumbnail) {
+        final ThemeEntity themeEntity = new ThemeEntity(name, description, thumbnail);
+
+        return themeRepository.save(themeEntity);
+    }
+
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
+    }
+
+    public Theme getById(final Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+    }
+
+    public void deleteById(final Long id) {
+        themeRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+
+        Long count = reservationRepository.countByTimeId(id);
+        if (count >= 1) {
+            throw new DataExistException("해당 테마를 사용하고 있는 예약 정보가 존재합니다. id = " + id);
+        }
+        
+        themeRepository.deleteById(id);
+    }
+}

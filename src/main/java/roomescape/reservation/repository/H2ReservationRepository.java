@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.entity.ReservationEntity;
+import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
@@ -26,15 +27,20 @@ public class H2ReservationRepository implements ReservationRepository {
                     new ReservationTime(
                             rs.getLong("time_id"),
                             rs.getTime("start_at").toLocalTime()
+                    ),
+                    new Theme(
+                            rs.getLong("theme_id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("thumbnail")
                     )
             );
-    ;
 
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Long save(ReservationEntity reservationEntity) {
-        String sql = "INSERT INTO reservations (name, date, time_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO reservations (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         final int rowAffected = jdbcTemplate.update(connection -> {
@@ -42,6 +48,7 @@ public class H2ReservationRepository implements ReservationRepository {
             ps.setString(1, reservationEntity.name());
             ps.setDate(2, Date.valueOf(reservationEntity.date()));
             ps.setLong(3, reservationEntity.timeId());
+            ps.setLong(4, reservationEntity.themeId());
             return ps;
         }, keyHolder);
 
@@ -64,11 +71,16 @@ public class H2ReservationRepository implements ReservationRepository {
                     r.id AS id,
                     r.name AS name,
                     r.date AS date,
-                    t.id AS time_id,
-                    t.start_at AS start_at
+                    rt.id AS time_id,
+                    rt.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS name,
+                    th.description AS description,
+                    th.thumbnail AS thumbnail
                 FROM reservations AS r
-                INNER JOIN reservation_times AS t
-                ON r.time_id = t.id
+                INNER JOIN reservation_times AS rt
+                INNER JOIN themes AS th
+                ON r.time_id = rt.id
                 WHERE r.id = ?
                 """;
         final List<Reservation> reservations = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
@@ -96,13 +108,17 @@ public class H2ReservationRepository implements ReservationRepository {
                     r.id AS id,
                     r.name AS name,
                     r.date AS date,
-                    t.id AS time_id,
-                    t.start_at AS start_at
+                    rt.id AS time_id,
+                    rt.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS name,
+                    th.description AS description,
+                    th.thumbnail AS thumbnail
                 FROM reservations AS r
-                INNER JOIN reservation_times AS t
-                ON r.time_id = t.id
+                INNER JOIN reservation_times AS rt
+                INNER JOIN themes AS th
+                ON r.time_id = rt.id
                 """;
-
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
 

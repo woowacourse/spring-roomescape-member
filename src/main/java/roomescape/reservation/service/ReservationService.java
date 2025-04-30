@@ -15,8 +15,8 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
 
-    public Long save(final String name, final LocalDate date, final Long timeId) {
-        final ReservationEntity reservationEntity = new ReservationEntity(name, date, timeId);
+    public Long save(final String name, final LocalDate date, final Long timeId, final Long themeId) {
+        final ReservationEntity reservationEntity = new ReservationEntity(name, date, timeId, themeId);
 
         return reservationRepository.save(reservationEntity);
     }
