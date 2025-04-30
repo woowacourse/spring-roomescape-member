@@ -12,6 +12,7 @@ public record ReservationRequest(
         LocalDate date,
 
         @NotBlank
+        @NotNull
         String name,
 
         @NotNull
