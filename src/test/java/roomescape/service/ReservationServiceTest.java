@@ -1,45 +1,37 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import roomescape.controller.dto.request.CreateReservationRequest;
+import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.exception.custom.NotExistedValueException;
+import roomescape.service.dto.ReservationCreation;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import roomescape.controller.dto.response.ReservationResponse;
-import roomescape.dao.InMemoryReservationDAO;
-import roomescape.dao.InMemoryReservationTimeDAO;
-import roomescape.domain.ReservationTime;
-import roomescape.service.dto.ReservationCreation;
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationServiceTest {
 
+    @Autowired
     ReservationService reservationService;
-    ReservationTimeService reservationTimeService;
-
-    @BeforeEach
-    void provideService() {
-        ReservationTime time = new ReservationTime(LocalTime.of(10, 10));
-        InMemoryReservationTimeDAO reservationTimeDAO = new InMemoryReservationTimeDAO(new ArrayList<>());
-        reservationTimeService = new ReservationTimeService(reservationTimeDAO);
-        long savedTimeId = reservationTimeDAO.insert(time);
-        reservationService = new ReservationService(new InMemoryReservationDAO(new ArrayList<>()), reservationTimeDAO);
-        reservationService.addReservation(
-                new ReservationCreation("reservation", LocalDate.of(2025, 1, 1), savedTimeId));
-    }
 
     @Test
     @DisplayName("같은 날짜 및 시간 예약이 존재하지 않을 경우, 예약 정보를 저장한 다음 id를 리턴한다")
     void saveReservation() {
         //given
-        LocalDate date = LocalDate.of(2025, 4, 16);
+        LocalDate date = LocalDate.of(2100, 6, 30);
 
         //when
-        ReservationCreation creation = new ReservationCreation("test", date, 1L);
+        ReservationCreation creation = new ReservationCreation("test", date, 1L, 1L);
         ReservationResponse actual = reservationService.addReservation(creation);
 
         //then
@@ -54,56 +46,44 @@ class ReservationServiceTest {
     @DisplayName("같은 날짜 및 시간 예약이 존재하면 -1을 리턴한다")
     void exceptionWhenSameDateTime() {
         //given
-        LocalDate date = LocalDate.of(2025, 1, 1);
-        long timeId = 1L;
+        LocalDate date = LocalDate.of(2100, 1, 1);
+        reservationService.addReservation(ReservationCreation.from(new CreateReservationRequest("test", date, 1, 1)));
 
         //when & then
-        ReservationCreation duplicated = new ReservationCreation("test", date, timeId);
+        ReservationCreation duplicated = new ReservationCreation("test", date, 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(duplicated))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 같은 날짜/시간 예약이 존재합니다: date=%s, time=%s"
-                        .formatted(date, reservationTimeService.findById(timeId).get().getStartAt()));
+                .isInstanceOf(ExistedDuplicateValueException.class)
+                .hasMessageContaining("이미 예약이 존재하는 시간입니다");
     }
 
     @Test
     @DisplayName("존재하는 예약을 삭제하면 true를 리턴한다")
     void removeReservationById() {
         //given
-        LocalDate date = LocalDate.of(2025, 4, 16);
-        ReservationTime time = reservationTimeService.findById(1L).get();
-        long existedId = 1L;
-
         //when
-        boolean actual = reservationService.removeReservationById(existedId);
-
         //then
-        assertThat(actual).isTrue();
+        assertDoesNotThrow(() -> reservationService.removeReservationById(1L));
     }
 
     @Test
-    @DisplayName("존재하지 않는 예약을 삭제하려는 경우 false를 리턴한다")
+    @DisplayName("존재하지 않는 예약을 삭제하려는 경우 예외를 던진다")
     void removeNotExistReservationById() {
         //given
-        long notExistId = 100L;
-
-        //when
-        boolean actual = reservationService.removeReservationById(notExistId);
-
-        //then
-        assertThat(actual).isFalse();
+        long notExistId = 1000L;
+//when & then
+        assertThatThrownBy(() -> reservationService.removeReservationById(notExistId))
+                .isInstanceOf(NotExistedValueException.class)
+                .hasMessageContaining("존재하지 않는 예약입니다");
     }
 
     @Test
-    @DisplayName("존재하지 않는 timeId인 경우 예외를 발생한다")
+    @DisplayName("존재하지 않는 timeId인 경우 예외를 던진다")
     void throwExceptionWhenNotExistTimeId() {
         //given
-        long notExistTimeId = 100L;
-        ReservationCreation creation = new ReservationCreation("test", LocalDate.of(2025, 1, 1),
-                notExistTimeId);
-
         //when & then
-        assertThatThrownBy(() -> reservationService.addReservation(creation))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 존재하지 않는 예약 가능 시간입니다: timeId=%d".formatted(notExistTimeId));
+        assertThatThrownBy(() -> reservationService.addReservation(
+                new ReservationCreation("test", LocalDate.of(3000, 1, 1), 1000, 1)))
+                .isInstanceOf(NotExistedValueException.class)
+                .hasMessageContaining("존재하지 않는 예약 가능 시간입니다");
     }
 }
