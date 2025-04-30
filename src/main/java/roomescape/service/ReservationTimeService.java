@@ -3,7 +3,6 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.controller.dto.response.ReservationTimeResponse;
@@ -34,20 +33,19 @@ public class ReservationTimeService {
         final ReservationTime reservationTime = new ReservationTime(creation.startAt());
         final long id = reservationTimeDAO.insert(reservationTime);
 
-        final ReservationTime savedReservationTime = reservationTimeDAO.findById(id)
-                .orElseThrow(NotExistedValueException::new);
+        final ReservationTime savedReservationTime = findById(id);
 
         return ReservationTimeResponse.from(savedReservationTime);
+    }
 
+    private ReservationTime findById(final long id) {
+        return reservationTimeDAO.findById(id)
+                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 시간입니다"));
     }
 
     // TODO
     public List<ReservationTime> findAll() {
         return reservationTimeDAO.findAll();
-    }
-
-    public Optional<ReservationTime> findById(final long id) {
-        return reservationTimeDAO.findById(id);
     }
 
     public List<AvailableReservationTimeResponse> findAllAvailableTime(final LocalDate date, final long themeId) {
