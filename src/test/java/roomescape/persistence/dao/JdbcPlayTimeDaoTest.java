@@ -125,7 +125,7 @@ class JdbcPlayTimeDaoTest {
 
     @DisplayName("데이터베이스에서 해당 방탈출 시간이 존재하는지 확인한다.")
     @Test
-    void existsByExists() {
+    void existsByStartAt() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:10')");
         final LocalTime validStartAt = LocalTime.of(10, 10);

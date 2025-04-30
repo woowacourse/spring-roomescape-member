@@ -14,8 +14,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
-import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.PlayTimeEntity;
+import roomescape.persistence.entity.ReservationEntity;
 
 @JdbcTest
 class JdbcReservationDaoTest {
@@ -132,5 +132,20 @@ class JdbcReservationDaoTest {
 
         // then
         assertThat(flag).isFalse();
+    }
+
+    @DisplayName("데이터베이스에서 해당 방탈출 예약이 존재하는지 확인한다.")
+    @Test
+    void existsByDateAndTime() {
+        // given
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id) values ('hotteok', '2025-01-01', 1)");
+        final LocalDate validDate = LocalDate.of(2025, 1, 1);
+        final LocalDate invalidDate = LocalDate.of(2025, 1, 2);
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationDao.existsByDateAndTime(validDate, playTimeFixture)).isTrue(),
+                () -> assertThat(reservationDao.existsByDateAndTime(invalidDate, playTimeFixture)).isFalse()
+        );
     }
 }

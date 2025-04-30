@@ -70,11 +70,11 @@ public class FakePlayTimeDao implements PlayTimeDao {
 
     @Override
     public boolean existsByStartAt(final LocalTime startAt) {
-        final String rawStartAt = PlayTimeEntity.formatStartAt(startAt);
+        final String formattedStartAt = PlayTimeEntity.formatStartAt(startAt);
 
         return times.stream()
                 .filter(timeEntity -> timeEntity.id() != null)
-                .anyMatch(timeEntity -> timeEntity.startAt().equals(rawStartAt));
+                .anyMatch(timeEntity -> timeEntity.startAt().equals(formattedStartAt));
     }
 
     public List<PlayTimeEntity> getTimes() {

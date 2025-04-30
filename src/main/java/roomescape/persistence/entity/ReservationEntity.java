@@ -29,6 +29,10 @@ public record ReservationEntity(
                 playTimeEntity.toDomain());
     }
 
+    public static String formatDate(final LocalDate date) {
+        return DATE_FORMATTER.format(date);
+    }
+
     public static ReservationEntity from(final Reservation reservation) {
         return new ReservationEntity(
                 reservation.getId(),

@@ -1,11 +1,13 @@
 package roomescape.persistence.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.persistence.entity.ReservationEntity;
 
@@ -61,5 +63,17 @@ public class JdbcReservationDao implements ReservationDao {
         final int rowNum = jdbcTemplate.update(sql, id);
 
         return rowNum == 1;
+    }
+
+    @Override
+    public boolean existsByDateAndTime(final LocalDate date, final PlayTime time) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?) AS is_exists";
+        final int flag = jdbcTemplate.queryForObject(
+                sql, Integer.class,
+                ReservationEntity.formatDate(date),
+                time.getId()
+        );
+
+        return flag == 1;
     }
 }

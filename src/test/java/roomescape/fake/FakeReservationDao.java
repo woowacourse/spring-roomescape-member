@@ -1,12 +1,14 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.persistence.dao.ReservationDao;
-import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.PlayTimeEntity;
+import roomescape.persistence.entity.ReservationEntity;
 
 public class FakeReservationDao implements ReservationDao {
 
@@ -54,5 +56,18 @@ public class FakeReservationDao implements ReservationDao {
         } catch (IndexOutOfBoundsException e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean existsByDateAndTime(final LocalDate date, final PlayTime time) {
+        final String formattedDate = ReservationEntity.formatDate(date);
+        final Long timeId = time.getId();
+
+        return reservations.stream()
+                .filter(reservationEntity -> reservationEntity.id() != null)
+                .anyMatch(reservationEntity ->
+                        reservationEntity.date().equals(formattedDate) &&
+                        reservationEntity.playTimeEntity().id().equals(timeId)
+                );
     }
 }

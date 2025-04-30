@@ -1,6 +1,8 @@
 package roomescape.persistence.dao;
 
+import java.time.LocalDate;
 import java.util.List;
+import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 
 public interface ReservationDao {
@@ -9,5 +11,7 @@ public interface ReservationDao {
 
     List<Reservation> findAll();
 
-    boolean remove(final Long id);
+    boolean remove(Long id);
+
+    boolean existsByDateAndTime(LocalDate date, PlayTime time);
 }
