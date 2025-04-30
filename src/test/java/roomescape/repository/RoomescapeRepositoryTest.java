@@ -2,49 +2,32 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@JdbcTest
 class RoomescapeRepositoryTest {
 
-    @Autowired
     RoomescapeRepository repository;
     @Autowired
     JdbcTemplate template;
 
     @BeforeEach
     void setUp() {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        String sql = "insert into reservation_time (start_at) values (?)";
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, "15:40");
-            return ps;
-        }, keyHolder);
-
-        String reservationSql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(reservationSql, new String[]{"id"});
-            ps.setString(1, "브라운");
-            ps.setString(2, "2023-08-05");
-            ps.setLong(3, 1L);
-            return ps;
-        }, keyHolder);
+        repository = new RoomescapeRepositoryImpl(template);
+        template.execute("DELETE FROM reservation");
+        template.execute("DELETE FROM reservation_time");
+        template.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        template.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        template.execute("insert into reservation_time (start_at) values ('15:40')");
+        template.execute("insert into reservation (name, date, time_id) values ('브라운', '2023-08-05', 1)");
     }
 
     @Test

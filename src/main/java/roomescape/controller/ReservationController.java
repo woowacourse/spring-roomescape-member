@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.util.List;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,14 +30,14 @@ public class ReservationController {
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> reservationAdd(@RequestBody ReservationRequest request) {
         try {
-            return ResponseEntity.ok(roomescapeService.addReservation(request));
+            return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(roomescapeService.addReservation(request));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> reservationRemove(@PathVariable long id) {
+    public ResponseEntity<Void> reservationRemove(@PathVariable(name = "id") long id) {
         try {
             roomescapeService.removeReservation(id);
             return ResponseEntity.ok().build();
