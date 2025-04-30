@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.dto.ThemeRequest;
@@ -48,5 +49,19 @@ class ThemeServiceTest {
                 () -> assertThat(saved.getDescription()).isEqualTo(request.description()),
                 () -> assertThat(saved.getThumbnail()).isEqualTo(request.thumbnail())
         );
+    }
+
+    @DisplayName("테마 목록을 조회할 수 있다.")
+    @Test
+    void testFindAll() {
+        // given
+        ThemeRequest request1 = new ThemeRequest("woooteco1", "우테코를 탈출하라", "https://www.woowacourse.io/");
+        ThemeRequest request2 = new ThemeRequest("woooteco2", "우테코에 합격하라", "https://www.woowacourse.io/");
+        themeService.createTheme(request1);
+        themeService.createTheme(request2);
+        // when
+        List<ThemeResponse> result = themeService.findAll();
+        // then
+        assertThat(result).hasSize(2);
     }
 }
