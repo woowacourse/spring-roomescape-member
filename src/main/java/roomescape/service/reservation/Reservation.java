@@ -7,20 +7,13 @@ import java.util.Objects;
 public final class Reservation {
 
     private final Long id;
-    private final String name;
+    private final MemberName name;
     private final ReservationDateTime dateTime;
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
-        validateName(name);
         this.id = id;
-        this.name = name;
+        this.name = new MemberName(name);
         this.dateTime = new ReservationDateTime(date, time);
-    }
-
-    private void validateName(final String name) {
-        if (name == null || name.isBlank() || name.length() > 5) {
-            throw new IllegalArgumentException("예약자명은 최소 1글자, 최대 5글자여야합니다.");
-        }
     }
 
     public boolean isBefore(final LocalDateTime other) {
@@ -36,7 +29,7 @@ public final class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public LocalDate getDate() {
