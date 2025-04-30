@@ -25,4 +25,4 @@
     - [x] 방탈출 시간 추가에 성공하면 HTTP status code 201을 응답한다.
     - [x] 중복된 방탈출 시간에 대해 시간을 추가하면 HTTP status code 409를 응답한다.
 - [x] 방탈출 시간을 삭제한다.
-    - [ ] 방탈출 시간 삭제에 성공하면 HTTP status code 204를 응답한다.
+    - [x] 방탈출 시간 삭제에 성공하면 HTTP status code 204를 응답한다.
