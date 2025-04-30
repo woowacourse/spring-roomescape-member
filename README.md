@@ -26,7 +26,7 @@
 
 ## 페이지 목록
 
-### 어드민 페이지 
+### 어드민 페이지
 
 - `http://localhost:8080/admin`: 어드민 메인 페이지
 - `http://localhost:8080/admin/reservation`: 예약 관리 페이지
@@ -262,4 +262,27 @@ DELETE /themes/1 HTTP/1.1
 
 ```
 HTTP/1.1 204
+```
+
+#### 예약 가능 시간 조회 API
+
+**Request**
+
+```
+GET /available-times?date="2025-03-30"&themeId=1 HTTP/1.1
+```
+
+**Response**
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "startAt": "10:00",
+        "alreadyBooked": false
+    }
+]
 ```
