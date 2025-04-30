@@ -10,4 +10,6 @@ public interface ReservationDao {
     void saveReservation(Reservation reservation);
 
     void deleteReservation(Long id);
+
+    int findByTimeId(Long id);
 }

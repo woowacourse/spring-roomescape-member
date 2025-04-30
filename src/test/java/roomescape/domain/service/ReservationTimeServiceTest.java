@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.dao.FakeReservationDaoImpl;
 import roomescape.domain.dao.FakeReservationTimeDaoImpl;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.service.ReservationTimeService;
@@ -15,7 +16,9 @@ public class ReservationTimeServiceTest {
 
     @BeforeEach
     void init() {
-        reservationTimeService = new ReservationTimeService(new FakeReservationTimeDaoImpl());
+        reservationTimeService = new ReservationTimeService(
+            new FakeReservationDaoImpl(),
+            new FakeReservationTimeDaoImpl());
     }
 
     @DisplayName("reservationTimeRequestDto가 들어왔을 때, Fake 객체에 저장되어야 한다.")

@@ -58,4 +58,10 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         String query = "delete from reservation where id = ?";
         jdbcTemplate.update(query, id);
     }
+
+    @Override
+    public int findByTimeId(Long id) {
+        String query = "select count(*) from reservation where time_id = ?";
+        return jdbcTemplate.queryForObject(query, Integer.class, id);
+    }
 }
