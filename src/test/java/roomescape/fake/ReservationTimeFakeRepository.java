@@ -16,13 +16,13 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     public ReservationTimeFakeRepository() {
-        ReservationTime defaultTime = new ReservationTime(idGenerator.getAndIncrement(), LocalTime.MIN);
+        ReservationTime defaultTime = new ReservationTime(idGenerator.getAndIncrement(), LocalTime.MAX);
         reservationTimes.put(1L, defaultTime);
     }
 
     @Override
-    public boolean existsTimeById(Long id) {
-        return reservationTimes.containsKey(id);
+    public ReservationTime findById(Long id) {
+        return reservationTimes.get(id);
     }
 
     @Override

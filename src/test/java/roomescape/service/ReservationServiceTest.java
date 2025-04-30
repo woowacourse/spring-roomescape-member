@@ -19,8 +19,8 @@ public class ReservationServiceTest {
 
     private final ReservationRepository reservationRepository = new ReservationFakeRepository();
     private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
-    private final ReservationTimeService timeService = new ReservationTimeService(reservationTimeRepository);
-    private final ReservationService reservationService = new ReservationService(reservationRepository, timeService);
+    private final ReservationService reservationService = new ReservationService(reservationRepository,
+            reservationTimeRepository);
 
     @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
@@ -41,7 +41,7 @@ public class ReservationServiceTest {
 
         //when
         long timeId = 1L;
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.now(), timeId);
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.MAX, timeId);
         ReservationResponse actual = reservationService.postReservation(request);
         //then
         assertThat(actual.id()).isEqualTo(2);

@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
-import roomescape.exceptions.EntityNotFoundException;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
@@ -19,13 +18,7 @@ public class ReservationTimeService {
         this.repository = repository;
     }
 
-    public void existsTimeById(long id) {
-        if (!repository.existsTimeById(id)) {
-            throw new EntityNotFoundException("해당 예약 시간이 존재하지 않습니다: " + id);
-        }
-    }
-
-    public List<ReservationTimeResponse> readReservationTime() {
+    public List<ReservationTimeResponse> readAllReservationTime() {
         return repository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();

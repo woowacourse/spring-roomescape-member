@@ -24,7 +24,7 @@ public class ReservationTimeController {
 
     @GetMapping("/times")
     public List<ReservationTimeResponse> readReservationTime() {
-        return service.readReservationTime();
+        return service.readAllReservationTime();
     }
 
     @PostMapping("/times")
@@ -35,7 +35,7 @@ public class ReservationTimeController {
 
     @DeleteMapping("/times/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservationTime(@PathVariable Long id) {
+    public void deleteReservationTime(@PathVariable long id) {
         service.deleteReservationTime(id);
     }
 }

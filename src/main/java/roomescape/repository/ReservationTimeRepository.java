@@ -5,7 +5,7 @@ import roomescape.entity.ReservationTime;
 
 public interface ReservationTimeRepository {
 
-    boolean existsTimeById(Long id);
+    ReservationTime findById(Long id);
 
     List<ReservationTime> findAll();
 

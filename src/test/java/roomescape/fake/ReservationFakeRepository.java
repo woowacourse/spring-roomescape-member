@@ -36,7 +36,8 @@ public class ReservationFakeRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(Reservation reservation, long timeId) {
+    public Reservation save(Reservation reservation) {
+        Long timeId = reservation.time().id();
         if (!reservationTimes.containsKey(timeId)) {
             throw new EntityNotFoundException("예약 시간을 찾을 수 없습니다: " + timeId);
         }

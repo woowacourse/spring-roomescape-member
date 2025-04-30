@@ -22,11 +22,10 @@ public class ReservationTimeJDBCDao implements ReservationTimeRepository {
     }
 
     @Override
-    public boolean existsTimeById(Long id) {
-        String sql = "select COUNT(*) from reservation_time where id = :id";
+    public ReservationTime findById(Long id) {
+        String sql = "select * from reservation_time where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-        Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
-        return count != null && count != 0;
+        return namedJdbcTemplate.queryForObject(sql, params, ReservationTime.class);
     }
 
     @Override

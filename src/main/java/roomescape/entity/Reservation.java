@@ -8,6 +8,18 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         validate(name, date, time);
     }
 
+    public static Reservation createIfDateTimeValid(String name, LocalDate date, ReservationTime time) {
+        validateDateTime(date, time);
+        return new Reservation(null, name, date, time);
+    }
+
+    private static void validateDateTime(LocalDate date, ReservationTime time) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("[ERROR] 예약이 불가능한 날짜입니다: " + date);
+        }
+        time.isBefore();
+    }
+
     private void validate(String name, LocalDate date, ReservationTime time) {
         validateName(name);
         validateDate(date);

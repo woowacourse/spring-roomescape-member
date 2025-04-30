@@ -32,14 +32,14 @@ public class ReservationJDBCDao implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(Reservation reservation, long timeId) {
+    public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (name, date, time_id) values (:name, :date, :timeId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
                 .addValue("date", Date.valueOf(reservation.date()))
-                .addValue("timeId", timeId);
+                .addValue("timeId", reservation.time().id());
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 

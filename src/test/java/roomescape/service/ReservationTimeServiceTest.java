@@ -19,20 +19,13 @@ public class ReservationTimeServiceTest {
     private final ReservationTimeService reservationService = new ReservationTimeService(reservationTimeRepository);
 
     @Test
-    @DisplayName("time_id를 찾을 수 없다면, 예외가 발생한다.")
-    void test_postReservationWhenCantFindReservationTime() {
-        assertThatThrownBy(() -> reservationService.existsTimeById(999L))
-                .isInstanceOf(EntityNotFoundException.class);
-    }
-
-    @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
-    void test_readReservationTime() {
+    void test_readAllReservationTime() {
         //given & when
-        List<ReservationTimeResponse> actual = reservationService.readReservationTime();
+        List<ReservationTimeResponse> actual = reservationService.readAllReservationTime();
         //then
         assertThat(actual.size()).isEqualTo(1);
-        assertThat(actual.getFirst().startAt()).isEqualTo(LocalTime.MIN);
+        assertThat(actual.getFirst().startAt()).isEqualTo(LocalTime.MAX);
     }
 
     @Test

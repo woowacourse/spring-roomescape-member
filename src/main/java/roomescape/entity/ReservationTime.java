@@ -13,4 +13,10 @@ public record ReservationTime(Long id, LocalTime startAt) {
             throw new IllegalArgumentException("[ERROR] 유효하지 않은 시간입니다.");
         }
     }
+
+    public void isBefore() {
+        if (startAt.isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 예약이 불가능한 시간입니다: " + startAt);
+        }
+    }
 }

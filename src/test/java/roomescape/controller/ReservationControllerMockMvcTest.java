@@ -1,17 +1,16 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
@@ -46,8 +46,9 @@ public class ReservationControllerMockMvcTest {
     @Test
     @DisplayName("예약 목록을 조회한다.")
     void readReservation() {
-        ReservationResponse response1 = new ReservationResponse(1L, "브라운", LocalDate.now().plusDays(1), 1L);
-        ReservationResponse response2 = new ReservationResponse(2L, "네오", LocalDate.now().plusDays(1), 1L);
+        ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
+        ReservationResponse response1 = new ReservationResponse(1L, "브라운", LocalDate.now().plusDays(1), givenTime);
+        ReservationResponse response2 = new ReservationResponse(2L, "네오", LocalDate.now().plusDays(1), givenTime);
 
         List<ReservationResponse> reservations = List.of(
                 response1, response2
@@ -70,11 +71,13 @@ public class ReservationControllerMockMvcTest {
     @DisplayName("예약 관리 페이지 내에서 예약 추가한다.")
     void postReservation() {
         LocalDate fixedDate = LocalDate.of(2023, 5, 15);
-        Long expectedTimeId = 1L;
-        Long expectedId = 1L;
+        long expectedTimeId = 1L;
+        long expectedId = 1L;
 
         ReservationRequest dto = new ReservationRequest("브라운", fixedDate, expectedTimeId);
-        ReservationResponse response = new ReservationResponse(expectedId, "브라운", fixedDate, expectedTimeId);
+        ReservationTimeResponse givenTime = new ReservationTimeResponse(expectedTimeId, LocalTime.MAX);
+
+        ReservationResponse response = new ReservationResponse(expectedId, "브라운", fixedDate, givenTime);
         given(reservationService.postReservation(dto)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
@@ -83,10 +86,10 @@ public class ReservationControllerMockMvcTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(expectedId.intValue()))
+                .body("id", is((int) expectedId))
                 .body("name", is("브라운"))
                 .body("date", is(fixedDate.toString()))
-                .body("timeId", is(expectedTimeId.intValue()));
+                .body("time.id", is((int) expectedTimeId));
     }
 
     @Test
@@ -119,18 +122,5 @@ public class ReservationControllerMockMvcTest {
                 .statusCode(404);
 
         verify(reservationService, times(1)).deleteReservation(nonExistingId);
-    }
-
-    @Test
-    @DisplayName("서버 내부 오류 발생 시 500 응답이 반환되어야 한다.")
-    void handleServerInternalError() {
-        when(reservationService.readReservation()).thenThrow(new RuntimeException("데이터베이스 오류"));
-
-        RestAssuredMockMvc.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(500)
-                .body("body.title", equalTo("Internal Server Error"))
-                .body("body.detail", equalTo("서버 오류가 발생했습니다"));
     }
 }

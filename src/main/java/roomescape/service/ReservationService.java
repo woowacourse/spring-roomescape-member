@@ -6,18 +6,21 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
+import roomescape.entity.ReservationTime;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeService timeService;
+    private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeService timeService) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository) {
         this.reservationRepository = reservationRepository;
-        this.timeService = timeService;
+        this.reservationTimeRepository = reservationTimeRepository;
     }
 
     public List<ReservationResponse> readReservation() {
@@ -28,8 +31,9 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse postReservation(ReservationRequest request) {
-        timeService.existsTimeById(request.timeId());
-        Reservation newReservation = reservationRepository.save(request.toEntity(), request.timeId());
+        ReservationTime time = reservationTimeRepository.findById(request.timeId());
+        Reservation reservation = Reservation.createIfDateTimeValid(request.name(), request.date(), time);
+        Reservation newReservation = reservationRepository.save(reservation);
         return ReservationResponse.from(newReservation);
     }
 
