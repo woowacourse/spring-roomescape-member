@@ -18,5 +18,22 @@
 - [x] /admin/reservation 요청 시 (templates/admin/reservation-new.html)
 - [x] DB 업데이트
 
+### 🚀 3단계 - 사용자 기능
+- [ ] (관리자가 아닌) 사용자가 예약 가능한 시간을 조회하고, 예약할 수 있도록 기능을 추가/변경 합니다.
+- [ ] 인기 테마 조회 기능을 추가합니다.
+- [ ] 예약 시 사용자 구분은 어드민과 동일하게 사용자의 이름으로 합니다.
+- [x] /reservation 요청 시 (templates/reservation.html)
+
 ## TODO:
 - 관리자 페이지에서, 과거의 예약을 추가할 수 없도록 해야할까? 굳이 그럴 필요가 있을까? 고민
+
+
+## API
+- 해당 날짜와 theme의 가능한 예약을 반환한다.
+- 한국어 쿼리
+1. 시간 목록을 다 불러옴.
+2. 이미 해당 시간이 ThemeId가 똑같고, Date도 똑같은 Reservation에 사용되는 경우 제외
+
+SELECT * FROM Reservation WHERE themeId date = ?
+3. 
+- localhost:8080/times?date={}&themeId={}
