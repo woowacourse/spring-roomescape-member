@@ -8,6 +8,10 @@
 - [x] `GET /reservations`  
   모든 예약 목록 조회
 
+ 
+- [x] `GET /reservations/times`  
+  날짜와 테마에 따른 예약 가능 여부를 포함한 시간 목록 조회
+
 
 - [x] `POST /reservations`  
   예약 생성
@@ -69,3 +73,14 @@
 
 - [x] `GET /admin/theme`  
   테마 관리 페이지  
+
+---
+
+
+### 사용자 페이지
+
+- [x] `GET /`  
+  인기 테마 페이지
+
+- [x] `GET /reservation`  
+  사용자 예약 페이지
