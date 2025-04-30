@@ -6,15 +6,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.service.fake_dao.FakeReservationDao;
 import roomescape.service.fake_dao.FakeReservationReservationTimeDao;
 
 class ReservationTimeServiceTest {
 
-    private final ReservationTimeDao timeDao = new FakeReservationReservationTimeDao();
-    private final ReservationTimeService timeService = new ReservationTimeService(timeDao);
+    private final ReservationTimeDao reservationTimeDao = new FakeReservationReservationTimeDao();
+    private final ReservationDao reservationDao = new FakeReservationDao();
+    private final ReservationTimeService timeService = new ReservationTimeService(reservationDao, reservationTimeDao);
 
     @Test
     void createReservationTime() {
@@ -41,7 +44,7 @@ class ReservationTimeServiceTest {
 
         timeService.deleteTime(1L);
 
-        assertThatThrownBy(() -> timeDao.findById(1L))
+        assertThatThrownBy(() -> reservationTimeDao.findById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
