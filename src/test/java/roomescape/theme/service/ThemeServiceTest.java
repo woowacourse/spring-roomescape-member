@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.ExistedThemeException;
+import roomescape.reservation.dao.FakeReservationDao;
+import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.FakeThemeDao;
 import roomescape.theme.dao.ThemeDao;
@@ -16,12 +18,14 @@ public class ThemeServiceTest {
 
     private final ThemeService themeService;
     private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
     public ThemeServiceTest() {
         Theme theme1 = new Theme(1L, "name1", "description1", "thumbnail");
         Theme theme2 = new Theme(2L, "name1", "description1", "thumbnail");
         this.themeDao = new FakeThemeDao(theme1, theme2);
-        this.themeService = new ThemeService(themeDao);
+        this.reservationDao = new FakeReservationDao();
+        this.themeService = new ThemeService(themeDao, reservationDao);
     }
 
     @Test

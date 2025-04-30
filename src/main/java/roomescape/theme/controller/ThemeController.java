@@ -41,4 +41,9 @@ public class ThemeController {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/top10")
+    public ResponseEntity<List<ThemeResponse>> getTop10Themes() {
+        return ResponseEntity.ok(themeService.getTop10Themes());
+    }
 }
