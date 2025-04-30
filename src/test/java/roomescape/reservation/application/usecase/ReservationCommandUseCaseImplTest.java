@@ -11,8 +11,12 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.domain.ReservationTimeRepository;
 
 import java.time.LocalDate;
@@ -35,6 +39,9 @@ class ReservationCommandUseCaseImplTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @Test
     @DisplayName("예약을 생성할 수 있다")
     void createAndFindReservation() {
@@ -51,8 +58,8 @@ class ReservationCommandUseCaseImplTest {
         final CreateReservationServiceRequest requestDto = new CreateReservationServiceRequest(
                 "브라운",
                 LocalDate.of(2025, 8, 5),
-                reservationTime.getId().getValue()
-        );
+                reservationTime.getId().getValue(),
+                theme.getId().getValue());
 
         // when
         final Reservation reservation = reservationCommandUseCase.create(requestDto);
@@ -66,6 +73,7 @@ class ReservationCommandUseCaseImplTest {
         assertThat(reservation.getName()).isEqualTo(found.getName());
         assertThat(reservation.getDate()).isEqualTo(found.getDate());
         assertThat(reservation.getTime()).isEqualTo(found.getTime());
+        assertThat(reservation.getTheme()).isEqualTo(found.getTheme());
     }
 
     @Test
@@ -73,21 +81,21 @@ class ReservationCommandUseCaseImplTest {
     void existsReservation() {
         // given
         final ReservationTime reservationTime = reservationTimeRepository.save(
-                ReservationTime.of(
-                        ReservationTimeId.unassigned(),
+                ReservationTime.withoutId(
                         LocalTime.of(10, 0)));
 
-        final Reservation savedReservation = reservationCommandUseCase.create(new CreateReservationServiceRequest(
-                "브라운",
-                LocalDate.of(2025, 8, 5),
-                reservationTime.getId().getValue()
-        ));
         final Theme theme = themeRepository.save(
                 Theme.withoutId(ThemeName.from("공포"),
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
-
+        final Reservation savedReservation = reservationCommandUseCase.create(
+                new CreateReservationServiceRequest(
+                        "브라운",
+                        LocalDate.of(2025, 8, 5),
+                        reservationTime.getId().getValue(),
+                        theme.getId().getValue()
+                ));
 
         // when
         // then
@@ -95,7 +103,8 @@ class ReservationCommandUseCaseImplTest {
                 new CreateReservationServiceRequest(
                         "강산",
                         LocalDate.of(2025, 8, 5),
-                        reservationTime.getId().getValue())))
+                        reservationTime.getId().getValue(),
+                        theme.getId().getValue())))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("추가하려는 예약이 이미 존재합니다.");
     }
@@ -117,7 +126,8 @@ class ReservationCommandUseCaseImplTest {
                 Reservation.withoutId(
                         ReserverName.from("브라운"),
                         ReservationDate.from(LocalDate.of(2025, 8, 5)),
-                        reservationTime));
+                        reservationTime,
+                        theme));
 
         // when
         reservationCommandUseCase.delete(reservation.getId());

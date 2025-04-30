@@ -32,7 +32,8 @@ public class ReservationServiceImpl implements ReservationService {
                         new CreateReservationServiceRequest(
                                 createReservationWebRequest.name(),
                                 createReservationWebRequest.date(),
-                                createReservationWebRequest.timeId())));
+                                createReservationWebRequest.timeId(),
+                                createReservationWebRequest.themeId())));
     }
 
     @Override

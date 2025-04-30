@@ -7,6 +7,9 @@ import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.theme.application.ThemeQueryUseCase;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeId;
 import roomescape.time.application.usecase.ReservationTimeQueryUseCase;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
@@ -20,6 +23,7 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
     private final ReservationRepository reservationRepository;
     private final ReservationQueryUseCase reservationQueryUseCase;
     private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
+    private final ThemeQueryUseCase themeQueryUseCase;
 
     @Override
     public Reservation create(final CreateReservationServiceRequest createReservationServiceRequest) {
@@ -34,8 +38,11 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
         final ReservationTime reservationTime = reservationTimeQueryUseCase.get(
                 ReservationTimeId.from(createReservationServiceRequest.timeId()));
 
+        final Theme theme = themeQueryUseCase.get(
+                ThemeId.from(createReservationServiceRequest.themeId()));
+
         return reservationRepository.save(
-                ReservationConverter.toDomain(createReservationServiceRequest, reservationTime));
+                ReservationConverter.toDomain(createReservationServiceRequest, reservationTime, theme));
     }
 
     @Override

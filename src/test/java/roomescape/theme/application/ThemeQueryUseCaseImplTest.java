@@ -14,7 +14,6 @@ import roomescape.theme.domain.ThemeThumbnail;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -47,7 +46,6 @@ class ThemeQueryUseCaseImplTest {
                 ThemeName.from(name2),
                 ThemeDescription.from(description2),
                 ThemeThumbnail.from(url2)));
-
 
         // when
         final List<Theme> themes = themeQueryUseCase.getAll();

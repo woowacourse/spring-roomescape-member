@@ -9,6 +9,11 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.application.dto.CreateReservationTimeServiceRequest;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
@@ -33,6 +38,9 @@ class ReservationTimeCommandUseCaseImplTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ThemeRepository themeRepository;
 
     @Test
     @DisplayName("예약 시간을 생성할 수 있다")
@@ -82,15 +90,19 @@ class ReservationTimeCommandUseCaseImplTest {
     void deleteRefReservationTime() {
         // given
         final ReservationTime savedTime =
-                reservationTimeRepository.save(ReservationTime.of(
-                        ReservationTimeId.unassigned(), LocalTime.of(14, 0)));
                 reservationTimeRepository.save(ReservationTime.withoutId(
                         LocalTime.of(14, 0)));
+
+        final Theme theme = themeRepository.save(Theme.withoutId(
+                ThemeName.from("공포"),
+                ThemeDescription.from("지구별 방탈출 최고"),
+                ThemeThumbnail.from("www.making.com")));
 
         final Reservation reservation = reservationRepository.save(Reservation.withoutId(
                 ReserverName.from("브라운"),
                 ReservationDate.from(LocalDate.now().plusDays(1L)),
-                savedTime
+                savedTime,
+                theme
         ));
 
         // when

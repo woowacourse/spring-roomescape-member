@@ -12,6 +12,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.infrastructure.entity.ReservationEntity;
+import roomescape.theme.domain.ThemeId;
+import roomescape.theme.infrastructure.entity.ThemeEntity;
 import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.infrastructure.entity.ReservationTimeEntity;
 
@@ -35,11 +37,19 @@ public class H2ReservationRepository implements ReservationRepository {
                 resultSet.getTime("start_at")
         );
 
+        ThemeEntity theme = ThemeEntity.of(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
+
         return ReservationEntity.of(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getDate("date"),
-                time
+                time,
+                theme
         );
     };
 
@@ -85,11 +95,17 @@ public class H2ReservationRepository implements ReservationRepository {
                     r.id,
                     r.name,
                     r.date,
-                    t.id as time_id,
-                    t.start_at as start_at
+                    rt.id as time_id,
+                    rt.start_at as start_at,
+                    t.id as theme_id,
+                    t.name as name,
+                    t.description as description,
+                    t.thumbnail as thumbnail
                 from reservation r
-                join reservation_time t
-                    on r.time_id = t.id
+                join reservation_time rt
+                    on r.time_id = rt.id
+                join theme t
+                    on r.theme_id = t.id
                 where r.id = ?
                 """;
 
@@ -104,11 +120,17 @@ public class H2ReservationRepository implements ReservationRepository {
                     r.id,
                     r.name,
                     r.date,
-                    t.id as time_id,
-                    t.start_at as started_at
+                    rt.id as time_id,
+                    rt.start_at as start_at,
+                    t.id as theme_id,
+                    t.name as name,
+                    t.description as description,
+                    t.thumbnail as thumbnail
                 from reservation r
-                join reservation_time t
-                    on r.time_id = t.id
+                join reservation_time rt
+                    on r.time_id = rt.id
+                join theme t
+                    on r.theme_id = t.id
                 """;
 
         return jdbcTemplate.query(sql, reservationMapper).stream()
@@ -118,7 +140,7 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        final String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
+        final String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -126,6 +148,7 @@ public class H2ReservationRepository implements ReservationRepository {
             preparedStatement.setString(1, reservation.getName().getValue());
             preparedStatement.setDate(2, Date.valueOf(reservation.getDate().getValue()));
             preparedStatement.setLong(3, reservation.getTime().getId().getValue());
+            preparedStatement.setLong(4, reservation.getTheme().getId().getValue());
 
             return preparedStatement;
         }, keyHolder);
@@ -136,7 +159,8 @@ public class H2ReservationRepository implements ReservationRepository {
                 ReservationId.from(generatedId),
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime());
+                reservation.getTime(),
+                reservation.getTheme());
     }
 
     @Override

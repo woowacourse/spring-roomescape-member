@@ -9,8 +9,12 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.domain.ReservationTimeRepository;
 
 import java.time.LocalDate;
@@ -33,6 +37,9 @@ class ReservationQueryUseCaseImplTest {
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
 
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @Test
     @DisplayName("예약을 조회할 수 있다")
     void createAndFindReservation() {
@@ -41,15 +48,22 @@ class ReservationQueryUseCaseImplTest {
                 ReservationTime.withoutId(
                         LocalTime.of(10, 0)));
 
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
+
         final Reservation given1 = Reservation.withoutId(
                 ReserverName.from("강산"),
                 ReservationDate.from(LocalDate.now().plusDays(1)),
-                reservationTime);
+                reservationTime,
+                theme);
 
         final Reservation given2 = Reservation.withoutId(
                 ReserverName.from("강산2"),
                 ReservationDate.from(LocalDate.now().plusDays(1)),
-                reservationTime);
+                reservationTime,
+                theme);
 
         final Reservation saved1 = reservationRepository.save(given1);
         final Reservation saved2 = reservationRepository.save(given2);

@@ -8,7 +8,6 @@ import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationTimeId;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -65,9 +64,8 @@ class DomainIdTest {
         final ReservationId sameId2 = ReservationId.from(sameIdValue);
 
         final Theme theme = Theme.withoutId(ThemeName.from("공포"),
-                        ThemeDescription.from("지구별 방탈출 최고"),
-                        ThemeThumbnail.from("www.making.com"));
-
+                ThemeDescription.from("지구별 방탈출 최고"),
+                ThemeThumbnail.from("www.making.com"));
 
         final Reservation sameReservation1 = Reservation.withId(
                 sameId1,

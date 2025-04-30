@@ -61,10 +61,14 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 "1", "10:00");
 
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)",
+                "1", "공포", "설명", "엄지손톱");
+
         final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2025-08-05");
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -112,8 +116,11 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 "1", "10:00");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "브라운", "2023-08-05", 1);
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)",
+                "1", "공포", "설명", "엄지손톱");
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2023-08-05", 1, 1);
 
         final List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -132,10 +139,14 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 "1", "10:00");
 
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)",
+                "1", "공포", "설명", "엄지손톱");
+
         final Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2025-08-05");
         params.put("timeId", "1");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
