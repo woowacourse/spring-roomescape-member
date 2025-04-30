@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ReservationTimeDaoImpl implements ReservationTimeDao{
+public class H2ReservationTimeDao implements ReservationTimeDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ReservationTimeDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public H2ReservationTimeDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
