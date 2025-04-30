@@ -2,10 +2,10 @@ package roomescape.dto;
 
 import java.time.LocalDate;
 
-public record ReservationResponseDto(
+public record ReservationResponse(
     Long id,
     String name,
     LocalDate date,
-    ReservationTimeResponseDto time,
-    ThemeResponseDto theme) {
+    ReservationTimeResponse time,
+    ThemeResponse theme) {
 }

@@ -1,8 +1,8 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ReservationExistException;
@@ -22,13 +22,13 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTimeResponseDto add(ReservationTimeRequestDto requestDto) {
+    public ReservationTimeResponse add(ReservationTimeRequest requestDto) {
         ReservationTime reservationTime = new ReservationTime(requestDto.startAt());
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
         return createResponseDto(savedReservationTime);
     }
 
-    public List<ReservationTimeResponseDto> findAll() {
+    public List<ReservationTimeResponse> findAll() {
         List<ReservationTime> times = reservationTimeDao.findAll();
         return times.stream()
             .map(this::createResponseDto)
@@ -46,7 +46,7 @@ public class ReservationTimeService {
         reservationTimeDao.deleteById(id);
     }
 
-    private ReservationTimeResponseDto createResponseDto(ReservationTime reservationTime) {
-        return new ReservationTimeResponseDto(reservationTime.getId(), reservationTime.getStartAt());
+    private ReservationTimeResponse createResponseDto(ReservationTime reservationTime) {
+        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
     }
 }

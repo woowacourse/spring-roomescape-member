@@ -2,8 +2,8 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.repository.ReservationDao;
 
@@ -28,13 +28,13 @@ class ReservationTimeServiceTest {
     void 예약_시간을_추가한다() {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
-        ReservationTimeRequestDto request = new ReservationTimeRequestDto(startAt);
+        ReservationTimeRequest request = new ReservationTimeRequest(startAt);
 
         // when
-        ReservationTimeResponseDto response = reservationTimeService.add(request);
+        ReservationTimeResponse response = reservationTimeService.add(request);
 
         // then
-        ReservationTimeResponseDto expected = new ReservationTimeResponseDto(1L, startAt);
+        ReservationTimeResponse expected = new ReservationTimeResponse(1L, startAt);
         assertThat(response).isEqualTo(expected);
     }
 
@@ -43,30 +43,30 @@ class ReservationTimeServiceTest {
         // given
         LocalTime tenHour = LocalTime.of(10, 0);
         LocalTime elevenHour = LocalTime.of(11, 0);
-        reservationTimeService.add(new ReservationTimeRequestDto(tenHour));
-        reservationTimeService.add(new ReservationTimeRequestDto(elevenHour));
+        reservationTimeService.add(new ReservationTimeRequest(tenHour));
+        reservationTimeService.add(new ReservationTimeRequest(elevenHour));
 
         // when
-        List<ReservationTimeResponseDto> all = reservationTimeService.findAll();
+        List<ReservationTimeResponse> all = reservationTimeService.findAll();
 
         // then
         assertThat(all).containsExactly(
-            new ReservationTimeResponseDto(1L, tenHour),
-            new ReservationTimeResponseDto(2L, elevenHour));
+            new ReservationTimeResponse(1L, tenHour),
+            new ReservationTimeResponse(2L, elevenHour));
     }
 
     @Test
     void 예약_시간을_삭제한다() {
         // given
         LocalTime tenHour = LocalTime.of(10, 0);
-        ReservationTimeResponseDto addedReservationTime
-            = reservationTimeService.add(new ReservationTimeRequestDto(tenHour));
+        ReservationTimeResponse addedReservationTime
+            = reservationTimeService.add(new ReservationTimeRequest(tenHour));
 
         // when
         reservationTimeService.deleteById(addedReservationTime.id());
 
         // then
-        List<ReservationTimeResponseDto> all = reservationTimeService.findAll();
+        List<ReservationTimeResponse> all = reservationTimeService.findAll();
         assertThat(all.isEmpty()).isTrue();
     }
 

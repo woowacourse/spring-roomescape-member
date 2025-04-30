@@ -1,11 +1,12 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.AvailableReservationTimeResponse;
+import roomescape.dto.ReservationRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeConflictException;
@@ -24,12 +25,19 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> readAllReservations() {
+    public ResponseEntity<List<ReservationResponse>> readAllReservations() {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
+    @GetMapping("/themes/{themeId}/times")
+    public ResponseEntity<List<AvailableReservationTimeResponse>> readAvailableReservationTimes(
+        @PathVariable Long themeId,
+        @RequestParam String date) {
+        return ResponseEntity.ok(reservationService.findAvailableReservationTime(themeId, date));
+    }
+
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> add(@Valid @RequestBody ReservationRequestDto requestDto) {
+    public ResponseEntity<ReservationResponse> add(@Valid @RequestBody ReservationRequest requestDto) {
         return new ResponseEntity<>(reservationService.add(requestDto), HttpStatus.CREATED);
     }
 

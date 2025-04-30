@@ -1,7 +1,7 @@
 package roomescape.dto;
 
-public record ThemeRequestDto(
-    // TODO : valid 사항 표시해주기
+public record ThemeResponse(
+    Long id,
     String name,
     String description,
     String thumbnail

@@ -1,8 +1,8 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.ThemeRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
 import roomescape.entity.Theme;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ReservationExistException;
@@ -22,18 +22,18 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
-    public List<ThemeResponseDto> findAll() {
+    public List<ThemeResponse> findAll() {
         List<Theme> themes = themeDao.findAll();
         return themes.stream()
             .map(this::createResponseDto)
             .toList();
     }
 
-    private ThemeResponseDto createResponseDto(Theme theme) {
-        return new ThemeResponseDto(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+    private ThemeResponse createResponseDto(Theme theme) {
+        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public ThemeResponseDto add(ThemeRequestDto requestDto) {
+    public ThemeResponse add(ThemeRequest requestDto) {
         Theme theme = new Theme(requestDto.name(), requestDto.description(), requestDto.thumbnail());
         Theme savedTheme = themeDao.save(theme);
         return createResponseDto(savedTheme);

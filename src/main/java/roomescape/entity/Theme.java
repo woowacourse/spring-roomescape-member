@@ -2,7 +2,7 @@ package roomescape.entity;
 
 public class Theme {
 
-    private static final int DURING_TIME = 1;
+    private static final int DURING_TIME = 2;
 
     private final Long id;
     private final String name;

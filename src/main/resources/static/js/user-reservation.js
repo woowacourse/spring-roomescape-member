@@ -38,7 +38,7 @@ function renderTheme(themes) {
     themes.forEach(theme => {
         const name = theme.name;
         const themeId = theme.id;
-
+        // TODO: 명세에 맞춰 클라이언트 코드 수정 (완료)
         themeSlots.appendChild(createSlot('theme', name, themeId));
     });
 }
@@ -85,9 +85,10 @@ function checkDateAndTheme() {
 function fetchAvailableTimes(date, themeId) {
     /*
     TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
-          요청 포맷에 맞게 설정
+          요청 포맷에 맞게 설정 (완료)
     */
-    fetch('/times', { // 예약 가능 시간 조회 API endpoint
+
+    fetch(`/reservations/themes/${themeId}/times?date=${date}`, { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -114,11 +115,10 @@ function renderAvailableTimes(times) {
     times.forEach(time => {
         /*
         TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
-              response 명세에 맞춰 createSlot 함수 호출 시 값 설정
-        */
+              response 명세에 맞춰 createSlot 함수 호출 시 값 설정 (완료)        */
         const startAt = time.startAt;
         const timeId = time.id;
-        const alreadyBooked = false;
+        const alreadyBooked = time.isBooked;
 
         const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
         timeSlots.appendChild(div);

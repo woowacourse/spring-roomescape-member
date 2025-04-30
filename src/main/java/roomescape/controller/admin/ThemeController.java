@@ -1,11 +1,11 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ThemeRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 import java.util.List;
@@ -21,12 +21,12 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> add(@Valid @RequestBody ThemeRequestDto requestDto) {
+    public ResponseEntity<ThemeResponse> add(@Valid @RequestBody ThemeRequest requestDto) {
         return new ResponseEntity<>(themeService.add(requestDto), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> findAll() {
+    public ResponseEntity<List<ThemeResponse>> findAll() {
         return ResponseEntity.ok(themeService.findAll());
     }
 

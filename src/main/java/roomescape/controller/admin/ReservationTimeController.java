@@ -1,11 +1,11 @@
-package roomescape.controller;
+package roomescape.controller.admin;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.ReservationExistException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
@@ -23,12 +23,12 @@ public class ReservationTimeController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> add(@Valid @RequestBody ReservationTimeRequestDto requestDto) {
+    public ResponseEntity<ReservationTimeResponse> add(@Valid @RequestBody ReservationTimeRequest requestDto) {
         return new ResponseEntity<>(reservationTimeService.add(requestDto), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponseDto>> findAll() {
+    public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
