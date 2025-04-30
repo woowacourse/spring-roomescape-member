@@ -42,7 +42,7 @@ public class ReservationTimeRestController {
         );
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTime(
             @PathVariable final Long id
     ) {
