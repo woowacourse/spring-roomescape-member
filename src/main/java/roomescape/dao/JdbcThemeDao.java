@@ -80,4 +80,25 @@ public class JdbcThemeDao implements ThemeDao {
             return Optional.empty();
         }
     }
+
+    @Override
+    public List<Theme> getTopTenTheme() {
+        String sql = """
+                SELECT id, name, description, thumbnail FROM THEME AS t
+                INNER JOIN
+                (SELECT THEME_ID, count(THEME_ID) AS COUNT
+                FROM RESERVATION
+                GROUP BY THEME_ID
+                ORDER BY COUNT DESC, THEME_ID ASC
+                LIMIT 10) AS popular
+                ON t.ID = popular.THEME_ID
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+        ));
+    }
 }

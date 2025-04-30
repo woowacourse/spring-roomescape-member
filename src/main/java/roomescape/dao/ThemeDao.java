@@ -12,4 +12,6 @@ public interface ThemeDao {
     List<Theme> findAll();
 
     Optional<Theme> findById(Long id);
+
+    List<Theme> getTopTenTheme();
 }

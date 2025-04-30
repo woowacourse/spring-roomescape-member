@@ -29,6 +29,13 @@ public class ThemeService {
                 .toList();
     }
 
+    public List<ThemeResponse> getTopTenTheme() {
+        List<Theme> topTenTheme = themeDao.getTopTenTheme();
+        return topTenTheme.stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
     public void deleteTheme(Long id) {
         if (reservationDao.isExistByThemeId(id)) {
             throw new IllegalStateException("예약이 존재하여 삭제할 수 없습니다.");

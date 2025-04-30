@@ -37,4 +37,9 @@ public class FakeThemeDao implements ThemeDao {
         Theme theme = themes.get(id);
         return Optional.ofNullable(theme);
     }
+
+    @Override
+    public List<Theme> getTopTenTheme() {
+        return List.of();
+    }
 }
