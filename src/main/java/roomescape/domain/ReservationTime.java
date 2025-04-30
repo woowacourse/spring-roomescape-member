@@ -2,7 +2,6 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 
-// TODO: record로 변경?
 public record ReservationTime(
         Long id,
         LocalTime startAt

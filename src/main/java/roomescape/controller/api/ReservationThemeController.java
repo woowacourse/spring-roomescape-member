@@ -36,8 +36,8 @@ public class ReservationThemeController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationThemeResponse> getAll() {
-        List<ReservationThemeServiceResponse> reservationThemes = reservationThemeService.getAll();
-        return reservationThemes.stream()
+        List<ReservationThemeServiceResponse> responses = reservationThemeService.getAll();
+        return responses.stream()
                 .map(ReservationThemeResponse::from)
                 .toList();
     }
@@ -50,7 +50,7 @@ public class ReservationThemeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/popular")
-    public List<ReservationThemeResponse> getHotThemes(@RequestParam(value = "limit", defaultValue = "10") int limit) {
+    public List<ReservationThemeResponse> getPopularThemes(@RequestParam(value = "limit", defaultValue = "10") int limit) {
         List<ReservationThemeServiceResponse> responses = reservationThemeService.getPopularThemes(limit);
         return responses.stream()
                 .map(ReservationThemeResponse::from)

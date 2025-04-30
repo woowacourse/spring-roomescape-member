@@ -26,7 +26,7 @@ public record CreateReservationRequest(
         }
     }
 
-    public CreateReservationServiceRequest toCommand() {
+    public CreateReservationServiceRequest toServiceRequest() {
         return new CreateReservationServiceRequest(name, date, timeId, themeId);
     }
 }

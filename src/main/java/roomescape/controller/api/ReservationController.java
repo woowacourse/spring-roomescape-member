@@ -37,7 +37,7 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ReservationResponse create(@RequestBody CreateReservationRequest request) {
-        ReservationServiceResponse response = reservationService.create(request.toCommand());
+        ReservationServiceResponse response = reservationService.create(request.toServiceRequest());
         return ReservationResponse.from(response);
     }
 
