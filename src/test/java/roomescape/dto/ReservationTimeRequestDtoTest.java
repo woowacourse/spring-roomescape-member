@@ -11,6 +11,7 @@ class ReservationTimeRequestDtoTest {
     void failIfFieldIsNull() {
         assertThatThrownBy(() -> {
             new ReservationTimeRequestDto(null);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("잘못된 startAt 입력입니다.");
     }
 }
