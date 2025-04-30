@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -22,15 +23,22 @@ public class JdbcReservationDao implements ReservationRepository {
 
     private static final RowMapper<Reservation> rowMapper = (rs, rowNum) -> {
         String date = rs.getString("date");
-        Long timeId = rs.getLong("time_id");
+        Long timeId = rs.getLong("reservation_time_id");
         String timeValue = rs.getString("start_at");
         ReservationTime reservationTime = new ReservationTime(timeId, LocalTime.parse(timeValue));
+        Theme theme = new Theme(
+                rs.getLong("reservation_theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+        );
 
         Reservation reservation = new Reservation(
                 rs.getLong("id"),
                 rs.getString("name"),
                 LocalDate.parse(date),
-                reservationTime
+                reservationTime,
+                theme
         );
         return reservation;
     };
@@ -48,10 +56,19 @@ public class JdbcReservationDao implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                SELECT *
+                SELECT
+                r.id,
+                r.date,
+                r.name,
+                r.time_id as reservation_time_id,
+                r.theme_id as reservation_theme_id,
+                t.start_at,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
                 FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
+                inner join reservation_time as t on r.time_id = t.id 
+                inner join theme as th on r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
     }
@@ -59,12 +76,13 @@ public class JdbcReservationDao implements ReservationRepository {
     @Override
     public Optional<Reservation> save(final Reservation reservation) {
         try {
-            SqlParameterSource parms = new MapSqlParameterSource()
+            SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("name", reservation.name())
                     .addValue("date", reservation.date())
-                    .addValue("time_id", reservation.time().id());
+                    .addValue("time_id", reservation.time().id())
+                    .addValue("theme_id", reservation.theme().id());
 
-            long id = jdbcInsert.executeAndReturnKey(parms).longValue();
+            long id = jdbcInsert.executeAndReturnKey(params).longValue();
             return findById(id);
         } catch (DuplicateKeyException e) {
             throw new IllegalStateException("[ERROR] 이미 등록된 예약 입니다.");
@@ -74,10 +92,19 @@ public class JdbcReservationDao implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(final Long id) {
         String sql = """
-                SELECT *
+                SELECT
+                r.id,
+                r.date,
+                r.name,
+                r.time_id as reservation_time_id,
+                r.theme_id as reservation_theme_id,
+                t.start_at,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
                 FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as th on r.theme_id = th.id
                 where r.id = ?
                 """;
         try {
@@ -96,10 +123,19 @@ public class JdbcReservationDao implements ReservationRepository {
     @Override
     public List<Reservation> findByDateTime(LocalDate date, LocalTime time) {
         String sql = """
-                SELECT *
+                SELECT
+                r.id,
+                r.date,
+                r.name,
+                r.time_id as reservation_time_id,
+                r.theme_id as reservation_theme_id,
+                t.start_at,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
                 FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
+                inner join reservation_time as t on r.time_id = t.id
+                inner join theme as th on r.theme_id = th.id
                 where r.date = ? and t.start_at = ?
                 """;
         try {

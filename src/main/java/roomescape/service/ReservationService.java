@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.DuplicateContentException;
@@ -13,6 +14,7 @@ import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 import java.util.List;
 
@@ -21,10 +23,12 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponseDto createReservation(ReservationCreateRequestDto dto) {
@@ -34,12 +38,14 @@ public class ReservationService {
         validateDuplicate(dto.date(), reservationTime.startAt());
         validateReservationDateTime(dto.date(), reservationTime.startAt());
 
-        Reservation requestReservation = dto.createWithoutId(reservationTime);
+        Theme theme = themeRepository.findById(dto.themeId())
+                .orElseThrow(() -> new IllegalStateException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.timeId()));
 
+        Reservation requestReservation = dto.createWithoutId(reservationTime, theme);
         Reservation newReservation = reservationRepository.save(requestReservation)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약 생성을 실패하였습니다."));
 
-        return ReservationResponseDto.from(newReservation, newReservation.time());
+        return ReservationResponseDto.from(newReservation, newReservation.time(), theme);
     }
 
     private void validateDuplicate(LocalDate date, LocalTime time) {
@@ -61,7 +67,7 @@ public class ReservationService {
         List<Reservation> allReservations = reservationRepository.findAll();
 
         return allReservations.stream()
-                .map(reservation -> ReservationResponseDto.from(reservation, reservation.time()))
+                .map(reservation -> ReservationResponseDto.from(reservation, reservation.time(), reservation.theme()))
                 .toList();
     }
 
