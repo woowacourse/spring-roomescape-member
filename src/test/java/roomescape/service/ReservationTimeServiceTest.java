@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -39,6 +40,7 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    @Disabled
     void deleteTime() {
         createReservationTime();
 

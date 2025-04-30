@@ -33,4 +33,9 @@ public class FakeReservationDao implements ReservationDao {
     public Boolean existByTimeId(Id timeId) {
         return true;
     }
+
+    @Override
+    public Boolean existBySameDateTime(Reservation reservation) {
+        return true;
+    }
 }

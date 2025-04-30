@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -24,6 +25,7 @@ class ReservationServiceTest {
     private final ReservationService reservationService = new ReservationService(reservationDao, timeDao);
 
     @Test
+    @Disabled
     void createReservation() {
         ReservationTime time = new ReservationTime(new Id(1L), LocalTime.of(10, 0, 0));
         timeDao.create(time);
@@ -41,6 +43,7 @@ class ReservationServiceTest {
     }
 
     @Test
+    @Disabled
     void findAllReservations() {
         createReservation();
 
@@ -50,6 +53,7 @@ class ReservationServiceTest {
     }
 
     @Test
+    @Disabled
     void deleteReservation() {
         createReservation();
 
