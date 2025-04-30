@@ -24,7 +24,7 @@ public class ReservationRestController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> persistReservation(
+    public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody final ReservationRequest reservationRequest
     ) {
         final Long id = reservationService.save(
@@ -38,7 +38,7 @@ public class ReservationRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> retrieveReservations() {
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
         final List<Reservation> reservations = reservationService.findAll();
         final List<ReservationResponse> reservationResponses = reservations.stream()
                 .map(ReservationResponse::from)

@@ -23,18 +23,8 @@ public class ThemeRestController {
 
     private final ThemeService themeService;
 
-    @GetMapping
-    public ResponseEntity<List<ThemeResponse>> retrieveTheme() {
-        final List<Theme> themes = themeService.findAll();
-        final List<ThemeResponse> themeResponses = themes.stream()
-                .map(ThemeResponse::from)
-                .toList();
-
-        return ResponseEntity.ok(themeResponses);
-    }
-
     @PostMapping
-    public ResponseEntity<ThemeResponse> persistTheme(
+    public ResponseEntity<ThemeResponse> createTheme(
             @RequestBody final ThemeRequest themeRequest
     ) {
         final Long id = themeService.save(
@@ -45,6 +35,16 @@ public class ThemeRestController {
         final Theme found = themeService.getById(id);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ThemeResponse.from(found));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponse>> getTheme() {
+        final List<Theme> themes = themeService.findAll();
+        final List<ThemeResponse> themeResponses = themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(themeResponses);
     }
 
     @DeleteMapping({"/{id}"})

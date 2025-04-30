@@ -1,6 +1,5 @@
 package roomescape.time.controller;
 
-import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,7 @@ public class ReservationTimeRestController {
     private final ReservationTimeService reservationTimeService;
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponse> persistReservationTime(
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @RequestBody final ReservationTimeRequest request
     ) {
         final Long id = reservationTimeService.save(request.startAt());
@@ -35,7 +34,7 @@ public class ReservationTimeRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> retrieveReservationTimes() {
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         return ResponseEntity.ok(
                 reservationTimeService.findAll().stream()
                         .map(ReservationTimeResponse::from)
