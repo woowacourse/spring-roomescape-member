@@ -65,6 +65,20 @@ class ReservationServiceTest {
     }
 
     @Test
+    void 지나간_날짜와_시간이면_예외가_발생한다() {
+        // given: r1과 동일한 date/time 요청
+        ReservationRequest dupReq = new ReservationRequest(
+                r1.getName(), LocalDate.of(2000, 10, 8), time1.getId()
+        );
+        
+        // when
+        // then
+        assertThatThrownBy(() -> service.saveReservation(dupReq))
+                .isInstanceOf(ReservationException.class)
+                .hasMessage("예약은 현재 시간 이후로 가능합니다.");
+    }
+
+    @Test
     void 새로운_예약은_정상_생성된다() {
         // given
         repo = new StubReservationRepository();
