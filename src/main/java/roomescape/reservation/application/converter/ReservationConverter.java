@@ -7,6 +7,8 @@ import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation.infrastructure.entity.ReservationEntity;
 import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.theme.application.converter.ThemeConverter;
+import roomescape.theme.domain.Theme;
 import roomescape.time.application.converter.ReservationTimeConverter;
 import roomescape.time.domain.ReservationTime;
 
@@ -19,15 +21,18 @@ public class ReservationConverter {
                 ReservationId.from(reservationEntity.getId()),
                 ReserverName.from(reservationEntity.getName()),
                 ReservationDate.from(reservationEntity.getDate().toLocalDate()),
-                ReservationTimeConverter.toDomain(reservationEntity.getTime()));
+                ReservationTimeConverter.toDomain(reservationEntity.getTime()),
+                ThemeConverter.toDomain(reservationEntity.getTheme()));
     }
 
     public static Reservation toDomain(final CreateReservationServiceRequest request,
-                                       final ReservationTime time) {
+                                       final ReservationTime time,
+                                       final Theme theme) {
         return Reservation.withoutId(
                 ReserverName.from(request.name()),
                 ReservationDate.from(request.date()),
-                time);
+                time,
+                theme);
     }
 
     public static ReservationResponse toDto(final Reservation reservation) {
@@ -35,7 +40,8 @@ public class ReservationConverter {
                 reservation.getId().getValue(),
                 reservation.getName().getValue(),
                 reservation.getDate().getValue(),
-                ReservationTimeConverter.toDto(reservation.getTime()));
+                ReservationTimeConverter.toDto(reservation.getTime()),
+                ThemeConverter.toDto(reservation.getTheme()));
     }
 
     public static List<ReservationResponse> toDto(final List<Reservation> reservations) {

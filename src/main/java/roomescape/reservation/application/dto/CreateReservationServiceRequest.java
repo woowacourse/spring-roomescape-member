@@ -8,17 +8,19 @@ import java.time.LocalDate;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record CreateReservationServiceRequest(String name,
-                                              LocalDate date,
-                                              Long timeId) {
+                                          LocalDate date,
+                                          Long timeId,
+                                          Long themeId) {
 
     public CreateReservationServiceRequest {
-        validate(name, date, timeId);
+        validate(name, date, timeId, themeId);
     }
 
-    private void validate(final String name, final LocalDate date, final Long time) {
+    private void validate(final String name, final LocalDate date, final Long timeId, final Long themeId) {
         Validator.of(CreateReservationServiceRequest.class)
-                .notBlankField(CreateReservationServiceRequest.Fields.name, name)
-                .notNullField(CreateReservationServiceRequest.Fields.date, date)
-                .notNullField(CreateReservationServiceRequest.Fields.timeId, time);
+                .notBlankField(Fields.name, name)
+                .notNullField(Fields.date, date)
+                .notNullField(Fields.timeId, timeId)
+                .notNullField(Fields.themeId, themeId);
     }
 }
