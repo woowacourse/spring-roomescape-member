@@ -7,6 +7,7 @@ public record ThemeCreateRequest(
         String description,
         String thumbnail
 ) {
+
     public ThemeCreateRequest {
         validateBlank(name, description, thumbnail);
     }

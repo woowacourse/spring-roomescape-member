@@ -15,17 +15,16 @@ import roomescape.domain.Theme;
 public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public JdbcThemeDao(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final RowMapper<Theme> themeMapper = (resultSet, rowNum) -> new Theme(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
             resultSet.getString("thumbnail")
     );
+
+    public JdbcThemeDao(final JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public List<Theme> findAll() {

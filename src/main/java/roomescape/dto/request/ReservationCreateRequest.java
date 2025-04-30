@@ -7,7 +7,8 @@ public record ReservationCreateRequest(
         String name,
         String date,
         Long timeId,
-        Long themeId) {
+        Long themeId
+) {
 
     public ReservationCreateRequest {
         validateBlank(name, date, timeId, themeId);

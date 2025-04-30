@@ -53,6 +53,4 @@ public class ThemeController {
     public List<ThemeResponse> findPopularThemesInLastWeek() {
         return themeService.findPopularThemesInLastWeek();
     }
-
-
 }

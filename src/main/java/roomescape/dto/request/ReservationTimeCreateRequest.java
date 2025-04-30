@@ -4,7 +4,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public record ReservationTimeCreateRequest(String startAt) {
+public record ReservationTimeCreateRequest(
+        String startAt
+) {
 
     public ReservationTimeCreateRequest {
         validateBlank(startAt);

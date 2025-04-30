@@ -36,7 +36,9 @@ public class ThemeService {
     }
 
     public ThemeCreateResponse create(ThemeCreateRequest themeCreateRequest) {
-        Theme theme = new Theme(themeCreateRequest.name(), themeCreateRequest.description(),
+        Theme theme = new Theme(
+                themeCreateRequest.name(),
+                themeCreateRequest.description(),
                 themeCreateRequest.thumbnail());
         return ThemeCreateResponse.from(themeDao.create(theme));
     }

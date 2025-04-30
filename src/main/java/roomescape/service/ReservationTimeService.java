@@ -31,7 +31,8 @@ public class ReservationTimeService {
     public List<ReservationTimeUserResponse> findAllByDateAndTheme(final long themeId, final LocalDate date) {
         return reservationTimeDao.findAll().stream()
                 .map(reservationTime ->
-                        ReservationTimeUserResponse.from(reservationTime,
+                        ReservationTimeUserResponse.from(
+                                reservationTime,
                                 reservationTimeDao.findByIdAndDateAndTheme(reservationTime.getId(), themeId, date)
                                         .isPresent()))
                 .toList();
