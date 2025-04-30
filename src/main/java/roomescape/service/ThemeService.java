@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.entity.Theme;
+import roomescape.exception.impl.ThemeNotFoundException;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -27,5 +28,13 @@ public class ThemeService {
 
     public List<Theme> getThemes() {
         return themeRepository.findAll();
+    }
+
+    public void deleteById(long id) {
+        boolean exist = themeRepository.existById(id);
+        if (!exist) {
+            throw new ThemeNotFoundException();
+        }
+        themeRepository.deleteById(id);
     }
 }
