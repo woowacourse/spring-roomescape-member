@@ -35,4 +35,10 @@ public class ReservationThemeController {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ReservationThemeResponse>> getPopularThemes(@RequestParam("limit") int limit) {
+        List<ReservationThemeResponse> response = themeService.getPopularThemes(limit);
+        return ResponseEntity.ok().body(response);
+    }
 }

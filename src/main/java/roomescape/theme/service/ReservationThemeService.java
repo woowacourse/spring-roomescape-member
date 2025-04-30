@@ -41,4 +41,11 @@ public class ReservationThemeService {
             throw new NotFoundException("존재하지 않는 id 입니다.");
         }
     }
+
+    public List<ReservationThemeResponse> getPopularThemes(int limit) {
+        return themeRepository.findPopularDescendingUpTo(limit)
+                .stream()
+                .map(ReservationThemeResponse::from)
+                .toList();
+    }
 }
