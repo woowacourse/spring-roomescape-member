@@ -20,6 +20,10 @@ public record PlayTimeEntity(Long id, String startAt) {
         );
     }
 
+    public static String formatStartAt(final LocalTime startAt) {
+        return TIME_FORMATTER.format(startAt);
+    }
+
     public static PlayTimeEntity from(final PlayTime playTime) {
         return new PlayTimeEntity(
                 playTime.getId(),

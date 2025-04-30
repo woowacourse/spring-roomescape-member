@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,12 @@ public class FakePlayTimeDao implements PlayTimeDao {
         } catch (IndexOutOfBoundsException e) {
             return false;
         }
+    }
+
+    @Override
+    public  boolean existsByStartAt(final LocalTime startAt) {
+        // TODO : 수정 필요
+        return true;
     }
 
     public List<PlayTimeEntity> getTimes() {

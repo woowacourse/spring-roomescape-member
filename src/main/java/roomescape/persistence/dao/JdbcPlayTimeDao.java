@@ -1,6 +1,7 @@
 package roomescape.persistence.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -61,5 +62,13 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
         final int rowNum = jdbcTemplate.update(sql, id);
 
         return rowNum == 1;
+    }
+
+    @Override
+    public boolean existsByStartAt(final LocalTime startAt) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?) AS is_exists";
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class ,PlayTimeEntity.formatStartAt(startAt));
+
+        return flag == 1;
     }
 }
