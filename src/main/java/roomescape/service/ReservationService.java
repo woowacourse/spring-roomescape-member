@@ -41,7 +41,7 @@ public class ReservationService {
         LocalDateTime dateTime = LocalDateTime.of(reservationDate.getDate(), reservationTime.getStartAt());
         LocalDateTime now = LocalDateTime.now();
         if (dateTime.isBefore(now)) {
-            throw new DateTimeException("과거 예약은 불가능합니다.");
+            throw new IllegalArgumentException("과거 예약은 불가능합니다.");
         }
     }
 }
