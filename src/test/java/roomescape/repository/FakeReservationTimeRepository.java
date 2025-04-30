@@ -14,11 +14,11 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     private final List<ReservationTime> reservationTimes;
     private final AtomicLong reservationTimeId = new AtomicLong(1);
-    private final FakeReservationRepository fakeReservationRepository;
+    private final List<Reservation> reservations;
 
     public FakeReservationTimeRepository(final List<ReservationTime> reservationTimes) {
         this.reservationTimes = reservationTimes;
-        fakeReservationRepository = new FakeReservationRepository(new ArrayList<>());
+        reservations = new ArrayList<>();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
                 .findFirst().orElse(new ReservationTime(null, LocalTime.now()));
 
         if (deleteReservation.id() != null) {
-            if (fakeReservationRepository.findAll().stream()
+            if (reservations.stream()
                     .filter(reservation -> reservation.time().equals(deleteReservation))
                     .count() != 0) {
                 throw new IllegalStateException();
@@ -56,7 +56,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     public void addReservation(Reservation reservation) {
-        fakeReservationRepository.save(reservation);
+        reservations.add(reservation);
     }
 
     @Override
