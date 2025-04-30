@@ -20,7 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 

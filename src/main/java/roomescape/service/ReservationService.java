@@ -2,13 +2,15 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.ReservationResponseDto;
-import roomescape.dto.ReservationTimeResponseDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.reservationtime.ReservationTimeResponseDto;
+import roomescape.dto.theme.ThemeResponseDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -27,18 +29,8 @@ public class ReservationService {
     }
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
-        ReservationTime foundTime = reservationTimeDao.findById(reservationRequestDto.timeId())
-                .orElseThrow(() -> new IllegalStateException("id 에 해당하는 예약 시각이 존재하지 않습니다."));
-        Theme foundTheme = themeDao.findById(reservationRequestDto.themeId())
-                .orElseThrow(() -> new IllegalStateException("id 에 해당하는 테마가 존재하지 않습니다."));
-
-        Reservation reservation = reservationRequestDto.convertToReservation(foundTime, foundTheme);
-        reservation.validateReservationDateInFuture();
-
-        reservationDao.findByDateAndTime(reservation)
-                .ifPresent(r -> {
-                    throw new IllegalStateException("이미 예약이 존재합니다.");
-                });
+        Reservation reservation = createReservation(reservationRequestDto);
+        validateReservation(reservation);
 
         Long id = reservationDao.saveReservation(reservation);
         ReservationTime time = reservation.getTime();
@@ -61,5 +53,24 @@ public class ReservationService {
 
     public void cancelReservation(Long id) {
         reservationDao.deleteById(id);
+    }
+
+    private Reservation createReservation(ReservationRequestDto reservationRequestDto) {
+        ReservationTime foundTime = reservationTimeDao.findById(reservationRequestDto.timeId())
+                .orElseThrow(() -> new NotFoundException("id 에 해당하는 예약 시각이 존재하지 않습니다."));
+
+        Theme foundTheme = themeDao.findById(reservationRequestDto.themeId())
+                .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 존재하지 않습니다."));
+
+        return reservationRequestDto.convertToReservation(foundTime, foundTheme);
+    }
+
+    private void validateReservation(Reservation reservation) {
+        reservation.validateReservationDateInFuture();
+
+        reservationDao.findByDateAndTime(reservation)
+                .ifPresent(r -> {
+                    throw new DuplicatedException("이미 예약이 존재합니다.");
+                });
     }
 }

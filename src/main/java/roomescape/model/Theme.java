@@ -25,7 +25,7 @@ public class Theme {
 
     private void validateRequiredFields(Long id, String name, String description, String thumbnail) {
         if (id == null) {
-            throw new IllegalStateException("id는 null 일 수 없습니다.");
+            throw new IllegalArgumentException("id는 null 일 수 없습니다.");
         }
 
         validateRequiredFields(name, description, thumbnail);
@@ -33,15 +33,15 @@ public class Theme {
 
     private void validateRequiredFields(String name, String description, String thumbnail) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalStateException("테마명은 null 이거나 빈 값일 수 없습니다.");
+            throw new IllegalArgumentException("테마명은 null 이거나 빈 값일 수 없습니다.");
         }
 
         if (description == null || description.isEmpty()) {
-            throw new IllegalStateException("설명은 null 이거나 빈 값일 수 없습니다.");
+            throw new IllegalArgumentException("설명은 null 이거나 빈 값일 수 없습니다.");
         }
 
         if (thumbnail == null || thumbnail.isEmpty()) {
-            throw new IllegalStateException("설명은 null 이거나 빈 값일 수 없습니다.");
+            throw new IllegalArgumentException("설명은 null 이거나 빈 값일 수 없습니다.");
         }
     }
 

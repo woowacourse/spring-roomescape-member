@@ -4,10 +4,12 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.ResourceInUseException;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.AvailableReservationTimeResponseDto;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.reservationtime.AvailableReservationTimeResponseDto;
+import roomescape.dto.reservationtime.ReservationTimeRequestDto;
+import roomescape.dto.reservationtime.ReservationTimeResponseDto;
 import roomescape.model.AvailableReservationTime;
 import roomescape.model.ReservationTime;
 
@@ -28,11 +30,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponseDto saveTime(ReservationTimeRequestDto reservationTimeRequestDto) {
-        LocalTime parsedStartAt = LocalTime.parse(reservationTimeRequestDto.startAt());
-        boolean duplicatedStartAtExisted = reservationTimeDao.isDuplicatedStartAtExisted(parsedStartAt);
-        if (duplicatedStartAtExisted) {
-            throw new IllegalStateException("중복된 예약시각은 등록할 수 없습니다.");
-        }
+        validateReservationTime(reservationTimeRequestDto);
 
         ReservationTime reservationTime = reservationTimeRequestDto.convertToTime();
         Long id = reservationTimeDao.saveTime(reservationTime);
@@ -44,12 +42,20 @@ public class ReservationTimeService {
         try {
             reservationTimeDao.deleteTimeById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("삭제하고자 하는 시각에 예약된 정보가 있습니다.");
+            throw new ResourceInUseException("삭제하고자 하는 시각에 예약된 정보가 있습니다.");
         }
     }
 
     public List<AvailableReservationTimeResponseDto> getAvailableTimes(String date, Long themeId) {
         List<AvailableReservationTime> availableTimes = reservationTimeDao.findAvailableTimes(date, themeId);
         return availableTimes.stream().map(AvailableReservationTimeResponseDto::from).toList();
+    }
+
+    private void validateReservationTime(ReservationTimeRequestDto reservationTimeRequestDto) {
+        LocalTime parsedStartAt = LocalTime.parse(reservationTimeRequestDto.startAt());
+        boolean duplicatedStartAtExisted = reservationTimeDao.isDuplicatedStartAtExisted(parsedStartAt);
+        if (duplicatedStartAtExisted) {
+            throw new DuplicatedException("중복된 예약시각은 등록할 수 없습니다.");
+        }
     }
 }

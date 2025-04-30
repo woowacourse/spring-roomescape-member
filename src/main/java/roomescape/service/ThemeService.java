@@ -3,10 +3,13 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.ResourceInUseException;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.ThemeRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.theme.ThemeRequestDto;
+import roomescape.dto.theme.ThemeResponseDto;
 import roomescape.model.Theme;
 
 @Service
@@ -25,18 +28,32 @@ public class ThemeService {
     }
 
     public ThemeResponseDto saveTheme(ThemeRequestDto themeRequestDto) {
+        validateTheme(themeRequestDto);
 
-        boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRequestDto.name());
-        if (duplicatedNameExisted) {
-            throw new IllegalStateException("중복된 예약시각은 등록할 수 없습니다.");
-        }
         Theme theme = themeRequestDto.convertToTheme();
         Long savedId = themeDao.saveTheme(theme);
-        return new ThemeResponseDto(savedId, theme.getName(), theme.getDescription(), theme.getThumbnail());
+
+        return new ThemeResponseDto(
+                savedId,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
+    }
+
+    private void validateTheme(ThemeRequestDto themeRequestDto) {
+        boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRequestDto.name());
+        if (duplicatedNameExisted) {
+            throw new DuplicatedException("중복된 예약시각은 등록할 수 없습니다.");
+        }
     }
 
     public void deleteTheme(Long id) {
-        themeDao.deleteById(id);
+        try {
+            themeDao.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new ResourceInUseException("삭제하고자 하는 테마에 예약된 정보가 있습니다.");
+        }
     }
 
     public List<ThemeResponseDto> findPopularThemes(final LocalDate today) {

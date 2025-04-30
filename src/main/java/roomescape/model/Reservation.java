@@ -32,7 +32,7 @@ public class Reservation {
 
     public void validateReservationDateInFuture() {
         if (!this.date.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("과거 및 당일 예약은 불가능합니다.");
+            throw new IllegalStateException("과거 및 당일 예약은 불가능합니다."); //TODO : exception 뭐로 하지?
         }
     }
 
@@ -63,7 +63,6 @@ public class Reservation {
             throw new IllegalArgumentException("테마는 null 일 수 없습니다.");
         }
     }
-
 
     public Long getId() {
         return id;

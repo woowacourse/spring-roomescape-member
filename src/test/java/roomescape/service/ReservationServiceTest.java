@@ -13,8 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.FakeReservationDao;
 import roomescape.dao.FakeReservationTimeDao;
 import roomescape.dao.FakeThemeDao;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationRequestDto;
+import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 

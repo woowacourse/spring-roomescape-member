@@ -20,9 +20,8 @@ public class ReservationTime {
     }
 
     private void validateRequiredFields(Long id, LocalTime startAt) {
-
         if (id == null) {
-            throw new IllegalStateException("id는  null 일 수 없습니다.");
+            throw new IllegalArgumentException("id는  null 일 수 없습니다.");
         }
 
         validateRequiredFields(startAt);
@@ -30,7 +29,7 @@ public class ReservationTime {
 
     private void validateRequiredFields(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalStateException("시작 시각은 null 일 수 없습니다.");
+            throw new IllegalArgumentException("시작 시각은 null 일 수 없습니다.");
         }
     }
 
