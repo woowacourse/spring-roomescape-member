@@ -38,7 +38,7 @@ public class ReservationTimeApiController {
     @GetMapping("/times/possible")
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableReservationTimes(
             @RequestParam("date") LocalDate date,
-            @RequestParam("themeId") Long themeId
+            @RequestParam("themeId") long themeId
     ) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAvailableReservationTimesOf(date, themeId);
         List<ReservationTimeResponse> responses = ReservationTimeResponse.from(reservationTimes);
@@ -46,7 +46,7 @@ public class ReservationTimeApiController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
     }

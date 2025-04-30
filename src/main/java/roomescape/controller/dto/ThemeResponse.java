@@ -4,7 +4,7 @@ import java.util.List;
 import roomescape.entity.Theme;
 
 public record ThemeResponse(
-        Long id,
+        long id,
         String name,
         String description,
         String thumbnail

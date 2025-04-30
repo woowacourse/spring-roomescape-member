@@ -4,12 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import roomescape.entity.Reservation;
 
-public record ReservationResponse(Long id,
-                                  String name,
-                                  LocalDate date,
-                                  ReservationTimeResponse time,
-                                  ThemeResponse theme) {
-
+public record ReservationResponse(
+        long id,
+        String name,
+        LocalDate date,
+        ReservationTimeResponse time,
+        ThemeResponse theme
+) {
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
