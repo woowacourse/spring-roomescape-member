@@ -13,6 +13,6 @@ public class TimeRequestTest {
     void validateNull() {
         assertThatThrownBy(() -> new TimeRequest(null))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("시간을 선택해야 합니다.");
+            .hasMessage("시간을 선택해라.");
     }
 }

@@ -21,7 +21,8 @@ public class FakeReservationDao implements ReservationDao {
             index.getAndIncrement(),
             reservation.getName(),
             reservation.getDate(),
-            reservation.getTime()
+            reservation.getTime(),
+            reservation.getTheme()
         );
         reservations.add(saved);
         return saved;
@@ -32,9 +33,10 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existReservationByDateAndTime(LocalDate date, Long timeId) {
+    public boolean existReservationByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         return reservations.stream()
             .anyMatch(reservation -> reservation.getDate().isEqual(date)
-                && reservation.getTime().getId().equals(timeId));
+                && reservation.getTime().getId().equals(timeId)
+                && reservation.getTime().getId().equals(themeId));
     }
 }

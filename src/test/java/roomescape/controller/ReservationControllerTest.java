@@ -38,7 +38,7 @@ public class ReservationControllerTest {
             .body(getTestParamsWithReservation())
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(200)
+            .statusCode(201)
             .body("name", is("사나"));
 
         RestAssured.given().log().all()
@@ -56,7 +56,7 @@ public class ReservationControllerTest {
             .body(getTestParamsWithReservation())
             .when().post("/reservations")
             .then().log().all()
-            .statusCode(200)
+            .statusCode(201)
             .body("id", is(1));
 
         RestAssured.given().log().all()
@@ -68,7 +68,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
             .when().delete("/reservations/1")
             .then().log().all()
-            .statusCode(200);
+            .statusCode(204);
 
         RestAssured.given().log().all()
             .when().get("/reservations")
@@ -79,11 +79,13 @@ public class ReservationControllerTest {
 
     private Map<String, Object> getTestParamsWithReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
+        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES('1단계', '탈출하기', 'http://~')");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "사나");
         params.put("date", "2024-04-26");
         params.put("timeId", 1);
+        params.put("themeId", 1);
         return params;
     }
 }
