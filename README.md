@@ -20,6 +20,7 @@
     - [x] 테마 전체 조회
     - [x] 테마 생성
     - [x] 테마 삭제
+        - [x] 특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 예외 처리- Service
 
 ---
 
@@ -100,7 +101,8 @@
     - 외래키를 사용한다해도 테스트에서 외래키를 끄고 테스트를 하는 경우도 고려
     - 외래키 제약 조건을 걸고, 아래 예외를 잡아 처리하면, 예외 메시지가 그대로 노출될 위험이 있다.
     - 그리고 JdbcSQLIntegrityConstraintViolationException을 잡아 예외를 처리한다 해도 JDBC에 너무 의존적인 구현이 된다.
-    - 결론은 서비스 단에서 비즈니스 로직으로 처리
+    - 결론은 서비스 단에서 비즈니스 로직으로 처리한다. 그래서, 다른 Repository 의존성을 추가했다.
+        - 그런데, 만약 reservation_time이나, theme을 참조하는 테이블이 많아지면, 의존성이 너무 많아지지 않을까? 걱정된다.
 
 ```text
 org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException: Referential integrity constraint violation: "CONSTRAINT_23: PUBLIC.RESERVATION FOREIGN KEY(TIME_ID) REFERENCES PUBLIC.RESERVATION_TIME(ID) (CAST(1 AS BIGINT))"; SQL statement:

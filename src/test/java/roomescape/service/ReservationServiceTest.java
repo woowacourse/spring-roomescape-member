@@ -26,7 +26,7 @@ class ReservationServiceTest {
     @Test
     void 예약을_생성한다() {
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
         FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
@@ -63,7 +63,7 @@ class ReservationServiceTest {
         //given
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Reservation reservation = new Reservation(1L, "test", LocalDate.now(), reservationTime, theme);
         FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
         FakeReservationRepository fakeReservationDao = new FakeReservationRepository(reservation);

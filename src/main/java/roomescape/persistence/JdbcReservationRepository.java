@@ -120,4 +120,10 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, reservationDate, timeId) > 0;
     }
+
+    @Override
+    public boolean existByThemeId(final Long themeId) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, themeId) > 0;
+    }
 }
