@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ExistedReservationException;
+import roomescape.exception.ReservationNotFoundException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
@@ -29,9 +30,9 @@ class ReservationServiceTest {
 
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
     private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
-    private final Reservation fakeReservation1 = new Reservation(1L, "포라", LocalDate.of(2025, 7, 25),
+    private final Reservation fakeReservation1 = Reservation.of(1L, "포라", LocalDate.of(2025, 7, 25),
             fakeReservationTime1);
-    private final Reservation fakeReservation2 = new Reservation(2L, "널안보면내마음에멍", LocalDate.of(2025, 12, 25),
+    private final Reservation fakeReservation2 = Reservation.of(2L, "널안보면내마음에멍", LocalDate.of(2025, 12, 25),
             fakeReservationTime2);
 
     @BeforeEach
@@ -40,7 +41,7 @@ class ReservationServiceTest {
         clock = Clock.fixed(fixedDateTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
         fakeReservationTimeDao = new FakeReservationTimeDao(fakeReservationTime1, fakeReservationTime2);
         fakeReservationDao = new FakeReservationDao(fakeReservation1, fakeReservation2);
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, clock);
+        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao);
     }
 
     @Test
@@ -81,7 +82,7 @@ class ReservationServiceTest {
     void id에_대한_예약이_없을_경우_예외가_발생한다() {
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.delete(10L))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test
@@ -91,7 +92,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(리사))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ExistedReservationException.class);
         assertThat(reservationService.findAll().size()).isEqualTo(2);
     }
 }

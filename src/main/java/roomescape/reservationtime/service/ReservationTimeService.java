@@ -2,10 +2,11 @@ package roomescape.reservationtime.service;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.exception.ExistedReservationException;
+import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.ReservationTimeDao;
@@ -40,10 +41,10 @@ public class ReservationTimeService {
 
     public Integer delete(@PathVariable Long id) {
         if (reservationTimeDao.findById(id).isEmpty()) {
-            throw new NoSuchElementException("예약 시간이 존재하지 않습니다.");
+            throw new ReservationTimeNotFoundException();
         }
         if (reservationDao.findByTimeId(id).isPresent()) {
-            throw new IllegalStateException("해당 시간에 대한 예약이 존재합니다.");
+            throw new ExistedReservationException();
         }
         return reservationTimeDao.delete(id);
     }

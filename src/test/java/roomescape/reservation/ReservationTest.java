@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.PastDateTimeReservationException;
+import roomescape.exception.ReservationNullPointException;
 import roomescape.reservationtime.ReservationTime;
 
 class ReservationTest {
@@ -16,7 +18,7 @@ class ReservationTest {
                                 null,
                                 LocalDate.now().plusDays(1),
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0))))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(ReservationNullPointException.class);
 
     }
 
@@ -28,7 +30,7 @@ class ReservationTest {
                                 "짱구",
                                 null,
                                 ReservationTime.createWithoutId(LocalTime.of(9, 0))))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(ReservationNullPointException.class);
     }
 
     @Test
@@ -39,7 +41,7 @@ class ReservationTest {
                                 "짱구",
                                 LocalDate.of(2025, 1, 1),
                                 null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(ReservationNullPointException.class);
     }
 
     @Test
@@ -50,6 +52,6 @@ class ReservationTest {
                                 "짱구",
                                 LocalDate.of(2024, 1, 1),
                                 new ReservationTime(1L, LocalTime.of(9, 0))))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(PastDateTimeReservationException.class);
     }
 }

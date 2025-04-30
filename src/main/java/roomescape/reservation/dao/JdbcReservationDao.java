@@ -41,7 +41,7 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getObject("time_value", LocalTime.class)
                     );
 
-                    return new Reservation(
+                    return Reservation.of(
                             resultSet.getLong("reservation_id"),
                             resultSet.getString("name"),
                             resultSet.getObject("date", LocalDate.class),
@@ -81,7 +81,7 @@ public class JdbcReservationDao implements ReservationDao {
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
-                    (rs, rowNum) -> new Reservation(
+                    (rs, rowNum) -> Reservation.of(
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getDate("date").toLocalDate(),
@@ -101,7 +101,7 @@ public class JdbcReservationDao implements ReservationDao {
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
-                    (rs, rowNum) -> new Reservation(
+                    (rs, rowNum) -> Reservation.of(
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getDate("date").toLocalDate(),
@@ -121,7 +121,7 @@ public class JdbcReservationDao implements ReservationDao {
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
-                    (rs, rowNum) -> new Reservation(
+                    (rs, rowNum) -> Reservation.of(
                             rs.getLong("id"),
                             rs.getString("name"),
                             rs.getDate("date").toLocalDate(),
