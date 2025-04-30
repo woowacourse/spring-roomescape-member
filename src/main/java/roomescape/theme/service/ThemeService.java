@@ -17,6 +17,11 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     public Long save(final String name, final String description, final String thumbnail) {
+        final long count = themeRepository.countByName(name);
+        if(count >= 1) {
+            throw new DataExistException("해당 테마명이 이미 존재합니다. name = " + name);
+        }
+
         final ThemeEntity themeEntity = new ThemeEntity(name, description, thumbnail);
 
         return themeRepository.save(themeEntity);
