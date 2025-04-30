@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequestMapping("admin")
+@RequestMapping("/admin")
 public class AdminViewController {
 
     @GetMapping
@@ -20,12 +20,12 @@ public class AdminViewController {
     }
 
     @GetMapping("/time")
-    public String adminTime() {
+    public String time() {
         return "admin/time";
     }
 
     @GetMapping("/theme")
-    public String adminTheme() {
+    public String theme() {
         return "admin/theme";
     }
 }

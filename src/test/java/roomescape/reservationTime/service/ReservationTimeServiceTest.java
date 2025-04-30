@@ -69,14 +69,14 @@ class ReservationTimeServiceTest {
 
     @Nested
     @DisplayName("저장된 모든 예약 시간 불러오는 기능")
-    class readAll {
+    class findAll {
 
         @DisplayName("데이터가 있을 때 모든 예약 시간을 불러온다")
         @Test
-        void readAll_success_whenDataExists() {
+        void findAll_success_whenDataExists() {
             // given
             // when
-            List<ReservationTimeResDto> resDtos = service.readAll();
+            List<ReservationTimeResDto> resDtos = service.findAll();
 
             // then
             assertSoftly(s -> {
@@ -92,12 +92,12 @@ class ReservationTimeServiceTest {
 
         @DisplayName("데이터가 없더라도 예외 없이 빈 리스트를 반환한다")
         @Test
-        void readAll_success_whenNoData() {
+        void findAll_success_whenNoData() {
             // given
             deleteAll();
 
             // when
-            List<ReservationTimeResDto> resDtos = service.readAll();
+            List<ReservationTimeResDto> resDtos = service.findAll();
 
             // then
             Assertions.assertThat(resDtos).hasSize(0);
@@ -118,7 +118,7 @@ class ReservationTimeServiceTest {
             service.add(ReservationTimeFixture.createReqDto(dummyTime1));
 
             // then
-            List<ReservationTimeResDto> resDtos = service.readAll();
+            List<ReservationTimeResDto> resDtos = service.findAll();
             Assertions.assertThat(resDtos)
                 .extracting(ReservationTimeResDto::startAt)
                 .contains(dummyTime1);
@@ -136,7 +136,7 @@ class ReservationTimeServiceTest {
             service.delete(testDataConfig.getDefaultDummyTimeId());
 
             // when
-            List<ReservationTimeResDto> resDtos = service.readAll();
+            List<ReservationTimeResDto> resDtos = service.findAll();
 
             // then
             Assertions.assertThat(resDtos).hasSize(0);

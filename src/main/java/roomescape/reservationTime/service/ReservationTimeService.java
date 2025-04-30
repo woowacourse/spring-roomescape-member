@@ -35,21 +35,14 @@ public class ReservationTimeService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationTimeResDto add(ReservationTimeReqDto dto) {
-        ReservationTime reservationTime = convertToReservationTimeReqDto(dto);
-        validateDuplicateTime(reservationTime);
-        ReservationTime savedReservationTime = repository.add(reservationTime);
-        return convertToReservationTimeResDto(savedReservationTime);
-    }
-
-    public List<ReservationTimeResDto> readAll() {
+    public List<ReservationTimeResDto> findAll() {
         List<ReservationTime> reservationTimes = repository.findAll();
         return reservationTimes.stream()
             .map(this::convertToReservationTimeResDto)
             .toList();
     }
 
-    public List<AvailableReservationTimeResDto> readAllAvailableTimes(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeResDto> findAllAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
             .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
@@ -76,6 +69,13 @@ public class ReservationTimeService {
         repository.delete(id);
     }
 
+    public ReservationTimeResDto add(ReservationTimeReqDto reqDto) {
+        ReservationTime reservationTime = convertToReservationTimeReqDto(reqDto);
+        validateDuplicateTime(reservationTime);
+        ReservationTime savedReservationTime = repository.add(reservationTime);
+        return convertToReservationTimeResDto(savedReservationTime);
+    }
+
     private void validateDuplicateTime(ReservationTime inputReservationTime) {
         List<ReservationTime> reservationTimes = repository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
@@ -85,8 +85,8 @@ public class ReservationTimeService {
         }
     }
 
-    private ReservationTime convertToReservationTimeReqDto(ReservationTimeReqDto dto) {
-        return ReservationTimeMapper.toEntity(dto);
+    private ReservationTime convertToReservationTimeReqDto(ReservationTimeReqDto reqDto) {
+        return ReservationTimeMapper.toEntity(reqDto);
     }
 
     public ReservationTimeResDto convertToReservationTimeResDto(ReservationTime reservationTime) {

@@ -71,6 +71,54 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> findById(Long id) {
+        String sql = "SELECT r.id AS reservation_id,\n" +
+            "       r.name,\n" +
+            "       r.date,\n" +
+            "       time.id AS time_id,\n" +
+            "       time.start_at AS time_value,\n" +
+            "       theme.id AS theme_id,\n" +
+            "       theme.name AS theme_name,\n" +
+            "       theme.description AS theme_description,\n" +
+            "       theme.thumbnail AS theme_thumbnail\n" +
+            "FROM reservation AS r\n" +
+            "    INNER JOIN reservation_time AS time\n" +
+            "    ON r.time_id = time.id\n" +
+            "    INNER JOIN theme AS theme\n" +
+            "    ON r.theme_id = theme.id\n" +
+            "WHERE r.id = ?";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                sql,
+                (resultSet, rowNum) -> {
+                    ReservationTime time = new ReservationTime(
+                        resultSet.getLong("time_id"),
+                        resultSet.getTime("time_value").toLocalTime()
+                    );
+
+                    Theme theme = new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("theme_description"),
+                        resultSet.getString("theme_thumbnail")
+                    );
+
+                    return new Reservation(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getDate("date").toLocalDate(),
+                        time,
+                        theme
+                    );
+                }, id)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Reservation> findByThemeAndDate(Theme theme, LocalDate date) {
         String sql = "SELECT r.id AS id, r.name AS name, r.date AS date, t.id AS time_id, t.start_at AS time_value "
             + "FROM reservation AS r INNER JOIN reservation_time AS t "
@@ -131,53 +179,5 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
-    }
-
-    @Override
-    public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT r.id AS reservation_id,\n" +
-            "       r.name,\n" +
-            "       r.date,\n" +
-            "       time.id AS time_id,\n" +
-            "       time.start_at AS time_value,\n" +
-            "       theme.id AS theme_id,\n" +
-            "       theme.name AS theme_name,\n" +
-            "       theme.description AS theme_description,\n" +
-            "       theme.thumbnail AS theme_thumbnail\n" +
-            "FROM reservation AS r\n" +
-            "    INNER JOIN reservation_time AS time\n" +
-            "    ON r.time_id = time.id\n" +
-            "    INNER JOIN theme AS theme\n" +
-            "    ON r.theme_id = theme.id\n" +
-            "WHERE r.id = ?";
-
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime time = new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        resultSet.getTime("time_value").toLocalTime()
-                    );
-
-                    Theme theme = new Theme(
-                        resultSet.getLong("theme_id"),
-                        resultSet.getString("theme_name"),
-                        resultSet.getString("theme_description"),
-                        resultSet.getString("theme_thumbnail")
-                    );
-
-                    return new Reservation(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getDate("date").toLocalDate(),
-                        time,
-                        theme
-                    );
-                }, id)
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
     }
 }

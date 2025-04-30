@@ -34,11 +34,11 @@ public class ReservationTimeControllerTest {
 
     @Nested
     @DisplayName("GET /times 요청")
-    class readAll {
+    class findAll {
 
         @DisplayName("데이터가 있을 때 200 OK와 함께 예약 시간을 반환한다")
         @Test
-        void readAll_success_whenDataExists() {
+        void findAll_success_whenDataExists() {
             // given 
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
 
@@ -55,7 +55,7 @@ public class ReservationTimeControllerTest {
 
         @DisplayName("데이터가 없을 때도 200 OK와 빈 리스트를 반환한다")
         @Test
-        void readAll_success_whenNoData() {
+        void findAll_success_whenNoData() {
             // when & then
             List<ReservationTimeResDto> resDtos = RestAssured.given().log().all()
                 .when().get("/times")

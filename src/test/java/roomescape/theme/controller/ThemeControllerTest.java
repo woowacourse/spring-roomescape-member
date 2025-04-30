@@ -27,7 +27,7 @@ class ThemeControllerTest {
 
     @DisplayName("theme를 생성하면, 201 응답이 도착한다.")
     @Test
-    public void createTheme() {
+    public void add() {
         ThemeReqDto dto = new ThemeReqDto("a", "b", "c");
 
         RestAssured.given().port(port).log().all()
@@ -39,7 +39,7 @@ class ThemeControllerTest {
 
     @DisplayName("전체 Theme를 조회한다.")
     @Test
-    public void findAllTheme() {
+    public void findAll() {
         RestAssured.given().port(port).log().all()
             .when().get("/themes")
             .then().log().all()

@@ -13,34 +13,34 @@ public class ThemeService {
 
     private static final int BETWEEN_DAY_START = 7;
     private static final int BETWEEN_DAY_END = 1;
-    private final ThemeRepository themeRepository;
+    private final ThemeRepository repository;
 
-    public ThemeService(ThemeRepository themeRepository) {
-        this.themeRepository = themeRepository;
-    }
-
-    public ThemeResDto add(ThemeReqDto dto) {
-        Theme notSavedTheme = new Theme(dto.name(), dto.description(), dto.thumbnail());
-        Theme savedTheme = themeRepository.add(notSavedTheme);
-        return ThemeResDto.from(savedTheme);
+    public ThemeService(ThemeRepository repository) {
+        this.repository = repository;
     }
 
     public List<ThemeResDto> findAll() {
-        return themeRepository.findAll().stream()
+        return repository.findAll().stream()
             .map(ThemeResDto::from)
             .toList();
-    }
-
-    public void deleteById(Long id) {
-        themeRepository.delete(id);
     }
 
     public List<ThemeResDto> findTopRankThemes(int size) {
         LocalDate now = LocalDate.now();
         LocalDate from = now.minusDays(BETWEEN_DAY_START);
         LocalDate to = now.minusDays(BETWEEN_DAY_END);
-        return themeRepository.findAllOrderByRank(from, to, size).stream()
+        return repository.findAllOrderByRank(from, to, size).stream()
             .map(ThemeResDto::from)
             .toList();
+    }
+
+    public ThemeResDto add(ThemeReqDto dto) {
+        Theme notSavedTheme = new Theme(dto.name(), dto.description(), dto.thumbnail());
+        Theme savedTheme = repository.add(notSavedTheme);
+        return ThemeResDto.from(savedTheme);
+    }
+
+    public void deleteById(Long id) {
+        repository.delete(id);
     }
 }

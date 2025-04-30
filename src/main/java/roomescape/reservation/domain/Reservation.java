@@ -9,13 +9,9 @@ import roomescape.theme.domain.Theme;
 public class Reservation {
 
     private final Long id;
-
     private final String name;
-
     private final LocalDate date;
-
     private final ReservationTime reservationTime;
-
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
@@ -26,14 +22,10 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        this(null, name, date, reservationTime, theme);
-    }
-
     public static Reservation of(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
         validateTense(dateTime);
-        return new Reservation(name, date, reservationTime, theme);
+        return new Reservation(null, name, date, reservationTime, theme);
     }
 
     private static void validateTense(LocalDateTime dateTime) {

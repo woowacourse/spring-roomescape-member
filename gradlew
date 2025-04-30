@@ -211,7 +211,7 @@ set -- \
 #
 # In Bash we could simply go:
 #
-#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
+#   findarray ARGS < <( xargs -n1 <<<"$var" ) &&
 #   set -- "${ARGS[@]}" "$@"
 #
 # but POSIX shell has neither arrays nor command substitution, so instead we

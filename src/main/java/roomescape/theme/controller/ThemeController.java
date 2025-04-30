@@ -28,17 +28,24 @@ public class ThemeController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<ThemeResDto> createTheme(
-        @RequestBody ThemeReqDto dto
-    ) {
-        ThemeResDto resDto = themeService.add(dto);
-        return ResponseEntity.created(URI.create("/themes/" + resDto.id())).body(resDto);
+    @GetMapping
+    public ResponseEntity<List<ThemeResDto>> findAll() {
+        return ResponseEntity.ok(themeService.findAll());
     }
 
-    @GetMapping
-    public ResponseEntity<List<ThemeResDto>> findAllTheme() {
-        return ResponseEntity.ok(themeService.findAll());
+    @GetMapping("/ranking")
+    public ResponseEntity<List<ThemeResDto>> findTopRankThemes(
+        @RequestParam(value = "size", defaultValue = "10") int size) {
+        List<ThemeResDto> topRankThemes = themeService.findTopRankThemes(size);
+        return ResponseEntity.ok(topRankThemes);
+    }
+
+    @PostMapping
+    public ResponseEntity<ThemeResDto> add(
+        @RequestBody ThemeReqDto reqDto
+    ) {
+        ThemeResDto resDto = themeService.add(reqDto);
+        return ResponseEntity.created(URI.create("/themes/" + resDto.id())).body(resDto);
     }
 
     @DeleteMapping("/{id}")
@@ -47,12 +54,5 @@ public class ThemeController {
     ) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResDto>> findTopRankThemes(
-        @RequestParam(value = "size", defaultValue = "10") int size) {
-        List<ThemeResDto> topRankThemes = themeService.findTopRankThemes(size);
-        return ResponseEntity.ok(topRankThemes);
     }
 }

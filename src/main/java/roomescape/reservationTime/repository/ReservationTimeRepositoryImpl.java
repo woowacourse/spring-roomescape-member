@@ -21,12 +21,6 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime add(ReservationTime reservationTime) {
-        Long id = insertWithKeyHolder(reservationTime);
-        return findByIdOrThrow(id);
-    }
-
-    @Override
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query(
             "select id, start_at from reservation_time",
@@ -43,6 +37,28 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     public ReservationTime findByIdOrThrow(Long id) {
         return findById(id)
             .orElseThrow(() -> new NotFoundException("해당 예약시간 id가 존재하지 않습니다."));
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(Long id) {
+        String sql = "select id, start_at from reservation_time where id = ?";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
+                (resultSet, rowNum) ->
+                    new ReservationTime(
+                        resultSet.getLong("id"),
+                        resultSet.getTime("start_at").toLocalTime()
+                    ), id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public ReservationTime add(ReservationTime reservationTime) {
+        Long id = insertWithKeyHolder(reservationTime);
+        return findByIdOrThrow(id);
     }
 
     @Override
@@ -65,21 +81,5 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
-    }
-
-    @Override
-    public Optional<ReservationTime> findById(Long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
-
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                (resultSet, rowNum) ->
-                    new ReservationTime(
-                        resultSet.getLong("id"),
-                        resultSet.getTime("start_at").toLocalTime()
-                    ), id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
     }
 }

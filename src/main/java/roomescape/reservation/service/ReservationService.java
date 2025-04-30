@@ -21,43 +21,44 @@ import roomescape.theme.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationRepository repository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
+    public ReservationService(ReservationRepository repository,
                               ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
+        this.repository = repository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResDto> readAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
+    public List<ReservationResDto> findAll() {
+        List<Reservation> reservations = repository.findAll();
         return reservations.stream()
             .map(this::convertReservationResDto)
             .collect(Collectors.toList());
     }
 
-    public ReservationResDto add(ReservationReqDto dto) {
-        Reservation reservation = convertReservation(dto);
+    public ReservationResDto add(ReservationReqDto reqDto) {
+        Reservation reservation = convertReservation(reqDto);
         validateDuplicateDateTime(reservation);
-        Reservation savedReservation = reservationRepository.add(reservation);
+        Reservation savedReservation = repository.add(reservation);
         return convertReservationResDto(savedReservation);
     }
 
     public void delete(Long id) {
-        reservationRepository.findByIdOrThrow(id);
-        reservationRepository.delete(id);
+        repository.findByIdOrThrow(id);
+        repository.delete(id);
     }
 
     private void validateDuplicateDateTime(Reservation inputReservation) {
-        List<Reservation> reservations = reservationRepository.findAll();
-        for (Reservation reservation : reservations) {
-            if (inputReservation.isSameDateTime(reservation)) {
+        List<Reservation> reservations = repository.findAll();
+        reservations.stream()
+            .filter(inputReservation::isSameDateTime)
+            .findAny()
+            .ifPresent((reservation) -> {
                 throw new ConflictException("이미 예약되어 있는 시간입니다.");
-            }
-        }
+            });
     }
 
     private Reservation convertReservation(ReservationReqDto dto) {
