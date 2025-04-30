@@ -9,6 +9,7 @@ import roomescape.entity.Theme;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -52,15 +53,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 SELECT * FROM theme
                 """;
 
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> {
-                    Long id = resultSet.getLong("id");
-                    String name = resultSet.getString("name");
-                    String description = resultSet.getString("description");
-                    String thumbnail = resultSet.getString("thumbnail");
-                    return Theme.afterSave(id, name, description, thumbnail);
-                });
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -92,5 +85,23 @@ public class JdbcThemeRepository implements ThemeRepository {
                 """;
 
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate startInclusive, LocalDate endInclusive, int count) {
+        final String sql = """
+                SELECT t.*
+                FROM (
+                    SELECT r.theme_id, COUNT(*) AS reservation_count
+                    FROM reservation r
+                    WHERE r.date BETWEEN ? AND ?
+                    GROUP BY r.theme_id
+                    ORDER BY reservation_count DESC
+                    LIMIT ?
+                ) AS ranked
+                JOIN theme t ON ranked.theme_id = t.id;
+                """;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER, startInclusive, endInclusive, count);
     }
 }

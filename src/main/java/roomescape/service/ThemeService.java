@@ -1,10 +1,12 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.entity.Theme;
 import roomescape.exception.impl.ThemeNotFoundException;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ThemeService {
@@ -36,5 +38,13 @@ public class ThemeService {
             throw new ThemeNotFoundException();
         }
         themeRepository.deleteById(id);
+    }
+
+    public List<Theme> getPopularThemes() {
+        return themeRepository.findPopularThemes(
+                LocalDate.now().minusDays(7),
+                LocalDate.now().minusDays(1),
+                10
+        );
     }
 }

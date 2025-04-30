@@ -1,18 +1,19 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
-import roomescape.exception.impl.HasDuplicatedDateTimeException;
+import roomescape.exception.impl.AlreadyReservedException;
 import roomescape.exception.impl.ReservationNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ReservationService {
@@ -39,8 +40,8 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
 
         Theme theme = themeRepository.findById(reservationRequest.themeId());
-        if (reservationRepository.isDuplicateDateAndTime(date, reservationTime.getStartAt())) {
-            throw new HasDuplicatedDateTimeException();
+        if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.getStartAt(), theme)) {
+            throw new AlreadyReservedException();
         }
         Reservation reservation = Reservation.beforeSave(name, date, reservationTime, theme);
 

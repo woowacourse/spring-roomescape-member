@@ -124,19 +124,24 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean isDuplicateDateAndTime(LocalDate date, LocalTime time) {
-        final String sql = "SELECT COUNT(*) FROM reservation as r"
-                + " INNER JOIN reservation_time as t"
-                + " ON t.id = r.time_id"
-                + " WHERE r.date = ? and t.start_at =?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time);
+    public boolean existByTimeId(Long id) {
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 
     @Override
-    public boolean existByTimeId(Long id) {
-        final String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+    public boolean isDuplicateDateAndTimeAndTheme(LocalDate date, LocalTime time, Theme theme) {
+        final String sql = """
+                SELECT COUNT(*)
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                ON t.id = r.time_id
+                WHERE r.date = ?
+                AND t.start_at = ?
+                AND r.time_id = ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time, theme.getId());
         return count != null && count > 0;
     }
 }
