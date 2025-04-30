@@ -6,11 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.reservationTime.dto.AvailableReservationTimeRequest;
+import roomescape.reservationTime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationTime.dto.ReservationTimeRequest;
 import roomescape.reservationTime.dto.ReservationTimeResponse;
 import roomescape.reservationTime.service.ReservationTimeService;
@@ -33,6 +37,12 @@ public class ReservationTimeApiController {
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         return ResponseEntity.ok(reservationTimeService.findAll());
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<AvailableReservationTimeResponse>> findByDateAndTheme(@ModelAttribute
+                                                                                     AvailableReservationTimeRequest availableReservationTimeRequest) {
+        return ResponseEntity.ok(reservationTimeService.findByDateAndTheme(availableReservationTimeRequest));
     }
 
     @DeleteMapping("/{id}")

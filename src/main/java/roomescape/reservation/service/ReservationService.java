@@ -7,6 +7,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.dto.ReservationTimeResponse;
 import roomescape.theme.domain.Theme;
 
 @Service
@@ -45,13 +46,15 @@ public class ReservationService {
 
         Reservation savedReservation = reservationDao.add(newReservation);
         return new ReservationResponse(
-                savedReservation.getId(), savedReservation.getName(), savedReservation.getTheme(), savedReservation.getDate(), savedReservation.getTime());
+                savedReservation.getId(), savedReservation.getName(), savedReservation.getTheme(), savedReservation.getDate(),
+                new ReservationTimeResponse(savedReservation.getTime().getId(), savedReservation.getTime().getStartAt()));
     }
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
                 .map(reservation -> new ReservationResponse(
-                        reservation.getId(), reservation.getName(), reservation.getTheme(), reservation.getDate(), reservation.getTime()))
+                        reservation.getId(), reservation.getName(), reservation.getTheme(), reservation.getDate(),
+                        new ReservationTimeResponse(reservation.getTime().getId(), reservation.getTime().getStartAt())))
                 .toList();
     }
 

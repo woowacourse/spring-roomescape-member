@@ -1,10 +1,13 @@
 package roomescape.reservationTime.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.Dao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.dto.AvailableReservationTimeRequest;
+import roomescape.reservationTime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationTime.dto.ReservationTimeRequest;
 import roomescape.reservationTime.dto.ReservationTimeResponse;
 
@@ -52,5 +55,31 @@ public class ReservationTimeService {
         }
 
         reservationTimeDao.deleteById(id);
+    }
+
+    public List<AvailableReservationTimeResponse> findByDateAndTheme(
+            AvailableReservationTimeRequest availableReservationTimeRequest) {
+        List<ReservationTime> occupiedReservationTimes = reservationDao.findAll().stream()
+                .filter(reservation -> reservation.getDate().equals(availableReservationTimeRequest.date())
+                        && reservation.getTheme().getId().equals(availableReservationTimeRequest.themeId())
+                ).map(reservation -> new ReservationTime(reservation.getTime().getId(), reservation.getTime()
+                        .getStartAt()))
+                .toList();
+
+        List<AvailableReservationTimeResponse> response = new ArrayList<>();
+
+        occupiedReservationTimes.forEach(
+                reservationTime -> response.add(new AvailableReservationTimeResponse(
+                        reservationTime.getId(), reservationTime.getStartAt(), true))
+        );
+
+        List<ReservationTime> nonOccupiedReservationTimes = reservationTimeDao.findAll();
+        nonOccupiedReservationTimes.removeAll(occupiedReservationTimes);
+        nonOccupiedReservationTimes.forEach(
+                reservationTime ->  response.add(new AvailableReservationTimeResponse(
+                        reservationTime.getId(), reservationTime.getStartAt(), false))
+        );
+
+        return response;
     }
 }
