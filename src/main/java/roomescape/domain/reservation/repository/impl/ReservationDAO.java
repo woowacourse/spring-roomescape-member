@@ -194,4 +194,25 @@ public class ReservationDAO implements ReservationRepository {
                 (resultSet, rowNum) -> reservationOf(resultSet)
         );
     }
+
+    @Override
+    public boolean existsByTimeId(Long timeId){
+        String selectSql = "select count(*) from reservation where time_id = :time_id";
+        Map<String, Long> params = Map.of("time_id", timeId);
+
+        int rowCountByTimeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
+
+        return rowCountByTimeId == 1;
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId){
+        String selectSql = "select count(*) from reservation where theme_id = :theme_id";
+
+        Map<String, Long> params = Map.of("theme_id", themeId);
+
+        int rowCountByThemeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
+
+        return rowCountByThemeId == 1;
+    }
 }

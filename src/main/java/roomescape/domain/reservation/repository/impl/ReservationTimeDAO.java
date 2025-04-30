@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
@@ -109,8 +108,6 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
 
     @Override
     public void deleteById(Long id) {
-        checkUsingReservationTime(id);
-
         String deleteSql = "delete from reservation_time where id = :id";
         Map<String, Long> params = Map.of("id", id);
 
@@ -118,16 +115,6 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
 
         if (deleteRowCount != 1) {
             throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
-        }
-    }
-
-    private void checkUsingReservationTime(Long timeId) {
-        String selectSql = "select count(*) from reservation where time_id = :time_id";
-        Map<String, Long> params = Map.of("time_id", timeId);
-
-        int rowCountByTimeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
-        if (rowCountByTimeId > 0) {
-            throw new AlreadyInUseException("reservation time with id " + timeId + " already exists");
         }
     }
 }

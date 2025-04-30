@@ -4,9 +4,11 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.AlreadyInUseException;
 import roomescape.domain.reservation.dto.ThemeRequest;
 import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.entity.Theme;
+import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 
 @Service
@@ -17,10 +19,12 @@ public class ThemeService {
 
     private final Clock clock;
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(Clock clock, ThemeRepository themeRepository) {
+    public ThemeService(Clock clock, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.clock = clock;
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<ThemeResponse> getAll() {
@@ -36,13 +40,14 @@ public class ThemeService {
     }
 
     public void delete(Long id) {
-        // TODO 이미 예약에서 사용할 경우 AlreadyInuse 예외 발생
-
+        if (reservationRepository.existsByThemeId(id)) {
+            throw new AlreadyInUseException("Theme with id " + id + " not found");
+        }
 
         themeRepository.deleteById(id);
     }
 
-    public List<ThemeResponse> getPopularThemes(){
+    public List<ThemeResponse> getPopularThemes() {
         LocalDate now = getNow();
 
         LocalDate startDate = now.minusDays(START_DATE_OFFSET);
@@ -54,7 +59,7 @@ public class ThemeService {
                 .toList();
     }
 
-    private LocalDate getNow(){
+    private LocalDate getNow() {
         return LocalDate.now(clock);
     }
 }
