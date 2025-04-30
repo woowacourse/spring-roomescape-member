@@ -1,15 +1,17 @@
 package roomescape.model;
 
+import java.time.LocalDate;
+
 public class ReservationDateTime {
-    private final ReservationDate date;
+    private final LocalDate date;
     private final ReservationTime time;
 
-    public ReservationDateTime(ReservationDate date, ReservationTime time) {
+    public ReservationDateTime(LocalDate date, ReservationTime time) {
         this.date = date;
         this.time = time;
     }
 
-    public ReservationDate getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

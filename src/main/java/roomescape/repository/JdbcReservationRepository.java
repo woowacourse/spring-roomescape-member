@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
-import roomescape.model.ReservationDate;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.UserName;
@@ -30,7 +29,7 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                 rs.getLong("id"),
                 new UserName(rs.getString("name")),
                 new ReservationDateTime(
-                        new ReservationDate(LocalDate.parse(rs.getString("date"))),
+                        LocalDate.parse(rs.getString("date")),
                         new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime())
                 )
         ));
@@ -57,9 +56,9 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
     }
 
     @Override
-    public boolean contains(ReservationDate reservationDate, Long timeId) {
+    public boolean contains(LocalDate reservationDate, Long timeId) {
         String sql = "select exists (select 1 from reservation where date = ? and time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationDate.getDate() ,timeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationDate ,timeId);
     }
 
     @Override

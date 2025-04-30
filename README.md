@@ -25,7 +25,7 @@
   - 된다. 그정도는 유효성 검증으로 보기 때문
 - NullPointException 을 반환할 것인가? 아니면 IllegalArgumentException 을 반환할 것인가
 - Test 용 DB를 만들어야 하나?? 
-- ReservationDate, ReservationTime 포장 하나 뜯기
+- [x] ReservationDate 포장 하나 뜯기
 - Time delete 시에 Reservation테이블이 필요해졌음 -> ReservationService(=RS)를 불러올까? -> 순환참조(이미 RS에서 ReservationTimeService(=RTS)를 호출)
   - 그러면 어떡할까? 1. 두개의 서비스가 각각 두 개의 리포지토리를 갖기 -> 이러면 뭐하러 서비스를 나누지? and 해당 서비스에서 불필요한 리포지토리 메서드를 사용할 수 있게 됨.
   - -> 천재적인 해결법 : 지금은 delete 시에 timeId 조회 기능만 필요하기 때문에 해당 기능만을 함수형 인터페이스로 분리해 냄.

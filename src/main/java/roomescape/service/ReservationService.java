@@ -1,11 +1,11 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
-import roomescape.model.ReservationDate;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationRepository;
@@ -30,7 +30,7 @@ public class ReservationService {
                 reservationRequestDto.timeId());
 
         ReservationDateTime reservationDateTime = new ReservationDateTime(
-                ReservationDate.of(reservationRequestDto.date()), reservationTime);
+                reservationRequestDto.date(), reservationTime);
 
         validateFutureDateTime(reservationDateTime);
         if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId())){
@@ -44,14 +44,14 @@ public class ReservationService {
     }
 
     private void validateFutureDateTime(ReservationDateTime reservationDateTime) {
-        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate().getDate(),reservationDateTime.getTime().getStartAt());
+        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate(),reservationDateTime.getTime().getStartAt());
         LocalDateTime now = LocalDateTime.now();
         if (dateTime.isBefore(now)) {
             throw new IllegalArgumentException("과거 예약은 불가능합니다.");
         }
     }
 
-    private boolean isAlreadyExist(ReservationDate reservationDate, Long timeId) {
+    private boolean isAlreadyExist(LocalDate reservationDate, Long timeId) {
          return reservationRepository.contains(reservationDate, timeId);
     }
 

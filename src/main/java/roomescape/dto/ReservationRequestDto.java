@@ -3,7 +3,6 @@ package roomescape.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import roomescape.model.Reservation;
-import roomescape.model.ReservationDate;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.UserName;
@@ -15,10 +14,10 @@ public record ReservationRequestDto(@JsonProperty(value = "name", defaultValue =
     public Reservation toEntity(Long id, ReservationTime reservationTime) {
         return new Reservation(id,
                 new UserName(name()),
-                new ReservationDateTime(new ReservationDate(date()), reservationTime));
+                new ReservationDateTime(date(), reservationTime));
     }
 
-    public ReservationRequestDto(String name, LocalDate date, Long timeId){
+    public ReservationRequestDto(String name, java.time.LocalDate date, Long timeId){
         if (name == null || date == null || timeId == null) throw new IllegalArgumentException();
         this.name = name;
         this.date = date;

@@ -1,9 +1,9 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
-import roomescape.model.ReservationDate;
 import roomescape.model.ReservationTime;
 
 public interface ReservationRepository {
@@ -14,5 +14,5 @@ public interface ReservationRepository {
 
     void deleteReservation(Long id);
 
-    boolean contains(ReservationDate reservationDate, Long timeId);
+    boolean contains(LocalDate reservationDate, Long timeId);
 }
