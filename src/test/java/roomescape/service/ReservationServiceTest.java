@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exceptions.EntityNotFoundException;
+import roomescape.exceptions.ReservationDuplicateException;
 import roomescape.fake.ReservationFakeRepository;
 import roomescape.fake.ReservationTimeFakeRepository;
 import roomescape.repository.ReservationRepository;
@@ -33,18 +34,47 @@ public class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("저장한 엔티티를 DTO로 반환한다.")
+    @DisplayName("예약 생성 시, 저장한 엔티티를 DTO로 반환한다.")
     void test_postReservation() {
         //given
         List<ReservationResponse> given = reservationService.readReservation();
         assertThat(given.size()).isEqualTo(1);
+        LocalDate givenDate = LocalDate.of(2028, 1, 10);
 
         //when
         long timeId = 1L;
-        ReservationRequest request = new ReservationRequest("브라운", LocalDate.MAX, timeId);
+        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId);
         ReservationResponse actual = reservationService.postReservation(request);
         //then
         assertThat(actual.id()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("예약 생성 시, 저장할 날짜가 과거일 경우 예외를 발생한다.")
+    void error_postReservationIfBeforeDate() {
+        //given
+        LocalDate givenDate = LocalDate.MIN;
+        long timeId = 1L;
+        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId);
+
+        //when&then
+        assertThatThrownBy(() -> reservationService.postReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("예약이 불가능한 날짜");
+    }
+
+    @Test
+    @DisplayName("예약 생성 시, 중복된 날짜,시간일 경우 예외가 발생한다.")
+    void error_postReservationIfDuplicationDatetime() {
+        //given
+        LocalDate givenDate = LocalDate.MAX;
+        long timeId = 1L;
+        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId);
+
+        //when&then
+        assertThatThrownBy(() -> reservationService.postReservation(request))
+                .isInstanceOf(ReservationDuplicateException.class)
+                .hasMessageContaining("해당 시각의 중복된 예약이 존재합니다");
     }
 
     @Test

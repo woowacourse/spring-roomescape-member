@@ -19,13 +19,13 @@ public class ReservationFakeRepository implements ReservationRepository {
     private final AtomicLong idGenerator = new AtomicLong(1);
 
     public ReservationFakeRepository() {
-        ReservationTime defaultTime = new ReservationTime(1L, LocalTime.now());
+        ReservationTime defaultTime = new ReservationTime(1L, LocalTime.MAX);
         reservationTimes.put(1L, defaultTime);
 
         Reservation defaultReservation = new Reservation(
                 idGenerator.getAndIncrement(),
                 "브라운",
-                LocalDate.of(2025, 1, 1),
+                LocalDate.MAX,
                 defaultTime);
         reservations.put(1L, defaultReservation);
     }
