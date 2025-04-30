@@ -48,8 +48,9 @@ class ReservationServiceTest {
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
         reservationTimeRepository.put(ReservationTime.of(1L, LocalTime.of(10, 0)));
+        reservationTimeRepository.put(ReservationTime.of(2L, LocalTime.of(10, 0)));
         reservationService.create(new ReservationCreateRequest("A", futureDate, 1L));
-        reservationService.create(new ReservationCreateRequest("B", futureDate, 1L));
+        reservationService.create(new ReservationCreateRequest("B", futureDate, 2L));
 
         List<ReservationResponse> result = reservationService.getReservations();
         assertThat(result).hasSize(2);
@@ -77,9 +78,17 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
-        ReservationCreateRequest request = new ReservationCreateRequest("누구", futureDate, 99L);
+        ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L);
 
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void createReservation_shouldThrowException_WhenDuplicated() {
+        reservationTimeRepository.put(ReservationTime.of(1L, LocalTime.of(9, 0)));
+        ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L);
+        reservationService.create(request);
+        assertThatThrownBy(() -> reservationService.create(request));
     }
 }

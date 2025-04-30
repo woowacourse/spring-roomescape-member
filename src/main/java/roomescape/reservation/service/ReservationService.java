@@ -37,6 +37,9 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationCreateRequest request) {
+        if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
+            throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다.");
+        }
         ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NoSuchElementException("요청한 id와 일치하는 예약 시간 정보가 없습니다."));
         Reservation newReservation = reservationRepository.put(

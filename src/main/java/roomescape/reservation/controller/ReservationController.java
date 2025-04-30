@@ -1,5 +1,6 @@
 package roomescape.reservation.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,11 +28,13 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservations());
     }
 
+    // TODO : URI 헤더에 등장하지 않는 문제 해결
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationCreateRequest request
     ) {
-        return ResponseEntity.ok(reservationService.create(request));
+        URI location = URI.create("http://localhost:8080");
+        return ResponseEntity.created(location).body(reservationService.create(request));
     }
 
     @DeleteMapping("/{id}")

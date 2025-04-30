@@ -3,24 +3,32 @@ package roomescape.reservationtime.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 class ReservationTimeServiceTest {
+    private final LocalDate futureDate = LocalDate.now().plusDays(1);
 
-    private ReservationTimeRepository reservationTimeRepository;
     private ReservationTimeService reservationTimeService;
+    private ReservationRepository reservationRepository;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setUp() {
         reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
     @Test
@@ -70,5 +78,15 @@ class ReservationTimeServiceTest {
 
         List<ReservationTimeResponse> result = reservationTimeService.getReservationTimes();
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void deleteReservationTime_shouldThrowException_WhenReservationExists() {
+        ReservationTime reservationTime = reservationTimeRepository.put(
+                ReservationTime.withUnassignedId(LocalTime.now()));
+        reservationRepository.put(Reservation.withUnassignedId("danny", futureDate, reservationTime));
+
+        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
+                .hasMessage("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

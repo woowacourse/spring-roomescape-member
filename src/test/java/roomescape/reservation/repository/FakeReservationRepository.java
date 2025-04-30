@@ -1,7 +1,9 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
@@ -30,6 +32,19 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean deleteById(final Long id) {
         return reservations.remove(id) != null;
+    }
+
+    @Override
+    public boolean existsByTimeId(final Long id) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), id));
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> Objects.equals(reservation.getDate(), date) && Objects.equals(
+                        reservation.getTime().getId(), timeId));
     }
 }
 

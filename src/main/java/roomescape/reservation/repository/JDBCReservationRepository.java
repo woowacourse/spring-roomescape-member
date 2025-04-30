@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.springframework.context.annotation.Primary;
@@ -65,4 +66,24 @@ public class JDBCReservationRepository implements ReservationRepository {
     public boolean deleteById(final Long id) {
         return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id) != 0;
     }
+
+    @Override
+    public boolean existsByTimeId(final Long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)",
+                Boolean.class,
+                id
+        ));
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                "SELECT EXISTS (SELECT 1 FROM reservation WHERE (date, time_id) = (?,?))",
+                Boolean.class,
+                date,
+                timeId
+        ));
+    }
+
 }

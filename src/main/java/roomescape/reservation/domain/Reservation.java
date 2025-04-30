@@ -14,6 +14,7 @@ public class Reservation {
     private final ReservationTime time;
 
     private Reservation(final Id id, final String name, final LocalDate date, final ReservationTime time) {
+        validateNameLength(name);
         validateDateTime(date, time.getStartAt());
         this.id = id;
         this.name = name;
@@ -27,6 +28,12 @@ public class Reservation {
 
     public static Reservation withUnassignedId(final String name, final LocalDate date, final ReservationTime time) {
         return new Reservation(Id.unassigned(), name, date, time);
+    }
+
+    private void validateNameLength(final String value) {
+        if (value.length() > 10) {
+            throw new IllegalArgumentException("이름은 10글자 이내여야 합니다.");
+        }
     }
 
     private void validateDateTime(LocalDate date, LocalTime time) {
