@@ -42,10 +42,12 @@ public class ThemeController {
                 .toUri();
         return ResponseEntity.created(location).body(themeCreateResponse);
     }
-
+    
     @DeleteMapping("{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.deleteIfNoReservation(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.ReservationTimeCreateResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeUserResponse;
 import roomescape.exception.ReservationExistException;
 
 @Service
@@ -20,16 +22,19 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public List<ReservationTimeResponse> findAll() {
-        return reservationTimeDao.findAll().stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
-    }
-
     public ReservationTimeCreateResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         ReservationTime reservationTime = reservationTimeDao.create(
                 new ReservationTime(reservationTimeCreateRequest.getLocalTime()));
         return ReservationTimeCreateResponse.from(reservationTime);
+    }
+
+    public List<ReservationTimeUserResponse> findAllByDateAndTheme(final long themeId, final LocalDate date) {
+        return reservationTimeDao.findAll().stream()
+                .map(reservationTime ->
+                        ReservationTimeUserResponse.from(reservationTime,
+                                reservationTimeDao.findByIdAndDateAndTheme(reservationTime.getId(), themeId, date)
+                                        .isPresent()))
+                .toList();
     }
 
     public void deleteIfNoReservation(final long id) {
@@ -46,5 +51,11 @@ public class ReservationTimeService {
             throw new NoSuchElementException("예약 시간이 존재하지 않습니다.");
         }
         return reservationTime.get();
+    }
+
+    public List<ReservationTimeResponse> findAll() {
+        return reservationTimeDao.findAll().stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 }

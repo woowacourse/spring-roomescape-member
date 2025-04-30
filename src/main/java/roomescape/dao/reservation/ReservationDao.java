@@ -12,5 +12,5 @@ public interface ReservationDao {
 
     void delete(long id);
 
-    Optional<Reservation> findByDateAndTime(Reservation reservation);
+    Optional<Reservation> findByThemeAndDateAndTime(Reservation reservation);
 }

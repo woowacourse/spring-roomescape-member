@@ -90,18 +90,26 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Optional<Reservation> findByDateAndTime(final Reservation reservation) {
-        final String sql = "SELECT " +
-                "r.id as reservation_id, " +
-                "r.name, " +
-                "r.date, " +
-                "t.id as time_id, " +
-                "t.start_at as time_value " +
-                "FROM reservation as r " +
-                "inner join reservation_time as t " +
-                "on r.time_id = t.id " +
-                "WHERE r.date = ? AND r.time_id = ?";
+    public Optional<Reservation> findByThemeAndDateAndTime(final Reservation reservation) {
+        final String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
+                FROM reservation as r 
+                inner join reservation_time as t
+                on r.time_id = t.id
+                inner join theme as th
+                on r.theme_id = th.id
+                WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?
+                """;
         return jdbcTemplate.query(sql, reservationMapper, reservation.getDate(),
-                reservation.getTime().getId()).stream().findFirst();
+                reservation.getTime().getId(), reservation.getTheme().getId()).stream().findFirst();
     }
 }

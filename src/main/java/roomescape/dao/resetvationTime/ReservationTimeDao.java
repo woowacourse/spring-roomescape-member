@@ -1,5 +1,6 @@
 package roomescape.dao.resetvationTime;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
@@ -13,4 +14,6 @@ public interface ReservationTimeDao {
     boolean deleteIfNoReservation(final long id);
 
     Optional<ReservationTime> findById(long id);
+
+    Optional<ReservationTime> findByIdAndDateAndTheme(long id, long themeId, LocalDate date);
 }

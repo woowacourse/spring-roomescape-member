@@ -7,13 +7,14 @@ public record ReservationCreateResponse(
         long id,
         String name,
         LocalDate date,
-        ReservationTimeResponse time,
-        ThemeResponse theme
+        ReservationTimeCreateResponse time,
+        ThemeCreateResponse theme
 ) {
 
     public static ReservationCreateResponse from(Reservation reservation) {
         return new ReservationCreateResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
-                ReservationTimeResponse.from(reservation.getTime()), ThemeResponse.from(reservation.getTheme()));
+                ReservationTimeCreateResponse.from(reservation.getTime()),
+                ThemeCreateResponse.from(reservation.getTheme()));
     }
 
     public long getId() {
@@ -28,7 +29,7 @@ public record ReservationCreateResponse(
         return date;
     }
 
-    public ReservationTimeResponse getTime() {
+    public ReservationTimeCreateResponse getTime() {
         return time;
     }
 }

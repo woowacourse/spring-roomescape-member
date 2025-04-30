@@ -36,7 +36,7 @@ public class ReservationService {
                 time,
                 theme);
 
-        if (reservationDao.findByDateAndTime(reservation).isPresent()) {
+        if (reservationDao.findByThemeAndDateAndTime(reservation).isPresent()) {
             throw new ReservationDuplicateException("이미 존재하는 예약입니다.");
         }
         return ReservationCreateResponse.from(reservationDao.create(reservation));

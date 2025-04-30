@@ -1,5 +1,6 @@
 package roomescape.dao.resetvationTime;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +61,23 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     @Override
     public Optional<ReservationTime> findById(final long id) {
         final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.query(sql, reservationTimeMapper, id).stream().findFirst();
+        return jdbcTemplate.query(sql, reservationTimeMapper, id).stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<ReservationTime> findByIdAndDateAndTheme(final long id, final long themeId, final LocalDate date) {
+        final String sql = """
+                SELECT id, start_at
+                FROM reservation_time rt
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM reservation r
+                    WHERE r.time_id = ? AND r.theme_id = ? AND r.date = ?
+                )
+                """;
+
+        return jdbcTemplate.query(sql, reservationTimeMapper, id, themeId, date).stream()
+                .findFirst();
     }
 }
