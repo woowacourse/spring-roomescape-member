@@ -287,8 +287,8 @@
   - [ ] 예약 목록 조회 API 호출 후 렌더링 response 명세에 맞춰 값 설정
 
 관리자 기능 (테마 관리, 예약 관리)
-- [ ] /admin/theme 요청 시 테마 관리 페이지를 응답합니다.
-  - [ ] 페이지는 templates/admin/theme.html 파일을 이용합니다.
-  - [ ] 어드민에서 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용합니다.
+- [x] /admin/theme 요청 시 테마 관리 페이지를 응답합니다.
+  - [x] 페이지는 templates/admin/theme.html 파일을 이용합니다.
+  - [x] 어드민에서 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용합니다.
     - AS-IS: templates/admin/reservation.html
     - TO-BE: templates/admin/reservation-new.html
