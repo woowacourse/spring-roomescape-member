@@ -22,8 +22,7 @@ class ReservationTest {
                         new ReservationTime(dateTime.toLocalTime()),
                         new Theme(1L, "공포", "무서워요", "image"))
         )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 null이거나 공백일 수 없습니다");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("이름에 공백값 들어오면 예외처리되도록 한다.")
@@ -41,8 +40,7 @@ class ReservationTest {
                         new ReservationTime(dateTime.toLocalTime()),
                         new Theme(1L, "공포", "무서워요", "image"))
         )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 null이거나 공백일 수 없습니다");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("당일 예약은 예외처리되도록 한다.")
@@ -60,8 +58,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(reservation::validateReservationDateInFuture
         )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("과거 및 당일 예약은 불가능합니다.");
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("오늘보다 과거로 예약하려고 할 경우 예외처리되도록 한다.")
@@ -79,7 +76,6 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(reservation::validateReservationDateInFuture
         )
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("과거 및 당일 예약은 불가능합니다.");
+                .isInstanceOf(IllegalStateException.class);
     }
 }

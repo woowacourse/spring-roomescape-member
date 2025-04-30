@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.common.exception.DuplicatedException;
 import roomescape.dao.FakeReservationDao;
 import roomescape.dao.FakeReservationTimeDao;
 import roomescape.dao.FakeThemeDao;
@@ -105,7 +106,7 @@ class ReservationServiceTest {
         // when && then
         assertThatThrownBy(
                 () -> reservationService.saveReservation(savedRequest))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(DuplicatedException.class);
     }
 
     @DisplayName("당일 예약을 한다면 예외를 던진다")
@@ -117,7 +118,7 @@ class ReservationServiceTest {
         // when && then
         assertThatThrownBy(
                 () -> reservationService.saveReservation(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
 }
