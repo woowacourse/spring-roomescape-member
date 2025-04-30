@@ -30,4 +30,20 @@ public class Theme {
         }
         return new Theme(id, name, description, thumbnail);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
 }
