@@ -7,21 +7,25 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
 import roomescape.exception.impl.HasDuplicatedDateTimeException;
 import roomescape.exception.impl.ReservationNotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> getReservations() {
@@ -33,10 +37,12 @@ public class ReservationService {
         LocalDate date = reservationRequest.date();
         Long timeId = reservationRequest.timeId();
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+
+        Theme theme = themeRepository.findById(reservationRequest.themeId());
         if (reservationRepository.isDuplicateDateAndTime(date, reservationTime.getStartAt())) {
             throw new HasDuplicatedDateTimeException();
         }
-        Reservation reservation = Reservation.beforeSave(name, date, reservationTime);
+        Reservation reservation = Reservation.beforeSave(name, date, reservationTime, theme);
 
         final Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);

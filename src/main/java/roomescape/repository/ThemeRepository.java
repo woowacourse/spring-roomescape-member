@@ -1,7 +1,8 @@
 package roomescape.repository;
 
-import java.util.List;
 import roomescape.entity.Theme;
+
+import java.util.List;
 
 public interface ThemeRepository {
     Theme save(Theme theme);
@@ -11,4 +12,6 @@ public interface ThemeRepository {
     boolean existById(long id);
 
     void deleteById(long id);
+
+    Theme findById(long id);
 }

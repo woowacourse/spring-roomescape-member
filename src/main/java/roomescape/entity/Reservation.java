@@ -1,12 +1,9 @@
 package roomescape.entity;
 
+import roomescape.exception.impl.*;
+
 import java.time.LocalDate;
 import java.time.Period;
-import roomescape.exception.impl.NameContainsNumberException;
-import roomescape.exception.impl.OverMaxNameLengthException;
-import roomescape.exception.impl.PastDateException;
-import roomescape.exception.impl.ReservationBeforeStartException;
-import roomescape.exception.impl.ReservationTimeNotFoundException;
 
 public class Reservation {
 
@@ -14,8 +11,9 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name.length() > 10) {
             throw new OverMaxNameLengthException();
         }
@@ -31,9 +29,15 @@ public class Reservation {
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static Reservation beforeSave(final String name, final LocalDate date, final ReservationTime time) {
+    public static Reservation beforeSave(
+            final String name,
+            final LocalDate date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         if (date.isBefore(LocalDate.now())) {
             throw new PastDateException();
         }
@@ -41,11 +45,11 @@ public class Reservation {
         if (minusDays > 7) {
             throw new ReservationBeforeStartException();
         }
-        return new Reservation(null, name, date, time);
+        return new Reservation(null, name, date, time, theme);
     }
 
-    public static Reservation afterSave(Long id, String name, LocalDate date, ReservationTime time) {
-        return new Reservation(id, name, date, time);
+    public static Reservation afterSave(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(id, name, date, time, theme);
     }
 
     public Long getId() {
@@ -62,5 +66,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

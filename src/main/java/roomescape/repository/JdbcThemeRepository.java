@@ -1,16 +1,26 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Theme;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
+
+    private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> {
+        Long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        String description = resultSet.getString("description");
+        String thumbnail = resultSet.getString("thumbnail");
+        return Theme.afterSave(id, name, description, thumbnail);
+    };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -72,5 +82,15 @@ public class JdbcThemeRepository implements ThemeRepository {
                 """;
 
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Theme findById(long id) {
+        final String sql = """
+                SELECT * FROM theme
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 }

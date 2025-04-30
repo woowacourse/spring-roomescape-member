@@ -10,5 +10,8 @@ public record ReservationRequest(
         @NotNull
         LocalDate date,
         @NotNull
-        Long timeId) {
+        Long timeId,
+        @NotNull
+        Long themeId
+) {
 }

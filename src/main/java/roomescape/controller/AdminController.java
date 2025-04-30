@@ -20,4 +20,9 @@ public class AdminController {
     public String getReservationTimePage() {
         return "time";
     }
+
+    @GetMapping("/admin/theme")
+    public String getThemePage() {
+        return "theme";
+    }
 }
