@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlotTimes;
+import roomescape.domain.Theme;
 import roomescape.dto.AddReservationDto;
 import roomescape.dto.AvailableTimeRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeSlotResponseDto;
+import roomescape.dto.ThemeResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -67,5 +70,16 @@ public class ReservationController {
                 .map((time) -> new ReservationTimeSlotResponseDto(time.getId(), time.getTime(), time.isReserved()))
                 .toList();
         return ResponseEntity.ok(reservationTimeSlotResponseDtos);
+    }
+
+    @GetMapping("/popular-themes")
+    public ResponseEntity<List<ThemeResponseDto>> popularThemes() {
+        List<Theme> rankingThemes = reservationService.getRankingThemes(LocalDate.now());
+
+        List<ThemeResponseDto> themeResponseDtos = rankingThemes.stream()
+                .map((theme) -> new ThemeResponseDto(theme.getId(), theme.getDescription(),
+                        theme.getName(), theme.getThumbnail()))
+                .toList();
+        return ResponseEntity.ok(themeResponseDtos);
     }
 }

@@ -94,10 +94,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(Reservation reservation) {
-        String sql = "select count(id) from reservation where date = ? and time_id = ?";
+    public boolean existsByDateAndTimeIdAndTheme(Reservation reservation) {
+        String sql = "select count(id) from reservation where date = ? and time_id = ? and theme_id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, reservation.getDate(),
-                reservation.getReservationTime().getId()) > 0;
+                reservation.getReservationTime().getId(),
+                reservation.getTheme().getId()) > 0;
     }
 
     @Override
@@ -124,7 +125,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(long addedReservationId) {
+    public Optional<Reservation> findById(long id) {
         String sql = """
                 select 
                     r.id as reservation_id,
@@ -141,11 +142,35 @@ public class JdbcReservationRepository implements ReservationRepository {
                     on r.time_id = rt.id
                     inner join theme as t
                     on r.theme_id = t.id
+                where r.id = ?
                 """;
         try {
-            return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper));
+            return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
+        String sql = """
+                select 
+                    r.id as reservation_id,
+                        r.name,
+                        r.date,
+                        rt.id as time_id,
+                        rt.start_at as time_value,
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_description,
+                        t.thumbnail as theme_thumbnail
+                    from reservation as r
+                    inner join reservation_time as rt
+                    on r.time_id = rt.id
+                    inner join theme as t
+                    on r.theme_id = t.id
+                    where r.date between ? and ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, start, end);
     }
 }

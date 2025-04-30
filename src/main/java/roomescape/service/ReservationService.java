@@ -3,7 +3,10 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
@@ -22,6 +25,9 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
+    public static final int THEME_RANKING_END_RANGE = 7;
+    public static final int THEME_RANKING_START_RANGE = 1;
+    public static final int RANKING_SIZE = 10;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -52,10 +58,8 @@ public class ReservationService {
         return reservationRepository.add(reservation);
     }
 
-
-    //TODO 테마 추가 테마 삭제할떄도 예약있는지 확인해야함
     private void validateSameReservation(Reservation reservation) {
-        if (reservationRepository.existsByDateAndTimeId(reservation)) {
+        if (reservationRepository.existsByDateAndTimeIdAndTheme(reservation)) {
             throw new InvalidReservationException("중복된 예약신청입니다");
         }
     }
@@ -83,5 +87,23 @@ public class ReservationService {
     public Reservation getReservationById(long addedReservationId) {
         return reservationRepository.findById(addedReservationId)
                 .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약입니다."));
+    }
+
+    public List<Theme> getRankingThemes(LocalDate originDate) {
+        LocalDate end = originDate.minusDays(THEME_RANKING_START_RANGE);
+        LocalDate start = end.minusDays(THEME_RANKING_END_RANGE);
+        List<Reservation> inRangeReservations = reservationRepository.findAllByDateInRange(start, end);
+
+        Map<Theme, Integer> themeRankCount = new HashMap<>();
+        for (Reservation inRangeReservation : inRangeReservations) {
+            Theme theme = inRangeReservation.getTheme();
+            themeRankCount.put(theme, themeRankCount.getOrDefault(theme, 0) + 1);
+        }
+
+        return themeRankCount.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(Map.Entry::getKey)
+                .limit(RANKING_SIZE)
+                .toList();
     }
 }

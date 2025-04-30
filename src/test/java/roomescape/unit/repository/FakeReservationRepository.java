@@ -45,11 +45,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(Reservation reservation) {
+    public boolean existsByDateAndTimeIdAndTheme(Reservation reservation) {
         return reservations.stream()
                 .anyMatch(currentReservation -> currentReservation.getDate().isEqual(reservation.getDate())
-                        && currentReservation.getReservationTime().getId()
-                        .equals(reservation.getReservationTime().getId()));
+                                                && currentReservation.getReservationTime().getId()
+                                                        .equals(reservation.getReservationTime().getId())
+                                                && currentReservation.getTheme().getId()
+                                                        .equals(reservation.getTheme().getId()));
     }
 
     @Override
@@ -65,5 +67,16 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .filter((reservation) -> reservation.getId().equals(id))
                 .findAny();
+    }
+
+    @Override
+    public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
+        List<Reservation> reservationsInRange = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            if (reservation.getDate().isAfter(start) && reservation.getDate().isBefore(end)) {
+                reservationsInRange.add(reservation);
+            }
+        }
+        return reservationsInRange;
     }
 }

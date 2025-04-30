@@ -3,6 +3,7 @@ package roomescape.unit.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,10 +13,13 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationSlot;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.AddReservationDto;
 import roomescape.dto.AddReservationTimeDto;
 import roomescape.dto.AddThemeDto;
 import roomescape.dto.AvailableTimeRequestDto;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
@@ -28,10 +32,12 @@ class ReservationServiceTest {
 
     static ReservationService reservationService;
     static ReservationTimeRepository reservationTimeRepository;
+    static ReservationRepository reservationRepository;
     static ThemeRepository themeRepository;
 
     @BeforeEach
     void setup() {
+        reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository();
         reservationService = new ReservationService(new FakeReservationRepository(), reservationTimeRepository,
@@ -142,7 +148,35 @@ class ReservationServiceTest {
 
         List<ReservationSlot> reservationSlots = List.of(new ReservationSlot(1L, firstTime, true),
                 new ReservationSlot(2L, secondTime, false));
-        
+
         assertThat(reservationAvailabilities).containsExactlyInAnyOrderElementsOf(reservationSlots);
+    }
+
+    @Test
+    void 최근_일주일을_기준으로_예약이_많은_테마_10개를_확인할_수_있다() {
+        for (int i = 0; i < 10; i++) {
+            Theme theme = new Theme(null, "테마" + 1, "테마", "thumbnail");
+            themeRepository.add(theme);
+        }
+        for (int i = 0; i < 6; i++) {
+            LocalTime localTime = LocalTime.of(10 + i, 0);
+            reservationTimeRepository.add(new ReservationTime(null, localTime));
+        }
+
+        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1), 1L, 1L));
+        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1), 2L, 1L));
+        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1), 3L, 1L));
+
+        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1), 1L, 2L));
+        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1), 2L, 2L));
+
+        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1), 1L, 3L));
+
+        List<Theme> top10Theme = reservationService.getRankingThemes(LocalDate.now().plusDays(6));
+        assertAll(() -> {
+            assertThat(top10Theme.getFirst().getId()).isEqualTo(1L);
+            assertThat(top10Theme.get(1).getId()).isEqualTo(2L);
+            assertThat(top10Theme.get(2).getId()).isEqualTo(3L);
+        });
     }
 }
