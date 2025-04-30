@@ -27,7 +27,7 @@ public class ReservationService {
 
     public Reservation reserve(String name, LocalDate date, Long timeId) {
         var timeSlot = findTimeSlot(timeId);
-        // TODO: 정적 팩토리 메서드로 임시 예약 생성하기
+        // TODO : 정적 팩토리 메서드로 임시 예약 생성하기
         var reservation = Reservation.create(name, date, timeSlot);
         // TODO : now 테스트 어려움 해결하기
         validatePastDateTime(reservation);

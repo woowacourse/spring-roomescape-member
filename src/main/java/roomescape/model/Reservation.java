@@ -37,16 +37,17 @@ public class Reservation {
             || (this.date.isEqual(date) && this.timeSlot.isBefore(time));
     }
 
+    public boolean isSameDateTime(final Reservation reservation) {
+        return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
+    }
+
+    // TODO : 메서드명
     public static Reservation register(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot) {
         return new Reservation(id, name, date, timeSlot);
     }
 
     public static Reservation create(final String name, final LocalDate date, final TimeSlot timeSlot) {
         return new Reservation(null, name, date, timeSlot);
-    }
-
-    public boolean isSameDateTime(final Reservation reservation) {
-        return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
     }
 
     private void validateNotNull(
