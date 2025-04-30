@@ -1,8 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
 import roomescape.exception.impl.ConnectedReservationExistException;
 import roomescape.exception.impl.HasDuplicatedTimeException;
@@ -20,34 +18,30 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
-                                  final ReservationRepository reservationRepository) {
-
+    public ReservationTimeService(
+            final ReservationTimeRepository reservationTimeRepository,
+            final ReservationRepository reservationRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
-        LocalTime createTime = reservationTimeRequest.startAtToLocalTime();
-        validateTime(createTime);
-        ReservationTime reservationTime = ReservationTime.beforeSave(createTime);
-        ReservationTime createdReservationTime = reservationTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.from(createdReservationTime);
+    public ReservationTime createReservationTime(final LocalTime time) {
+        validateNoDuplication(time);
+        validateTimeInterval(time);
+
+        ReservationTime reservationTime = ReservationTime.beforeSave(time);
+        return reservationTimeRepository.save(reservationTime);
     }
 
-    private void validateTime(LocalTime createTime) {
-        validateNoDuplication(createTime);
-        validateTimeInterval(createTime);
-    }
-
-    private void validateNoDuplication(LocalTime createTime) {
+    private void validateNoDuplication(final LocalTime createTime) {
         boolean isExist = reservationTimeRepository.existByTime(createTime);
         if (isExist) {
             throw new HasDuplicatedTimeException();
         }
     }
 
-    private void validateTimeInterval(LocalTime createTime) {
+    private void validateTimeInterval(final LocalTime createTime) {
         boolean hasLess30MinDifference = reservationTimeRepository.findAll().stream()
                 .anyMatch(reservationTime -> reservationTime.isInTimeInterval(createTime));
         if (hasLess30MinDifference) {
@@ -55,16 +49,15 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTimeResponse> getAllReservationTime() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        return ReservationTimeResponse.from(reservationTimes);
+    public List<ReservationTime> getAllReservationTime() {
+        return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTime> getAvailableReservationTimesOf(LocalDate date, Long themeId) {
+    public List<ReservationTime> getAvailableReservationTimesOf(final LocalDate date, final long themeId) {
         return reservationTimeRepository.getAvailableReservationTimeOf(date, themeId);
     }
 
-    public boolean delete(Long id) {
+    public boolean delete(final long id) {
         boolean isReservationExistInTime = reservationRepository.existByTimeId(id);
         if (isReservationExistInTime) {
             throw new ConnectedReservationExistException();

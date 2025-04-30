@@ -1,8 +1,6 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -22,34 +20,38 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponse> getReservations() {
-        return ReservationResponse.from(reservationRepository.findAll());
-    }
-
-    public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
-        String name = reservationRequest.name();
-        LocalDate date = reservationRequest.date();
-        Long timeId = reservationRequest.timeId();
+    public Reservation createReservation(
+            final String name,
+            final LocalDate date,
+            final long timeId,
+            final long themeId
+    ) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
+        Theme theme = themeRepository.findById(themeId);
 
-        Theme theme = themeRepository.findById(reservationRequest.themeId());
         if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.getStartAt(), theme)) {
             throw new AlreadyReservedException();
         }
-        Reservation reservation = Reservation.beforeSave(name, date, reservationTime, theme);
 
-        final Reservation saved = reservationRepository.save(reservation);
-        return ReservationResponse.from(saved);
+        Reservation reservation = Reservation.beforeSave(name, date, reservationTime, theme);
+        return reservationRepository.save(reservation);
     }
 
-    public void delete(final Long id) {
+    public List<Reservation> getReservations() {
+        return reservationRepository.findAll();
+    }
+
+    public void delete(final long id) {
         if (reservationRepository.findById(id) == null) {
             throw new ReservationNotFoundException();
         }

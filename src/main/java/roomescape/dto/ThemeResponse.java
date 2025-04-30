@@ -2,6 +2,8 @@ package roomescape.dto;
 
 import roomescape.entity.Theme;
 
+import java.util.List;
+
 public record ThemeResponse(
         Long id,
         String name,
@@ -10,5 +12,11 @@ public record ThemeResponse(
 ) {
     public static ThemeResponse from(Theme theme) {
         return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    public static List<ThemeResponse> from(List<Theme> theme) {
+        return theme.stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

@@ -21,25 +21,18 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @PostMapping("/times")
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody @Valid ReservationTimeRequest request) {
+        ReservationTime reservationTime = reservationTimeService.createReservationTime(request.startAtToLocalTime());
+        ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
+        return ResponseEntity.created(URI.create("/times")).body(response);
+    }
+
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTime() {
-        List<ReservationTimeResponse> allReservationTime = reservationTimeService.getAllReservationTime();
-        return ResponseEntity.ok(allReservationTime);
-    }
-
-    @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(
-            @RequestBody @Valid ReservationTimeRequest reservationTimeRequest) {
-        ReservationTimeResponse reservationTimeResponse = reservationTimeService.createReservationTime(
-                reservationTimeRequest);
-        // TODO : 더 정확한 리소스 위치 표기 필요
-        return ResponseEntity.created(URI.create("/times")).body(reservationTimeResponse);
-    }
-
-    @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
-        reservationTimeService.delete(id);
-        return ResponseEntity.noContent().build();
+        List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTime();
+        List<ReservationTimeResponse> responses = ReservationTimeResponse.from(reservationTimes);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/times/possible")
@@ -48,10 +41,13 @@ public class ReservationTimeController {
             @RequestParam("themeId") Long themeId
     ) {
         List<ReservationTime> reservationTimes = reservationTimeService.getAvailableReservationTimesOf(date, themeId);
-        List<ReservationTimeResponse> responses = reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
-
+        List<ReservationTimeResponse> responses = ReservationTimeResponse.from(reservationTimes);
         return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping("/times/{id}")
+    public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
+        reservationTimeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

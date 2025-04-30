@@ -17,27 +17,13 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    // TODO : DTO 반환 VS 엔티티 반환 고민하기
-    // 해보고 경과보기
-    public Theme add(
-            String name,
-            String description,
-            String thumbnail
-    ) {
+    public Theme add(final String name, final String description, final String thumbnail) {
         Theme theme = Theme.beforeSave(name, description, thumbnail);
         return themeRepository.save(theme);
     }
 
-    public List<Theme> getThemes() {
+    public List<Theme> getAllThemes() {
         return themeRepository.findAll();
-    }
-
-    public void deleteById(long id) {
-        boolean exist = themeRepository.existById(id);
-        if (!exist) {
-            throw new ThemeNotFoundException();
-        }
-        themeRepository.deleteById(id);
     }
 
     public List<Theme> getPopularThemes() {
@@ -46,5 +32,13 @@ public class ThemeService {
                 LocalDate.now().minusDays(1),
                 10
         );
+    }
+
+    public void deleteById(final long id) {
+        boolean exist = themeRepository.existById(id);
+        if (!exist) {
+            throw new ThemeNotFoundException();
+        }
+        themeRepository.deleteById(id);
     }
 }
