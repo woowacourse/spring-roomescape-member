@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.ReservationService;
-import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateException;
-import roomescape.exception.PlayTimeNotFoundException;
-import roomescape.exception.ReservationNotFoundException;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -35,14 +32,8 @@ public class ReservationController {
         try {
             final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-        } catch (PlayTimeNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (DuplicateReservationException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (InvalidReservationDateException e) {
             return ResponseEntity.unprocessableEntity().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -55,11 +46,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
-        try {
-            reservationService.remove(id);
-        } catch (ReservationNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        reservationService.remove(id);
 
         return ResponseEntity.noContent().build();
     }

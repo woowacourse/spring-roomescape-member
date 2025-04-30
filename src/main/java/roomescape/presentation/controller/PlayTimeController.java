@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.PlayTimeService;
-import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.presentation.dto.PlayTimeRequest;
 import roomescape.presentation.dto.PlayTimeResponse;
 
@@ -29,30 +28,22 @@ public class PlayTimeController {
     public ResponseEntity<PlayTimeResponse> create(
             @RequestBody final PlayTimeRequest playTimeRequest
     ) {
-        try {
-            final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(playTimeResponse);
-        }  catch (DuplicatePlayTimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(playTimeResponse);
+
     }
 
     @GetMapping
     public ResponseEntity<List<PlayTimeResponse>> readAll() {
-        final List<PlayTimeResponse> playTimeRespons = playTimeService.findAll();
+        final List<PlayTimeResponse> playTimeResponse = playTimeService.findAll();
 
-        return ResponseEntity.ok(playTimeRespons);
+        return ResponseEntity.ok(playTimeResponse);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
-        try {
-            playTimeService.remove(id);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        playTimeService.remove(id);
 
         return ResponseEntity.noContent().build();
     }
