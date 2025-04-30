@@ -33,4 +33,9 @@ public class ReservationTime {
     public LocalTime getStartAt() {
         return startAt;
     }
+
+    public boolean isPastTime() {
+        LocalTime now = LocalTime.now();
+        return !startAt.isAfter(now);
+    }
 }
