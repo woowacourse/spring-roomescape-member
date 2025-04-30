@@ -121,7 +121,7 @@ function renderAvailableTimes(times) {
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정 - 완료
     */
     const startAt = time.startAt;
-    const timeId = time.id;
+    const timeId = time.timeId;
     const alreadyBooked = time.booked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
