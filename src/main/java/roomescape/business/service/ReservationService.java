@@ -11,6 +11,7 @@ import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
 import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationResponseDto;
+import roomescape.business.dto.ReservationThemeRequestDto;
 import roomescape.business.dto.ReservationThemeResponseDto;
 import roomescape.business.dto.ReservationTimeRequestDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
@@ -128,5 +129,23 @@ public class ReservationService {
                         )
                 )
                 .toList();
+    }
+
+    public ReservationThemeResponseDto createTheme(ReservationThemeRequestDto reservationThemeDto) {
+        if (reservationThemeRepository.existByName(reservationThemeDto.name())) {
+            throw new IllegalArgumentException("동일한 이름의 테마를 추가할 수 없습니다.");
+        }
+        Long id = reservationThemeRepository.add(new ReservationTheme(
+                        reservationThemeDto.name(),
+                        reservationThemeDto.description(),
+                        reservationThemeDto.thumbnail()
+                )
+        );
+        return new ReservationThemeResponseDto(
+                id,
+                reservationThemeDto.name(),
+                reservationThemeDto.description(),
+                reservationThemeDto.thumbnail()
+        );
     }
 }

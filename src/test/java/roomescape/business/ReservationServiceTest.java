@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.dto.ReservationRequestDto;
+import roomescape.business.dto.ReservationThemeRequestDto;
 import roomescape.business.dto.ReservationTimeRequestDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
 import roomescape.business.fakerepository.FakeReservationRepository;
@@ -33,7 +34,8 @@ class ReservationServiceTest {
         ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         reservationThemeRepository = new FakeReservationThemeRepository();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, reservationThemeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+                reservationThemeRepository);
         timeId = reservationTimeRepository.add(new ReservationTime(1L, LocalTime.now()));
     }
 
@@ -149,8 +151,22 @@ class ReservationServiceTest {
 
         // when
         // then
-        assertThatCode(() -> reservationService.deleteTime(timeId) )
+        assertThatCode(() -> reservationService.deleteTime(timeId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("동일한 이름의 테마를 추가할 경우 예외가 발생한다.")
+    @Test
+    void createSameNameTheme() {
+        // given
+        ReservationThemeRequestDto reservationThemeRequest = new ReservationThemeRequestDto("수양", "수양테마", "수양썸네일");
+        reservationService.createTheme(reservationThemeRequest);
+
+        // when
+        // then
+        assertThatCode(() -> reservationService.createTheme(reservationThemeRequest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("동일한 이름의 테마를 추가할 수 없습니다.");
     }
 }
