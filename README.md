@@ -7,19 +7,23 @@
 - [x] 시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때
   - [x] null이 들어오면 예외가 발생한다.
   - [x] 이미 존재하는 시간은 등록할 수 없다.
-- [x] 예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력 되었을 때
+- [x] 테마 생성 시 테마 이름, 테마 설명, 썸네일에 유효하지 않은 값이 입력되었을 때
+  - [x] null이 들어오면 예외가 발생한다.
+  - [x] 이미 존재하는 테마 이름이라면 예외가 발생한다.
+- [x] 예약 생성 시 예약자명, 날짜, 시간, 테마에 유효하지 않은 값이 입력 되었을 때
   - [x] 값중에 하나라도 null이 들어오면 예외가 발생한다.
   - [x] 등록되지 않은 시간인 경우 예외가 발생한다.
 - [x] 아래와 같은 서비스 정책을 반영
-  - [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능하다.
+  - [x] 사용자는 지나간 날짜와 시간에 대한 예약 생성이 불가능하다.
   - [x] 중복 예약은 불가능하다.
   - [x] 특정 시간에 대한 예약이 존재하면 그 시간은 삭제가 불가능하다.
+  - [x] 특정 테마에 대한 예약이 존재하면 그 테마는 삭제가 불가능하다.
 
 ### 2. 예외 응답
 
 - [x] null, 생성할 때의 예외는 BadRequest로 응답한다.
   - null: InvalidInputException
-  - 생성: TimeDoesNotExistException, NotCorrectDateTimeException -> ReservationC
+  - 생성: TimeDoesNotExistException, NotCorrectDateTimeException 
 - [x] 중복, 삭제할 때의 예외는 Conflict로 응답한다.
   - 중복: DuplicateTimeException, DuplicateReservationException
 

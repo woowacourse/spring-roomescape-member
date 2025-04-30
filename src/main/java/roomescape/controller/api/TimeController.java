@@ -46,12 +46,6 @@ public class TimeController {
         timeService.removeReservationTime(id);
     }
 
-    @ExceptionHandler(value = DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleSQLException(DataIntegrityViolationException ex) {
-        return "예약이 존재하여 제거할 수 없다.";
-    }
-
     @ExceptionHandler(value = DuplicateTimeException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleDuplicateException(DuplicateTimeException ex) {

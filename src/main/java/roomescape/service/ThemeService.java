@@ -4,7 +4,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+import roomescape.dto.ReservationRequest;
 import roomescape.dto.ThemeRequest;
+import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicateThemeException;
 
 @Service
 public class ThemeService {
@@ -28,8 +31,15 @@ public class ThemeService {
     }
 
     public Theme addTheme(ThemeRequest request) {
+        validateDuplicateTheme(request);
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnail());
         return themeDao.addTheme(theme);
+    }
+
+    private void validateDuplicateTheme(ThemeRequest themeRequest) {
+        if (themeDao.existThemeByName(themeRequest.name())) {
+            throw new DuplicateThemeException();
+        }
     }
 
     public void removeTheme(Long id) {

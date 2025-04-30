@@ -14,4 +14,6 @@ public interface ThemeDao {
     Theme findThemeById(Long id);
 
     List<Theme> findTopReservedThemesInPeriodWithLimit(int period, int limitCount);
+
+    boolean existThemeByName(String name);
 }

@@ -1,6 +1,7 @@
 package roomescape.dao.jdbc;
 
 import java.sql.Date;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,11 @@ public class JdbcThemeDao implements ThemeDao {
             LIMIT ?;
         """;
         return jdbcTemplate.query(sql, createThemeMapper(), period, limitCount);
+    }
+
+    public boolean existThemeByName(String name) {
+        String sql = "SELECT EXISTS(SELECT id FROM theme WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     private RowMapper<Theme> createThemeMapper() {
