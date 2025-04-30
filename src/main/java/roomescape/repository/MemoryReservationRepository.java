@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
+import roomescape.model.ReservationDate;
 import roomescape.model.ReservationTime;
 
 public class MemoryReservationRepository implements ReservationRepository{
@@ -35,5 +36,10 @@ public class MemoryReservationRepository implements ReservationRepository{
                 return;
             }
         }
+    }
+
+    @Override
+    public boolean contains(ReservationDate reservationDate, Long timeId) {
+        return false;
     }
 }
