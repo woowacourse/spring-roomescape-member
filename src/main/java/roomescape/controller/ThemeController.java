@@ -36,6 +36,12 @@ public class ThemeController {
         return ResponseEntity.created(URI.create("themes/" + responseDto.id())).body(responseDto);
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponseDto>> getPopularThemes() {
+        List<ThemeResponseDto> popularThemes = themeService.findPopularThemes();
+        return ResponseEntity.ok(popularThemes);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable("id") final Long id) {
         themeService.deleteThemeById(id);

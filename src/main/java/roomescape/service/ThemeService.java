@@ -1,7 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequestDto;
@@ -44,5 +44,14 @@ public class ThemeService {
         if (deletedThemeCount == 0) {
             throw new NotFoundException("[ERROR] 등록된 테마만 삭제할 수 있습니다. 입력된 번호는 " + id + "입니다.");
         }
+    }
+
+    public List<ThemeResponseDto> findPopularThemes() {
+        LocalDate end = LocalDate.now();
+        LocalDate start = end.minusDays(7);
+        List<Theme> popularThemes = themeRepository.findPopular(start, end);
+        return popularThemes.stream()
+                .map(ThemeResponseDto::from)
+                .toList();
     }
 }

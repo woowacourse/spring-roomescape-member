@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -76,5 +77,23 @@ public class JdbcThemeDao implements ThemeRepository {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("[ERROR] 이 테마는 이미 존재합니다. id : " + id);
         }
+    }
+
+    @Override
+    public List<Theme> findPopular(LocalDate start, LocalDate end) {
+        String sql = """
+                SELECT
+                th.id,
+                th.name,
+                th.description,
+                th.thumbnail
+                FROM theme as th
+                INNER JOIN reservation as r on r.theme_id = th.id
+                WHERE r.date >= ? and r.date < ?
+                GROUP BY th.id
+                ORDER BY COUNT(th.id) DESC
+                LIMIT 10
+                """;
+        return jdbcTemplate.query(sql, rowMapper, start, end);
     }
 }
