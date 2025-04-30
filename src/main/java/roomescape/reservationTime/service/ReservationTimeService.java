@@ -1,27 +1,45 @@
 package roomescape.reservationTime.service;
 
+import java.time.LocalDate;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import roomescape.globalException.CustomException;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.domain.dto.AvailableReservationTimeResDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository repository;
     private final ReservationRepository reservationRepository;
+    private final ThemeRepository themeRepository;
 
-    @Autowired
-    public ReservationTimeService(ReservationTimeRepository repository, ReservationRepository reservationRepository) {
+    public ReservationTimeService(
+        ReservationTimeRepository repository,
+        ReservationRepository reservationRepository,
+        ThemeRepository themeRepository
+    ) {
         this.repository = repository;
         this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
+    }
+
+    public ReservationTimeResDto add(ReservationTimeReqDto dto) {
+        ReservationTime reservationTime = convertToReservationTimeReqDto(dto);
+        validateDuplicateTime(reservationTime);
+        ReservationTime savedReservationTime = repository.add(reservationTime);
+        return convertToReservationTimeResDto(savedReservationTime);
     }
 
     public List<ReservationTimeResDto> readAll() {
@@ -31,11 +49,22 @@ public class ReservationTimeService {
             .toList();
     }
 
-    public ReservationTimeResDto add(ReservationTimeReqDto dto) {
-        ReservationTime reservationTime = convertToReservationTimeReqDto(dto);
-        validateDuplicateTime(reservationTime);
-        ReservationTime savedReservationTime = repository.add(reservationTime);
-        return convertToReservationTimeResDto(savedReservationTime);
+    public List<AvailableReservationTimeResDto> readAllAvailableTimes(Long themeId, LocalDate date) {
+        List<ReservationTime> allTime = repository.findAll();
+        Theme theme = themeRepository.findByIdOrThrow(themeId);
+        Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findByThemeAndDate(theme, date)
+            .stream()
+            .map(Reservation::getReservationTime)
+            .collect(Collectors.toSet());
+
+        return allTime.stream()
+            .map(reservationTime ->
+                AvailableReservationTimeResDto.from(
+                    reservationTime,
+                    reservationTimesByThemeAndDate.contains(reservationTime)
+                )
+            )
+            .toList();
     }
 
     public void delete(Long id) {
