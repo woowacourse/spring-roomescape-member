@@ -36,7 +36,7 @@ public class ThemeController {
         return themeService.saveTheme(themeRequestDto);
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(@PathVariable("id") Long id) {
         themeService.deleteTheme(id);
