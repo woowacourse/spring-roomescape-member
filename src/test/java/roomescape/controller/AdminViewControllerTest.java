@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class ViewControllerTest {
+class AdminViewControllerTest {
 //    @DisplayName("/ 페이지 연결 테스트(웰컴 페이지)")
 //    @Test
 //    void welcomePage() {
