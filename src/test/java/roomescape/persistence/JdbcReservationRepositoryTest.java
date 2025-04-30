@@ -140,4 +140,18 @@ class JdbcReservationRepositoryTest {
         //then
         assertThat(result).isTrue();
     }
+
+    @Test
+    void theme_id를_사용하는_예약이_존재하는지_알_수_있다() {
+        //given
+        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
+        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
+
+        //when
+        boolean result = reservationDao.existByThemeId(1L);
+
+        //then
+        assertThat(result).isTrue();
+    }
 }
