@@ -1,9 +1,11 @@
 package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ExistedThemeException;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.FakeThemeDao;
 import roomescape.theme.dao.ThemeDao;
@@ -48,5 +50,15 @@ public class ThemeServiceTest {
         themeService.delete(1L);
         // then
         assertThat(themeDao.findAll()).hasSize(1);
+    }
+
+    @Test
+    void 중복된_이름으로_테마를_생성할_수_없다() {
+        // given
+        Theme theme3 = new Theme(1L, "name1", "description3", "thumbnail3");
+        ThemeRequest themeRequest = new ThemeRequest(theme3.getName(), theme3.getDescription(), theme3.getThumbnail());
+        // when & then
+        assertThatThrownBy(() -> themeService.create(themeRequest))
+                .isInstanceOf(ExistedThemeException.class);
     }
 }

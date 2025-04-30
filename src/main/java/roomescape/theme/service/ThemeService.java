@@ -1,7 +1,9 @@
 package roomescape.theme.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.exception.ExistedThemeException;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.dto.request.ThemeRequest;
@@ -17,6 +19,11 @@ public class ThemeService {
     }
 
     public ThemeResponse create(ThemeRequest themeRequest) {
+        Optional<Theme> optionalTheme = themeDao.findByName(themeRequest.name());
+        if (optionalTheme.isPresent()) {
+            throw new ExistedThemeException();
+        }
+
         Theme theme = Theme.createWithoutId(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         Theme themeWithId = themeDao.create(theme);
         return new ThemeResponse(themeWithId.getId(), themeWithId.getName(), themeWithId.getDescription(),

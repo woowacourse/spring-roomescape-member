@@ -3,6 +3,7 @@ package roomescape.theme.dao;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.theme.Theme;
 
@@ -35,5 +36,12 @@ public class FakeThemeDao implements ThemeDao {
     @Override
     public void delete(long id) {
         fakeThemes.removeIf(theme -> theme.getId().equals(id));
+    }
+
+    @Override
+    public Optional<Theme> findByName(String name) {
+        return fakeThemes.stream()
+                .filter(theme -> theme.getName().equals(name))
+                .findFirst();
     }
 }

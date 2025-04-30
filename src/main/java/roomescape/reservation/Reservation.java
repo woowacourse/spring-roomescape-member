@@ -2,8 +2,8 @@ package roomescape.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import roomescape.exception.ArgumentNullException;
 import roomescape.exception.PastDateTimeReservationException;
-import roomescape.exception.ReservationNullPointException;
 import roomescape.reservationtime.ReservationTime;
 
 public class Reservation {
@@ -22,13 +22,13 @@ public class Reservation {
 
     private static void validateNull(String name, LocalDate date, ReservationTime reservationTime) {
         if (name == null || name.isBlank()) {
-            throw new ReservationNullPointException();
+            throw new ArgumentNullException();
         }
         if (date == null) {
-            throw new ReservationNullPointException();
+            throw new ArgumentNullException();
         }
         if (reservationTime == null) {
-            throw new ReservationNullPointException();
+            throw new ArgumentNullException();
         }
     }
 
