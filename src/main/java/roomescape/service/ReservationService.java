@@ -46,9 +46,17 @@ public class ReservationService {
         return ReservationResponse.from(savedReservation);
     }
 
+    private ReservationTime findReservationTimeByTimeId(final long timeId) {
+        return reservationTimeDAO.findById(timeId)
+                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d"
+                        .formatted(timeId)));
+    }
+
+    // TODO : 맞추기
+
     private RoomTheme findThemeByThemeId(final ReservationCreation creation) {
         return themeDAO.findById(creation.themeId())
-                .orElseThrow(NotExistedValueException::new);
+                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
     }
 
     private void validatePastDateAndTime(final LocalDate date, final ReservationTime time) {
@@ -77,12 +85,6 @@ public class ReservationService {
 
     public List<Reservation> findAll() {
         return reservationDAO.findAll();
-    }
-
-    private ReservationTime findReservationTimeByTimeId(final long timeId) {
-        return reservationTimeDAO.findById(timeId)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d"
-                        .formatted(timeId)));
     }
 
     public void removeReservationById(final long id) {
