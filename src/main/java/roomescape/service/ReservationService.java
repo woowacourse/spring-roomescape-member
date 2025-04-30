@@ -2,9 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -36,7 +34,7 @@ public class ReservationService {
         if (reservation.isPast(LocalDate.now())) {
             throw new IllegalStateException("하루 전 까지 예약 가능합니다.");
         }
-        if (reservationDao.isExistByTimeIdAndDate(reservationRequest.timeId(), reservationRequest.date())) {
+        if (reservationDao.isExistByThemeIdAndTimeIdAndDate(reservationRequest.themeId(), reservationRequest.timeId(), reservationRequest.date())) {
             throw new IllegalStateException("이미 해당 시간에 예약이 존재합니다.");
         }
         Reservation savedReservation = reservationDao.save(reservation);

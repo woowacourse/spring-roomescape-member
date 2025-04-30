@@ -40,7 +40,7 @@ public class FakeReservaionDao implements ReservationDao {
     }
 
     @Override
-    public boolean isExistByTimeIdAndDate(Long timeId, LocalDate date) {
+    public boolean isExistByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date) {
         return false;
     }
 

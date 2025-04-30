@@ -9,6 +9,6 @@ public interface ReservationDao {
     boolean deleteById(Long id);
     List<Reservation> findAll();
     boolean isExistByTimeId(Long timeId);
-    boolean isExistByTimeIdAndDate(Long timeId, LocalDate date);
+    boolean isExistByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date);
     boolean isExistByThemeId(Long themeId);
 }
