@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -91,14 +92,14 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long countByTimeId(Long timeId) {
+    public long countByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         final String sql = """
                 SELECT COUNT(*) AS count
                 FROM reservations
-                WHERE time_id = ?
+                WHERE date = ? AND time_id = ? AND theme_id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Long.class, timeId);
+        return jdbcTemplate.queryForObject(sql, Long.class, date, timeId, themeId);
     }
 
     @Override
