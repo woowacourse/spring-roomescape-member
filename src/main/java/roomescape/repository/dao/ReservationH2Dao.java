@@ -1,6 +1,7 @@
 package roomescape.repository.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,5 +80,17 @@ public class ReservationH2Dao implements ReservationDao {
     public void deleteById(Long id) {
         String deleteQuery = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(deleteQuery, id);
+    }
+
+    @Override
+    public boolean existDuplicatedDateTime(LocalDate date, Long timeId) {
+        String query = """
+                SELECT count(*)
+                FROM reservation r
+                WHERE time_id = ? AND date = ?
+                """;
+        // TODO : npe 가능성 점검
+        int duplicatedCount = jdbcTemplate.queryForObject(query, Integer.class, timeId, date);
+        return duplicatedCount > 0;
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +34,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public void remove(Reservation reservation) {
         reservationDao.deleteById(reservation.id());
+    }
+
+    @Override
+    public boolean existDuplicatedDateTime(LocalDate date, Long timeId) {
+        return reservationDao.existDuplicatedDateTime(date, timeId);
     }
 }

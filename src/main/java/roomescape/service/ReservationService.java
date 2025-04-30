@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +22,13 @@ public class ReservationService {
 
     public ReservationQuery create(CreateReservationCommand command) {
         ReservationTime reservationTime = getReservationTimeById(command.timeId());
+        LocalDateTime requestedDateTime = LocalDateTime.of(command.date(), reservationTime.getStartAt());
+        if (requestedDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("이미 지나간 시간으로 예약할 수 없습니다.");
+        }
+        if (reservationRepository.existDuplicatedDateTime(command.date(), command.timeId())) {
+            throw new IllegalArgumentException("이미 예약된 시간입니다.");
+        }
         Reservation reservation = command.toReservation(reservationTime);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationQuery.from(savedReservation);

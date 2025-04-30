@@ -29,6 +29,7 @@ public class ReservationTimeService {
     }
 
     public void delete(Long id) {
+        // TODO: noContent vs IllegalArgumentException
         ReservationTime reservation = getById(id);
         reservationTimeRepository.remove(reservation);
     }

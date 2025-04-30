@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -70,6 +71,10 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
     public void deleteById(Long id) {
         String deleteQuery = "DELETE FROM reservation_time WHERE id = ?";
 
-        jdbcTemplate.update(deleteQuery, id);
+        try {
+            jdbcTemplate.update(deleteQuery, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("삭제하려는 시간을 사용중인 예약이 있습니다.");
+        }
     }
 }

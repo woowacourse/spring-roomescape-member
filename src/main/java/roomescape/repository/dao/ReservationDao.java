@@ -1,5 +1,6 @@
 package roomescape.repository.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,6 @@ public interface ReservationDao {
     Optional<Reservation> selectById(Long id);
 
     void deleteById(Long id);
+
+    boolean existDuplicatedDateTime(LocalDate date, Long timeId);
 }
