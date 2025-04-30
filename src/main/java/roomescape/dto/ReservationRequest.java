@@ -18,10 +18,6 @@ public record ReservationRequest(
         validateName(name);
     }
 
-    public static Reservation toEntity(ReservationRequest request, ReservationTime time, Theme theme) {
-        return new Reservation(null, request.name(), request.date(), time, theme);
-    }
-
     private void validateNull(LocalDate date, String name, Long timeId, Long themeId) {
         if(date == null || name == null || timeId == null || themeId == null) {
             throw new InvalidInputException("값을 모두 선택해라.");

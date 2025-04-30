@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.fake.FakeReservationTimeDao;
@@ -25,11 +26,11 @@ public class TimeServiceTest {
     void addReservation() {
         TimeRequest request = new TimeRequest(LocalTime.of(10, 0));
 
-        TimeResponse actual = timeService.addReservationTime(request);
+        ReservationTime actual = timeService.addReservationTime(request);
 
         assertAll(() -> {
-            assertThat(actual.id()).isEqualTo(1L);
-            assertThat(actual.startAt()).isEqualTo(LocalTime.of(10, 0));
+            assertThat(actual.getId()).isEqualTo(1L);
+            assertThat(actual.getStartAt()).isEqualTo(LocalTime.of(10, 0));
         });
     }
 

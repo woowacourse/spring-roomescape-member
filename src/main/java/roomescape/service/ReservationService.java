@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -9,8 +10,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.NotCorrectDateTimeException;
 
 @Service
 public class ReservationService {
@@ -26,26 +27,32 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
-    public ReservationResponse addReservation(ReservationRequest reservationRequest) {
+    public Reservation addReservationAfterNow(ReservationRequest request) {
+        Reservation reservation = addReservation(request);
+
+        if(reservation.isBefore(LocalDateTime.now())) {
+            throw new NotCorrectDateTimeException("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.");
+        }
+        return reservation;
+    }
+
+    public Reservation addReservation(ReservationRequest reservationRequest) {
         validateDuplicateReservation(reservationRequest);
         ReservationTime time = reservationTimeDao.findTimeById(reservationRequest.timeId());
         Theme theme = themeDao.findThemeById(reservationRequest.themeId());
-        Reservation reservation = reservationDao.addReservation(
-            ReservationRequest.toEntity(reservationRequest, time, theme));
-
-        return ReservationResponse.from(reservation);
+        return reservationDao.addReservation(
+            new Reservation(null, reservationRequest.name(), reservationRequest.date(), time, theme));
     }
 
     private void validateDuplicateReservation(ReservationRequest reservationRequest) {
-        if (reservationDao.existReservationByDateTimeAndTheme(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId())) {
+        if (reservationDao.existReservationByDateTimeAndTheme(reservationRequest.date(),
+            reservationRequest.timeId(), reservationRequest.themeId())) {
             throw new DuplicateReservationException();
         }
     }
 
-    public List<ReservationResponse> findAllReservations() {
-        return reservationDao.findAllReservations().stream()
-            .map(ReservationResponse::from)
-            .toList();
+    public List<Reservation> findAllReservations() {
+        return reservationDao.findAllReservations();
     }
 
     public void removeReservation(Long id) {

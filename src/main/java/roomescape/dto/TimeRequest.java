@@ -12,10 +12,6 @@ public record TimeRequest(
         validateTime(startAt);
     }
 
-    public static ReservationTime toEntity(TimeRequest request) {
-        return new ReservationTime(null, request.startAt());
-    }
-
     private void validateTime(LocalTime startAt) {
         if (startAt == null) {
             throw new InvalidInputException("시간을 선택해라.");

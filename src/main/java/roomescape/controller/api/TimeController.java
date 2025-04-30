@@ -30,12 +30,14 @@ public class TimeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TimeResponse createReservationTime(@RequestBody TimeRequest request) {
-        return timeService.addReservationTime(request);
+        return TimeResponse.from(timeService.addReservationTime(request));
     }
 
     @GetMapping
     public List<TimeResponse> readReservationTimes() {
-        return timeService.findAllReservationTimes();
+        return timeService.findAllReservationTimes().stream()
+            .map(TimeResponse::from)
+            .toList();
     }
 
     @DeleteMapping("/{id}")

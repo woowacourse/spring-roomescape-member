@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.TimeRequest;
-import roomescape.dto.TimeResponse;
 import roomescape.exception.DuplicateTimeException;
 
 @Service
@@ -17,11 +16,9 @@ public class TimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public TimeResponse addReservationTime(TimeRequest timeRequest) {
+    public ReservationTime addReservationTime(TimeRequest timeRequest) {
         validateExistedTime(timeRequest);
-
-        ReservationTime time = reservationTimeDao.addTime(TimeRequest.toEntity(timeRequest));
-        return TimeResponse.from(time);
+        return reservationTimeDao.addTime(new ReservationTime(null, timeRequest.startAt()));
     }
 
     private void validateExistedTime(TimeRequest timeRequest) {
@@ -30,10 +27,8 @@ public class TimeService {
         }
     }
 
-    public List<TimeResponse> findAllReservationTimes() {
-        return reservationTimeDao.findAllTimes().stream()
-            .map(TimeResponse::from)
-            .toList();
+    public List<ReservationTime> findAllReservationTimes() {
+        return reservationTimeDao.findAllTimes();
     }
 
     public void removeReservationTime(Long id) {

@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import roomescape.exception.NotCorrectDateTimeException;
 
 public class Reservation {
 
@@ -16,6 +18,11 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public boolean isBefore(LocalDateTime dateTime) {
+        return date.isBefore(dateTime.toLocalDate()) ||
+            (date.isEqual(dateTime.toLocalDate()) && time.isBefore(dateTime.toLocalTime()));
     }
 
     public Long getId() {

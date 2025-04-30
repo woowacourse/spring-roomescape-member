@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
@@ -38,13 +39,14 @@ public class ReservationServiceTest {
     @DisplayName("예약 추가를 할 수 있다.")
     void addReservation() {
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L, 1L);
-        ReservationResponse actual = reservationService.addReservation(request);
+        Reservation actual = reservationService.addReservation(request);
 
         assertAll(() -> {
-            assertThat(actual.id()).isEqualTo(1L);
-            assertThat(actual.name()).isEqualTo("사나");
-            assertThat(actual.date()).isEqualTo(LocalDate.of(2024, 4, 26));
-            assertThat(actual.time().getId()).isEqualTo(1L);
+            assertThat(actual.getId()).isEqualTo(1L);
+            assertThat(actual.getName()).isEqualTo("사나");
+            assertThat(actual.getDate()).isEqualTo(LocalDate.of(2024, 4, 26));
+            assertThat(actual.getTime().getId()).isEqualTo(1L);
+            assertThat(actual.getTheme().getId()).isEqualTo(1L);
         });
     }
 

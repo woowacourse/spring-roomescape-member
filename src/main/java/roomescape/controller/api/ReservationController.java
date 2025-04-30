@@ -33,15 +33,20 @@ public class ReservationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
+        return ReservationResponse.from(reservationService.addReservationAfterNow(request));
+    }
+
     @PostMapping("/admin")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createAdminReservation(@RequestBody ReservationRequest request) {
-        return reservationService.addReservation(request);
+        return ReservationResponse.from(reservationService.addReservation(request));
     }
 
     @GetMapping
     public List<ReservationResponse> readReservations() {
-        return reservationService.findAllReservations();
+        return reservationService.findAllReservations().stream()
+            .map(ReservationResponse::from)
+            .toList();
     }
 
     @DeleteMapping("/{id}")
