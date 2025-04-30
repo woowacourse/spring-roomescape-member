@@ -1,5 +1,6 @@
-package roomescape.reservation.repository.fake;
+package roomescape.domain.reservation.repository.fake;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +31,12 @@ public class FakeThemeRepository implements ThemeRepository {
         }
 
         throw new EntityNotFoundException("theme with id " + id + " not found");
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
+        // TODO 구현해야함
+        return List.of();
     }
 
     @Override

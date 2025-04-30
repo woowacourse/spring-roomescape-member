@@ -1,4 +1,4 @@
-package roomescape.utils;
+package roomescape.domain.reservation;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

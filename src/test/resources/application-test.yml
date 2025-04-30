@@ -8,3 +8,9 @@ spring:
     url: jdbc:h2:mem:test-database
 
     username: sa
+  sql:
+    init:
+      mode: always
+      schema-locations: schema.sql
+      data-locations:
+

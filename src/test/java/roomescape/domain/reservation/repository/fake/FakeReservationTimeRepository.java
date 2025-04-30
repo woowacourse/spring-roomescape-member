@@ -1,4 +1,4 @@
-package roomescape.reservation.repository.fake;
+package roomescape.domain.reservation.repository.fake;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.domain.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -13,8 +13,7 @@ import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationTimeRequest;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.service.ReservationTimeService;
-import roomescape.reservation.repository.fake.FakeReservationTimeRepository;
+import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
 
 public class ReservationTimeServiceTest {
 

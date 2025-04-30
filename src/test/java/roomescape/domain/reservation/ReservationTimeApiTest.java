@@ -1,4 +1,4 @@
-package roomescape.reservation;
+package roomescape.domain.reservation;
 
 import static org.hamcrest.Matchers.is;
 
@@ -21,7 +21,6 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.utils.JdbcTemplateUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ReservationTimeApiTest {

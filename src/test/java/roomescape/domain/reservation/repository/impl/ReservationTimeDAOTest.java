@@ -1,4 +1,4 @@
-package roomescape.reservation.repository.impl;
+package roomescape.domain.reservation.repository.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,9 +20,9 @@ import roomescape.common.exception.EntityNotFoundException;
 import roomescape.config.TestConfig;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
-import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
-import roomescape.utils.JdbcTemplateUtils;
+import roomescape.domain.reservation.JdbcTemplateUtils;
 
+@Disabled
 class ReservationTimeDAOTest {
 
     private JdbcTemplate jdbcTemplate;

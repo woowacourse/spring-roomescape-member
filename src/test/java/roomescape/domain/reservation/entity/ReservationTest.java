@@ -1,4 +1,4 @@
-package roomescape.reservation.entity;
+package roomescape.domain.reservation.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -12,9 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.domain.reservation.entity.Reservation;
-import roomescape.domain.reservation.entity.ReservationTime;
-import roomescape.domain.reservation.entity.Theme;
 
 class ReservationTest {
 

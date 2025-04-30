@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.domain.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -22,11 +22,10 @@ import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
-import roomescape.domain.reservation.service.ReservationService;
-import roomescape.reservation.repository.fake.FakeReservationRepository;
-import roomescape.reservation.repository.fake.FakeReservationTimeRepository;
-import roomescape.reservation.repository.fake.FakeThemeRepository;
-import roomescape.utils.FixedClock;
+import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
+import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
+import roomescape.domain.reservation.repository.fake.FakeThemeRepository;
+import roomescape.domain.reservation.FixedClock;
 
 class ReservationServiceTest {
 

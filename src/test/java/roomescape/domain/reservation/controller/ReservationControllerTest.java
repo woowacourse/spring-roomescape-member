@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.domain.reservation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,7 +25,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.domain.reservation.controller.ReservationController;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
@@ -86,7 +85,7 @@ public class ReservationControllerTest {
         Long timeId = 1L;
         Long themeId = 1L;
 
-        LocalDate date = LocalDate.of(2025, 4, 29);
+        LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.of(8, 0);
         String name = "꾹이";
 

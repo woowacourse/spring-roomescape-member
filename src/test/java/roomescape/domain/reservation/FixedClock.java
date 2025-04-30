@@ -1,4 +1,4 @@
-package roomescape.utils;
+package roomescape.domain.reservation;
 
 import java.time.Clock;
 import java.time.Instant;

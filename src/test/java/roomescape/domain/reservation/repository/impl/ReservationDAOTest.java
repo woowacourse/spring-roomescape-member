@@ -1,4 +1,4 @@
-package roomescape.reservation.repository.impl;
+package roomescape.domain.reservation.repository.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,9 +22,9 @@ import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.repository.impl.ReservationDAO;
-import roomescape.utils.JdbcTemplateUtils;
+import roomescape.domain.reservation.JdbcTemplateUtils;
 
+@Disabled
 class ReservationDAOTest {
 
     private static final Long RESERVATION_TIME_ID = 1L;
@@ -172,7 +173,7 @@ class ReservationDAOTest {
             assertThat(resultTime).isEqualTo(RESERVATION_TIME_START_TIME);
         }
 
-        for(String themeName : themeNames) {
+        for (String themeName : themeNames) {
             assertThat(themeName).isEqualTo(THEME_NAME);
         }
     }

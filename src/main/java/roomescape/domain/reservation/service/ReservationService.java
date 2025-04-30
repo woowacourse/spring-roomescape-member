@@ -52,20 +52,25 @@ public class ReservationService {
             throw new AlreadyInUseException("reservation is already in use");
         }
 
-        Long timeId = request.timeId();
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
-        Long themeId = request.themeId();
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
-
-        Reservation reservation = Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
+        Reservation reservation = getReservation(request);
 
         validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStratTime());
 
         Reservation saved = reservationRepository.save(reservation);
 
         return ReservationResponse.from(saved);
+    }
+
+    private Reservation getReservation(ReservationRequest request) {
+        Long timeId = request.timeId();
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
+
+        Long themeId = request.themeId();
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+
+        return Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
     }
 
     private void validateDateTime(LocalDateTime now, LocalDate date, LocalTime time) {

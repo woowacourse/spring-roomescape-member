@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.domain.reservation.controller;
 
 public class ReservationTimeControllerTest {
     // TODO 작성 필요
