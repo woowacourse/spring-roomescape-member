@@ -16,7 +16,8 @@ class ReservationTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
 
         //when&then
-        Assertions.assertThatThrownBy(() -> new Reservation(1L, "riwon", LocalDate.now().minusDays(1), reservationTime))
+        Assertions.assertThatThrownBy(() -> new Reservation(
+                1L, "riwon", LocalDate.now().minusDays(1), reservationTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
     }

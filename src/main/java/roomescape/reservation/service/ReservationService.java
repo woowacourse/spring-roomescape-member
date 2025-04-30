@@ -7,21 +7,31 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @Service
 public class ReservationService {
     private final Dao<Reservation> reservationDao;
     private final Dao<ReservationTime> reservationTimeDao;
+    private final Dao<Theme> themeDao;
 
-    public ReservationService(Dao<Reservation> reservationDao, Dao<ReservationTime> reservationTimeDao) {
+    public ReservationService(Dao<Reservation> reservationDao, Dao<ReservationTime> reservationTimeDao, Dao<Theme> themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao =  themeDao;
     }
 
     public ReservationResponse add(ReservationRequest reservationRequest) {
         ReservationTime findReservationTime = getReservationTime(reservationRequest);
+        Theme findTheme = getTheme(reservationRequest);
+
         Reservation newReservation = new Reservation(
-                null, reservationRequest.name(), reservationRequest.date(), findReservationTime);
+                null,
+                reservationRequest.name(),
+                reservationRequest.date(),
+                findReservationTime,
+                findTheme
+        );
 
         List<Reservation> reservations = reservationDao.findAll();
         boolean isAlreadyExisted = reservations.stream()
@@ -35,13 +45,13 @@ public class ReservationService {
 
         Reservation savedReservation = reservationDao.add(newReservation);
         return new ReservationResponse(
-                savedReservation.getId(), savedReservation.getName(), savedReservation.getDate(), savedReservation.getTime());
+                savedReservation.getId(), savedReservation.getName(), savedReservation.getTheme(), savedReservation.getDate(), savedReservation.getTime());
     }
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll().stream()
                 .map(reservation -> new ReservationResponse(
-                        reservation.getId(), reservation.getName(), reservation.getDate(), reservation.getTime()))
+                        reservation.getId(), reservation.getName(), reservation.getTheme(), reservation.getDate(), reservation.getTime()))
                 .toList();
     }
 
@@ -55,5 +65,10 @@ public class ReservationService {
         return reservationTimeDao
                 .findById(reservationRequest.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 시간 id가 존재하지 않습니다."));
+    }
+
+    private Theme getTheme(ReservationRequest reservationRequest) {
+        return themeDao.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 테마 id가 존재하지 않습니다."));
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -38,7 +39,14 @@ public class ThemeDao implements Dao<Theme> {
 
     @Override
     public Optional<Theme> findById(Long id) {
-        return Optional.empty();
+        String sql = "SELECT id, name, description, thumbnail from theme where id = :id";
+        Map<String, Object> parameter = Map.of("id", id);
+        try {
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
+                    (resultSet, rowNum) -> createTheme(resultSet)));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

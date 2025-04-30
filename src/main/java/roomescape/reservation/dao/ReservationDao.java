@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.Dao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class ReservationDao implements Dao<Reservation> {
@@ -34,18 +35,31 @@ public class ReservationDao implements Dao<Reservation> {
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
+        parameters.put("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, "
+        String sql = "SELECT r.id AS reservation_id, r.name, r.date, "
                 + "t.id AS time_id, "
-                + "t.start_at AS time_value "
+                + "t.start_at AS time_value, "
+                + "e.id AS theme_id, "
+                + "e.name AS theme_name, "
+                + "e.description AS theme_description, "
+                + "e.thumbnail AS theme_thumbnail "
                 + "FROM reservation AS r "
                 + "INNER JOIN reservation_time AS t "
                 + "ON r.time_id = t.id "
+                + "INNER JOIN theme AS e "
+                + "ON r.theme_id = e.id "
                 + "WHERE r.id = :id";
         Map<String, Object> parameter = Map.of("id", id);
         try {
@@ -58,12 +72,18 @@ public class ReservationDao implements Dao<Reservation> {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, "
+        String sql = "SELECT r.id AS reservation_id, r.name, r.date, "
                 + "t.id AS time_id, "
-                + "t.start_at AS time_value "
+                + "t.start_at AS time_value, "
+                + "e.id AS theme_id, "
+                + "e.name AS theme_name, "
+                + "e.description AS theme_description, "
+                + "e.thumbnail AS theme_thumbnail "
                 + "FROM reservation AS r "
                 + "INNER JOIN reservation_time AS t "
-                + "ON r.time_id = t.id";
+                + "ON r.time_id = t.id "
+                + "INNER JOIN theme AS e "
+                + "ON r.theme_id = e.id ";
 
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> createReservation(resultSet));
     }
@@ -84,6 +104,12 @@ public class ReservationDao implements Dao<Reservation> {
                 new ReservationTime(
                         resultSet.getLong("time_id"),
                         resultSet.getTime("time_value").toLocalTime()
+                ),
+                new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("theme_description"),
+                        resultSet.getString("theme_thumbnail")
                 ));
     }
 }
