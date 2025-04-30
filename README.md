@@ -89,6 +89,34 @@
 - [DELETE] /themes/{id}
   테마 삭제
 
+- [GET] /times/available
+  - Query Parameter
+    - themeId: 테마의 식별자
+    - date: 에약 날짜
+
+**응답 예시**
+
+```json
+[
+  {
+    "timeId": 1,
+    "startAt": "12:00:00",
+    "booked": true
+  },
+  {
+    "timeId": 2,
+    "startAt": "13:00:00",
+    "booked": false
+  }
+]
+```
+
+**timeId:** 예약 시간의 식별자
+
+**startAt:** 예약 시작 시간
+
+**booked:** 예약 여부
+
 ### 고민한 점
 
 - 현재 도메인에서 IllegalArgumentException을 사용해 예외처리를 하고 있는데 이 예외를 ControllerAdvice에서 잡아도 될까?
@@ -110,3 +138,7 @@ DELETE FROM reservation_time WHERE id = ?
 ```
 
 - LocalDate.now(), LocalTime.now()를 사용할 지, Clock을 Mocking할 지
+
+- Reservation 생성자 중, Id를 받지 않는 생성자에서만 과거의 예약인지 검사한다.
+- id를 받는다면, id가 있는 것이니까, 이미 데이터베이스에 들어갔다 나온 예약이다. 그래서 과거의 예약인지 검사하면 안된다.
+    - 데이터베이스에서 꺼내온 것이기 때문에, 과거의 예약인지 검사하면 문제가 발생한다.
