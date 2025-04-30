@@ -3,6 +3,7 @@ package roomescape.fake;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,11 @@ public class FakeThemeRepository implements ThemeRepository {
         themes = themes.stream()
                 .filter(theme -> theme.getId() != themeId)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Theme> findRankByDate(final LocalDate startDate, final LocalDate endDate, final int limit) {
+        return List.copyOf(themes); //TODO: 테스트 구현 고민하기
     }
 
     @Override
