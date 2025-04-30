@@ -3,6 +3,7 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,6 +18,7 @@ import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 import roomescape.presentation.dto.response.TimeResponse;
 import roomescape.testRepository.FakeReservationRepository;
+import roomescape.testRepository.FakeThemeRepository;
 import roomescape.testRepository.FakeTimeRepository;
 
 class ReservationServiceTest {
@@ -24,13 +26,16 @@ class ReservationServiceTest {
     private ReservationService reservationService;
     private FakeReservationRepository reservationRepository;
     private FakeTimeRepository timeRepository;
+    private FakeThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         timeRepository = new FakeTimeRepository();
+        themeRepository = new FakeThemeRepository();
         TimeService timeService = new TimeService(timeRepository);
-        reservationService = new ReservationService(reservationRepository, timeService);
+        ThemeService themeService = new ThemeService(themeRepository);
+        reservationService = new ReservationService(reservationRepository, timeService, themeService);
     }
 
     @DisplayName("예약을 정상적으로 등록한다.")
@@ -39,12 +44,12 @@ class ReservationServiceTest {
         // given
         LocalTime time = LocalTime.of(10, 0);
         timeRepository.save(ReservationTime.withoutId(time));
-
+        themeRepository.save(THEME_1);
         LocalDate date = LocalDate.now().plusDays(1);
         String name = "멍구";
         Long timeId = 1L;
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, name, timeId);
+        ReservationRequest reservationRequest = new ReservationRequest(1L, date, name, timeId);
 
         // when
         ReservationResponse response = reservationService.registerReservation(reservationRequest);
@@ -66,7 +71,7 @@ class ReservationServiceTest {
         String name = "멍구";
         Long timeId = 999L;
 
-        ReservationRequest reservationRequest = new ReservationRequest(date, name, timeId);
+        ReservationRequest reservationRequest = new ReservationRequest(1L, date, name, timeId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.registerReservation(reservationRequest))
@@ -85,11 +90,11 @@ class ReservationServiceTest {
         Long timeId = 1L;
 
         ReservationTime reservationTime = ReservationTime.of(1L, time);
-        Reservation reservation = Reservation.of(1L, name, date, reservationTime);
+        Reservation reservation = Reservation.of(1L, name, THEME_1, date, reservationTime);
         reservationRepository.save(reservation);
 
         // when
-        ReservationRequest reservationRequest = new ReservationRequest(date, "아이나", timeId);
+        ReservationRequest reservationRequest = new ReservationRequest(1L, date, "아이나", timeId);
 
         // then
         assertThatThrownBy(() -> reservationService.registerReservation(reservationRequest))
@@ -103,9 +108,9 @@ class ReservationServiceTest {
         ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
         ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        reservationRepository.save(Reservation.of(1L, "브라운", LocalDate.of(2024, 4, 1), time1));
-        reservationRepository.save(Reservation.of(2L, "솔라", LocalDate.of(2024, 4, 1), time2));
-        reservationRepository.save(Reservation.of(3L, "브리", LocalDate.of(2024, 4, 2), time1));
+        reservationRepository.save(Reservation.of(1L, "브라운", THEME_1, LocalDate.of(2024, 4, 1), time1));
+        reservationRepository.save(Reservation.of(2L, "솔라", THEME_1, LocalDate.of(2024, 4, 1), time2));
+        reservationRepository.save(Reservation.of(3L, "브리", THEME_1, LocalDate.of(2024, 4, 2), time1));
 
         // when
         List<ReservationResponse> allReservations = reservationService.getAllReservations();
@@ -124,7 +129,7 @@ class ReservationServiceTest {
     void cancelReservation() {
         // given
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        reservationRepository.save(Reservation.of(1L, "브라운", LocalDate.of(2024, 4, 1), time));
+        reservationRepository.save(Reservation.of(1L, "브라운", THEME_1, LocalDate.of(2024, 4, 1), time));
 
         assertThat(reservationRepository.findAll()).hasSize(1);
 
@@ -143,7 +148,7 @@ class ReservationServiceTest {
         Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
 
         // when
-        ReservationRequest request = new ReservationRequest(date, "멍구", timeId);
+        ReservationRequest request = new ReservationRequest(1L, date, "멍구", timeId);
 
         // then
         assertThatThrownBy(() -> reservationService.registerReservation(request))
@@ -157,11 +162,11 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = timeRepository.save(ReservationTime.withoutId(LocalTime.of(10, 0)));
         ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(1L, "아이나", date, reservationTime);
+        Reservation reservation = Reservation.of(1L, "아이나", THEME_1, date, reservationTime);
         reservationRepository.save(reservation);
 
         // when
-        ReservationRequest request = new ReservationRequest(date, "멍구", timeId);
+        ReservationRequest request = new ReservationRequest(1L, date, "멍구", timeId);
 
         // then
         assertThatThrownBy(() -> reservationService.registerReservation(request))

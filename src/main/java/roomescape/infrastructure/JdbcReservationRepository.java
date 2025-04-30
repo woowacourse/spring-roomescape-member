@@ -10,8 +10,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.repository.ReservationRepository;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -24,13 +25,22 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private final static RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (rs, rowNum) -> {
-                Long id = rs.getLong("id");
-                String name = rs.getString("name");
+                Long id = rs.getLong("reservation_id");
+                String name = rs.getString("reservation_name");
                 LocalDate date = rs.getObject("reservation_date", LocalDate.class);
                 Long time_id = rs.getLong("time_id");
                 LocalTime time = rs.getObject("time_value", LocalTime.class);
-
-                return Reservation.of(id, name, date, ReservationTime.of(time_id, time));
+                long theme_id = rs.getLong("theme_id");
+                String theme_name = rs.getString("theme_name");
+                String theme_description = rs.getString("theme_description");
+                String theme_thumbnail = rs.getString("theme_thumbnail");
+                return Reservation.of(
+                        id,
+                        name,
+                        Theme.of(theme_id, theme_name, theme_description, theme_thumbnail),
+                        date,
+                        ReservationTime.of(time_id, time)
+                );
             };
 
     @Override
@@ -38,13 +48,19 @@ public class JdbcReservationRepository implements ReservationRepository {
         String findAllSql = """
                 SELECT
                     r.id as reservation_id,
-                    r.name as name,
+                    r.name as reservation_name,
                     r.date as reservation_date,
                     t.id as time_id,
-                    t.start_at as time_value
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
                 FROM reservation as r
                 join reservation_time as t
-                on r.time_id = t.id
+                    on r.time_id = t.id
+                join theme as th 
+                    on r.theme_id = th.id
                 """;
         return jdbcTemplate.query(findAllSql, RESERVATION_ROW_MAPPER);
     }
@@ -58,7 +74,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         Map<String, Object> parameters = Map.of(
                 "name", reservation.getName(),
                 "date", Date.valueOf(reservation.getReservationDate()),
-                "time_id", reservation.getReservationTime().getId()
+                "time_id", reservation.getReservationTime().getId(),
+                "theme_id", reservation.getTheme().getId()
         );
 
         Number key = simpleJdbcInsert.executeAndReturnKey(parameters);

@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @JdbcTest
 @Import(JdbcReservationRepository.class)
@@ -41,14 +42,18 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
+
     @DisplayName("save 후 생성된 id를 반환한다.")
     @Test
     void saveTest() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
+        jdbcTemplate.update(
+                "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
 
         Reservation reservation = Reservation.withoutId(
                 "테스트행님",
+                Theme.of(1L, "테마1", "테마 1입니다.", "썸네일"),
                 LocalDate.of(2025, 4, 30),
                 ReservationTime.of(1L, LocalTime.of(10, 0))
         );
@@ -73,11 +78,16 @@ class JdbcReservationRepositoryTest {
     @Test
     void findAllTest() {
         // given
+        jdbcTemplate.update(
+                "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('브라운', '2025-01-01', 1)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('솔라', '2025-01-01', 1)");
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES ('브리', '2025-01-01', 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', '2025-01-01', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('솔라', '2025-01-01', 1, 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브리', '2025-01-01', 1, 1)");
 
         // when
         List<Reservation> reservations = reservationRepository.findAll();
@@ -94,8 +104,11 @@ class JdbcReservationRepositoryTest {
     void deleteByIdTest() {
         // given
         assertThat(reservationRepository.findAll()).hasSize(0);
+        jdbcTemplate.update(
+                "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
-        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id) VALUES (1, '브라운', '2025-01-01', 1)");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '브라운', '2025-01-01', 1, 1)");
         assertThat(reservationRepository.findAll()).hasSize(1);
 
         // when

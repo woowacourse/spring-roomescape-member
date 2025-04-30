@@ -3,6 +3,7 @@ package roomescape;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
+import static roomescape.testFixture.Fixture.RESERVATION_BODY;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -11,7 +12,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.presentation.controller.ReservationController;
 import roomescape.presentation.dto.response.ReservationResponse;
@@ -46,6 +45,9 @@ public class MissionStepTest {
     @Autowired
     private TimeRepository timeRepository;
 
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
@@ -55,6 +57,8 @@ public class MissionStepTest {
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE theme");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -102,21 +106,16 @@ public class MissionStepTest {
     @DisplayName("3단계 - 예약 추가 api 호출 시, id가 정상적으로 부여된다.")
     @Test
     public void request_addReservation() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
 
         int repositorySize = reservationRepository.findAll().size();
         int expectedSize = repositorySize + 1;
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        params.put("date", date);
-        params.put("timeId", "1");
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(RESERVATION_BODY)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -148,11 +147,12 @@ public class MissionStepTest {
 
     @Test
     void 오단계() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "브라운", "2023-08-05", 1L
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2023-08-05", 1L, 1L
         );
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
@@ -168,20 +168,15 @@ public class MissionStepTest {
 
     @Test
     void 육단계() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
 
         int beforeCount = reservationRepository.findAll().size();
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        params.put("date", date);
-        params.put("timeId", "1");
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(RESERVATION_BODY)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -226,20 +221,13 @@ public class MissionStepTest {
 
     @Test
     void 팔단계() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
 
-        int beforeSize = reservationRepository.findAll().size();
-
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        reservation.put("date", date);
-        reservation.put("timeId", 1);
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(RESERVATION_BODY)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -248,7 +236,7 @@ public class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(beforeSize + 1));
+                .body("size()", is(1));
     }
 
     @Autowired
@@ -271,13 +259,13 @@ public class MissionStepTest {
     @DisplayName("예약이 존재하는 시간은 삭제 불가")
     @Test
     void cannotDeleteTime_when_hasReservation() {
-        Long timeId = 1L;
-        ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        timeRepository.save(reservationTime);
-        reservationRepository.save(Reservation.of(1L, "testName", LocalDate.of(2025,1,1), reservationTime));
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마1입니다.', '썸네일')");
+        jdbcTemplate.update(
+                "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '아이나', '2025-01-01', 1, 1)");
 
         RestAssured.given().log().all()
-                .when().delete(String.format("/times/%d", timeId))
+                .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(400);
     }
@@ -291,6 +279,7 @@ public class MissionStepTest {
         String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         reservation.put("date", date);
         reservation.put("timeId", timeId);
+        reservation.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -304,11 +293,12 @@ public class MissionStepTest {
     @Test
     void error_when_duplicateReservation() {
         // given
-        Long timeId = 1L;
-        ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        timeRepository.save(reservationTime);
         LocalDate date = LocalDate.now().plusDays(1);
-        reservationRepository.save(Reservation.of(1L, "testName", date, reservationTime));
+        Long timeId = 1L;
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마1입니다.', '썸네일')");
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '아이나', ?, ?, 1)",
+                date, timeId);
 
         // when
         Map<String, Object> reservation = new HashMap<>();

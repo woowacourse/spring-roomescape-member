@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import roomescape.application.mapper.ReservationMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
@@ -17,16 +18,20 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final TimeService timeService;
+    private final ThemeService themeService;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeService timeService) {
+    public ReservationService(ReservationRepository reservationRepository, TimeService timeService,
+                              ThemeService themeService) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
+        this.themeService = themeService;
     }
 
     public ReservationResponse registerReservation(ReservationRequest request) {
+        Theme theme = themeService.getThemeById(request.themeId());
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
         validateNotPast(request.date(), reservationTime.getStartAt());
-        Reservation reservation = ReservationMapper.toDomain(request, reservationTime);
+        Reservation reservation = ReservationMapper.toDomain(request, theme, reservationTime);
         validteNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);
 

@@ -9,10 +9,11 @@ public record ReservationResponse(
 
         String name,
 
+        ThemeResponse theme,
+
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
 
-        @JsonFormat(pattern = "HH:mm")
         TimeResponse time
 ) {
 }

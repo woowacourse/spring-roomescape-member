@@ -2,6 +2,7 @@ package roomescape.application.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,10 +22,10 @@ class ReservationMapperTest {
         // given
         LocalDate reservationDate = LocalDate.of(2024, 4, 1);
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationRequest request = new ReservationRequest(reservationDate, "멍구", 1L);
+        ReservationRequest request = new ReservationRequest(1L, reservationDate, "멍구", 1L);
 
         // when
-        Reservation reservation = ReservationMapper.toDomain(request, reservationTime);
+        Reservation reservation = ReservationMapper.toDomain(request, THEME_1, reservationTime);
 
         // then
         assertAll(
@@ -44,7 +45,7 @@ class ReservationMapperTest {
 
         LocalDate reservationDate = LocalDate.of(2025, 4, 1);
         ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(timeId, name, reservationDate, reservationTime);
+        Reservation reservation = Reservation.of(timeId, name, THEME_1, reservationDate, reservationTime);
 
         // when
         ReservationResponse response = ReservationMapper.toDto(reservation);
@@ -65,9 +66,9 @@ class ReservationMapperTest {
         ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
         ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
 
-        Reservation reservation1 = Reservation.of(1L, "브라운", LocalDate.of(2024, 4, 1), time1);
-        Reservation reservation2 = Reservation.of(2L, "솔라", LocalDate.of(2024, 4, 1), time2);
-        Reservation reservation3 = Reservation.of(3L, "브리", LocalDate.of(2024, 4, 2), time1);
+        Reservation reservation1 = Reservation.of(1L, "브라운", THEME_1, LocalDate.of(2024, 4, 1), time1);
+        Reservation reservation2 = Reservation.of(2L, "솔라", THEME_1, LocalDate.of(2024, 4, 1), time2);
+        Reservation reservation3 = Reservation.of(3L, "브리", THEME_1, LocalDate.of(2024, 4, 2), time1);
 
         List<Reservation> reservations = List.of(reservation1, reservation2, reservation3);
 

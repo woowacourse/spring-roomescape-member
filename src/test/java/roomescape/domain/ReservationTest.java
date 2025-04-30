@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,10 +18,10 @@ class ReservationTest {
         // given
         LocalDate date = LocalDate.of(2025, 1, 1);
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Reservation reservation1 = Reservation.of(1L, "멍구", date, reservationTime);
+        Reservation reservation1 = Reservation.of(1L, "멍구", THEME_1, date, reservationTime);
 
         // when
-        Reservation reservation2 = Reservation.of(2L, "아이나", date, reservationTime);
+        Reservation reservation2 = Reservation.of(2L, "아이나", THEME_1, date, reservationTime);
         boolean duplicated = reservation2.isDuplicated(reservation1);
 
         // then
@@ -37,16 +38,15 @@ class ReservationTest {
         // given
         LocalDate date1 = LocalDate.of(2025, 1, 1);
         ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Reservation reservation1 = Reservation.of(1L, "멍구", date1, time1);
+        Reservation reservation1 = Reservation.of(1L, "멍구", THEME_1, date1, time1);
 
         // when
         LocalDate date2 = LocalDate.parse(date);
         ReservationTime time2 = ReservationTime.of(timeId, LocalTime.parse(time));
-        Reservation reservation2 = Reservation.of(2L, "아이나", date2, time2);
+        Reservation reservation2 = Reservation.of(2L, "아이나", THEME_1, date2, time2);
         boolean duplicated = reservation2.isDuplicated(reservation1);
 
         // then
         assertThat(duplicated).isFalse();
     }
-
 }

@@ -1,11 +1,13 @@
 package roomescape.application;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.mapper.ThemeMapper;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ThemeRequest;
 import roomescape.presentation.dto.response.ThemeResponse;
 
@@ -32,5 +34,10 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         themeRepository.deleteById(id);
+    }
+
+    public Theme getThemeById(@NotNull Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("id에 해당하는 테마가 없습니다."));
     }
 }
