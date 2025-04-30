@@ -23,6 +23,10 @@ public final class Reservation {
         return dateTime.isBefore(other);
     }
 
+    public boolean isSameTime(final ReservationTime reservationTime) {
+        return dateTime.isSameTime(reservationTime);
+    }
+
     public Long getTimeId() {
         return dateTime.getTimeId();
     }

@@ -95,4 +95,12 @@ class ReservationTimeServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }
+
+    @DisplayName("예약 가능 시간을 조회할 수 있다.")
+    @Test
+    void test() {
+        // given
+        // when
+        // then
+    }
 }

@@ -24,6 +24,10 @@ public final class ReservationDateTime {
         return false;
     }
 
+    public boolean isSameTime(final ReservationTime other) {
+        return time.equals(other);
+    }
+
     public LocalDate getDate() {
         return date;
     }

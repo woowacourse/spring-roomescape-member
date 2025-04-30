@@ -48,6 +48,14 @@ public class FakeReservationDao implements ReservationDao {
                 .anyMatch(reservation -> reservation.getTheme().getId() == themeId);
     }
 
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getDate().equals(date))
+                .filter(reservation -> reservation.getTheme().getId() == themeId)
+                .toList();
+    }
+
     public Reservation findById(final long id) {
         return reservations.stream()
                 .filter(reservation -> reservation.getId() == id)

@@ -269,7 +269,7 @@ HTTP/1.1 204
 **Request**
 
 ```
-GET /available-times?date="2025-03-30"&themeId=1 HTTP/1.1
+GET /available-times?date=2025-03-30&themeId=1 HTTP/1.1
 ```
 
 **Response**
