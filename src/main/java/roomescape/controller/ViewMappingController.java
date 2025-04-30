@@ -13,7 +13,7 @@ public class ViewMappingController {
 
     @GetMapping("/admin/reservation")
     public String reservation() {
-        return "admin/reservation";
+        return "admin/reservation-new";
     }
 
     @GetMapping("/admin/time")

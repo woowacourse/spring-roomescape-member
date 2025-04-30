@@ -1,5 +1,7 @@
 package roomescape.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -12,6 +14,7 @@ import roomescape.domain.Person;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class JdbcReservationDaoImpl implements ReservationDao {
@@ -28,27 +31,64 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     @Override
     public List<Reservation> findAllReservation() {
-        String sql = "select r.id as reservation_id, r.name, r.date, t.id as time_id,  t.start_at as time_value from reservation as r inner join reservation_time as t on r.time_id = t. id";
+        String sql = """
+               select r.id as reservation_id, 
+                      r.name, 
+                      r.date,
+            
+                      rt.id as time_id,
+                      rt.start_at as time_value,
+            
+                      t.id as theme_id,
+                      t.name as theme_name,
+                      t.description as theme_description,
+                      t.thumbnail as theme_thumbnail
+               from reservation as r 
+               inner join reservation_time as rt on r.time_id = rt.id
+               inner join theme as t on r.theme_id = t.id 
+            """;
+
         return jdbcTemplate.query(sql,
-            (resultSet, RowNum) -> {
-                Reservation reservation = new Reservation(
-                    resultSet.getLong("reservation_id"),
-                    new Person(resultSet.getString("name")),
-                    new ReservationDate(LocalDate.parse(resultSet.getString("date"))),
-                    new ReservationTime(
-                        resultSet.getLong("time_id"),
-                        LocalTime.parse(resultSet.getString("time_value")))
-                );
-                return reservation;
-            });
+            (resultSet, RowNum) ->
+                new Reservation(resultSet.getLong("reservation_id"),
+                    createPerson(resultSet),
+                    createReservationDate(resultSet),
+                    createReservationTime(resultSet),
+                    createTheme(resultSet)
+                ));
+    }
+
+    private ReservationDate createReservationDate(ResultSet resultSet) throws SQLException {
+        return new ReservationDate(LocalDate.parse(resultSet.getString("date")));
+    }
+
+    private Person createPerson(ResultSet resultSet) throws SQLException {
+        return new Person(resultSet.getString("name"));
+    }
+
+    private Theme createTheme(ResultSet resultSet) throws SQLException {
+        return new Theme(
+            resultSet.getLong("theme_id"),
+            resultSet.getString("theme_name"),
+            resultSet.getString("theme_description"),
+            resultSet.getString("theme_thumbnail")
+        );
+    }
+
+    private ReservationTime createReservationTime(ResultSet resultSet) throws SQLException {
+        return new ReservationTime(
+            resultSet.getLong("time_id"),
+            LocalTime.parse(resultSet.getString("time_value")));
     }
 
     @Override
     public void saveReservation(Reservation reservation) {
-        Map<String, Object> parameters = new HashMap<>(3);
+        Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", reservation.getPersonName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTimeId());
+        parameters.put("theme_id", reservation.getThemeId());
+
         Number newId = insertActor.executeAndReturnKey(parameters);
         reservation.setId(newId.longValue());
     }

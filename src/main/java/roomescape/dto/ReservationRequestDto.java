@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public record ReservationRequestDto(String name, String date, Long timeId) {
+public record ReservationRequestDto(String name, String date, Long timeId, Long themeId) {
 
     public ReservationRequestDto {
         validateName(name);

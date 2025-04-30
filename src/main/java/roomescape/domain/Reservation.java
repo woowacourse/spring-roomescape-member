@@ -10,17 +10,20 @@ public class Reservation {
     private final Person person;
     private final ReservationDate date;
     private final ReservationTime reservationTime;
+    private final Theme theme;
 
     public Reservation(Long id, Person person, ReservationDate date,
-        ReservationTime reservationTime) {
+        ReservationTime reservationTime, Theme theme) {
         this.id = id;
         this.person = person;
         this.date = date;
         this.reservationTime = reservationTime;
+        this.theme = theme;
     }
 
-    public Reservation(Person person, ReservationDate date, ReservationTime reservationTime) {
-        this(null, person, date, reservationTime);
+    public Reservation(Person person, ReservationDate date, ReservationTime reservationTime,
+        Theme theme) {
+        this(null, person, date, reservationTime, theme);
     }
 
     public void validateDateTime(
@@ -55,6 +58,14 @@ public class Reservation {
 
     public long getTimeId() {
         return reservationTime.getId();
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
     }
 
     @Override

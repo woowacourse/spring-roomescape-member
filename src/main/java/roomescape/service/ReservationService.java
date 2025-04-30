@@ -6,10 +6,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Person;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
@@ -19,11 +21,13 @@ public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
     public ReservationService(ReservationDao reservationDao,
-        ReservationTimeDao reservationTimeDao) {
+        ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<ReservationResponseDto> getAllReservations() {
@@ -41,7 +45,10 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeDao.findById(
             reservationRequestDto.timeId());
 
-        Reservation reservation = new Reservation(person, date, reservationTime);
+        Theme theme = themeDao.findById(reservationRequestDto.themeId())
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다"));
+
+        Reservation reservation = new Reservation(person, date, reservationTime, theme);
         reservation.validateDateTime(date, reservationTime, currentDateTime);
 
         validateAlreadyExistDateTime(reservationRequestDto, date);
