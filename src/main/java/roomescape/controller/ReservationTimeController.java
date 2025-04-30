@@ -2,12 +2,15 @@ package roomescape.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationTimeCreateRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,6 +26,12 @@ public class ReservationTimeController {
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponseDto>> getAllReservationTimes() {
         List<ReservationTimeResponseDto> allReservationTimeResponses = reservationTimeService.findAllReservationTimes();
+        return ResponseEntity.ok(allReservationTimeResponses);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<AvailableReservationTimeResponseDto>> getAvailableReservationTimes(@RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId) {
+        List<AvailableReservationTimeResponseDto> allReservationTimeResponses = reservationTimeService.findAvailableReservationTimes(date,themeId);
         return ResponseEntity.ok(allReservationTimeResponses);
     }
 

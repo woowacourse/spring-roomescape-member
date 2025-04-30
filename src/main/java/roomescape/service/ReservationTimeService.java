@@ -1,22 +1,29 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationTimeCreateRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ReservationTimeService {
 
     private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponseDto createReservationTime(final ReservationTimeCreateRequestDto requestDto) {
@@ -36,6 +43,23 @@ public class ReservationTimeService {
         return allReservationTime.stream()
                 .map(reservationTime -> ReservationTimeResponseDto.from(reservationTime))
                 .toList();
+    }
+
+    public List<AvailableReservationTimeResponseDto> findAvailableReservationTimes(LocalDate date, Long themeId) {
+        List<ReservationTime> allReservationTimes = reservationTimeRepository.findAll();
+        List<Reservation> availableReservationsByDate = reservationRepository.findByDate(date);
+
+        List<ReservationTime> availableReservationTimes = availableReservationsByDate.stream().map(reservation -> reservation.time()).toList();
+        List<AvailableReservationTimeResponseDto> dtos = new ArrayList<>();
+        for (ReservationTime reservationTime : allReservationTimes) {
+            if(availableReservationTimes.contains(reservationTime)) {
+                dtos.add(new AvailableReservationTimeResponseDto(reservationTime.id(),reservationTime.startAt(),true));
+                continue;
+            }
+            dtos.add(new AvailableReservationTimeResponseDto(reservationTime.id(),reservationTime.startAt(),false));
+        }
+
+        return dtos;
     }
 
     public void deleteReservationTimeById(final Long id) {

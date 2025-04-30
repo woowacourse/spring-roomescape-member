@@ -18,4 +18,6 @@ public interface ReservationRepository {
     int deleteById(final long id);
 
     List<Reservation> findByDateTime(final LocalDate date, final LocalTime time);
+
+    List<Reservation> findByDate(final LocalDate date);
 }

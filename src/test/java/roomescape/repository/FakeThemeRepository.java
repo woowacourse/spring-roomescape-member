@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +53,11 @@ public class FakeThemeRepository implements ThemeRepository {
         }
 
         return 0;
+    }
+
+    @Override
+    public List<Theme> findPopular(LocalDate start, LocalDate end) {
+        return List.of();
     }
 
     public void addReservation(Reservation reservation) {

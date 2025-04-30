@@ -144,4 +144,29 @@ public class JdbcReservationDao implements ReservationRepository {
             return List.of();
         }
     }
+
+    @Override
+    public List<Reservation> findByDate(LocalDate date) {
+        String sql = """
+                SELECT
+                r.id,
+                r.date,
+                r.name,
+                r.time_id as reservation_time_id,
+                r.theme_id as reservation_theme_id,
+                t.start_at,
+                th.name as theme_name,
+                th.description,
+                th.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t on r.time_id = t.id
+                inner join theme as th on r.theme_id = th.id
+                WHERE r.date = ?
+                """;
+        try {
+            return jdbcTemplate.query(sql, rowMapper, date);
+        } catch (EmptyResultDataAccessException e) {
+            return List.of();
+        }
+    }
 }
