@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationDao {
@@ -27,15 +28,23 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
-            "SELECT "
-                + "r.id as reservation_id, "
-                + "r.name, "
-                + "r.date, "
-                + "t.id as time_id, "
-                + "t.start_at as time_value "
-                + "FROM reservation as r "
-                + "inner join reservation_time as t "
-                + "on r.time_id = t.id",
+            """
+                SELECT
+                r.id as reservation_id,
+                r.name,
+                r.date,
+                rt.id as time_id,
+                rt.start_at as time_value,
+                t.id as theme_id,
+                t.name as theme_name,
+                t.description as theme_description,
+                t.thumbnail as theme_thumbnail
+                FROM reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
+                """,
             (resultSet, rowNum) ->
             {
                 LocalDate date = LocalDate.parse(
@@ -52,6 +61,12 @@ public class ReservationDao {
                             resultSet.getString("time_value"),
                             DateTimeFormatter.ofPattern("HH:mm")
                         )
+                    ),
+                    new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("theme_description"),
+                        resultSet.getString("theme_thumbnail")
                     )
                 );
             }
@@ -63,9 +78,10 @@ public class ReservationDao {
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
+        parameters.put("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(),
-            reservation.getTime());
+            reservation.getTime(), reservation.getTheme());
     }
 
     public int deleteById(Long id) {

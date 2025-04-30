@@ -5,23 +5,27 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.domain.Theme;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 
 @Service
 public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
     public ReservationService(
         ReservationDao reservationDao,
-        ReservationTimeDao reservationTimeDao
-    ) {
+        ReservationTimeDao reservationTimeDao,
+        ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
     }
 
     public List<ReservationResponse> findAll() {
@@ -38,13 +42,19 @@ public class ReservationService {
         }
 
         Optional<ReservationTime> reservationTime = reservationTimeDao.findById(request.timeId());
+        Optional<Theme> theme = themeDao.findById(request.themeId());
         if (reservationTime.isEmpty()) {
             throw new IllegalArgumentException("해당하는 시간이 없습니다");
+        }
+        if (theme.isEmpty()) {
+            throw new IllegalArgumentException("해당하는 테마가 없습니다");
         }
         Reservation reservation = new Reservation(
             request.name(),
             request.date(),
-            reservationTime.get());
+            reservationTime.get(),
+            theme.get()
+        );
         return ReservationResponse.from(reservationDao.save(reservation));
     }
 

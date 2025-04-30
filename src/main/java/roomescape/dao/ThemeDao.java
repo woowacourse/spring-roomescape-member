@@ -2,6 +2,8 @@ package roomescape.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -44,6 +46,17 @@ public class ThemeDao {
     public int deleteById(Long id) {
         String query = "DELETE FROM theme WHERE id = ?";
         return jdbcTemplate.update(query, id);
+    }
+
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT * from theme where id = ?";
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, mapToTheme(), id);
+            return Optional.of(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+
     }
 
     private RowMapper<Theme> mapToTheme() {

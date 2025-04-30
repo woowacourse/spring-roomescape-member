@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class Reservation {
@@ -10,12 +11,15 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
+        //TODO: NPE 수정
         this.name = Objects.requireNonNull(name, "[ERROR] 이름은 null이 될 수 없습니다.");
         this.date = Objects.requireNonNull(date, "[ERROR] 날짜는 null이 될 수 없습니다.");
         this.time = Objects.requireNonNull(time, "[ERROR] 시간은 null이 될 수 없습니다.");
+        this.theme = Objects.requireNonNull(theme, "[ERROR] 테마는 null이 될 수 없습니다.");
         validateDateTime(date, time);
     }
 
@@ -26,8 +30,8 @@ public class Reservation {
         }
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time) {
-        this(null, name, date, time);
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
     }
 
     public Long getId() {
@@ -44,6 +48,10 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override
