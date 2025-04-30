@@ -7,6 +7,28 @@ public record ThemeRequestDto(
         String description,
         String thumbnail
 ) {
+    public ThemeRequestDto(String name, String description, String thumbnail) {
+        validateRequiredFields(name, description, thumbnail);
+
+        this.name = name;
+        this.description = description;
+        this.thumbnail = thumbnail;
+    }
+
+    private void validateRequiredFields(String name, String description, String thumbnail) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("테마명은 null이거나 공백일 수 없습니다");
+        }
+
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("테마 설명은 null이거나 공백일 수 없습니다");
+        }
+
+        if (thumbnail == null || thumbnail.isBlank()) {
+            throw new IllegalArgumentException("썸내일 이미지는 null이거나 공백일 수 없습니다");
+        }
+    }
+
     public Theme convertToTheme() {
         return new Theme(name, description, thumbnail);
     }

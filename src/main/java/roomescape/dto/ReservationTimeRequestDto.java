@@ -7,6 +7,13 @@ import roomescape.model.ReservationTime;
 public record ReservationTimeRequestDto(
         String startAt
 ) {
+    public ReservationTimeRequestDto(String startAt) {
+        if (startAt == null || startAt.isBlank()) {
+            throw new IllegalArgumentException("시작 시각은 null이거나 공백일 수 없습니다");
+        }
+        this.startAt = startAt;
+    }
+
     public ReservationTime convertToTime() {
         try {
             LocalTime startTime = LocalTime.parse(startAt);
