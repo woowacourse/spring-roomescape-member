@@ -14,7 +14,7 @@ import roomescape.theme.Theme;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcThemeDaoTest {
     @Autowired
-    private ThemeDao themeDao;
+    private JdbcThemeDao jdbcThemeDao;
 
     @Test
     void 테마를_추가할_수_있다() {
@@ -24,7 +24,7 @@ public class JdbcThemeDaoTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when
-        Theme createdTheme = themeDao.create(theme);
+        Theme createdTheme = jdbcThemeDao.create(theme);
 
         // then
         assertThat(createdTheme.getName()).isEqualTo("레벨2");
@@ -37,10 +37,10 @@ public class JdbcThemeDaoTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         Theme theme2 = Theme.createWithoutId("레벨2", "탈출하자",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        themeDao.create(theme1);
-        themeDao.create(theme2);
+        jdbcThemeDao.create(theme1);
+        jdbcThemeDao.create(theme2);
         // when
-        List<Theme> allTheme = themeDao.findAll();
+        List<Theme> allTheme = jdbcThemeDao.findAll();
         // then
         assertThat(allTheme).hasSize(2);
         assertThat(allTheme.getFirst().getName()).isEqualTo("레벨1");
@@ -54,12 +54,12 @@ public class JdbcThemeDaoTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         Theme theme2 = Theme.createWithoutId("레벨2", "탈출하자",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        themeDao.create(theme1);
-        themeDao.create(theme2);
+        jdbcThemeDao.create(theme1);
+        jdbcThemeDao.create(theme2);
         // when
-        themeDao.delete(1L);
+        jdbcThemeDao.delete(1L);
         // then
-        List<Theme> allTheme = themeDao.findAll();
+        List<Theme> allTheme = jdbcThemeDao.findAll();
         assertThat(allTheme).hasSize(1);
     }
 }
