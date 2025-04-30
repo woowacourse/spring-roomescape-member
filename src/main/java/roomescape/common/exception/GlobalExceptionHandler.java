@@ -13,8 +13,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    // TODO: Status Code 고민해보기 (400 Bad Request로 처리하는 게 맞을까?)
     @ExceptionHandler(DeleteReservationException.class)
     public ResponseEntity<String> deleteReservationExceptionHandler(DeleteReservationException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotAbleReservationException.class)
+    public ResponseEntity<String> deleteReservationExceptionHandler(NotAbleReservationException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

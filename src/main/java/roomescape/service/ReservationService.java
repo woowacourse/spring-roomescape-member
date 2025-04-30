@@ -3,6 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.common.exception.NotAbleReservationException;
 import roomescape.common.exception.NotFoundReservationException;
 import roomescape.common.exception.NotFoundThemeException;
 import roomescape.domain.Reservation;
@@ -37,6 +38,13 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundReservationException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundThemeException("올바른 방탈출 테마가 없습니다."));
+
+        List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(request.date(), request.themeId());
+
+        if (!availableTimes.contains(reservationTime)) {
+            throw new NotAbleReservationException("이미 해당 시간과 테마에 예약이 존재하여 예약할 수 없습니다.");
+        };
+
         Reservation createdReservation = reservationRepository.saveReservation(request.toReservation(reservationTime, theme));
         return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime), ThemeResponse.from(theme));
     }
