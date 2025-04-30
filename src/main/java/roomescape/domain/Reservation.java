@@ -32,7 +32,9 @@ public class Reservation {
     }
 
     public boolean isDuplicated(Reservation other) {
-        return this.reservationDate.equals(other.reservationDate) && this.reservationTime.equals(other.reservationTime);
+        return this.reservationDate.equals(other.reservationDate)
+               && this.reservationTime.equals(other.reservationTime)
+               && this.theme.equals(other.theme);
     }
 
     public Long getId() {
