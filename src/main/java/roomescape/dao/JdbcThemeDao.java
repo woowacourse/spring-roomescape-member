@@ -51,7 +51,7 @@ public class JdbcThemeDao implements ThemeDao {
     public List<Theme> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, name, description, thumbnail"
-                        + "FROM theme",
+                        + " FROM theme",
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"),
                         rs.getString("name"),
