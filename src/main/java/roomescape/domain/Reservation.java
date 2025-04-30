@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import roomescape.exception.custom.InvalidInputException;
 
 public class Reservation {
 
@@ -15,6 +16,8 @@ public class Reservation {
                        final LocalDate date,
                        final ReservationTime time,
                        final Theme theme) {
+        validate(name, date, time, theme);
+
         this.id = id;
         this.name = name;
         this.date = date;
@@ -27,6 +30,21 @@ public class Reservation {
                        final ReservationTime reservationTime,
                        final Theme theme) {
         this(0, name, date, reservationTime, theme);
+    }
+
+    private void validate(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidInputException("예약자 명은 빈 값이 입력될 수 없습니다");
+        }
+        if (date == null) {
+            throw new InvalidInputException("예약 날짜는 빈 값이 입력될 수 없습니다");
+        }
+        if (reservationTime == null) {
+            throw new InvalidInputException("예약 시간은 빈 값이 입력될 수 없습니다");
+        }
+        if (theme == null) {
+            throw new InvalidInputException("테마는 빈 값이 입력될 수 없습니다");
+        }
     }
 
     public Reservation withId(final long id) {
