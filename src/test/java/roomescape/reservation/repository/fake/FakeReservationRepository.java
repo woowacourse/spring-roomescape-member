@@ -67,6 +67,12 @@ public class FakeReservationRepository implements ReservationRepository {
                 .anyMatch(reservation -> sameReservationDateTime(reservation, date, timeId));
     }
 
+    @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        // TODO 해야함
+        return List.of();
+    }
+
     private boolean sameReservationDateTime(Reservation reservation, LocalDate date, Long timeId) {
         return reservation.getReservationDate().equals(date) &&
                reservation.getReservationTime().getId().equals(timeId);
