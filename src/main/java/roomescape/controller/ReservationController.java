@@ -6,16 +6,18 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationSlotTimes;
 import roomescape.dto.AddReservationDto;
 import roomescape.dto.AvailableTimeRequestDto;
 import roomescape.dto.ReservationResponseDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ReservationTimeSlotResponseDto;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -51,14 +53,14 @@ public class ReservationController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<ReservationTimeResponseDto>> availableReservationTimes(
-            @Valid @RequestBody AvailableTimeRequestDto availableTimeRequestDto) {
-        List<ReservationTimeResponseDto> reservationTimeResponseDtos = reservationService.availableReservationTimes(
-                        availableTimeRequestDto)
+    public ResponseEntity<List<ReservationTimeSlotResponseDto>> availableReservationTimes(
+            @Valid @ModelAttribute AvailableTimeRequestDto availableTimeRequestDto) {
+        ReservationSlotTimes reservationSlotTimes = reservationService.availableReservationTimes(
+                availableTimeRequestDto);
+        List<ReservationTimeSlotResponseDto> reservationTimeSlotResponseDtos = reservationSlotTimes.getAvailableBookTimes()
                 .stream()
-                .map(reservationTime -> new ReservationTimeResponseDto(reservationTime.getId(),
-                        reservationTime.getTime()))
+                .map((time) -> new ReservationTimeSlotResponseDto(time.getId(), time.getTime(), time.isReserved()))
                 .toList();
-        return ResponseEntity.ok(reservationTimeResponseDtos);
+        return ResponseEntity.ok(reservationTimeSlotResponseDtos);
     }
 }

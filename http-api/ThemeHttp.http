@@ -24,7 +24,7 @@ POST http://localhost:8080/times
 Content-Type: application/json
 
 {
-  "startAt": "10:00"
+  "startAt": "10:01"
 }
 
 <> 2025-04-30T141328.400.txt

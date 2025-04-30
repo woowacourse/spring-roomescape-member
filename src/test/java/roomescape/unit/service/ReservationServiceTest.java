@@ -6,10 +6,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.ReservationSlot;
 import roomescape.dto.AddReservationDto;
 import roomescape.dto.AddReservationTimeDto;
 import roomescape.dto.AddThemeDto;
@@ -129,10 +131,18 @@ class ReservationServiceTest {
         Long firstReservationTimeId = reservationTimeRepository.add(new AddReservationTimeDto(firstTime).toEntity());
         Long secondReservationTimeId = reservationTimeRepository.add(new AddReservationTimeDto(secondTime).toEntity());
         Long themeId = themeRepository.add(new AddThemeDto("테마", "테마2", "unique.png").toEntity());
+
         reservationService.addReservation(
                 new AddReservationDto("투다", today, firstReservationTimeId, themeId));
 
         AvailableTimeRequestDto availableTimeRequestDto = new AvailableTimeRequestDto(today, themeId);
-        assertThat(reservationService.availableReservationTimes(availableTimeRequestDto)).hasSize(1);
+        List<ReservationSlot> reservationAvailabilities = reservationService.availableReservationTimes(
+                        availableTimeRequestDto)
+                .getAvailableBookTimes();
+
+        List<ReservationSlot> reservationSlots = List.of(new ReservationSlot(1L, firstTime, true),
+                new ReservationSlot(2L, secondTime, false));
+        
+        assertThat(reservationAvailabilities).containsExactlyInAnyOrderElementsOf(reservationSlots);
     }
 }

@@ -6,8 +6,8 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.domain.AvailableBookTimes;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationSlotTimes;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.AddReservationDto;
@@ -70,12 +70,12 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public AvailableBookTimes availableReservationTimes(AvailableTimeRequestDto availableTimeRequestDto) {
+    public ReservationSlotTimes availableReservationTimes(AvailableTimeRequestDto availableTimeRequestDto) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
                 availableTimeRequestDto.date(), availableTimeRequestDto.themeId());
 
-        return new AvailableBookTimes(times, alreadyReservedReservations);
+        return new ReservationSlotTimes(times, alreadyReservedReservations);
     }
 }
