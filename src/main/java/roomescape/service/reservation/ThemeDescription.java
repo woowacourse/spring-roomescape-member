@@ -9,4 +9,26 @@ public final class ThemeDescription {
         }
         this.description = description;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final ThemeDescription that = (ThemeDescription) o;
+        return description.equals(that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return description.hashCode();
+    }
 }

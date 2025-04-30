@@ -7,10 +7,26 @@ public final class Theme {
     private final ThemeDescription description;
     private final String thumbnail;
 
-    public Theme(final Long id, final ThemeName name, final ThemeDescription description, final String thumbnail) {
+    public Theme(final Long id, final String name, final String description, final String thumbnail) {
         this.id = id;
-        this.name = name;
-        this.description = description;
+        this.name = new ThemeName(name);
+        this.description = new ThemeDescription(description);
         this.thumbnail = thumbnail;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name.getName();
+    }
+
+    public String getDescription() {
+        return description.getDescription();
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
     }
 }
