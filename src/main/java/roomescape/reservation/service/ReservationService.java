@@ -1,5 +1,7 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.Dao;
@@ -8,22 +10,29 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.dto.ReservationTimeResponse;
+import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 
 @Service
 public class ReservationService {
     private final Dao<Reservation> reservationDao;
     private final Dao<ReservationTime> reservationTimeDao;
-    private final Dao<Theme> themeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(Dao<Reservation> reservationDao, Dao<ReservationTime> reservationTimeDao, Dao<Theme> themeDao) {
+    public ReservationService(Dao<Reservation> reservationDao, Dao<ReservationTime> reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao =  themeDao;
     }
 
     public ReservationResponse add(ReservationRequest reservationRequest) {
+        if (reservationRequest.date().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
+        }
         ReservationTime findReservationTime = getReservationTime(reservationRequest);
+        if(reservationRequest.date().isEqual(LocalDate.now()) && findReservationTime.getStartAt().isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
+        }
         Theme findTheme = getTheme(reservationRequest);
 
         Reservation newReservation = new Reservation(

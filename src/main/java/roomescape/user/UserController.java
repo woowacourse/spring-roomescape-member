@@ -9,4 +9,9 @@ public class UserController {
     public String showReservation() {
         return "reservation";
     }
+
+    @GetMapping
+    public String showBestTheme() {
+        return "index";
+    }
 }

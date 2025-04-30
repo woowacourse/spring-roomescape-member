@@ -17,19 +17,9 @@ public class Reservation {
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
-        validateDateAndTime(date, time.getStartAt());
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    private void validateDateAndTime(LocalDate date, LocalTime time) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
-        }
-        if(date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
-        }
     }
 
     public Long getId() {

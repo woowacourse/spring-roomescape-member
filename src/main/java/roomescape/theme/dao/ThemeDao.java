@@ -1,7 +1,9 @@
 package roomescape.theme.dao;
 
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +13,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.common.Dao;
-import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 @Repository
-public class ThemeDao implements Dao<Theme> {
+public class ThemeDao {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -27,7 +27,6 @@ public class ThemeDao implements Dao<Theme> {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    @Override
     public Theme add(Theme theme) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());
@@ -37,7 +36,6 @@ public class ThemeDao implements Dao<Theme> {
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail from theme where id = :id";
         Map<String, Object> parameter = Map.of("id", id);
@@ -49,14 +47,29 @@ public class ThemeDao implements Dao<Theme> {
         }
     }
 
-    @Override
+    public List<Theme> findBest(LocalDate startDate, LocalDate endDate) {
+        String sql = "SELECT t.id, t.name, t.description, t.thumbnail "
+                + "FROM theme AS t "
+                + "INNER JOIN reservation AS r ON r.theme_id = t.id "
+                + "WHERE r.date BETWEEN :startDate AND :endDate "
+                + "GROUP BY t.id, t.name, t.description, t.thumbnail "
+                + "ORDER BY COUNT(r.id) DESC "
+                + "LIMIT 10";
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("startDate", startDate);
+        parameters.put("endDate", endDate);
+
+        return namedParameterJdbcTemplate.query(sql, parameters,
+                (resultSet, rowNum) -> createTheme(resultSet));
+    }
+
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
         return namedParameterJdbcTemplate.query(sql,
                 (resultSet, rowNum) -> createTheme(resultSet));
     }
 
-    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
         Map<String, Object> parameter = Map.of("id", id);
@@ -64,7 +77,7 @@ public class ThemeDao implements Dao<Theme> {
     }
 
     private Theme createTheme(ResultSet resultSet) throws SQLException {
-        return new roomescape.theme.domain.Theme(
+        return new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),

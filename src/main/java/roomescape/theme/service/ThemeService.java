@@ -1,17 +1,20 @@
 package roomescape.theme.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.Dao;
+import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.BestThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private final Dao<Theme> themeDao;
+    private final ThemeDao themeDao;
 
-    public ThemeService(Dao<Theme> themeDao) {
+    public ThemeService(ThemeDao themeDao) {
         this.themeDao = themeDao;
     }
 
@@ -38,5 +41,12 @@ public class ThemeService {
     public void deleteById(Long id) {
         // TODO : 검증 로직 추가
         themeDao.deleteById(id);
+    }
+
+    public List<BestThemeResponse> findBest() {
+        List<Theme> bestThemes = themeDao.findBest(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1));
+        return bestThemes.stream()
+                .map(theme -> new BestThemeResponse(theme.getName(), theme.getDescription(), theme.getThumbnail()))
+                .toList();
     }
 }

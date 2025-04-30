@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.theme.dto.BestThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -32,6 +33,11 @@ public class ThemeApiController {
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {
         return ResponseEntity.ok(themeService.findAll());
+    }
+
+    @GetMapping("/best")
+    public ResponseEntity<List<BestThemeResponse>> findBest() {
+        return ResponseEntity.ok(themeService.findBest());
     }
 
     @DeleteMapping("/{id}")
