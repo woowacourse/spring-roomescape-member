@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import roomescape.business.dto.ReservationResponseDto;
+import roomescape.business.dto.ReservationThemeResponseDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
 import roomescape.business.service.ReservationService;
 
@@ -47,5 +48,11 @@ public class ReservationQueryController {
     public ResponseEntity<ReservationTimeResponseDto> readReservationTime(@PathVariable("timeId") Long id) {
         ReservationTimeResponseDto reservationTime = reservationService.readTimeOne(id);
         return ResponseEntity.ok(reservationTime);
+    }
+
+    @GetMapping("themes")
+    public ResponseEntity<List<ReservationThemeResponseDto>> readReservationThemes() {
+        List<ReservationThemeResponseDto> reservationThemes = reservationService.readThemeAll();
+        return ResponseEntity.ok(reservationThemes);
     }
 }

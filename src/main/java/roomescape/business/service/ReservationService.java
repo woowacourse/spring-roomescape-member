@@ -7,12 +7,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.business.Reservation;
+import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
 import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationResponseDto;
+import roomescape.business.dto.ReservationThemeResponseDto;
 import roomescape.business.dto.ReservationTimeRequestDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
 import roomescape.persistence.ReservationRepository;
+import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
 
 @Service
@@ -20,12 +23,15 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationThemeRepository reservationThemeRepository;
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ReservationThemeRepository reservationThemeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationThemeRepository = reservationThemeRepository;
     }
 
     public List<ReservationResponseDto> readReservationAll() {
@@ -109,5 +115,18 @@ public class ReservationService {
             throw new IllegalArgumentException("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(timeId);
+    }
+
+    public List<ReservationThemeResponseDto> readThemeAll() {
+        List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
+        return reservationThemes.stream()
+                .map(reservationTheme -> new ReservationThemeResponseDto(
+                                reservationTheme.getId(),
+                                reservationTheme.getName(),
+                                reservationTheme.getDescription(),
+                                reservationTheme.getThumbnail()
+                        )
+                )
+                .toList();
     }
 }

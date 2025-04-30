@@ -14,14 +14,17 @@ import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationTimeRequestDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
 import roomescape.business.fakerepository.FakeReservationRepository;
+import roomescape.business.fakerepository.FakeReservationThemeRepository;
 import roomescape.business.fakerepository.FakeReservationTimeRepository;
 import roomescape.business.service.ReservationService;
 import roomescape.persistence.ReservationRepository;
+import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
 
 class ReservationServiceTest {
 
     private ReservationTimeRepository reservationTimeRepository;
+    private ReservationThemeRepository reservationThemeRepository;
     private ReservationService reservationService;
     private Long timeId;
 
@@ -29,7 +32,8 @@ class ReservationServiceTest {
     void setUp() {
         ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+        reservationThemeRepository = new FakeReservationThemeRepository();
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, reservationThemeRepository);
         timeId = reservationTimeRepository.add(new ReservationTime(1L, LocalTime.now()));
     }
 
