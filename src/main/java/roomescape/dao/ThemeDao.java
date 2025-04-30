@@ -55,4 +55,9 @@ public class ThemeDao {
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public boolean isDuplicatedNameExisted(String name) {
+        String sql = "SELECT EXISTS (SELECT * FROM theme WHERE name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
 }

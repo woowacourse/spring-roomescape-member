@@ -29,7 +29,6 @@ public class ReservationTimeService {
         LocalTime parsedStartAt = LocalTime.parse(reservationTimeRequestDto.startAt());
         boolean duplicatedStartAtExisted = reservationTimeDao.isDuplicatedStartAtExisted(parsedStartAt);
         if (duplicatedStartAtExisted) {
-            System.out.println("Duplicated start at: " + reservationTimeRequestDto.startAt());
             throw new IllegalStateException("중복된 예약시각은 등록할 수 없습니다.");
         }
 

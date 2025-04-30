@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,11 @@ public class ThemeService {
     }
 
     public ThemeResponseDto saveTheme(ThemeRequestDto themeRequestDto) {
+
+        boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRequestDto.name());
+        if (duplicatedNameExisted) {
+            throw new IllegalStateException("중복된 예약시각은 등록할 수 없습니다.");
+        }
         Theme theme = themeRequestDto.convertToTheme();
         Long savedId = themeDao.saveTheme(theme);
         return new ThemeResponseDto(savedId, theme.getName(), theme.getDescription(), theme.getThumbnail());
