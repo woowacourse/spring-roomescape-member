@@ -12,4 +12,6 @@ public interface ReservationTimeDao {
     Integer delete(Long id);
 
     Optional<ReservationTime> findById(Long id);
+
+//    List<ReservationTime> findTimesByThemeId(LocalDate date, Long themeId);
 }
