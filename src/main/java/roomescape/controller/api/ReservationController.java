@@ -2,13 +2,13 @@ package roomescape.controller.api;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
@@ -26,10 +26,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody CreateReservationRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponse addReservation(@RequestBody CreateReservationRequest request) {
         ReservationCreation creation = ReservationCreation.from(request);
-        ReservationResponse response = reservationService.addReservation(creation);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return reservationService.addReservation(creation);
     }
 
     @GetMapping
@@ -41,9 +41,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeReservation(@PathVariable long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeReservation(@PathVariable long id) {
         reservationService.removeReservationById(id);
-
-        return ResponseEntity.noContent().build();
     }
 }
