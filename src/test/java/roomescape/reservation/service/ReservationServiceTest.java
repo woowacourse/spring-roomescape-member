@@ -17,6 +17,8 @@ import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeRepository;
 
 class ReservationServiceTest {
 
@@ -30,6 +32,9 @@ class ReservationServiceTest {
                 return LocalDateTime.of(2025, 10, 5, 10, 0);
             }
         };
+        ThemeRepository themeRepository = new FakeThemeRepository();
+        Theme theme = new Theme(null, "테스트1", "설명", "localhost:8080");
+        themeRepository.save(theme);
 
         ReservationTime reservationTime1 = new ReservationTime(null, LocalTime.of(10, 0));
         ReservationTime reservationTime2 = new ReservationTime(null, LocalTime.of(9, 0));
@@ -39,9 +44,14 @@ class ReservationServiceTest {
         reservationTimeRepository.save(reservationTime2);
 
         ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationRepository.save(new Reservation(null, "홍길동", LocalDate.of(2024, 10, 6), reservationTime1));
+        reservationRepository.save(new Reservation(null, "홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
 
-        reservationService = new ReservationService(dateTime, reservationRepository, reservationTimeRepository);
+        reservationService = new ReservationService(
+                dateTime,
+                reservationRepository,
+                reservationTimeRepository,
+                themeRepository
+        );
     }
 
     @DisplayName("지나간 날짜와 시간에 대한 예약을 생성할 수 없다.")
@@ -49,7 +59,7 @@ class ReservationServiceTest {
     @MethodSource
     void cant_not_reserve_before_now(final LocalDate date, final Long timeId) {
         Assertions.assertThatThrownBy(
-                        () -> reservationService.createReservation(new ReservationRequest("홍길동", date, timeId)))
+                        () -> reservationService.createReservation(new ReservationRequest("홍길동", date, timeId, 1L)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -66,7 +76,7 @@ class ReservationServiceTest {
     @Test
     void cant_not_reserve_duplicate() {
         Assertions.assertThatThrownBy(() -> reservationService.createReservation(
-                        new ReservationRequest("홍길동", LocalDate.of(2024, 10, 6), 1L)))
+                        new ReservationRequest("홍길동", LocalDate.of(2024, 10, 6), 1L, 1L)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

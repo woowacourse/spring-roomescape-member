@@ -36,13 +36,25 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .anyMatch(reservation ->
                         reservation.getTime().getStartAt().equals(time)
-                && reservation.getDate().equals(date));
+                                && reservation.getDate().equals(date));
+    }
+
+    @Override
+    public boolean existByThemeId(Long themeId) {
+        return reservations.stream()
+                .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), themeId));
     }
 
     @Override
     public Long save(Reservation reservation) {
         long currentIndex = index.incrementAndGet();
-        reservations.add(new Reservation(currentIndex, reservation.getName(), reservation.getDate(), reservation.getTime()));
+        reservations.add(new Reservation(
+                currentIndex,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme())
+        );
         return currentIndex;
     }
 
@@ -52,7 +64,7 @@ public class FakeReservationRepository implements ReservationRepository {
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findAny();
 
-        if(findReservation.isEmpty()){
+        if (findReservation.isEmpty()) {
             return 0;
         }
 
