@@ -44,7 +44,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400).body(containsString("[ERROR] "))
+                .statusCode(400).body(containsString("[ERROR]"))
         ;
     }
 
@@ -62,7 +62,7 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400).body(containsString("[ERROR] "))
+                .statusCode(400).body(containsString("[ERROR]"))
         ;
     }
 
@@ -89,7 +89,36 @@ public class ReservationControllerTest {
                 .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400).body(containsString("[ERROR] "))
+                .statusCode(400).body(containsString("[ERROR]"))
+        ;
+    }
+
+    @Test
+    @DisplayName("과거 예약을 생성하면 예외 처리한다.")
+    void test4() {
+        Test_ReservationTime_Post();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "띠용");
+        params.put("date", "2222-02-02");
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201);
+
+        params.replace("name", "벡터");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400)
+                .body(containsString("[ERROR]"))
         ;
     }
 
