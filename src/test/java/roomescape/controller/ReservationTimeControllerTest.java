@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -45,7 +46,7 @@ class ReservationTimeControllerTest {
 
             Map<String, String> params = Map.of(
                     "name", "브라운",
-                    "date", "2023-08-06",
+                    "date", LocalDate.now().plusDays(2).toString(),
                     "timeId", "1"
             );
 

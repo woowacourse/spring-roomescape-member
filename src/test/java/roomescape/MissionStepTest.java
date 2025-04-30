@@ -8,6 +8,7 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -69,9 +70,10 @@ class MissionStepTest {
                 .statusCode(201)
                 .body("id", is(1));
 
+
         Map<String, String> params = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", LocalDate.now().plusDays(1).toString(),
                 "timeId", "1"
         );
 
@@ -159,7 +161,7 @@ class MissionStepTest {
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", LocalDate.now().plusDays(1).toString(),
                 "timeId", "1"
         );
 
@@ -225,7 +227,7 @@ class MissionStepTest {
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
-                "date", "2023-08-05",
+                "date", LocalDate.now().plusDays(1).toString(),
                 "timeId", "1"
         );
 

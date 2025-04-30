@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,7 +50,7 @@ class ReservationControllerTest {
 
             Map<String, String> params = Map.of(
                     "name", "브라운",
-                    "date", "2023-08-05",
+                    "date", LocalDate.now().minusDays(1).toString(),
                     "timeId", "1"
             );
 
@@ -74,12 +75,11 @@ class ReservationControllerTest {
                     .body(timeParams)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(201)
-                    .body("id", is(1));
+                    .statusCode(201);
 
             Map<String, String> params = Map.of(
                     "name", "브라운",
-                    "date", "2023-08-05",
+                    "date", LocalDate.now().plusDays(1).toString(),
                     "timeId", "1"
             );
 
@@ -92,7 +92,7 @@ class ReservationControllerTest {
 
             Map<String, String> duplicated = Map.of(
                     "name", "네오",
-                    "date", "2023-08-05",
+                    "date", LocalDate.now().plusDays(1).toString(),
                     "timeId", "1"
             );
 
