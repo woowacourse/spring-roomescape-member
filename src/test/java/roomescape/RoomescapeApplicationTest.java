@@ -34,11 +34,14 @@ class RoomescapeApplicationTest {
         @DisplayName("저장된 모든 예약을 응답한다.")
         @Test
         void canResponseAllReservations() {
-                jdbcTemplate.update("insert into reservation_time (id, start_at) values (?, ?)", 1, LocalTime.of(10,0));
-                jdbcTemplate.update("insert into reservation_time (id, start_at) values (?, ?)", 2, LocalTime.of(11,0));
+                jdbcTemplate.update("insert into reservation_time (start_at) values (?)",LocalTime.of(10,0));
+                jdbcTemplate.update("insert into reservation_time (start_at) values (?)",LocalTime.of(11,0));
 
-                jdbcTemplate.update("insert into reservation (id, name, date, time_id) values (?, ?, ?, ?)", 1, "랜디", "2025-5-5", "1");
-                jdbcTemplate.update("insert into reservation (id, name, date, time_id) values (?, ?, ?, ?)", 2, "아마", "2025-5-5", "2");
+                jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)","이름1", "설명1", "썸네일1");
+                jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)","이름2", "설명2", "썸네일2");
+
+                jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)","랜디", "2025-5-5", "1", "1");
+                jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)","아마", "2025-5-5", "2", "2");
 
                 RestAssured.given().log().all()
                         .when().get("/reservations")
@@ -50,12 +53,14 @@ class RoomescapeApplicationTest {
         @DisplayName("예약을 추가할 수 있다.")
         @Test
         void canCreateReservation() {
+                jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)","이름1", "설명1", "썸네일1");
                 jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
 
                 Map<String, Object> params = new HashMap<>();
                 params.put("name", "브라운");
                 params.put("date", FUTURE_DATE_TEXT);
                 params.put("timeId", 1);
+                params.put("themeId", 1);
 
                 RestAssured.given().log().all()
                         .contentType(ContentType.JSON)
@@ -124,8 +129,9 @@ class RoomescapeApplicationTest {
         @DisplayName("Id를 통해 예약을 삭제할 수 있다.")
         @Test
         void canDeleteReservationById() {
-                jdbcTemplate.update("insert into reservation_time (id, start_at) values (?, ?)", 1, LocalTime.of(10,0));
-                jdbcTemplate.update("insert into reservation (id, name, date, time_id) values (?, ?, ?, ?)", 1, "랜디", "2025-5-5", "1");
+                jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)","이름1", "설명1", "썸네일1");
+                jdbcTemplate.update("insert into reservation_time (start_at) values (?)",LocalTime.of(10,0));
+                jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)","랜디", "2025-5-5", "1", "1");
 
                 RestAssured.given().log().all()
                         .when().delete("/reservations/1")

@@ -14,17 +14,20 @@ public final class Reservation {
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time) {
-        validateField(id, name, date, time);
+    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
+                       final Theme theme) {
+        validateField(id, name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time) {
-        return new Reservation(DEFAULT_ID, name, date, time);
+    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(DEFAULT_ID, name, date, time, theme);
     }
 
     public long getId() {
@@ -41,6 +44,10 @@ public final class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override
@@ -66,12 +73,13 @@ public final class Reservation {
         }
     }
 
-    private void validateField(Long id, String name, LocalDate date, ReservationTime time) {
+    private void validateField(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateNullId(id);
         validateBlankName(name);
         validateNameLength(name);
         validateNullDate(date);
         validateNullTime(time);
+        validateNullTheme(theme);
     }
 
     private void validateBlankName(String name) {
@@ -102,6 +110,12 @@ public final class Reservation {
     private void validateNullTime(ReservationTime reservationTime) {
         if (reservationTime == null) {
             throw new IllegalArgumentException("[ERROR] 비어있는 예약시간으로는 예약을 생성할 수 없습니다.");
+        }
+    }
+
+    private void validateNullTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("[ERROR] 비어있는 테마로는 예약을 생성할 수 없습니다.");
         }
     }
 }

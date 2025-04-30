@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 @Repository
 public class ReservationRepository {
@@ -29,6 +30,12 @@ public class ReservationRepository {
                 new ReservationTime(
                         resultSet.getLong("time_id"),
                         resultSet.getTime("start_at").toLocalTime()
+                ),
+                new Theme(
+                        resultSet.getLong("theme_id"),
+                        resultSet.getString("theme_name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
                 )
         );
     }
@@ -38,18 +45,24 @@ public class ReservationRepository {
     }
 
     public List<Reservation> findAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, rt.id as time_id, rt.start_at "
+        String sql = "SELECT "
+                + "r.id as reservation_id, r.name, r.date, "
+                + "rt.id as time_id, rt.start_at, "
+                + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail "
                 + "FROM reservation AS r "
-                + "INNER JOIN reservation_time AS rt "
-                + "ON r.time_id = rt.id ";
+                + "INNER JOIN reservation_time AS rt ON r.time_id = rt.id "
+                + "INNER JOIN theme AS t ON r.theme_id = t.id ";
         return template.query(sql, mapper);
     }
 
     public Optional<Reservation> findById(long id) {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, rt.id as time_id, rt.start_at "
+        String sql = "SELECT "
+                + "r.id as reservation_id, r.name, r.date, "
+                + "rt.id as time_id, rt.start_at, "
+                + "t.id as theme_id, t.name as theme_name, t.description, t.thumbnail "
                 + "FROM reservation AS r "
-                + "INNER JOIN reservation_time AS rt "
-                + "ON r.time_id = rt.id "
+                + "INNER JOIN reservation_time AS rt ON r.time_id = rt.id "
+                + "INNER JOIN theme AS t ON r.theme_id = t.id "
                 + "WHERE r.id = ?";
         try {
             Reservation reservation = template.queryForObject(sql, mapper, id);
@@ -78,7 +91,7 @@ public class ReservationRepository {
     }
 
     public long add(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id) values (?,?,?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(
                 (connection) -> {
@@ -86,6 +99,7 @@ public class ReservationRepository {
                     statement.setString(1, reservation.getName());
                     statement.setDate(2, Date.valueOf(reservation.getDate()));
                     statement.setLong(3, reservation.getTime().getId());
+                    statement.setLong(4, reservation.getTheme().getId());
                     return statement;
                 },
                 keyHolder

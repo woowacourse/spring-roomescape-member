@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.test.fixture.ReservationTimeFixture.addReservationTimeInRepository;
+import static roomescape.test.fixture.ThemeFixture.addThemeInRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,18 +13,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.test.fake.FakeReservationRepository;
 import roomescape.test.fake.FakeReservationTimeRepository;
+import roomescape.test.fake.FakeThemeRepository;
 
 class ReservationTimeServiceTest {
 
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
     private final ReservationTimeRepository timeRepository = new FakeReservationTimeRepository();
+    private final ThemeRepository themeRepository = new FakeThemeRepository();
     private final ReservationTimeService reservationTimeService =
             new ReservationTimeService(reservationRepository, timeRepository);
 
@@ -95,7 +100,9 @@ class ReservationTimeServiceTest {
     @Test
     void canNotDeleteBecauseReservations() {
         ReservationTime savedTime = addReservationTimeInRepository(timeRepository, LocalTime.of(10, 0));
-        reservationRepository.add(Reservation.createWithoutId("reservation1", LocalDate.now(), savedTime));
+        Theme theme = addThemeInRepository(themeRepository, "이름", "설명", "썸네일");
+
+        reservationRepository.add(Reservation.createWithoutId("reservation1", LocalDate.now(), savedTime, theme));
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(savedTime.getId()))
                 .isInstanceOf(BadRequestException.class)
