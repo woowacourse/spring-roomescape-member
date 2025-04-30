@@ -2,6 +2,7 @@ package roomescape.persistence;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -9,11 +10,18 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
+
+    private static final RowMapper<Theme> themeRowMapper = (rs, rowNum) -> new Theme(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("thumbnail"));
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -41,12 +49,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Optional<Theme> findById(Long themeId) {
         try {
             String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-            Theme theme = jdbcTemplate.queryForObject(sql,
-                    (rs, rowNum) -> new Theme(
-                            rs.getLong("id"),
-                            rs.getString("name"),
-                            rs.getString("description"),
-                            rs.getString("thumbnail")), themeId);
+            Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, themeId);
             return Optional.of(theme);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
@@ -56,16 +59,26 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail"))
+        return jdbcTemplate.query(sql, themeRowMapper
         );
     }
 
     @Override
     public void deleteById(Long themeId) {
         jdbcTemplate.update("DELETE FROM theme WHERE id = ?", themeId);
+    }
+
+    @Override
+    public List<Theme> findRankByDate(LocalDate startDate, LocalDate endDate, int limit) {
+        String sql = """
+                    SELECT t.id, t.name, t.description, t.thumbnail
+                    FROM theme t
+                    INNER JOIN reservation r ON t.id = r.theme_id
+                    WHERE r.date BETWEEN ? AND ?
+                    GROUP BY t.id
+                    ORDER BY COUNT(r.id) DESC
+                    LIMIT ?;
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper, startDate, endDate, limit);
     }
 }

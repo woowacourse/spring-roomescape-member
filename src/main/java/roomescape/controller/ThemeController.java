@@ -41,4 +41,13 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/rank")
+    public ResponseEntity<List<ThemeResponse>> rank() {
+        List<ThemeResult> rankForWeek = themeService.findRankByTheme();
+
+        List<ThemeResponse> themeResponses = rankForWeek.stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return ResponseEntity.ok(themeResponses);
+    }
 }

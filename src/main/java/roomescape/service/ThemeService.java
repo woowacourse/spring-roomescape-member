@@ -7,10 +7,13 @@ import roomescape.domain.ThemeRepository;
 import roomescape.service.param.CreateThemeParam;
 import roomescape.service.result.ThemeResult;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class ThemeService {
+
+    private static final int RANK_LIMIT = 10;
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -44,5 +47,17 @@ public class ThemeService {
             throw new IllegalArgumentException("해당 테마에 예약이 존재합니다.");
         }
         themeRepository.deleteById(themeId);
+    }
+
+    public List<ThemeResult> findRankByTheme() {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusWeeks(1);
+        LocalDate endDate = today.minusDays(1);
+
+        List<Theme> rankForWeek = themeRepository.findRankByDate(startDate, endDate, RANK_LIMIT);
+
+        return rankForWeek.stream()
+                .map(ThemeResult::from)
+                .toList();
     }
 }
