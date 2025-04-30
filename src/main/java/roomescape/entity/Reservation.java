@@ -41,10 +41,6 @@ public class Reservation {
         }
     }
 
-    public boolean isSameId(long id) {
-        return this.id == id;
-    }
-
     public boolean isBooked(ReservationTime reservationTime, Theme theme) {
         LocalTime startAt = time.getStartAt();
         return reservationTime.hasConflict(theme, startAt);

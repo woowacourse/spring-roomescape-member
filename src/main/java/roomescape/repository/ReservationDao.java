@@ -18,7 +18,7 @@ public interface ReservationDao {
 
     boolean isExistByTimeId(Long timeId);
 
-    boolean isExist(LocalDate date, Long timeId);
+    boolean isExist(LocalDate date, Long timeId, Long themeId);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 }

@@ -43,7 +43,7 @@ public class ReservationService {
         Theme theme = themeDao.findById(requestDto.themeId())
             .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
 
-        if (reservationDao.isExist(requestDto.date(), requestDto.timeId())) {
+        if (reservationDao.isExist(requestDto.date(), requestDto.timeId(), requestDto.themeId())) {
             throw new DuplicateReservationException("이미 예약이 존재합니다.");
         }
 

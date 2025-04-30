@@ -47,8 +47,11 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({PastReservationException.class, DuplicateReservationException.class, ReservationTimeConflictException.class})
-    public ResponseEntity<String> handleCreateReservationException(final PastReservationException e) {
+    @ExceptionHandler({
+        PastReservationException.class,
+        DuplicateReservationException.class,
+        ReservationTimeConflictException.class})
+    public ResponseEntity<String> handleCreateReservationException(final RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
