@@ -41,7 +41,11 @@ public class ReservationTimeService {
         return reservationTimeDAO.findById(id);
     }
 
-    public boolean deleteById(final long id) {
-        return reservationTimeDAO.deleteById(id);
+    public void deleteById(final long id) {
+        boolean deleted = reservationTimeDAO.deleteById(id);
+
+        if (!deleted) {
+            throw new NotExistedValueException("존재하지 않는 예약 시간입니다");
+        }
     }
 }

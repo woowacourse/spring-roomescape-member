@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.ThemeResponse;
 import roomescape.dao.ThemeDAO;
 import roomescape.domain.Theme;
+import roomescape.exception.custom.NotExistedValueException;
 import roomescape.service.dto.ThemeCreation;
 
 @Service
@@ -29,7 +30,11 @@ public class ThemeService {
                 .toList();
     }
 
-    public boolean deleteTheme(final long id) {
-        return themeDAO.deleteById(id);
+    public void deleteTheme(final long id) {
+        boolean deleted = themeDAO.deleteById(id);
+
+        if (!deleted) {
+            throw new NotExistedValueException("존재하지 않는 테마입니다");
+        }
     }
 }

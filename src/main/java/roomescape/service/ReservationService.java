@@ -66,7 +66,11 @@ public class ReservationService {
                         .formatted(timeId)));
     }
 
-    public boolean removeReservationById(final long id) {
-        return reservationDAO.deleteById(id);
+    public void removeReservationById(final long id) {
+        boolean deleted = reservationDAO.deleteById(id);
+
+        if (!deleted) {
+            throw new NotExistedValueException("존재하지 않는 예약입니다");
+        }
     }
 }
