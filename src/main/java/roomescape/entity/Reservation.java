@@ -16,7 +16,6 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validatePastDateTime(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -28,7 +27,13 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    private void validatePastDateTime(LocalDate date, ReservationTime time) {
+    public static Reservation create(String name, LocalDate date, ReservationTime time, Theme theme) {
+        // TODO: 운영시간 검증 구현 필요
+        validatePastDateTime(date, time);
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validatePastDateTime(LocalDate date, ReservationTime time) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time.getStartAt());
         if (reservationDateTime.isBefore(now)) {

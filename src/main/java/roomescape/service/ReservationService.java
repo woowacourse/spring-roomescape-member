@@ -55,7 +55,7 @@ public class ReservationService {
             throw new ReservationTimeConflictException("해당 테마 이용시간이 겹칩니다.");
         }
 
-        Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), reservationTime, theme);
+        Reservation reservation = Reservation.create(requestDto.name(), requestDto.date(), reservationTime, theme);
         Reservation saved = reservationDao.save(reservation);
         return createResponseDto(saved);
     }
