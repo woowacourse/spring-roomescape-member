@@ -27,6 +27,7 @@
 ### API 명세
 
 - [GET] /themes
+  
   테마 조회
   **응답 예시**
 
@@ -49,7 +50,9 @@
 
 **thumbnail:** 썸네일 이미지 경로
 
+---
 - [POST] /themes
+  
   테마 생성
   **요청 예시**
 
@@ -86,10 +89,14 @@
 
 **thumbnail:** 썸네일 이미지 경로
 
+---
 - [DELETE] /themes/{id}
+  
   테마 삭제
-
+---
 - [GET] /times/available
+  
+- 예약 가능 시간 조회
   - Query Parameter
     - themeId: 테마의 식별자
     - date: 에약 날짜
@@ -117,6 +124,38 @@
 
 **booked:** 예약 여부
 
+---
+- [GET] /themes/rank
+  
+  일주일 간, 인기 테마 10개 내림차순 조회
+
+
+**응답 예시**
+
+```json
+[
+  {
+    "id": 7,
+    "name": "The Lost City",
+    "description": "Discover the secrets of the lost city and find your way out.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  },
+  {
+    "id": 11,
+    "name": "The Bank Heist",
+    "description": "Plan and execute the perfect bank heist to escape.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  },
+  {
+    "id": 20,
+    "name": "The Wild West",
+    "description": "Escape the wild west town before the showdown.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+  },
+  ...
+]
+```
+---
 ### 고민한 점
 
 - 현재 도메인에서 IllegalArgumentException을 사용해 예외처리를 하고 있는데 이 예외를 ControllerAdvice에서 잡아도 될까?
