@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -51,7 +50,7 @@ public class ReservationTimeDao {
         }
     }
 
-    public ReservationTime create(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("start_at", reservationTime.getStartAt().toString());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();

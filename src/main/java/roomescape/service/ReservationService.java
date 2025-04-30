@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -44,10 +45,10 @@ public class ReservationService {
         Optional<ReservationTime> reservationTime = reservationTimeDao.findById(request.timeId());
         Optional<Theme> theme = themeDao.findById(request.themeId());
         if (reservationTime.isEmpty()) {
-            throw new IllegalArgumentException("해당하는 시간이 없습니다");
+            throw new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다");
         }
         if (theme.isEmpty()) {
-            throw new IllegalArgumentException("해당하는 테마가 없습니다");
+            throw new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다");
         }
         Reservation reservation = new Reservation(
             request.name(),
@@ -55,7 +56,12 @@ public class ReservationService {
             reservationTime.get(),
             theme.get()
         );
-        return ReservationResponse.from(reservationDao.save(reservation));
+        try {
+            return ReservationResponse.from(reservationDao.save(reservation));
+            // TODO: 이 예외는 어디서 catch하는게 맞을가? service vs dao
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
+        }
     }
 
     public boolean deleteReservation(Long id) {

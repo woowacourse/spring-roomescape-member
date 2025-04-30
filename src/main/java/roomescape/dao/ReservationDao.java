@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -79,6 +80,7 @@ public class ReservationDao {
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
+
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Reservation(id, reservation.getName(), reservation.getDate(),
             reservation.getTime(), reservation.getTheme());

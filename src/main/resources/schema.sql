@@ -11,7 +11,8 @@ CREATE TABLE theme
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    unique (name)
 );
 
 CREATE TABLE reservation
@@ -23,5 +24,6 @@ CREATE TABLE reservation
     theme_id BIGINT,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    unique (date, time_id)
 );

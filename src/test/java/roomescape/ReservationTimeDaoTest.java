@@ -30,7 +30,7 @@ class ReservationTimeDaoTest {
         ReservationTime reservationTime = new ReservationTime(
             LocalTime.of(10, 5)
         );
-        savedReservationTime = reservationTimeDao.create(reservationTime);
+        savedReservationTime = reservationTimeDao.save(reservationTime);
     }
 
     @Test
@@ -42,12 +42,12 @@ class ReservationTimeDaoTest {
 
     @Test
     @DisplayName("ReservationTime을 저장한다")
-    void create() {
+    void save() {
         LocalTime startAt = LocalTime.of(10, 5);
         ReservationTime reservationTime = new ReservationTime(
             startAt
         );
-        ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
         assertThat(savedReservationTime.getStartAt()).isEqualTo(startAt);
     }
 

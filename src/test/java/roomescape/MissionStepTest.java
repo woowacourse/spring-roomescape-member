@@ -252,6 +252,8 @@ public class MissionStepTest {
             .statusCode(404);
     }
 
+    // TODO : 서비스 테스트 작성하기
+
 //    @Test
 //    @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 400 코드를 반환한다")
 //    void cannot_delete_theme_if_reservation_exist() {

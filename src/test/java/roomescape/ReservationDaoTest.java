@@ -36,14 +36,14 @@ class ReservationDaoTest {
         reservationDao = new ReservationDao(jdbcTemplate);
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         themeDao = new ThemeDao(jdbcTemplate);
-        ReservationTime reservationTime = reservationTimeDao.create(
+        ReservationTime reservationTime = reservationTimeDao.save(
             new ReservationTime(
                 LocalTime.of(10, 5)
             )
         );
         Theme savedTheme = themeDao.save(
             new Theme(
-                "탈출",
+                "탈출2",
                 "탈출하는 내용",
                 "abc.jpg"
             )
