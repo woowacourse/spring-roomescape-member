@@ -5,8 +5,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.time.dto.AvailableReservationTimeResponse;
 import roomescape.time.entity.ReservationTimeEntity;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -63,5 +65,31 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, final Long themeId) {
+        String query = """
+                SELECT
+                        rt.id,
+                        rt.start_at,
+                        r.id IS NOT NULL as alreadyBooked
+                FROM reservation_time as rt
+                LEFT JOIN (
+                    SELECT id, time_id
+                    FROM reservation
+                    WHERE date = :date AND theme_id = :themeId
+                ) as r
+                on r.time_id = rt.id
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date.toString())
+                .addValue("themeId", themeId);
+        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
+            final long id = resultSet.getLong("id");
+            LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+            final boolean alreadyBooked = resultSet.getBoolean("alreadyBooked");
+            return new AvailableReservationTimeResponse(id, startAt.toString(), alreadyBooked);
+        });
     }
 }

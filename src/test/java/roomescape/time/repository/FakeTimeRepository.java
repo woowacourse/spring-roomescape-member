@@ -1,7 +1,9 @@
 package roomescape.time.repository;
 
+import roomescape.time.dto.AvailableReservationTimeResponse;
 import roomescape.time.entity.ReservationTimeEntity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,5 +33,11 @@ public class FakeTimeRepository implements ReservationTimeRepository {
         return entities.stream()
                 .filter(entity -> entity.getId().equals(id))
                 .findFirst();
+    }
+
+    @Override
+    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
+        // TODO: 테스트용 메서드 로직 작성
+        return null;
     }
 }
