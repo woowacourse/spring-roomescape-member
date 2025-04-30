@@ -3,6 +3,7 @@ package roomescape.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,17 @@ class ThemeControllerTest {
     private final ThemeRepository themeRepository = new FakeThemeRepository();
     private final ThemeService themeService = new ThemeService(themeRepository);
     private final ThemeController themeController = new ThemeController(themeService);
+
+    @DisplayName("모든 테마를 조회합니다.")
+    @Test
+    void getReservationTimes() {
+        themeRepository.addTheme(Theme.createWithoutId("theme1", "설명", "섬네일"));
+        themeRepository.addTheme(Theme.createWithoutId("theme2", "설명", "섬네일"));
+        themeRepository.addTheme(Theme.createWithoutId("theme3", "설명", "섬네일"));
+
+        List<Theme> themes = themeController.getReservationTimes();
+        assertThat(themes).hasSize(3);
+    }
 
     @DisplayName("테마를 추가합니다.")
     @Test

@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,11 @@ public class ThemeController {
 
     public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
+    }
+
+    @GetMapping
+    public List<Theme> getReservationTimes() {
+        return themeService.findAllTheme();
     }
 
     @PostMapping

@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import java.util.Objects;
 
+//TODO: null 테스트 만들기
 public class Theme {
     private static final long DEFAULT_ID = 0L;
     private final Long id;
