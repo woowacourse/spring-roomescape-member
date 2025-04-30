@@ -10,12 +10,14 @@ public class ReservationEntity {
     private String name;
     private LocalDate date;
     private ReservationTimeEntity time;
+    private Long themeId;
 
-    public ReservationEntity(Long id, String name, LocalDate date, ReservationTimeEntity time) {
+    public ReservationEntity(Long id, String name, LocalDate date, ReservationTimeEntity time, Long themeId) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.themeId = themeId;
     }
 
     public boolean isDuplicatedWith(ReservationEntity other) {
@@ -48,5 +50,9 @@ public class ReservationEntity {
 
     public ReservationTimeEntity getTime() {
         return time;
+    }
+
+    public Long getThemeId() {
+        return themeId;
     }
 }

@@ -170,6 +170,7 @@ public class MissionStepTest {
         LocalDate reservationDate = now.plusDays(1);
 
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1L, LocalTime.of(10, 0));
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1L, "theme", "hello", "hi");
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -181,6 +182,7 @@ public class MissionStepTest {
         reservation.put("name", "브라운");
         reservation.put("date", reservationDate.toString());
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.reservation.repository.FakeReservationRepository;
-import roomescape.time.repository.FakeTimeRepository;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.dto.ReservationTimeRequest;
 import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.repository.FakeTimeRepository;
+import roomescape.time.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -88,7 +88,7 @@ class ReservationTimeServiceTest {
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
         timeRepository.save(timeEntity);
         LocalDate date = LocalDate.of(2025, 1, 2);
-        reservationRepository.save(new ReservationEntity(1L, "test1", date, timeEntity));
+        reservationRepository.save(new ReservationEntity(1L, "test1", date, timeEntity, null));
 
         // when & then
         assertThatThrownBy(() -> {

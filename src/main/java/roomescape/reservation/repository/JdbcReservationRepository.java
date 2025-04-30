@@ -21,11 +21,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     public ReservationEntity save(ReservationEntity newReservation) {
-        String query = "INSERT INTO reservation (name, date, time_id) VALUES (:name, :date, :time_id)";
+        String query = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", newReservation.getName())
                 .addValue("date", newReservation.getFormattedDate())
-                .addValue("time_id", newReservation.getTimeId());
+                .addValue("time_id", newReservation.getTimeId())
+                .addValue("theme_id", newReservation.getThemeId());
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
@@ -33,7 +34,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 id,
                 newReservation.getName(),
                 newReservation.getDate(),
-                newReservation.getTime()
+                newReservation.getTime(),
+                newReservation.getThemeId()
         );
     }
 
@@ -47,26 +49,31 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     public List<ReservationEntity> findAll() {
         String query = """
-            SELECT
-                r.id as reservation_id,
-                r.name,
-                r.date,
-                t.id as time_id,
-                t.start_at as time_value
-            FROM reservation as r
-            inner join reservation_time as t
-            on r.time_id = t.id
-            """;
+        SELECT 
+        r.id as reservation_id, 
+        r.name, 
+        r.date, 
+        t.id as time_id, 
+        t.start_at as time_value, 
+        r.theme_id 
+        FROM reservation as r 
+        inner join reservation_time as t 
+        on r.time_id = t.id
+        """;
         return jdbcTemplate.query(query, (resultSet, rowNum) -> {
+            final long id = resultSet.getLong("reservation_id");
+            String name = resultSet.getString("name");
             LocalDate date = resultSet.getObject("date", LocalDate.class);
             final long timeId = resultSet.getLong("time_id");
             LocalTime timeValue = resultSet.getObject("time_value", LocalTime.class);
             ReservationTimeEntity timeEntity = new ReservationTimeEntity(timeId, timeValue);
+            final long themeId = resultSet.getLong("theme_id");
             return new ReservationEntity(
-                    resultSet.getLong("reservation_id"),
-                    resultSet.getString("name"),
+                    id,
+                    name,
                     date,
-                    timeEntity
+                    timeEntity,
+                    themeId
             );
         });
     }
@@ -74,7 +81,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public List<ReservationEntity> findAllByTimeId(Long id) {
         String query = """
-                SELECT r.id, r.name, r.date, rt.start_at
+                SELECT r.id, r.name, r.date, rt.start_at, r.theme_id
                 FROM reservation as r
                 INNER JOIN reservation_time as rt
                 ON r.time_id = rt.id
@@ -87,11 +94,14 @@ public class JdbcReservationRepository implements ReservationRepository {
             String name = resultSet.getString("name");
             LocalDate date = resultSet.getObject("date", LocalDate.class);
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
+            final long themeId = resultSet.getLong("theme_id");
+            ReservationTimeEntity timeEntity = new ReservationTimeEntity(id, startAt);
             return new ReservationEntity(
                     reservationId,
                     name,
                     date,
-                    new ReservationTimeEntity(id, startAt)
+                    timeEntity,
+                    themeId
             );
         });
     }

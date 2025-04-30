@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.reservation.entity.ReservationEntity;
 import roomescape.time.entity.ReservationTimeEntity;
 
 import java.time.LocalDate;
@@ -22,8 +21,8 @@ class ReservationTest {
         LocalDate date = LocalDate.of(2025, 1, 2);
         LocalTime time = LocalTime.of(10, 0);
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
-        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity);
-        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, timeEntity);
+        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity, null);
+        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, timeEntity, null);
 
         // when
         final boolean isSame = reservation.isDuplicatedWith(otherReservation);
@@ -40,9 +39,9 @@ class ReservationTest {
         LocalDate date = LocalDate.of(2025, 1, 2);
         LocalTime time = LocalTime.of(10, 0);
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
-        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity);
+        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity, null);
         ReservationTimeEntity otherTimeEntity = new ReservationTimeEntity(2L, otherTime);
-        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, otherTimeEntity);
+        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, otherTimeEntity, null);
 
         // when
         final boolean isDuplicated = reservation.isDuplicatedWith(otherReservation);

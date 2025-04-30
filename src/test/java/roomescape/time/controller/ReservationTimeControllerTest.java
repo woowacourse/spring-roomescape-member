@@ -27,11 +27,25 @@ class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(200);
 
+        Map<String, String> themeParams = Map.of(
+                "name", "theme",
+                "description", "hi",
+                "thumbnail", "hello"
+        );
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         LocalDate now = LocalDate.now();
         Map<String, Object> reservationParams = Map.of(
                 "name", "test",
                 "date", now.plusDays(1).toString(),
-                "timeId", 1
+                "timeId", 1,
+                "themeId", 1
         );
 
         RestAssured.given().log().all()
