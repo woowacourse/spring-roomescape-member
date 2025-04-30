@@ -14,6 +14,6 @@ public record ReservationTimeRequest(
         return new ReservationTime(
                 null,
                 startAt
-                );
+        );
     }
 }

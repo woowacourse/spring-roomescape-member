@@ -1,9 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequest;
@@ -27,7 +25,7 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(Long id) {
-        if(reservationDao.isExistByTimeId(id)) {
+        if (reservationDao.isExistByTimeId(id)) {
             throw new IllegalStateException("예약이 존재하여 삭제할 수 없습니다.");
         }
         boolean isDeleted = reservationTimeDao.deleteById(id);

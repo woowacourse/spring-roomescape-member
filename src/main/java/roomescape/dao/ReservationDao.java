@@ -6,9 +6,14 @@ import roomescape.model.Reservation;
 
 public interface ReservationDao {
     Reservation save(Reservation reservation);
+
     boolean deleteById(Long id);
+
     List<Reservation> findAll();
+
     boolean isExistByTimeId(Long timeId);
+
     boolean isExistByThemeIdAndTimeIdAndDate(Long themeId, Long timeId, LocalDate date);
+
     boolean isExistByThemeId(Long themeId);
 }

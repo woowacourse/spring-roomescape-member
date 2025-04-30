@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
 
 @Repository
-public class JdbcThemeDao implements ThemeDao{
+public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
 

@@ -2,13 +2,8 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.model.Reservation;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -38,7 +32,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid ReservationRequest reservationRequest) {
+    public ResponseEntity<ReservationResponse> addReservation(
+            @RequestBody @Valid ReservationRequest reservationRequest) {
         ReservationResponse newReservation = reservationService.addReservation(reservationRequest);
         Long id = newReservation.id();
         return ResponseEntity.created(URI.create("/reservations/" + id)).body(newReservation);

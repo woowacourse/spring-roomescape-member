@@ -4,13 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ReservationTimeResponse;
 import roomescape.model.ReservationTime;
 
 @Repository
