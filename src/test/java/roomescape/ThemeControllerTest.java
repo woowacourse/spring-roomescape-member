@@ -13,9 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ThemeControllerTest {
 
-    @Test
-    @DisplayName("테마 생성 요청")
-    void test1() {
+    private static void Test_Theme_Post() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "Ddyong");
         params.put("description", "살인마가 쫓아오는 느낌");
@@ -27,5 +25,23 @@ public class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("테마 생성 요청")
+    void test1() {
+        Test_Theme_Post();
+    }
+
+    @Test
+    @DisplayName("테마 조회 요청")
+    void test2() {
+        Test_Theme_Post();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200);
     }
 }
