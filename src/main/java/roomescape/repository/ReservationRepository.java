@@ -90,6 +90,15 @@ public class ReservationRepository {
         return template.queryForObject(sql, Boolean.class, reservationTimeId);
     }
 
+    public boolean checkExistenceInTheme(long themeId) {
+        String sql = "SELECT EXISTS ( "
+                + "SELECT * "
+                + "FROM reservation AS r "
+                + "INNER JOIN theme AS t ON r.theme_id = t.id "
+                + "WHERE r.theme_id = ?)";
+        return template.queryForObject(sql, Boolean.class, themeId);
+    }
+
     public long add(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

@@ -2,20 +2,35 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static roomescape.test.fixture.ReservationTimeFixture.*;
+import static roomescape.test.fixture.ThemeFixture.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreationRequest;
+import roomescape.exception.BadRequestException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+import roomescape.test.fake.FakeReservationRepository;
+import roomescape.test.fake.FakeReservationTimeRepository;
 import roomescape.test.fake.FakeThemeRepository;
+import roomescape.test.fixture.ReservationTimeFixture;
+import roomescape.test.fixture.ThemeFixture;
 
 class ThemeServiceTest {
 
+    private final ReservationRepository reservationRepository = new FakeReservationRepository();
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository();
-    private final ThemeService themeService = new ThemeService(themeRepository);
+    private final ThemeService themeService = new ThemeService(reservationRepository, themeRepository);
 
     @DisplayName("테마를 추가할 수 있다.")
     @Test
@@ -59,5 +74,17 @@ class ThemeServiceTest {
         themeService.deleteThemeById(id);
         List<Theme> themes = themeService.findAllTheme();
         assertThat(themes).hasSize(0);
+    }
+
+    @DisplayName("예약이 존재하는 경우 테마를 삭제할 수 있다.")
+    @Test
+    void cannotDeleteThemeWhenReservationExist() {
+        ReservationTime reservationTime = addReservationTimeInRepository(reservationTimeRepository, LocalTime.now());
+        Theme theme = addThemeInRepository(themeRepository,"이름", "설명", "썸네일" );
+        reservationRepository.add(Reservation.createWithoutId("이름", LocalDate.now().plusDays(1), reservationTime, theme));
+
+        assertThatCode(()-> themeService.deleteThemeById(theme.getId()))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("[ERROR] 예약이 이미 존재하는 테마를 제거할 수 없습니다.");
     }
 }

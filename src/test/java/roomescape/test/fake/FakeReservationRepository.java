@@ -46,6 +46,12 @@ public class FakeReservationRepository extends ReservationRepository {
     }
 
     @Override
+    public boolean checkExistenceInTheme(final long themeId) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
+    }
+
+    @Override
     public long add(Reservation reservation) {
         Reservation newReservation = new Reservation(
                 index.getAndIncrement(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());

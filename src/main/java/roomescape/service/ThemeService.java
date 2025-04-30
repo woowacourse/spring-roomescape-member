@@ -5,16 +5,20 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreationRequest;
+import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
+    private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ThemeService(final ThemeRepository h2ThemeRepository) {
-        this.themeRepository = h2ThemeRepository;
+    public ThemeService(final ReservationRepository reservationRepository, final ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.themeRepository = themeRepository;
     }
 
     public long addTheme(ThemeCreationRequest request) {
@@ -32,6 +36,7 @@ public class ThemeService {
 
     public void deleteThemeById(long themeId) {
         validateThemeById(themeId);
+        validateReservationExistenceInTheme(themeId);
         themeRepository.deleteById(themeId);
     }
 
@@ -44,6 +49,13 @@ public class ThemeService {
         Optional<Theme> theme = themeRepository.findById(themeId);
         if (theme.isEmpty()) {
             throw new NotFoundException("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
+        }
+    }
+
+    private void validateReservationExistenceInTheme(long themeId) {
+        boolean isExist = reservationRepository.checkExistenceInTheme(themeId);
+        if (isExist) {
+            throw new BadRequestException("[ERROR] 예약이 이미 존재하는 테마를 제거할 수 없습니다.");
         }
     }
 }
