@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.PlayTimeService;
+import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.presentation.dto.PlayTimeRequest;
 import roomescape.presentation.dto.PlayTimeResponse;
 
@@ -31,6 +32,8 @@ public class PlayTimeController {
         try {
             final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(playTimeResponse);
+        }  catch (DuplicatePlayTimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
