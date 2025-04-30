@@ -29,7 +29,7 @@ public class ReservationController {
 
     @GetMapping("/admin/reservation")
     public String displayAdminReservation() {
-        return "/admin/reservation";
+        return "/admin/reservation-new";
     }
 
     @GetMapping("/reservations")
