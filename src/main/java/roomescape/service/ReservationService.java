@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.DuplicateContentException;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -67,7 +68,7 @@ public class ReservationService {
         int deletedReservationCount = reservationRepository.deleteById(id);
 
         if (deletedReservationCount == 0) {
-            throw new IllegalStateException("[ERROR] 등록된 예약번호만 삭제할 수 있습니다. 입력된 번호는 " + id + "입니다.");
+            throw new NotFoundException("[ERROR] 등록된 예약번호만 삭제할 수 있습니다. 입력된 번호는 " + id + "입니다.");
         }
     }
 }
