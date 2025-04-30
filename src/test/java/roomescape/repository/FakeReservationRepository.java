@@ -2,13 +2,12 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.stream.Collectors;
-import roomescape.domain.Reservation;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import roomescape.domain.Reservation;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -33,7 +32,7 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> save(final Reservation reservation) {
-        Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.name(), reservation.date(), reservation.time());
+        Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.name(), reservation.date(), reservation.time(), reservation.theme());
         reservations.add(newReservation);
         return findById(newReservation.id());
     }

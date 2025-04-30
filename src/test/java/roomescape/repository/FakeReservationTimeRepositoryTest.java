@@ -1,17 +1,17 @@
 package roomescape.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import roomescape.domain.Theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -120,7 +120,8 @@ class FakeReservationTimeRepositoryTest {
         @Test
         void deleteReservationTimeOfExistingReservationTest() {
             ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-            Reservation reservation = new Reservation(1L, "가이온", LocalDate.now(), reservationTime);
+            Theme theme = new Theme(1L, "우테코", "방탈출", ".png");
+            Reservation reservation = new Reservation(1L, "가이온", LocalDate.now(), reservationTime, theme);
             List<ReservationTime> reservationTimes = new ArrayList<>();
             reservationTimes.add(reservationTime);
 

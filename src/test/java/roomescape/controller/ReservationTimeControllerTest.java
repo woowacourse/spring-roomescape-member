@@ -2,16 +2,15 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationTimeCreateRequestDto;
-
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -45,7 +44,7 @@ class ReservationTimeControllerTest {
                     .body(requestTime)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(200)
+                    .statusCode(201)
                     .body("id", is(1));
 
             RestAssured.given().log().all()
@@ -66,7 +65,7 @@ class ReservationTimeControllerTest {
                     .body(requestTime)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(201);
 
             RestAssured.given().log().all()
                     .when().get("/times")
@@ -118,12 +117,12 @@ class ReservationTimeControllerTest {
                     .body(requestTime)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(201);
 
             RestAssured.given().log().all()
                     .when().delete("/times/1")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(204);
 
             RestAssured.given().log().all()
                     .when().get("/times")

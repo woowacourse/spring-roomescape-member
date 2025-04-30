@@ -2,6 +2,9 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,10 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationTimeCreateRequestDto;
-
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
+import roomescape.dto.ThemeCreateRequestDto;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -44,7 +44,16 @@ class ReservationControllerTest {
                     .body(reservationTime)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(201);
+
+            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "c");
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(theme)
+                    .when().post("/themes")
+                    .then().log().all()
+                    .statusCode(201);
         }
 
 
@@ -55,13 +64,14 @@ class ReservationControllerTest {
             params.put("name", "브라운");
             params.put("date", "2030-08-05");
             params.put("timeId", 1);
+            params.put("themeId", 1);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(200)
+                    .statusCode(201)
                     .body("id", is(1));
 
             RestAssured.given().log().all()
@@ -78,13 +88,14 @@ class ReservationControllerTest {
             params.put("name", "브라운");
             params.put("date", "2030-08-05");
             params.put("timeId", 1);
+            params.put("themeId", 1);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(201);
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -107,24 +118,34 @@ class ReservationControllerTest {
                     .body(reservationTime)
                     .when().post("/times")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(201);
+
+            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "c");
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(theme)
+                    .when().post("/themes")
+                    .then().log().all()
+                    .statusCode(201);
 
             Map<String, Object> params = new HashMap<>();
             params.put("name", "브라운");
             params.put("date", "2030-08-05");
             params.put("timeId", 1);
+            params.put("themeId", 1);
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(201);
 
             RestAssured.given().log().all()
                     .when().delete("/reservations/1")
                     .then().log().all()
-                    .statusCode(200);
+                    .statusCode(204);
 
             RestAssured.given().log().all()
                     .when().get("/reservations")
