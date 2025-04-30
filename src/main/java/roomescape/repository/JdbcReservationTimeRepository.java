@@ -46,12 +46,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return count != null && count > 0;
     }
 
-    /*
-    1 2 3 4 5 6
-
-    1 2 3
-     */
-
     @Override
     public List<ReservationTime> getAvailableReservationTimeOf(LocalDate date, Long themeId) {
         final String sql = """
@@ -66,7 +60,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     AND r.theme_id = ?
                 )
                 """;
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
     @Override

@@ -8,21 +8,21 @@ public class AdminController {
 
     @GetMapping("/admin")
     public String getMainPage() {
-        return "index";
+        return "admin/index";
     }
 
     @GetMapping("/admin/reservation")
     public String getReservationPage() {
-        return "reservation";
+        return "admin/reservation";
     }
 
     @GetMapping("/admin/time")
     public String getReservationTimePage() {
-        return "time";
+        return "admin/time";
     }
 
     @GetMapping("/admin/theme")
     public String getThemePage() {
-        return "theme";
+        return "admin/theme";
     }
 }

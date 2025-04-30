@@ -6,7 +6,3 @@ spring:
 
   datasource:
     url: jdbc:h2:mem:database  # 인메모리 H2 DB 사용
-
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/admin/  # 템플릿 경로
