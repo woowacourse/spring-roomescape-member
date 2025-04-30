@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.model.AvailableReservationTime;
 import roomescape.model.ReservationTime;
 
 @Service
@@ -44,5 +46,10 @@ public class ReservationTimeService {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("삭제하고자 하는 시각에 예약된 정보가 있습니다.");
         }
+    }
+
+    public List<AvailableReservationTimeResponseDto> getAvailableTimes(String date, Long themeId) {
+        List<AvailableReservationTime> availableTimes = reservationTimeDao.findAvailableTimes(date, themeId);
+        return availableTimes.stream().map(AvailableReservationTimeResponseDto::from).toList();
     }
 }

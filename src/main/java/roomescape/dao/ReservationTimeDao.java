@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.model.AvailableReservationTime;
 import roomescape.model.ReservationTime;
 
 @Repository
@@ -23,6 +24,16 @@ public class ReservationTimeDao {
         );
         return reservationTime;
     };
+
+    private final RowMapper<AvailableReservationTime> availableTimeRowMapper = (resultSet, rowNum) -> {
+        AvailableReservationTime availableReservationTime = new AvailableReservationTime(
+                resultSet.getLong("id"),
+                resultSet.getTime("start_at").toLocalTime(),
+                resultSet.getBoolean("already_booked")
+        );
+        return availableReservationTime;
+    };
+
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -58,5 +69,22 @@ public class ReservationTimeDao {
     public boolean isDuplicatedStartAtExisted(LocalTime startAt) {
         String sql = "SELECT EXISTS (SELECT * FROM reservation_time WHERE start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+    }
+
+    public List<AvailableReservationTime> findAvailableTimes(String date, Long themeId) {
+        String sql =
+                """
+                SELECT rt.id,
+                       rt.start_at,
+                       EXISTS (
+                           SELECT 1
+                           FROM reservation r
+                           WHERE r.time_id = rt.id
+                             AND r.date = ?
+                             AND r.theme_id = ?
+                       ) AS already_booked
+                FROM reservation_time rt
+                """;
+        return jdbcTemplate.query(sql, availableTimeRowMapper, date, themeId);
     }
 }

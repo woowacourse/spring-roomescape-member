@@ -49,7 +49,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.saveTime(new ReservationTimeRequestDto(LocalTime.of(12, 0).toString()));
 
         // when
-        List<ReservationTimeResponseDto> times = reservationTimeService.getAllTimes();
+        List<ReservationTimeResponseDto> times = reservationTimeService.getAllTimes(date, themeId);
 
         // then
         assertThat(times).hasSize(2);
@@ -68,7 +68,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteTime(saved.id());
 
         // then
-        List<ReservationTimeResponseDto> times = reservationTimeService.getAllTimes();
+        List<ReservationTimeResponseDto> times = reservationTimeService.getAllTimes(date, themeId);
         assertThat(times).isEmpty();
     }
 
