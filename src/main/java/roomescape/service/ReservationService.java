@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.ReservationResponse;
@@ -11,6 +13,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
+import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.ReservationCreation;
 
 @Service
@@ -34,6 +37,7 @@ public class ReservationService {
                 .orElseThrow(NotExistedValueException::new);
         Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
 
+        validatePastDateAndTime(reservation.getDate(), reservation.getTime());
         validateDuplicateReservation(reservation);
 
         long savedId = reservationDAO.insert(reservation);
@@ -41,6 +45,17 @@ public class ReservationService {
                 .orElseThrow(NotExistedValueException::new);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    private void validatePastDateAndTime(final LocalDate date, final ReservationTime time) {
+        final LocalDate currentDate = LocalDate.now();
+
+        final boolean isPastDate = date.isBefore(currentDate);
+        final boolean isPastTime = date.isEqual(currentDate) && time.getStartAt().isBefore(LocalTime.now());
+
+        if (isPastDate || isPastTime) {
+            throw new PharmaceuticalViolationException("과거 시점은 예약할 수 없습니다");
+        }
     }
 
     private void validateDuplicateReservation(final Reservation reservation) {
