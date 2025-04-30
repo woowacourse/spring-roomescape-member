@@ -13,15 +13,6 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     private List<ReservationTime> reservationTimes = new ArrayList<>();
     private Long id = 0L;
 
-    public FakeReservationTimeRepository(ReservationTime... reservationTimes) {
-        this((long) reservationTimes.length, new ArrayList<>(List.of(reservationTimes)));
-    }
-
-    private FakeReservationTimeRepository(Long id, List<ReservationTime> reservationTimes) {
-        this.id = id;
-        this.reservationTimes = reservationTimes;
-    }
-
     @Override
     public List<ReservationTime> findAll() {
         return List.copyOf(reservationTimes);

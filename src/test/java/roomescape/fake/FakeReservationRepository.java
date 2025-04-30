@@ -14,15 +14,6 @@ public class FakeReservationRepository implements ReservationRepository {
     private Long id = 0L;
     private List<Reservation> reservations = new ArrayList<>();
 
-    public FakeReservationRepository(Reservation... reservations) {
-        this((long) reservations.length, new ArrayList<>(List.of(reservations)));
-    }
-
-    private FakeReservationRepository(Long id, List<Reservation> reservations) {
-        this.id = id;
-        this.reservations = reservations;
-    }
-
     @Override
     public List<Reservation> findAll() {
         return List.copyOf(reservations);

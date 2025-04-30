@@ -23,33 +23,32 @@ class ReservationServiceTest {
 
     public static final LocalDate RESERVATION_DATE = LocalDate.now().plusDays(1);
 
+    FakeReservationRepository reservationRepository = new FakeReservationRepository();
+    FakeThemeRepository themeRepository = new FakeThemeRepository();
+    FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+    ReservationService reservationService = new ReservationService(reservationTimeRepository, reservationRepository, themeRepository);
+
     @Test
     void 예약을_생성한다() {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
-        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository();
-        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao, fakeThemeRepository);
+        reservationTimeRepository.create(reservationTime);
+        themeRepository.create(theme);
         CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE, 1L, 1L);
 
         //when
         Long createdId = reservationService.create(createReservationParam);
 
         //then
-        assertThat(fakeReservationDao.findById(createdId))
+        assertThat(reservationRepository.findById(createdId))
                 .hasValue(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
     }
 
     @Test
     void 예약을_생성할때_timeId가_데이터베이스에_존재하지_않는다면_예외가_발생한다() {
         //give
-        Theme theme = new Theme(1L, "test", "description", "thumbnail");
-        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository();
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository();
-        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao, fakeThemeRepository);
+        themeRepository.create(new Theme(1L, "test", "description", "thumbnail"));
         CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE, 1L, 1L);
 
         //when & then
@@ -61,35 +60,30 @@ class ReservationServiceTest {
     @Test
     void id값으로_예약을_삭제할_수_있다() {
         //given
-        Theme theme = new Theme(1L, "test", "description", "thumbnail");
-        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
-        Reservation reservation = new Reservation(1L, "test", LocalDate.now(), reservationTime, theme);
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(reservation);
-        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao, fakeThemeRepository);
+        Theme theme = new Theme(1L, "test", "description", "thumbnail");
+        reservationTimeRepository.create(reservationTime);
+        themeRepository.create(theme);
+        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
 
         //when
         reservationService.deleteById(1L);
 
         //then
-        assertThat(fakeReservationDao.findById(1L)).isEmpty();
+        assertThat(reservationRepository.findById(1L)).isEmpty();
     }
 
     @Test
     void 전체_예약을_조회할_수_있다() {
         //given
+        Theme theme = new Theme(1L, "test", "description", "thumbnail");
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(12, 1));
         ReservationTime reservationTime2 = new ReservationTime(1L, LocalTime.of(13, 1));
-
-        Theme theme = new Theme(1L, "test", "description", "thumbnail");
-        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime1, reservationTime2);
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
-                new Reservation(1L, "test1", RESERVATION_DATE, reservationTime1, theme),
-                new Reservation(2L, "test2", RESERVATION_DATE, reservationTime2, theme)
-        );
-        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao, fakeThemeRepository);
+        themeRepository.create(theme);
+        reservationTimeRepository.create(reservationTime1);
+        reservationTimeRepository.create(reservationTime2);
+        reservationRepository.create(new Reservation(1L, "test1", RESERVATION_DATE, reservationTime1, theme));
+        reservationRepository.create(new Reservation(2L, "test2", RESERVATION_DATE, reservationTime2, theme));
 
         //when
         List<ReservationResult> reservationResults = reservationService.findAll();
@@ -108,21 +102,19 @@ class ReservationServiceTest {
     @Test
     void id_로_예약을_찾을_수_있다() {
         //given
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
-        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 1));
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
-                new Reservation(1L, "test1", RESERVATION_DATE, reservationTime, theme));
-        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao, fakeThemeRepository);
+        reservationTimeRepository.create(reservationTime);
+        themeRepository.create(theme);
+        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
 
         //when
         ReservationResult reservationResult = reservationService.findById(1L);
 
         //then
         assertThat(reservationResult).isEqualTo(
-                new ReservationResult(1L, "test1", RESERVATION_DATE,
-                        new ReservationTimeResult(1L, LocalTime.of(12, 1)),
+                new ReservationResult(1L, "test", RESERVATION_DATE,
+                        new ReservationTimeResult(1L, LocalTime.of(12, 0)),
                         new ThemeResult(1L, "test", "description", "thumbnail"))
         );
     }
@@ -130,13 +122,11 @@ class ReservationServiceTest {
     @Test
     void id에_해당하는_예약이_없는경우_예외가_발생한다() {
         //given
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
-        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(13, 1));
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
-                new Reservation(1L, "test1", LocalDate.now().plusDays(1), reservationTime, theme));
-        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao, fakeThemeRepository);
+        reservationTimeRepository.create(reservationTime);
+        themeRepository.create(theme);
+        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
 
         //when & then
         assertThatThrownBy(() -> reservationService.findById(2L))
@@ -147,17 +137,14 @@ class ReservationServiceTest {
     @Test
     void 날짜와_시간이_중복된_예약이_있으면_예외가_발생한다() {
         //given
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
-        FakeThemeRepository fakeThemeRepository = new FakeThemeRepository(theme);
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(13, 1));
-        FakeReservationTimeRepository fakeReservationTimeDao = new FakeReservationTimeRepository(reservationTime);
-        LocalDate reservationDate = LocalDate.now().plusDays(1);
-        FakeReservationRepository fakeReservationDao = new FakeReservationRepository(
-                new Reservation(1L, "test1", reservationDate, reservationTime, theme));
-        ReservationService reservationService = new ReservationService(fakeReservationTimeDao, fakeReservationDao, fakeThemeRepository);
+        reservationTimeRepository.create(reservationTime);
+        themeRepository.create(theme);
+        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test2", reservationDate, 1L, 1L)))
+        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test2", RESERVATION_DATE, 1L, 1L)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("날짜와 시간이 중복된 예약이 존재합니다.");
     }

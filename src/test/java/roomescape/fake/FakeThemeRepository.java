@@ -14,15 +14,6 @@ public class FakeThemeRepository implements ThemeRepository {
     private List<Theme> themes = new ArrayList<>();
     private Long id = 0L;
 
-    public FakeThemeRepository(Theme... themes) {
-        this((long) themes.length, new ArrayList<>(List.of(themes)));
-    }
-
-    private FakeThemeRepository(Long id, List<Theme> themes) {
-        this.id = id;
-        this.themes = themes;
-    }
-
     @Override
     public List<Theme> findAll() {
         return List.copyOf(themes);
