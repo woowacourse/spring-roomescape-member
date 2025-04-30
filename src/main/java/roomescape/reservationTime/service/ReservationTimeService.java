@@ -10,15 +10,18 @@ import roomescape.reservationTime.dto.AvailableReservationTimeRequest;
 import roomescape.reservationTime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationTime.dto.ReservationTimeRequest;
 import roomescape.reservationTime.dto.ReservationTimeResponse;
+import roomescape.theme.dao.ThemeDao;
 
 @Service
 public class ReservationTimeService {
     private final Dao<ReservationTime> reservationTimeDao;
     private final Dao<Reservation> reservationDao;
+    private final ThemeDao themeDao;
 
-    public ReservationTimeService(Dao<ReservationTime> reservationTimeDao, Dao<Reservation> reservationDao) {
+    public ReservationTimeService(Dao<ReservationTime> reservationTimeDao, Dao<Reservation> reservationDao, ThemeDao themeDao) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
+        this.themeDao = themeDao;
     }
 
     public ReservationTimeResponse add(ReservationTimeRequest reservationTimeRequest) {
@@ -59,6 +62,9 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> findByDateAndTheme(
             AvailableReservationTimeRequest availableReservationTimeRequest) {
+
+        themeDao.findById(availableReservationTimeRequest.themeId()).orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 테마 아이디입니다"));
+
         List<ReservationTime> occupiedReservationTimes = reservationDao.findAll().stream()
                 .filter(reservation -> reservation.getDate().equals(availableReservationTimeRequest.date())
                         && reservation.getTheme().getId().equals(availableReservationTimeRequest.themeId())
@@ -73,7 +79,8 @@ public class ReservationTimeService {
                         reservationTime.getId(), reservationTime.getStartAt(), true))
         );
 
-        List<ReservationTime> nonOccupiedReservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> nonOccupiedReservationTimes = reservationTimeDao.findAll(); //
+
         nonOccupiedReservationTimes.removeAll(occupiedReservationTimes);
         nonOccupiedReservationTimes.forEach(
                 reservationTime ->  response.add(new AvailableReservationTimeResponse(

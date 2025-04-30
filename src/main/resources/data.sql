@@ -104,3 +104,7 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-26', 2, 3);
 
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-26', 1, 2);
+
+INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-30', 1, 1);
+INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-30', 2, 1);
+INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-30', 3, 1);

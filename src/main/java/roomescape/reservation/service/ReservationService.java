@@ -26,9 +26,6 @@ public class ReservationService {
     }
 
     public ReservationResponse add(ReservationRequest reservationRequest) {
-        if (reservationRequest.date().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
-        }
         ReservationTime findReservationTime = getReservationTime(reservationRequest);
         if(reservationRequest.date().isEqual(LocalDate.now()) && findReservationTime.getStartAt().isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");

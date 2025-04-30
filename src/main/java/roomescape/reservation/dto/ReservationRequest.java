@@ -13,6 +13,9 @@ public record ReservationRequest(String name, @JsonFormat(pattern = "yyyy-MM-dd"
         if (date == null) {
             throw new IllegalArgumentException("[ERROR] 날짜를 입력해주세요");
         }
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
+        }
         if (timeId == null) {
             throw new IllegalArgumentException("[ERROR] 시간 id를 입력해주세요");
         }

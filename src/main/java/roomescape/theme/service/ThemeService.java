@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.Dao;
+import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.BestThemeResponse;
@@ -29,7 +30,10 @@ public class ThemeService {
     }
 
     public ThemeResponse add(ThemeRequest themeRequest) {
-        // TODO : 검증 로직 추가
+        if (isAlreadyExisted(themeRequest)) {
+            throw new IllegalArgumentException("[ERROR] 이미 테마가 존재합니다.");
+        }
+
         Theme theme = new Theme(null, themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
         Theme savedTheme = themeDao.add(theme);
         return new ThemeResponse(savedTheme.getId(),
@@ -38,8 +42,16 @@ public class ThemeService {
                 savedTheme.getThumbnail());
     }
 
+    private boolean isAlreadyExisted(ThemeRequest themeRequest) {
+        List<Theme> themes = themeDao.findAll();
+        return themes.stream()
+                .anyMatch(
+                        theme -> theme.getName().equals(themeRequest.name())
+                );
+    }
+
     public void deleteById(Long id) {
-        // TODO : 검증 로직 추가
+        themeDao.findById(id).orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 테마 아이디는 존재하지 않습니다"));
         themeDao.deleteById(id);
     }
 
