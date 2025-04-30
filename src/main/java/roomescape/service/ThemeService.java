@@ -23,4 +23,7 @@ public class ThemeService {
         return themeRepository.getAllTheme();
     }
 
+    public void deleteTheme(Long id) {
+        themeRepository.deleteTheme(id);
+    }
 }
