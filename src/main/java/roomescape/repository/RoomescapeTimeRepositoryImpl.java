@@ -46,8 +46,12 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
 
     @Override
     public int deleteById(final long id) {
-        String sql = "delete from reservation_time where id = ?";
-        return template.update(sql, id);
+        try {
+            String sql = "delete from reservation_time where id = ?";
+            return template.update(sql, id);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("예약 시간을 지울 수 없습니다.");
+        }
     }
 
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
