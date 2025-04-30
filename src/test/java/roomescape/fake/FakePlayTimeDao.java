@@ -69,9 +69,12 @@ public class FakePlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public  boolean existsByStartAt(final LocalTime startAt) {
-        // TODO : 수정 필요
-        return true;
+    public boolean existsByStartAt(final LocalTime startAt) {
+        final String rawStartAt = PlayTimeEntity.formatStartAt(startAt);
+
+        return times.stream()
+                .filter(timeEntity -> timeEntity.id() != null)
+                .anyMatch(timeEntity -> timeEntity.startAt().equals(rawStartAt));
     }
 
     public List<PlayTimeEntity> getTimes() {

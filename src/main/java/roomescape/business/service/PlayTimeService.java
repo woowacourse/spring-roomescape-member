@@ -1,8 +1,10 @@
 package roomescape.business.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
+import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.presentation.dto.PlayTimeRequest;
@@ -23,10 +25,17 @@ public class PlayTimeService {
     }
 
     public PlayTimeResponse create(final PlayTimeRequest playTimeRequest) {
+        validateIsDuplicate(playTimeRequest.startAt());
         final PlayTime playTime = playTimeRequest.toDomain();
         final Long id = playTimeDao.save(playTime);
 
         return PlayTimeResponse.withId(id, playTime);
+    }
+
+    private void validateIsDuplicate(final LocalTime startAt) {
+        if (playTimeDao.existsByStartAt(startAt)) {
+            throw new DuplicatePlayTimeException(startAt);
+        }
     }
 
     public List<PlayTimeResponse> findAll() {
