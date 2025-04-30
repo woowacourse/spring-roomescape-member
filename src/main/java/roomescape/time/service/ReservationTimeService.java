@@ -1,16 +1,18 @@
 package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.dto.ReservationTimeRequest;
-import roomescape.time.dto.ReservationTimeResponse;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.dto.AvailableReservationTimeResponse;
+import roomescape.time.dto.ReservationTimeRequest;
+import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.repository.ReservationTimeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,7 +20,10 @@ public class ReservationTimeService {
     private final ReservationTimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository timeRepository, ReservationRepository reservationRepository) {
+    public ReservationTimeService(
+            ReservationTimeRepository timeRepository,
+            ReservationRepository reservationRepository
+    ) {
         this.timeRepository = timeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -59,5 +64,9 @@ public class ReservationTimeService {
         if (!deleted) {
             throw new NotFoundException("존재하지 않는 id 입니다.");
         }
+    }
+
+    public List<AvailableReservationTimeResponse> getAvailableTimes(LocalDate date, final Long themeId) {
+        return timeRepository.findAvailableTimes(date, themeId);
     }
 }
