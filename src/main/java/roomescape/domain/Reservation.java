@@ -48,9 +48,8 @@ public class Reservation {
     }
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        // TODO: 예외 분기 처리 좀 더 자세히
         if (name == null || date == null || time == null || theme == null) {
-            throw new NullPointerException("예약 정보가 비어있습니다.");
+            throw new IllegalArgumentException("예약 정보가 비어있습니다.");
         }
         if (name.isBlank()) {
             throw new IllegalArgumentException("예약자명은 비워둘 수 없습니다.");

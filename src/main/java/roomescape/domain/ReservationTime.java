@@ -30,9 +30,8 @@ public class ReservationTime {
     }
 
     private void validate(LocalTime startAt) {
-        // TODO: 시간 관리 예외 처리 만들기
         if (startAt == null) {
-            throw new NullPointerException("startAt(시작 시간)은 비어있을 수 없습니다.");
+            throw new IllegalArgumentException("startAt(시작 시간)은 비어있을 수 없습니다.");
         }
     }
 

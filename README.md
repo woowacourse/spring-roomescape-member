@@ -27,16 +27,11 @@
 - [x] / 요청 시 인기 테마 페이지를 응답 (최근 일주일 예약 건수 내림차순 10개 조회)
 
 
-## TODO:
-- 관리자 페이지에서, 과거의 예약을 추가할 수 없도록 해야할까? 굳이 그럴 필요가 있을까? 고민
+## .isBefore(PR);
+- [ ] 테스트 코드 작성하기
+- [ ] 리팩토링 사항 찾기
+- [ ] H2 DB - In memory 에서 Embedded 모드로 변경
 
 
 ## API
-- 해당 날짜와 theme의 가능한 예약을 반환한다.
-- 한국어 쿼리
-1. 시간 목록을 다 불러옴.
-2. 이미 해당 시간이 ThemeId가 똑같고, Date도 똑같은 Reservation에 사용되는 경우 제외
-
-SELECT * FROM Reservation WHERE themeId date = ?
-3. 
 - localhost:8080/times?date={}&themeId={}

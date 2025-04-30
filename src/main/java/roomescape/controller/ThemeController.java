@@ -44,16 +44,17 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
+    // [리뷰어님에게] 리스트를 생성하는 필터 조건을 파라미터로 전달할 수 있도록 설계함. (프론트엔드와의 협업 필요, 따라서 현재는 파라미터 고정)
     @GetMapping("/lists")
     public ResponseEntity<List<Theme>> readLists(
-            @RequestParam(value = "order_type", required = false) String order_type,
-            @RequestParam(value = "list_num", required = false) Long list_num
+            @RequestParam(value = "order_type", required = false) String orderType,
+            @RequestParam(value = "list_num", required = false) Long listNum
             ) {
-        // TODO: 리스트를 생성하는 필터 조건을 파라미터로 전달할 수 있도록 설계함. (프론트엔드와의 협업 필요)
+
         // TODO: 정렬 조건을 ENUM으로 관리하기.
-        order_type = "desc"; // 현재는 내림차순으로 고정
-        list_num = 10L;
-        List<Theme> listedTheme = themeService.readLists(order_type, list_num);
+        orderType = "desc"; // 현재는 내림차순으로 고정
+        listNum = 10L;
+        List<Theme> listedTheme = themeService.readLists(orderType, listNum);
         return ResponseEntity.ok(listedTheme);
     }
 }

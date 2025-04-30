@@ -7,6 +7,7 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        validate(name);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -31,5 +32,11 @@ public class Theme {
 
     public String getThumbnail() {
         return thumbnail;
+    }
+
+    public void validate(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("테마 이름은 비워둘 수 없습니다.");
+        }
     }
 }
