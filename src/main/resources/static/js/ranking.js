@@ -12,12 +12,12 @@ function render(data) {
 
     /*
     TODO: [3단계] 인기 테마 - 인기 테마 목록 조회 API 호출 후 렌더링
-          response 명세에 맞춰 name, thumbnail, description 값 설정
+          response 명세에 맞춰 name, thumbnail, description 값 설정 -> 완료
     */
     data.forEach(theme => {
-        const name = '';
-        const thumbnail = '';
-        const description = '';
+        const name = theme.name;
+        const thumbnail = theme.thumbnail;
+        const description = theme.description;
 
         const htmlContent = `
             <img class="mr-3 img-thumbnail" src="${thumbnail}" alt="${name}">
