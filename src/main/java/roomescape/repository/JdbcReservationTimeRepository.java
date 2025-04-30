@@ -30,40 +30,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime findById(Long timeId) {
-        try {
-            final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public boolean existByTime(LocalTime createTime) {
-        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ? ";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, createTime);
-        return count != null && count > 0;
-    }
-
-    @Override
-    public List<ReservationTime> getAvailableReservationTimeOf(LocalDate date, Long themeId) {
-        final String sql = """
-                SELECT *
-                FROM reservation_time
-                WHERE id NOT IN (
-                    SELECT rt.id
-                    FROM reservation_time AS rt
-                    INNER JOIN reservation AS r
-                    ON r.time_id = rt.id
-                    WHERE r.date = ?
-                    AND r.theme_id = ?
-                )
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
-    }
-
-    @Override
     public ReservationTime save(ReservationTime reservationTime) {
         final String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -82,6 +48,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public ReservationTime findById(long timeId) {
+        try {
+            final String sql = "SELECT * FROM reservation_time WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     public List<ReservationTime> findAll() {
         final String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(
@@ -93,7 +69,31 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean existByTime(LocalTime createTime) {
+        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ? ";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, createTime);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public List<ReservationTime> getAvailableReservationTimeOf(LocalDate date, long themeId) {
+        final String sql = """
+                SELECT *
+                FROM reservation_time
+                WHERE id NOT IN (
+                    SELECT rt.id
+                    FROM reservation_time AS rt
+                    INNER JOIN reservation AS r
+                    ON r.time_id = rt.id
+                    WHERE r.date = ?
+                    AND r.theme_id = ?
+                )
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public boolean deleteById(long id) {
         final String sql = "DELETE FROM reservation_time WHERE id = ?";
         return jdbcTemplate.update(sql, id) > 0;
     }

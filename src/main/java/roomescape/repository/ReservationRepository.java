@@ -9,15 +9,15 @@ import java.util.List;
 
 public interface ReservationRepository {
 
-    Reservation findById(Long id);
+    Reservation save(Reservation reservation);
+
+    Reservation findById(long id);
 
     List<Reservation> findAll();
 
-    Reservation save(Reservation reservation);
-
-    int deleteById(Long id);
-
-    boolean existByTimeId(Long id);
+    boolean existByTimeId(long id);
 
     boolean isDuplicateDateAndTimeAndTheme(LocalDate date, LocalTime time, Theme theme);
+
+    int deleteById(long id);
 }
