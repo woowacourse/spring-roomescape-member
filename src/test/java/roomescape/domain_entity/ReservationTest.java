@@ -11,8 +11,8 @@ class ReservationTest {
     private final String TEST_NAME = "moda";
 
     @Test
-    @DisplayName("지난 날짜와 시간 예약일 경우 예외가 발생한다")
-    void failIfPastDateOrPastTime() {
+    @DisplayName("지난 날짜 예약일 경우 예외가 발생한다")
+    void failIfPastDate() {
         //given
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
@@ -20,6 +20,24 @@ class ReservationTest {
                 TEST_NAME,
                 now.toLocalDate().minusDays(1),
                 new ReservationTime(now.toLocalTime())
+        );
+
+        //when & then
+        assertThatThrownBy(() -> reservation.validatePastDateTime())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("지난 날짜와 시간의 예약은 생성 불가능합니다.");
+    }
+
+    @Test
+    @DisplayName("지난 날짜와 시간 예약일 경우 예외가 발생한다")
+    void failIfPastTime() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        Reservation reservation = new Reservation(
+                new Id(1L),
+                TEST_NAME,
+                now.toLocalDate(),
+                new ReservationTime(now.toLocalTime().minusMinutes(1))
         );
 
         //when & then
