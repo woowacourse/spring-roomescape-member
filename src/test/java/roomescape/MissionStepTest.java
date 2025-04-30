@@ -1,7 +1,6 @@
 package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static roomescape.testFixture.Fixture.RESERVATION_BODY;
 
@@ -47,6 +46,8 @@ public class MissionStepTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private ReservationController reservationController;
 
     @BeforeEach
     void setUp() {
@@ -62,15 +63,14 @@ public class MissionStepTest {
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
-    @DisplayName("/ 요청 시 admin/reservation으로 리디렉션")
+    @DisplayName("/ 요청 시 200 OK 반환")
     @Test
     void welcomePage_redirect_to_reservationPage() {
         RestAssured.given().log().all()
                 .redirects().follow(false) // 리디렉션 따라가지 말고 그대로 응답 확인
                 .when().get("/")
                 .then().log().all()
-                .statusCode(302) // 또는 301, 실제 리디렉션 코드에 따라 다름
-                .header("Location", endsWith("/admin/reservation"));
+                .statusCode(200); // 또는 301, 실제 리디렉션 코드에 따라 다름
     }
 
     @DisplayName("/admin 요청 시 200 OK 응답")
@@ -238,9 +238,6 @@ public class MissionStepTest {
                 .statusCode(200)
                 .body("size()", is(1));
     }
-
-    @Autowired
-    private ReservationController reservationController;
 
     @Test
     void 구단계() {

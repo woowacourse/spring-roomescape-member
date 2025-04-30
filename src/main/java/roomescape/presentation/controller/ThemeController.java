@@ -44,4 +44,10 @@ public class ThemeController {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/ranking")
+    public List<ThemeResponse> getThemeRanking() {
+        List<ThemeDto> themes = themeService.getThemeRanking();
+        return ThemeResponse.from(themes);
+    }
 }

@@ -8,11 +8,10 @@ import roomescape.domain.repository.dto.AvailableTimesData;
 
 @Service
 public class UserReservationService {
-    private final ReservationService reservationService;
+
     private final TimeService timeService;
 
-    public UserReservationService(ReservationService reservationService, TimeService timeService) {
-        this.reservationService = reservationService;
+    public UserReservationService(TimeService timeService) {
         this.timeService = timeService;
     }
 

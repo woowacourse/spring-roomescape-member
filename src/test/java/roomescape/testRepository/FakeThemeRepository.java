@@ -1,5 +1,6 @@
 package roomescape.testRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,5 +38,10 @@ public class FakeThemeRepository implements ThemeRepository {
         Theme theme = findById(id)
                 .orElseThrow(() -> new NotFoundException("FakeTimeRepository: 삭제하려는 id 없음"));
         themes.remove(theme);
+    }
+
+    @Override
+    public List<Theme> findThemeRanking(int count, LocalDate startDate, LocalDate endDate) {
+        return List.of();
     }
 }

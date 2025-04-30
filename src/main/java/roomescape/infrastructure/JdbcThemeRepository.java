@@ -1,5 +1,6 @@
 package roomescape.infrastructure;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,5 +66,18 @@ public class JdbcThemeRepository implements ThemeRepository {
         // TODO: id가 존재하지 않는 경우 예외 처리 추가
         String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Theme> findThemeRanking(int count, LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT th.id, th.name, th.description, th.thumbnail, count(r.id)
+                FROM theme as th
+                LEFT JOIN reservation as r on th.id = r.theme_id AND r.date BETWEEN ? and ?
+                GROUP BY th.id, th.name, th.description, th.thumbnail
+                ORDER BY COUNT(r.id) desc
+                LIMIT ?
+                """;
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, count);
     }
 }

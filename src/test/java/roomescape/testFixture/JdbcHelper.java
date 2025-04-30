@@ -12,6 +12,11 @@ public class JdbcHelper {
                 theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
+    public static void insertThemes(JdbcTemplate template, Theme... themes) {
+        Arrays.stream(themes)
+                .forEach(theme -> insertTheme(template, theme));
+    }
+
     public static void insertReservationTime(JdbcTemplate template, ReservationTime reservationTime) {
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 reservationTime.getStartAt());
