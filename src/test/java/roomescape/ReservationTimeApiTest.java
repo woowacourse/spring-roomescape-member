@@ -19,7 +19,7 @@ public class ReservationTimeApiTest {
     @Test
     void 시간을_추가한다() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "23:00");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
