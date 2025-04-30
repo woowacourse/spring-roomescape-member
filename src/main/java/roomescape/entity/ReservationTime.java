@@ -7,13 +7,7 @@ public record ReservationTime(Long id, LocalTime startAt) {
     public ReservationTime {
         validate(startAt);
     }
-
-    public void isBefore() {
-        if (startAt.isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("[ERROR] 예약이 불가능한 시간입니다: " + startAt);
-        }
-    }
-
+    
     public boolean equalsTime(ReservationTime time) {
         return this.startAt == time.startAt();
     }

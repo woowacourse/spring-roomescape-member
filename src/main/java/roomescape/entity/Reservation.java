@@ -1,6 +1,7 @@
 package roomescape.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
 
@@ -28,10 +29,10 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     }
 
     private static void validateDateTime(LocalDate date, ReservationTime time) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("[ERROR] 예약이 불가능한 날짜입니다: " + date);
+        LocalDateTime dateTime = LocalDateTime.of(date, time.startAt());
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 예약이 불가능한 시간입니다: " + date);
         }
-        time.isBefore();
     }
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {

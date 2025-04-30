@@ -7,13 +7,15 @@ public record ReservationResponse(
         long id,
         String name,
         LocalDate date,
-        ReservationTimeResponse time
+        ReservationTimeResponse time,
+        ThemeResponse theme
 ) {
 
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(reservation.id(), reservation.name(),
                 reservation.date(),
-                ReservationTimeResponse.from(reservation.time())
+                ReservationTimeResponse.from(reservation.time()),
+                ThemeResponse.from(reservation.theme())
         );
     }
 }

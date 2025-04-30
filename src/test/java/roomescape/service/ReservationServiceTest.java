@@ -46,7 +46,8 @@ public class ReservationServiceTest {
 
         //when
         long timeId = 1L;
-        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId);
+        long themeId = 1L;
+        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
         ReservationResponse actual = reservationService.postReservation(request);
         //then
         assertThat(actual.id()).isEqualTo(2);
@@ -58,12 +59,13 @@ public class ReservationServiceTest {
         //given
         LocalDate givenDate = LocalDate.MIN;
         long timeId = 1L;
-        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId);
+        long themeId = 1L;
+        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
 
         //when&then
         assertThatThrownBy(() -> reservationService.postReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("예약이 불가능한 날짜");
+                .hasMessageContaining("예약이 불가능한 시간");
     }
 
     @Test
@@ -72,7 +74,8 @@ public class ReservationServiceTest {
         //given
         LocalDate givenDate = LocalDate.MAX;
         long timeId = 1L;
-        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId);
+        long themeId = 1L;
+        ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
 
         //when&then
         assertThatThrownBy(() -> reservationService.postReservation(request))

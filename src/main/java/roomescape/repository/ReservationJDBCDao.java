@@ -25,23 +25,27 @@ public class ReservationJDBCDao implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at "
-                + "from reservation as r "
-                + "inner join reservation_time as t "
-                + "on r.time_id = t.id";
+        String sql = """
+                select r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at, th.id as theme_id,th.name as theme_name, th.description, th.thumbnail 
+                from reservation as r 
+                inner join reservation_time as t 
+                on r.time_id = t.id
+                inner join theme as th
+                on r.theme_id = th.id
+                """;
         return namedJdbcTemplate.query(sql, getReservationRowMapper());
     }
 
     @Override
     public Reservation save(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into reservation (name, date, time_id, them_id) values (:name, :date, :timeId, :themId)";
+        String sql = "insert into reservation (name, date, time_id, theme_id) values (:name, :date, :timeId, :themeId)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.name())
                 .addValue("date", Date.valueOf(reservation.date()))
                 .addValue("timeId", reservation.time().id())
-                .addValue("themId", reservation.theme().id());
+                .addValue("themeId", reservation.theme().id());
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
@@ -70,7 +74,7 @@ public class ReservationJDBCDao implements ReservationRepository {
                 ),
                 new Theme(
                         resultSet.getLong("theme_id"),
-                        resultSet.getString("name"),
+                        resultSet.getString("theme_name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
                 )
