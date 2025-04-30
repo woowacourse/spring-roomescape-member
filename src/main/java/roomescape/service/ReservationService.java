@@ -32,7 +32,7 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         List<Reservation> reservations = reservationDao.findAll();
         return reservations.stream()
-            .map(this::createResponseDto)
+            .map(ReservationResponse::of)
             .toList();
     }
 
@@ -56,7 +56,7 @@ public class ReservationService {
 
         Reservation reservation = Reservation.create(requestDto.name(), requestDto.date(), reservationTime, theme);
         Reservation saved = reservationDao.save(reservation);
-        return createResponseDto(saved);
+        return ReservationResponse.of(saved);
     }
 
     public void deleteById(Long id) {
@@ -66,19 +66,7 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private ReservationResponse createResponseDto(Reservation reservation) {
-        ReservationTime time = reservation.getTime();
-        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(time.getId(), time.getStartAt());
-        Theme theme = reservation.getTheme();
-        ThemeResponse themeResponse = new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
-        return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(), reservationTimeResponse, themeResponse);
-    }
-
     public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, String date) {
-        // 1. 저장되어 있는 모슨 시간 조회
-        // 2. date, themeId를 가진 예약들 조회
-        // 3. 시간 조회결과를 순회하면서 response를 만드는데, 이때 2번에서 찾은 예약들을 보면서 isBooked 처리해주기
-
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         Theme selectedTheme = themeDao.findById(themeId).orElseThrow(RuntimeException::new);
         List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(LocalDate.parse(date), themeId);

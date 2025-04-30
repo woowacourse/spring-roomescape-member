@@ -25,18 +25,14 @@ public class ThemeService {
     public List<ThemeResponse> findAll() {
         List<Theme> themes = themeDao.findAll();
         return themes.stream()
-            .map(this::createResponseDto)
+            .map(ThemeResponse::of)
             .toList();
-    }
-
-    private ThemeResponse createResponseDto(Theme theme) {
-        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     public ThemeResponse add(ThemeRequest requestDto) {
         Theme theme = new Theme(requestDto.name(), requestDto.description(), requestDto.thumbnail());
         Theme savedTheme = themeDao.save(theme);
-        return createResponseDto(savedTheme);
+        return ThemeResponse.of(savedTheme);
     }
 
     public void deleteById(Long id) {
@@ -53,7 +49,7 @@ public class ThemeService {
     public List<ThemeResponse> sortByRank() {
         List<Theme> themes = themeDao.sortByRank();
         return themes.stream()
-            .map(this::createResponseDto)
+            .map(ThemeResponse::of)
             .toList();
     }
 }

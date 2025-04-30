@@ -25,13 +25,13 @@ public class ReservationTimeService {
     public ReservationTimeResponse add(ReservationTimeRequest requestDto) {
         ReservationTime reservationTime = new ReservationTime(requestDto.startAt());
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
-        return createResponseDto(savedReservationTime);
+        return ReservationTimeResponse.of(savedReservationTime);
     }
 
     public List<ReservationTimeResponse> findAll() {
         List<ReservationTime> times = reservationTimeDao.findAll();
         return times.stream()
-            .map(this::createResponseDto)
+            .map(ReservationTimeResponse::of)
             .toList();
     }
 
@@ -44,9 +44,5 @@ public class ReservationTimeService {
             .orElseThrow(() -> new EntityNotFoundException("삭제할 예약시간이 없습니다."));
 
         reservationTimeDao.deleteById(id);
-    }
-
-    private ReservationTimeResponse createResponseDto(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
     }
 }
