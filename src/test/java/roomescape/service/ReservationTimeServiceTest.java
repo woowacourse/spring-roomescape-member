@@ -75,7 +75,7 @@ class ReservationTimeServiceTest {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(11, 0));
         reservationTimeService.createReservationTime(request);
         // when
-        reservationTimeService.deleteReservationTime(1L);
+        reservationTimeService.deleteReservationTimeById(1L);
         // then
         assertThat(reservationTimeDao.isNotExistsById(1L)).isTrue();
     }
@@ -91,7 +91,7 @@ class ReservationTimeServiceTest {
         reservationDao.save(new Reservation(null, "노랑", LocalDate.now().plusDays(1), time, theme));
         // when
         // then
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(response.id()))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(response.id()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }

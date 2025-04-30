@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 import roomescape.service.reservation.Theme;
 import roomescape.service.reservation.ThemeName;
@@ -12,9 +13,11 @@ import roomescape.service.reservation.ThemeName;
 public class ThemeService {
 
     private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
-    public ThemeService(final ThemeDao themeDao) {
+    public ThemeService(final ThemeDao themeDao, final ReservationDao reservationDao) {
         this.themeDao = themeDao;
+        this.reservationDao = reservationDao;
     }
 
     public ThemeResponse createTheme(final ThemeRequest themeRequest) {
@@ -31,5 +34,12 @@ public class ThemeService {
         return themes.stream()
                 .map(ThemeResponse::new)
                 .toList();
+    }
+
+    public void deleteThemeById(final Long id) {
+        if (reservationDao.isExistsByThemeId(id)) {
+            throw new IllegalArgumentException("예약이 존재하는 테마는 삭제할 수 없습니다.");
+        }
+        themeDao.deleteById(id);
     }
 }

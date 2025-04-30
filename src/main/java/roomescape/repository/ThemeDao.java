@@ -13,4 +13,6 @@ public interface ThemeDao {
     List<Theme> findAll();
 
     Theme findById(long id);
+
+    void deleteById(Long id);
 }

@@ -4,18 +4,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.controller.dto.ThemeRequest;
 import roomescape.controller.dto.ThemeResponse;
+import roomescape.fake.FakeReservationDao;
+import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
+import roomescape.service.reservation.Reservation;
+import roomescape.service.reservation.ReservationTime;
 import roomescape.service.reservation.Theme;
 
 class ThemeServiceTest {
 
     FakeThemeDao fakeThemeDao = new FakeThemeDao();
-    ThemeService themeService = new ThemeService(fakeThemeDao);
+    FakeReservationDao fakeReservationDao = new FakeReservationDao();
+    FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
+    ThemeService themeService = new ThemeService(fakeThemeDao, fakeReservationDao);
 
     @DisplayName("저장할 테마 이름이 중복될 경우 예외가 발생한다.")
     @Test
@@ -63,5 +71,35 @@ class ThemeServiceTest {
         List<ThemeResponse> result = themeService.findAll();
         // then
         assertThat(result).hasSize(2);
+    }
+
+    @DisplayName("예약이 존재하는 테마를 삭제할 경우 예외가 발생한다.")
+    @Test
+    void testIllegalDelete() {
+        // given
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
+        ReservationTime saveTime = fakeReservationTimeDao.save(reservationTime);
+        Theme theme = new Theme(null, "우테코방탈출", "탈출탈출탈출", "포비솔라브라운");
+        Theme savedTheme = fakeThemeDao.save(theme);
+        fakeReservationDao.save(new Reservation(null, "노랑", LocalDate.now().plusDays(1), saveTime, savedTheme));
+
+        // when
+        // then
+        assertThatThrownBy(() -> themeService.deleteThemeById(savedTheme.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약이 존재하는 테마는 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("테마를 삭제할 수 있다.")
+    @Test
+    void testDelete() {
+        // given
+        Theme theme = new Theme(null, "우테코방탈출", "탈출탈출탈출", "포비솔라브라운");
+        Theme savedTheme = fakeThemeDao.save(theme);
+        // when
+        themeService.deleteThemeById(savedTheme.getId());
+        // then
+        List<Theme> themes = fakeThemeDao.findAll();
+        assertThat(themes).isEmpty();
     }
 }

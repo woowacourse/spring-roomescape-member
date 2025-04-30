@@ -91,6 +91,13 @@ public class H2ReservationDao implements ReservationDao {
         return count > 0;
     }
 
+    @Override
+    public boolean isExistsByThemeId(Long themeId) {
+        final String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
+        return count > 0;
+    }
+
     private Reservation getReservationById(final long id) {
         final String sql = """
                 SELECT

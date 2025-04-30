@@ -59,4 +59,10 @@ public class H2ThemeDao implements ThemeDao {
         final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, themeMapper, id);
     }
+
+    @Override
+    public void deleteById(final Long id) {
+        final String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
