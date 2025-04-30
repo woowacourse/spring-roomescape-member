@@ -22,14 +22,14 @@ public class ReservationTimeService {
 
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeDao.findAll().stream()
-                .map(ReservationTimeResponse::new)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
     public ReservationTimeCreateResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         ReservationTime reservationTime = reservationTimeDao.create(
                 new ReservationTime(reservationTimeCreateRequest.getLocalTime()));
-        return new ReservationTimeCreateResponse(reservationTime);
+        return ReservationTimeCreateResponse.from(reservationTime);
     }
 
     public void deleteIfNoReservation(final long id) {

@@ -6,10 +6,11 @@ import java.time.format.DateTimeParseException;
 public record ReservationCreateRequest(
         String name,
         String date,
-        Long timeId) {
+        Long timeId,
+        Long themeId) {
 
     public ReservationCreateRequest {
-        validateBlank(name, date, timeId);
+        validateBlank(name, date, timeId, themeId);
         validateDateFormat(date);
     }
 
@@ -17,8 +18,8 @@ public record ReservationCreateRequest(
         return LocalDate.parse(date);
     }
 
-    private void validateBlank(final String name, final String date, final Long timeId) {
-        if (name == null || name.isBlank() || date == null || date.isBlank() || timeId == null) {
+    private void validateBlank(final String name, final String date, final Long timeId, final Long themeId) {
+        if (name == null || name.isBlank() || date == null || date.isBlank() || timeId == null || themeId == null) {
             throw new IllegalArgumentException("빈 값으로 예약할 수 없습니다.");
         }
     }
@@ -30,6 +31,4 @@ public record ReservationCreateRequest(
             throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식으로 입력해주세요.");
         }
     }
-
-
 }

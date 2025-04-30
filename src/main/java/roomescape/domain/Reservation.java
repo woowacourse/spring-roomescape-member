@@ -5,26 +5,31 @@ import java.time.LocalTime;
 
 public class Reservation {
 
+    private Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
-    private Long id;
+    private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time) {
+    //TODO: 정적 팩토리 메서드로 변경
+    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
+                       final Theme theme) {
         validateNameLength(name);
         validateDateTime(date, time);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time) {
+    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateNameLength(name);
         validateDateTime(date, time);
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
     private void validateNameLength(final String name) {
@@ -60,5 +65,9 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 }

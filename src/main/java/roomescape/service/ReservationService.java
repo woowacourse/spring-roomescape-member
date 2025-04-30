@@ -5,9 +5,12 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.reservation.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ReservationDuplicateException;
 
 @Service
@@ -15,24 +18,28 @@ public class ReservationService {
 
     private final ReservationDao reservationDao;
     private final ReservationTimeService reservationTimeService;
+    private final ThemeService themeService;
 
     public ReservationService(final ReservationDao reservationDao,
-                              final ReservationTimeService reservationTimeService) {
+                              final ReservationTimeService reservationTimeService, final ThemeService themeService) {
         this.reservationDao = reservationDao;
         this.reservationTimeService = reservationTimeService;
+        this.themeService = themeService;
     }
 
     public ReservationCreateResponse create(ReservationCreateRequest reservationCreateRequest) {
         ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
+        Theme theme = themeService.findById(reservationCreateRequest.themeId());
         Reservation reservation = new Reservation(
                 reservationCreateRequest.name(),
                 reservationCreateRequest.getLocalDate(),
-                time);
+                time,
+                theme);
 
         if (reservationDao.findByDateAndTime(reservation).isPresent()) {
             throw new ReservationDuplicateException("이미 존재하는 예약입니다.");
         }
-        return new ReservationCreateResponse(reservationDao.create(reservation));
+        return ReservationCreateResponse.from(reservationDao.create(reservation));
     }
 
     public List<ReservationResponse> findAll() {
@@ -41,7 +48,8 @@ public class ReservationService {
                         reservation.getId(),
                         reservation.getName(),
                         reservation.getDate(),
-                        reservation.getTime()
+                        ReservationTimeResponse.from(reservation.getTime()),
+                        ThemeResponse.from(reservation.getTheme())
                 ))
                 .toList();
     }
