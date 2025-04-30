@@ -107,6 +107,18 @@ class ReservationServiceTest {
 
             assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
         }
+
+        @DisplayName("이미 지난 날짜의 경우 예약 생성이 불가능 하다")
+        @Test
+        void createInvalidDateTest(){
+            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
+            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+            reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.of(2025,1,1), 1L);
+
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+        }
     }
 
     @Nested
