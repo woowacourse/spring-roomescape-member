@@ -4,18 +4,23 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
+import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.ReservationTimeCreation;
 
 @Service
 public class ReservationTimeService {
 
+    private final ReservationDAO reservationDAO;
     private final ReservationTimeDAO reservationTimeDAO;
 
-    public ReservationTimeService(final ReservationTimeDAO reservationTimeDAO) {
+    public ReservationTimeService(final ReservationDAO reservationDAO,
+                                  final ReservationTimeDAO reservationTimeDAO) {
+        this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
@@ -42,6 +47,10 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final long id) {
+        if (reservationDAO.existsByTimeId(id)) {
+            throw new PharmaceuticalViolationException("사용 중인 예약 시간입니다");
+        }
+
         boolean deleted = reservationTimeDAO.deleteById(id);
 
         if (!deleted) {

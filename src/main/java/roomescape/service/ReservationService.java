@@ -33,8 +33,7 @@ public class ReservationService {
 
     public ReservationResponse addReservation(final ReservationCreation creation) {
         ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
-        Theme theme = themeDAO.findById(creation.themeId())
-                .orElseThrow(NotExistedValueException::new);
+        Theme theme = findThemeByThemeId(creation);
         Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
 
         validatePastDateAndTime(reservation.getDate(), reservation.getTime());
@@ -45,6 +44,12 @@ public class ReservationService {
                 .orElseThrow(NotExistedValueException::new);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    private Theme findThemeByThemeId(final ReservationCreation creation) {
+        Theme theme = themeDAO.findById(creation.themeId())
+                .orElseThrow(NotExistedValueException::new);
+        return theme;
     }
 
     private void validatePastDateAndTime(final LocalDate date, final ReservationTime time) {

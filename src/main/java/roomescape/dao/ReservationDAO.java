@@ -15,5 +15,9 @@ public interface ReservationDAO {
 
     Optional<Reservation> findById(long id);
 
+    boolean existsByTimeId(long timeId);
+
+    boolean existsByThemeId(long themeId);
+
     boolean deleteById(long id);
 }
