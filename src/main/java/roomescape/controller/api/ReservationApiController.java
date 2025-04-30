@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +12,11 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-public class ReservationController {
+public class ReservationApiController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public ReservationApiController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 

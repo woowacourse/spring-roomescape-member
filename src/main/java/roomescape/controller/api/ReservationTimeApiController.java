@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-public class ReservationTimeController {
+public class ReservationTimeApiController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeApiController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 

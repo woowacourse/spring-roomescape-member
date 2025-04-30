@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +11,11 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-public class ThemeController {
+public class ThemeApiController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeApiController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
