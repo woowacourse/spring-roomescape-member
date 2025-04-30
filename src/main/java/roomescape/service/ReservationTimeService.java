@@ -10,8 +10,9 @@ import roomescape.service.result.AvailableReservationTimeResult;
 import roomescape.service.result.ReservationTimeResult;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationTimeService {
@@ -41,23 +42,24 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResult> findAvailableTimes(Long themeId, LocalDate reservationDate) { //TODO: 메서드명 고민
-        List<ReservationTime> allReservationTimes = reservationTImeRepository.findAll();
-
+    public List<AvailableReservationTimeResult> findAvailableTimesByThemeIdAndDate(Long themeId, LocalDate reservationDate) { //TODO: 메서드명 고민
+        List<ReservationTime> reservationTimes = reservationTImeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findByThemeIdAndReservationDate(themeId, reservationDate);
 
-        List<AvailableReservationTimeResult> availableReservationTimeResults = new ArrayList<>();
-        for (ReservationTime reservationTime : allReservationTimes) {
-            boolean booked = false;
-            for (Reservation reservation : reservations) {
-                if(reservation.isStartAt(reservationTime)) {
-                    booked = true;
-                    break;
-                }
-            }
-            availableReservationTimeResults.add(new AvailableReservationTimeResult(reservationTime.id(), reservationTime.startAt(), booked));
-        }
-        return availableReservationTimeResults;
+        Set<ReservationTime> bookedTimes = reservations.stream()
+                .map(Reservation::getTime)
+                .filter(reservationTimes::contains)
+                .collect(Collectors.toSet());
+
+        return reservationTimes.stream()
+                .map(reservationTime ->
+                        new AvailableReservationTimeResult(
+                                reservationTime.id(),
+                                reservationTime.startAt(),
+                                bookedTimes.contains(reservationTime)
+                        )
+                )
+                .toList();
     }
 
     public void deleteById(Long reservationTimeId) {
