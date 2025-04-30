@@ -29,4 +29,8 @@ public class ThemeService {
         Theme theme = Theme.assignId(id, themeWithoutId);
         return ThemeMapper.toDto(theme);
     }
+
+    public void deleteTheme(Long id) {
+        themeRepository.deleteById(id);
+    }
 }

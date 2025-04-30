@@ -49,7 +49,7 @@ public class ThemeControllerTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마2', '테마 2입니다.', '썸네일입니다.')");
 
-        int themesCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
+        int themesCount = getThemesCount();
 
         RestAssured.given().log().all()
                 .when().get("/themes")
@@ -81,5 +81,30 @@ public class ThemeControllerTest {
                         params.get("description")),
                 () -> assertThat(extractedResponse.jsonPath().getString("thumbnail")).isEqualTo(params.get("thumbnail"))
         );
+    }
+
+    @DisplayName("테마 삭제 요청 시 해당하는 id의 테마를 삭제한다")
+    @Test
+    void delete() {
+        //given
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
+
+        int addedCount = getThemesCount();
+
+        assertThat(addedCount).isEqualTo(1);
+
+        //when & then
+        RestAssured.given().log().all()
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(204);
+
+        int deletedCount = getThemesCount();
+        assertThat(deletedCount).isEqualTo(0);
+    }
+
+    private int getThemesCount() {
+        int themesCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
+        return themesCount;
     }
 }
