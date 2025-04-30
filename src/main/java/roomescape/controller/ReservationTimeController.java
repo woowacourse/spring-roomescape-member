@@ -24,9 +24,9 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<String> handleNullStartAtException(NullPointerException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleNullStartAtException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[ERROR] "+e.getMessage());
     }
 
     @PostMapping()

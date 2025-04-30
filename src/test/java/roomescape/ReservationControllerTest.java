@@ -1,5 +1,7 @@
 package roomescape;
 
+import static org.hamcrest.Matchers.containsString;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -39,8 +41,8 @@ public class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(400).body(containsString("[ERROR] "))
+        ;
     }
-
 
 }

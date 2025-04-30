@@ -41,6 +41,6 @@ public class ReservationTimeControllerTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(400)
-                .body(containsString("Cannot invoke \"java.time.LocalTime.toString()\" because \"startAt\" is null"));
+                .body(containsString("[ERROR] "));
     }
 }
