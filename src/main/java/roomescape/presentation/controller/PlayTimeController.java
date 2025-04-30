@@ -1,6 +1,7 @@
 package roomescape.presentation.controller;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class PlayTimeController {
     ) {
         try {
             final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
-            return ResponseEntity.ok(playTimeResponse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(playTimeResponse);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
