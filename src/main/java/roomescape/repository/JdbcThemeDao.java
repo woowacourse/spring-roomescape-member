@@ -11,8 +11,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
+@Repository
 public class JdbcThemeDao implements ThemeRepository {
 
     private static final RowMapper<Theme> rowMapper = ((rs, rowNum) -> {

@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreateRequestDto;
 import roomescape.dto.ThemeResponseDto;
@@ -8,6 +10,7 @@ import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ThemeRepository;
 
+@Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
