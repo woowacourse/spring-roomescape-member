@@ -1,10 +1,12 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.ReservationTimeWithBookState;
 import roomescape.dto.ReservationTimeCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
@@ -26,6 +28,10 @@ public class ReservationTimeService {
 
     public List<ReservationTime> getAllReservationTime() {
         return reservationTimeRepository.findAll();
+    }
+
+    public List<ReservationTimeWithBookState> getAllReservationTimeWithBookState(LocalDate date, long themeId) {
+        return reservationTimeRepository.findAllWithBookState(date, themeId);
     }
 
     public ReservationTime getReservationTimeById(long reservationTimeId) {
