@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 public class ReservationTimeApiTest {
 
     @Test
-        // TODO: 같은 시간 추가 못하게 막아야됨
     void 시간을_추가한다() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");

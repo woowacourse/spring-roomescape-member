@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 public class ThemeApiTest {
 
     @Test
-        // TODO: 같은 테마 추가 못하게 막아야됨
     void 테마를_추가한다() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "배트맨");

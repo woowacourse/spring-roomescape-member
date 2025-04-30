@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 @JdbcTest
@@ -66,5 +67,13 @@ class H2ReservationTimeDaoTest {
 
         assertThat(reservationTimeDao.findById(2L).get())
             .isEqualTo(expected);
+    }
+
+    @Test
+    void 동일한_시간이_존재하는지_확인한다() {
+        assertAll(
+            () -> assertThat(reservationTimeDao.isExistByTime(LocalTime.of(10, 0))).isTrue(),
+            () -> assertThat(reservationTimeDao.isExistByTime(LocalTime.of(23, 0))).isFalse()
+        );
     }
 }

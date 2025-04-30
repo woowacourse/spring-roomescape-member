@@ -16,4 +16,6 @@ public interface ThemeDao {
     void deleteById(Long id);
 
     List<Theme> sortByRank();
+
+    boolean isExistByName(String name);
 }

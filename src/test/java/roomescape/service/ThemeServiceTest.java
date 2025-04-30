@@ -49,6 +49,9 @@ class ThemeServiceTest {
     void 테마를_생성한다() {
         ThemeRequest request = new ThemeRequest("아이언맨", "", "");
 
+        Mockito.when(themeDao.isExistByName(Mockito.any()))
+            .thenReturn(false);
+
         Mockito.when(themeDao.save(Mockito.any()))
             .thenReturn(new Theme(1L, "아이언맨", "", ""));
 

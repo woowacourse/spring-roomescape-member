@@ -11,6 +11,7 @@ import roomescape.entity.Theme;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -68,5 +69,13 @@ class H2ThemeDaoTest {
             new Theme(3L, "", "", "")
         );
         assertThat(themes).isEqualTo(expected);
+    }
+
+    @Test
+    void 동일한_이름의_테마를_확인한다() {
+        assertAll(
+            () -> assertThat(themeDao.isExistByName("인터스텔라")).isTrue(),
+            () -> assertThat(themeDao.isExistByName("고질라")).isFalse()
+        );
     }
 }

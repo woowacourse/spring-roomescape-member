@@ -6,6 +6,7 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ReservationExistException;
+import roomescape.exception.ReservationTimeExistException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 
@@ -23,6 +24,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse add(ReservationTimeRequest requestDto) {
+        if (reservationTimeDao.isExistByTime(requestDto.startAt())) {
+            throw new ReservationTimeExistException("동일한 시간이 이미 존재합니다.");
+        }
         ReservationTime reservationTime = new ReservationTime(requestDto.startAt());
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
         return ReservationTimeResponse.of(savedReservationTime);

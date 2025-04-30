@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.ReservationExistException;
+import roomescape.exception.ReservationTimeExistException;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 
@@ -38,8 +39,8 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(ReservationExistException.class)
-    public ResponseEntity<String> handleReservationExistException(final ReservationExistException e) {
+    @ExceptionHandler({ReservationExistException.class, ReservationTimeExistException.class})
+    public ResponseEntity<String> handleReservationExistException(final RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

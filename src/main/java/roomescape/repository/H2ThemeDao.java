@@ -73,6 +73,15 @@ public class H2ThemeDao implements ThemeDao {
     }
 
     @Override
+    public boolean isExistByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM theme WHERE name = :name)";
+
+        return Boolean.TRUE == jdbcTemplate.queryForObject(
+            sql, new MapSqlParameterSource("name", name), Boolean.class);
+
+    }
+
+    @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = :id";
 

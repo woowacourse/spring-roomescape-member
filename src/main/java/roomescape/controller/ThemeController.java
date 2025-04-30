@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exception.ReservationExistException;
+import roomescape.exception.ThemeExistException;
 import roomescape.service.ThemeService;
 
 import java.util.List;
@@ -42,8 +43,8 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(ReservationExistException.class)
-    public ResponseEntity<String> handleReservationExistException(final ReservationExistException e) {
+    @ExceptionHandler({ReservationExistException.class, ThemeExistException.class})
+    public ResponseEntity<String> handleReservationExistException(final RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

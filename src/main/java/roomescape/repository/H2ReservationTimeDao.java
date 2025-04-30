@@ -54,6 +54,14 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
         return findReservationTime.stream().findFirst();
     }
 
+    @Override
+    public boolean isExistByTime(LocalTime time) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = :start_at)";
+
+        return Boolean.TRUE == jdbcTemplate.queryForObject(
+            sql, new MapSqlParameterSource("start_at", time), Boolean.class);
+    }
+
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (resultSet, rowNum) -> new ReservationTime(
             resultSet.getLong("id"),

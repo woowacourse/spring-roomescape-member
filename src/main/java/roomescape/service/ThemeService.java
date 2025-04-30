@@ -6,6 +6,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.entity.Theme;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ReservationExistException;
+import roomescape.exception.ThemeExistException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 
@@ -30,6 +31,9 @@ public class ThemeService {
     }
 
     public ThemeResponse add(ThemeRequest requestDto) {
+        if (themeDao.isExistByName(requestDto.name())) {
+            throw new ThemeExistException("동일한 이름의 테마가 이미 존재합니다.");
+        }
         Theme theme = new Theme(requestDto.name(), requestDto.description(), requestDto.thumbnail());
         Theme savedTheme = themeDao.save(theme);
         return ThemeResponse.of(savedTheme);
