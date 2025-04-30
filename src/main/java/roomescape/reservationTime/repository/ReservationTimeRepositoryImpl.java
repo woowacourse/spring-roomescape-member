@@ -22,6 +22,12 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
+    public ReservationTime add(ReservationTime reservationTime) {
+        Long id = insertWithKeyHolder(reservationTime);
+        return findByIdOrThrow(id);
+    }
+
+    @Override
     public List<ReservationTime> findAll() {
         return jdbcTemplate.query(
             "select id, start_at from reservation_time",
@@ -32,12 +38,6 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
                 );
                 return reservationTime;
             });
-    }
-
-    @Override
-    public ReservationTime add(ReservationTime reservationTime) {
-        Long id = insertWithKeyHolder(reservationTime);
-        return findByIdOrThrow(id);
     }
 
     @Override
