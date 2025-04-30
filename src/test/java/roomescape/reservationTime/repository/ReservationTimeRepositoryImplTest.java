@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.NotFoundException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 
@@ -38,7 +38,7 @@ class ReservationTimeRepositoryImplTest {
         // when & then
         Assertions.assertThatCode(
             () -> repository.findByIdOrThrow(Long.MAX_VALUE)
-        ).isInstanceOf(CustomException.class);
+        ).isInstanceOf(NotFoundException.class);
     }
 }
 

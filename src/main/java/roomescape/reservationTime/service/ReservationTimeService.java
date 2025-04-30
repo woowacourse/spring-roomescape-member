@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.BadRequestException;
+import roomescape.globalException.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationTime.ReservationTimeMapper;
@@ -51,7 +51,8 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResDto> readAllAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
-        Theme theme = themeRepository.findByIdOrThrow(themeId);
+        Theme theme = themeRepository.findById(themeId)
+            .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
         Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findByThemeAndDate(theme, date)
             .stream()
             .map(Reservation::getReservationTime)
@@ -70,7 +71,7 @@ public class ReservationTimeService {
     public void delete(Long id) {
         ReservationTime reservationTime = repository.findByIdOrThrow(id);
         if (reservationRepository.existsByReservationTime(reservationTime)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "예약에서 사용 중인 시간입니다.");
+            throw new BadRequestException("예약에서 사용 중인 시간입니다.");
         }
         repository.delete(id);
     }
@@ -79,7 +80,7 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = repository.findAll();
         for (ReservationTime reservationTime : reservationTimes) {
             if (inputReservationTime.isSameTime(reservationTime)) {
-                throw new CustomException(HttpStatus.CONFLICT, "이미 등록되어 있는 시간입니다.");
+                throw new ConflictException("이미 등록되어 있는 시간입니다.");
             }
         }
     }

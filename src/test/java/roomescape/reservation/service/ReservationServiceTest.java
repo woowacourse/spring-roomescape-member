@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.fixture.ReservationFixture;
@@ -77,7 +77,7 @@ class ReservationServiceTest {
 
             Assertions.assertThatThrownBy(
                 () -> service.add(reqDto)
-            ).isInstanceOf(CustomException.class);
+            ).isInstanceOf(ConflictException.class);
         }
 
         @DisplayName("시간이 같아도 날짜가 다르다면 예약이 가능하다.")

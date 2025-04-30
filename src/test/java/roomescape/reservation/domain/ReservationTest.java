@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.BadRequestException;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
@@ -33,7 +33,7 @@ class ReservationTest {
             // when & then
             Assertions.assertThatThrownBy(
                 () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime, theme)
-            ).isInstanceOf(CustomException.class);
+            ).isInstanceOf(BadRequestException.class);
         }
 
         @DisplayName("예약 시점이 미래이면 예외를 발생하지 않는다.")

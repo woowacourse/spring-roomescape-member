@@ -14,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.BadRequestException;
+import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.repository.ReservationRepositoryImpl;
 import roomescape.reservation.service.ReservationService;
@@ -149,7 +150,7 @@ class ReservationTimeServiceTest {
             // then
             Assertions.assertThatCode(
                 () -> service.delete(Long.MAX_VALUE)
-            ).isInstanceOf(CustomException.class);
+            ).isInstanceOf(NotFoundException.class);
         }
 
         @DisplayName("예약에서 사용 중인 시간 삭제 시 예외가 발생한다")
@@ -169,7 +170,7 @@ class ReservationTimeServiceTest {
             // when, then
             Assertions.assertThatCode(
                 () -> service.delete(testDataConfig.getDefaultDummyTimeId())
-            ).isInstanceOf(CustomException.class);
+            ).isInstanceOf(BadRequestException.class);
         }
     }
 }

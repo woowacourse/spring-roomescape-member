@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.NotFoundException;
 import roomescape.theme.domain.Theme;
 
 @Repository
@@ -23,7 +22,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     @Override
     public Theme findByIdOrThrow(Long id) {
         return findById(id)
-            .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "해당 테마 id가 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("해당 테마 id가 존재하지 않습니다."));
     }
 
     @Override
@@ -32,7 +31,8 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    private Optional<Theme> findById(Long id) {
+    @Override
+    public Optional<Theme> findById(Long id) {
         String sql = "select id, name, description, thumbnail from theme where id = ?";
 
         try {

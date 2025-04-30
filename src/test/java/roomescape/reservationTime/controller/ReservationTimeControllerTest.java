@@ -133,7 +133,7 @@ public class ReservationTimeControllerTest {
             RestAssured.given().log().all()
                 .when().delete("/times/" + maxValue)
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.NOT_FOUND.value());
         }
     }
 }

@@ -2,9 +2,9 @@ package roomescape.reservation.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.BadRequestException;
+import roomescape.globalException.ConflictException;
 import roomescape.reservation.ReservationMapper;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
@@ -55,14 +55,17 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation : reservations) {
             if (inputReservation.isSameDateTime(reservation)) {
-                throw new CustomException(HttpStatus.CONFLICT, "이미 예약되어 있는 시간입니다.");
+                throw new ConflictException("이미 예약되어 있는 시간입니다.");
             }
         }
     }
 
     private Reservation convertReservation(ReservationReqDto dto) {
-        ReservationTime reservationTime = reservationTimeRepository.findByIdOrThrow(dto.timeId());
-        Theme theme = themeRepository.findByIdOrThrow(dto.themeId());
+        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
+            .orElseThrow(() -> new BadRequestException("존재하지 않는 예약 시간입니다."));
+        Theme theme = themeRepository.findById(dto.themeId())
+            .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
+
         return ReservationMapper.toEntity(dto, reservationTime, theme);
     }
 

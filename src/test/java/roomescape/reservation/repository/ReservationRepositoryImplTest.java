@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -68,7 +68,7 @@ class ReservationRepositoryImplTest {
         // when & then
         Assertions.assertThatCode(
             () -> reservationTimeRepository.findByIdOrThrow(Long.MAX_VALUE)
-        ).isInstanceOf(CustomException.class);
+        ).isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("예약 시간에 해당하는 예약의 존재 여부를 알 수 있다.")

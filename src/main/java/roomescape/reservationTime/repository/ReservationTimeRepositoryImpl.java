@@ -4,12 +4,11 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.globalException.CustomException;
+import roomescape.globalException.NotFoundException;
 import roomescape.reservationTime.domain.ReservationTime;
 
 @Repository
@@ -43,7 +42,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     @Override
     public ReservationTime findByIdOrThrow(Long id) {
         return findById(id)
-            .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "해당 예약시간 id가 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("해당 예약시간 id가 존재하지 않습니다."));
     }
 
     @Override
@@ -68,7 +67,8 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         return keyHolder.getKey().longValue();
     }
 
-    private Optional<ReservationTime> findById(Long id) {
+    @Override
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "select id, start_at from reservation_time where id = ?";
 
         try {
