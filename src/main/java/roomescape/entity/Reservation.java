@@ -13,7 +13,13 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(
+            final Long id,
+            final String name,
+            final LocalDate date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         if (name.length() > 10) {
             throw new OverMaxNameLengthException();
         }
@@ -48,7 +54,13 @@ public class Reservation {
         return new Reservation(null, name, date, time, theme);
     }
 
-    public static Reservation afterSave(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation afterSave(
+            final Long id,
+            final String name,
+            final LocalDate date,
+            final ReservationTime time,
+            final Theme theme
+    ) {
         return new Reservation(id, name, date, time, theme);
     }
 

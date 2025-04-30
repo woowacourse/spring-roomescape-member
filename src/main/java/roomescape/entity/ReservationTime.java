@@ -1,11 +1,12 @@
 package roomescape.entity;
 
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Objects;
 import roomescape.exception.impl.InvalidReservationTimeException;
 
+import java.time.Duration;
+import java.time.LocalTime;
+
 public class ReservationTime {
+
     private static final LocalTime START_RESERVATION_TIME = LocalTime.of(10, 0);
     private static final LocalTime LAST_RESERVATION_TIME = LocalTime.of(23, 0);
 
@@ -32,33 +33,16 @@ public class ReservationTime {
         return new ReservationTime(null, startAt);
     }
 
+    public boolean isInTimeInterval(LocalTime otherTime) {
+        long minuteDifference = Duration.between(startAt, otherTime).abs().toMinutes();
+        return minuteDifference < 30;
+    }
+
     public Long getId() {
         return id;
     }
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    public boolean isInTimeInterval(LocalTime otherTime) {
-        long minuteDifference = Duration.between(startAt, otherTime).abs().toMinutes();
-        return minuteDifference < 30;
     }
 }
