@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.entity.Theme;
 import roomescape.repository.ThemeRepository;
@@ -22,5 +23,9 @@ public class ThemeService {
     ) {
         Theme theme = Theme.beforeSave(name, description, thumbnail);
         return themeRepository.save(theme);
+    }
+
+    public List<Theme> getThemes() {
+        return themeRepository.findAll();
     }
 }
