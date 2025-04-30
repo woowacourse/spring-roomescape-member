@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,10 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundReservationException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundThemeException("올바른 방탈출 테마가 없습니다."));
+
+        if (LocalDateTime.of(request.date(), reservationTime.getStartAt()).isBefore(LocalDateTime.now())) {
+            throw new NotAbleReservationException("과거 시점의 예약을 할 수 없습니다.");
+        }
 
         List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(request.date(), request.themeId());
 
