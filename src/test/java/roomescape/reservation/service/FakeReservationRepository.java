@@ -28,7 +28,7 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean existByReservationTimeId(Long timeId) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getTime().getId() == timeId);
+                .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), timeId));
     }
 
     @Override
