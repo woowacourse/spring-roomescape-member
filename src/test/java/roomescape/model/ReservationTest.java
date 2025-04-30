@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.Fixtures;
 
 public class ReservationTest {
 
@@ -33,7 +32,7 @@ public class ReservationTest {
             1L,
             "여섯글자이름",
             LocalDate.of(2023, 12, 1),
-            new TimeSlot(1L, LocalTime.of(10, 0)))
+            TimeSlot.register(1L, LocalTime.of(10, 0)))
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -44,7 +43,8 @@ public class ReservationTest {
         var reserveDate = LocalDate.of(2023, 12, 1);
         var reserveTime = LocalTime.of(10, 0);
         var compareDateTime = LocalDateTime.of(reserveDate, reserveTime).plusDays(1);
-        var reservation = Reservation.register(1L, "리버", reserveDate, new TimeSlot(1L, reserveTime));
+        var reservation = Reservation.register(1L, "리버", reserveDate,
+            TimeSlot.register(1L, reserveTime));
 
         // when
         boolean isBefore = reservation.isBefore(compareDateTime);
@@ -59,8 +59,10 @@ public class ReservationTest {
         // given
         var reserveDate = LocalDate.of(2023, 12, 1);
         var reserveTime = LocalTime.of(10, 0);
-        var reservation = Reservation.register(1L, "리버", reserveDate, new TimeSlot(1L, reserveTime));
-        var otherReservation = Reservation.register(2L, "포포", reserveDate, new TimeSlot(1L, reserveTime));
+        var reservation = Reservation.register(1L, "리버", reserveDate,
+            TimeSlot.register(1L, reserveTime));
+        var otherReservation = Reservation.register(2L, "포포", reserveDate,
+            TimeSlot.register(1L, reserveTime));
 
         // when
         boolean isSameDateTime = reservation.isSameDateTime(otherReservation);
@@ -74,12 +76,12 @@ public class ReservationTest {
             Arguments.of(
                 null,
                 LocalDate.of(2023, 12, 1),
-                new TimeSlot(1L, LocalTime.of(10, 0))
+                TimeSlot.register(1L, LocalTime.of(10, 0))
             ),
             Arguments.of(
                 "brown",
                 null,
-                new TimeSlot(1L, LocalTime.of(10, 0))
+                TimeSlot.register(1L, LocalTime.of(10, 0))
             ),
             Arguments.of(
                 "brown",

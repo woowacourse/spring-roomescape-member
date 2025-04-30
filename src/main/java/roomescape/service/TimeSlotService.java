@@ -23,9 +23,9 @@ public class TimeSlotService {
     }
 
     public TimeSlot add(LocalTime startAt) {
-        var timeSlot = new TimeSlot(null, startAt);
+        var timeSlot = TimeSlot.create(startAt);
         var id = timeSlotRepository.save(timeSlot);
-        return new TimeSlot(id, startAt);
+        return TimeSlot.register(id, startAt);
     }
 
     public List<TimeSlot> allTimeSlots() {

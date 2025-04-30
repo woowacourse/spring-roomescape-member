@@ -17,7 +17,7 @@ public class TimeSlotJdbcRepository implements TimeSlotRepository {
     private static final RowMapper<TimeSlot> TIME_SLOT_ROW_MAPPER = (rs, rowNum) -> {
         var id = rs.getLong("id");
         var startAt = rs.getString("start_at");
-        return new TimeSlot(id, LocalTime.parse(startAt));
+        return TimeSlot.register(id, LocalTime.parse(startAt));
     };
 
     private final JdbcTemplate jdbcTemplate;

@@ -20,7 +20,7 @@ public class TimeSlotFakeRepository implements TimeSlotRepository {
     @Override
     public long save(final TimeSlot timeSlot) {
         var id = index.getAndIncrement();
-        var created = new TimeSlot(id, timeSlot.startAt());
+        var created = TimeSlot.register(id, timeSlot.startAt());
         timeSlots.put(id, created);
         return id;
     }

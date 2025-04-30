@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +17,7 @@ import roomescape.repository.TimeSlotFakeRepository;
 
 public class ReservationServiceTest {
 
-    private static final TimeSlot JUNK_TIME_SLOT = new TimeSlot(1L, LocalTime.of(10, 0));
+    private static final TimeSlot JUNK_TIME_SLOT = TimeSlot.register(1L, LocalTime.of(10, 0));
 
     private ReservationService service;
 

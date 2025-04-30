@@ -97,7 +97,7 @@ public class ReservationJdbcRepositoryTest {
         return Reservation.create(
             "브라운",
             LocalDate.of(2023, 12, 1),
-            new TimeSlot(timeSlotId, LocalTime.of(10, 0))
+            TimeSlot.register(timeSlotId, LocalTime.of(10, 0))
         );
     }
 }

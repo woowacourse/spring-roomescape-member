@@ -21,7 +21,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             var date = rs.getDate("date").toLocalDate();
             var timeSlotId = rs.getLong("time_id");
             var time = rs.getTime("start_at").toLocalTime();
-            return Reservation.register(id, name, date, new TimeSlot(timeSlotId, time));
+            return Reservation.register(id, name, date, TimeSlot.register(timeSlotId, time));
         };
 
     private final JdbcTemplate jdbcTemplate;
