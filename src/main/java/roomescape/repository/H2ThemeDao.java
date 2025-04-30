@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ThemeDaoImpl implements ThemeDao {
+public class H2ThemeDao implements ThemeDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ThemeDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public H2ThemeDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -61,7 +61,7 @@ public class ThemeDaoImpl implements ThemeDao {
             JOIN
                 theme t ON r.theme_id = t.id
             WHERE
-                PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN CURRENT_DATE - 6 AND CURRENT_DATE
+                PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN CURRENT_DATE - 7 AND CURRENT_DATE - 1
             GROUP BY
                 t.id, t.name, t.description, t.thumbnail
             ORDER BY
