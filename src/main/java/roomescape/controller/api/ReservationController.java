@@ -33,6 +33,9 @@ public class ReservationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
+    @PostMapping("/admin")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReservationResponse createAdminReservation(@RequestBody ReservationRequest request) {
         return reservationService.addReservation(request);
     }
 

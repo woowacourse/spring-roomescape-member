@@ -36,7 +36,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(getTestParamsWithReservation())
-            .when().post("/reservations")
+            .when().post("/reservations/admin")
             .then().log().all()
             .statusCode(201)
             .body("name", is("사나"));
@@ -54,7 +54,7 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(getTestParamsWithReservation())
-            .when().post("/reservations")
+            .when().post("/reservations/admin")
             .then().log().all()
             .statusCode(201)
             .body("id", is(1));
