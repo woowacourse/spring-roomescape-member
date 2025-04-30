@@ -5,14 +5,18 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservedTimeChecker;
 
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservedTimeChecker reservedTimeChecker;
 
-    public ReservationTimeService(ReservationTimeRepository jdbcReservationTimeRepository) {
+    public ReservationTimeService(ReservationTimeRepository jdbcReservationTimeRepository,
+                                  ReservedTimeChecker reservedTimeChecker) {
         this.reservationTimeRepository = jdbcReservationTimeRepository;
+        this.reservedTimeChecker = reservedTimeChecker;
     }
 
     public ReservationTime addTime(LocalTime startAt) {
@@ -24,6 +28,9 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(Long id) {
+        if (reservedTimeChecker.isReserved(id)) {
+            throw new IllegalArgumentException("Reservation time is already reserved.");
+        }
         reservationTimeRepository.deleteTime(id);
     }
 

@@ -17,7 +17,7 @@ import roomescape.repository.MemoryReservationTimeRepository;
 class ReservationServiceTest {
     private final MemoryReservationRepository memoryReservationRepository = new MemoryReservationRepository();
     private final ReservationTimeService reservationTimeService = new ReservationTimeService(
-            new MemoryReservationTimeRepository());
+            new MemoryReservationTimeRepository(), (Long id) -> {return true;});
     private final ReservationService reservationService = new ReservationService(memoryReservationRepository,
             reservationTimeService);
 
