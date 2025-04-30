@@ -93,54 +93,54 @@
 - [x] API 명세에 따라 아래 기능 구현
     - [x] 시간 추가 API 구현
         - Request
-        ```
-        POST /times HTTP/1.1
-        content-type: application/json
-        
-        {
-        "startAt": "10:00"
-        }
-        ```
+          ```
+          POST /times HTTP/1.1
+          content-type: application/json
+          
+          {
+              "startAt": "10:00"
+          }
+          ```
       
         - Response
-        ```
-        HTTP/1.1 200
-        Content-Type: application/json
-        
-        {
-        "id": 1,
-        "startAt": "10:00"
-        }
-        ```
-    - [x] 시간 조회 API 구현
-      - Request
-      ```
-      GET /times HTTP/1.1
-      ```
-      
-      - Response
-      ```
-      HTTP/1.1 200 
-      Content-Type: application/json
-      
-      [
+          ```
+          HTTP/1.1 200
+          Content-Type: application/json
+          
           {
               "id": 1,
               "startAt": "10:00"
           }
-      ]
-      ```
+          ```
+    - [x] 시간 조회 API 구현
+      - Request
+        ```
+        GET /times HTTP/1.1
+        ```
+      
+      - Response
+        ```
+        HTTP/1.1 200 
+        Content-Type: application/json
+        
+        [
+            {
+                "id": 1,
+                "startAt": "10:00"
+            }
+        ]
+        ```
 
     - [x] 시간 삭제 API 구현
       - Request
-      ```
-      DELETE /times/1 HTTP/1.1
-      ```
+        ```
+        DELETE /times/1 HTTP/1.1
+        ```
 
       - Response
-      ```
-      HTTP/1.1 200
-      ```
+        ```
+        HTTP/1.1 200
+        ```
 
 ## 8단계
 
@@ -149,38 +149,38 @@
 - [x] 예약 추가/조회 API 명세 변경
   - [x] 예약 추가 API
     - Request
-    ```
-    POST /reservations HTTP/1.1
-    content-type: application/json
-    
-    {
-        "date": "2023-08-05",
-        "name": "브라운",
-        "timeId": 1
-    }
-    ```
+      ```
+      POST /reservations HTTP/1.1
+      content-type: application/json
+      
+      {
+          "date": "2023-08-05",
+          "name": "브라운",
+          "timeId": 1
+      }
+      ```
 
     - Response
-    ```
-    HTTP/1.1 200
-    Content-Type: application/json
-    
-    {
-        "id": 1,
-        "name": "브라운",
-        "date": "2023-08-05",
-        "time" : {
-            "id": 1,
-            "startAt" : "10:00"
-        }
-    }
-    ```
+      ```
+      HTTP/1.1 200
+      Content-Type: application/json
+      
+      {
+          "id": 1,
+          "name": "브라운",
+          "date": "2023-08-05",
+          "time" : {
+              "id": 1,
+              "startAt" : "10:00"
+          }
+      }
+      ```
 
   - [x] 예약 조회 API
     - Request
-    ```
-    GET /reservations HTTP/1.1
-    ```
+      ```
+      GET /reservations HTTP/1.1
+      ```
     
     - Response
       ```
@@ -239,7 +239,7 @@
         
       - Response
         ```
-        GET /themes HTTP/1.1HTTP/1.1 200 
+        GET /themes HTTP/1.1 200 
         Content-Type: application/json
         
         [
@@ -324,7 +324,7 @@
     ]
     ```
 
-- [ ] /reservation 요청 시 사용자 예약 페이지를 응답
+- [x] /reservation 요청 시 사용자 예약 페이지를 응답
   - 페이지는 templates/reservation.html 파일을 이용
 
 인기 테마
@@ -351,5 +351,5 @@
     ]
     ```
 
-- [ ] "/" 요청 시 인기 테마 페이지를 응답
+- [x] "/" 요청 시 인기 테마 페이지를 응답
   - 페이지는 templates/index.html 파일을 이용
