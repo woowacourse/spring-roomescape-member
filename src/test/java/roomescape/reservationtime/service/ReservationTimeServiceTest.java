@@ -14,6 +14,8 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
+import roomescape.reservationtime.exception.ReservationTimeAlreadyExistsException;
+import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
@@ -39,7 +41,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.create(request);
 
         assertThatThrownBy(() -> reservationTimeService.create(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ReservationTimeAlreadyExistsException.class);
     }
 
     @Test
@@ -65,7 +67,7 @@ class ReservationTimeServiceTest {
     @Test
     void deleteReservationTime_shouldThrowException_WhenIdNotFound() {
         assertThatThrownBy(() -> reservationTimeService.delete(999L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationTimeNotFoundException.class)
                 .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
     }
 

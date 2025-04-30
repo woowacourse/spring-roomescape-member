@@ -6,11 +6,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -59,7 +59,7 @@ class ReservationServiceTest {
     @Test
     void deleteReservation_shouldThrowException_WhenIdNotFound() {
         assertThatThrownBy(() -> reservationService.delete(999L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationNotFoundException.class)
                 .hasMessageContaining("요청한 id와 일치하는 예약 정보가 없습니다.");
     }
 
@@ -81,7 +81,7 @@ class ReservationServiceTest {
         ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L);
 
         assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test
