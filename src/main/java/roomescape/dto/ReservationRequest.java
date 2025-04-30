@@ -7,5 +7,6 @@ import java.time.LocalDate;
 
 public record ReservationRequest(@NotBlank String name,
                                  @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul") LocalDate date,
-                                 @NotNull Long timeId) {
+                                 @NotNull Long timeId,
+                                 @NotNull Long themeId) {
 }

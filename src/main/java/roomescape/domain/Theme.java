@@ -6,7 +6,7 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(Long id, String name, String description, String thumbnail) {
+    private Theme(Long id, String name, String description, String thumbnail) {
         validate(name, description, thumbnail);
         this.id = id;
         this.name = name;
@@ -16,6 +16,10 @@ public class Theme {
 
     public Theme(String name, String description, String thumbnail) {
         this(null, name, description, thumbnail);
+    }
+
+    public Theme withId(Long id) {
+        return new Theme(id, this.name, this.description, this.thumbnail);
     }
 
     private void validate(String name, String description, String thumbnail) {
@@ -40,10 +44,6 @@ public class Theme {
         if (name.isBlank()) {
             throw new IllegalArgumentException();
         }
-    }
-
-    public Theme withId(Long id) {
-        return new Theme(id, this.name, this.description, this.thumbnail);
     }
 
     public Long getId() {

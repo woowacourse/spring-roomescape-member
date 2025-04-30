@@ -8,7 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.entity.ReservationEntity;
+import roomescape.entity.ReservationTimeEntity;
+import roomescape.entity.ThemeEntity;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
@@ -23,14 +25,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation add(Reservation reservation) {
+    public ReservationEntity add(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservation.getName());
         params.put("date", reservation.getDate());
         params.put("time_id", reservation.getTime().getId());
+        params.put("theme_id", reservation.getTheme().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return reservation.withId(id);
+        return ReservationEntity.of(id, reservation);
     }
 
     @Override
@@ -40,19 +43,46 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAll() {
-        String sql = "SELECT r.id as reservation_id, r.name, r.date, t.id as time_id, t.start_at as time_value FROM reservation as r inner join reservation_time as t on r.time_id = t.id";
+    public List<ReservationEntity> findAll() {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    rt.id AS time_id,
+                    rt.start_at AS time_value,
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM
+                    reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id;
+                
+                """;
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
-                    Reservation reservation = new Reservation(
-                            resultSet.getString("name"),
-                            resultSet.getDate("date").toLocalDate(),
-                            new ReservationTime(
-                                    resultSet.getLong("time_id"),
-                                    resultSet.getTime("time_value").toLocalTime())
+                    ReservationTimeEntity reservationTimeEntity = new ReservationTimeEntity(
+                            resultSet.getLong("time_id"),
+                            resultSet.getTime("time_value").toLocalTime()
                     );
-                    return reservation.withId(resultSet.getLong("reservation_id"));
+
+                    ThemeEntity themeEntity = new ThemeEntity(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail"));
+
+                    ReservationEntity reservationEntity = new ReservationEntity(
+                            resultSet.getLong("reservation_id"),
+                            resultSet.getString("reservation_name"),
+                            resultSet.getDate("reservation_date").toLocalDate(),
+                            reservationTimeEntity,
+                            themeEntity
+                    );
+                    return reservationEntity;
                 }
         );
     }

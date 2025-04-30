@@ -10,11 +10,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.entity.ReservationTimeEntity;
 
 @Repository
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
-    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) ->
-            new ReservationTime(
+    private static final RowMapper<ReservationTimeEntity> ROW_MAPPER = (resultSet, rowNum) ->
+            new ReservationTimeEntity(
                     resultSet.getLong("id"),
                     resultSet.getTime("start_at").toLocalTime()
             );
@@ -29,16 +30,16 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime add(ReservationTime time) {
+    public ReservationTimeEntity add(ReservationTime time) {
         Map<String, LocalTime> params = new HashMap<>();
         params.put("start_at", time.getStartAt());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return new ReservationTime(id, time.getStartAt());
+        return ReservationTimeEntity.of(id, time);
     }
 
     @Override
-    public List<ReservationTime> findAll() {
+    public List<ReservationTimeEntity> findAll() {
         String sql = "select * from reservation_time";
         return jdbcTemplate.query(
                 sql,
@@ -53,9 +54,9 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long timeId) {
+    public Optional<ReservationTimeEntity> findById(Long timeId) {
         String sql = "select * from reservation_time where id = ?";
-        List<ReservationTime> time = jdbcTemplate.query(
+        List<ReservationTimeEntity> time = jdbcTemplate.query(
                 sql,
                 ROW_MAPPER,
                 timeId

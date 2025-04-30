@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.entity.ThemeEntity;
 import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.repository.theme.ThemeRepository;
 
@@ -25,7 +26,7 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public List<ThemeResponse> getAll() {
-        List<Theme> themes = themeRepository.findAll();
+        List<ThemeEntity> themes = themeRepository.findAll();
         return ThemeResponse.from(themes);
     }
 

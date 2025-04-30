@@ -74,7 +74,7 @@
       "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
   }
    ```
-    - [ ] 테마를 삭제할 수 있다
+    - [x] 테마를 삭제할 수 있다
   ```http request
   DELETE /themes/1 HTTP/1.1
   ```

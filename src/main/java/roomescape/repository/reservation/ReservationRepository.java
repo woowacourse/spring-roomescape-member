@@ -3,13 +3,14 @@ package roomescape.repository.reservation;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
+import roomescape.entity.ReservationEntity;
 
 public interface ReservationRepository {
-    Reservation add(Reservation reservation);
+    ReservationEntity add(Reservation reservation);
 
     int deleteById(Long id);
 
-    List<Reservation> findAll();
+    List<ReservationEntity> findAll();
 
     boolean existsByDateAndTime(LocalDate date, Long id);
 

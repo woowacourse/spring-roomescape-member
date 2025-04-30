@@ -5,15 +5,16 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
+import roomescape.entity.ReservationTimeEntity;
 
 public interface ReservationTimeRepository {
-    ReservationTime add(ReservationTime time);
+    ReservationTimeEntity add(ReservationTime time);
 
-    List<ReservationTime> findAll();
+    List<ReservationTimeEntity> findAll();
 
     int deleteById(Long id);
 
-    Optional<ReservationTime> findById(Long timeId);
+    Optional<ReservationTimeEntity> findById(Long timeId);
 
     boolean existsByStartAt(@NotNull LocalTime localTime);
 }

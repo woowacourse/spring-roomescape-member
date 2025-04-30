@@ -2,7 +2,7 @@ package roomescape.dto;
 
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.domain.ReservationTime;
+import roomescape.entity.ReservationTimeEntity;
 
 public class ReservationTimeResponse {
     private final Long id;
@@ -13,11 +13,11 @@ public class ReservationTimeResponse {
         this.startAt = startAt;
     }
 
-    public static ReservationTimeResponse from(ReservationTime time) {
-        return new ReservationTimeResponse(time.getId(), time.getStartAt());
+    public static ReservationTimeResponse from(ReservationTimeEntity time) {
+        return new ReservationTimeResponse(time.id(), time.startAt());
     }
 
-    public static List<ReservationTimeResponse> from(List<ReservationTime> times) {
+    public static List<ReservationTimeResponse> from(List<ReservationTimeEntity> times) {
         return times.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
