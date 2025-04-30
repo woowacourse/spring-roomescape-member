@@ -29,7 +29,7 @@ public class Reservation {
 
     public void validatePastDateTime() {
         LocalDate now = LocalDate.now();
-        if (date.isBefore(now)) {
+        if (date.isBefore(now) || (date.equals(now) && time.isPastTime())) {
             throw new IllegalArgumentException("지난 날짜와 시간의 예약은 생성 불가능합니다.");
         }
     }
