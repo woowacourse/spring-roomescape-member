@@ -49,4 +49,11 @@ public class ThemeService {
 
         themeDao.deleteById(id);
     }
+
+    public List<ThemeResponse> sortByRank() {
+        List<Theme> themes = themeDao.sortByRank();
+        return themes.stream()
+            .map(this::createResponseDto)
+            .toList();
+    }
 }

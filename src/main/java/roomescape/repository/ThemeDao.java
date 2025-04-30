@@ -14,4 +14,6 @@ public interface ThemeDao {
     Optional<Theme> findById(Long id);
 
     void deleteById(Long id);
+
+    List<Theme> sortByRank();
 }

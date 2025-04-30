@@ -30,6 +30,11 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.findAll());
     }
 
+    @GetMapping("/rank")
+    public ResponseEntity<List<ThemeResponse>> sortByRank() {
+        return ResponseEntity.ok(themeService.sortByRank());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         themeService.deleteById(id);

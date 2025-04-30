@@ -49,6 +49,30 @@ public class ThemeDaoImpl implements ThemeDao {
     }
 
     @Override
+    public List<Theme> sortByRank() {
+        String sql = """
+            SELECT
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description,
+                t.thumbnail
+            FROM
+                reservation r
+            JOIN
+                theme t ON r.theme_id = t.id
+            WHERE
+                PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN CURRENT_DATE - 6 AND CURRENT_DATE
+            GROUP BY
+                t.id, t.name, t.description, t.thumbnail
+            ORDER BY
+                COUNT(r.id) DESC
+            LIMIT 10;
+            """;
+
+        return jdbcTemplate.query(sql, getThemeRowMapper());
+    }
+
+    @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = :id";
 
