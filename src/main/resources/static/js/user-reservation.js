@@ -1,4 +1,5 @@
 const THEME_API_ENDPOINT = '/themes';
+const TIME_WITH_AVAILABILITY_API_ENDPOINT = '/reservations/times';
 
 document.addEventListener('DOMContentLoaded', () => {
   requestRead(THEME_API_ENDPOINT)
@@ -36,13 +37,9 @@ function renderTheme(themes) {
   const themeSlots = document.getElementById('theme-slots');
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
-    const name = '';
-    const themeId = '';
-    /*
-    TODO: [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
-          response 명세에 맞춰 createSlot 함수 호출 시 값 설정
-          createSlot('theme', theme name, theme id) 형태로 호출
-    */
+    const name = theme.name;
+    const themeId = theme.id;
+
     themeSlots.appendChild(createSlot('theme', name, themeId));
   });
 }
@@ -82,25 +79,31 @@ function checkDateAndTheme() {
   const selectedThemeElement = document.querySelector('.theme-slot.active');
   if (selectedDate && selectedThemeElement) {
     const selectedThemeId = selectedThemeElement.getAttribute('data-theme-id');
+    const availableTimeRequest = {
+      date : selectedDate,
+      themeId : selectedThemeId
+    }
+
     fetchAvailableTimes(selectedDate, selectedThemeId);
   }
 }
 
-function fetchAvailableTimes(date, themeId) {
-  /*
-  TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
-        요청 포맷에 맞게 설정
-  */
-  fetch('/', { // 예약 가능 시간 조회 API endpoint
+
+function fetchAvailableTimes(selectedDate, selectedThemeId) {
+  const url = `${TIME_WITH_AVAILABILITY_API_ENDPOINT}?date=${selectedDate}&themeId=${selectedThemeId}`;
+
+  fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
-  }).then(response => {
-    if (response.status === 200) return response.json();
-    throw new Error('Read failed');
-  }).then(renderAvailableTimes)
-  .catch(error => console.error("Error fetching available times:", error));
+  })
+      .then(response => {
+        if (response.status === 200) return response.json();
+        throw new Error('Read failed');
+      })
+      .then(renderAvailableTimes)
+      .catch(error => console.error("Error fetching available times:", error));
 }
 
 function renderAvailableTimes(times) {
@@ -116,13 +119,9 @@ function renderAvailableTimes(times) {
     return;
   }
   times.forEach(time => {
-    /*
-    TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
-          response 명세에 맞춰 createSlot 함수 호출 시 값 설정
-    */
-    const startAt = '';
-    const timeId = '';
-    const alreadyBooked = false;
+    const startAt = time.startAt;
+    const timeId = time.timeId;
+    const alreadyBooked = time.isBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
