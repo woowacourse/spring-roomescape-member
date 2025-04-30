@@ -1,7 +1,6 @@
 package roomescape.model;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class Reservation {
 
@@ -12,17 +11,21 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        this.id = Objects.requireNonNull(id);
-        this.name = validateNonBlank(name);
-        this.date = Objects.requireNonNull(date);
+        validateRequiredFields(id, name, date, reservationTime, theme);
+
+        this.id = id;
+        this.name = name;
+        this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
     public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        validateRequiredFields(name, date, reservationTime, theme);
+
         this.id = null;
-        this.name = validateNonBlank(name);
-        this.date = Objects.requireNonNull(date);
+        this.name = name;
+        this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
@@ -33,12 +36,34 @@ public class Reservation {
         }
     }
 
-    private String validateNonBlank(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("이름은 null이거나 공백일 수 없습니다");
+    private void validateRequiredFields(Long id, String name, LocalDate date, ReservationTime reservationTime,
+                                        Theme theme) {
+        if (id == null) {
+            throw new IllegalArgumentException("id 값은 null 일 수 없습니다.");
         }
-        return name;
+
+        validateRequiredFields(name, date, reservationTime, theme);
     }
+
+    private void validateRequiredFields(String name, LocalDate date, ReservationTime reservationTime,
+                                        Theme theme) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("예약자명은 null이거나 공백일 수 없습니다");
+        }
+
+        if (date == null) {
+            throw new IllegalArgumentException("예약 날짜는 null이거나 공백일 수 없습니다");
+        }
+
+        if (reservationTime == null) {
+            throw new IllegalArgumentException("예약 시각은 null 일 수 없습니다.");
+        }
+
+        if (theme == null) {
+            throw new IllegalArgumentException("테마는 null 일 수 없습니다.");
+        }
+    }
+
 
     public Long getId() {
         return id;
