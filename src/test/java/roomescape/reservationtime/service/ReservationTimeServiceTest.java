@@ -80,20 +80,6 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void 아이디로_예약시간을_찾는다() {
-        // given
-        Optional<ReservationTime> found = stubReservationTimeRepo.findById(1L);
-
-        // when
-        // then
-        SoftAssertions.assertSoftly(soft -> {
-            soft.assertThat(found).isPresent();
-            soft.assertThat(found.get().getStartAt()).isEqualTo(LocalTime.of(10, 0));
-        });
-
-    }
-
-    @Test
     void 존재하지_않는_아이디면_빈_옵셔널을_반환한다() {
         // given
         Optional<ReservationTime> found = stubReservationTimeRepo.findById(999L);

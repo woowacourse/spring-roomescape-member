@@ -14,6 +14,7 @@ public class StubReservationRepository implements ReservationRepository {
     private final List<Reservation> data = new ArrayList<>();
     private final AtomicLong atomicLong = new AtomicLong();
     private boolean existsByReservationTimeId = false;
+    private boolean existsByThemeId = false;
 
     public StubReservationRepository(Reservation... inputReservations) {
         data.addAll(List.of(inputReservations));
@@ -68,5 +69,9 @@ public class StubReservationRepository implements ReservationRepository {
 
     public void setExistsByReservationTimeId(final boolean existsByReservationTimeId) {
         this.existsByReservationTimeId = existsByReservationTimeId;
+    }
+
+    public void setExistsByThemeId(final boolean existsByThemeId) {
+        this.existsByThemeId = existsByThemeId;
     }
 }

@@ -25,7 +25,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.template = new JdbcTemplate(dataSource);
         this.inserter = new SimpleJdbcInsert(dataSource).withTableName("reservation")
                 .usingGeneratedKeyColumns("id")
-                .usingColumns("name", "date", "time_id");
+                .usingColumns("name", "date", "time_id", "theme_id");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 inner join reservation_time as t 
                 on r.time_id = t.id
                 inner join theme as th
-                on r.theme_id = th.theme_id
+                on r.theme_id = th.id
                 """;
         return template.query(sql, reservationRowMapper);
     }
@@ -74,11 +74,23 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByThemeId(final Long themeId) {
+        final String sql = """
+                        select count(*) 
+                        from reservation as r
+                        where r.theme_id = ?
+                """;
+        final Integer count = template.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
+    @Override
     public Reservation save(final Reservation reservation) {
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTime().getId());
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
 
         final long newId = inserter.executeAndReturnKey(params).longValue();
         return new Reservation(newId, reservation.getName(),
@@ -101,7 +113,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 inner join reservation_time as t 
                 on r.time_id = t.id
                 inner join theme as th
-                on r.theme_id = th.theme_id
+                on r.theme_id = th.id
                 where r.id = ?
                 """;
         return template.query(sql, reservationRowMapper, id)
