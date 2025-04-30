@@ -1,0 +1,69 @@
+package roomescape.repository;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import roomescape.domain.ReservationTheme;
+
+@Repository
+public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository {
+
+    private final JdbcTemplate template;
+
+    public RoomescapeThemeRepositoryImpl(final JdbcTemplate template) {
+        this.template = template;
+    }
+
+    @Override
+    public ReservationTheme findById(final Long id) {
+        String sql = "select * from reservation_theme where id=?";
+        return template.queryForObject(sql, reservationThemeRowMapper(), id);
+    }
+
+    @Override
+    public List<ReservationTheme> findAll() {
+        String sql = "select * from reservation_theme";
+        return template.query(sql, reservationThemeRowMapper());
+    }
+
+    @Override
+    public ReservationTheme save(final ReservationTheme reservationTheme) {
+        String sql = "insert into reservation_theme (name, description, thumbnail) values (?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, reservationTheme.getName());
+            ps.setString(2, reservationTheme.getDescription());
+            ps.setString(3, reservationTheme.getThumbnail());
+            return ps;
+        }, keyHolder);
+
+        long id = keyHolder.getKey().longValue();
+        return reservationTheme.toEntity(id);
+    }
+
+    @Override
+    public int deleteById(final long id) {
+        try {
+            String sql = "delete from reservation_theme where id = ?";
+            return template.update(sql, id);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("예약 테마를 지울 수 없습니다.");
+        }
+    }
+
+    private RowMapper<ReservationTheme> reservationThemeRowMapper() {
+        return (rs, rowNum) -> {
+            return new ReservationTheme(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            );
+        };
+    }
+}
