@@ -1,8 +1,5 @@
 package roomescape.service;
 
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalTime;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
@@ -12,6 +9,10 @@ import roomescape.exception.impl.HasDuplicatedTimeException;
 import roomescape.exception.impl.ReservationTimeIntervalException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class ReservationTimeService {
@@ -59,16 +60,15 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(reservationTimes);
     }
 
+    public List<ReservationTime> getAvailableReservationTimesOf(LocalDate date, Long themeId) {
+        return reservationTimeRepository.getAvailableReservationTimeOf(date, themeId);
+    }
+
     public boolean delete(Long id) {
         boolean isReservationExistInTime = reservationRepository.existByTimeId(id);
         if (isReservationExistInTime) {
             throw new ConnectedReservationExistException();
         }
         return reservationTimeRepository.deleteById(id);
-    }
-
-    public ReservationTimeResponse getReservationTime(@NotNull Long timeId) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
-        return ReservationTimeResponse.from(reservationTime);
     }
 }

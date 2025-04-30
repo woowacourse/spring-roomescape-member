@@ -1,19 +1,27 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Time;
-import java.time.LocalTime;
-import java.util.List;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.ReservationTime;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+
+    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.afterSave(
+            resultSet.getLong("id"),
+            resultSet.getTime("start_at").toLocalTime()
+    );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -25,12 +33,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime findById(Long timeId) {
         try {
             final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-            return jdbcTemplate.queryForObject(
-                    sql,
-                    (resultSet, rowNum) -> ReservationTime.afterSave(
-                            timeId,
-                            resultSet.getTime("start_at").toLocalTime()
-                    ), timeId);
+            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -41,6 +44,29 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ? ";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, createTime);
         return count != null && count > 0;
+    }
+
+    /*
+    1 2 3 4 5 6
+
+    1 2 3
+     */
+
+    @Override
+    public List<ReservationTime> getAvailableReservationTimeOf(LocalDate date, Long themeId) {
+        final String sql = """
+                SELECT *
+                FROM reservation_time
+                WHERE id NOT IN (
+                    SELECT rt.id
+                    FROM reservation_time AS rt
+                    INNER JOIN reservation AS r
+                    ON r.time_id = rt.id
+                    WHERE r.date = ?
+                    AND r.theme_id = ?
+                )
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -66,13 +92,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         final String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = ReservationTime.afterSave(
-                            resultSet.getLong("id"),
-                            resultSet.getTime("start_at").toLocalTime()
-                    );
-                    return reservationTime;
-                });
+                (resultSet, rowNum) -> ReservationTime.afterSave(
+                        resultSet.getLong("id"),
+                        resultSet.getTime("start_at").toLocalTime()
+                ));
     }
 
     @Override

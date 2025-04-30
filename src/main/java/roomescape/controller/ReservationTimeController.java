@@ -1,18 +1,15 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
-import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.entity.ReservationTime;
 import roomescape.service.ReservationTimeService;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
 public class ReservationTimeController {
@@ -42,5 +39,24 @@ public class ReservationTimeController {
     public ResponseEntity<Void> deleteReservationTime(@PathVariable Long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /*
+    GetMapping : uri ->  /times/possible
+    request : date, themeId
+    예약 가능한 시간을 가져와야 한다.
+    response : List<ReservationTimeResponse>
+     */
+
+    @GetMapping("/times/possible")
+    public ResponseEntity<List<ReservationTimeResponse>> getAvailableReservationTimes(
+            @RequestBody AvailableReservationTimeSearchRequest request
+    ) {
+        List<ReservationTime> reservationTimes = reservationTimeService.getAvailableReservationTimesOf(request.date(), request.themeId());
+        List<ReservationTimeResponse> responses = reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(responses);
     }
 }
