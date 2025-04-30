@@ -5,17 +5,14 @@ import java.time.LocalTime;
 
 public class Reservation {
 
-    private Long id;
+    private final Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    //TODO: 정적 팩토리 메서드로 변경
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
-                       final Theme theme) {
-        validateNameLength(name);
-        validateDateTime(date, time);
+    private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
+                        final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -23,22 +20,25 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        validateNameLength(name);
-        validateDateTime(date, time);
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+    public static Reservation load(final Long id, final String name, final LocalDate date, final ReservationTime time,
+                                   final Theme theme) {
+        return new Reservation(id, name, date, time, theme);
     }
 
-    private void validateNameLength(final String name) {
+    public static Reservation create(final String name, final LocalDate date, final ReservationTime time,
+                                     final Theme theme) {
+        validateNameLength(name);
+        validateDateTime(date, time);
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    private static void validateNameLength(final String name) {
         if (name.length() > 10) {
             throw new IllegalArgumentException("예약자명은 10자 이하여야합니다.");
         }
     }
 
-    private void validateDateTime(final LocalDate localDate, final ReservationTime reservationTime) {
+    private static void validateDateTime(final LocalDate localDate, final ReservationTime reservationTime) {
         if (localDate.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("예약은 미래만 가능합니다.");
         }

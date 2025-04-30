@@ -31,7 +31,7 @@ public class JdbcReservationDao implements ReservationDao {
                 resultSet.getString("theme_thumbnail")
         );
 
-        return new Reservation(
+        return Reservation.load(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
                 resultSet.getObject("date", LocalDate.class),
@@ -79,7 +79,7 @@ public class JdbcReservationDao implements ReservationDao {
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()));
         Number key = jdbcInsert.executeAndReturnKey(parameters);
-        return new Reservation(key.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
+        return Reservation.load(key.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
 

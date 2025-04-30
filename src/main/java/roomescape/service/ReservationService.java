@@ -30,7 +30,7 @@ public class ReservationService {
     public ReservationCreateResponse create(ReservationCreateRequest reservationCreateRequest) {
         ReservationTime time = reservationTimeService.findById(reservationCreateRequest.timeId());
         Theme theme = themeService.findById(reservationCreateRequest.themeId());
-        Reservation reservation = new Reservation(
+        Reservation reservation = Reservation.create(
                 reservationCreateRequest.name(),
                 reservationCreateRequest.getLocalDate(),
                 time,
