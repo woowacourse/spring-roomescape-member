@@ -95,4 +95,30 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
                 limit
         );
     }
+
+    @Override
+    public void deleteById(Long id) {
+        String query = """
+                DELETE FROM thema
+                WHERE id = ?
+                """;
+        jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public ReservationTheme findById(Long id) {
+        String query = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                WHERE id = ?
+                """;
+        return jdbcTemplate.queryForObject(query, (rs, rowNum) -> new ReservationTheme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                ),
+                id
+        );
+    }
 }
