@@ -1,6 +1,8 @@
 package roomescape.reservation.infrastructure.dao;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -55,8 +57,29 @@ public class ThemeDao implements ThemeRepository {
                 DELETE FROM theme WHERE id = ?
                 """;
         int result = jdbcTemplate.update(sql, id);
-        if(result != 1){
+        if (result != 1) {
             throw new DeleteThemeException("[ERROR] 삭제하지 못했습니다.");
+        }
+    }
+
+    @Override
+    public Optional<Theme> findById(Long themeId) {
+        String sql = """
+                SELECT id, name, description, thumbnail
+                FROM theme
+                WHERE id = ?
+                """;
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
+                    (resultSet, rowNum) -> new Theme(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail")
+                    )
+                    , themeId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 }

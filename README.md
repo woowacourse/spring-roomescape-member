@@ -29,7 +29,7 @@
 - [x] `/admin/time` 요청 시 예약 시간 관리 페이지 응답
 
 ### 4. 테마 화면
-- [ ] `/admin/theme` 요청 시 테마 관리 페이지 응답
+- [x] `/admin/theme` 요청 시 테마 관리 페이지 응답
 
 ## API 명세서
 ## 예약 API
@@ -46,6 +46,12 @@ GET /reservations HTTP/1.1
     {
         "id": 1,
         "name": "브라운",
+        "theme": {
+            "id": 1,
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
         "date": "2023-08-05",
         "time": {
             "id": 1,
@@ -66,6 +72,7 @@ content-type: application/json
 {
     "date": "2023-08-05",
     "name": "브라운",
+    "themeId": 1
     "timeId": 1
 }
 ```
@@ -78,6 +85,12 @@ Content-Type: application/json
 {
     "id": 1,
     "name": "브라운",
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
     "date": "2023-08-05",
     "time" : {
         "id": 1,

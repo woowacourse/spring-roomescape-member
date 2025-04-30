@@ -13,11 +13,13 @@ public class ReservationRequest {
     @Size(max = 10)
     private final String name;
 
+    private final Long themeId;
     private final Long timeId;
 
-    public ReservationRequest(final LocalDate date, final String name, final Long timeId) {
+    public ReservationRequest(final LocalDate date, final String name, final Long themeId, final Long timeId) {
         this.date = date;
         this.name = name;
+        this.themeId = themeId;
         this.timeId = timeId;
     }
 
@@ -31,5 +33,9 @@ public class ReservationRequest {
 
     public Long getTimeId() {
         return timeId;
+    }
+
+    public Long getThemeId() {
+        return themeId;
     }
 }

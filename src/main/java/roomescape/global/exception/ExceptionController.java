@@ -21,8 +21,8 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(GetTimeException.class)
-    public ResponseEntity<String> handleGetTimeException(GetTimeException e) {
+    @ExceptionHandler({GetTimeException.class, GetThemeException.class})
+    public ResponseEntity<String> handleGetTimeException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
