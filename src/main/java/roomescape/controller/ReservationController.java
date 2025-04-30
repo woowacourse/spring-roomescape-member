@@ -26,12 +26,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> postReservation(@RequestBody final ReservationCreateRequestDto requestDto) {
-        try {
-            ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
-            return ResponseEntity.ok(responseDto);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")

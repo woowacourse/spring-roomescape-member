@@ -27,12 +27,8 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponseDto> postReservationTime(@RequestBody final ReservationTimeCreateRequestDto requestDto) {
-        try {
-            ReservationTimeResponseDto responseDto = reservationTimeService.createReservationTime(requestDto);
-            return ResponseEntity.ok(responseDto);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        ReservationTimeResponseDto responseDto = reservationTimeService.createReservationTime(requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")

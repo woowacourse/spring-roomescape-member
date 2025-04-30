@@ -13,6 +13,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
 import roomescape.repository.ReservationRepository;
@@ -176,7 +177,7 @@ class ReservationServiceTest {
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(reservationTime));
             ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
 
-            assertThatThrownBy(() -> reservationService.deleteReservation(2L)).isInstanceOf(IllegalStateException.class);
+            assertThatThrownBy(() -> reservationService.deleteReservation(2L)).isInstanceOf(NotFoundException.class);
         }
     }
 }

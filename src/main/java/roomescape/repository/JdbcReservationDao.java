@@ -67,7 +67,7 @@ public class JdbcReservationDao implements ReservationRepository {
             long id = jdbcInsert.executeAndReturnKey(parms).longValue();
             return findById(id);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 이미 등록된 예약 입니다.");
+            throw new IllegalStateException("[ERROR] 이미 등록된 예약 입니다.");
         }
     }
 

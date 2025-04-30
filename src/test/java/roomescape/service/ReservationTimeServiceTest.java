@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationTimeCreateRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeReservationTimeRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -65,7 +66,7 @@ class ReservationTimeServiceTest {
             Long nonExistentId = 2L;
 
             assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(nonExistentId))
-                    .isInstanceOf(IllegalStateException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

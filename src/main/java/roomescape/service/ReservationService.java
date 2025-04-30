@@ -9,6 +9,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.DuplicateContentException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -52,7 +53,7 @@ public class ReservationService {
         LocalDateTime dateTime = LocalDateTime.of(date, time);
         LocalDateTime currentTime = LocalDateTime.now();
         if (dateTime.isBefore(currentTime) || dateTime.equals(currentTime)) {
-            throw new IllegalArgumentException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
+            throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
         }
     }
 
