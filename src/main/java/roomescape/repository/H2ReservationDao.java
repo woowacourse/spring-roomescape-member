@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ReservationDaoImpl implements ReservationDao {
+public class H2ReservationDao implements ReservationDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ReservationDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public H2ReservationDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -1,7 +1,6 @@
 package roomescape.entity;
 
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class ReservationTime {
 
@@ -35,15 +34,5 @@ public class ReservationTime {
         return startAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, startAt);
-    }
 }
