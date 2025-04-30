@@ -10,6 +10,8 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.infrastructure.ThemeRepository;
 
 @Service
 public class ReservationService {
@@ -17,19 +19,23 @@ public class ReservationService {
     private final DateTime dateTime;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(
             DateTime dateTime,
             ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository
     ) {
         this.dateTime = dateTime;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse createReservation(final ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
+        Theme theme = themeRepository.findById(request.themeId());
 
         LocalDateTime now = dateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), time.getStartAt());
@@ -42,7 +48,7 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약이 존재합니다.");
         }
 
-        Long id = reservationRepository.save(new Reservation(null, request.name(), request.date(), time));
+        Long id = reservationRepository.save(new Reservation(null, request.name(), request.date(), time, theme));
         Reservation findReservation = reservationRepository.findById(id);
 
         return ReservationResponse.from(findReservation);
@@ -55,6 +61,7 @@ public class ReservationService {
     }
 
     public void deleteReservationById(final Long id) {
+        // TODO: 메서드명 변경 (why? count 인것을 특정할 수 없다.)
         int count = reservationRepository.deleteById(id);
         validateExistIdToDelete(count);
     }
