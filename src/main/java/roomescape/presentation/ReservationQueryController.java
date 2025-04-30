@@ -21,26 +21,6 @@ public class ReservationQueryController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("")
-    public String home() {
-        return "home/index";
-    }
-
-    @GetMapping("admin")
-    public String admin() {
-        return "admin/index";
-    }
-
-    @GetMapping("admin/reservation")
-    public String reservation() {
-        return "admin/reservation";
-    }
-
-    @GetMapping("admin/time")
-    public String time() {
-        return "admin/time";
-    }
-
     @GetMapping("reservations")
     @ResponseBody
     public ResponseEntity<List<ReservationResponseDto>> readReservations() {
