@@ -7,22 +7,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ViewController {
 
     @GetMapping("/admin")
-    public String getHomePage() {
+    public String getAdminHomePage() {
         return "admin/index";
     }
 
     @GetMapping("/admin/reservation")
-    public String getReservationPage() {
+    public String getAdminReservationPage() {
         return "admin/reservation-new";
     }
 
     @GetMapping("/admin/time")
-    public String getTimePage() {
+    public String getAdminTimePage() {
         return "admin/time";
     }
 
     @GetMapping("/admin/theme")
-    public String getThemePage() {
+    public String getAdminThemePage() {
         return "admin/theme";
+    }
+
+    @GetMapping("/reservation")
+    public String getReservationPage() {
+        return "reservation";
+    }
+
+    @GetMapping()
+    public String getHomePage() {
+        return "index";
     }
 }
