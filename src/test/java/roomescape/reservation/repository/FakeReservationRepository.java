@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 
-@Repository
 public class FakeReservationRepository implements ReservationRepository {
     private final Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1);
@@ -17,8 +15,11 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> getAll() {
         return reservations.entrySet().stream()
-                .map(entry -> Reservation.of(entry.getKey(), entry.getValue().getName(),
-                        entry.getValue().getDate(), entry.getValue().getTime()))
+                .map(entry -> {
+                    Reservation value = entry.getValue();
+                    return Reservation.of(entry.getKey(), value.getName(),
+                            value.getDate(), value.getTime(), value.getTheme());
+                })
                 .toList();
     }
 
@@ -26,7 +27,8 @@ public class FakeReservationRepository implements ReservationRepository {
     public Reservation put(final Reservation reservation) {
         Long id = index.getAndIncrement();
         reservations.put(id, reservation);
-        return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime());
+        return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     @Override
@@ -38,6 +40,12 @@ public class FakeReservationRepository implements ReservationRepository {
     public boolean existsByTimeId(final Long id) {
         return reservations.values().stream()
                 .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), id));
+    }
+
+    @Override
+    public boolean existsByThemeId(final Long id) {
+        return reservations.values().stream()
+                .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), id));
     }
 
     @Override

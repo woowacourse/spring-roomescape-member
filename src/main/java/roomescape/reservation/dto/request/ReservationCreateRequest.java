@@ -7,7 +7,8 @@ public record ReservationCreateRequest(
         String name,
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
-        long timeId
+        long timeId,
+        long themeId
 ) {
     public ReservationCreateRequest {
         if (name == null) {

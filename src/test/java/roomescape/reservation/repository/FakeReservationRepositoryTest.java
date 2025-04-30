@@ -8,44 +8,53 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.FakeThemeRepository;
+import roomescape.theme.repository.ThemeRepository;
 
 class FakeReservationRepositoryTest {
 
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
-    private FakeReservationRepository repository;
+    private ReservationRepository reservationRepository;
+    private ThemeRepository themeRepository;
+    private Reservation reservation;
+    private Theme theme;
 
     @BeforeEach
     void setUp() {
-        repository = new FakeReservationRepository();
+        reservationRepository = new FakeReservationRepository();
+        themeRepository = new FakeThemeRepository();
+
+        theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
+        reservation = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"),
+                theme);
+
+        themeRepository.put(theme);
     }
 
     @Test
     void put_shouldStoreReservation() {
-        Reservation reservation = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"));
+        reservationRepository.put(reservation);
 
-        repository.put(reservation);
-
-        assertThat(repository.getAll()).hasSize(1);
+        assertThat(reservationRepository.getAll()).hasSize(1);
     }
 
     @Test
     void getAll_shouldReturnAllSavedReservations() {
-        Reservation r1 = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"));
-        Reservation r2 = Reservation.of(1L, "존", futureDate, ReservationTime.of(1L, "16:00"));
+        Reservation reservation2 = Reservation.of(1L, "대니", futureDate, ReservationTime.of(1L, "16:00"),
+                theme);
 
-        repository.put(r1);
-        repository.put(r2);
+        reservationRepository.put(reservation);
+        reservationRepository.put(reservation2);
 
-        List<Reservation> all = repository.getAll();
+        List<Reservation> all = reservationRepository.getAll();
         assertThat(all).hasSize(2);
     }
 
     @Test
     void deleteById_shouldRemoveReservation() {
-        repository.put(Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40")));
+        reservationRepository.deleteById(1L);
 
-        repository.deleteById(1L);
-
-        assertThat(repository.getAll()).isEmpty();
+        assertThat(reservationRepository.getAll()).isEmpty();
     }
 }

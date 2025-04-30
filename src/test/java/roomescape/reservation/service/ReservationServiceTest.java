@@ -16,6 +16,9 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.FakeThemeRepository;
+import roomescape.theme.repository.ThemeRepository;
 
 class ReservationServiceTest {
 
@@ -24,20 +27,24 @@ class ReservationServiceTest {
     private ReservationService reservationService;
     private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository);
+        themeRepository = new FakeThemeRepository();
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+
+        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
+        reservationTimeRepository.put(time);
+        Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
+        themeRepository.put(theme);
     }
 
     @Test
     void createReservation_shouldReturnResponseWhenSuccessful() {
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.put(time);
-
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", LocalDate.of(2025, 5, 1), 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", LocalDate.of(2025, 5, 1), 1L, 1L);
         ReservationResponse response = reservationService.create(request);
 
         assertThat(response.name()).isEqualTo("홍길동");
@@ -47,10 +54,9 @@ class ReservationServiceTest {
 
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
-        reservationTimeRepository.put(ReservationTime.of(1L, LocalTime.of(10, 0)));
         reservationTimeRepository.put(ReservationTime.of(2L, LocalTime.of(10, 0)));
-        reservationService.create(new ReservationCreateRequest("A", futureDate, 1L));
-        reservationService.create(new ReservationCreateRequest("B", futureDate, 2L));
+        reservationService.create(new ReservationCreateRequest("A", futureDate, 1L, 1L));
+        reservationService.create(new ReservationCreateRequest("B", futureDate, 2L, 1L));
 
         List<ReservationResponse> result = reservationService.getReservations();
         assertThat(result).hasSize(2);
@@ -65,9 +71,8 @@ class ReservationServiceTest {
 
     @Test
     void deleteReservation_shouldRemoveSuccessfully() {
-        reservationTimeRepository.put(ReservationTime.of(1L, LocalTime.of(9, 0)));
         ReservationResponse response = reservationService.create(
-                new ReservationCreateRequest("Test", futureDate, 1L)
+                new ReservationCreateRequest("Test", futureDate, 1L, 1L)
         );
 
         reservationService.delete(response.id());
@@ -78,7 +83,7 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
-        ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L);
+        ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(ReservationNotFoundException.class);
@@ -86,8 +91,7 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldThrowException_WhenDuplicated() {
-        reservationTimeRepository.put(ReservationTime.of(1L, LocalTime.of(9, 0)));
-        ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L, 1L);
         reservationService.create(request);
         assertThatThrownBy(() -> reservationService.create(request));
     }

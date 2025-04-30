@@ -4,7 +4,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -12,7 +11,6 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.entity.ReservationTimeEntity;
 
 @Repository
-@Primary
 public class JDBCReservationTimeRepository implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
 

@@ -13,6 +13,7 @@ class ReservationCreateRequestTest {
                 () -> new ReservationCreateRequest(
                         "Danny",
                         LocalDate.parse("2025-12"),
+                        1L,
                         1L
                 )
         );
@@ -24,6 +25,7 @@ class ReservationCreateRequestTest {
                 () -> new ReservationCreateRequest(
                         null,
                         LocalDate.parse("2025-12-25"),
+                        1L,
                         1L
                 )
         ).hasMessage("이름은 반드시 입력해야합니다.");

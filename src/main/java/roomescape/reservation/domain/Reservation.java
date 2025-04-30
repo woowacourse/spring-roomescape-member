@@ -6,28 +6,34 @@ import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.common.domain.Id;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 public class Reservation {
     private final Id id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
+    private final Theme theme;
 
-    private Reservation(final Id id, final String name, final LocalDate date, final ReservationTime time) {
+    private Reservation(final Id id, final String name, final LocalDate date, final ReservationTime time,
+                        final Theme theme) {
         validateNameLength(name);
         validateDateTime(date, time.getStartAt());
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
+        this.theme = theme;
     }
 
-    public static Reservation of(final Long id, final String name, final LocalDate date, final ReservationTime time) {
-        return new Reservation(Id.from(id), name, date, time);
+    public static Reservation of(final Long id, final String name, final LocalDate date, final ReservationTime time,
+                                 final Theme theme) {
+        return new Reservation(Id.from(id), name, date, time, theme);
     }
 
-    public static Reservation withUnassignedId(final String name, final LocalDate date, final ReservationTime time) {
-        return new Reservation(Id.unassigned(), name, date, time);
+    public static Reservation withUnassignedId(final String name, final LocalDate date, final ReservationTime time,
+                                               final Theme theme) {
+        return new Reservation(Id.unassigned(), name, date, time, theme);
     }
 
     private void validateNameLength(final String value) {
@@ -42,6 +48,14 @@ public class Reservation {
         }
     }
 
+    public Long getId() {
+        return id.getValue();
+    }
+
+    public void setId(Long value) {
+        id.setValue(value);
+    }
+
     public String getName() {
         return name;
     }
@@ -54,12 +68,8 @@ public class Reservation {
         return time;
     }
 
-    public Long getId() {
-        return id.getValue();
-    }
-
-    public void setId(Long value) {
-        id.setValue(value);
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

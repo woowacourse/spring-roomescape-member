@@ -46,11 +46,6 @@ public class MissionStepTest {
 
     @Test
     void step3_createAndDeleteReservation() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", futureDate);
-        params.put("timeId", 1);
-
         Map<String, String> reservationTime = new HashMap<>();
         reservationTime.put("startAt", "10:00");
 
@@ -60,6 +55,24 @@ public class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
+
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "추리");
+        theme.put("description", "셜록 with Danny");
+        theme.put("thumbnail", "image.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", futureDate);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -124,11 +137,6 @@ public class MissionStepTest {
 
     @Test
     void step6_addReservationWithDatabase() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", futureDate);
-        params.put("timeId", 1);
-
         Map<String, String> reservationTime = new HashMap<>();
         reservationTime.put("startAt", "10:00");
 
@@ -138,6 +146,24 @@ public class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
+
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "추리");
+        theme.put("description", "셜록 with Danny");
+        theme.put("thumbnail", "image.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", futureDate);
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -185,10 +211,6 @@ public class MissionStepTest {
 
     @Test
     void step8_schemaModification() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", futureDate);
-        reservation.put("timeId", 1);
 
         Map<String, String> reservationTime = new HashMap<>();
         reservationTime.put("startAt", "10:00");
@@ -199,6 +221,24 @@ public class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
+
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", "추리");
+        theme.put("description", "셜록 with Danny");
+        theme.put("thumbnail", "image.png");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", futureDate);
+        reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -224,7 +264,6 @@ public class MissionStepTest {
                 break;
             }
         }
-
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 

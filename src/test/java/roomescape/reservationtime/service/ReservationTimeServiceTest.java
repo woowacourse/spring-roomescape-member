@@ -18,9 +18,11 @@ import roomescape.reservationtime.exception.ReservationTimeAlreadyExistsExceptio
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
 
 class ReservationTimeServiceTest {
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
+    private final Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
 
     private ReservationTimeService reservationTimeService;
     private ReservationRepository reservationRepository;
@@ -86,7 +88,7 @@ class ReservationTimeServiceTest {
     void deleteReservationTime_shouldThrowException_WhenReservationExists() {
         ReservationTime reservationTime = reservationTimeRepository.put(
                 ReservationTime.withUnassignedId(LocalTime.now()));
-        reservationRepository.put(Reservation.withUnassignedId("danny", futureDate, reservationTime));
+        reservationRepository.put(Reservation.withUnassignedId("danny", futureDate, reservationTime, theme));
 
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
                 .hasMessage("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");

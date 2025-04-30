@@ -8,7 +8,7 @@
 - 요청 URL : /admin
 - 설명 : 어드민 페이지를 응답한다.
 
-`GET /reservations HTTP/1.1`
+`GET /admin HTTP/1.1`
 
 ## 예약 목록 조회
 
