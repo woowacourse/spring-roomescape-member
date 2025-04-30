@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,29 @@ public class ThemeRepositoryImpl implements ThemeRepository {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public List<Theme> findAllOrderByRank(LocalDate from, LocalDate to, int size) {
+        String sql = "SELECT t.id AS id," +
+            "       t.name AS name," +
+            "       t.description AS description," +
+            "       t.thumbnail AS thumbnail " +
+            "FROM theme AS t INNER JOIN reservation AS r " +
+            "ON r.theme_id = t.id " +
+            "WHERE r.date BETWEEN ? AND ? " +
+            "GROUP BY t.id " +
+            "ORDER BY count(*) DESC " +
+            "LIMIT ? ";
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")),
+            from, to, size
+        );
     }
 
     public List<Theme> findAll() {

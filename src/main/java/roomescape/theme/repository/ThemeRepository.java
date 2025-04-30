@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.theme.domain.Theme;
 
@@ -12,4 +13,6 @@ public interface ThemeRepository {
     void delete(Long id);
 
     List<Theme> findAll();
+
+    List<Theme> findAllOrderByRank(LocalDate from, LocalDate to, int size);
 }

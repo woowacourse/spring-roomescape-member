@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.domain.dto.ThemeReqDto;
 import roomescape.theme.domain.dto.ThemeResDto;
@@ -46,5 +47,12 @@ public class ThemeController {
     ) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/ranking")
+    public ResponseEntity<List<ThemeResDto>> findTopRankThemes(
+        @RequestParam(value = "size", defaultValue = "10") int size) {
+        List<ThemeResDto> topRankThemes = themeService.findTopRankThemes(size);
+        return ResponseEntity.ok(topRankThemes);
     }
 }
