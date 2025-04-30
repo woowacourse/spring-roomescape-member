@@ -41,7 +41,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return template.query(sql, actorRowMapper);
     }
 
-    // and rt.start_at >= current_time
     @Override
     public List<AvailableReservationTimeResponse> findAllAvailable(LocalDate date, Long themeId) {
         String sql = """
