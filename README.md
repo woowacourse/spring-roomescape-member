@@ -212,3 +212,83 @@
 서비스 정책을 반영합니다.
 - [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능하다.
 - [x] 이미 예약된 날짜와 시간에 대한 예약 생성은 불가능하다.
+
+## 2단계
+
+- [ ] 사용자 예약 시 원하는 테마를 선택할 수 있도록 테마 도메인을 추가합니다.
+  - 테마는 아래의 정보를 가집니다.
+    - name: 테마 이름
+    - description: 테마 설명
+    - thumbnail: 테마 이미지
+- [ ] 모든 테마는 시작 시간과 소요 시간이 동일하다고 가정합니다.
+
+관리자가 테마를 관리할 수 있도록 기능을 추가합니다.
+- [ ] API 명세에 따라 아래 기능 구현
+    - [ ] 테마 조회 API 구현
+      - Request
+        ```
+        GET /themes HTTP/1.1
+        ```
+        
+      - Response
+        ```
+        GET /themes HTTP/1.1HTTP/1.1 200 
+        Content-Type: application/json
+        
+        [
+            {
+                "id": 1,
+                "name": "레벨2 탈출",
+                "description": "우테코 레벨2를 탈출하는 내용입니다.",
+                "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+            }
+        ]
+        ```
+
+    - [ ] 테마 추가 API 구현
+      - Request
+        ```
+        POST /themes HTTP/1.1
+        content-type: application/json
+        
+        {
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
+        ```
+
+      - Response
+        ```
+        HTTP/1.1 201
+        Location: /themes/1
+        Content-Type: application/json
+        
+        {
+            "id": 1,
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
+        ```
+
+    - [ ] 테마 삭제 API 구현
+      - Request
+        ```
+        DELETE /themes/1 HTTP/1.1
+        ```
+        
+      - Response
+        ```
+        HTTP/1.1 204
+        ```
+
+- [ ] 관리자가 방탈출 예약 시, 테마 정보를 포함할 수 있도록 기능을 변경합니다.
+  - [ ] 예약 목록 조회 API 호출 후 렌더링 response 명세에 맞춰 값 설정
+
+관리자 기능 (테마 관리, 예약 관리)
+- [ ] /admin/theme 요청 시 테마 관리 페이지를 응답합니다.
+  - [ ] 페이지는 templates/admin/theme.html 파일을 이용합니다.
+  - [ ] 어드민에서 방탈출 예약 시, 테마 정보를 포함할 수 있도록 신규 페이지 파일을 사용합니다.
+    - AS-IS: templates/admin/reservation.html
+    - TO-BE: templates/admin/reservation-new.html
