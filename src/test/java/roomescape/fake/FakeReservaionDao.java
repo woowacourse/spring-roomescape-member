@@ -43,4 +43,9 @@ public class FakeReservaionDao implements ReservationDao {
     public boolean isExistByTimeIdAndDate(Long timeId, LocalDate date) {
         return false;
     }
+
+    @Override
+    public boolean isExistByThemeId(Long themeId) {
+        return false;
+    }
 }
