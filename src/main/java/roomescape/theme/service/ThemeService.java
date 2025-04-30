@@ -1,5 +1,7 @@
 package roomescape.theme.service;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,12 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
+    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
+        this.clock = clock;
     }
 
     public void deleteById(Long id) {
@@ -40,5 +44,10 @@ public class ThemeService {
     public Theme getTheme(Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 테마가 존재하지 않습니다."));
+    }
+
+    public List<ThemeResponse> getPopularThemes() {
+        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10, LocalDate.now(clock));
+        return ThemeResponse.from(themes);
     }
 }

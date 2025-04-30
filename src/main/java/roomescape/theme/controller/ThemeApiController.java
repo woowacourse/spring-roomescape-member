@@ -1,7 +1,6 @@
 package roomescape.theme.controller;
 
 import java.util.List;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,9 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.controller.request.ReservationCreateRequest;
-import roomescape.reservation.controller.response.ReservationResponse;
-import roomescape.reservation.service.ReservationService;
 import roomescape.theme.controller.request.ThemeCreateRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -46,5 +42,11 @@ public class ThemeApiController {
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> popularThemes() {
+        List<ThemeResponse> popularThemes = themeService.getPopularThemes();
+        return ResponseEntity.ok(popularThemes);
     }
 }

@@ -32,4 +32,22 @@ public class ThemeDbFixture {
 
         return new Theme(id, name, description, thumbnail);
     }
+
+    public Theme 커스텀_테마(String customName) {
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
+
+        String name = customName;
+        String description = customName + "테마";
+        String thumbnail = customName + ".jpg";
+
+        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("description", description)
+                .addValue("thumbnail", thumbnail)
+        ).longValue();
+
+        return new Theme(id, name, description, thumbnail);
+    }
 }

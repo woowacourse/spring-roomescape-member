@@ -3,10 +3,14 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
 import roomescape.reservation.fixture.ReservationTimeDbFixture;
 import roomescape.reservation.fixture.ThemeDbFixture;
@@ -75,5 +79,31 @@ public class ThemeServiceTest extends BaseTest {
     void 존재하지_않는_테마를_삭제할_수_없다() {
         assertThatThrownBy(() -> themeService.deleteById(3L))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    void 지난_일주일_간_인기_테마_10개를_조회한다() {
+        List<Theme> themes = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            themes.add(themeDbFixture.커스텀_테마("테마" + i));
+        }
+
+        for (int i = 0; i < 20; i++) {
+            addReservation(i, ReservationDateFixture.예약날짜_오늘, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
+            addReservation(19 - i, ReservationDateFixture.예약날짜_7일전, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
+        }
+
+        List<ThemeResponse> popularThemes = themeService.getPopularThemes();
+
+        assertThat(popularThemes)
+                .hasSize(10)
+                .extracting(ThemeResponse::id)
+                .containsExactlyInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+    }
+
+    private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {
+        for (int i = 0; i < count; i++) {
+            reservationDbFixture.예약_생성_한스(date, time, theme);
+        }
     }
 }

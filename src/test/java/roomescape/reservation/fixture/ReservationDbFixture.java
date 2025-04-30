@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -35,4 +36,24 @@ public class ReservationDbFixture {
 
         return new Reservation(id, name, date, reservationTime, theme);
     }
+
+    public Reservation 예약_생성_한스(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
+
+        String name = ReserverNameFixture.한스.getName();
+        LocalDate date = reservationDate.getDate();
+
+        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("date", date)
+                .addValue("time_id", reservationTime.getId())
+                .addValue("theme_id", theme.getId())
+        ).longValue();
+
+        return new Reservation(id, name, date, reservationTime, theme);
+    }
+
+
 }
