@@ -24,7 +24,7 @@ public class H2ThemeDao implements ThemeDao {
     @Override
     public boolean isExists(final ThemeName name) {
         final String sql = "SELECT COUNT(*) FROM theme WHERE name = ?";
-        long count = jdbcTemplate.queryForObject(sql, Long.class, name);
+        long count = jdbcTemplate.queryForObject(sql, Long.class, name.getName());
         return count > 0;
     }
 
