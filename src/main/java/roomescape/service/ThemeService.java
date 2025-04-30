@@ -15,6 +15,8 @@ import roomescape.model.Theme;
 @Service
 public class ThemeService {
 
+    private static final int POPULAR_DAY_RANGE = 7;
+
     private final ThemeDao themeDao;
 
     public ThemeService(ThemeDao themeDao) {
@@ -51,13 +53,13 @@ public class ThemeService {
     public void deleteTheme(Long id) {
         try {
             themeDao.deleteById(id);
-        }catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("삭제하고자 하는 테마에 예약된 정보가 있습니다.");
         }
     }
 
     public List<ThemeResponseDto> findPopularThemes(final LocalDate today) {
-        return themeDao.findPopularThemes(today).stream()
+        return themeDao.findPopularThemes(today, POPULAR_DAY_RANGE).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }

@@ -79,25 +79,9 @@ public class ReservationDao {
     }
 
     public Optional<Reservation> findByDateAndTime(Reservation reservation) {
-        String sql =
-                """
-                        SELECT 
-                            r.id, 
-                            r.name, 
-                            r.date,
-                            rt.id AS time_id, 
-                            rt.start_at AS time_start_at,
-                            t.id AS theme_id, 
-                            t.name AS theme_name, 
-                            t.description AS theme_description, 
-                            t.thumbnail AS theme_thumbnail
-                        FROM reservation AS r
-                        INNER JOIN reservation_time AS rt ON r.time_id = rt.id
-                        INNER JOIN theme AS t ON t.id = r.theme_id
-                        WHERE r.date = ? AND rt.id = ?
-                        """;
-        return jdbcTemplate.query(sql, actorRowMapper, reservation.getDate(), reservation.getTime().getId())
-                .stream()
+        String sql = SELECT_RESERVATION + " WHERE r.date = ? AND rt.id = ?";
+
+        return jdbcTemplate.query(sql, actorRowMapper, reservation.getDate(), reservation.getTime().getId()).stream()
                 .findFirst();
     }
 }

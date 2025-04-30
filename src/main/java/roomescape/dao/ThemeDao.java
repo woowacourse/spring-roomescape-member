@@ -44,6 +44,7 @@ public class ThemeDao {
             ps.setString(3, theme.getThumbnail());
             return ps;
         }, keyHolder);
+
         return keyHolder.getKey().longValue();
     }
 
@@ -62,8 +63,8 @@ public class ThemeDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
-    public List<Theme> findPopularThemes(LocalDate today) {
-        LocalDate sevenDaysAgo = today.minusDays(7);
+    public List<Theme> findPopularThemes(LocalDate today, int dayRange) {
+        LocalDate sevenDaysAgo = today.minusDays(dayRange);
 
         String sql = """
                     SELECT theme.id AS id,

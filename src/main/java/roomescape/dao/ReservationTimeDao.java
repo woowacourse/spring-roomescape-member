@@ -72,8 +72,7 @@ public class ReservationTimeDao {
     }
 
     public List<AvailableReservationTime> findAvailableTimes(String date, Long themeId) {
-        String sql =
-                """
+        String sql = """
                 SELECT rt.id,
                        rt.start_at,
                        EXISTS (
@@ -85,6 +84,7 @@ public class ReservationTimeDao {
                        ) AS already_booked
                 FROM reservation_time rt
                 """;
+
         return jdbcTemplate.query(sql, availableTimeRowMapper, date, themeId);
     }
 }
