@@ -4,6 +4,9 @@ import static org.hamcrest.Matchers.containsString;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +42,51 @@ public class ReservationControllerTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400).body(containsString("[ERROR] "))
+        ;
+    }
+
+    @Test
+    @DisplayName("과거 예약을 생성하면 예외 처리한다.")
+    void test2() {
+        Test_ReservationTime_Post();
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "띠용");
+        params.put("date", String.valueOf(LocalDate.now().minusDays(1)));
+        params.put("timeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400).body(containsString("[ERROR] "))
+        ;
+    }
+
+    @Test
+    @DisplayName("과거 예약을 생성하면 예외 처리한다.")
+    void test3() {
+        Map<String, String> timeParams = new HashMap<>();
+        timeParams.put("startAt", LocalTime.now().minusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(timeParams)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> reservationParams = new HashMap<>();
+        reservationParams.put("name", "띠용");
+        reservationParams.put("date", String.valueOf(LocalDate.now()));
+        reservationParams.put("timeId", 2);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationParams)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400).body(containsString("[ERROR] "))
