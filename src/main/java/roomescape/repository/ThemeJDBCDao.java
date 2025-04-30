@@ -1,7 +1,5 @@
 package roomescape.repository;
 
-import java.util.List;
-import java.util.Objects;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,6 +8,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Theme;
 import roomescape.exceptions.EntityNotFoundException;
+
+import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class ThemeJDBCDao implements ThemeRepository {
@@ -55,7 +56,7 @@ public class ThemeJDBCDao implements ThemeRepository {
         int result = namedJdbcTemplate.update(sql, params);
 
         if (result == 0) {
-            throw new EntityNotFoundException("예약 데이터를 찾을 수 없습니다:" + id);
+            throw new EntityNotFoundException("테마 데이터를 찾을 수 없습니다:" + id);
         }
     }
 

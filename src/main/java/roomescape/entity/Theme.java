@@ -20,13 +20,13 @@ public record Theme(Long id, String name, String description, String thumbnail) 
 
     private void validateDescription(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 설명입니다.");
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 테마 설명입니다.");
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 썸네일 주소입니다.");
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 테마 썸네일 주소입니다.");
         }
     }
 }

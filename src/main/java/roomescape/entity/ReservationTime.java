@@ -20,7 +20,7 @@ public record ReservationTime(Long id, LocalTime startAt) {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("[ERROR] 유효하지 않은 시간입니다.");
+            throw new IllegalArgumentException("[ERROR] 유효하지 않은 예약 시간입니다.");
         }
     }
 }

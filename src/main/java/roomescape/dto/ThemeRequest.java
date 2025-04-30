@@ -11,8 +11,4 @@ public record ThemeRequest(
     public Theme toEntity() {
         return new Theme(null, this.name(), this.description(), this.thumbnail());
     }
-
-    public Theme toEntity(long id) {
-        return new Theme(id, this.name(), this.description(), this.thumbnail());
-    }
 }

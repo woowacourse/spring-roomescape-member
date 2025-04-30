@@ -1,5 +1,10 @@
 package roomescape.fake;
 
+import roomescape.entity.Reservation;
+import roomescape.entity.ReservationTime;
+import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.ReservationRepository;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -7,10 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ReservationRepository;
 
 public class ReservationFakeRepository implements ReservationRepository {
 
@@ -22,12 +23,13 @@ public class ReservationFakeRepository implements ReservationRepository {
         ReservationTime defaultTime = new ReservationTime(1L, LocalTime.MAX);
         reservationTimes.put(1L, defaultTime);
 
+        long reservationId = idGenerator.getAndIncrement();
         Reservation defaultReservation = new Reservation(
-                idGenerator.getAndIncrement(),
+                reservationId,
                 "브라운",
                 LocalDate.MAX,
                 defaultTime);
-        reservations.put(1L, defaultReservation);
+        reservations.put(reservationId, defaultReservation);
     }
 
     @Override
