@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +46,15 @@ public class JdbcThemeDaoTest {
 
         // then
         assertThat(id).isEqualTo(4L);
+    }
+
+    @DisplayName("테마를 조회한다")
+    @Test
+    void find_all_test() {
+        // when
+        List<Theme> themes = jdbcThemeDao.findAll();
+        // then
+        assertThat(themes).hasSize(3);
     }
 
 }

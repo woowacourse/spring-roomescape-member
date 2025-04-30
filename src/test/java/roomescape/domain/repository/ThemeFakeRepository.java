@@ -1,5 +1,6 @@
 package roomescape.domain.repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -18,5 +19,11 @@ public class ThemeFakeRepository implements ThemeRepository {
         themes.put(id, theme);
 
         return id;
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        return themes.values().stream()
+                .toList();
     }
 }

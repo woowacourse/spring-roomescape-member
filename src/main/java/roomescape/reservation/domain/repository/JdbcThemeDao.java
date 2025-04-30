@@ -2,7 +2,9 @@ package roomescape.reservation.domain.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -10,6 +12,14 @@ import roomescape.reservation.domain.Theme;
 
 @Repository
 public class JdbcThemeDao implements ThemeRepository {
+
+    private final RowMapper<Theme> rowMapper = (rs, rowNum) -> {
+        Long id = rs.getLong("id");
+        String name = rs.getString("name");
+        String description = rs.getString("description");
+        String thumbnail = rs.getString("thumbnail");
+        return new Theme(id, name, description, thumbnail);
+    };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,5 +41,11 @@ public class JdbcThemeDao implements ThemeRepository {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        return jdbcTemplate.query(sql, rowMapper);
     }
 }

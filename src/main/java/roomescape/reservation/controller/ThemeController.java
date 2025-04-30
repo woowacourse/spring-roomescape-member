@@ -1,6 +1,8 @@
 package roomescape.reservation.controller;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,5 +26,10 @@ public class ThemeController {
     @PostMapping
     public ThemeResponse addTheme(@RequestBody ThemeRequest request) {
         return themeService.add(request);
+    }
+
+    @GetMapping
+    public List<ThemeResponse> getThemes() {
+        return themeService.getThemes();
     }
 }
