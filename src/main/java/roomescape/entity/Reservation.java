@@ -13,6 +13,18 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         return new Reservation(null, name, date, time);
     }
 
+    public boolean equalDateTime(Reservation reservation) {
+        return equalsDate(reservation) && equalsTime(reservation);
+    }
+
+    private boolean equalsDate(Reservation reservation) {
+        return this.date == reservation.date;
+    }
+
+    private boolean equalsTime(Reservation reservation) {
+        return this.time.equalsTime(reservation.time);
+    }
+
     private static void validateDateTime(LocalDate date, ReservationTime time) {
         if (date.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("[ERROR] 예약이 불가능한 날짜입니다: " + date);
