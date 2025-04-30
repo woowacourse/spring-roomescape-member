@@ -18,6 +18,16 @@
     - [x] 중복된 일시의 예약은 불가능하다. 
     - [x] 존재하지 않는 예약 시간 ID를 이용하여 예약할 수 없다.
 
+- [ ] 테마 검증
+    - [ ] 예약이 이미 존재하는 테마는 삭제할 수 없다.
+
+- [x] NotNull
+  - [x] Reservation: date, themeId, timeId
+  - [x] ReservationTime: startAt
+- [x] NotBlank
+  - [x] Reservation: name
+  - [x] Theme: name
+
 ##  화면 명세서
 ###  1. 홈 화면
 - [x] `localhost:8080/admin` 요청 시 어드민 메인 페이지 응답

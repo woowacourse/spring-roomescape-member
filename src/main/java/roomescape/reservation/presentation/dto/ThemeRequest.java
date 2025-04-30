@@ -1,6 +1,10 @@
 package roomescape.reservation.presentation.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class ThemeRequest {
+
+    @NotBlank
     private final String name;
     private final String description;
     private final String thumbnail;
