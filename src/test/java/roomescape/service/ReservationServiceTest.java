@@ -79,7 +79,7 @@ class ReservationServiceTest {
                 .hasMessage("[ERROR] 이미 과거의 날짜와 시간입니다.");
     }
 
-    @DisplayName("이미 예약한 날짜와 시간으로는 예약이 불가능하다")
+    @DisplayName("예약 중복을 허용하지 않는다.")
     @Test
     void canNotCreateReservationWithSameDateTime() {
         LocalDate sameDate = NEXT_DATE;
@@ -93,7 +93,7 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("[ERROR] 이미 예약이 완료된 날짜와 시간입니다.");
+                .hasMessage("[ERROR] 이미 존재하는 예약입니다.");
     }
 
     @DisplayName("특정 ID의 예약을 삭제할 수 있다.")

@@ -32,11 +32,13 @@ public class FakeReservationRepository extends ReservationRepository {
     }
 
     @Override
-    public boolean checkAlreadyReserved(LocalDate date, long timeId) {
+    public boolean checkAlreadyReserved(LocalDate date, long timeId, long themeId) {
         return reservations.values()
                 .stream()
                 .anyMatch(reservation ->
-                        reservation.getDate().equals(date) && reservation.getTime().getId().equals(timeId));
+                        reservation.getDate().equals(date)
+                                && reservation.getTime().getId().equals(timeId)
+                                && reservation.getTheme().getId().equals(themeId));
     }
 
     @Override
