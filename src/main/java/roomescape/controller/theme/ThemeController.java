@@ -62,9 +62,4 @@ public class ThemeController {
         var response = ThemeResponse.from(themes);
         return ResponseEntity.ok(response);
     }
-
-    @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
 }

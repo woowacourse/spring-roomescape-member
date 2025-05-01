@@ -31,7 +31,6 @@ public class TimeSlotController {
 
     @PostMapping("/times")
     public ResponseEntity<TimeSlotResponse> add(@RequestBody CreateTimeSlotRequest request) {
-        // TODO : 시간 바인딩 예외 응답 처리하기
         var timeSlot = service.add(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);
@@ -60,10 +59,5 @@ public class TimeSlotController {
     ) {
         var availableTimeSlots = service.findAvailableTimeSlots(date, themeId);
         return ResponseEntity.ok(availableTimeSlots);
-    }
-
-    @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
