@@ -1,0 +1,44 @@
+package roomescape.domain;
+
+import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
+import static roomescape.testFixture.Fixture.THEME_1;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+class ReservationRegistrationPolicyTest {
+
+    @DisplayName("과거 시간으로의 예약은 등록이 불가하여 예외를 발생시킨다.")
+    @Test
+    void error_when_register_isPast() {
+        // given
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+        Reservation candidate = Reservation.withoutId("멍구", THEME_1, pastDate, RESERVATION_TIME_1);
+        ReservationRegistrationPolicy reservationRegistrationPolicy = new ReservationRegistrationPolicy();
+
+        // when & then
+        Assertions.assertThatThrownBy(() ->
+                reservationRegistrationPolicy.validate(candidate, Collections.emptyList())
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("날짜, 테마, 시간이 중복된다면 등록이 불가하여 예외를 발생시킨다.")
+    @Test
+    void error_when_register_duplicated() {
+        // given
+        LocalDate reservationDate = LocalDate.now().plusDays(1);
+        Reservation candidate = Reservation.withoutId("멍구", THEME_1, reservationDate, RESERVATION_TIME_1);
+        Reservation alreadyExistReservation = Reservation.of(1L, "아이나", THEME_1, reservationDate, RESERVATION_TIME_1);
+        ReservationRegistrationPolicy reservationRegistrationPolicy = new ReservationRegistrationPolicy();
+
+        // when & then
+        Assertions.assertThatThrownBy(() ->
+                reservationRegistrationPolicy.validate(candidate, List.of(alreadyExistReservation))
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+}

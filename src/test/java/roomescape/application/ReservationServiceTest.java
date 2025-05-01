@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.application.dto.ReservationDto;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRegistrationPolicy;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ReservationRequest;
@@ -35,7 +36,9 @@ class ReservationServiceTest {
         themeRepository = new FakeThemeRepository();
         TimeService timeService = new TimeService(timeRepository);
         ThemeService themeService = new ThemeService(themeRepository);
-        reservationService = new ReservationService(reservationRepository, timeService, themeService);
+        ReservationRegistrationPolicy reservationRegistrationPolicy = new ReservationRegistrationPolicy();
+        reservationService = new ReservationService(reservationRepository, timeService, themeService,
+                reservationRegistrationPolicy);
     }
 
     @DisplayName("예약을 정상적으로 등록한다.")
