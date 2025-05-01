@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.error.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
@@ -27,6 +28,10 @@ public class ThemeService {
         return themes.stream()
                 .map(ThemeResponse::new)
                 .toList();
+    }
+
+    public List<PopularThemeResponse> findAllPopular() {
+        return themeRepository.findAllPopular();
     }
 
     public void delete(final Long id) {

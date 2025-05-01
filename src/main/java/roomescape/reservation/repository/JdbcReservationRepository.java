@@ -54,7 +54,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = """
                 select count(*) 
                 from reservation as r                
-                inner join reservation_time as rt 
+                inner join reservation_time as rt
+                on r.time_id = rt.id
                 where r.date = ? 
                   and rt.start_at = ?
                 """;

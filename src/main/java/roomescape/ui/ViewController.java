@@ -30,4 +30,9 @@ public class ViewController {
     public String getUserReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/")
+    public String getHomePage() {
+        return "index";
+    }
 }
