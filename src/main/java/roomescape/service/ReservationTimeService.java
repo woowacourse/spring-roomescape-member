@@ -17,8 +17,8 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeServiceResponse create(CreateReservationTimeServiceRequest command) {
-        ReservationTime reservationTime = reservationTimeRepository.save(command.toReservationTime());
+    public ReservationTimeServiceResponse create(CreateReservationTimeServiceRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.save(request.toReservationTime());
         return ReservationTimeServiceResponse.withoutBook(reservationTime);
     }
 

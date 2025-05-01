@@ -31,9 +31,9 @@ class ReservationTimeServiceTest {
     void create() {
         // given
         LocalTime startAt = LocalTime.now().plusHours(1);
-        CreateReservationTimeServiceRequest command = new CreateReservationTimeServiceRequest(startAt);
+        CreateReservationTimeServiceRequest request = new CreateReservationTimeServiceRequest(startAt);
         // when
-        ReservationTimeServiceResponse reservationTimeServiceResponse = service.create(command);
+        ReservationTimeServiceResponse reservationTimeServiceResponse = service.create(request);
 
         // then
         assertSoftly(softly -> {
@@ -64,7 +64,7 @@ class ReservationTimeServiceTest {
         LocalTime startAt = LocalTime.now().plusHours(1);
         ReservationTime savedReservationTime = fakeRepository.save(new ReservationTime(startAt));
         // when
-        service.delete(savedReservationTime.getId());
+        service.delete(savedReservationTime.id());
         // then
         assertThat(fakeRepository.getAll()).hasSize(0);
     }

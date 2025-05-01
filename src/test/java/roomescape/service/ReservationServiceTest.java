@@ -40,10 +40,10 @@ class ReservationServiceTest {
         String name = "이름";
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = 1L;
-        CreateReservationServiceRequest command = new CreateReservationServiceRequest(name, date, timeId);
+        CreateReservationServiceRequest request = new CreateReservationServiceRequest(name, date, timeId);
 
         // when
-        ReservationServiceResponse reservationServiceResponse = reservationService.create(command);
+        ReservationServiceResponse reservationServiceResponse = reservationService.create(request);
 
         // then
         assertSoftly(softly -> {
