@@ -12,6 +12,7 @@ import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeConflictException;
 import roomescape.service.ReservationService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class ReservationController {
     @GetMapping("/themes/{themeId}/times")
     public ResponseEntity<List<AvailableReservationTimeResponse>> readAvailableReservationTimes(
         @PathVariable Long themeId,
-        @RequestParam String date) {
+        @RequestParam LocalDate date) {
         return ResponseEntity.ok(reservationService.findAvailableReservationTime(themeId, date));
     }
 

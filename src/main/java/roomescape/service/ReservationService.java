@@ -60,10 +60,10 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, String date) {
+    public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         Theme selectedTheme = themeDao.findById(themeId).orElseThrow(RuntimeException::new);
-        List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(LocalDate.parse(date), themeId);
+        List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(date, themeId);
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
     }
 

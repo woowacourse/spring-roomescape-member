@@ -86,7 +86,7 @@ class ReservationServiceTest {
     @Test
     void 예약가능한_시간을_조회한다() {
         Long themeId = 1L;
-        String date = "2025-01-01";
+        LocalDate date = LocalDate.of(2025, 1, 1);
 
         Mockito.when(reservationTimeDao.findAll())
             .thenReturn(List.of(
