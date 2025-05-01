@@ -51,9 +51,11 @@ public class RoomescapeService {
     public ReservationResponse addReservation(final ReservationRequest request) {
         LocalDateTime now = LocalDateTime.now();
         long timeId = request.timeId();
+        final long themeId = request.themeId();
 
         ReservationTime time = roomescapeTimeRepository.findById(timeId);
-        Reservation reservation = new Reservation(request.name(), request.date(), time);
+        ReservationTheme theme = roomescapeThemeRepository.findById(themeId);
+        Reservation reservation = new Reservation(request.name(), request.date(), time, theme);
         LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 
         validateFutureDateTime(requestDateTime, now);

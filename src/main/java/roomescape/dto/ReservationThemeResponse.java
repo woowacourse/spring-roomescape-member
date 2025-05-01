@@ -2,7 +2,7 @@ package roomescape.dto;
 
 import roomescape.domain.ReservationTheme;
 
-public record ReservationThemeResponse(long id, String name, String description, String thumbnail) {
+public record ReservationThemeResponse(long themeId, String name, String description, String thumbnail) {
 
     public static ReservationThemeResponse of(ReservationTheme reservationTheme) {
         return new ReservationThemeResponse(reservationTheme.getId(), reservationTheme.getName(),

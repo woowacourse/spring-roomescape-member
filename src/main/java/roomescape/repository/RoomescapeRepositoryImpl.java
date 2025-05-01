@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 
 @Repository
@@ -40,13 +41,14 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
+        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, reservation.getName());
             ps.setString(2, reservation.getDate().toString());
             ps.setLong(3, reservation.getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
 
@@ -72,11 +74,19 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
                     rs.getLong("time_id"),
                     rs.getString("time_value")
             );
+
+            ReservationTheme reservationTheme = new ReservationTheme(
+                    rs.getLong("theme_id"),
+                    rs.getString("theme_name"),
+                    rs.getString("theme_description"),
+                    rs.getString("theme_thumbnail")
+            );
             return new Reservation(
                     rs.getLong("reservation_id"),
                     rs.getString("name"),
                     rs.getString("date"),
-                    reservationTime
+                    reservationTime,
+                    reservationTheme
             );
         };
     }
@@ -87,10 +97,12 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
 
     private String joinReservationAndTime(String where) {
         String sql = """
-                SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS time_value
+                SELECT r.id AS reservation_id, r.name, r.date, t.id AS time_id, t.start_at AS time_value, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail, th.id AS theme_id
                 FROM reservation as r 
                 INNER JOIN reservation_time AS t
                 ON r.time_id = t.id
+                INNER JOIN reservation_theme AS th
+                ON r.theme_id = th.id
                 """;
         return sql + where;
     }
