@@ -14,34 +14,38 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
+
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
                                   ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse add(ReservationTimeRequest request) {
-        ReservationTime newTime = request.toTimeWithoutId();
-        if (reservationTimeRepository.existSameStartAt(request.startAt())) {
-            throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
+    public void remove(Long id) {
+        if (reservationRepository.existReservationByTimeId(id)){
+            throw new IllegalStateException("해당 시간에 대한 예약이 존재합니다.");
         }
-        Long id = reservationTimeRepository.saveAndReturnId(request.toTimeWithoutId());
-        return ReservationTimeResponse.from(newTime.withId(id));
+        reservationTimeRepository.deleteById(id);
     }
 
-    public void remove(Long id) {
-        if (!reservationRepository.existReservationByTimeId(id)){
-            reservationTimeRepository.deleteById(id);
-            return;
-        }
-        throw new IllegalStateException("해당 시간에 대한 예약이 존재합니다.");
+    public ReservationTimeResponse add(ReservationTimeRequest request) {
+        ReservationTime newTime = request.toTimeWithoutId();
+        validateDuplicateTime(request);
+        Long id = reservationTimeRepository.saveAndReturnId(request.toTimeWithoutId());
+        return ReservationTimeResponse.from(newTime.withId(id));
     }
 
     public List<ReservationTimeResponse> getTimes() {
         return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+
     }
 
+    private void validateDuplicateTime(ReservationTimeRequest request) {
+        if (reservationTimeRepository.existSameStartAt(request.startAt())) {
+            throw new IllegalArgumentException("해당 시간은 이미 존재합니다.");
+        }
+    }
 
 }

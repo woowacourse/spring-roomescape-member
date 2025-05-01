@@ -39,11 +39,10 @@ public class ThemeService {
     }
 
     public void remove(Long id) {
-        if (!reservationRepository.existReservationByThemeId(id)) {
-            themeRepository.deleteById(id);
-            return;
+        if (reservationRepository.existReservationByThemeId(id)) {
+            throw new IllegalStateException("해당 테마에 대한 예약이 존재합니다.");
         }
-        throw new IllegalStateException("해당 테마에 대한 예약이 존재합니다.");
+        themeRepository.deleteById(id);
     }
 
     public List<ThemeRankingResponse> getThemeRankings() {

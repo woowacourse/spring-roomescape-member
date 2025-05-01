@@ -37,30 +37,9 @@ public class ReservationService {
     }
 
     public ReservationResponse add(ReservationRequest request) {
-        ReservationTime findTime = reservationTimeRepository.findById(request.timeId());
-
-        validateDateAndTime(request.date(), findTime.getStartAt());
-        validateDuplicateReservation(request.date(), request.timeId(), request.themeId());
-
-        Theme findTheme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
-        Reservation reservation = request.toReservationWithoutId(findTime, findTheme);
-
+        Reservation reservation = createReservationWithoutId(request);
         Long id = reservationRepository.saveAndReturnId(reservation);
         return ReservationResponse.from(reservation.withId(id));
-    }
-
-    private void validateDateAndTime(LocalDate date, LocalTime time){
-        LocalDate now = LocalDate.now();
-        if (date.isBefore(now)) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
-        }
-        if (date.equals(now)) {
-            if (time.isBefore(LocalTime.now())) {
-                throw new IllegalArgumentException("지난 시각은 예약할 수 없습니다.");
-            }
-        }
     }
 
     public void remove(Long id) {
@@ -70,22 +49,42 @@ public class ReservationService {
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
         List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date,
                 themeId);
-
         List<ReservationTime> times = reservationTimeRepository.findAll();
+        return convertTimeToResponses(reservations, times);
+    }
 
-        List<AvailableTimeResponse> timeResponses = new ArrayList<>();
+    private List<AvailableTimeResponse> convertTimeToResponses(List<Reservation> reservations,
+                                                                  List<ReservationTime> times) {
+        return times.stream()
+                .map(time -> AvailableTimeResponse.from(time.getStartAt(), time.getId(), isAlreadyBooked(time, reservations)))
+                .toList();
+    }
 
-        for (ReservationTime time : times) {
-            timeResponses.add(
-                    AvailableTimeResponse.from(time.getStartAt(), time.getId(), isAlreadyBooked(time, reservations)));
-        }
+    private Reservation createReservationWithoutId(ReservationRequest request) {
+        ReservationTime findTime = reservationTimeRepository.findById(request.timeId());
 
-        return timeResponses;
+        validateDateAndTime(request.date(), findTime.getStartAt());
+        validateDuplicateReservation(request.date(), request.timeId(), request.themeId());
+
+        Theme findTheme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+
+        return request.toReservationWithoutId(findTime, findTheme);
     }
 
     private Boolean isAlreadyBooked(ReservationTime time, List<Reservation> reservations) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getTimeId().equals(time.getId()));
+    }
+
+    private void validateDateAndTime(LocalDate date, LocalTime time){
+        LocalDate now = LocalDate.now();
+        if (date.isBefore(now)) {
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+        }
+        if (date.equals(now) && time.isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("지난 시각은 예약할 수 없습니다.");
+        }
     }
 
     private void validateDuplicateReservation(LocalDate localDate, Long timeId, Long themeId) {
