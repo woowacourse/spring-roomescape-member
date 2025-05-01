@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.ThemeDto;
-import roomescape.application.mapper.ThemeMapper;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.NotFoundException;
@@ -24,14 +23,15 @@ public class ThemeService {
 
     public List<ThemeDto> getAllThemes() {
         List<Theme> themes = themeRepository.findAll();
-        return ThemeMapper.toDtos(themes);
+        return ThemeDto.from(themes);
     }
 
     public ThemeDto registerTheme(@Valid ThemeRequest themeRequest) {
-        Theme themeWithoutId = ThemeMapper.toDomain(themeRequest);
+        Theme themeWithoutId = Theme.withoutId(themeRequest.name(), themeRequest.description(),
+                themeRequest.thumbnail());
         Long id = themeRepository.save(themeWithoutId);
         Theme theme = Theme.assignId(id, themeWithoutId);
-        return ThemeMapper.toDto(theme);
+        return ThemeDto.from(theme);
     }
 
     public void deleteTheme(Long id) {
@@ -48,6 +48,6 @@ public class ThemeService {
         LocalDate startDate = today.minusWeeks(1);
         LocalDate endDate = today.minusDays(1);
         List<Theme> themeRanking = themeRepository.findThemeRanking(RANKING_LIMIT_COUNT, startDate, endDate);
-        return ThemeMapper.toDtos(themeRanking);
+        return ThemeDto.from(themeRanking);
     }
 }

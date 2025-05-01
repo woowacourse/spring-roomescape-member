@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.presentation.dto.request.TimeRequest;
-import roomescape.presentation.dto.response.TimeResponse;
 
 class ReservationTimeMapperTest {
 
@@ -22,7 +21,7 @@ class ReservationTimeMapperTest {
         TimeRequest request = new TimeRequest(time);
 
         // when
-        ReservationTime reservationTime = ReservationTimeMapper.toDomain(request);
+        ReservationTime reservationTime = ReservationTime.withoutId(request.startAt());
 
         // then
         assertAll(
@@ -38,7 +37,7 @@ class ReservationTimeMapperTest {
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
 
         // when
-        TimeDto dto = ReservationTimeMapper.toDto(reservationTime);
+        TimeDto dto = TimeDto.from(reservationTime);
 
         // then
         assertAll(
@@ -62,7 +61,7 @@ class ReservationTimeMapperTest {
         List<ReservationTime> reservationTimes = List.of(reservationTime1, reservationTime2, reservationTime3);
 
         // when
-        List<TimeDto> dtos = ReservationTimeMapper.toDtos(reservationTimes);
+        List<TimeDto> dtos = TimeDto.from(reservationTimes);
 
         // then
         assertAll(

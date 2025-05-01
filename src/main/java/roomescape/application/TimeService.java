@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.TimeDto;
-import roomescape.application.mapper.ReservationTimeMapper;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.exception.NotFoundException;
@@ -21,16 +20,16 @@ public class TimeService {
 
     public List<TimeDto> getAllTimes() {
         List<ReservationTime> reservationTimes = repository.findAll();
-        return ReservationTimeMapper.toDtos(reservationTimes);
+        return TimeDto.from(reservationTimes);
     }
 
     public TimeDto registerNewTime(TimeRequest request) {
-        ReservationTime newReservationTime = ReservationTimeMapper.toDomain(request);
+        ReservationTime newReservationTime = ReservationTime.withoutId(request.startAt());
         Long id = repository.save(newReservationTime);
 
         ReservationTime saved = ReservationTime.assignId(id, newReservationTime);
 
-        return ReservationTimeMapper.toDto(saved);
+        return TimeDto.from(saved);
     }
 
     public void deleteTime(Long id) {

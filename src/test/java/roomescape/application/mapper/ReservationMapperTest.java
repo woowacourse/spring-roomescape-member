@@ -13,7 +13,6 @@ import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.presentation.dto.request.ReservationRequest;
-import roomescape.presentation.dto.response.AdminReservationResponse;
 
 class ReservationMapperTest {
 
@@ -26,7 +25,7 @@ class ReservationMapperTest {
         ReservationRequest request = new ReservationRequest(1L, reservationDate, "멍구", 1L);
 
         // when
-        Reservation reservation = ReservationMapper.toDomain(request, THEME_1, reservationTime);
+        Reservation reservation = Reservation.withoutId(request.name(), THEME_1, request.date(), reservationTime);
 
         // then
         assertAll(
@@ -49,7 +48,7 @@ class ReservationMapperTest {
         Reservation reservation = Reservation.of(timeId, name, THEME_1, reservationDate, reservationTime);
 
         // when
-        ReservationDto dto = ReservationMapper.toDto(reservation);
+        ReservationDto dto = ReservationDto.from(reservation);
 
         // then
         assertAll(
@@ -74,7 +73,7 @@ class ReservationMapperTest {
         List<Reservation> reservations = List.of(reservation1, reservation2, reservation3);
 
         // when
-        List<ReservationDto> dtos = ReservationMapper.toDtos(reservations);
+        List<ReservationDto> dtos = ReservationDto.from(reservations);
 
         // then
         assertAll(

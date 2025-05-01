@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.ReservationDto;
-import roomescape.application.mapper.ReservationMapper;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -31,11 +30,11 @@ public class ReservationService {
         Theme theme = themeService.getThemeById(request.themeId());
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
         validateNotPast(request.date(), reservationTime.getStartAt());
-        Reservation reservation = ReservationMapper.toDomain(request, theme, reservationTime);
+        Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
         validteNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);
 
-        return ReservationMapper.toDto(Reservation.assignId(id, reservation));
+        return ReservationDto.from(Reservation.assignId(id, reservation));
     }
 
     private void validteNotDuplicate(Reservation reservation) {
@@ -57,7 +56,7 @@ public class ReservationService {
 
     public List<ReservationDto> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
-        return ReservationMapper.toDtos(reservations);
+        return ReservationDto.from(reservations);
     }
 
     public void deleteReservation(Long id) {
