@@ -49,11 +49,11 @@ public class ReservationRestController {
     @GetMapping
     public ResponseEntity<List<CreateReservationResponse>> getReservations() {
         final List<Reservation> reservations = reservationService.findAll();
-        final List<CreateReservationResponse> createReservationRespons = reservations.stream()
+        final List<CreateReservationResponse> createReservationResponse = reservations.stream()
                 .map(CreateReservationResponse::from)
                 .toList();
 
-        return ResponseEntity.ok(createReservationRespons);
+        return ResponseEntity.ok(createReservationResponse);
     }
 
     @PostMapping("/available-times")
