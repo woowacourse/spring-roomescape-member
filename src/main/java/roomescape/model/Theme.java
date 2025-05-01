@@ -17,7 +17,6 @@ public class Theme {
     private final Long id;
     private final String name;
     private final String description;
-    // TODO: 별도의 thumbnail 자료형 구현하기
     private final String thumbnail;
 
     public Theme(final String name, final String description, final String thumbnail) {

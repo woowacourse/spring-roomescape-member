@@ -34,7 +34,6 @@ public class ReservationService {
         var timeSlot = findTimeSlot(timeId);
         var theme = findTheme(themeId);
         var reservation = new Reservation(name, date, timeSlot, theme);
-        // TODO : now 테스트 어려움 해결하기
         validatePastDateTime(reservation);
         validateDuplicateReservation(reservation);
         var id = reservationRepository.save(reservation);

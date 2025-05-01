@@ -1,6 +1,5 @@
 package roomescape.repository.fake;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,11 +35,5 @@ public class ThemeFakeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return List.copyOf(themes.values());
-    }
-
-    // TODO : 메서드 책임 위치
-    @Override
-    public List<Theme> findRankingByPeriod(final LocalDate startDate, final LocalDate endDate, final int limit) {
-        return List.of();
     }
 }

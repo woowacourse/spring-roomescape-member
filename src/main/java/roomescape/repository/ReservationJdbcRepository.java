@@ -16,7 +16,7 @@ import roomescape.model.TimeSlot;
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
 
-    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
+    static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
         (rs, rowNum) -> {
             var id = rs.getLong("id");
             var name = rs.getString("name");
@@ -31,6 +31,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
             var timeSlot = new TimeSlot(timeSlotId, time);
             var theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
             return new Reservation(id, name, date, timeSlot, theme);
+        };
+
+    private static final RowMapper<Theme> THEME_ROW_MAPPER =
+        (rs, rowNum) -> {
+            var id = rs.getLong("id");
+            var name = rs.getString("name");
+            var description = rs.getString("description");
+            var thumbnail = rs.getString("thumbnail");
+            return new Theme(id, name, description, thumbnail);
         };
 
     private final JdbcTemplate jdbcTemplate;
@@ -120,5 +129,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public List<Theme> findThemeRankingByPeriod(LocalDate startDate, LocalDate endDate, int limit) {
+        var sql = """
+            select T.id, T.name, T.description, T.thumbnail from THEME T
+            join RESERVATION R on T.id = R.theme_id
+            where R.date >= ? and R.date <= ?
+            group by T.id
+            order by count(R.id) desc
+            limit ?
+            """;
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
     }
 }

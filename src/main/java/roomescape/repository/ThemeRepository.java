@@ -14,6 +14,4 @@ public interface ThemeRepository {
     boolean removeById(long id);
 
     List<Theme> findAll();
-
-    List<Theme> findRankingByPeriod(LocalDate startDate, LocalDate endDate, int limit);
 }

@@ -1,12 +1,16 @@
 package roomescape.repository.fake;
 
+
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import roomescape.model.Reservation;
+import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 
 public class ReservationFakeRepository implements ReservationRepository {
@@ -60,9 +64,26 @@ public class ReservationFakeRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final long themeId) {
-        return reservations.values()
-            .stream()
+        return reservations.values().stream()
             .filter(r -> r.date().equals(date) && r.theme().id() == themeId)
             .toList();
+    }
+
+    @Override
+    public List<Theme> findThemeRankingByPeriod(final LocalDate startDate, final LocalDate endDate,
+        final int limit) {
+        var themeCounts = reservations.values().stream()
+            .filter(r -> isBetween(r.date(), startDate, endDate))
+            .collect(Collectors.groupingBy(Reservation::theme, Collectors.counting()));
+
+        return themeCounts.keySet()
+            .stream()
+            .sorted(Comparator.comparingLong(themeCounts::get))
+            .limit(limit)
+            .toList();
+    }
+
+    private boolean isBetween(LocalDate date, LocalDate startDate, LocalDate endDate) {
+        return (date.isAfter(startDate) || date.isEqual(startDate)) && (date.isEqual(endDate) || date.isBefore(endDate));
     }
 }

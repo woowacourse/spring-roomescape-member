@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.model.Reservation;
+import roomescape.model.Theme;
 
 public interface ReservationRepository {
 
@@ -20,4 +21,6 @@ public interface ReservationRepository {
     List<Reservation> findByThemeId(long id);
 
     List<Reservation> findByDateAndThemeId(LocalDate date, long themeId);
+
+    List<Theme> findThemeRankingByPeriod(LocalDate startDate, LocalDate endDate, int limit);
 }
