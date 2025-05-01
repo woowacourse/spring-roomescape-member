@@ -15,8 +15,8 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-class JdbcReservationDaoTest {
-    private static JdbcReservationDao reservationDao;
+class ReservationDaoTest {
+    private static ReservationDao reservationDao;
     private static JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -24,16 +24,17 @@ class JdbcReservationDaoTest {
         DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("schema.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(dataSource);
-        reservationDao = new JdbcReservationDao(jdbcTemplate);
+        reservationDao = new ReservationDao(jdbcTemplate);
         jdbcTemplate.execute("INSERT INTO reservation_time(start_at) VALUES ('10:00')");
-        jdbcTemplate.execute("INSERT INTO theme(name, description, thumbnail) VALUES ('hello', 'description', 'thumbnail')");
+        jdbcTemplate.execute(
+                "INSERT INTO theme(name, description, thumbnail) VALUES ('hello', 'description', 'thumbnail')");
     }
 
     @Test
     void 예약_저장() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "hello", "description", "thumbnail");
-        Reservation reservation = new Reservation(null, "이름", LocalDate.of(2025,12,16), reservationTime, theme);
+        Reservation reservation = new Reservation(null, "이름", LocalDate.of(2025, 12, 16), reservationTime, theme);
 
         Reservation saved = reservationDao.save(reservation);
         List<Reservation> all = reservationDao.findAll();
@@ -49,7 +50,7 @@ class JdbcReservationDaoTest {
     void 예약_삭제() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "hello", "description", "thumbnail");
-        Reservation reservation = new Reservation(null, "이름", LocalDate.of(2025,12,16), reservationTime, theme);
+        Reservation reservation = new Reservation(null, "이름", LocalDate.of(2025, 12, 16), reservationTime, theme);
 
         Reservation saved = reservationDao.save(reservation);
         boolean isDeleted = reservationDao.deleteById(saved.getId());

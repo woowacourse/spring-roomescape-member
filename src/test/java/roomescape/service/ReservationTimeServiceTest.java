@@ -5,28 +5,35 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.fake.FakeReservaionDao;
-import roomescape.fake.FakeReservationTimeDao;
-import roomescape.fake.FakeThemeDao;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
-        ReservationDao reservationDao = new FakeReservaionDao();
-        ThemeDao themeDao = new FakeThemeDao();
+        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+                .addScript("schema.sql")
+                .addScript("data.sql")
+                .build();
+        jdbcTemplate = new JdbcTemplate(dataSource);
+        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
+        ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
+        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
         reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao, themeDao);
     }
 
@@ -46,7 +53,7 @@ class ReservationTimeServiceTest {
 
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes();
 
-        assertThat(reservationTimes).hasSize(1);
+        assertThat(reservationTimes).hasSize(4);
     }
 
     @Test
@@ -58,7 +65,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteTime(id);
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes();
 
-        assertThat(reservationTimes).isEmpty();
+        assertThat(reservationTimes).hasSize(3);
     }
 
     @Test

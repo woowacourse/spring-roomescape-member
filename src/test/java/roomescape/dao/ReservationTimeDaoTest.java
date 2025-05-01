@@ -13,9 +13,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.model.ReservationTime;
 
-class JdbcReservationTimeDaoTest {
+class ReservationTimeDaoTest {
 
-    private static JdbcReservationTimeDao dao;
+    private static ReservationTimeDao dao;
     private static JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -23,12 +23,12 @@ class JdbcReservationTimeDaoTest {
         DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("schema.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(dataSource);
-        dao = new JdbcReservationTimeDao(jdbcTemplate);
+        dao = new ReservationTimeDao(jdbcTemplate);
     }
 
     @Test
     void 예약시간_저장() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10,0));
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
         ReservationTime saved = dao.save(reservationTime);
         List<ReservationTime> all = dao.findAll();
 
@@ -39,7 +39,7 @@ class JdbcReservationTimeDaoTest {
 
     @Test
     void 예약시간_삭제() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10,0));
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
         ReservationTime saved = dao.save(reservationTime);
         boolean isDeleted = dao.deleteById(saved.getId());
 
@@ -50,7 +50,7 @@ class JdbcReservationTimeDaoTest {
 
     @Test
     void id로_예약시간_조회() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10,0));
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
         ReservationTime saved = dao.save(reservationTime);
 
         Optional<ReservationTime> foundReservationTime = dao.findById(saved.getId());
