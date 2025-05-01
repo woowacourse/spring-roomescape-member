@@ -23,7 +23,7 @@ class FakeReservationRepositoryTest {
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
-        themeRepository = new FakeThemeRepository();
+        themeRepository = new FakeThemeRepository(reservationRepository);
 
         theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
         reservation = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"),

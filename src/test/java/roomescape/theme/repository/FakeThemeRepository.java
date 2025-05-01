@@ -6,11 +6,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 
 public class FakeThemeRepository implements ThemeRepository {
     private final Map<Long, Theme> themes = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1);
+    private final ReservationRepository reservationRepository;
+
+    public FakeThemeRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     @Override
     public List<Theme> getAll() {
@@ -41,6 +47,35 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findTop10PopularThemesWithinLastWeek(final LocalDate nowDate) {
-        return List.of();
+        LocalDate from = nowDate.minusDays(7);
+        LocalDate to = nowDate.minusDays(1);
+
+        Map<Long, Long> themeCount = reservationRepository.getAll().stream()
+                .filter(r -> {
+                    LocalDate d = r.getDate();
+                    return !d.isBefore(from) && !d.isAfter(to);
+                })
+                .collect(java.util.stream.Collectors.groupingBy(
+                        r -> r.getTheme().getId(),
+                        java.util.stream.Collectors.counting()
+                ));
+
+        return themeCount.entrySet().stream()
+                .sorted((a, b) -> {
+                    int countCompare = Long.compare(b.getValue(), a.getValue());
+                    if (countCompare != 0) {
+                        return countCompare;
+                    }
+
+                    String nameA = themes.get(a.getKey()).getName();
+                    String nameB = themes.get(b.getKey()).getName();
+                    return nameA.compareTo(nameB);
+                })
+                .limit(10)
+                .map(entry -> {
+                    Theme t = themes.get(entry.getKey());
+                    return Theme.of(entry.getKey(), t.getName(), t.getDescription(), t.getThumbnail());
+                })
+                .toList();
     }
 }
