@@ -4,10 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
-import roomescape.model.ReservationTime;
-import roomescape.model.Theme;
 
 public class MemoryReservationRepository implements ReservationRepository {
     private final List<Reservation> reservations;
@@ -23,9 +20,8 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(ReservationRequestDto reservationRequestDto, ReservationTime reservationTime,
-                                      Theme theme) {
-        Reservation reservation = reservationRequestDto.toEntity(id.getAndIncrement(), reservationTime, theme);
+    public Reservation addReservation(Reservation reservation) {
+//        Reservation reservation = reservationRequestDto.toEntity(id.getAndIncrement(), reservationTime, theme);
         reservations.add(reservation);
         return reservation;
     }

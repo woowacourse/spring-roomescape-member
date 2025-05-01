@@ -16,7 +16,9 @@ public class ThemeService {
     }
 
     public Theme addTheme(ThemeRequestDto themeRequestDto) {
-        return themeRepository.addTheme(themeRequestDto);
+        Theme theme = new Theme(null, themeRequestDto.name(), themeRequestDto.description(),
+                themeRequestDto.thumbnail());
+        return themeRepository.addTheme(theme);
     }
 
     public List<Theme> getAllThemes() {

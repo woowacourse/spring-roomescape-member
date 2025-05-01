@@ -43,7 +43,7 @@ public class ReservationService {
 
         Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
 
-        return reservationRepository.addReservation(reservationRequestDto, reservationTime, theme);
+        return reservationRepository.addReservation(reservationRequestDto.toEntity(null, reservationTime, theme));
     }
 
     public void deleteReservation(long id) {

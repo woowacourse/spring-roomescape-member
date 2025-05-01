@@ -3,7 +3,6 @@ package roomescape.repository;
 import static java.time.LocalTime.parse;
 
 import java.sql.PreparedStatement;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,16 +20,17 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime addTime(LocalTime startAt) {
+    public ReservationTime addTime(ReservationTime reservationTime) {
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation_time (start_at) values (?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, startAt.toString());
+            ps.setString(1, reservationTime.getStartAt().toString());
             return ps;
         }, keyHolder);
         return new ReservationTime(Objects.requireNonNull(keyHolder.getKey())
-                .longValue(), startAt);
+                .longValue(), reservationTime.getStartAt());
     }
 
     @Override

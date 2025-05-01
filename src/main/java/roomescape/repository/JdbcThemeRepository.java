@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ThemeRequestDto;
 import roomescape.model.Theme;
 
 @Repository
@@ -28,18 +27,18 @@ public class JdbcThemeRepository implements ThemeRepository {
                     rs.getString("thumbnail"));
 
     @Override
-    public Theme addTheme(ThemeRequestDto themeRequestDto) {
+    public Theme addTheme(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into theme(name, description, thumbnail) VALUES (?, ?, ?)";
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, themeRequestDto.name());
-            ps.setString(2, themeRequestDto.description());
-            ps.setString(3, themeRequestDto.thumbnail());
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnail());
             return ps;
         }, keyHolder);
-        return new Theme(Objects.requireNonNull(keyHolder.getKey().longValue()), themeRequestDto.name(),
-                themeRequestDto.description(), themeRequestDto.thumbnail());
+        return new Theme(Objects.requireNonNull(keyHolder.getKey().longValue()), theme.getName(),
+                theme.getDescription(), theme.getThumbnail());
     }
 
     @Override

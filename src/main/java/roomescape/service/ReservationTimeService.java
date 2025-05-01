@@ -20,7 +20,8 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addTime(LocalTime startAt) {
-        return reservationTimeRepository.addTime(startAt);
+        ReservationTime reservationTime = new ReservationTime(null, startAt);
+        return reservationTimeRepository.addTime(reservationTime);
     }
 
     public List<ReservationTime> getAllTime() {

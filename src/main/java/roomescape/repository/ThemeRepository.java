@@ -1,11 +1,10 @@
 package roomescape.repository;
 
 import java.util.List;
-import roomescape.dto.ThemeRequestDto;
 import roomescape.model.Theme;
 
 public interface ThemeRepository {
-    Theme addTheme(ThemeRequestDto themeRequestDto);
+    Theme addTheme(Theme theme);
 
     List<Theme> getAllTheme();
 

@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ReservationRequestDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
@@ -42,21 +41,20 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
     }
 
     @Override
-    public Reservation addReservation(ReservationRequestDto reservationRequestDto, ReservationTime reservationTime,
-                                      Theme theme) {
+    public Reservation addReservation(Reservation reservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql, new String[]{"id"});
-            ps.setString(1, reservationRequestDto.name());
-            ps.setString(2, reservationRequestDto.date().toString());
-            ps.setLong(3, reservationRequestDto.timeId());
-            ps.setLong(4, reservationRequestDto.themeId());
+            ps.setString(1, reservation.getUserName().getName());
+            ps.setString(2, reservation.getReservationDateTime().getDate().toString());
+            ps.setLong(3, reservation.getReservationDateTime().getTime().getId());
+            ps.setLong(4, reservation.getTheme().getId());
             return ps;
         }, keyHolder);
-        return reservationRequestDto.toEntity(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservationTime,
-                theme);
+        return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservation.getUserName(),
+                reservation.getReservationDateTime(), reservation.getTheme());
     }
 
     @Override
