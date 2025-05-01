@@ -1,4 +1,4 @@
-package roomescape.business.dto;
+package roomescape.presentation.dto;
 
 public record ReservationThemeResponseDto(
         long id,

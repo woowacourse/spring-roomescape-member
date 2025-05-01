@@ -3,7 +3,7 @@ package roomescape.persistence;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.business.ReservationTime;
-import roomescape.business.dto.AvailableTimesResponseDto;
+import roomescape.presentation.dto.AvailableTimesResponseDto;
 
 public interface ReservationTimeRepository {
 

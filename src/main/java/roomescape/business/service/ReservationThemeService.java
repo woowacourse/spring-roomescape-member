@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.business.ReservationTheme;
-import roomescape.business.dto.ReservationThemeRequestDto;
-import roomescape.business.dto.ReservationThemeResponseDto;
+import roomescape.presentation.dto.ReservationThemeRequestDto;
+import roomescape.presentation.dto.ReservationThemeResponseDto;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 

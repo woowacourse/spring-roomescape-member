@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.ReservationTime;
-import roomescape.business.dto.AvailableTimesResponseDto;
+import roomescape.presentation.dto.AvailableTimesResponseDto;
 import roomescape.persistence.ReservationTimeRepository;
 
 public final class FakeReservationTimeRepository implements ReservationTimeRepository {
