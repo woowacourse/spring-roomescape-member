@@ -52,7 +52,8 @@ public class JdbcReservationDaoTest {
     void addReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "레벨1", "탈출하기", "http/~");
-        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2024, 4, 22), time,
+            theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
 
@@ -64,7 +65,8 @@ public class JdbcReservationDaoTest {
     void removeReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
         Theme theme = new Theme(1L, "레벨4", "탈출하기", "http/~");
-        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation(null, "사나", LocalDate.of(2024, 4, 22), time,
+            theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
         assertThatCode(() -> jdbcReservationDao.removeReservationById(newReservation.getId()))

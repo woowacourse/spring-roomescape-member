@@ -2,7 +2,7 @@ package roomescape.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +22,7 @@ class JdbcThemeDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private  JdbcThemeDao jdbcThemeDao;
+    private JdbcThemeDao jdbcThemeDao;
 
     @Test
     @DisplayName("전체 테마를 조회할 수 있다.")
@@ -91,7 +91,8 @@ class JdbcThemeDaoTest {
     @DisplayName("일주일 동안의 인기 테마를 검색할 수 있다.")
     void findTopReservedThemesInPeriodWithLimit() {
         LocalDate date = LocalDate.of(2025, 4, 30);
-        List<Theme> themes = jdbcThemeDao.findTopReservedThemesInPeriodWithLimit(date.minusDays(7), date, 2);
+        List<Theme> themes = jdbcThemeDao.findTopReservedThemesInPeriodWithLimit(date.minusDays(7),
+            date, 2);
         assertAll(() -> {
             assertThat(themes.getFirst().getId()).isEqualTo(2);
             assertThat(themes.getLast().getId()).isEqualTo(1);

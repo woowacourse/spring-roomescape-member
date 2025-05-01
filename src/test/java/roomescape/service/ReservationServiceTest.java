@@ -15,7 +15,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
@@ -38,7 +37,8 @@ public class ReservationServiceTest {
     @Test
     @DisplayName("예약 추가를 할 수 있다.")
     void addReservation() {
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L,
+            1L);
         Reservation actual = reservationService.addReservation(request);
 
         assertAll(() -> {
@@ -53,8 +53,10 @@ public class ReservationServiceTest {
     @Test
     @DisplayName("모든 예약 정보를 가져올 수 있다.")
     void findAllReservations() {
-        ReservationRequest request1 = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L, 1L);
-        ReservationRequest request2 = new ReservationRequest(LocalDate.of(2024, 4, 28), "프리", 1L, 1L);
+        ReservationRequest request1 = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L,
+            1L);
+        ReservationRequest request2 = new ReservationRequest(LocalDate.of(2024, 4, 28), "프리", 1L,
+            1L);
 
         reservationService.addReservation(request1);
         reservationService.addReservation(request2);
@@ -65,7 +67,8 @@ public class ReservationServiceTest {
     @Test
     @DisplayName("예약을 id를 통해 제거할 수 있다.")
     void removeReservation() {
-        ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L, 1L);
+        ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L,
+            1L);
         reservationService.addReservation(request);
 
         reservationService.removeReservation(1L);

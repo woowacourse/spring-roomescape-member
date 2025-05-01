@@ -79,7 +79,8 @@ public class ReservationControllerTest {
 
     private Map<String, Object> getTestParamsWithReservation() {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES('1단계', '탈출하기', 'http://~')");
+        jdbcTemplate.update(
+            "INSERT INTO theme(name, description, thumbnail) VALUES('1단계', '탈출하기', 'http://~')");
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "사나");
