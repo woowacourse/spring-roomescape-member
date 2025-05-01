@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,9 @@ public class ThemeService {
             throw new IllegalStateException("삭제하려는 테마를 사용하는 예약이 있습니다.");
         }
         return themeRepository.removeById(id);
+    }
+
+    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
+        return themeRepository.findRankingByPeriod(startDate, endDate, limit);
     }
 }

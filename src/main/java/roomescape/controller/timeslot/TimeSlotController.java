@@ -54,8 +54,11 @@ public class TimeSlotController {
     }
 
     @GetMapping(value = "/availableTimes", params = {"date", "themeId"})
-    public ResponseEntity<List<AvailableTimeSlotDto>> availableTimes(@RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId) {
-        var availableTimeSlots = service.availableTimeSlots(date, themeId);
+    public ResponseEntity<List<AvailableTimeSlotDto>> availableTimes(
+        @RequestParam("date") LocalDate date,
+        @RequestParam("themeId") Long themeId
+    ) {
+        var availableTimeSlots = service.findAvailableTimeSlots(date, themeId);
         return ResponseEntity.ok(availableTimeSlots);
     }
 

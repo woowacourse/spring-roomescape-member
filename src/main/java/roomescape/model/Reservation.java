@@ -63,8 +63,8 @@ public class Reservation {
     }
 
     private void validateNameLength(final String name) {
-        if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException(String.format("이름은 %d자를 넘길 수 없습니다.", NAME_MAX_LENGTH));
+        if (name.isBlank() || name.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("이름은 공백이거나 %d자를 넘길 수 없습니다.", NAME_MAX_LENGTH));
         }
     }
 }

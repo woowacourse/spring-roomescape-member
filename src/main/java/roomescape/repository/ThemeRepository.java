@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.model.Theme;
@@ -13,4 +14,6 @@ public interface ThemeRepository {
     boolean removeById(long id);
 
     List<Theme> findAll();
+
+    List<Theme> findRankingByPeriod(LocalDate startDate, LocalDate endDate, int limit);
 }

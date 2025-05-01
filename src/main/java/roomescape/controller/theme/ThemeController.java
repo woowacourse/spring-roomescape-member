@@ -1,6 +1,7 @@
 package roomescape.controller.theme;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.theme.dto.CreateThemeRequest;
 import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.service.ThemeService;
+import roomescape.service.dto.AvailableTimeSlotDto;
 
 @Controller
 @RequestMapping("/themes")
@@ -47,6 +50,17 @@ public class ThemeController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/popular", params = {"startDate", "endDate", "limit"})
+    public ResponseEntity<List<ThemeResponse>> availableTimes(
+        @RequestParam("startDate") LocalDate startDate,
+        @RequestParam("endDate") LocalDate endDate,
+        @RequestParam("limit") Integer limit
+    ) {
+        var themes = service.findPopularThemes(startDate, endDate, limit);
+        var response = ThemeResponse.from(themes);
+        return ResponseEntity.ok(response);
     }
 
     @ExceptionHandler(value = IllegalStateException.class)

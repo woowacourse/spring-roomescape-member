@@ -1,9 +1,7 @@
 package roomescape.service;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +42,8 @@ public class TimeSlotService {
         return timeSlotRepository.removeById(id);
     }
 
-    public List<AvailableTimeSlotDto> availableTimeSlots(LocalDate date, long themeId) {
+    public List<AvailableTimeSlotDto> findAvailableTimeSlots(LocalDate date, long themeId) {
+        // TODO: timeSlotRepository가 filter된 timeslot 바로 반환하기
         var filteredReservations = reservationRepository.findByDateAndThemeId(date, themeId);
         var filteredTimeSlots = filteredReservations.stream()
             .map(Reservation::timeSlot)
