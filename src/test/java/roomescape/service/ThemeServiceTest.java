@@ -1,17 +1,19 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-import java.util.List;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exceptions.EntityNotFoundException;
+import roomescape.exceptions.ThemeDuplicateException;
 import roomescape.fake.ThemeFakeRepository;
 import roomescape.repository.ThemeRepository;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class ThemeServiceTest {
 
@@ -46,5 +48,16 @@ class ThemeServiceTest {
     void test_deleteReservationTime() {
         assertThatThrownBy(() -> themeService.deleteTheme(999L))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("예약 시간 생성 시, 중복된 테마명일 경우 예외가 발생한다.")
+    void error_postThemeIfDuplicationThemeName() {
+        //given
+        ThemeRequest request = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        //when&then
+        assertThatThrownBy(() -> themeService.postTheme(request))
+                .isInstanceOf(ThemeDuplicateException.class)
+                .hasMessageContaining("중복된 테마명이 존재합니다.");
     }
 }
