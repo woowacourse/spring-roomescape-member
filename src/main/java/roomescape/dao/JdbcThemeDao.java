@@ -46,4 +46,13 @@ public class JdbcThemeDao implements ThemeDao {
         );
         return keyHolder.getKey().longValue();
     }
+
+    @Override
+    public void deleteById(Long idRequest) {
+        String sql = "delete from theme where id = ?";
+        jdbcTemplate.update(
+                sql,
+                idRequest
+        );
+    }
 }

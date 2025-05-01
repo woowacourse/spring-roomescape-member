@@ -28,4 +28,8 @@ public class ThemeService {
         Theme created = themeWithoutId.copyWithId(id);
         return new ThemeResponseDto(created);
     }
+
+    public void deleteTheme(Long idRequest) {
+        themeDao.deleteById(idRequest);
+    }
 }
