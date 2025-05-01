@@ -7,11 +7,13 @@ import roomescape.theme.domain.Theme;
 public interface ThemeRepository {
     Long save(Theme theme);
 
-    Optional<Theme> findById(Long id);
+    void deleteById(Long id);
 
     long countByName(String name);
 
+    Optional<Theme> findById(Long id);
+
     List<Theme> findAll();
 
-    void deleteById(Long id);
+    List<Theme> findTop10ThemesByReservationCountWithin7Days();
 }

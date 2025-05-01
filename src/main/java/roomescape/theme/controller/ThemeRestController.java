@@ -37,8 +37,17 @@ public class ThemeRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ThemeResponse.from(found));
     }
 
+    @DeleteMapping({"/{id}"})
+    public ResponseEntity<Void> deleteTheme(
+            @PathVariable final Long id
+    ) {
+        themeService.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getTheme() {
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
         final List<Theme> themes = themeService.findAll();
         final List<ThemeResponse> themeResponses = themes.stream()
                 .map(ThemeResponse::from)
@@ -47,12 +56,13 @@ public class ThemeRestController {
         return ResponseEntity.ok(themeResponses);
     }
 
-    @DeleteMapping({"/{id}"})
-    public ResponseEntity<Void> deleteTheme(
-            @PathVariable final Long id
-    ) {
-        themeService.deleteById(id);
+    @GetMapping("/popular-list")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        final List<Theme> popularThemes = themeService.findPopularThemes();
+        final List<ThemeResponse> themeResponses = popularThemes.stream()
+                .map(ThemeResponse::from)
+                .toList();
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(themeResponses);
     }
 }

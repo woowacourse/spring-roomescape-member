@@ -104,4 +104,24 @@ public class H2ThemeRepository implements ThemeRepository {
                 """;
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<Theme> findTop10ThemesByReservationCountWithin7Days() {
+        final String sql = """
+                SELECT
+                    t.id AS id,
+                    t.name AS name,
+                    t.description AS description,
+                    t.thumbnail AS thumbnail,
+                    COUNT(r.id) AS reservation_count
+                FROM themes t
+                LEFT JOIN reservations r 
+                    ON t.id = r.theme_id AND r.date >= DATEADD('DAY', -7, CURRENT_DATE)
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY reservation_count DESC
+                LIMIT 10;
+                """;
+
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
+    }
 }
