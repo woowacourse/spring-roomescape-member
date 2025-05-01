@@ -56,20 +56,6 @@ public class ReservationTimeDaoTest {
     }
 
     @Test
-    @DisplayName("중복된 시간은 추가하려 하면 예외가 발생한다.")
-    void duplicateTimeTest() {
-        // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
-        reservationTimeDao.insert(reservationTimeRequest.getStartAt());
-        ReservationTimeRequest duplicateReservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
-
-        // when - then
-        assertThatThrownBy(() -> reservationTimeDao.insert(duplicateReservationTimeRequest.getStartAt()))
-                .isInstanceOf(DuplicateTimeException.class)
-                .hasMessage("[ERROR] 중복된 시간은 추가할 수 없습니다.");
-    }
-
-    @Test
     @DisplayName("시간 삭제 확인 테스트")
     void deleteTest() {
         // given

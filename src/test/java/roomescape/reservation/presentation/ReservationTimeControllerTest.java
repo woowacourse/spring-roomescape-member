@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,13 +95,13 @@ public class ReservationTimeControllerTest {
     @DisplayName("예약 가능 시간 조회 테스트")
     void getAvailableTimesTest() {
         // given
-//        Map<String, String> availableReservationTime = reservationFixture.createReservationTime("10:00");
+        Map<String, String> availableReservationTime = reservationFixture.createReservationTime("10:00");
         Map<String, String> unAvailableReservationTime = reservationFixture.createReservationTime("11:00");
 
-//        RestAssured.given().log().all()
-//                .contentType(ContentType.JSON)
-//                .body(availableReservationTime)
-//                .when().post("/times");
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(availableReservationTime)
+                .when().post("/times");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -129,7 +130,7 @@ public class ReservationTimeControllerTest {
                 .when().get("/times/available?date=2025-08-05&themeId=1")
                 .then().log().all()
                 .statusCode(200)
-                .body("alreadyBooked", is(true));
+                .body("alreadyBooked", is(List.of(false, true)));
     }
 
     @Test

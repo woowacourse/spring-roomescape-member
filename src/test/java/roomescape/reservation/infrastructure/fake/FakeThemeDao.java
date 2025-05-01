@@ -38,4 +38,11 @@ public class FakeThemeDao implements ThemeRepository {
                 .filter(theme -> theme.getId().equals(themeId))
                 .findAny();
     }
+
+    @Override
+    public List<Theme> findPopularThemes() {
+        // TODO: fake vs mock
+        return store.values().stream()
+                .toList();
+    }
 }
