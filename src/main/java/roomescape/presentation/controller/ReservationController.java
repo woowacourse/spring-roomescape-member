@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.ReservationService;
 import roomescape.exception.InvalidReservationDateException;
+import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -49,5 +51,15 @@ public class ReservationController {
         reservationService.remove(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/available-times")
+    public ResponseEntity<List<ReservationAvailableTimeResponse>> readAvailableTimes(
+            @RequestParam("date") final String date,
+            @RequestParam("themeId") final Long themeId) {
+        final List<ReservationAvailableTimeResponse> availableTimeResponses =
+                reservationService.findAvailableTimes(date, themeId);
+
+        return ResponseEntity.ok(availableTimeResponses);
     }
 }
