@@ -41,4 +41,8 @@ public class Reservation {
     public Theme getTheme() {
         return theme;
     }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
 }

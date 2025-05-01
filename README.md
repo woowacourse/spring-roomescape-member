@@ -7,7 +7,7 @@
 
 ## 사용자 예약
 - [ ] 사용자는 원하는 시간에 예약을 할 수 있다.
-- [ ] 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.
+- [X] 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.
 - [X] `/reservation` 요청 시 사용자 예약 페이지를 응답한다.
   - 페이지는 `templates/reservation.html` 파일을 이용
 
@@ -42,7 +42,6 @@
   - null, 공백
 - [X] 동일한 시간, 날짜, 테마에 대한 중복 에약이 불가능하다.
 - [X] 해당 테마에 대한 예약이 있을 경우, 삭제가 불가능하다.
--
 
 ---
 
@@ -116,11 +115,7 @@
 
   - Request
     ```
-    GET /user/reservations HTTP/1.1
-    {
-      "date": "2025-05-05",
-      "themeId": "1"
-    }
+    GET /reservations/available?date={date}&themeId={themeId} HTTP/1.1
     ```
 
   - Response
