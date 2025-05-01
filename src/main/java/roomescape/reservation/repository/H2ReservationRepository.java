@@ -76,16 +76,7 @@ public class H2ReservationRepository implements ReservationRepository {
                                                     final Long themeId) {
         final String sql = """
                 SELECT EXISTS(
-                    SELECT 
-                        r.id AS id,
-                        r.name AS name,
-                        r.date AS date,
-                        rt.id AS time_id,
-                        rt.start_at AS start_at,
-                        th.id AS theme_id,
-                        th.name AS theme_name,
-                        th.description AS description,
-                        th.thumbnail AS thumbnail
+                    SELECT 1
                     FROM reservations AS r
                     INNER JOIN reservation_times AS rt
                     ON r.time_id = rt.id
@@ -99,14 +90,17 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public long countByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         final String sql = """
-                SELECT COUNT(*) AS count
-                FROM reservations
-                WHERE date = ? AND time_id = ? AND theme_id = ?
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM reservations AS r
+                    WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?
+                    LIMIT 1
+                )
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Long.class, date, timeId, themeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override

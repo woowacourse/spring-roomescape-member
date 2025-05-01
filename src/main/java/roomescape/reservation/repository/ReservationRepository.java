@@ -14,7 +14,7 @@ public interface ReservationRepository {
 
     boolean existsByDateAndStartAtAndThemeId(LocalDate date, LocalTime startAt, Long themeId);
 
-    long countByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     Optional<Reservation> findById(Long id);
 

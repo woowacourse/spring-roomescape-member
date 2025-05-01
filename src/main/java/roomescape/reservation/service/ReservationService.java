@@ -24,8 +24,7 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     public Long save(final String name, final LocalDate date, final Long timeId, final Long themeId) {
-        final long count = reservationRepository.countByDateAndTimeIdAndThemeId(date, timeId, themeId);
-        if (count >= 1) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new DataExistException("해당 시간에 이미 예약된 테마입니다.");
         }
 
