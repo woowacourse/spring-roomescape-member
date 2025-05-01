@@ -6,6 +6,7 @@ import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.service.dto.response.AvailableReservationTimeResponse;
 import roomescape.time.service.dto.request.ReservationTimeRequest;
 import roomescape.time.service.dto.response.ReservationTimeResponse;
 import roomescape.time.entity.ReservationTimeEntity;
@@ -66,6 +67,9 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponse> getAvailableTimes(LocalDate date, final Long themeId) {
-        return timeRepository.findAvailableTimes(date, themeId);
+        return timeRepository.findAvailableTimes(date, themeId)
+                .stream()
+                .map(AvailableReservationTimeResponse::from)
+                .toList();
     }
 }

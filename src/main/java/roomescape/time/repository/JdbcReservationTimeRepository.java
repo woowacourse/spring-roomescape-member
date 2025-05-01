@@ -5,8 +5,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.time.dto.AvailableReservationTimeResponse;
 import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.repository.dto.AvailableTimeResponse;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -68,7 +68,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, final Long themeId) {
+    public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, final Long themeId) {
         String query = """
                 SELECT
                         rt.id,
@@ -89,7 +89,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             final long id = resultSet.getLong("id");
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
             final boolean alreadyBooked = resultSet.getBoolean("alreadyBooked");
-            return new AvailableReservationTimeResponse(id, startAt.toString(), alreadyBooked);
+            return new AvailableTimeResponse(id, startAt, alreadyBooked);
         });
     }
 }
