@@ -333,12 +333,12 @@
   - 예시) 오늘이 4월 8일인 경우, 4월 1일부터 4월 7일까지 예약 건수가 많은 순서대로 10개의 테마를 조회
   - Request
     ```
-    GET /themes/popular HTTP/1.1
+    GET /themes/popular?startDate="2025-05-01"&endDate="2025-05-07"&limit=10 HTTP/1.1
     ```
-
+    
   - Response
     ```
-    GET /themes/popular HTTP/1.1 200 
+    HTTP/1.1 200 
     Content-Type: application/json
     
     [
