@@ -31,6 +31,20 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
     }
 
     @Override
+    public List<ReservationTheme> findPopularThemes() {
+        String sql = """
+                SELECT th.id, th.name, th.description, th.thumbnail, COUNT(*) AS reservation_count
+                FROM reservation r
+                JOIN reservation_theme th ON r.theme_id = th.id
+                WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND DATEADD('DAY', -1, CURRENT_DATE)
+                GROUP BY th.id, th.name, th.description, th.thumbnail
+                ORDER BY reservation_count DESC
+                LIMIT 10; 
+                """;
+        return template.query(sql, reservationThemeRowMapper());
+    }
+
+    @Override
     public ReservationTheme save(final ReservationTheme reservationTheme) {
         String sql = "insert into reservation_theme (name, description, thumbnail) values (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

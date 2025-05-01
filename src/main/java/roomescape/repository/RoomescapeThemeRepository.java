@@ -7,6 +7,8 @@ public interface RoomescapeThemeRepository {
 
     ReservationTheme findById(final Long id);
 
+    List<ReservationTheme> findPopularThemes();
+
     List<ReservationTheme> findAll();
 
     ReservationTheme save(final ReservationTheme reservationTheme);

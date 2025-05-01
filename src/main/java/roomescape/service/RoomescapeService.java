@@ -48,6 +48,11 @@ public class RoomescapeService {
         return reservationThemes.stream().map(ReservationThemeResponse::of).toList();
     }
 
+    public List<ReservationThemeResponse> findPopularReservations() {
+        List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository.findPopularThemes();
+        return popularReservationThemes.stream().map(ReservationThemeResponse::of).toList();
+    }
+
     public ReservationResponse addReservation(final ReservationRequest request) {
         LocalDateTime now = LocalDateTime.now();
         long timeId = request.timeId();

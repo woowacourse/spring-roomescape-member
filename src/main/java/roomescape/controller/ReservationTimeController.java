@@ -38,7 +38,7 @@ public class ReservationTimeController {
     public ResponseEntity<String> reservationTimeRemove(@PathVariable(name = "id") long id) {
         try {
             roomescapeService.removeReservationTime(id);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

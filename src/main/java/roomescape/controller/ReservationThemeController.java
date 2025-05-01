@@ -28,6 +28,11 @@ public class ReservationThemeController {
         return ResponseEntity.ok(roomescapeService.findReservationThemes());
     }
 
+    @GetMapping("/themes/ranking")
+    public ResponseEntity<List<ReservationThemeResponse>> reservationThemeRankingList() {
+        return ResponseEntity.ok(roomescapeService.findPopularReservations());
+    }
+
     @PostMapping("/themes")
     public ResponseEntity<ReservationThemeResponse> reservationThemeAdd(
             @RequestBody ReservationThemeRequest request) {
