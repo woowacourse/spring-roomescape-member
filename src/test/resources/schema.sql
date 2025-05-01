@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS reservation_times
     start_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (start_at)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS themes
 (
@@ -12,8 +12,9 @@ CREATE TABLE IF NOT EXISTS themes
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     thumbnail   VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-);
+    PRIMARY KEY (id),
+    UNIQUE (name)
+    );
 
 CREATE TABLE IF NOT EXISTS reservations
 (
