@@ -9,8 +9,8 @@ public record ReservationServiceResponse(
         Long id,
         String name,
         LocalDate date,
-        InnerTime time,
-        InnerTheme theme
+        LocalTime startAt,
+        String themeName
 ) {
 
     public static ReservationServiceResponse from(Reservation reservation) {
@@ -18,30 +18,8 @@ public record ReservationServiceResponse(
                 reservation.id(),
                 reservation.name(),
                 reservation.date(),
-                new InnerTime(
-                        reservation.time().id(),
-                        reservation.time().startAt()
-                ),
-                new InnerTheme(
-                        reservation.theme().id(),
-                        reservation.theme().name(),
-                        reservation.theme().description(),
-                        reservation.theme().thumbnail()
-                )
+                reservation.time().startAt(),
+                reservation.theme().name()
         );
-    }
-
-    public record InnerTime(
-            Long id,
-            LocalTime startAt
-    ) {
-    }
-
-    public record InnerTheme(
-            Long id,
-            String name,
-            String description,
-            String thumbnail
-    ) {
     }
 }

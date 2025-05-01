@@ -11,33 +11,18 @@ public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
-        InnerReservationTime time,
-        InnerReservationTheme theme
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+        LocalTime startAt,
+        String themeName
 ) {
-
-    private record InnerReservationTime(
-            Long id,
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-            LocalTime startAt
-    ) {
-    }
 
     public static ReservationResponse from(ReservationServiceResponse response) {
         return new ReservationResponse(
                 response.id(),
                 response.name(),
                 response.date(),
-                new InnerReservationTime(response.time().id(), response.time().startAt()),
-                new InnerReservationTheme(response.theme().id(), response.theme().name(),
-                        response.theme().description(), response.theme().thumbnail())
+                response.startAt(),
+                response.themeName()
         );
-    }
-
-    private record InnerReservationTheme(
-            Long id,
-            String name,
-            String description,
-            String thumbnail
-    ) {
     }
 }

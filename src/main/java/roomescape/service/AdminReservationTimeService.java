@@ -20,7 +20,6 @@ public class AdminReservationTimeService {
         return ReservationTimeServiceResponse.withoutBook(reservationTime);
     }
 
-    // TODO : User와 응답DTO 분리하기
     public List<ReservationTimeServiceResponse> getAll() {
         List<ReservationTime> allTimes = reservationTimeRepository.getAll();
         return allTimes.stream()

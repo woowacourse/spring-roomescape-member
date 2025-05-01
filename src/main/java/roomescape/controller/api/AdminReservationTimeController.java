@@ -27,12 +27,12 @@ public class AdminReservationTimeController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationTimeResponse create(
-            @RequestBody CreateReservationTimeRequest request) {
+    public ReservationTimeResponse create(@RequestBody CreateReservationTimeRequest request) {
         ReservationTimeServiceResponse response = adminReservationTimeService.create(request.toServiceRequest());
         return ReservationTimeResponse.from(response);
     }
 
+    // TODO : User와 응답DTO 분리하기
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationTimeResponse> getAll() {
