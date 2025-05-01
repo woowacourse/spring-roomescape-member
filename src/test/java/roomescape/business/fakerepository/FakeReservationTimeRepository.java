@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.ReservationTime;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 

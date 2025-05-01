@@ -106,20 +106,22 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
     }
 
     @Override
-    public ReservationTheme findById(Long id) {
+    public Optional<ReservationTheme> findById(Long id) {
         String query = """
                 SELECT id, name, description, thumbnail
                 FROM theme
                 WHERE id = ?
                 """;
-        return jdbcTemplate.queryForObject(query, (rs, rowNum) -> new ReservationTheme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                ),
-                id
-        );
+        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("description"),
+                                rs.getString("thumbnail")
+                        ),
+                        id
+                )
+                .stream()
+                .findFirst();
     }
 
     @Override
