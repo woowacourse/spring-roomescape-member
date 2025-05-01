@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeRequestDto;
@@ -37,5 +39,15 @@ public class ThemeService {
 
     public Theme getThemeById(Long id) {
         return themeRepository.findById(id);
+    }
+
+    public List<Theme> getWeeklyBestThemes() {
+        LocalDate now = LocalDate.now();
+        List<Long> bestThemesIds = reservedThemeChecker.getBestThemesIdInDays(now.minusDays(8), now.minusDays(1));
+        List<Theme> bestThemes = new ArrayList<>();
+        for (Long themeId : bestThemesIds) {
+            bestThemes.add(themeRepository.findById(themeId));
+        }
+        return bestThemes;
     }
 }
