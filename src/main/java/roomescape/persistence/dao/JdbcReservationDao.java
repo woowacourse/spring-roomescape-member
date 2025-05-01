@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Theme;
 import roomescape.persistence.entity.ReservationEntity;
 
 @Repository
@@ -73,12 +74,17 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsByDateAndTime(final LocalDate date, final PlayTime time) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ?) AS is_exists";
+    public boolean existsByDateAndTimeAndTheme(
+            final LocalDate date,
+            final PlayTime time,
+            final Theme theme
+    ) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?) AS is_exists";
         final int flag = jdbcTemplate.queryForObject(
                 sql, Integer.class,
                 ReservationEntity.formatDate(date),
-                time.getId()
+                time.getId(),
+                theme.getId()
         );
 
         return flag == 1;

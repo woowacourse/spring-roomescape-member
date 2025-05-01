@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
+import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ReservationEntity;
@@ -19,7 +20,7 @@ public class FakeReservationDao implements ReservationDao {
 
     public FakeReservationDao(final List<PlayTimeEntity> times) {
         this.times = times;
-        final ReservationEntity dummy = new ReservationEntity(null, null, null, null);
+        final ReservationEntity dummy = new ReservationEntity(null, null, null, null, null);
         reservations.add(dummy);
     }
 
@@ -28,7 +29,7 @@ public class FakeReservationDao implements ReservationDao {
         final ReservationEntity temp = ReservationEntity.from(reservation);
         final ReservationEntity reservationEntity = new ReservationEntity(
                 (long) index,
-                temp.name(), temp.date(), temp.playTimeEntity()
+                temp.name(), temp.date(), temp.playTimeEntity(), temp.themeEntity()
         );
         reservations.add(index, reservationEntity);
 
@@ -59,15 +60,21 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsByDateAndTime(final LocalDate date, final PlayTime time) {
+    public boolean existsByDateAndTimeAndTheme(
+            final LocalDate date,
+            final PlayTime time,
+            final Theme theme
+    ) {
         final String formattedDate = ReservationEntity.formatDate(date);
         final Long timeId = time.getId();
+        final Long themeId = theme.getId();
 
         return reservations.stream()
                 .filter(reservationEntity -> reservationEntity.id() != null)
                 .anyMatch(reservationEntity ->
                         reservationEntity.date().equals(formattedDate) &&
-                        reservationEntity.playTimeEntity().id().equals(timeId)
+                        reservationEntity.playTimeEntity().id().equals(timeId) &&
+                        reservationEntity.themeEntity().id().equals(themeId)
                 );
     }
 }

@@ -34,7 +34,7 @@ public class ReservationService {
     public ReservationResponse create(final ReservationRequest reservationRequest) {
         final PlayTime playTime = playTimeService.find(reservationRequest.timeId());
         final Theme theme = themeService.find(reservationRequest.themeId());
-        validateIsDuplicate(reservationRequest.date(), playTime);
+        validateIsDuplicate(reservationRequest.date(), playTime, theme);
 
         final Reservation reservation = reservationRequest.toDomain(playTime, theme);
         validateIsFuture(reservation);
@@ -46,11 +46,11 @@ public class ReservationService {
 
     private void validateIsDuplicate(
             final LocalDate date,
-            final PlayTime playTime
+            final PlayTime playTime,
+            final Theme theme
     ) {
-        // TODO : 테마에 대한 중복 검사 필요
-        if (reservationDao.existsByDateAndTime(date, playTime)) {
-            throw new DuplicateReservationException(date, playTime);
+        if (reservationDao.existsByDateAndTimeAndTheme(date, playTime, theme)) {
+            throw new DuplicateReservationException(date, playTime, theme);
         }
     }
 
