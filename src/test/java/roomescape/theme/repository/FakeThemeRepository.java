@@ -1,6 +1,6 @@
 package roomescape.theme.repository;
 
-import roomescape.theme.entity.ReservationThemeEntity;
+import roomescape.theme.entity.ThemeEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,18 +8,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class FakeReservationThemeRepository implements ReservationThemeRepository {
+public class FakeThemeRepository implements ThemeRepository {
 
-    private final List<ReservationThemeEntity> entities = new ArrayList<>();
+    private final List<ThemeEntity> entities = new ArrayList<>();
 
     @Override
-    public ReservationThemeEntity save(ReservationThemeEntity entity) {
+    public ThemeEntity save(ThemeEntity entity) {
         entities.add(entity);
         return entity;
     }
 
     @Override
-    public List<ReservationThemeEntity> findAll() {
+    public List<ThemeEntity> findAll() {
         return Collections.unmodifiableList(entities);
     }
 
@@ -29,21 +29,21 @@ public class FakeReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public Optional<ReservationThemeEntity> findById(Long id) {
+    public Optional<ThemeEntity> findById(Long id) {
         return entities.stream()
                 .filter(entity -> entity.getId().equals(id))
                 .findFirst();
     }
 
     @Override
-    public Optional<ReservationThemeEntity> findByName(String name) {
+    public Optional<ThemeEntity> findByName(String name) {
         return entities.stream()
                 .filter(entity -> entity.getName().equals(name))
                 .findFirst();
     }
 
     @Override
-    public List<ReservationThemeEntity> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, final int limit) {
+    public List<ThemeEntity> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, final int limit) {
         // TODO: 테스트 로직 작성하기
         return null;
     }

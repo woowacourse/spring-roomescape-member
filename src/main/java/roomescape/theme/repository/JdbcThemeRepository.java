@@ -6,23 +6,23 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.entity.ReservationThemeEntity;
+import roomescape.theme.entity.ThemeEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JdbcReservationThemeRepository implements ReservationThemeRepository {
+public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcReservationThemeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcThemeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public ReservationThemeEntity save(ReservationThemeEntity entity) {
+    public ThemeEntity save(ThemeEntity entity) {
         String query = "insert into theme (name, description, thumbnail) values (:name, :description, :thumbnail)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", entity.getName())
@@ -31,7 +31,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return new ReservationThemeEntity(
+        return new ThemeEntity(
                 id,
                 entity.getName(),
                 entity.getDescription(),
@@ -40,14 +40,14 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeEntity> findAll() {
+    public List<ThemeEntity> findAll() {
         String query = "select * from theme";
         return jdbcTemplate.query(query, (resultSet, rowNum) -> {
             long id = resultSet.getLong("id");
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             String thumbnail = resultSet.getString("thumbnail");
-            return new ReservationThemeEntity(
+            return new ThemeEntity(
                     id,
                     name,
                     description,
@@ -66,16 +66,16 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public Optional<ReservationThemeEntity> findById(Long id) {
+    public Optional<ThemeEntity> findById(Long id) {
         String query = "select * from theme where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
         try {
-            ReservationThemeEntity themeEntity = jdbcTemplate.queryForObject(query, params, (resultSet, rowNum) -> {
+            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, params, (resultSet, rowNum) -> {
                 String name = resultSet.getString("name");
                 String description = resultSet.getString("description");
                 String thumbnail = resultSet.getString("thumbnail");
-                return new ReservationThemeEntity(
+                return new ThemeEntity(
                         id,
                         name,
                         description,
@@ -89,16 +89,16 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public Optional<ReservationThemeEntity> findByName(String name) {
+    public Optional<ThemeEntity> findByName(String name) {
         String query = "SELECT * FROM theme WHERE name = :name";
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", name);
         try {
-            ReservationThemeEntity themeEntity = jdbcTemplate.queryForObject(query, param, (resultSet, rowNum) -> {
+            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, param, (resultSet, rowNum) -> {
                 final long id = resultSet.getLong("id");
                 String description = resultSet.getString("description");
                 String thumbnail = resultSet.getString("thumbnail");
-                return new ReservationThemeEntity(
+                return new ThemeEntity(
                         id,
                         name,
                         description,
@@ -112,7 +112,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeEntity> findPopularThemesByDateRangeAndLimit(
+    public List<ThemeEntity> findPopularThemesByDateRangeAndLimit(
             LocalDate startDate,
             LocalDate endDate,
             final int limit
@@ -146,7 +146,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
             String name = resultSet.getString("name");
             String description = resultSet.getString("description");
             String thumbnail = resultSet.getString("thumbnail");
-            return new ReservationThemeEntity(
+            return new ThemeEntity(
                     id,
                     name,
                     description,

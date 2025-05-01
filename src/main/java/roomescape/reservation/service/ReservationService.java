@@ -2,8 +2,8 @@ package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.entity.ReservationThemeEntity;
-import roomescape.theme.repository.ReservationThemeRepository;
+import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.reservation.service.dto.request.ReservationRequest;
 import roomescape.reservation.service.dto.response.ReservationResponse;
@@ -20,12 +20,12 @@ import java.util.List;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
-    private final ReservationThemeRepository themeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository timeRepository,
-            ReservationThemeRepository themeRepository
+            ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
@@ -41,7 +41,7 @@ public class ReservationService {
 
     private ReservationResponse convertToResponse(ReservationEntity reservation) {
         final Long themeId = reservation.getThemeId();
-        ReservationThemeEntity themeEntity = themeRepository.findById(themeId)
+        ThemeEntity themeEntity = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
         return ReservationResponse.from(reservation, themeEntity);
     }
@@ -49,7 +49,7 @@ public class ReservationService {
     public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTimeEntity timeEntity = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간 입니다."));
-        ReservationThemeEntity themeEntity = themeRepository.findById(request.themeId())
+        ThemeEntity themeEntity = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
 
         ReservationEntity newReservation = request.toEntity(timeEntity);

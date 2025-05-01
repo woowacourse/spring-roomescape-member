@@ -1,7 +1,7 @@
 package roomescape.reservation.service.dto.response;
 
-import roomescape.theme.service.dto.response.ReservationThemeResponse;
-import roomescape.theme.entity.ReservationThemeEntity;
+import roomescape.theme.service.dto.response.ThemeResponse;
+import roomescape.theme.entity.ThemeEntity;
 import roomescape.time.service.dto.response.ReservationTimeResponse;
 import roomescape.reservation.entity.ReservationEntity;
 
@@ -12,15 +12,15 @@ public record ReservationResponse(
         String name,
         LocalDate date,
         ReservationTimeResponse time,
-        ReservationThemeResponse theme
+        ThemeResponse theme
 ) {
-    public static ReservationResponse from(ReservationEntity reservation, ReservationThemeEntity theme) {
+    public static ReservationResponse from(ReservationEntity reservation, ThemeEntity theme) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime()),
-                ReservationThemeResponse.from(theme)
+                ThemeResponse.from(theme)
         );
     }
 }

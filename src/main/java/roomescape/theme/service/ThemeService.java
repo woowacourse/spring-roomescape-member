@@ -1,10 +1,10 @@
 package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.theme.repository.ReservationThemeRepository;
-import roomescape.theme.service.dto.request.ReservationThemeRequest;
-import roomescape.theme.service.dto.response.ReservationThemeResponse;
-import roomescape.theme.entity.ReservationThemeEntity;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.service.dto.request.ThemeRequest;
+import roomescape.theme.service.dto.response.ThemeResponse;
+import roomescape.theme.entity.ThemeEntity;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 
@@ -12,27 +12,27 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class ReservationThemeService {
-    private final ReservationThemeRepository themeRepository;
+public class ThemeService {
+    private final ThemeRepository themeRepository;
 
-    public ReservationThemeService(ReservationThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationThemeResponse createTheme(ReservationThemeRequest request) {
-        ReservationThemeEntity newTheme = request.toEntity();
+    public ThemeResponse createTheme(ThemeRequest request) {
+        ThemeEntity newTheme = request.toEntity();
         themeRepository.findByName(newTheme.getName())
                 .ifPresent((theme) -> {
                     throw new ConflictException("중복되는 테마가 존재합니다.");
                 });
-        ReservationThemeEntity saved = themeRepository.save(newTheme);
-        return ReservationThemeResponse.from(saved);
+        ThemeEntity saved = themeRepository.save(newTheme);
+        return ThemeResponse.from(saved);
     }
 
-    public List<ReservationThemeResponse> getAllThemes() {
+    public List<ThemeResponse> getAllThemes() {
         return themeRepository.findAll()
                 .stream()
-                .map(ReservationThemeResponse::from)
+                .map(ThemeResponse::from)
                 .toList();
     }
 
@@ -43,12 +43,12 @@ public class ReservationThemeService {
         }
     }
 
-    public List<ReservationThemeResponse> getPopularThemes(final int limit) {
+    public List<ThemeResponse> getPopularThemes(final int limit) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusWeeks(1);
         return themeRepository.findPopularThemesByDateRangeAndLimit(startDate, endDate, limit)
                 .stream()
-                .map(ReservationThemeResponse::from)
+                .map(ThemeResponse::from)
                 .toList();
     }
 }

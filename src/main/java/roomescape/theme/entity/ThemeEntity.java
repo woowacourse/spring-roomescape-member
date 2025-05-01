@@ -2,7 +2,7 @@ package roomescape.theme.entity;
 
 import roomescape.exception.BadRequestException;
 
-public class ReservationThemeEntity {
+public class ThemeEntity {
 
     private final Long id;
 
@@ -12,7 +12,7 @@ public class ReservationThemeEntity {
 
     private String thumbnail;
 
-    public ReservationThemeEntity(Long id, String name, String description, String thumbnail) {
+    public ThemeEntity(Long id, String name, String description, String thumbnail) {
         if (id == null
                 || name == null || name.isBlank()
                 || description == null || description.isBlank()

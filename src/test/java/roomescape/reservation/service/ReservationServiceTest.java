@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.repository.FakeReservationRepository;
-import roomescape.theme.entity.ReservationThemeEntity;
-import roomescape.theme.repository.FakeReservationThemeRepository;
-import roomescape.theme.repository.ReservationThemeRepository;
+import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.repository.FakeThemeRepository;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.repository.FakeTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.repository.ReservationTimeRepository;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ReservationServiceTest {
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
     private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
-    private final ReservationThemeRepository themeRepository = new FakeReservationThemeRepository();
+    private final ThemeRepository themeRepository = new FakeThemeRepository();
     private final ReservationService service = new ReservationService(
             reservationRepository,
             timeRepository,
@@ -31,7 +31,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setupTheme() {
-        themeRepository.save(new ReservationThemeEntity(1L, "theme", "hello", "hi"));
+        themeRepository.save(new ThemeEntity(1L, "theme", "hello", "hi"));
     }
 
     @DisplayName("존재하지 않는 timeId로 생성할 수 없다.")
