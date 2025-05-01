@@ -11,8 +11,10 @@ import roomescape.time.entity.ReservationTimeEntity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @JdbcTest
 class JdbcReservationRepositoryTest {
@@ -40,5 +42,44 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(reservationRepository.findAll()).hasSize(1);
+    }
+
+    @DisplayName("삭제 테스트")
+    @Test
+    void deleteTest() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1, "10:00");
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id) VALUES (?, ?, ?, ?)", 1, "test", "2025-01-01", 1);
+
+        // when
+        reservationRepository.deleteById(1L);
+
+        // then
+        assertThat(reservationRepository.findAll()).hasSize(0);
+    }
+
+    @DisplayName("time id로 조회할 수 있다.")
+    @Test
+    void findByIdTest() {
+        // given
+        // time
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1, "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES ( ?, ? )", 2, "12:00");
+        // theme
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES ( ?, ?, ?, ? )", 1, "hello", "hi", "hh");
+        // reservation
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 1, "first", "2025-01-01", 1, 1);
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 2, "second", "2025-01-01", 2, 1);
+
+        // when
+        List<ReservationEntity> firstTimeReservations = reservationRepository.findAllByTimeId(1L);
+        List<ReservationEntity> secondTimeReservations = reservationRepository.findAllByTimeId(2L);
+
+        // then
+        assertSoftly((softly) -> {
+            softly.assertThat(firstTimeReservations).hasSize(1);
+            softly.assertThat(firstTimeReservations.getFirst().getId()).isEqualTo(1L);
+            softly.assertThat(secondTimeReservations).hasSize(1);
+            softly.assertThat(secondTimeReservations.getFirst().getId()).isEqualTo(2L);        });
     }
 }
