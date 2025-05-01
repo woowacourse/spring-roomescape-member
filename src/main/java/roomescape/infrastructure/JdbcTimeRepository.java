@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
+import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 
 @Repository
 public class JdbcTimeRepository implements TimeRepository {
@@ -73,15 +74,27 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public List<ReservationTime> getTimesBy(LocalDate date, Long themeId) {
+    public List<TimeDataWithBookingInfo> getTimesWithBookingInfo(LocalDate date, Long themeId) {
         String sql = """
-                SELECT t.id, t.start_at
-                FROM reservation_time as t
-                JOIN reservation as r on r.time_id=t.id
-                WHERE r.date = ? AND r.theme_id = ?
+                SELECT
+                    t.id,
+                    t.start_at,
+                    CASE WHEN r.id IS NULL THEN FALSE ELSE TRUE END AS already_booked
+                FROM
+                    reservation_time t
+                LEFT JOIN
+                    reservation r
+                    ON t.id = r.time_id
+                    AND r.date = ?
+                    AND r.theme_id = ?
+                ORDER BY
+                    t.start_at;
                 """;
-
-        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER,
-                date, themeId);
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> new TimeDataWithBookingInfo(
+                        rs.getLong("id"),
+                        rs.getTime("start_at").toLocalTime(),
+                        rs.getBoolean("already_booked")
+                ), date, themeId);
     }
 }

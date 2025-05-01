@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
+import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.exception.NotFoundException;
 
 public class FakeTimeRepository implements TimeRepository {
@@ -41,7 +42,7 @@ public class FakeTimeRepository implements TimeRepository {
     }
 
     @Override
-    public List<ReservationTime> getTimesBy(LocalDate date, Long themeId) {
+    public List<TimeDataWithBookingInfo> getTimesWithBookingInfo(LocalDate date, Long themeId) {
         return List.of();
     }
 }

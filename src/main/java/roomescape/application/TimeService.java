@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
+import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.TimeRequest;
 
@@ -41,8 +42,7 @@ public class TimeService {
                 .orElseThrow(() -> new NotFoundException("삭제하려는 id가 존재하지 않습니다, id: " + id));
     }
 
-    public List<TimeDto> getTimesBy(LocalDate date, Long themeId) {
-        List<ReservationTime> bookedTimes = repository.getTimesBy(date, themeId);
-        return TimeDto.from(bookedTimes);
+    public List<TimeDataWithBookingInfo> getTimesWithBookingInfo(LocalDate date, Long themeId) {
+        return repository.getTimesWithBookingInfo(date, themeId);
     }
 }

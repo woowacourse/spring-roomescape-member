@@ -1,4 +1,4 @@
-package roomescape.presentation.controller.Integration;
+package roomescape.presentation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.repository.dto.AvailableTimesData;
+import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserReservationControllerTest {
+class TimeControllerTest {
     @LocalServerPort
     int port;
 
@@ -44,22 +44,22 @@ class UserReservationControllerTest {
 
     @DisplayName("테마와 날짜 선택 후 예약 가능한 시간 조회 요청")
     @Test
-    void getAllThemes() {
+    void getTimesWithBookingInfo() {
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
         JdbcHelper.insertReservationTimes(jdbcTemplate, RESERVATION_TIME_1, RESERVATION_TIME_2, RESERVATION_TIME_3);
         JdbcHelper.insertReservation(jdbcTemplate, RESERVATION_1);
 
         String date = RESERVATION_1.getReservationDate().toString();
 
-        List<AvailableTimesData> timesData = RestAssured.given().log().all()
-                .when().get("/reservation/themes/1/available-times?date=" + date)
+        List<TimeDataWithBookingInfo> timesData = RestAssured.given().log().all()
+                .when().get(String.format("/times/booking-status?date=%s&themeId=%d", date, THEME_1.getId()))
                 .then().log().all()
                 .statusCode(200)
                 .extract()
-                .body().jsonPath().getList(".", AvailableTimesData.class);
+                .body().jsonPath().getList(".", TimeDataWithBookingInfo.class);
 
         long bookedCount = timesData.stream()
-                .filter(AvailableTimesData::alreadyBooked)
+                .filter(TimeDataWithBookingInfo::alreadyBooked)
                 .count();
 
         assertAll(
@@ -67,4 +67,5 @@ class UserReservationControllerTest {
                 () -> assertThat(bookedCount).isEqualTo(1)
         );
     }
+
 }
