@@ -45,7 +45,7 @@ public class JdbcThemeDaoTest {
         Long id = jdbcThemeDao.saveAndReturnId(theme);
 
         // then
-        assertThat(id).isEqualTo(4L);
+        assertThat(id).isEqualTo(7L);
     }
 
     @DisplayName("테마를 조회한다")
@@ -55,14 +55,14 @@ public class JdbcThemeDaoTest {
         List<Theme> themes = jdbcThemeDao.findAll();
 
         // then
-        assertThat(themes).hasSize(3);
+        assertThat(themes).hasSize(6);
     }
 
     @DisplayName("테마를 삭제한다")
     @Test
     void delete_test() {
         // given
-        Long deleteId = 3L;
+        Long deleteId = 6L;
 
         // when
         jdbcThemeDao.deleteById(deleteId);
@@ -70,7 +70,7 @@ public class JdbcThemeDaoTest {
         // then
         String sql = "SELECT COUNT(*) FROM theme";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        assertThat(count).isEqualTo(2);
+        assertThat(count).isEqualTo(5);
     }
 
     @DisplayName("특정 ID의 테마를 조회한다")

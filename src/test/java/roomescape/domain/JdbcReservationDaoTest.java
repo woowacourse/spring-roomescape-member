@@ -50,7 +50,7 @@ class JdbcReservationDaoTest {
         Long id = jdbcReservationDao.saveAndReturnId(reservation);
 
         // then
-        assertThat(id).isEqualTo(6L);
+        assertThat(id).isEqualTo(17L);
     }
 
     @DisplayName("Reservation 데이터를 정상적으로 삭제한다")
@@ -66,7 +66,7 @@ class JdbcReservationDaoTest {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
 
         // then
-        assertThat(count).isEqualTo(4);
+        assertThat(count).isEqualTo(15);
     }
 
     @DisplayName("저장된 Reservation 목록들을 조회한다")
@@ -76,7 +76,7 @@ class JdbcReservationDaoTest {
         List<Reservation> reservations = jdbcReservationDao.findAll();
 
         // then
-        assertThat(reservations).hasSize(5);
+        assertThat(reservations).hasSize(16);
     }
 
     @DisplayName("시간 id 일치 여부를 반환한다")
@@ -92,7 +92,7 @@ class JdbcReservationDaoTest {
     @Test
     void same_time_id_and_date_test(){
         // when
-        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 5, 5), 1L, 1L);
+        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L, 1L);
         // then
         assertThat(actual).isTrue();
     }

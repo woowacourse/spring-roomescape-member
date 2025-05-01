@@ -60,7 +60,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(5));
+                .body("size()", is(16));
     }
 
     @DisplayName("예약 및 삭제 요청이 200 코드를 반환한다")
@@ -78,13 +78,13 @@ class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(6));
+                .body("id", is(17));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(6));
+                .body("size()", is(17));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
@@ -95,7 +95,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(5));
+                .body("size()", is(16));
     }
 
     @DisplayName("데이터 삭제를 성공하면 204 코드를 반환한다")
