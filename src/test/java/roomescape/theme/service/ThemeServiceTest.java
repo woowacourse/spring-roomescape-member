@@ -7,8 +7,12 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.DataExistException;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.H2ThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 @JdbcTest
@@ -19,8 +23,7 @@ class ThemeServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-
+    
     @Test
     void 테마를_저장한다() {
         // given
@@ -112,5 +115,23 @@ class ThemeServiceTest {
         Assertions.assertThatThrownBy(() -> {
             themeService.save(name, description, thumbnail);
         }).isInstanceOf(DataExistException.class);
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Bean
+        public ThemeRepository themeRepository(
+                final JdbcTemplate jdbcTemplate
+        ) {
+            return new H2ThemeRepository(jdbcTemplate);
+        }
+
+        @Bean
+        public ThemeService themeService(
+                final ThemeRepository themeRepository
+        ) {
+            return new ThemeService(themeRepository);
+        }
     }
 }
