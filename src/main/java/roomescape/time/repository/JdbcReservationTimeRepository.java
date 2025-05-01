@@ -1,6 +1,7 @@
 package roomescape.time.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,8 +18,8 @@ import java.util.Optional;
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcReservationTimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     @Override

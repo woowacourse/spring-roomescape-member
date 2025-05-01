@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -16,8 +17,8 @@ import java.util.List;
 public class JdbcReservationRepository implements ReservationRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcReservationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     public ReservationEntity save(ReservationEntity newReservation) {

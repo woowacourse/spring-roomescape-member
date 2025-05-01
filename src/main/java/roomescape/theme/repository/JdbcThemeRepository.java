@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -17,8 +18,8 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcThemeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     @Override
