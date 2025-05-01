@@ -68,12 +68,11 @@ public class Reservation {
         if (date.isAfter(now.toLocalDate())) {
             return;
         }
-        // TODO: 메시지 정의
         if (date.isBefore(now.toLocalDate())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
         if (time.isBefore(now.toLocalTime())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("이미 지난 시간에는 예약할 수 없습니다.");
         }
     }
 }
