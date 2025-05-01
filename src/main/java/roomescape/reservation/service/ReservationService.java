@@ -14,6 +14,7 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -26,11 +27,15 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public List<ReservationResponse> getReservations() {
+    public List<ReservationResponse> findAllReservation() {
         final List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(ReservationResponse::new)
                 .toList();
+    }
+
+    public List<AvailableReservationTimeResponse> findAllReservationTime(final LocalDate date, final Long themeId) {
+        return reservationTimeRepository.findAllAvailable(date, themeId);
     }
 
     public ReservationResponse saveReservation(final @Valid ReservationRequest request) {

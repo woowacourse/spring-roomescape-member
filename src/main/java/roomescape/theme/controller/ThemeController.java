@@ -35,7 +35,7 @@ public class ThemeController {
         return themeService.findAll();
     }
 
-    @GetMapping("/popular")
+    @GetMapping("/ranking")
     public List<PopularThemeResponse> findAllPopular() {
         return themeService.findAllPopular();
     }

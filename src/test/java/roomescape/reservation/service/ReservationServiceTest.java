@@ -47,7 +47,7 @@ class ReservationServiceTest {
     @Test
     void 모든_예약을_조회한다() {
         // when
-        List<ReservationResponse> responses = service.getReservations();
+        List<ReservationResponse> responses = service.findAllReservation();
 
         // then
         assertThat(responses)

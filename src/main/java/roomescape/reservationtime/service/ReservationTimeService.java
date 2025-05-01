@@ -1,13 +1,11 @@
 package roomescape.reservationtime.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.error.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -29,10 +27,6 @@ public class ReservationTimeService {
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::new)
                 .toList();
-    }
-
-    public List<AvailableReservationTimeResponse> findAllAvailable(final LocalDate date, final Long themeId) {
-        return reservationTimeRepository.findAllAvailable(date, themeId);
     }
 
     public void delete(final Long id) {
