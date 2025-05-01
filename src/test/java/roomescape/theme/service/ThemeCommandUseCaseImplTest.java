@@ -91,6 +91,6 @@ class ThemeCommandUseCaseImplTest {
         // then
         assertThatThrownBy(() -> themeCommandUseCase.delete(unassigned))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("저장되지 않아서 식별할 수 없습니다.");
+                .hasMessage("저장되지 않아 식별할 수 없습니다.");
     }
 }

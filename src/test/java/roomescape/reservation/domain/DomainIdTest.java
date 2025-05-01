@@ -27,7 +27,7 @@ class DomainIdTest {
         // then
         assertThatThrownBy(id::getValue)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("저장되지 않아서 식별할 수 없습니다.");
+                .hasMessage("저장되지 않아 식별할 수 없습니다.");
     }
 
     @Test
@@ -41,7 +41,7 @@ class DomainIdTest {
         // then
         assertThatThrownBy(() -> id1.equals(id2))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("저장되지 않아서 식별할 수 없습니다.");
+                .hasMessage("저장되지 않아 식별할 수 없습니다.");
     }
 
     @Test
