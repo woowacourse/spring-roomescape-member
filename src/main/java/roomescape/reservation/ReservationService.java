@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.globalexception.BadRequestException;
 import roomescape.globalexception.ConflictException;
+import roomescape.globalexception.NotFoundException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationtime.ReservationTime;
@@ -48,6 +49,9 @@ public class ReservationService {
     }
 
     public void deleteById(final Long id) {
+        if(!reservationRepository.existsByReservationTime(id)){
+            throw new NotFoundException("존재하지 않는 예약입니다.");
+        }
         reservationRepository.delete(id);
     }
 
