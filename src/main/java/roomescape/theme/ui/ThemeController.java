@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.uri.UriFactory;
 import roomescape.theme.application.ThemeService;
-import roomescape.theme.domain.ThemeId;
 import roomescape.theme.ui.dto.CreateThemeWebRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
 
@@ -50,7 +49,7 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        themeService.delete(ThemeId.from(id));
+        themeService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

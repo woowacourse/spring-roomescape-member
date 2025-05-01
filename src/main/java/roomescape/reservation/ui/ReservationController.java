@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.uri.UriFactory;
 import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
-import roomescape.theme.domain.ThemeId;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -41,8 +39,7 @@ public class ReservationController {
     public ResponseEntity<List<AvailableReservationTimeWebResponse>> getAvailable(
             @RequestParam final LocalDate date,
             @RequestParam final Long themeId) {
-        final List<AvailableReservationTimeWebResponse> reservations = reservationService.getAvailable(date,
-                ThemeId.from(themeId));
+        final List<AvailableReservationTimeWebResponse> reservations = reservationService.getAvailable(date, themeId);
         return ResponseEntity.ok(reservations);
     }
 
@@ -56,8 +53,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable final long id) {
-        reservationService.delete(ReservationId.from(id));
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
+        reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

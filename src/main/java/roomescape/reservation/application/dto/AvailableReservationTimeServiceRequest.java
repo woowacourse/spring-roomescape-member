@@ -13,10 +13,8 @@ public record AvailableReservationTimeServiceRequest(
         ThemeId themeId
 ) {
 
-    public AvailableReservationTimeServiceRequest(final LocalDate date, final ThemeId themeId) {
+    public AvailableReservationTimeServiceRequest {
         validate(date, themeId);
-        this.date = date;
-        this.themeId = themeId;
     }
 
     private void validate(final LocalDate date, final ThemeId themeId) {

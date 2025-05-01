@@ -46,7 +46,7 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
-    public void delete(final ThemeId id) {
-        themeCommandUseCase.delete(id);
+    public void delete(final Long id) {
+        themeCommandUseCase.delete(ThemeId.from(id));
     }
 }

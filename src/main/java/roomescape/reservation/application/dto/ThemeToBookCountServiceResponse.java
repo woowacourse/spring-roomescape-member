@@ -1,4 +1,4 @@
-package roomescape.reservation.application.usecase;
+package roomescape.reservation.application.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;

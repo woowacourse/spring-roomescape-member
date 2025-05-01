@@ -34,7 +34,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     @Override
-    public void delete(final ReservationTimeId id) {
-        reservationTimeCommandUseCase.delete(id);
+    public void delete(final Long id) {
+        reservationTimeCommandUseCase.delete(ReservationTimeId.from(id));
     }
 }

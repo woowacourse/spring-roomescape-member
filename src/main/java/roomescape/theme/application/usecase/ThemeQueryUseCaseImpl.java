@@ -2,8 +2,8 @@ package roomescape.theme.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.application.dto.ThemeToBookCountServiceResponse;
 import roomescape.reservation.application.usecase.ReservationQueryUseCase;
-import roomescape.reservation.application.usecase.ThemeToBookCountServiceResponse;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;

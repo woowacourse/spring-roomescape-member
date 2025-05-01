@@ -1,6 +1,5 @@
 package roomescape.time.application;
 
-import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.ui.dto.CreateReservationTimeWebRequest;
 import roomescape.time.ui.dto.ReservationTimeResponse;
 
@@ -12,5 +11,5 @@ public interface ReservationTimeService {
 
     ReservationTimeResponse create(CreateReservationTimeWebRequest createReservationTimeWebRequest);
 
-    void delete(ReservationTimeId id);
+    void delete(Long id);
 }

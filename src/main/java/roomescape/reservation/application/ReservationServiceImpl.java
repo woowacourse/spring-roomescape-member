@@ -29,12 +29,11 @@ public class ReservationServiceImpl implements ReservationService {
                 reservationQueryUseCase.getAll());
     }
 
-    // TODO: Controller to Service에서는 Long으로 (래핑된 ID로 변환하는 단 수정하기)
     @Override
-    public List<AvailableReservationTimeWebResponse> getAvailable(final LocalDate date, final ThemeId themeId) {
+    public List<AvailableReservationTimeWebResponse> getAvailable(final LocalDate date, final Long id) {
         final AvailableReservationTimeServiceRequest serviceRequest = new AvailableReservationTimeServiceRequest(
                 date,
-                themeId);
+                ThemeId.from(id));
 
         return reservationQueryUseCase.getTimesWithAvailability(serviceRequest).stream()
                 .map(ReservationConverter::toWebDto)
@@ -53,7 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void delete(final ReservationId id) {
-        reservationCommandUseCase.delete(id);
+    public void delete(final Long id) {
+        reservationCommandUseCase.delete(ReservationId.from(id));
     }
 }

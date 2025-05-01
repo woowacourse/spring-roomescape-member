@@ -1,6 +1,5 @@
 package roomescape.theme.application;
 
-import roomescape.theme.domain.ThemeId;
 import roomescape.theme.ui.dto.CreateThemeWebRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
 
@@ -14,5 +13,5 @@ public interface ThemeService {
 
     ThemeResponse create(CreateThemeWebRequest createThemeWebRequest);
 
-    void delete(ThemeId id);
+    void delete(Long id);
 }
