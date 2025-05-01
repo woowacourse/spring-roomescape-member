@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.dao.resetvationTime.ReservationTimeDao;
+import roomescape.dao.reservationTime.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationTimeUserResponse;
 import roomescape.exception.ReservationExistException;

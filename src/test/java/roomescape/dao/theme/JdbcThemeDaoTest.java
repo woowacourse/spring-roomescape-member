@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.reservation.JdbcReservationDao;
-import roomescape.dao.resetvationTime.JdbcReservationTimeDao;
+import roomescape.dao.reservationTime.JdbcReservationTimeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;

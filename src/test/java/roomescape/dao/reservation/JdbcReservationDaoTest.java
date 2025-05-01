@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.dao.resetvationTime.JdbcReservationTimeDao;
+import roomescape.dao.reservationTime.JdbcReservationTimeDao;
 import roomescape.dao.theme.JdbcThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
