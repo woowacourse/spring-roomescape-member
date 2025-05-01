@@ -36,7 +36,7 @@ public class ReservationTimeServiceTest extends BaseTest {
     void 예약시간을_생성한다() {
         CreateReservationTimeRequest request = new CreateReservationTimeRequest(LocalTime.of(10, 0));
 
-        ReservationTimeResponse response = reservationTimeService.create(request);
+        ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
 
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.startAt()).isEqualTo("10:00");
@@ -45,7 +45,7 @@ public class ReservationTimeServiceTest extends BaseTest {
     @Test
     void 예약시간을_모두_조회한다() {
         reservationTimeDbFixture.예약시간_10시();
-        List<ReservationTimeResponse> responses = reservationTimeService.getAll();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
 
         assertThat(responses.get(0).startAt()).isEqualTo("10:00");
     }
@@ -53,16 +53,16 @@ public class ReservationTimeServiceTest extends BaseTest {
     @Test
     void 예약시간을_삭제한다() {
         reservationTimeDbFixture.예약시간_10시();
-        reservationTimeService.deleteById(1L);
+        reservationTimeService.deleteReservationTimeById(1L);
 
-        List<ReservationTimeResponse> responses = reservationTimeService.getAll();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
 
         assertThat(responses).hasSize(0);
     }
 
     @Test
     void 존재하지_않는_예약시간을_삭제할_수_없다() {
-        assertThatThrownBy(() -> reservationTimeService.deleteById(3L))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(3L))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
@@ -72,7 +72,7 @@ public class ReservationTimeServiceTest extends BaseTest {
         Theme theme = themeDbFixture.공포();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
 
-        assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -82,7 +82,7 @@ public class ReservationTimeServiceTest extends BaseTest {
         CreateReservationTimeRequest request = new CreateReservationTimeRequest(
                 LocalTime.of(10, 0));
 
-        assertThatThrownBy(() -> reservationTimeService.create(request))
+        assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

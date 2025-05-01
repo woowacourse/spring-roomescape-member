@@ -41,7 +41,7 @@ public class ReservationServiceTest extends BaseTest {
                 theme.getId()
         );
 
-        ReservationResponse response = reservationService.create(request);
+        ReservationResponse response = reservationService.createReservation(request);
 
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
@@ -55,7 +55,7 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
-        reservationService.create(new ReservationCreateRequest(
+        reservationService.createReservation(new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
                 reservationTime.getId(),
@@ -69,7 +69,7 @@ public class ReservationServiceTest extends BaseTest {
                 theme.getId()
         );
 
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -78,13 +78,13 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
-        reservationService.create(new ReservationCreateRequest(
+        reservationService.createReservation(new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
         ReservationResponse response = responses.get(0);
 
         assertThat(response.id()).isEqualTo(1L);
@@ -99,22 +99,22 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
-        reservationService.create(new ReservationCreateRequest(
+        reservationService.createReservation(new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
-        reservationService.deleteById(1L);
+        reservationService.deleteReservationById(1L);
 
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAllReservations();
 
         assertThat(responses).hasSize(0);
     }
 
     @Test
     void 존재하지_않는_예약을_삭제할_수_없다() {
-        assertThatThrownBy(() -> reservationService.deleteById(3L))
+        assertThatThrownBy(() -> reservationService.deleteReservationById(3L))
                 .isInstanceOf(NoSuchElementException.class);
     }
 }

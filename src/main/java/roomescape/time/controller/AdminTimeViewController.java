@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin/time")
 public class AdminTimeViewController {
 
-    @GetMapping("/theme")
-    public String getThemes() {
-        return "admin/theme";
+    @GetMapping
+    public String getTime() {
+        return "admin/time";
     }
 }

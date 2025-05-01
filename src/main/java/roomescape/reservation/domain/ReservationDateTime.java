@@ -32,4 +32,8 @@ public class ReservationDateTime {
     public ReservationTime getReservationTime() {
         return reservationTime;
     }
+
+    public Long getTimeId() {
+        return reservationTime.getId();
+    }
 }

@@ -14,51 +14,47 @@ import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
-
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
     public ReservationTimeService(
-            ReservationTimeRepository reservationTimeRepository,
-            ReservationRepository reservationRepository
+            final ReservationTimeRepository reservationTimeRepository,
+            final ReservationRepository reservationRepository
     ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse create(CreateReservationTimeRequest request) {
+    public ReservationTimeResponse createReservationTime(final CreateReservationTimeRequest request) {
         LocalTime startAt = request.startAt();
         if (reservationTimeRepository.existByStartAt(startAt)) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 시간입니다.");
         }
-
         ReservationTime created = reservationTimeRepository.save(startAt);
-
         return ReservationTimeResponse.from(created);
     }
 
-    public List<ReservationTimeResponse> getAll() {
+    public List<ReservationTimeResponse> getAllReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-
         return ReservationTimeResponse.from(reservationTimes);
     }
 
-    public void deleteById(Long id) {
+    public void deleteReservationTimeById(final Long id) {
         if (reservationRepository.existReservationByTimeId(id)) {
             throw new IllegalArgumentException("[ERROR] 해당 시간에 이미 예약이 존재하여 삭제할 수 없습니다.");
         }
-
         ReservationTime reservationTime = getReservationTime(id);
         reservationTimeRepository.deleteById(reservationTime.getId());
     }
 
-    public ReservationTime getReservationTime(Long id) {
+    public ReservationTime getReservationTime(final Long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 예약 시간을 찾을 수 없습니다."));
     }
 
-    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(
-            AvailableReservationTimeRequest request) {
+    public List<AvailableReservationTimeResponse> findAvailableReservationTimes(
+            final AvailableReservationTimeRequest request
+    ) {
         return reservationTimeRepository.findAllAvailableReservationTimes(request.date(), request.themeId());
     }
 }

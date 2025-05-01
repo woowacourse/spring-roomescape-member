@@ -37,7 +37,7 @@ public class ThemeServiceTest extends BaseTest {
     void 테마를_생성한다() {
         CreateThemeRequest request = new CreateThemeRequest("공포", "공포 테마", "공포.jpg");
 
-        ThemeResponse response = themeService.create(request);
+        ThemeResponse response = themeService.createTheme(request);
 
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("공포");
@@ -48,7 +48,7 @@ public class ThemeServiceTest extends BaseTest {
     @Test
     void 테마를_조회한다() {
         Theme theme = themeDbFixture.공포();
-        ThemeResponse response = themeService.getAll().get(0);
+        ThemeResponse response = themeService.getAllThemes().get(0);
 
         assertThat(response.id()).isEqualTo(theme.getId());
         assertThat(response.name()).isEqualTo(theme.getName());
@@ -60,9 +60,9 @@ public class ThemeServiceTest extends BaseTest {
     @Test
     void 테마를_삭제한다() {
         themeDbFixture.공포();
-        themeService.deleteById(1L);
+        themeService.deleteThemeById(1L);
 
-        assertThat(themeService.getAll()).isEmpty();
+        assertThat(themeService.getAllThemes()).isEmpty();
     }
 
     @Test
@@ -71,13 +71,13 @@ public class ThemeServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
 
-        assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void 존재하지_않는_테마를_삭제할_수_없다() {
-        assertThatThrownBy(() -> themeService.deleteById(3L))
+        assertThatThrownBy(() -> themeService.deleteThemeById(3L))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
@@ -93,7 +93,7 @@ public class ThemeServiceTest extends BaseTest {
             addReservation(19 - i, ReservationDateFixture.예약날짜_7일전, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
         }
 
-        List<ThemeResponse> popularThemes = themeService.getPopularThemes();
+        List<ThemeResponse> popularThemes = themeService.getWeeklyPopularThemes();
 
         assertThat(popularThemes)
                 .hasSize(10)

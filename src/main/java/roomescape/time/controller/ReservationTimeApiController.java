@@ -31,7 +31,7 @@ public class ReservationTimeApiController {
     public ResponseEntity<ReservationTimeResponse> createTime(
             @RequestBody CreateReservationTimeRequest request
     ) {
-        ReservationTimeResponse response = reservationTimeService.create(request);
+        ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -40,14 +40,14 @@ public class ReservationTimeApiController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
-        List<ReservationTimeResponse> responses = reservationTimeService.getAll();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAllReservationTimes();
 
         return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
-        reservationTimeService.deleteById(id);
+        reservationTimeService.deleteReservationTimeById(id);
 
         return ResponseEntity.noContent().build();
     }
@@ -57,7 +57,7 @@ public class ReservationTimeApiController {
             @ModelAttribute AvailableReservationTimeRequest request
     ) {
         List<AvailableReservationTimeResponse> responses =
-                reservationTimeService.getAvailableReservationTimes(request);
+                reservationTimeService.findAvailableReservationTimes(request);
 
         return ResponseEntity.ok(responses);
     }
