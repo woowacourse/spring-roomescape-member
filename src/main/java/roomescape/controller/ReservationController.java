@@ -50,7 +50,7 @@ public class ReservationController {
     public ResponseEntity<Void> reservationRemove(@PathVariable(name = "id") long id) {
         try {
             roomescapeService.removeReservation(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

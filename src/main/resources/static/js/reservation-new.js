@@ -67,7 +67,9 @@ function createSelect(options, defaultText, selectId, textProperty) {
   // 넘겨받은 옵션을 바탕으로 드롭다운 메뉴 아이템 생성
   options.forEach(optionData => {
     const option = document.createElement('option');
-    option.value = optionData.id;
+    const idField = selectId === 'theme-select' ? 'themeId' : 'timeId';
+    option.value = optionData[idField];
+    // option.value = optionData.id;
     option.textContent = optionData[textProperty]; // 동적 속성 접근
     select.appendChild(option);
   });
@@ -145,6 +147,8 @@ function saveRow(event) {
     date: dateInput.value,
     timeId: timeSelect.value
   };
+
+  console.log(reservation);
 
   requestCreate(reservation)
       .then(() => {
