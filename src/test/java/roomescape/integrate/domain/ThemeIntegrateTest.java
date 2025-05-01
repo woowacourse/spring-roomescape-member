@@ -14,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ThemeIntegrateTest {
 
     static Map<String, String> params;
@@ -28,9 +31,14 @@ class ThemeIntegrateTest {
         params.put("thumbnail", "hello");
     }
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
-    void setup(@Autowired JdbcTemplate jdbcTemplate) {
+    void setup() {
+        jdbcTemplate.execute("delete from reservation_time");
         jdbcTemplate.execute("delete from theme");
+        jdbcTemplate.execute("delete from reservation");
     }
 
     @Test

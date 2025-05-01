@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -27,6 +29,7 @@ import roomescape.repository.ReservationRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrateTest {
 
     static Map<String, String> params;
@@ -40,9 +43,9 @@ class ReservationIntegrateTest {
 
     @BeforeEach
     void setup(@Autowired JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("delete from reservation");
         jdbcTemplate.execute("delete from reservation_time");
         jdbcTemplate.execute("delete from theme");
-        jdbcTemplate.execute("delete from reservation");
     }
 
     @Test

@@ -16,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeIntegrateTest {
 
     static Map<String, String> params;
@@ -32,7 +35,9 @@ class ReservationTimeIntegrateTest {
 
     @BeforeEach
     void setup(@Autowired JdbcTemplate jdbcTemplate) {
+        jdbcTemplate.execute("delete from reservation");
         jdbcTemplate.execute("delete from reservation_time");
+        jdbcTemplate.execute("delete from theme");
     }
 
     @Test
@@ -75,7 +80,7 @@ class ReservationTimeIntegrateTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -86,7 +91,7 @@ class ReservationTimeIntegrateTest {
                 .statusCode(204);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
