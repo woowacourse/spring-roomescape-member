@@ -21,7 +21,13 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Long getId() { return id; }
+    public boolean isSameTime(ReservationTime time) {
+        return this.time.isSameTime(time);
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public String getName() {
         return name;

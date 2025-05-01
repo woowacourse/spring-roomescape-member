@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.exceptionHandler.dto.ExceptionResponse;
-import roomescape.reservationTime.service.ReservationTimeService;
 import roomescape.reservationTime.dto.ReservationTimeRequest;
 import roomescape.reservationTime.dto.ReservationTimeResponse;
+import roomescape.reservationTime.dto.TimeConditionRequest;
+import roomescape.reservationTime.dto.TimeConditionResponse;
+import roomescape.reservationTime.service.ReservationTimeService;
 
 @RestController
 public class ReservationTimeController {
@@ -32,10 +34,16 @@ public class ReservationTimeController {
         return ResponseEntity.created(URI.create("/admin/time")).body(response);
     }
 
-    @GetMapping("/times")
+    @GetMapping(value = "/times")
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         List<ReservationTimeResponse> response = reservationTimeService.getReservationTimes();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/times", consumes = {"application/json"})
+    public ResponseEntity<List<TimeConditionResponse>> getReservationTimes(final TimeConditionRequest request) {
+        List<TimeConditionResponse> responses = reservationTimeService.getTimesWithCondition(request);
+        return ResponseEntity.ok().body(responses);
     }
 
     @DeleteMapping("/times/{id}")
