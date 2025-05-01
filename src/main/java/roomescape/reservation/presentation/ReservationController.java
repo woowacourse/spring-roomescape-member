@@ -40,12 +40,8 @@ public class ReservationController {
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> deleteReservationById(@PathVariable("id") final Long id) {
-        try {
-            reservationService.deleteReservationById(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservationService.deleteReservationById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(value = DateTimeParseException.class)
