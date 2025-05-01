@@ -22,10 +22,10 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select r.id as id, r.name, r.date, rt.id as time_id, rt.start_at
+                select r.id, r.name, r.date, time_id, rt.start_at, theme_id, t.name, t.description, t.thumbnail
                 from reservation as r 
-                inner join reservation_time as rt 
-                on r.time_id = rt.id
+                inner join reservation_time as rt on r.time_id = rt.id
+                inner join theme as t on r.theme_id = t.id
                 """;
         List<Reservation> reservations = jdbcTemplate.query(
                 sql,
@@ -37,7 +37,7 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public long create(Reservation newReservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into reservation (name, date, time_id) values (?, ?, ?)";
+        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(
@@ -47,6 +47,7 @@ public class JdbcReservationDao implements ReservationDao {
                     ps.setString(1, newReservation.getName());
                     ps.setObject(2, newReservation.getDate());
                     ps.setLong(3, newReservation.getTime().getId());
+                    ps.setLong(4, newReservation.getTheme().getId());
                     return ps;
                 },
                 keyHolder
