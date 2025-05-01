@@ -6,7 +6,6 @@ public class Theme {
 
     private final String name;
     private final String description;
-
     private final String thumbnail;
 
     public Theme(

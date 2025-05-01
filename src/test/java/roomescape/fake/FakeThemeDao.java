@@ -3,10 +3,8 @@ package roomescape.fake;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ThemeDao;
-import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ThemeEntity;
 
 public class FakeThemeDao implements ThemeDao {
@@ -19,6 +17,13 @@ public class FakeThemeDao implements ThemeDao {
         this.themes = new ArrayList<>();
         final ThemeEntity dummy = new ThemeEntity(null, null, null, null);
         themes.add(dummy);
+    }
+
+    public FakeThemeDao(final List<ThemeEntity> themes) {
+        this.themes = themes;
+        index += themes.size();
+        final ThemeEntity dummy = new ThemeEntity(null, null, null, null);
+        themes.addFirst(dummy);
     }
 
     @Override

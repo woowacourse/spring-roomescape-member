@@ -12,7 +12,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+
 class ReservationTest {
+
+    private static final PlayTime VALID_PLAY_TIME = new PlayTime(LocalTime.MAX);
+    private static final Theme VALID_THEME = new Theme("테마", "소개", "썸네일");
+
 
     @DisplayName("생성자로 null은 들어올 수 없다.")
     @ParameterizedTest
@@ -20,10 +25,11 @@ class ReservationTest {
     void validateNonNull(
             final String name,
             final LocalDate localDate,
-            final PlayTime playTime
+            final PlayTime playTime,
+            final Theme theme
     ) {
         // given & when & then
-        assertThatThrownBy(() -> new Reservation(name, localDate, playTime))
+        assertThatThrownBy(() -> new Reservation(name, localDate, playTime, theme))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -33,24 +39,26 @@ class ReservationTest {
     void createWithId(
             final String name,
             final LocalDate localDate,
-            final PlayTime playTime
+            final PlayTime playTime,
+            final Theme theme
     ) {
         // given & when & then
         assertAll(
                 () -> assertThatThrownBy(
-                        () -> Reservation.createWithId(null, "hotteok", LocalDate.MAX, new PlayTime(LocalTime.MAX)))
+                        () -> Reservation.createWithId(null, "hotteok", LocalDate.MAX, VALID_PLAY_TIME, VALID_THEME))
                         .isInstanceOf(IllegalArgumentException.class),
                 () -> assertThatThrownBy(
-                        () -> Reservation.createWithId(1L, name, localDate, playTime))
+                        () -> Reservation.createWithId(1L, name, localDate, playTime, theme))
                         .isInstanceOf(IllegalArgumentException.class)
         );
     }
 
     private static Stream<Arguments> provideConstructorArguments() {
         return Stream.of(
-                Arguments.of(null, LocalDate.MAX, new PlayTime(LocalTime.MAX)),
-                Arguments.of("hotteok", null, new PlayTime(LocalTime.MAX)),
-                Arguments.of("hotteok", LocalDate.MAX, null)
+                Arguments.of(null, LocalDate.MAX, VALID_PLAY_TIME, VALID_THEME),
+                Arguments.of("hotteok", null, VALID_PLAY_TIME, VALID_THEME),
+                Arguments.of("hotteok", LocalDate.MAX, null, VALID_THEME),
+                Arguments.of("hotteok", LocalDate.MAX, VALID_PLAY_TIME, null)
         );
     }
 
@@ -59,7 +67,7 @@ class ReservationTest {
     @ValueSource(strings = {"", "  ", "     "})
     void validateNameIsNotBlack(final String name) {
         // given & when & then
-        assertThatThrownBy(() -> new Reservation(name, LocalDate.MAX, new PlayTime(LocalTime.MAX)))
+        assertThatThrownBy(() -> new Reservation(name, LocalDate.MAX, VALID_PLAY_TIME, VALID_THEME))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
