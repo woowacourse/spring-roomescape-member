@@ -2,7 +2,7 @@ package roomescape.controller.dto.response;
 
 import java.time.LocalDate;
 import java.util.List;
-import roomescape.entity.Reservation;
+import roomescape.model.entity.Reservation;
 
 public record ReservationResponse(
         long id,

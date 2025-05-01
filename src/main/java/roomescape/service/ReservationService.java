@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
+import roomescape.model.entity.Reservation;
+import roomescape.model.entity.ReservationTime;
+import roomescape.model.entity.Theme;
 import roomescape.exception.impl.AlreadyReservedException;
 import roomescape.exception.impl.ReservationNotFoundException;
 import roomescape.repository.ReservationRepository;

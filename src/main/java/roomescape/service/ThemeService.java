@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.entity.Theme;
+import roomescape.model.entity.Theme;
 import roomescape.exception.impl.ThemeNotFoundException;
 import roomescape.repository.ThemeRepository;
 

@@ -1,6 +1,6 @@
 package roomescape.repository;
 
-import roomescape.entity.ReservationTime;
+import roomescape.model.entity.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

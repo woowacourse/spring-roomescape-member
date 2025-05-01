@@ -1,7 +1,7 @@
 package roomescape.repository;
 
-import roomescape.entity.Reservation;
-import roomescape.entity.Theme;
+import roomescape.model.entity.Reservation;
+import roomescape.model.entity.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

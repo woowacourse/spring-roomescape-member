@@ -1,7 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.entity.ReservationTime;
+import roomescape.model.entity.ReservationTime;
 import roomescape.exception.impl.ConnectedReservationExistException;
 import roomescape.exception.impl.HasDuplicatedTimeException;
 import roomescape.exception.impl.ReservationTimeIntervalException;

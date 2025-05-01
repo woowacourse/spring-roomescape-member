@@ -1,18 +1,19 @@
-package roomescape.entity;
+package roomescape.model.entity;
 
 import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
+import roomescape.model.vo.Id;
 
 public class Theme {
 
     private static final int MAX_NAME_LENGTH = 20;
 
-    private final Long id;
+    private final Id id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
     private Theme(
-            final Long id,
+            final Id id,
             final String name,
             final String description,
             final String thumbnail
@@ -35,7 +36,7 @@ public class Theme {
             final String description,
             final String thumbnail
     ) {
-        return new Theme(null, name, description, thumbnail);
+        return new Theme(Id.nullId(), name, description, thumbnail);
     }
 
     public static Theme afterSave(
@@ -44,7 +45,7 @@ public class Theme {
             final String description,
             final String thumbnail
     ) {
-        return new Theme(id, name, description, thumbnail);
+        return new Theme(Id.create(id), name, description, thumbnail);
     }
 
     public static Theme afterSave(final long id, final Theme theme) {
@@ -52,7 +53,7 @@ public class Theme {
     }
 
     public Long getId() {
-        return id;
+        return id.longValue();
     }
 
     public String getName() {

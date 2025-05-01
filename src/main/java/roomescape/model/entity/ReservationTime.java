@@ -1,6 +1,7 @@
-package roomescape.entity;
+package roomescape.model.entity;
 
 import roomescape.exception.impl.InvalidReservationTimeException;
+import roomescape.model.vo.Id;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -11,10 +12,10 @@ public class ReservationTime {
     private static final LocalTime LAST_RESERVATION_TIME = LocalTime.of(23, 0);
     private static final int MAX_MIN_INTERVAL = 30;
 
-    private final Long id;
+    private final Id id;
     private final LocalTime startAt;
 
-    private ReservationTime(final Long id, final LocalTime startAt) {
+    private ReservationTime(final Id id, final LocalTime startAt) {
         validateTimeAvailable(startAt);
         this.id = id;
         this.startAt = startAt;
@@ -27,11 +28,11 @@ public class ReservationTime {
     }
 
     public static ReservationTime beforeSave(final LocalTime startAt) {
-        return new ReservationTime(null, startAt);
+        return new ReservationTime(Id.nullId(), startAt);
     }
 
     public static ReservationTime afterSave(final long id, final LocalTime startAt) {
-        return new ReservationTime(id, startAt);
+        return new ReservationTime(Id.create(id), startAt);
     }
 
     public boolean isInTimeInterval(LocalTime otherTime) {
@@ -40,7 +41,7 @@ public class ReservationTime {
     }
 
     public Long getId() {
-        return id;
+        return id.longValue();
     }
 
     public LocalTime getStartAt() {

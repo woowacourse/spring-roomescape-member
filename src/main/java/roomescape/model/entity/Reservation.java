@@ -1,6 +1,7 @@
-package roomescape.entity;
+package roomescape.model.entity;
 
 import roomescape.exception.impl.*;
+import roomescape.model.vo.Id;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -10,14 +11,14 @@ public class Reservation {
     private static final int MAX_NAME_LENGTH = 10;
     private static final int RESERVATION_START_INTERVAL = 7;
 
-    private final Long id;
+    private final Id id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     private Reservation(
-            final Long id,
+            final Id id,
             final String name,
             final LocalDate date,
             final ReservationTime time,
@@ -57,7 +58,7 @@ public class Reservation {
     ) {
         validateDateIsNotPast(date);
         validateDateInterval(date);
-        return new Reservation(null, name, date, time, theme);
+        return new Reservation(Id.nullId(), name, date, time, theme);
     }
 
     private static void validateDateInterval(final LocalDate date) {
@@ -80,11 +81,11 @@ public class Reservation {
             final ReservationTime time,
             final Theme theme
     ) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(Id.create(id), name, date, time, theme);
     }
 
     public Long getId() {
-        return id;
+        return id.longValue();
     }
 
     public String getName() {

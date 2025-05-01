@@ -6,9 +6,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
+import roomescape.model.entity.Reservation;
+import roomescape.model.entity.ReservationTime;
+import roomescape.model.entity.Theme;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.request.ReservationTimeRequest;
 import roomescape.controller.dto.response.ReservationTimeResponse;
-import roomescape.entity.ReservationTime;
+import roomescape.model.entity.ReservationTime;
 import roomescape.service.ReservationTimeService;
 
 import java.net.URI;
