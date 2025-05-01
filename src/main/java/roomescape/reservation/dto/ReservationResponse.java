@@ -20,8 +20,8 @@ public record ReservationResponse(Long id,
         return new ReservationResponse(
                 reservation.id(),
                 reservation.name(),
-                new ThemeResponse(theme.id(), theme.name(), theme.description(), theme.thumbnail()),
+                ThemeResponse.from(theme),
                 reservation.date(),
-                new TimeResponse(time.id(), time.startAt()));
+                TimeResponse.from(time));
     }
 }
