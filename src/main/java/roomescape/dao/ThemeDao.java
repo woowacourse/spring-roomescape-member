@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
@@ -77,24 +78,31 @@ public class ThemeDao {
         }
     }
 
-    public List<Theme> getTopTenTheme() {
+    public List<Theme> getPopularThemeByRankAndDuration(int rank, LocalDate startAt, LocalDate endAt) {
         String sql = """
                 SELECT id, name, description, thumbnail FROM THEME AS t
                 INNER JOIN
                 (SELECT THEME_ID, count(THEME_ID) AS COUNT
                 FROM RESERVATION
+                WHERE date BETWEEN ? AND ?
                 GROUP BY THEME_ID
                 ORDER BY COUNT DESC, THEME_ID ASC
-                LIMIT 10) AS popular
+                LIMIT ?) AS popular
                 ON t.ID = popular.THEME_ID
                 """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
-        ));
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                ),
+                startAt,
+                endAt,
+                rank
+        );
     }
 
     public boolean isExistThemeName(String name) {

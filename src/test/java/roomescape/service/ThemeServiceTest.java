@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +39,8 @@ public class ThemeServiceTest {
                 .addScript("data.sql")
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        service = new ThemeService(new ReservationDao(jdbcTemplate), new ThemeDao(jdbcTemplate));
+        Clock clock = Clock.fixed(Instant.parse("2023-03-26T08:25:24Z"), ZoneId.systemDefault());
+        service = new ThemeService(new ReservationDao(jdbcTemplate), new ThemeDao(jdbcTemplate), clock);
     }
 
     @Test
@@ -82,7 +86,7 @@ public class ThemeServiceTest {
         List<ThemeResponse> topTenResponses = service.getTopTenTheme();
 
         // then
-        assertThat(topTenResponses).hasSize(10);
+        assertThat(topTenResponses).hasSize(6);
     }
 
     @Test

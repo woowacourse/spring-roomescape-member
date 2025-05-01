@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -106,12 +107,16 @@ class ThemeDaoTest {
     @Test
     void 예약_건_수가_많은_순서대로_10개의_테마_조회() {
         // when
-        List<Theme> topTenTheme = dao.getTopTenTheme();
+        List<Theme> topFiveTheme = dao.getPopularThemeByRankAndDuration(
+                5,
+                LocalDate.of(2023, 3, 11),
+                LocalDate.of(2023, 3, 25)
+        );
 
         // then
-        List<Long> topTenIds = topTenTheme.stream().map(Theme::getId).toList();
-        assertThat(topTenTheme).hasSize(10);
-        assertThat(topTenIds).contains(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+        List<Long> topTenIds = topFiveTheme.stream().map(Theme::getId).toList();
+        assertThat(topFiveTheme).hasSize(5);
+        assertThat(topTenIds).contains(6L, 7L, 8L, 9L, 10L);
     }
 
     @Test
