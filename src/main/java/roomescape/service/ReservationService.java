@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
@@ -50,6 +52,7 @@ public class ReservationService {
         if (theme.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다");
         }
+        validateDateTime(request.date(), reservationTime.get());
         Reservation reservation = new Reservation(
             request.name(),
             request.date(),
@@ -67,5 +70,12 @@ public class ReservationService {
     public boolean deleteReservation(Long id) {
         int deleteCount = reservationDao.deleteById(id);
         return deleteCount != 0;
+    }
+
+    private void validateDateTime(LocalDate date, ReservationTime time) {
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
+        if(dateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("[ERROR] 현재보다 과거 시간에는 예약이 불가능합니다.");
+        }
     }
 }
