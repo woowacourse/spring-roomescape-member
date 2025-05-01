@@ -1,13 +1,13 @@
 package roomescape.reservation.service;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ReservationTimeNotFoundException;
+import roomescape.exception.ThemeNotFoundException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
@@ -40,8 +40,8 @@ public class ReservationService {
 
     public ReservationResponse create(ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
-                .orElseThrow(NoSuchElementException::new);
-        Theme theme = themeDao.findById(request.themeId()).orElseThrow(NoSuchElementException::new);
+                .orElseThrow(ReservationTimeNotFoundException::new);
+        Theme theme = themeDao.findById(request.themeId()).orElseThrow(ThemeNotFoundException::new);
         Reservation reservation = Reservation.createWithoutId(
                 request.name(),
                 request.date(),
@@ -61,7 +61,7 @@ public class ReservationService {
         );
     }
 
-    private void validateDuplicate(@NotNull LocalDate date, LocalTime startAt) {
+    private void validateDuplicate(LocalDate date, LocalTime startAt) {
         if (reservationDao.findByDateTime(date, startAt).isPresent()) {
             throw new ExistedReservationException();
         }
