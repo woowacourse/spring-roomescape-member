@@ -14,8 +14,8 @@ import roomescape.common.exception.DuplicatedException;
 import roomescape.dao.FakeReservationDao;
 import roomescape.dao.FakeReservationTimeDao;
 import roomescape.dao.FakeThemeDao;
-import roomescape.dto.reservation.ReservationRequestDto;
-import roomescape.dto.reservation.ReservationResponseDto;
+import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.response.ReservationResponseDto;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 

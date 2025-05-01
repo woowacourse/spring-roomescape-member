@@ -10,8 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.FakeReservationTimeDao;
-import roomescape.dto.reservationtime.ReservationTimeRequestDto;
-import roomescape.dto.reservationtime.ReservationTimeResponseDto;
+import roomescape.dto.request.ReservationTimeRequestDto;
+import roomescape.dto.response.ReservationTimeResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
