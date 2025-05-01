@@ -80,35 +80,13 @@ public class ThemeDao {
     }
 
     public List<Theme> findTop10() {
-//        String sql = """
-//            select count(*) as count, t.id, t.name, t.description, t.thumbnail
-//            from reservation as r
-//            inner join theme as t on r.theme_id = t.id
-//            where PARSEDATETIME(r.date, 'yyyy-MM-dd') between PARSEDATETIME(TIMESTAMPADD(DAY, -8, CURRENT_DATE), 'yyyy-MM-dd') and PARSEDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd')
-//            group by (t.id)
-//            order by count desc
-//            limit 10
-//            """;
-//        String sql = """
-//                        select t.id, t.name, t.description, t.thumbnail
-//                        from reservation as r
-//                        inner join theme as t on r.theme_id = t.id
-//                        group by (t.id)
-//                        order by (select count(*) where PARSEDATETIME(r.date, 'yyyy-MM-dd') between PARSEDATETIME(TIMESTAMPADD(DAY, -8, CURRENT_DATE), 'yyyy-MM-dd') and PARSEDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd')) desc
-//                        limit 10;
-//            """;
-//
         String sql = """
-                select jj.count, t.id, t.name, t.description, t.thumbnail
-                from reservation r
-                join (SELECT count(*) as count, id
-                      	FROM reservation as re inner join theme as t on re.theme_id = t.id
-                      	where t.id = r.theme_id PARSEDATETIME(r.date, 'yyyy-MM-dd') between PARSEDATETIME(TIMESTAMPADD(DAY, -8, CURRENT_DATE), 'yyyy-MM-dd') and PARSEDATETIME(TIMESTAMPADD(DAY, -1, CURRENT_DATE), 'yyyy-MM-dd'))
-                        group by (theme_id)
-                        ) as jj on r.id = re.id
-                order by count
-
-        """;
+            select count(*), t.id, t.name, t.description, t.thumbnail from theme as t
+            left join (select * from reservation as r where PARSEDATETIME(r.date, 'yyyy-MM-dd') between TIMESTAMPADD(DAY, -8, CURRENT_DATE) and TIMESTAMPADD(DAY, -1, CURRENT_DATE))
+            as r on t.id = r.theme_id
+            group by t.id
+            order by count(*) desc
+            """;
         return jdbcTemplate.query(sql, mapToTheme());
     }
 }
