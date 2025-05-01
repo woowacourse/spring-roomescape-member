@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import roomescape.exception.ExistedThemeException;
 import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.FakeReservationDao;
@@ -17,6 +16,8 @@ import roomescape.theme.dao.FakeThemeDao;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.dto.request.ThemeRequest;
 import roomescape.theme.dto.response.ThemeResponse;
+
+import org.junit.jupiter.api.Test;
 
 public class ThemeServiceTest {
 
@@ -35,13 +36,11 @@ public class ThemeServiceTest {
     @Test
     void 테마를_생성할_수_있다() {
         // given
-        ThemeRequest theme = new ThemeRequest("name3", "description3", "thumbnail3");
+        ThemeRequest theme = new ThemeRequest("테마3", "description3", "thumbnail3");
         // when
-        ThemeResponse savedTheme = themeService.create(theme);
+        Long themeId = themeService.create(theme);
         // then
-        assertThat(savedTheme.name()).isEqualTo("name3");
-        assertThat(savedTheme.description()).isEqualTo("description3");
-        assertThat(savedTheme.thumbnail()).isEqualTo("thumbnail3");
+        assertThat(themeId).isEqualTo(1L);
     }
 
     @Test

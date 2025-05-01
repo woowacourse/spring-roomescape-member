@@ -6,7 +6,7 @@ import java.util.Optional;
 import roomescape.theme.Theme;
 
 public interface ThemeDao {
-    Theme create(Theme theme);
+    Long create(Theme theme);
 
     List<Theme> findAll();
 

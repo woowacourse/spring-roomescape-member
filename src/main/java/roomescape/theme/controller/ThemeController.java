@@ -26,9 +26,9 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest request) {
-        ThemeResponse themeResponse = themeService.create(request);
-        return ResponseEntity.created(URI.create("/theme/" + themeResponse.id())).body(themeResponse);
+    public ResponseEntity<Long> createTheme(@Valid @RequestBody ThemeRequest request) {
+        Long id = themeService.create(request);
+        return ResponseEntity.created(URI.create("/theme/" + id)).body(id);
     }
 
     @GetMapping

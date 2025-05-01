@@ -25,16 +25,15 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public ThemeResponse create(ThemeRequest themeRequest) {
+    public Long create(ThemeRequest themeRequest) {
         Optional<Theme> optionalTheme = themeDao.findByName(themeRequest.name());
         if (optionalTheme.isPresent()) {
             throw new ExistedThemeException();
         }
 
         Theme theme = Theme.createWithoutId(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
-        Theme themeWithId = themeDao.create(theme);
-        return new ThemeResponse(themeWithId.getId(), themeWithId.getName(), themeWithId.getDescription(),
-                themeWithId.getThumbnail());
+        Long id = themeDao.create(theme);
+        return id;
     }
 
     public List<ThemeResponse> findAll() {

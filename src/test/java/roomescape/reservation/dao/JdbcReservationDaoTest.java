@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -16,6 +15,8 @@ import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.ReservationTimeDao;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.ThemeDao;
+
+import org.junit.jupiter.api.Test;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -57,12 +58,12 @@ class JdbcReservationDaoTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
-        Theme savedTheme = themeDao.create(theme);
+        Long themeId = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
                 new ReservationTime(id, reservationTime.getStartAt()),
-                savedTheme
+                new Theme(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail())
         );
         reservationDao.create(reservation);
 
@@ -79,12 +80,12 @@ class JdbcReservationDaoTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
-        Theme savedTheme = themeDao.create(theme);
+        Long themeId = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
                 new ReservationTime(id, reservationTime.getStartAt()),
-                savedTheme);
+                new Theme(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail()));
         reservationDao.create(reservation);
         int beforeSize = reservationDao.findAll().size();
 
@@ -103,12 +104,12 @@ class JdbcReservationDaoTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
-        Theme savedTheme = themeDao.create(theme);
+        Long themeId = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
                 new ReservationTime(id, reservationTime.getStartAt()),
-                savedTheme);
+                new Theme(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail()));
         reservationDao.create(reservation);
         // when
         Optional<Reservation> foundReservation = reservationDao.findByTimeId(id);
@@ -123,12 +124,12 @@ class JdbcReservationDaoTest {
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
-        Theme savedTheme = themeDao.create(theme);
+        Long themeId = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
                 new ReservationTime(id, reservationTime.getStartAt()),
-                savedTheme);
+                new Theme(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail()));
         reservationDao.create(reservation);
         // when
         Optional<Reservation> foundReservation = reservationDao.findById(1L);
