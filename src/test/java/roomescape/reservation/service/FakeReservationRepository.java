@@ -49,13 +49,8 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public Long save(Reservation reservation) {
         long currentIndex = index.incrementAndGet();
-        reservations.add(new Reservation(
-                currentIndex,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme())
-        );
+
+        reservations.add(reservation.assignId(currentIndex));
         return currentIndex;
     }
 
@@ -79,13 +74,5 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId().equals(themeId))
                 .toList();
-    }
-
-    @Override
-    public Reservation findById(Long id) {
-        return reservations.stream()
-                .filter(reservation -> Objects.equals(reservation.getId(), id))
-                .findAny()
-                .orElseThrow();
     }
 }

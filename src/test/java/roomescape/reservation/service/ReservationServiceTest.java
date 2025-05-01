@@ -33,18 +33,18 @@ class ReservationServiceTest {
             }
         };
         ThemeRepository themeRepository = new FakeThemeRepository(null);
-        Theme theme = new Theme(1L, "테스트1", "설명", "localhost:8080");
+        Theme theme = Theme.createWithId(1L, "테스트1", "설명", "localhost:8080");
         themeRepository.save(theme);
 
-        ReservationTime reservationTime1 = new ReservationTime(null, LocalTime.of(10, 0));
-        ReservationTime reservationTime2 = new ReservationTime(null, LocalTime.of(9, 0));
+        ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(9, 0));
 
         ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
         ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationRepository.save(new Reservation(null, "홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
+        reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
 
         reservationService = new ReservationService(
                 dateTime,

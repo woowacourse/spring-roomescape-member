@@ -22,9 +22,9 @@ class ReservationTimeServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        ReservationTime reservationTime1 = new ReservationTime(null, LocalTime.of(10, 0));
-        ReservationTime reservationTime2 = new ReservationTime(null, LocalTime.of(11, 0));
-        Theme theme = new Theme(1L, "테마", "테마", "테마");
+        ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(11, 0));
+        Theme theme = Theme.createWithId(1L, "테마", "테마", "테마");
 
         ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
         Long id = reservationTimeRepository.save(reservationTime1);
@@ -32,7 +32,7 @@ class ReservationTimeServiceTest {
 
         reservationTime1 = reservationTimeRepository.findById(id);
         ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationRepository.save(new Reservation(null, "홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
+        reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
 
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }

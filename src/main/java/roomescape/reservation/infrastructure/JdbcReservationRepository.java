@@ -22,15 +22,15 @@ import roomescape.theme.domain.Theme;
 @Primary
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
+    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.createWithId(
             resultSet.getLong("reservation_id"),
             resultSet.getString("name"),
             resultSet.getDate("date").toLocalDate(),
-            new ReservationTime(
+            ReservationTime.createWithId(
                     resultSet.getLong("time_id"),
                     resultSet.getTime("time_value").toLocalTime()
             ),
-            new Theme(
+            Theme.createWithId(
                     resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("description"),
@@ -79,27 +79,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, ROW_MAPPER, themeId, Date.valueOf(date));
-    }
-
-    @Override
-    public Reservation findById(final Long id) {
-        String sql = """               
-                SELECT
-                    r.id as reservation_id,
-                    r.name as name,
-                    r.date as date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as decription,
-                    th.thumbnail as thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id 
-                INNER JOIN theme as th ON th.id = r.theme_id
-                WHERE r.id = ?
-                """;
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
     @Override

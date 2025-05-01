@@ -16,7 +16,7 @@ import roomescape.theme.domain.ThemeRepository;
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
 
-    private static RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> new Theme(
+    private static RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> Theme.createWithId(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),

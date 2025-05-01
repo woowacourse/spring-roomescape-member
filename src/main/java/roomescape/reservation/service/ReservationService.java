@@ -48,11 +48,10 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약이 존재합니다.");
         }
 
-        // TODO: save -> findById 흐름의 아이디 부여 로직 변경
-        Long id = reservationRepository.save(new Reservation(null, request.name(), request.date(), time, theme));
-        Reservation findReservation = new Reservation(id, request.name(), request.date(), time, theme);
+        Reservation reservation = Reservation.createWithoutId(request.name(), request.date(), time, theme);
+        Long id = reservationRepository.save(reservation);
 
-        return ReservationResponse.from(findReservation);
+        return ReservationResponse.from(reservation.assignId(id));
     }
 
     public List<ReservationResponse> getReservations() {
