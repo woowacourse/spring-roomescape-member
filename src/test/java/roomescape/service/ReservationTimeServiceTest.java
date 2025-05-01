@@ -3,7 +3,6 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
@@ -17,7 +16,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.AvailableReservationResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 
@@ -89,23 +87,5 @@ class ReservationTimeServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(id))
                 .isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void 선택한_날짜와_테마의_시간과_예약_여부_조회하기() {
-        // given
-        LocalDate date = LocalDate.of(2023, 3, 21);
-        Long themeId = 11L;
-
-        // when
-        List<AvailableReservationResponse> responses = reservationTimeService.getReservationTimesWithStatus(themeId,
-                date);
-        List<Boolean> list = responses.stream()
-                .map(AvailableReservationResponse::isBooked).toList();
-
-        // then
-        assertThat(responses).hasSize(4);
-        assertThat(list.stream().filter(b -> b).count()).isEqualTo(1L);
-        assertThat(list.stream().filter(b -> !b).count()).isEqualTo(3L);
     }
 }

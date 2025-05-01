@@ -78,7 +78,7 @@ function fetchAvailableTimes(date, themeId) {
           요청 포맷에 맞게 설정
     TODO : API 고민 필수!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     */
-    fetch(`/times/status?date=${date}&themeId=${themeId}`, { // 예약 가능 시간 조회 API endpoint
+    fetch(`/themes/${themeId}/times?date=${date}`, { // 예약 가능 시간 조회 API endpoint
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
