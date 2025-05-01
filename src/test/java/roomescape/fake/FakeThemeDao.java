@@ -51,6 +51,11 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
+    public List<Theme> findPopularThemesBetween(final String startDate, final String endDate) {
+        return List.of();
+    }
+
+    @Override
     public List<Theme> findAll() {
         return themes.stream()
                 .filter(themeEntity -> themeEntity.id() != null)

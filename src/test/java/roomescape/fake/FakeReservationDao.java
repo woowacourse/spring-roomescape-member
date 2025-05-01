@@ -10,6 +10,7 @@ import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ReservationEntity;
+import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 public class FakeReservationDao implements ReservationDao {
 
@@ -76,5 +77,11 @@ public class FakeReservationDao implements ReservationDao {
                         reservationEntity.playTimeEntity().id().equals(timeId) &&
                         reservationEntity.themeEntity().id().equals(themeId)
                 );
+    }
+
+    @Override
+    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(final LocalDate date,
+                                                                                   final Theme theme) {
+        return List.of();
     }
 }
