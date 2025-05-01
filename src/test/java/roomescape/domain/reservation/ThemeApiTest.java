@@ -28,10 +28,10 @@ import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 class ThemeApiTest {
 
     @Autowired
-    private ReservationTimeRepository reservationTimeRepository;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @Autowired
     private ReservationRepository reservationRepository;

@@ -11,7 +11,5 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: schema.sql
+      schema-locations: classpath:schema-test.sql
       data-locations:
-  main:
-    allow-bean-definition-overriding: true

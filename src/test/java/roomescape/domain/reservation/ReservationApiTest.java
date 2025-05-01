@@ -30,6 +30,9 @@ import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 class ReservationApiTest {
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private ReservationRepository reservationRepository;
 
     @Autowired
@@ -37,9 +40,6 @@ class ReservationApiTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     public static String formatDateTime(LocalDate dateTime) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
