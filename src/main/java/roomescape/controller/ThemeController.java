@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,12 @@ public class ThemeController {
     @GetMapping("/admin/theme")
     public String displayAdminTheme() {
         return "/admin/theme";
+    }
+
+    @GetMapping("/themes")
+    public ResponseEntity<List<ThemeResponseDto>> readThemes() {
+        List<ThemeResponseDto> themeResponseDtos = themeService.findAllThemes();
+        return ResponseEntity.ok().body(themeResponseDtos);
     }
 
     @PostMapping("/themes")

@@ -1,19 +1,30 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.domain_entity.Theme;
+import roomescape.mapper.ThemeMapper;
 
 @Component
-public class JdbcTemplateDao implements ThemeDao {
+public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcTemplateDao(JdbcTemplate jdbcTemplate) {
+    public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public List<Theme> findAll() {
+        String sql = "select * from theme";
+        return jdbcTemplate.query(
+                sql,
+                new ThemeMapper()
+        );
     }
 
     @Override
