@@ -10,19 +10,22 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.fake_dao.FakeReservationDao;
-import roomescape.service.fake_dao.FakeReservationReservationTimeDao;
+import roomescape.service.fake_dao.FakeReservationTimeDao;
+import roomescape.service.fake_dao.FakeThemeDao;
 
 class ReservationServiceTest {
 
     private final ReservationDao reservationDao = new FakeReservationDao();
-    private final ReservationTimeDao timeDao = new FakeReservationReservationTimeDao();
-    private final ReservationService reservationService = new ReservationService(reservationDao, timeDao);
+    private final ReservationTimeDao timeDao = new FakeReservationTimeDao();
+    private final ThemeDao themeDao = new FakeThemeDao();
+    private final ReservationService reservationService = new ReservationService(reservationDao, timeDao, themeDao);
 
     @Test
     @Disabled
@@ -31,7 +34,7 @@ class ReservationServiceTest {
         timeDao.create(time);
 
         ReservationResponseDto reservation = reservationService.createReservation(new ReservationRequestDto(
-                "moda", LocalDate.of(2025, 4, 27), 1L
+                "moda", LocalDate.of(2025, 4, 27), 1L, 1L
         ));
 
         assertAll(
