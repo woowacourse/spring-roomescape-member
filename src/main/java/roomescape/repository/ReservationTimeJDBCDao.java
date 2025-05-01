@@ -26,13 +26,13 @@ public class ReservationTimeJDBCDao implements ReservationTimeRepository {
     public ReservationTime findById(Long id) {
         String sql = "select * from reservation_time where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-        return namedJdbcTemplate.queryForObject(sql, params, getReservationRowMapper());
+        return namedJdbcTemplate.queryForObject(sql, params, getReservationTimeRowMapper());
     }
 
     @Override
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
-        return namedJdbcTemplate.query(sql, getReservationRowMapper());
+        return namedJdbcTemplate.query(sql, getReservationTimeRowMapper());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ReservationTimeJDBCDao implements ReservationTimeRepository {
         return count != null && count > 0;
     }
 
-    private RowMapper<ReservationTime> getReservationRowMapper() {
+    private RowMapper<ReservationTime> getReservationTimeRowMapper() {
         return (resultSet, rowNum) -> new ReservationTime(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime()

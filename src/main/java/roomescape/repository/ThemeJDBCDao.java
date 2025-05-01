@@ -24,13 +24,13 @@ public class ThemeJDBCDao implements ThemeRepository {
     public Theme findById(Long id) {
         String sql = "select * from theme where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-        return namedJdbcTemplate.queryForObject(sql, params, getReservationRowMapper());
+        return namedJdbcTemplate.queryForObject(sql, params, getThemeRowMapper());
     }
 
     @Override
     public List<Theme> findAll() {
         String sql = "select * from theme";
-        return namedJdbcTemplate.query(sql, getReservationRowMapper());
+        return namedJdbcTemplate.query(sql, getThemeRowMapper());
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ThemeJDBCDao implements ThemeRepository {
                 order by reservation_count desc
                 limit 10
                 """;
-        return namedJdbcTemplate.query(sql, getReservationRowMapper());
+        return namedJdbcTemplate.query(sql, getThemeRowMapper());
     }
 
     @Override
@@ -83,7 +83,7 @@ public class ThemeJDBCDao implements ThemeRepository {
         return count != null && count > 0;
     }
 
-    private RowMapper<Theme> getReservationRowMapper() {
+    private RowMapper<Theme> getThemeRowMapper() {
         return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),

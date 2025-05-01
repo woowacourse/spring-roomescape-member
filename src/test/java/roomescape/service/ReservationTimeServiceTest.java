@@ -42,6 +42,20 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("예약 시간을 성공적으로 삭제한다.")
+    void test_successfulDeleteReservationTime() {
+        // given
+        Long existingId = 1L;
+
+        // when
+        reservationService.deleteReservationTime(existingId);
+
+        // then
+        assertThatThrownBy(() -> reservationService.deleteReservationTime(existingId))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
     void test_deleteReservationTime() {
         assertThatThrownBy(() -> reservationService.deleteReservationTime(999L))

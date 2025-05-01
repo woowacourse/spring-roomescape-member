@@ -1,11 +1,5 @@
 package roomescape.fake;
 
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ReservationRepository;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -13,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.entity.Reservation;
+import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
+import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.ReservationRepository;
 
 public class ReservationFakeRepository implements ReservationRepository {
 
@@ -89,8 +88,8 @@ public class ReservationFakeRepository implements ReservationRepository {
     public List<Long> findBookedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         return reservations.values().stream()
                 .filter(reservation -> reservation.date().equals(date))
-                .map(Reservation::time)
-                .map(ReservationTime::id)
-                .filter(id -> id.equals(themeId)).toList();
+                .filter(reservation -> reservation.theme().id().equals(themeId))
+                .map(reservation -> reservation.time().id())
+                .toList();
     }
 }
