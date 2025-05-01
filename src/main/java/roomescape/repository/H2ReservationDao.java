@@ -1,5 +1,9 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,13 +14,28 @@ import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public class H2ReservationDao implements ReservationDao {
+
+    private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
+        ReservationTime reservationTime = new ReservationTime(
+                rs.getLong("time_id"),
+                rs.getObject("time_value", LocalTime.class)
+        );
+        Theme theme = new Theme(
+                rs.getLong("theme_id"),
+                rs.getString("theme_name"),
+                rs.getString("theme_description"),
+                rs.getString("theme_thumbnail")
+        );
+        return new Reservation(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getObject("date", LocalDate.class),
+                reservationTime,
+                theme);
+    };
+
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -28,21 +47,21 @@ public class H2ReservationDao implements ReservationDao {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-            SELECT
-                 r.id AS id,
-                 r.name AS name,
-                 r.date AS date,
-                 t.id AS time_id,
-                 t.start_at AS time_value,
-                 th.id AS theme_id,
-                 th.name AS theme_name,
-                 th.description AS theme_description,
-                 th.thumbnail AS theme_thumbnail
-            FROM reservation r
-            JOIN reservation_time t ON r.time_id = t.id
-            JOIN theme th ON r.theme_id = th.id
-            """;
-        return jdbcTemplate.query(sql, getReservationRowMapper());
+                SELECT
+                     r.id AS id,
+                     r.name AS name,
+                     r.date AS date,
+                     t.id AS time_id,
+                     t.start_at AS time_value,
+                     th.id AS theme_id,
+                     th.name AS theme_name,
+                     th.description AS theme_description,
+                     th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -51,14 +70,15 @@ public class H2ReservationDao implements ReservationDao {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("name", reservation.getName())
-            .addValue("date", reservation.getDate())
-            .addValue("time_id", reservation.getTime().getId())
-            .addValue("theme_id", reservation.getTheme().getId());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
         jdbcTemplate.update(sql, mapSqlParameterSource, keyHolder);
 
         Number key = keyHolder.getKey();
-        return new Reservation(key.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        return new Reservation(key.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     @Override
@@ -70,23 +90,23 @@ public class H2ReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
-            SELECT
-                 r.id AS id,
-                 r.name AS name,
-                 r.date AS date,
-                 t.id AS time_id,
-                 t.start_at AS time_value,
-                 th.id AS theme_id,
-                 th.name AS theme_name,
-                 th.description AS theme_description,
-                 th.thumbnail AS theme_thumbnail
-            FROM reservation r
-            JOIN reservation_time t ON r.time_id = t.id
-            JOIN theme th ON r.theme_id = th.id
-            WHERE r.id = :id
-            """;
+                SELECT
+                     r.id AS id,
+                     r.name AS name,
+                     r.date AS date,
+                     t.id AS time_id,
+                     t.start_at AS time_value,
+                     th.id AS theme_id,
+                     th.name AS theme_name,
+                     th.description AS theme_description,
+                     th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE r.id = :id
+                """;
         List<Reservation> findReservation = jdbcTemplate.query(
-            sql, new MapSqlParameterSource("id", id), getReservationRowMapper());
+                sql, new MapSqlParameterSource("id", id), ROW_MAPPER);
 
         return findReservation.stream().findFirst();
     }
@@ -94,55 +114,37 @@ public class H2ReservationDao implements ReservationDao {
     @Override
     public boolean isExistByTimeId(Long timeId) {
         String sql = """
-            SELECT EXISTS 
-                (SELECT 1 
-                 FROM reservation 
-                 WHERE time_id = :time_id
-                )
-            """;
+                SELECT EXISTS 
+                    (SELECT 1 
+                     FROM reservation 
+                     WHERE time_id = :time_id
+                    )
+                """;
         return Boolean.TRUE == jdbcTemplate.queryForObject(
-            sql, new MapSqlParameterSource("time_id", timeId), Boolean.class);
+                sql, new MapSqlParameterSource("time_id", timeId), Boolean.class);
     }
 
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
-            SELECT
-                 r.id AS id,
-                 r.name AS name,
-                 r.date AS date,
-                 t.id AS time_id,
-                 t.start_at AS time_value,
-                 th.id AS theme_id,
-                 th.name AS theme_name,
-                 th.description AS theme_description,
-                 th.thumbnail AS theme_thumbnail
-            FROM reservation r
-            JOIN reservation_time t ON r.time_id = t.id
-            JOIN theme th ON r.theme_id = th.id
-            WHERE th.id = :theme_id AND r.date = :date
-            """;
+                SELECT
+                     r.id AS id,
+                     r.name AS name,
+                     r.date AS date,
+                     t.id AS time_id,
+                     t.start_at AS time_value,
+                     th.id AS theme_id,
+                     th.name AS theme_name,
+                     th.description AS theme_description,
+                     th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
+                WHERE th.id = :theme_id AND r.date = :date
+                """;
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("theme_id", themeId)
-            .addValue("date", date);
-        return jdbcTemplate.query(sql, mapSqlParameterSource, getReservationRowMapper());
-    }
-
-    private RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getObject("date", LocalDate.class),
-            new ReservationTime(
-                resultSet.getLong("time_id"),
-                resultSet.getObject("time_value", LocalTime.class)
-            ),
-            new Theme(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("theme_description"),
-                resultSet.getString("theme_thumbnail")
-            )
-        );
+                .addValue("theme_id", themeId)
+                .addValue("date", date);
+        return jdbcTemplate.query(sql, mapSqlParameterSource, ROW_MAPPER);
     }
 }
