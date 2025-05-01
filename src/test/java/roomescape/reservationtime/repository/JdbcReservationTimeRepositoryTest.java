@@ -2,6 +2,7 @@ package roomescape.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -11,8 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
+import roomescape.theme.domain.Theme;
 
 class JdbcReservationTimeRepositoryTest {
 
@@ -59,6 +63,29 @@ class JdbcReservationTimeRepositoryTest {
 
         // then
         assertThat(reservationTimes).hasSize(2);
+    }
+
+    @Test
+    void 예약가능한_모든_시간을_조회한다() {
+        // given
+        jdbcReservationRepository.save(
+                new Reservation("예약1", LocalDate.of(2999, 5, 1), new ReservationTime(1L, LocalTime.of(10, 0)),
+                        new Theme(1L, "이름1", "썸네일1", "설명1")));
+        jdbcReservationRepository.save(
+                new Reservation("예약1", LocalDate.of(2999, 5, 1), new ReservationTime(2L, LocalTime.of(11, 0)),
+                        new Theme(1L, "이름1", "썸네일1", "설명1")));
+
+        // when
+        List<AvailableReservationTimeResponse> allAvailable = repository.findAllAvailable(
+                LocalDate.of(2999, 5, 1), 1L);
+
+        // then
+        SoftAssertions.assertSoftly(soft -> {
+                    soft.assertThat(allAvailable).hasSize(2);
+                    soft.assertThat(allAvailable.get(0).alreadyBooked()).isTrue();
+                    soft.assertThat(allAvailable.get(1).alreadyBooked()).isTrue();
+                }
+        );
     }
 
     @Test
