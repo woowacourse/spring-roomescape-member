@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,12 +10,16 @@ import roomescape.exception.DataNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.entity.ReservationEntity;
+import roomescape.reservation.service.dto.AvailableReservationTime;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
 
     public Long save(final String name, final LocalDate date, final Long timeId, final Long themeId) {
         final long count = reservationRepository.countByDateAndTimeIdAndThemeId(date, timeId, themeId);
@@ -41,5 +46,25 @@ public class ReservationService {
                 .orElseThrow(() -> new DataNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
 
         reservationRepository.deleteById(id);
+    }
+
+
+    public List<AvailableReservationTime> findAvailableReservationTimes(final LocalDate date, final Long themeId) {
+        final List<AvailableReservationTime> availableReservationTimes = new ArrayList<>();
+        final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+
+        for (ReservationTime reservationTime : reservationTimes) {
+            availableReservationTimes.add(new AvailableReservationTime(
+                    reservationTime.getId(),
+                    reservationTime.getStartAt(),
+                    reservationRepository.existsByDateAndStartAtAndThemeId(
+                            date,
+                            reservationTime.getStartAt(),
+                            themeId
+                    ))
+            );
+        }
+
+        return availableReservationTimes;
     }
 }

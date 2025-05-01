@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservation.controller.dto.ReservationRequest;
-import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.AvailableReservationTimeRequest;
+import roomescape.reservation.controller.dto.AvailableReservationTimeResponse;
+import roomescape.reservation.controller.dto.CreateReservationRequest;
+import roomescape.reservation.controller.dto.CreateReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.service.ReservationService;
 
@@ -24,27 +26,42 @@ public class ReservationRestController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody final ReservationRequest reservationRequest
+    public ResponseEntity<CreateReservationResponse> createReservation(
+            @RequestBody final CreateReservationRequest createReservationRequest
     ) {
         final Long id = reservationService.save(
-                reservationRequest.name(),
-                reservationRequest.date(),
-                reservationRequest.timeId(),
-                reservationRequest.themeId()
+                createReservationRequest.name(),
+                createReservationRequest.date(),
+                createReservationRequest.timeId(),
+                createReservationRequest.themeId()
         );
         final Reservation found = reservationService.getById(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(found));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CreateReservationResponse.from(found));
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
+    public ResponseEntity<List<CreateReservationResponse>> getReservations() {
         final List<Reservation> reservations = reservationService.findAll();
-        final List<ReservationResponse> reservationResponses = reservations.stream()
-                .map(ReservationResponse::from)
+        final List<CreateReservationResponse> createReservationRespons = reservations.stream()
+                .map(CreateReservationResponse::from)
                 .toList();
 
-        return ResponseEntity.ok(reservationResponses);
+        return ResponseEntity.ok(createReservationRespons);
+    }
+    
+    @PostMapping("/available-times")
+    public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimes(
+            @RequestBody AvailableReservationTimeRequest request) {
+
+        return ResponseEntity.ok(
+                reservationService.findAvailableReservationTimes(request.date(), request.themeId()).stream()
+                        .map(availableReservationTime -> new AvailableReservationTimeResponse(
+                                availableReservationTime.id(),
+                                availableReservationTime.startAt(),
+                                availableReservationTime.alreadyBooked()
+                        ))
+                        .toList()
+        );
     }
 
     @DeleteMapping("/{id}")
