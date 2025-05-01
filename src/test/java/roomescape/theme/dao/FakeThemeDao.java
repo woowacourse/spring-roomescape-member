@@ -1,5 +1,6 @@
 package roomescape.theme.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,5 +50,10 @@ public class FakeThemeDao implements ThemeDao {
     @Override
     public Optional<Theme> findById(Long id) {
         return fakeThemes.stream().filter(theme -> theme.getId().equals(id)).findFirst();
+    }
+
+    @Override
+    public List<Theme> findTopNReservedThemesBetween(int count, LocalDate startDate, LocalDate endDate) {
+        return List.of();
     }
 }

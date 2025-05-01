@@ -148,7 +148,7 @@ public class JdbcReservationDao implements ReservationDao {
                        t.description as theme_des,
                        t.thumbnail as theme_thumb
                     FROM reservation as r 
-                    INNER JOIN reservation_time as rt ON rt.id = r.id
+                    INNER JOIN reservation_time as rt ON rt.id = r.time_id
                     INNER JOIN theme as t ON t.id = r.theme_id
                     WHERE r.id= ?
                 """;

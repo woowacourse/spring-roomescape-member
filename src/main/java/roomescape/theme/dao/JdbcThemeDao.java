@@ -2,6 +2,7 @@ package roomescape.theme.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -98,5 +99,30 @@ public class JdbcThemeDao implements ThemeDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Theme> findTopNReservedThemesBetween(int count, LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT *
+                FROM (SELECT theme_id, COUNT(*) AS count
+                FROM reservation
+                WHERE date BETWEEN ? AND ?
+                GROUP BY theme_id
+                ORDER BY count DESC) AS r
+                JOIN theme AS t ON r.theme_id = t.id
+                LIMIT ?
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("theme_id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                ),
+                startDate, endDate, count
+
+        );
     }
 }

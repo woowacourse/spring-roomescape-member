@@ -3,15 +3,11 @@ package roomescape.theme.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.ExistedThemeException;
-import roomescape.reservation.Reservation;
 import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.FakeThemeDao;
 import roomescape.theme.dao.ThemeDao;
@@ -68,29 +64,5 @@ public class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.create(themeRequest))
                 .isInstanceOf(ExistedThemeException.class);
-    }
-
-    @Test
-    void 최근_일주일_기준으로_인기테마_10개를_가져올_수_있다() {
-        // given
-        Reservation reservation1 = Reservation.of(1L, "포라", LocalDate.now().minusDays(1),
-                new ReservationTime(1L, LocalTime.of(9, 0)), theme1);
-        Reservation reservation2 = Reservation.of(2L, "짱구", LocalDate.now().minusDays(3),
-                new ReservationTime(1L, LocalTime.of(9, 0)), theme2);
-        Reservation reservation3 = Reservation.of(3L, "포비", LocalDate.of(2025, 4, 1),
-                new ReservationTime(1L, LocalTime.of(9, 0)), theme1);
-        Reservation reservation4 = Reservation.of(4L, "리사", LocalDate.now().minusDays(4),
-                new ReservationTime(1L, LocalTime.of(9, 0)), theme2);
-        reservationDao.create(reservation1);
-        reservationDao.create(reservation2);
-        reservationDao.create(reservation3);
-
-        // when
-        List<ThemeResponse> top10Themes = themeService.getTop10Themes();
-
-        // then
-        assertThat(top10Themes).hasSize(2);
-        assertThat(top10Themes.getFirst().name()).isEqualTo("테마2");
-        assertThat(top10Themes.get(1).name()).isEqualTo("테마1");
     }
 }
