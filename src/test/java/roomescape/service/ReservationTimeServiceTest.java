@@ -1,9 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -14,10 +10,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
-import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
+import roomescape.exception.custom.NotFoundValueException;
 import roomescape.service.dto.ReservationTimeCreation;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -85,7 +85,7 @@ class ReservationTimeServiceTest {
     void deleteNotExistTimeById() {
         //given //when //then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1000L))
-                .isInstanceOf(NotExistedValueException.class)
+                .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 예약 시간입니다");
     }
 
@@ -94,7 +94,7 @@ class ReservationTimeServiceTest {
     void deleteUsedTimeById() {
         //given //when //then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
-                .isInstanceOf(PharmaceuticalViolationException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("사용 중인 예약 시간입니다");
     }
 }

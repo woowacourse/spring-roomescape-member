@@ -9,9 +9,9 @@ import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
-import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
+import roomescape.exception.custom.NotFoundValueException;
 import roomescape.service.dto.ReservationTimeCreation;
 
 @Service
@@ -40,7 +40,7 @@ public class ReservationTimeService {
 
     private ReservationTime findById(final long id) {
         return reservationTimeDAO.findById(id)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 시간입니다"));
+                .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약 시간입니다"));
     }
 
     public List<ReservationTimeResponse> findAllReservationTimes() {
@@ -67,13 +67,13 @@ public class ReservationTimeService {
 
     public void deleteById(final long id) {
         if (reservationDAO.existsByTimeId(id)) {
-            throw new PharmaceuticalViolationException("사용 중인 예약 시간입니다");
+            throw new BusinessRuleViolationException("사용 중인 예약 시간입니다");
         }
 
         boolean deleted = reservationTimeDAO.deleteById(id);
 
         if (!deleted) {
-            throw new NotExistedValueException("존재하지 않는 예약 시간입니다");
+            throw new NotFoundValueException("존재하지 않는 예약 시간입니다");
         }
     }
 }

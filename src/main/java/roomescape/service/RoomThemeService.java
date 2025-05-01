@@ -8,9 +8,9 @@ import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.RoomThemeDAO;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
-import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
+import roomescape.exception.custom.NotFoundValueException;
 import roomescape.service.dto.RoomThemeCreation;
 
 @Service
@@ -39,7 +39,7 @@ public class RoomThemeService {
 
     private RoomTheme findById(final long id) {
         return themeDAO.findById(id)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마입니다"));
+                .orElseThrow(() -> new NotFoundValueException("존재하지 않는 테마입니다"));
     }
 
     public List<RoomThemeResponse> findAllThemes() {
@@ -61,13 +61,13 @@ public class RoomThemeService {
 
     public void deleteTheme(final long id) {
         if (reservationDAO.existsByThemeId(id)) {
-            throw new PharmaceuticalViolationException("사용 중인 테마입니다");
+            throw new BusinessRuleViolationException("사용 중인 테마입니다");
         }
 
         final boolean deleted = themeDAO.deleteById(id);
 
         if (!deleted) {
-            throw new NotExistedValueException("존재하지 않는 테마입니다");
+            throw new NotFoundValueException("존재하지 않는 테마입니다");
         }
     }
 }

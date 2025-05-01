@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.response.RoomThemeResponse;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
-import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
+import roomescape.exception.custom.NotFoundValueException;
 import roomescape.service.dto.RoomThemeCreation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,7 +76,7 @@ class RoomThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> roomThemeService.deleteTheme(deleteId))
-                .isInstanceOf(PharmaceuticalViolationException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("사용 중인 테마입니다");
     }
 
@@ -88,7 +88,7 @@ class RoomThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> roomThemeService.deleteTheme(deleteId))
-                .isInstanceOf(NotExistedValueException.class)
+                .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 테마입니다");
     }
 }

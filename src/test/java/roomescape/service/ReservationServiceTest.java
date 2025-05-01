@@ -1,10 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -14,10 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
-import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
+import roomescape.exception.custom.NotFoundValueException;
 import roomescape.service.dto.ReservationCreation;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -66,7 +66,7 @@ class ReservationServiceTest {
         //when & then
         ReservationCreation past = new ReservationCreation("test", date, 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(past))
-                .isInstanceOf(PharmaceuticalViolationException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("과거 시점은 예약할 수 없습니다");
     }
 
@@ -76,7 +76,7 @@ class ReservationServiceTest {
         //given //when & then
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationCreation("test", LocalDate.of(3000, 1, 1), 1000, 1)))
-                .isInstanceOf(NotExistedValueException.class)
+                .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 예약 가능 시간입니다");
     }
 
@@ -86,7 +86,7 @@ class ReservationServiceTest {
         //given //when & then
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationCreation("test", LocalDate.of(3000, 1, 1), 1, 1000L)))
-                .isInstanceOf(NotExistedValueException.class)
+                .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 테마 입니다");
     }
 
@@ -114,7 +114,7 @@ class ReservationServiceTest {
         long notExistId = 1000L;
         //when & then
         assertThatThrownBy(() -> reservationService.removeReservationById(notExistId))
-                .isInstanceOf(NotExistedValueException.class)
+                .isInstanceOf(NotFoundValueException.class)
                 .hasMessageContaining("존재하지 않는 예약입니다");
     }
 }

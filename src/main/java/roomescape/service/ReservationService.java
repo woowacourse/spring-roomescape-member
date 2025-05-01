@@ -11,9 +11,9 @@ import roomescape.dao.RoomThemeDAO;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
-import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
+import roomescape.exception.custom.NotFoundValueException;
 import roomescape.service.dto.ReservationCreation;
 
 @Service
@@ -47,13 +47,13 @@ public class ReservationService {
 
     private ReservationTime findReservationTimeByTimeId(final long timeId) {
         return reservationTimeDAO.findById(timeId)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d"
+                .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d"
                         .formatted(timeId)));
     }
 
     private RoomTheme findThemeByThemeId(final long themeId) {
         return themeDAO.findById(themeId)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
+                .orElseThrow(() -> new NotFoundValueException("존재하지 않는 테마 입니다"));
     }
 
     private void validatePastDateAndTime(final LocalDate date, final ReservationTime time) {
@@ -63,7 +63,7 @@ public class ReservationService {
         final boolean isPastTime = date.isEqual(currentDate) && time.getStartAt().isBefore(LocalTime.now());
 
         if (isPastDate || isPastTime) {
-            throw new PharmaceuticalViolationException("과거 시점은 예약할 수 없습니다");
+            throw new BusinessRuleViolationException("과거 시점은 예약할 수 없습니다");
         }
     }
 
@@ -82,7 +82,7 @@ public class ReservationService {
 
     private Reservation findById(final long savedId) {
         return reservationDAO.findById(savedId)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약입니다"));
+                .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약입니다"));
     }
 
     public List<ReservationResponse> findAllReservations() {
@@ -96,7 +96,7 @@ public class ReservationService {
         boolean deleted = reservationDAO.deleteById(id);
 
         if (!deleted) {
-            throw new NotExistedValueException("존재하지 않는 예약입니다");
+            throw new NotFoundValueException("존재하지 않는 예약입니다");
         }
     }
 }
