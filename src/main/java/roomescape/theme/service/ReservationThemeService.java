@@ -21,10 +21,10 @@ public class ReservationThemeService {
 
     public ReservationThemeResponse createTheme(ReservationThemeRequest request) {
         ReservationThemeEntity newTheme = request.toEntity();
-        // TODO: Optional 개선하기
-        if (themeRepository.findByName(newTheme.getName()).isPresent()) {
-            throw new ConflictException("중복되는 테마가 존재합니다.");
-        }
+        themeRepository.findByName(newTheme.getName())
+                .ifPresent((theme) -> {
+                    throw new ConflictException("중복되는 테마가 존재합니다.");
+                });
         ReservationThemeEntity saved = themeRepository.save(newTheme);
         return ReservationThemeResponse.from(saved);
     }
