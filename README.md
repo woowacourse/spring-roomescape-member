@@ -33,6 +33,14 @@
     - [x] 예를 들어 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회할 수 있어야 합니다.
     - [x] / 요청 시 인기 테마 페이지를 응답합니다
 
+# 화면
+
+- 어드민 메인 페이지: localhost:8080/admin
+- 예약 관리 페이지: localhost:8080/admin/reservation
+- 시간 관리 페이지: localhost:8080/admin/time
+- 사용자 예약 페이지: localhost:8080/reservation
+- 인기 테마 페이지: localhost:8080
+
 # API 명세
 
 ### 예약 목록 조회
@@ -200,4 +208,43 @@ DELETE /themes/1 HTTP/1.1
 
 Response
 HTTP/1.1 204
+```
+
+### 예약 가능한 시간 조회
+
+```
+Request
+GET /times/available?date={}&themeId={} HTTP/1.1
+
+Response
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": Long,
+        "startAt": LocalTime (HH:mm)
+        "alreadyBooked": boolean
+    }
+]
+```
+
+### 인기 테마 조회
+
+```
+Request
+GET /theme/top10
+
+Response
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": Number
+        "name": String
+        "description": String
+        "thumbnail": String
+    }
+]
 ```
