@@ -17,4 +17,6 @@ public interface ReservationTimeRepository {
     void remove(ReservationTime reservation);
 
     List<ReservationTime> getAllByThemeIdAndDate(Long themeId, LocalDate date);
+
+    ReservationTime getById(Long id);
 }

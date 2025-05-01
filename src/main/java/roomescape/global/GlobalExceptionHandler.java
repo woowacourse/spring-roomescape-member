@@ -28,7 +28,6 @@ public class GlobalExceptionHandler {
         return ERROR_MESSAGE_PREFIX + e.getMessage();
     }
 
-    // TODO: 코드 개선점 고민해보기(근본 예외 타입에 따른 구체적인 조치가 필요할지?)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public String handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {

@@ -14,6 +14,8 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long id);
 
+    Reservation getById(Long id);
+
     void remove(Reservation reservation);
 
     boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId);

@@ -33,12 +33,7 @@ public class ReservationTimeService {
 
     public void delete(Long id) {
         // TODO: noContent vs IllegalArgumentException
-        ReservationTime reservation = getById(id);
+        ReservationTime reservation = reservationTimeRepository.getById(id);
         reservationTimeRepository.remove(reservation);
-    }
-
-    private ReservationTime getById(Long id) {
-        return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 시간이 존재하지 않습니다."));
     }
 }

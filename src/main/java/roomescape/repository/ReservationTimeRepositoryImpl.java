@@ -31,12 +31,10 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
         return reservationTimeDao.selectById(id);
     }
 
-    // TODO: getByXX 일관적으로 적용하기
-/*
+    @Override
     public ReservationTime getById(Long id) {
-        return findById(id).orElseThrow(() -> new IllegalArgumentException());
+        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
     }
-*/
 
     @Override
     public void remove(ReservationTime reservationTime) {

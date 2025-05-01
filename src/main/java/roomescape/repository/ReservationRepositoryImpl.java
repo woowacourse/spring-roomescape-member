@@ -32,13 +32,17 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
+    public Reservation getById(Long id) {
+        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약입니다."));
+    }
+
+    @Override
     public void remove(Reservation reservation) {
         reservationDao.deleteById(reservation.id());
     }
 
     @Override
     public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
-        // TODO: 시간만 확인하지 말고 테마까지 함께 확인
         return reservationDao.existDuplicatedDateTime(date, timeId, themeId);
     }
 }

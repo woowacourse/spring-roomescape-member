@@ -27,7 +27,6 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
             resultSet.getString("thumbnail")
     );
 
-    // TODO: NamedParameterJdbcTemplate
     private final JdbcTemplate jdbcTemplate;
 
     @Override
