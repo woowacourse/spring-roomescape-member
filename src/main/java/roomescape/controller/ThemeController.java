@@ -22,16 +22,6 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
-    public String displayThemeRank() {
-        return "/index";
-    }
-
-    @GetMapping("/admin/theme")
-    public String displayAdminTheme() {
-        return "/admin/theme";
-    }
-
     @GetMapping("/themes")
     public ResponseEntity<List<ThemeResponseDto>> readThemes() {
         List<ThemeResponseDto> themeResponseDtos = themeService.findAllThemes();

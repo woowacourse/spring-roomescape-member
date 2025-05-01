@@ -25,11 +25,6 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping("/admin/time")
-    public String displayAdminTime() {
-        return "/admin/time";
-    }
-
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponseDto>> getTimes(
     ) {
