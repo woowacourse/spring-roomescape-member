@@ -10,7 +10,6 @@ import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.repository.entity.ReservationTimeEntity;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class ReservationTimeService {
             throw new DataExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
         }
 
-        final ReservationTimeEntity reservationTimeEntity = new ReservationTimeEntity(startAt);
+        final ReservationTime reservationTimeEntity = new ReservationTime(startAt);
 
         return reservationTimeRepository.save(reservationTimeEntity);
     }

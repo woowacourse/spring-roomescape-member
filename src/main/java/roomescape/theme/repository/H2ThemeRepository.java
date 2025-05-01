@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.entity.ThemeEntity;
 
 @RequiredArgsConstructor
 @Repository
@@ -27,7 +26,7 @@ public class H2ThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Long save(final ThemeEntity themeEntity) {
+    public Long save(final Theme theme) {
         final String sql = """
                 INSERT INTO themes (name, description, thumbnail) VALUES (?, ?, ?)
                 """;
@@ -35,9 +34,9 @@ public class H2ThemeRepository implements ThemeRepository {
 
         final int rowAffected = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, themeEntity.name());
-            ps.setString(2, themeEntity.description());
-            ps.setString(3, themeEntity.thumbnail());
+            ps.setString(1, theme.getName());
+            ps.setString(2, theme.getDescription());
+            ps.setString(3, theme.getThumbnail());
             return ps;
         }, keyHolder);
 

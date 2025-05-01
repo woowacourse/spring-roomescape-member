@@ -5,11 +5,10 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.repository.entity.ReservationEntity;
 
 public interface ReservationRepository {
 
-    Long save(ReservationEntity reservationEntity);
+    Long save(Reservation reservation);
 
     Optional<Reservation> findById(Long id);
 

@@ -9,8 +9,9 @@ import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.entity.ReservationEntity;
 import roomescape.reservation.service.dto.AvailableReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
@@ -20,16 +21,21 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
     public Long save(final String name, final LocalDate date, final Long timeId, final Long themeId) {
         final long count = reservationRepository.countByDateAndTimeIdAndThemeId(date, timeId, themeId);
         if (count >= 1) {
             throw new DataExistException("해당 시간에 이미 예약된 테마입니다.");
         }
+        
+        final ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new DataNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + timeId));
+        final Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new DataNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + themeId));
+        final Reservation reservation = new Reservation(name, date, reservationTime, theme);
 
-        final ReservationEntity reservationEntity = new ReservationEntity(name, date, timeId, themeId);
-
-        return reservationRepository.save(reservationEntity);
+        return reservationRepository.save(reservation);
     }
 
     public Reservation getById(final Long id) {

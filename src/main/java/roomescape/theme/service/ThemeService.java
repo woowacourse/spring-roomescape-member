@@ -8,7 +8,6 @@ import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.repository.entity.ThemeEntity;
 
 @RequiredArgsConstructor
 @Service
@@ -18,13 +17,13 @@ public class ThemeService {
 
     public Long save(final String name, final String description, final String thumbnail) {
         final long count = themeRepository.countByName(name);
-        if(count >= 1) {
+        if (count >= 1) {
             throw new DataExistException("해당 테마명이 이미 존재합니다. name = " + name);
         }
 
-        final ThemeEntity themeEntity = new ThemeEntity(name, description, thumbnail);
+        final Theme theme = new Theme(name, description, thumbnail);
 
-        return themeRepository.save(themeEntity);
+        return themeRepository.save(theme);
     }
 
     public List<Theme> findAll() {
