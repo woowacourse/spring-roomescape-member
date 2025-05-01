@@ -1,4 +1,4 @@
-package roomescape.reservationTime.domain;
+package roomescape.reservationTime;
 
 import java.time.LocalTime;
 import java.util.Objects;
@@ -8,18 +8,13 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(Long id, LocalTime startAt) {
+    public ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime(LocalTime time) {
-        this.id = null;
-        this.startAt = time;
-    }
-
-    public boolean isSameTime(ReservationTime reservationTime) {
-        return this.startAt.equals(reservationTime.startAt);
+    public ReservationTime(final LocalTime startAt) {
+        this(null, startAt);
     }
 
     public Long getId() {
