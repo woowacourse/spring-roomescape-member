@@ -9,10 +9,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationRequest;
@@ -160,7 +162,7 @@ class ReservationServiceTest {
 
     @DisplayName("존재하지 않는 테마 ID로 저장하면 예외를 반환한다.")
     @Test
-    void notExistThemeId(){
+    void notExistThemeId() {
         LocalDate date = LocalDate.of(2025, 4, 29);
 
         Long notExistId = 1000L;

@@ -3,6 +3,7 @@ package roomescape.domain.reservation.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class ReservationTimeTest {
     @DisplayName("id 존재를 확인할 수 있다.")
     @ParameterizedTest
     @CsvSource(value = {"1,true", "null,false"}, nullValues = "null", delimiter = ',')
-    void test1(Long id, Boolean expect){
+    void test1(Long id, Boolean expect) {
         LocalTime now = LocalTime.now();
 
         ReservationTime reservationTime = new ReservationTime(id, now);
@@ -23,7 +24,7 @@ class ReservationTimeTest {
 
     @DisplayName("시간은 null일 수 없다.")
     @Test
-    void test2(){
+    void test2() {
         SoftAssertions softAssertions = new SoftAssertions();
 
         softAssertions.assertThatThrownBy(() -> new ReservationTime(1L, null))

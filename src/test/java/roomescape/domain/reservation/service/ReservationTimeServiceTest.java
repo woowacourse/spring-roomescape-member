@@ -6,9 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationTimeRequest;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
@@ -16,7 +18,7 @@ import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
 import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
 
-public class ReservationTimeServiceTest {
+class ReservationTimeServiceTest {
 
     private final FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
     private final FakeReservationRepository reservationRepository = new FakeReservationRepository();
