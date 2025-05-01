@@ -1,6 +1,7 @@
 package roomescape.reservationtime.dao;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationtime.ReservationTime;
+import roomescape.reservationtime.dto.response.AvailableTimeResponse;
 
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
@@ -77,11 +79,25 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             return Optional.empty();
         }
     }
-//
-//    @Override
-//    public List<ReservationTime> findTimesByThemeId(LocalDate date, Long themeId) {
-//        String sql = """
-//
-//                """
-//    }
+
+    @Override
+    public List<AvailableTimeResponse> findByDateAndThemeIdWithBooked(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT rt.id, rt.start_at, r.id is not null as already_booked
+                FROM reservation_time rt
+                LEFT JOIN reservation r
+                  ON rt.id = r.time_id
+                  AND r.date = ?
+                  AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new AvailableTimeResponse(
+                        rs.getLong("id"),
+                        rs.getTime("start_at").toLocalTime(),
+                        rs.getBoolean("already_booked")
+                ),
+                date, themeId
+        );
+    }
 }

@@ -52,16 +52,6 @@ public class ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> nonAvailableReservations = reservationDao.findAll().stream()
-                .filter(reservation -> reservation.getDate().equals(date))
-                .filter(reservation -> reservation.getTheme().getId().equals(themeId))
-                .map(reservation -> reservation.getReservationTime())
-                .toList();
-
-        List<ReservationTime> timeDaoAll = reservationTimeDao.findAll();
-
-        return timeDaoAll.stream()
-                .map(t -> new AvailableTimeResponse(t.getId(), t.getStartAt(), nonAvailableReservations.contains(t)))
-                .toList();
+        return reservationTimeDao.findByDateAndThemeIdWithBooked(date, themeId);
     }
 }

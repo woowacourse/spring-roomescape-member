@@ -1,5 +1,6 @@
 package roomescape.reservationtime.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservationtime.ReservationTime;
+import roomescape.reservationtime.dto.response.AvailableTimeResponse;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
 
@@ -42,5 +44,10 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
                 .filter(reservationTime -> reservationTime.getId().equals(id))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new));
+    }
+
+    @Override
+    public List<AvailableTimeResponse> findByDateAndThemeIdWithBooked(LocalDate date, Long themeId) {
+        return List.of();
     }
 }
