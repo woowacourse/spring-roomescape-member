@@ -23,10 +23,6 @@ public class Reservation {
         return new Reservation(newPrimaryKey, reservation.name, reservation.date, reservation.time, reservation.theme);
     }
 
-    public boolean isSameId(Long id) {
-        return Objects.equals(this.id, id);
-    }
-
     public Long getId() {
         return id;
     }
@@ -54,5 +50,25 @@ public class Reservation {
         if (name.isBlank()) {
             throw new IllegalArgumentException("예약자명은 비워둘 수 없습니다.");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Reservation that = (Reservation) o;
+        if(id == null && that.id == null ) {
+            return false;
+        }
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
     }
 }
