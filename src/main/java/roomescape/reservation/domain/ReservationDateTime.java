@@ -1,8 +1,12 @@
 package roomescape.reservation.domain;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import roomescape.reservation.domain.exception.PastReservationException;
+import roomescape.reservation.domain.exception.ReservationDateNullException;
+import roomescape.reservation.domain.exception.ReservationTimeNullException;
 import roomescape.time.domain.ReservationTime;
 
 public class ReservationDateTime {
@@ -17,7 +21,10 @@ public class ReservationDateTime {
     }
 
     private void validatePast(ReservationDate reservationDate, ReservationTime reservationTime, Clock clock) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate.getDate(), reservationTime.getStartAt());
+        LocalDate localDate = reservationDate.getDate();
+        LocalTime localTime = reservationTime.getStartAt();
+
+        LocalDateTime reservationDateTime = LocalDateTime.of(localDate, localTime);
         LocalDateTime now = LocalDateTime.now(clock);
 
         if (reservationDateTime.isBefore(now)) {

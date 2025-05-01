@@ -219,4 +219,31 @@ public class ReservationTest extends BaseTest {
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
+
+    @Test
+    void 날짜가_null이면_예외를_응답한다() {
+        Map<String, Object> reservationFail = new HashMap<>();
+        reservationFail.put("name", "브라운");
+        reservationFail.put("timeId", 1);
+        reservationFail.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationFail)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 시간이_null이면_예외를_응답한다() {
+        Map<String, String> reservationFail = new HashMap<>();
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationFail)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
