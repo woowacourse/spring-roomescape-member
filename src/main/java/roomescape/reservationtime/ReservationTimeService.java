@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.globalexception.BadRequestException;
 import roomescape.globalexception.ConflictException;
+import roomescape.globalexception.NotFoundException;
 import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
@@ -57,6 +58,10 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final Long id) {
+        if (!reservationTimeRepository.existsById(id)) {
+            throw new NotFoundException("시간이 존재하지 않습니다.");
+        }
+
         try {
             reservationTimeRepository.deleteById(id);
         } catch (final DataIntegrityViolationException e) {

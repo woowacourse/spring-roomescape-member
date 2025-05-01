@@ -69,6 +69,12 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public Boolean existsById(final Long id) {
+        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id=?";
+        return jdbcTemplate.queryForObject(sql, Long.class, id) >= 1;
+    }
+
+    @Override
     public Boolean existsByStartAt(final LocalTime startAt) {
         final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at=?";
         return jdbcTemplate.queryForObject(sql, Long.class, startAt) >= 1;
