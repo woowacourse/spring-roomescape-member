@@ -16,7 +16,7 @@ public interface ReservationRepository {
 
     List<Reservation> findByDateTime(final LocalDate date, final LocalTime time);
 
-    List<Reservation> findByDate(final LocalDate date);
+    List<Reservation> findByDateAndTheme(final LocalDate date, final long themeId);
 
     int deleteById(final long id);
 }

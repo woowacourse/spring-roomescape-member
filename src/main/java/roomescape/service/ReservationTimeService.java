@@ -45,7 +45,7 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResponseDto> findAvailableReservationTimes(LocalDate date, Long themeId) {
         List<ReservationTime> allReservationTimes = reservationTimeRepository.findAll();
-        List<Reservation> availableReservationsByDate = reservationRepository.findByDate(date);
+        List<Reservation> availableReservationsByDate = reservationRepository.findByDateAndTheme(date, themeId);
 
         List<ReservationTime> availableReservationTimes = availableReservationsByDate.stream()
                 .map(Reservation::time)

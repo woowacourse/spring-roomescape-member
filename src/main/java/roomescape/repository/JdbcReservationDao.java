@@ -139,7 +139,7 @@ public class JdbcReservationDao implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDate(LocalDate date) {
+    public List<Reservation> findByDateAndTheme(LocalDate date, long themeId) {
         String sql = """
                 SELECT
                 r.id,
@@ -153,11 +153,11 @@ public class JdbcReservationDao implements ReservationRepository {
                 th.thumbnail
                 FROM reservation as r
                 INNER JOIN reservation_time as t on r.time_id = t.id
-                inner join theme as th on r.theme_id = th.id
+                INNER JOIN theme as th on r.theme_id = ?
                 WHERE r.date = ?
                 """;
         try {
-            return jdbcTemplate.query(sql, rowMapper, date);
+            return jdbcTemplate.query(sql, rowMapper, themeId, date);
         } catch (EmptyResultDataAccessException e) {
             return List.of();
         }
