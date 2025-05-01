@@ -2,6 +2,7 @@ package roomescape.theme.repository;
 
 import roomescape.theme.entity.ReservationThemeEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,5 +17,5 @@ public interface ReservationThemeRepository {
 
     Optional<ReservationThemeEntity> findByName(String name);
 
-    List<ReservationThemeEntity> findPopularDescendingUpTo(int count);
+    List<ReservationThemeEntity> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, int limit);
 }

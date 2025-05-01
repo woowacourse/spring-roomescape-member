@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.entity.ReservationThemeEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,7 +112,11 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeEntity> findPopularDescendingUpTo(final int limit) {
+    public List<ReservationThemeEntity> findPopularDescendingUpTo(
+            LocalDate startDate,
+            LocalDate endDate,
+            final int limit
+    ) {
         String query = """
                 SELECT
                     t.id as theme_id,
@@ -125,14 +130,16 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                         theme_id,
                         COUNT(*) as cnt
                     FROM reservation
-                    WHERE date >= DATEADD(DAY, -7, CURRENT_DATE)
+                    WHERE date BETWEEN :startDate AND :endDate
                     GROUP BY theme_id
                 ) as r_stats
                 ON t.id = r_stats.theme_id
-                ORDER BY cnt DESC
+                ORDER BY cnt DESC, theme_id DESC
                 FETCH FIRST :limit ROWS ONLY
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
                 .addValue("limit", limit);
         return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
             long id = resultSet.getLong("theme_id");

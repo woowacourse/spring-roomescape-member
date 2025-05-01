@@ -8,6 +8,7 @@ import roomescape.theme.entity.ReservationThemeEntity;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -42,8 +43,10 @@ public class ReservationThemeService {
         }
     }
 
-    public List<ReservationThemeResponse> getPopularThemes(int limit) {
-        return themeRepository.findPopularDescendingUpTo(limit)
+    public List<ReservationThemeResponse> getPopularThemes(final int limit) {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusWeeks(1);
+        return themeRepository.findPopularDescendingUpTo(startDate, endDate, limit)
                 .stream()
                 .map(ReservationThemeResponse::from)
                 .toList();

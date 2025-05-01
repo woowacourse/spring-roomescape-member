@@ -2,6 +2,7 @@ package roomescape.theme.repository;
 
 import roomescape.theme.entity.ReservationThemeEntity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +43,7 @@ public class FakeReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeEntity> findPopularDescendingUpTo(int count) {
+    public List<ReservationThemeEntity> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, final int limit) {
         // TODO: 테스트 로직 작성하기
         return null;
     }
