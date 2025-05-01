@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.PopularThemeResponse;
-import roomescape.controller.dto.response.ThemeResponse;
+import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.RoomThemeDAO;
 import roomescape.domain.RoomTheme;
@@ -14,17 +14,17 @@ import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.RoomThemeCreation;
 
 @Service
-public class ThemeService {
+public class RoonThemeService {
 
     private final ReservationDAO reservationDAO;
     private final RoomThemeDAO themeDAO;
 
-    public ThemeService(final ReservationDAO reservationDAO, final RoomThemeDAO themeDAO) {
+    public RoonThemeService(final ReservationDAO reservationDAO, final RoomThemeDAO themeDAO) {
         this.reservationDAO = reservationDAO;
         this.themeDAO = themeDAO;
     }
 
-    public ThemeResponse addTheme(final RoomThemeCreation themeCreation) {
+    public RoomThemeResponse addTheme(final RoomThemeCreation themeCreation) {
         if (themeDAO.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
@@ -33,13 +33,13 @@ public class ThemeService {
                 themeCreation.thumbnail());
         final long id = themeDAO.insert(theme);
 
-        return ThemeResponse.from(theme.withId(id));
+        return RoomThemeResponse.from(theme.withId(id));
     }
 
-    public List<ThemeResponse> findAllThemes() {
+    public List<RoomThemeResponse> findAllThemes() {
         return themeDAO.findAll()
                 .stream()
-                .map(ThemeResponse::from)
+                .map(RoomThemeResponse::from)
                 .toList();
     }
 
