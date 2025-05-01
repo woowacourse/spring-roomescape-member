@@ -61,13 +61,12 @@ public class ReservationService {
     }
 
     public void deleteReservationById(final Long id) {
-        // TODO: 메서드명 변경 (why? count 인것을 특정할 수 없다.)
-        int count = reservationRepository.deleteById(id);
-        validateExistIdToDelete(count);
+        boolean isDeleted = reservationRepository.deleteById(id);
+        validateExistIdToDelete(isDeleted);
     }
 
-    private void validateExistIdToDelete(int count) {
-        if (count == 0) {
+    private void validateExistIdToDelete(boolean isDeleted) {
+        if (!isDeleted) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약입니다.");
         }
     }

@@ -65,17 +65,17 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public int deleteById(Long id) {
+    public boolean deleteById(Long id) {
         Optional<Theme> findTheme = themes.stream()
                 .filter(theme -> Objects.equals(theme.getId(), id))
                 .findAny();
 
         if (findTheme.isEmpty()) {
-            return 0;
+            return false;
         }
 
         Theme theme = findTheme.get();
         themes.remove(theme);
-        return 1;
+        return true;
     }
 }
