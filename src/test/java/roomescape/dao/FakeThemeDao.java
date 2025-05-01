@@ -1,16 +1,14 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.model.Theme;
 
-public class FakeThemeDao extends ThemeJdbcDao {
-    public FakeThemeDao(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
-    }
+public class FakeThemeDao implements ThemeDao {
+
     private final List<Theme> themes = new ArrayList<>();
     private final AtomicLong nextId = new AtomicLong(1L);
 
@@ -21,7 +19,8 @@ public class FakeThemeDao extends ThemeJdbcDao {
 
     @Override
     public Long saveTheme(Theme theme) {
-        Theme newTheme = new Theme(nextId.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        Theme newTheme = new Theme(nextId.getAndIncrement(), theme.getName(), theme.getDescription(),
+                theme.getThumbnail());
         themes.add(newTheme);
         return newTheme.getId();
     }
@@ -31,5 +30,24 @@ public class FakeThemeDao extends ThemeJdbcDao {
         return themes.stream()
                 .filter(theme -> theme.getId().equals(id))
                 .findFirst();
+    }
+
+    @Override
+    public boolean isDuplicatedNameExisted(String name) {
+        return themes.stream()
+                .anyMatch(theme -> theme.getName().equals(name));
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate today, int dayRange) {
+        return List.of();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Optional<Theme> foundTheme = themes.stream()
+                .filter(theme -> theme.getId().equals(id))
+                .findAny();
+        foundTheme.ifPresent(themes::remove);
     }
 }

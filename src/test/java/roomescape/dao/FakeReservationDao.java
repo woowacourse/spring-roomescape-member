@@ -6,19 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-public class FakeReservationDao extends ReservationJdbcDao {
+public class FakeReservationDao implements ReservationDao {
 
     private final Map<Long, Reservation> database = new HashMap<>();
     private final AtomicLong nextId = new AtomicLong(1L);
-
-    public FakeReservationDao(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
-    }
 
     @Override
     public Long saveReservation(Reservation reservation) {

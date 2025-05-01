@@ -1,16 +1,14 @@
 package roomescape.dao;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.model.AvailableReservationTime;
 import roomescape.model.ReservationTime;
 
-public class FakeReservationTimeDao extends ReservationTimeJdbcDao {
-    public FakeReservationTimeDao(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
-    }
+public class FakeReservationTimeDao implements ReservationTimeDao {
 
     private final List<ReservationTime> times = new ArrayList<>();
     private final AtomicLong nextId = new AtomicLong(1L);
@@ -37,5 +35,15 @@ public class FakeReservationTimeDao extends ReservationTimeJdbcDao {
         return times.stream()
                 .filter(time -> time.getId().equals(id))
                 .findFirst();
+    }
+
+    @Override
+    public boolean isDuplicatedStartAtExisted(LocalTime startAt) {
+        return times.stream().anyMatch(time -> time.getStartAt().equals(startAt));
+    }
+
+    @Override
+    public List<AvailableReservationTime> findAvailableTimes(String date, Long themeId) {
+        return List.of();
     }
 }
