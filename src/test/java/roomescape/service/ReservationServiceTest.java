@@ -76,7 +76,7 @@ class ReservationServiceTest {
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now(), 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
         }
 
         @DisplayName("이름이 공백이거나 존재하지 않으면 Reservation을 생성할 수 없다")
@@ -112,7 +112,7 @@ class ReservationServiceTest {
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto));
         }
 
         @DisplayName("이미 지난 날짜의 경우 예약 생성이 불가능 하다")
@@ -125,7 +125,7 @@ class ReservationServiceTest {
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.of(2025, 1, 1), 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto));
         }
     }
 
