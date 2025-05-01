@@ -1,5 +1,6 @@
 package roomescape.business.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ThemeDao;
@@ -20,5 +21,11 @@ public class ThemeService {
         final Long id = themeDao.save(theme);
 
         return ThemeResponse.withId(id, theme);
+    }
+
+    public List<ThemeResponse> findAll() {
+        return themeDao.findAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }
