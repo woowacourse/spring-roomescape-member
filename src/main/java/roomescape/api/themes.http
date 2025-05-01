@@ -42,10 +42,27 @@ content-type: application/json
 #}
 
 
-###테마 삭제 API request
+### 테마 삭제 API request
 
 DELETE http://localhost:8080/themes/6 HTTP/1.1
 
 ### 테마 삭제 API response
 
 #HTTP/1.1 204
+
+### 테마 랭킹 조회 API request
+
+GET http://localhost:8080/themes/popular HTTP/1.1
+
+
+### 테마 랭킹 조회 API response
+
+#HTTP/1.1 200
+#Content-Type: application/json
+#[
+#  {
+#    "name": "예시 1",
+#    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+#    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+#  }
+#]
