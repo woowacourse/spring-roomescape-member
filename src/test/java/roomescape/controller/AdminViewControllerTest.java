@@ -14,15 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class AdminViewControllerTest {
-//    @DisplayName("/ 페이지 연결 테스트(웰컴 페이지)")
-//    @Test
-//    void welcomePage() {
-//        RestAssured.given().log().all()
-//                .when().get("/")
-//                .then().log().all()
-//                .statusCode(200);
-//    }
-
     @DisplayName("/admin 페이지 연결 테스트")
     @Test
     void adminPage() {
@@ -46,6 +37,15 @@ class AdminViewControllerTest {
     void adminTimePage() throws URISyntaxException, IOException {
         // [요구사항] RestAssured 를 사용하지 않고 테스트 코드 작성해보기.
         HttpURLConnection connection = (HttpURLConnection) new URI("http://localhost:8080/admin/time").toURL().openConnection();
+        int responseCode = connection.getResponseCode();
+
+        Assertions.assertThat(responseCode).isEqualTo(200);
+    }
+
+    @DisplayName("/admin/theme 페이지 연결 테스트")
+    @Test
+    void adminThemePage() throws URISyntaxException, IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URI("http://localhost:8080/admin/theme").toURL().openConnection();
         int responseCode = connection.getResponseCode();
 
         Assertions.assertThat(responseCode).isEqualTo(200);

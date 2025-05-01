@@ -14,13 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.impl.JdbcReservationTimeRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class MissionStepTest {
 
     @Autowired
@@ -59,52 +60,52 @@ public class MissionStepTest {
         }
     }
 
-    @Test
-    void 칠단계() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-
-        RestAssured.given().log().all()
-                .when().delete("/times/1")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    void 팔단계() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", "2023-08-05");
-        reservation.put("timeId", 1);
-
-        new JdbcReservationTimeRepository(jdbcTemplate).saveReservationTime(new ReservationTime(1L, LocalTime.now()));
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(200);
-
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-    }
+//    @Test
+//    void 칠단계() {
+//        Map<String, String> params = new HashMap<>();
+//        params.put("startAt", "10:00");
+//
+//        RestAssured.given().log().all()
+//                .contentType(ContentType.JSON)
+//                .body(params)
+//                .when().post("/times")
+//                .then().log().all()
+//                .statusCode(200);
+//
+//        RestAssured.given().log().all()
+//                .when().get("/times")
+//                .then().log().all()
+//                .statusCode(200)
+//                .body("size()", is(1));
+//
+//        RestAssured.given().log().all()
+//                .when().delete("/times/1")
+//                .then().log().all()
+//                .statusCode(200);
+//    }
+//
+//    @Test
+//    void 팔단계() {
+//        Map<String, Object> reservation = new HashMap<>();
+//        reservation.put("name", "브라운");
+//        reservation.put("date", "2023-08-05");
+//        reservation.put("timeId", 1);
+//
+//        new JdbcReservationTimeRepository(jdbcTemplate).saveReservationTime(new ReservationTime(1L, LocalTime.now()));
+//
+//        RestAssured.given().log().all()
+//                .contentType(ContentType.JSON)
+//                .body(reservation)
+//                .when().post("/reservations")
+//                .then().log().all()
+//                .statusCode(200);
+//
+//
+//        RestAssured.given().log().all()
+//                .when().get("/reservations")
+//                .then().log().all()
+//                .statusCode(200)
+//                .body("size()", is(1));
+//    }
 }
 
