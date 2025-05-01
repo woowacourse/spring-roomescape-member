@@ -65,8 +65,7 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
         return jdbcTemplate.query(sql, reservationMapper);
     }
-
-
+    
     @Override
     public Reservation create(final Reservation reservation) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)

@@ -76,7 +76,6 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                     WHERE r.time_id = ? AND r.theme_id = ? AND r.date = ?
                 )
                 """;
-
         return jdbcTemplate.query(sql, reservationTimeMapper, id, themeId, date).stream()
                 .findFirst();
     }
