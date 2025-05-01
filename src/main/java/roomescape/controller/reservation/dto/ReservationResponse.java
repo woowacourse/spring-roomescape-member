@@ -1,7 +1,9 @@
-package roomescape.controller.dto;
+package roomescape.controller.reservation.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import roomescape.controller.theme.dto.ThemeResponse;
+import roomescape.controller.timeslot.dto.TimeSlotResponse;
 import roomescape.model.Reservation;
 
 public record ReservationResponse(

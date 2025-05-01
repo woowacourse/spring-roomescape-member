@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.reservation;
 
 import java.net.URI;
 import java.util.List;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.controller.dto.CreateReservationRequest;
-import roomescape.controller.dto.ReservationResponse;
+import roomescape.controller.reservation.dto.CreateReservationRequest;
+import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
 @Controller

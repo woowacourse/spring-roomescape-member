@@ -1,4 +1,4 @@
-package roomescape.controller.dto;
+package roomescape.controller.timeslot.dto;
 
 import java.time.LocalTime;
 import java.util.List;

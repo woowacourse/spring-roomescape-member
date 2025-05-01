@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.timeslot;
 
 import java.net.URI;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import roomescape.controller.dto.CreateTimeSlotRequest;
-import roomescape.controller.dto.TimeSlotResponse;
+import roomescape.controller.timeslot.dto.CreateTimeSlotRequest;
+import roomescape.controller.timeslot.dto.TimeSlotResponse;
 import roomescape.service.TimeSlotService;
 
 @Controller
