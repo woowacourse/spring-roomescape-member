@@ -40,7 +40,7 @@ public class ReservationJdbcRepositoryTest {
 
     @Test
     @DisplayName("예약을 아이디로 조회한다.")
-    void findReservation() {
+    void findById() {
         // given
         var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
@@ -55,7 +55,7 @@ public class ReservationJdbcRepositoryTest {
 
     @Test
     @DisplayName("예약을 저장한다.")
-    void addReservation() {
+    void save() {
         // given
         var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
@@ -69,7 +69,7 @@ public class ReservationJdbcRepositoryTest {
 
     @Test
     @DisplayName("예약을 삭제한다.")
-    void removeReservation() {
+    void removeById() {
         // given
         var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
@@ -84,7 +84,7 @@ public class ReservationJdbcRepositoryTest {
 
     @Test
     @DisplayName("모든 예약을 조회한다.")
-    void getAllReservation() {
+    void findAll() {
         // given
         var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation1 = readyReservation();
@@ -94,6 +94,51 @@ public class ReservationJdbcRepositoryTest {
 
         // when & then
         assertThat(repository.findAll()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("타임 슬롯 아이디에 해당하는 예약을 조회한다.")
+    void findByTimeSlotId() {
+        // given
+        var repository = new ReservationJdbcRepository(jdbcTemplate);
+        var reservation = readyReservation();
+        repository.save(reservation);
+
+        // when
+        var found = repository.findByTimeSlotId(reservation.timeSlot().id());
+
+        // then
+        assertThat(found).contains(reservation);
+    }
+
+    @Test
+    @DisplayName("테마 아이디에 해당하는 예약을 조회한다.")
+    void findByThemeId() {
+        // given
+        var repository = new ReservationJdbcRepository(jdbcTemplate);
+        var reservation = readyReservation();
+        repository.save(reservation);
+
+        // when
+        var found = repository.findByThemeId(reservation.theme().id());
+
+        // then
+        assertThat(found).contains(reservation);
+    }
+
+    @Test
+    @DisplayName("날짜와 테마 아이디에 해당하는 예약을 조회한다.")
+    void findByDateAndThemeId() {
+        // given
+        var repository = new ReservationJdbcRepository(jdbcTemplate);
+        var reservation = readyReservation();
+        repository.save(reservation);
+
+        // when
+        var found = repository.findByDateAndThemeId(reservation.date(), reservation.theme().id());
+
+        // then
+        assertThat(found).contains(reservation);
     }
 
     private Reservation readyReservation() {
