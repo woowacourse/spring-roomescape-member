@@ -19,6 +19,20 @@
   - [x] 특정 시간에 대한 예약이 존재하면 그 시간은 삭제가 불가능하다.
   - [x] 특정 테마에 대한 예약이 존재하면 그 테마는 삭제가 불가능하다.
 
+SELECT
+  id,
+  start_at,
+  EXISTS(
+    SELECT rt.id
+    FROM reservation_time as rt
+      INNER JOIN reservation as r
+      ON r.time_id = rt.id
+    WHERE r.theme_id = ?;
+  ) as alreadyBooked
+FROM reservation_time;
+
+1. 내가 선택한 테마에 대해서 시간대를 
+
 ### 2. 예외 응답
 
 - [x] null, 생성할 때의 예외는 BadRequest로 응답한다.

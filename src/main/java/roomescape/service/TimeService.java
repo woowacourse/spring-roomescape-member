@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
@@ -29,6 +31,10 @@ public class TimeService {
 
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimeDao.findAllTimes();
+    }
+
+    public List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId) {
+        return reservationTimeDao.findAllTimesWithBooked(date, themeId);
     }
 
     public void removeReservationTime(Long id) {

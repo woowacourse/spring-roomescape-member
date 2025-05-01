@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,11 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
             .filter(time -> time.getId().equals(id))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("예약 시간을 찾을 수 없습니다."));
+    }
+
+    @Override
+    public List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId) {
+        return List.of();
     }
 
     public ReservationTime addTime(ReservationTime reservationTime) {

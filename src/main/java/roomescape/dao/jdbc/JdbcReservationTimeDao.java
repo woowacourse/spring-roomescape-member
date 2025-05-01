@@ -1,6 +1,7 @@
 package roomescape.dao.jdbc;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,23 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     public List<ReservationTime> findAllTimes() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, createReservationMapper());
+    }
+
+    public List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId) {
+        String sql = """
+            SELECT
+              rt.id,
+              rt.start_at,
+              EXISTS(
+                SELECT r.id
+                FROM reservation as r
+                WHERE r.time_id = rt.id
+                    AND r.theme_id = ?
+                    AND r.date = ?
+              ) as alreadyBooked
+            FROM reservation_time as rt;
+            """;
+        return jdbcTemplate.query(sql, createReservationWithBookedMapper(), themeId, date);
     }
 
     public ReservationTime findTimeById(Long id) {
@@ -63,5 +81,12 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime());
+    }
+
+    private RowMapper<ReservationTime> createReservationWithBookedMapper() {
+        return (rs, rowNum) -> new ReservationTime(
+            rs.getLong("id"),
+            rs.getTime("start_at").toLocalTime(),
+            rs.getBoolean("alreadyBooked"));
     }
 }
