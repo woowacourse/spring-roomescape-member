@@ -3,15 +3,13 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlotTimes;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRanking;
 import roomescape.dto.AddReservationDto;
 import roomescape.dto.AvailableTimeRequestDto;
 import roomescape.exception.InvalidReservationException;
@@ -26,7 +24,6 @@ public class ReservationService {
 
     private static final int THEME_RANKING_END_RANGE = 7;
     private static final int THEME_RANKING_START_RANGE = 1;
-    private static final int RANKING_SIZE = 10;
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -93,16 +90,7 @@ public class ReservationService {
         LocalDate start = end.minusDays(THEME_RANKING_END_RANGE);
         List<Reservation> inRangeReservations = reservationRepository.findAllByDateInRange(start, end);
 
-        Map<Theme, Integer> themeRankCount = new HashMap<>();
-        for (Reservation inRangeReservation : inRangeReservations) {
-            Theme theme = inRangeReservation.getTheme();
-            themeRankCount.put(theme, themeRankCount.getOrDefault(theme, 0) + 1);
-        }
-
-        return themeRankCount.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .map(Map.Entry::getKey)
-                .limit(RANKING_SIZE)
-                .toList();
+        ThemeRanking themeRanking = new ThemeRanking(inRangeReservations);
+        return themeRanking.getAscendingRanking();
     }
 }
