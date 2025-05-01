@@ -22,7 +22,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "select * from reservation_time";
+        String sql = "select * from reservation_time ORDER BY start_at";
         return this.jdbcTemplate.query(sql,
                 (resultSet, rowNum) -> {
                     String timeString = resultSet.getString("start_at");
@@ -53,9 +53,9 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Integer delete(Long id) {
+    public void delete(Long id) {
         String sql = "delete from reservation_time where id = ?";
-        return this.jdbcTemplate.update(sql, id);
+        this.jdbcTemplate.update(sql, id);
     }
 
     @Override

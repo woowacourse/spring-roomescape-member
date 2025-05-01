@@ -15,6 +15,7 @@ import roomescape.reservation.dao.FakeReservationDao;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.FakeReservationTimeDao;
 import roomescape.reservationtime.dto.request.ReservationTimeRequest;
+import roomescape.reservationtime.dto.response.AvailableTimeResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.theme.Theme;
 
@@ -80,5 +81,17 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(ExistedReservationException.class);
+    }
+
+    @Test
+    void 예약_가능한_시간을_조회한다() {
+        // given
+        LocalDate date = LocalDate.of(2025, 12, 25);
+        // when
+        List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(date, 1L);
+        // then
+        assertThat(availableTimes).hasSize(2);
+        assertThat(availableTimes.getFirst().alreadyBooked()).isTrue();
+        assertThat(availableTimes.get(1).alreadyBooked()).isFalse();
     }
 }

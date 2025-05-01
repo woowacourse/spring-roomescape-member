@@ -32,9 +32,8 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Integer delete(Long id) {
+    public void delete(Long id) {
         fakeReservationTimes.removeIf(reservationTime -> reservationTime.getId().equals(id));
-        return fakeReservationTimes.size();
     }
 
     @Override

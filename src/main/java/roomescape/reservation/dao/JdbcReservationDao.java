@@ -185,7 +185,7 @@ public class JdbcReservationDao implements ReservationDao {
         String sql = """
                 SELECT * FROM reservation as r 
                     INNER JOIN reservation_time as rt ON rt.id = r.id 
-                         INNER JOIN theme ON r.theme_id = theme.id
+                         INNER JOIN theme as t ON r.theme_id = t.id
                          WHERE r.date = ? and rt.start_at = ?""";
         try {
             Reservation reservation = jdbcTemplate.queryForObject(

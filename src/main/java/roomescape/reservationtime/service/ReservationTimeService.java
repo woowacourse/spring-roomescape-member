@@ -41,14 +41,14 @@ public class ReservationTimeService {
         return reservationTimeDao.create(reservationTime);
     }
 
-    public Integer delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         if (reservationTimeDao.findById(id).isEmpty()) {
             throw new ReservationTimeNotFoundException();
         }
         if (reservationDao.findByTimeId(id).isPresent()) {
             throw new ExistedReservationException();
         }
-        return reservationTimeDao.delete(id);
+        reservationTimeDao.delete(id);
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {

@@ -34,8 +34,9 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public void delete(long id) {
+    public int delete(long id) {
         fakeThemes.removeIf(theme -> theme.getId().equals(id));
+        return fakeThemes.size();
     }
 
     @Override

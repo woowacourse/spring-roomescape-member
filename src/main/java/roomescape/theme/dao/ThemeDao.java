@@ -10,7 +10,7 @@ public interface ThemeDao {
 
     List<Theme> findAll();
 
-    void delete(long id);
+    int delete(long id);
 
     Optional<Theme> findByName(String name);
 

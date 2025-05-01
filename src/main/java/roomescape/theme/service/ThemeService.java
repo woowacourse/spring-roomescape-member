@@ -51,8 +51,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public void delete(long id) {
-        themeDao.delete(id);
+    public int delete(long id) {
+        return themeDao.delete(id);
     }
 
     public List<ThemeResponse> getTop10Themes() {
