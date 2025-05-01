@@ -43,7 +43,7 @@
 
 ```
 Request
-GET /reservationDao HTTP/1.1
+GET /reservations HTTP/1.1
 
 Response
 HTTP/1.1 200 
@@ -74,7 +74,7 @@ time: string
 ```
 Request
 Content-Type: application/json
-POST /reservation
+POST /reservations
 
 {
     "date": "2026-08-05",
@@ -115,7 +115,7 @@ time
 ```
 Request
 Content-Type: application/json
-POST /reservation
+POST /reservations
 
 {
     "date": "2023-08-05",
@@ -164,7 +164,7 @@ message: string
 
 ```
 Request
-DELETE /reservationDao/{id} HTTP/1.1
+DELETE /reservations/{id} HTTP/1.1
 
 Response
 HTTP/1.1 204
