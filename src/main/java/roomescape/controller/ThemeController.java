@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +32,8 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(@RequestBody ThemeRequest request) {
-        //TODO: URI의 의미는?
-        return ResponseEntity.created(URI.create("google.com")).body(themeService.save(request));
+        ThemeResponse themeResponse = themeService.save(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(themeResponse);
     }
 
     @DeleteMapping("/{id}")
