@@ -1,14 +1,12 @@
 package roomescape.unit.domain;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
-import roomescape.reservation.domain.exception.PastReservationException;
 import roomescape.time.domain.ReservationTime;
 
 public class ReservationDateTimeTest {
@@ -20,7 +18,7 @@ public class ReservationDateTimeTest {
         ReservationTime pastTime = new ReservationTime(1L, now.toLocalTime().minusHours(1));
 
         assertThatThrownBy(() -> new ReservationDateTime(today, pastTime, FIXED_CLOCK))
-                .isInstanceOf(PastReservationException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
