@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +28,11 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.getThemes());
     }
 
-    @PostMapping
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
+        return ResponseEntity.ok(themeService.getPopularThemes());
+    }
+
     public ResponseEntity<ThemeResponse> createTheme(
             @RequestBody ThemeCreateRequest request
     ) {

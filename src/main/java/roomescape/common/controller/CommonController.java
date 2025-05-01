@@ -10,4 +10,9 @@ public class CommonController {
     public String getReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/")
+    public String getPopularThemePage() {
+        return "index";
+    }
 }

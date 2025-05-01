@@ -1,5 +1,6 @@
 package roomescape.theme.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,5 +67,29 @@ public class JDBCThemeRepository implements ThemeRepository {
         );
         return Optional.ofNullable(themeEntity)
                 .map(ThemeEntity::toTheme);
+    }
+
+    @Override
+    public List<Theme> findTop10PopularThemesWithinLastWeek(final LocalDate nowDate) {
+        List<ThemeEntity> themeEntity = jdbcTemplate.query(
+                "SELECT th.id, th.name, th.description, th.thumbnail "
+                        + "FROM theme as th "
+                        + "inner join reservation as r "
+                        + "on th.id = r.theme_id "
+                        + "where PARSEDATETIME(r.date, 'yyyy-MM-dd') between ? and ? "
+                        + "group by th.id "
+                        + "order by count(r.id) desc, "
+                        + "th.name asc "
+                        + "limit 10",
+                (resultSet, rowNum) -> new ThemeEntity(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ), nowDate.minusDays(7), nowDate.minusDays(1)
+        );
+        return themeEntity.stream()
+                .map(ThemeEntity::toTheme)
+                .toList();
     }
 }
