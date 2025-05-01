@@ -60,14 +60,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Boolean existsByReservationTime(final Long reservationTimeId) {
+    public Boolean existsById(final Long id) {
         return reservations.stream()
-                .map(reservation -> reservation.getReservationTime())
-                .anyMatch(reservationTime -> Objects.equals(reservationTime.getId(), reservationTimeId));
+                .anyMatch(reservation -> Objects.equals(reservation.getId(), id));
     }
 
     @Override
-    public Boolean existsByReservationTimeAndDate(final Long reservationTimeId, final LocalDate date) {
+    public Boolean existsByReservationTimeIdAndDate(final Long reservationTimeId, final LocalDate date) {
         return reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getDate(), date))
                 .map(reservation -> reservation.getReservationTime())

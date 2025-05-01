@@ -49,7 +49,7 @@ public class ReservationService {
     }
 
     public void deleteById(final Long id) {
-        if(!reservationRepository.existsByReservationTime(id)){
+        if(!reservationRepository.existsById(id)){
             throw new NotFoundException("존재하지 않는 예약입니다.");
         }
         reservationRepository.delete(id);
@@ -74,7 +74,7 @@ public class ReservationService {
     }
 
     private void validateDuplicateDateTime(final Long reservationTimeId, final LocalDate date) {
-        if (reservationRepository.existsByReservationTimeAndDate(reservationTimeId, date)) {
+        if (reservationRepository.existsByReservationTimeIdAndDate(reservationTimeId, date)) {
             throw new ConflictException("이미 예약이 존재합니다.");
         }
     }
