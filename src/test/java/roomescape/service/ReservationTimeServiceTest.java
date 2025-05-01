@@ -24,7 +24,7 @@ public class ReservationTimeServiceTest {
         //given & when
         List<ReservationTimeResponse> actual = reservationService.readAllReservationTime();
         //then
-        assertThat(actual.size()).isEqualTo(1);
+        assertThat(actual.size()).isEqualTo(2);
         assertThat(actual.getFirst().startAt()).isEqualTo(LocalTime.MAX);
     }
 
