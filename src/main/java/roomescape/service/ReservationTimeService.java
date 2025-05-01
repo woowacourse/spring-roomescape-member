@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.response.AvailableReservationTimeResponseDto;
 import roomescape.dto.request.ReservationTimeRequestDto;
+import roomescape.dto.response.AvailableReservationTimeResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 import roomescape.model.AvailableReservationTime;
 import roomescape.model.ReservationTime;
@@ -23,8 +23,9 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponseDto> getAllTimes() {
-        List<ReservationTime> reservationTimeInfos = reservationTimeDao.findAll();
-        return reservationTimeInfos.stream()
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+
+        return reservationTimes.stream()
                 .map(ReservationTimeResponseDto::from)
                 .toList();
     }

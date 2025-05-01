@@ -15,25 +15,20 @@ import roomescape.model.ReservationTime;
 @Repository
 public class ReservationTimeDao {
 
+    private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNum) ->
+            new ReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
+
+    private static final RowMapper<AvailableReservationTime> AVAILABLE_TIME_ROW_MAPPER = (resultSet, rowNum) ->
+            new AvailableReservationTime(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime(),
+                    resultSet.getBoolean("already_booked")
+            );
+
     private final JdbcTemplate jdbcTemplate;
-
-    private final RowMapper<ReservationTime> actorRowMapper = (resultSet, rowNum) -> {
-        ReservationTime reservationTime = new ReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime()
-        );
-        return reservationTime;
-    };
-
-    private final RowMapper<AvailableReservationTime> availableTimeRowMapper = (resultSet, rowNum) -> {
-        AvailableReservationTime availableReservationTime = new AvailableReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime(),
-                resultSet.getBoolean("already_booked")
-        );
-        return availableReservationTime;
-    };
-
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,11 +36,12 @@ public class ReservationTimeDao {
 
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, actorRowMapper);
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER);
     }
 
     public Long saveTime(ReservationTime reservationTime) {
         String sql = "INSERT INTO reservation_time (start_at) values(?)";
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -63,7 +59,7 @@ public class ReservationTimeDao {
 
     public Optional<ReservationTime> findById(final Long id) {
         String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.query(sql, actorRowMapper, id).stream().findFirst();
+        return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER, id).stream().findFirst();
     }
 
     public boolean isDuplicatedStartAtExisted(LocalTime startAt) {
@@ -85,6 +81,6 @@ public class ReservationTimeDao {
                 FROM reservation_time rt
                 """;
 
-        return jdbcTemplate.query(sql, availableTimeRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, AVAILABLE_TIME_ROW_MAPPER, date, themeId);
     }
 }

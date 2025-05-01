@@ -8,6 +8,7 @@ public class ReservationTime {
 
     public ReservationTime(Long id, LocalTime startAt) {
         validateRequiredFields(id, startAt);
+
         this.id = id;
         this.startAt = startAt;
     }

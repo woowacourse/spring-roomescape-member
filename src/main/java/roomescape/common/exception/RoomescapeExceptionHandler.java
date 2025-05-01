@@ -1,13 +1,10 @@
-package roomescape.common;
+package roomescape.common.exception;
 
 import java.util.zip.DataFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.common.exception.DuplicatedException;
-import roomescape.common.exception.NotFoundException;
-import roomescape.common.exception.ResourceInUseException;
 
 @ControllerAdvice
 public class RoomescapeExceptionHandler {

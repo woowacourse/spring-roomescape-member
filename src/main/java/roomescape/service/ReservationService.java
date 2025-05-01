@@ -33,6 +33,7 @@ public class ReservationService {
         validateReservation(reservation);
 
         Long id = reservationDao.saveReservation(reservation);
+
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
         return new ReservationResponseDto(
@@ -45,8 +46,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDto> getAllReservations() {
-        List<Reservation> reservations = reservationDao.findAll();
-        return reservations.stream()
+        return reservationDao.findAll().stream()
                 .map(ReservationResponseDto::from)
                 .toList();
     }
@@ -69,7 +69,7 @@ public class ReservationService {
         reservation.validateReservationDateInFuture();
 
         reservationDao.findByDateAndTime(reservation)
-                .ifPresent(r -> {
+                .ifPresent(foundReservation -> {
                     throw new DuplicatedException("이미 예약이 존재합니다.");
                 });
     }

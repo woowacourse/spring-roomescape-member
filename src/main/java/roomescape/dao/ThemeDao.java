@@ -14,13 +14,13 @@ import roomescape.model.Theme;
 @Repository
 public class ThemeDao {
 
-    private final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> {
-        return new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail"));
-    };
+    private static final RowMapper<Theme> THEME_ROW_MAPPER = (resultSet, rowNum) -> (
+            new Theme(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail"))
+    );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -30,7 +30,7 @@ public class ThemeDao {
 
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
-        return jdbcTemplate.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }
 
     public Long saveTheme(Theme theme) {
@@ -50,7 +50,7 @@ public class ThemeDao {
 
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.query(sql, themeRowMapper, id).stream().findFirst();
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, id).stream().findFirst();
     }
 
     public void deleteById(Long id) {
@@ -81,6 +81,6 @@ public class ThemeDao {
                     LIMIT 10
                 """;
 
-        return jdbcTemplate.query(sql, themeRowMapper, today.toString(), sevenDaysAgo.toString());
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, today.toString(), sevenDaysAgo.toString());
     }
 }
