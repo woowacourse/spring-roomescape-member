@@ -8,9 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Theme;
-import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ThemeEntity;
 
 @Repository
@@ -65,5 +63,33 @@ public class JdbcThemeDao implements ThemeDao {
         final int rowNum = jdbcTemplate.update(sql, id);
 
         return rowNum == 1;
+    }
+
+    @Override
+    public List<Theme> findPopularThemesBetween(
+            final String startDate,
+            final String endDate
+    ) {
+        final String sql = """
+                SELECT id, name, description, thumbnail 
+                FROM theme as t INNER JOIN
+                (SELECT theme_id
+                    FROM reservation
+                    WHERE date BETWEEN ? AND ?
+                    GROUP BY theme_id
+                    ORDER BY COUNT(*)
+                ) as ot
+                ON t.id = ot.theme_id
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> Theme.createWithId(
+                        rs.getLong(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4)
+                ), startDate, endDate
+        );
     }
 }

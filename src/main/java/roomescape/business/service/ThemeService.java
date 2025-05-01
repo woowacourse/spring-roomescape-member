@@ -1,11 +1,13 @@
 package roomescape.business.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.Theme;
-import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.persistence.dao.ThemeDao;
+import roomescape.persistence.entity.ReservationEntity;
 import roomescape.presentation.dto.ThemeRequest;
 import roomescape.presentation.dto.ThemeResponse;
 
@@ -40,5 +42,15 @@ public class ThemeService {
         if (!themeDao.remove(id)) {
             throw new ThemeNotFoundException(id);
         }
+    }
+
+    public List<ThemeResponse> findPopularThemes() {
+        final LocalDate now = LocalDate.now();
+        final String startDate = ReservationEntity.formatDate(now);
+        final String endDate = ReservationEntity.formatDate(now.minusDays(7));
+
+        return themeDao.findPopularThemesBetween(startDate, endDate).stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

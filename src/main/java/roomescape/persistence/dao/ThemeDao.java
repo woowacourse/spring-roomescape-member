@@ -13,4 +13,6 @@ public interface ThemeDao {
     boolean remove(Long id);
 
     Optional<Theme> find(Long id);
+
+    List<Theme> findPopularThemesBetween(String startDate, String endDate);
 }
