@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.exception.BadRequestException;
+import roomescape.exception.ConflictException;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -54,7 +56,7 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.create(requestDto);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BadRequestException.class);
     }
 
     private static Stream<Arguments> invalidOperatingTime() {
@@ -77,7 +79,7 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.create(requestDto);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ConflictException.class);
     }
 
     @DisplayName("예약 내역이 존재하는 시간은 삭제할 수 없다.")
@@ -93,7 +95,6 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.delete(1L);
-        }).isInstanceOf(IllegalArgumentException.class);
-        // TODO: Custom Exception으로 변경
+        }).isInstanceOf(BadRequestException.class);
     }
 }
