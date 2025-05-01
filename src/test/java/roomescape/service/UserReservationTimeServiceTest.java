@@ -16,10 +16,10 @@ import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.service.dto.request.CreateReservationTimeServiceRequest;
 import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
-class ReservationTimeServiceTest {
+class UserReservationTimeServiceTest {
 
     private FakeReservationTimeRepository fakeRepository = new FakeReservationTimeRepository();
-    private ReservationTimeService service = new ReservationTimeService(fakeRepository);
+    private UserReservationTimeService service = new UserReservationTimeService(fakeRepository);
 
     @BeforeEach
     void setUp() {
@@ -51,7 +51,7 @@ class ReservationTimeServiceTest {
         fakeRepository.save(new ReservationTime(startAt));
 
         // when
-        List<ReservationTimeServiceResponse> queries = service.getAll();
+        List<ReservationTimeServiceResponse> queries = service.getAllByThemeIdAndDate();
 
         // then
         assertThat(queries).hasSize(1);

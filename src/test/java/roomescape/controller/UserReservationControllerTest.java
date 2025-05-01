@@ -14,7 +14,7 @@ import io.restassured.http.ContentType;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 // TODO: 남겨놓을지 지울지 결정하기
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationControllerTest {
+class UserReservationControllerTest {
 
     @Test
     void 이름이_없으면_400_응답을_반환한다() {

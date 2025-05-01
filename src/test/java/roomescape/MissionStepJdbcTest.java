@@ -20,7 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.controller.api.ReservationController;
+import roomescape.controller.api.UserReservationController;
 import roomescape.controller.api.dto.response.ReservationResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -30,7 +30,7 @@ class MissionStepJdbcTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReservationController reservationController;
+    private UserReservationController userReservationController;
 
     @BeforeEach
     void setUp() {
@@ -159,7 +159,7 @@ class MissionStepJdbcTest {
     void 구단계() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : userReservationController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;

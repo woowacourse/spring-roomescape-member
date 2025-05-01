@@ -7,31 +7,19 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTheme;
 import roomescape.repository.ReservationThemeRepository;
-import roomescape.service.dto.request.CreateReservationThemeServiceRequest;
 import roomescape.service.dto.response.ReservationThemeServiceResponse;
 
 @Service
 @RequiredArgsConstructor
-public class ReservationThemeService {
+public class UserReservationThemeService {
 
     private final ReservationThemeRepository reservationThemeRepository;
-
-    public ReservationThemeServiceResponse create(CreateReservationThemeServiceRequest request) {
-        ReservationTheme reservationTheme = reservationThemeRepository.save(request.toReservationTheme());
-        return ReservationThemeServiceResponse.from(reservationTheme);
-    }
 
     public List<ReservationThemeServiceResponse> getAll() {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.getAll();
         return reservationThemes.stream()
                 .map(ReservationThemeServiceResponse::from)
                 .toList();
-    }
-
-    public void delete(Long id) {
-        // TODO: noContent vs IllegalArgumentException
-        ReservationTheme reservationTheme = reservationThemeRepository.getById(id);
-        reservationThemeRepository.remove(reservationTheme);
     }
 
     public List<ReservationThemeServiceResponse> getPopularThemes(int limit) {

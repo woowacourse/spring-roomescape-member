@@ -2,7 +2,7 @@ package roomescape.controller.api;
 
 import java.time.LocalDate;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,35 +13,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
 import roomescape.controller.api.dto.request.CreateReservationTimeRequest;
 import roomescape.controller.api.dto.response.ReservationTimeResponse;
-import roomescape.service.ReservationTimeService;
+import roomescape.service.AdminReservationTimeService;
 import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
 @RestController
-@RequestMapping("/times")
+@RequestMapping("/admin/times")
 @RequiredArgsConstructor
-public class ReservationTimeController {
+public class AdminReservationTimeController {
 
-    private final ReservationTimeService reservationTimeService;
+    private final AdminReservationTimeService adminReservationTimeService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ReservationTimeResponse create(
             @RequestBody CreateReservationTimeRequest request) {
-        ReservationTimeServiceResponse response = reservationTimeService.create(request.toServiceRequest());
+        ReservationTimeServiceResponse response = adminReservationTimeService.create(request.toServiceRequest());
         return ReservationTimeResponse.from(response);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<ReservationTimeResponse> getAll(
-            @RequestParam("themeId") Long themeId,
-            @RequestParam("date") LocalDate date
-    ) {
-        List<ReservationTimeServiceResponse> responses = reservationTimeService.getAll(themeId, date);
+    public List<ReservationTimeResponse> getAll() {
+        List<ReservationTimeServiceResponse> responses = adminReservationTimeService.getAll();
         return responses.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
@@ -50,6 +45,6 @@ public class ReservationTimeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
-        reservationTimeService.delete(id);
+        adminReservationTimeService.delete(id);
     }
 }

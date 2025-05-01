@@ -19,11 +19,11 @@ import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.service.dto.request.CreateReservationServiceRequest;
 import roomescape.service.dto.response.ReservationServiceResponse;
 
-class ReservationServiceTest {
+class UserReservationServiceTest {
 
     private FakeReservationTimeRepository fakeReservationTimeRepository = new FakeReservationTimeRepository();
     private FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
-    private ReservationService reservationService = new ReservationService(fakeReservationRepository,
+    private UserReservationService userReservationService = new UserReservationService(fakeReservationRepository,
             fakeReservationTimeRepository);
 
     @BeforeEach
@@ -43,7 +43,7 @@ class ReservationServiceTest {
         CreateReservationServiceRequest command = new CreateReservationServiceRequest(name, date, timeId);
 
         // when
-        ReservationServiceResponse reservationServiceResponse = reservationService.create(command);
+        ReservationServiceResponse reservationServiceResponse = userReservationService.create(command);
 
         // then
         assertSoftly(softly -> {
@@ -67,7 +67,7 @@ class ReservationServiceTest {
         fakeReservationRepository.save(new Reservation(name2, date2, savedTime));
 
         // when
-        List<ReservationServiceResponse> queries = reservationService.getAll();
+        List<ReservationServiceResponse> queries = userReservationService.getAll();
 
         // then
         assertThat(queries).hasSize(2);
@@ -83,7 +83,7 @@ class ReservationServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
         Reservation savedReservation = fakeReservationRepository.save(new Reservation(name, date, savedTime));
         // when
-        reservationService.delete(savedReservation.id());
+        userReservationService.delete(savedReservation.id());
         // then
         assertThat(fakeReservationRepository.getAll()).hasSize(0);
     }
@@ -99,7 +99,7 @@ class ReservationServiceTest {
         fakeReservationRepository.save(new Reservation(name, date, savedTime));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.delete(2L))
+        assertThatThrownBy(() -> userReservationService.delete(2L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

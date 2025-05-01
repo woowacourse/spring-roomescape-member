@@ -14,9 +14,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class ReservationTimeH2Dao implements ReservationTimeDao {
 

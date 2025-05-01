@@ -1,6 +1,6 @@
 let isEditing = false;
-const RESERVATION_API_ENDPOINT = '/reservations';
-const TIME_API_ENDPOINT = '/times';
+const RESERVATION_API_ENDPOINT = '/admin/reservations';
+const TIME_API_ENDPOINT = '/admin/times';
 const THEME_API_ENDPOINT = '/themes';
 const timesOptions = [];
 const themesOptions = [];
@@ -170,7 +170,7 @@ function requestCreate(reservation) {
     body: JSON.stringify(reservation)
   };
 
-  return fetch(RESERVATION_API_ENDPOINT, requestOptions)
+  return fetch("/reservations", requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
         throw new Error('Create failed');

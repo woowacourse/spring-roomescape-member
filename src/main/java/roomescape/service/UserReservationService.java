@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ import roomescape.service.dto.response.ReservationServiceResponse;
 
 @Service
 @RequiredArgsConstructor
-public class ReservationService {
+public class UserReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -36,17 +35,5 @@ public class ReservationService {
         Reservation reservation = request.toReservation(reservationTime, reservationTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
         return ReservationServiceResponse.from(savedReservation);
-    }
-
-    public List<ReservationServiceResponse> getAll() {
-        List<Reservation> reservations = reservationRepository.getAll();
-        return reservations.stream()
-                .map(ReservationServiceResponse::from)
-                .toList();
-    }
-
-    public void delete(Long id) {
-        Reservation reservation = reservationRepository.getById(id);
-        reservationRepository.remove(reservation);
     }
 }
