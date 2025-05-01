@@ -26,24 +26,6 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> getThemes() {
-        List<Theme> themes = themeService.findAll();
-        List<ThemeResponseDto> themeResponseDtos = themes.stream()
-                .map((theme) -> new ThemeResponseDto(theme.getId(), theme.getDescription(),
-                        theme.getName(), theme.getThumbnail()))
-                .toList();
-        return ResponseEntity.ok(themeResponseDtos);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ThemeResponseDto> getTheme(@PathVariable Long id) {
-        Theme theme = themeService.getThemeById(id);
-        ThemeResponseDto themeResponseDto = new ThemeResponseDto(theme.getId(), theme.getDescription(), theme.getName(),
-                theme.getThumbnail());
-        return ResponseEntity.ok(themeResponseDto);
-    }
-
     @PostMapping
     public ResponseEntity<ThemeResponseDto> addTheme(@Valid @RequestBody AddThemeDto addThemeDto) {
         long id = themeService.addTheme(addThemeDto);
@@ -57,5 +39,23 @@ public class ThemeController {
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteThemeById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ThemeResponseDto> getTheme(@PathVariable Long id) {
+        Theme theme = themeService.getThemeById(id);
+        ThemeResponseDto themeResponseDto = new ThemeResponseDto(theme.getId(), theme.getDescription(), theme.getName(),
+                theme.getThumbnail());
+        return ResponseEntity.ok(themeResponseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ThemeResponseDto>> getThemes() {
+        List<Theme> themes = themeService.findAll();
+        List<ThemeResponseDto> themeResponseDtos = themes.stream()
+                .map((theme) -> new ThemeResponseDto(theme.getId(), theme.getDescription(),
+                        theme.getName(), theme.getThumbnail()))
+                .toList();
+        return ResponseEntity.ok(themeResponseDtos);
     }
 }
