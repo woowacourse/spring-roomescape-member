@@ -2,7 +2,6 @@ package roomescape.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
-import roomescape.domain.ReservationTime;
 import roomescape.exception.InvalidInputException;
 
 public record TimeRequest(

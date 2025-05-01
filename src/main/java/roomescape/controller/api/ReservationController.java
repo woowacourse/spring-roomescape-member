@@ -55,7 +55,8 @@ public class ReservationController {
         reservationService.removeReservation(id);
     }
 
-    @ExceptionHandler(value = {TimeDoesNotExistException.class, ThemeDoesNotExistException.class, NotCorrectDateTimeException.class})
+    @ExceptionHandler(value = {TimeDoesNotExistException.class, ThemeDoesNotExistException.class,
+        NotCorrectDateTimeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleCreatedException(CannotCreatedException ex) {
         return ex.getMessage();

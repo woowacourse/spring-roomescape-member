@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
@@ -24,7 +23,7 @@ public class TimeService {
     }
 
     private void validateExistedTime(TimeRequest timeRequest) {
-        if(reservationTimeDao.existTimeByStartAt(timeRequest.startAt())) {
+        if (reservationTimeDao.existTimeByStartAt(timeRequest.startAt())) {
             throw new DuplicateTimeException();
         }
     }

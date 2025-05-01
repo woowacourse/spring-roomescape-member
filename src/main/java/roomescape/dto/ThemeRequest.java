@@ -10,7 +10,7 @@ public record ThemeRequest(String name, String description, String thumbnail) {
     }
 
     private void validateNull(String name, String description, String thumbnail) {
-        if(name == null || description == null || thumbnail == null) {
+        if (name == null || description == null || thumbnail == null) {
             throw new InvalidInputException("값을 모두 선택해라.");
         }
     }

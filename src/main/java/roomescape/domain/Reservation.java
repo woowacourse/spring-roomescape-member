@@ -1,8 +1,6 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import roomescape.exception.NotCorrectDateTimeException;
 
 public class Reservation {
 

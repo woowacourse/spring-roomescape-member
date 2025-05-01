@@ -2,7 +2,6 @@ package roomescape.controller.api;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,7 +41,8 @@ public class TimeController {
     }
 
     @GetMapping("/{date}/{themeId}")
-    public List<TimeResponse> readReservationTimesWithBooked(@PathVariable LocalDate date, @PathVariable Long themeId) {
+    public List<TimeResponse> readReservationTimesWithBooked(@PathVariable LocalDate date,
+        @PathVariable Long themeId) {
         return timeService.findAllTimesWithBooked(date, themeId).stream()
             .map(TimeResponse::from)
             .toList();

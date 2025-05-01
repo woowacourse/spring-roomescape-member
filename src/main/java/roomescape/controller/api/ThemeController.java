@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequest;
 import roomescape.exception.DuplicateThemeException;
-import roomescape.exception.DuplicateTimeException;
 import roomescape.service.ThemeService;
 
 @RestController
