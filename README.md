@@ -172,6 +172,38 @@ DELETE /times/1 HTTP/1.1
 HTTP/1.1 200
 ```
 
+## 예약 가능 시간 조회
+
+### 요청
+
+- 메서드 : GET
+- 요청 URL : /times/available
+- 설명 : 가능한 시간을 조회한다.
+
+```json
+GET /times/available?date=2020-05-01&themeId=1 HTTP/1.1
+```
+
+### 응답
+
+```json
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+{
+"timeId": 1,
+"startAt": "10:00",
+"alreadyBooked": "true"
+}
+{
+"timeId": 2,
+"startAt": "11:00",
+"alreadyBooked": "false"
+}
+]
+```
+
 ## 예외
 
 ### 시간

@@ -44,11 +44,11 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_shouldReturnResponseWhenSuccessful() {
-        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", LocalDate.of(2025, 5, 1), 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", futureDate, 1L, 1L);
         ReservationResponse response = reservationService.create(request);
 
         assertThat(response.name()).isEqualTo("홍길동");
-        assertThat(response.date()).isEqualTo(LocalDate.of(2025, 5, 1));
+        assertThat(response.date()).isEqualTo(futureDate);
         assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0));
     }
 
@@ -95,4 +95,6 @@ class ReservationServiceTest {
         reservationService.create(request);
         assertThatThrownBy(() -> reservationService.create(request));
     }
+
+
 }

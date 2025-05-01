@@ -1,10 +1,16 @@
 package roomescape.reservationtime.service;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.request.ReservationTimeCreateRequest;
+import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.reservationtime.exception.ReservationTimeAlreadyExistsException;
 import roomescape.reservationtime.exception.ReservationTimeInUseException;
@@ -48,5 +54,30 @@ public class ReservationTimeService {
         if (reservationTimeRepository.checkExistsByStartAt(request.startAt())) {
             throw new ReservationTimeAlreadyExistsException("중복된 예약 시간을 생성할 수 없습니다");
         }
+    }
+
+    public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date,
+                                                                               final Long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.getAll();
+        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        Map<ReservationTime, Boolean> availabilities = new HashMap<>();
+
+        for (ReservationTime reservationTime : reservationTimes) {
+            Long timeId = reservationTime.getId();
+            availabilities.put(reservationTime, false);
+
+            for (Reservation reservation : reservations) {
+                if (Objects.equals(timeId, reservation.getTime().getId())) {
+                    availabilities.put(reservationTime, true);
+                }
+            }
+        }
+        return availabilities.entrySet().stream()
+                .map(entry -> {
+                    ReservationTime reservationTime = entry.getKey();
+                    return new AvailableReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt(),
+                            entry.getValue());
+                })
+                .toList();
     }
 }

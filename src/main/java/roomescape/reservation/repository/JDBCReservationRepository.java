@@ -108,4 +108,45 @@ public class JDBCReservationRepository implements ReservationRepository {
         ));
     }
 
+    @Override
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        return jdbcTemplate.query(
+                "SELECT "
+                        + "r.id as reservation_id, "
+                        + "r.name, "
+                        + "r.date, "
+                        + "t.id as time_id, "
+                        + "t.start_at as time_value, "
+                        + "th.id as theme_id, "
+                        + "th.name as theme_name, "
+                        + "th.description,"
+                        + "th.thumbnail "
+                        + "FROM reservation as r "
+                        + "inner join reservation_time as t "
+                        + "on r.time_id = t.id "
+                        + "inner join theme as th "
+                        + "on r.theme_id = th.id "
+                        + "where (date, theme_id) = (?, ?)",
+                (resultSet, rowNum) -> {
+                    ReservationTimeEntity timeEntity = new ReservationTimeEntity(
+                            resultSet.getLong("time_id"),
+                            resultSet.getString("time_value"));
+
+                    ThemeEntity themeEntity = new ThemeEntity(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail"));
+
+                    ReservationEntity entity = new ReservationEntity(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("date"),
+                            timeEntity,
+                            themeEntity
+                    );
+                    return entity.toReservation();
+                }, date, themeId);
+    }
+
 }

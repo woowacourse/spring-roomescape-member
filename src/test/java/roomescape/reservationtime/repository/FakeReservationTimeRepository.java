@@ -33,7 +33,8 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(final long id) {
-        return Optional.ofNullable(reservationTimes.get(id));
+        return Optional.ofNullable(reservationTimes.get(id))
+                .map(reservationTime -> ReservationTime.of(id, reservationTime.getStartAt()));
     }
 
     @Override
