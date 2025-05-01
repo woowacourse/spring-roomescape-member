@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.service.dto.AvailableReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +53,6 @@ public class ReservationService {
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }
-
 
     public List<AvailableReservationTime> findAvailableReservationTimes(final LocalDate date, final Long themeId) {
         final List<AvailableReservationTime> availableReservationTimes = new ArrayList<>();
