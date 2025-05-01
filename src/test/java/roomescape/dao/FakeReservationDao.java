@@ -11,7 +11,7 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-public class FakeReservationDao extends ReservationDao {
+public class FakeReservationDao extends ReservationJdbcDao {
 
     private final Map<Long, Reservation> database = new HashMap<>();
     private final AtomicLong nextId = new AtomicLong(1L);

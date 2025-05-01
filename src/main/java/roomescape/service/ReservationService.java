@@ -4,9 +4,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.NotFoundException;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
+import roomescape.dao.ReservationJdbcDao;
+import roomescape.dao.ReservationTimeJdbcDao;
+import roomescape.dao.ThemeJdbcDao;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
@@ -18,11 +18,11 @@ import roomescape.model.Theme;
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final ReservationJdbcDao reservationDao;
+    private final ReservationTimeJdbcDao reservationTimeDao;
+    private final ThemeJdbcDao themeDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationJdbcDao reservationDao, ReservationTimeJdbcDao reservationTimeDao, ThemeJdbcDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;

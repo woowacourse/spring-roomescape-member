@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.model.ReservationTime;
 
-public class FakeReservationTimeDao extends ReservationTimeDao {
+public class FakeReservationTimeDao extends ReservationTimeJdbcDao {
     public FakeReservationTimeDao(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }

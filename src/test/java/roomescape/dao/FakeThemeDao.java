@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-public class FakeThemeDao extends ThemeDao {
+public class FakeThemeDao extends ThemeJdbcDao {
     public FakeThemeDao(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }

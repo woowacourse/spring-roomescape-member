@@ -6,7 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
-import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ReservationTimeJdbcDao;
 import roomescape.dto.request.ReservationTimeRequestDto;
 import roomescape.dto.response.AvailableReservationTimeResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
@@ -16,9 +16,9 @@ import roomescape.model.ReservationTime;
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeDao reservationTimeDao;
+    private final ReservationTimeJdbcDao reservationTimeDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationTimeJdbcDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 

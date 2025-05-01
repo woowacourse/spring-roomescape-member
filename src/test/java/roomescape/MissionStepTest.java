@@ -18,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
+import roomescape.dao.ReservationTimeJdbcDao;
+import roomescape.dao.ThemeJdbcDao;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -32,10 +32,10 @@ public class MissionStepTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeJdbcDao reservationTimeDao;
 
     @Autowired
-    private ThemeDao themeDao;
+    private ThemeJdbcDao themeDao;
 
     @BeforeEach
     void beforeEachTest() {
