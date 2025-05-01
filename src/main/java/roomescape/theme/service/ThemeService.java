@@ -1,6 +1,7 @@
 package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.exception.BadRequestException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;
 import roomescape.theme.service.dto.response.ThemeResponse;
@@ -44,6 +45,12 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes(final int limit) {
+        if (limit <= 0) {
+            throw new BadRequestException("인기 테마 조회 개수는 최소 1개 이상이어야 합니다.");
+        }
+        if (limit > 100) {
+            throw new BadRequestException("인기 테마 조회 개수는 최대 100개까지 가능합니다.");
+        }
         LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDate startDate = yesterday.minusWeeks(1);
         return themeRepository.findPopularThemesByDateRangeAndLimit(startDate, yesterday, limit)

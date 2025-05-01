@@ -2,6 +2,9 @@ package roomescape.theme.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.exception.BadRequestException;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;
@@ -47,5 +50,17 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> service.deleteTheme(1L))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @DisplayName("인기 테마 조회는 1개 이상 100개 이하까지만 가능하며 그 이외의 범위가 주어지면 예외가 발생한다.")
+    @ParameterizedTest
+    @ValueSource(ints = {0, 101})
+    void invalidLimit(final int limit) {
+        // given
+
+        // when & then
+        assertThatThrownBy(() -> {
+            service.getPopularThemes(limit);
+        }).isInstanceOf(BadRequestException.class);
     }
 }
