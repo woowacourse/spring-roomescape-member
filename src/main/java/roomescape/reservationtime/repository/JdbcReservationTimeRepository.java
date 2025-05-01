@@ -16,6 +16,20 @@ import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+
+    private static final RowMapper<ReservationTime> timeRowMapper = (resultSet, rowNum) -> {
+        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        final LocalTime time = LocalTime.parse(resultSet.getString("start_at"), timeFormatter);
+        return new ReservationTime(resultSet.getLong("id"), time);
+    };
+
+    private static final RowMapper<AvailableReservationTimeResponse> availableTimeRowMapper = (resultSet, rowNum) ->
+            new AvailableReservationTimeResponse(
+                    resultSet.getLong("id"),
+                    resultSet.getTime("start_at").toLocalTime(),
+                    resultSet.getBoolean("alreadyBooked")
+            );
+
     private final JdbcTemplate template;
     private final SimpleJdbcInsert inserter;
 
@@ -38,7 +52,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         final String sql = "select id, start_at from reservation_time";
-        return template.query(sql, actorRowMapper);
+        return template.query(sql, timeRowMapper);
     }
 
     @Override
@@ -56,14 +70,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 order by rt.start_at
                 """;
 
-        return template.query(sql, (rs, rowNum) ->
-                        new AvailableReservationTimeResponse(
-                                rs.getLong("id"),
-                                rs.getTime("start_at").toLocalTime(),
-                                rs.getBoolean("alreadyBooked")
-                        ),
-                date, themeId
-        );
+        return template.query(sql, availableTimeRowMapper, date, themeId);
     }
 
     @Override
@@ -79,14 +86,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Optional<ReservationTime> findById(final Long id) {
         final String sql = "select id, start_at from reservation_time where id = ?";
-        return template.query(sql, actorRowMapper, id)
+        return template.query(sql, timeRowMapper, id)
                 .stream()
                 .findFirst();
     }
-
-    private final RowMapper<ReservationTime> actorRowMapper = (resultSet, rowNum) -> {
-        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        final LocalTime time = LocalTime.parse(resultSet.getString("start_at"), timeFormatter);
-        return new ReservationTime(resultSet.getLong("id"), time);
-    };
 }
