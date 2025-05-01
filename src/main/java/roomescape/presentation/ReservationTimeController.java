@@ -31,10 +31,16 @@ public final class ReservationTimeController {
     }
 
     @GetMapping
+    public ResponseEntity<List<ReservationTimeResponseDto>> readReservationTimes() {
+        List<ReservationTimeResponseDto> reservationTimes = reservationTimeService.readTimeAll();
+        return ResponseEntity.ok(reservationTimes);
+    }
+
+    @GetMapping("/reservation")
     public ResponseEntity<List<AvailableTimesResponseDto>> readReservationAvailableTimes(
             @RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId) {
-        List<AvailableTimesResponseDto> reservationTimes = reservationTimeService.readAvailableTimes(date, themeId);
-        return ResponseEntity.ok(reservationTimes);
+        List<AvailableTimesResponseDto> availableReservationTimes = reservationTimeService.readAvailableTimes(date, themeId);
+        return ResponseEntity.ok(availableReservationTimes);
     }
 
     @GetMapping("/{timeId}")

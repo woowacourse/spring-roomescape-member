@@ -24,6 +24,16 @@ public final class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
+    public List<ReservationTimeResponseDto> readTimeAll() {
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(reservationTime -> new ReservationTimeResponseDto(
+                        reservationTime.getId(),
+                        reservationTime.getStartAt()
+                ))
+                .toList();
+    }
+
     public Long createTime(ReservationTimeRequestDto reservationTimeRequestDto) {
         return reservationTimeRepository.add(new ReservationTime(reservationTimeRequestDto.startAt()));
     }
