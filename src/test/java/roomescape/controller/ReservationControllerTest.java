@@ -154,16 +154,9 @@ class ReservationControllerTest {
         Long themeId = 1L;
         Long savedId = insertNewReservationWithJdbcTemplate(timeId, themeId);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", tomorrow.toString());
-        params.put("timeId", timeId.toString());
-        params.put("themeId", themeId.toString());
-
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
                 .when().delete("/reservations/" + savedId)
                 .then().log().all()
                 .statusCode(204);
