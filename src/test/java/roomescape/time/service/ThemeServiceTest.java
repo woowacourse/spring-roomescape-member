@@ -59,7 +59,7 @@ public class ThemeServiceTest {
         }
 
         Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29),
-                reservationTimeRepository.findById(1L), themeRepository.findById(1L).get());
+                reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get());
 
         reservationRepository.saveAndReturnId(reservation);
         themeService = new ThemeService(themeRepository, reservationRepository);

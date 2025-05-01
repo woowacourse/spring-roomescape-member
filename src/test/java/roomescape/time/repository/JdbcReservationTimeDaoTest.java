@@ -68,7 +68,7 @@ class JdbcReservationTimeDaoTest {
         jdbcReservationTimeDao.deleteById(id);
 
         // then
-        String sql = "SELECT COUNT(*) FROM reservation_time";
+        String sql = "SELECT COUNT(1) FROM reservation_time";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
         assertThat(count).isEqualTo(5);
     }
@@ -80,7 +80,7 @@ class JdbcReservationTimeDaoTest {
         Long id = 1L;
 
         // when
-        ReservationTime findTime = jdbcReservationTimeDao.findById(id);
+        ReservationTime findTime = jdbcReservationTimeDao.findById(id).get();
 
         // then
         assertThat(findTime.getId()).isEqualTo(1L);
@@ -99,6 +99,5 @@ class JdbcReservationTimeDaoTest {
         // then
         Assertions.assertThat(actual).isTrue();
     }
-
 
 }

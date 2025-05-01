@@ -60,9 +60,9 @@ class ReservationServiceTest {
         }
 
         List<Reservation> reservations = List.of(
-                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L), themeRepository.findById(1L).get()),
-                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L), themeRepository.findById(2L).get()),
-                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L), themeRepository.findById(3L).get())
+                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get()),
+                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(), themeRepository.findById(2L).get()),
+                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(), themeRepository.findById(3L).get())
         );
 
         for (Reservation reservation : reservations) {

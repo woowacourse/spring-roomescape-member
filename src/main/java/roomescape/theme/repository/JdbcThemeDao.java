@@ -66,7 +66,8 @@ public class JdbcThemeDao implements ThemeRepository {
     @Override
     public List<Theme> findByPeriodAndLimit(LocalDate start, LocalDate end, int limit) {
         String sql = """
-                SELECT th.id, th.name, th.description, th.thumbnail, r.theme_count FROM theme AS th
+                SELECT th.id, th.name, th.description, th.thumbnail, r.theme_count 
+                FROM theme AS th
                 JOIN
                 (
                     SELECT COUNT(theme_id) AS theme_count, theme_id FROM reservation
@@ -77,7 +78,6 @@ public class JdbcThemeDao implements ThemeRepository {
                 ORDER BY theme_count DESC
                 LIMIT ?
                 """;
-
         return jdbcTemplate.query(sql, rowMapper, start, end, limit);
     }
 }

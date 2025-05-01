@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -26,6 +27,7 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Long saveAndReturnId(ReservationTime time) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
 
@@ -40,19 +42,22 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
         return keyHolder.getKey().longValue();
     }
 
+    @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, rowMapper);
     }
 
+    @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
-    public ReservationTime findById(Long id) {
+    @Override
+    public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, rowMapper, id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
     }
 
     @Override
@@ -64,7 +69,6 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
                     WHERE start_at =  ?
                 )
                 """;
-
         return jdbcTemplate.queryForObject(sql, Boolean.class, time);
     }
 }

@@ -3,6 +3,7 @@ package roomescape.util.repository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.time.domain.ReservationTime;
@@ -35,8 +36,8 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime findById(Long id) {
-        return times.get(id);
+    public Optional<ReservationTime> findById(Long id) {
+        return Optional.ofNullable(times.get(id));
     }
 
     @Override
