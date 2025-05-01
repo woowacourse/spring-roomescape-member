@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.entity.ReservationTime;
 
 import java.time.LocalTime;
@@ -14,13 +16,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-
 @JdbcTest
+@ActiveProfiles("test")
+@Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class H2ReservationTimeDaoTest {
 
     /**
-     * data.sql에 초기값이 설정되어 있습니다.
+     * test.sql에 초기값이 설정되어 있습니다.
      * 시간 데이터가 6개 들어가있고, 테스트 전 data.sql 확인바랍니다.
      */
 
@@ -77,3 +80,4 @@ class H2ReservationTimeDaoTest {
         );
     }
 }
+
