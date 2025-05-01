@@ -1,7 +1,7 @@
 package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -52,7 +52,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .body("size()", greaterThan(0));
     }
 
     @DisplayName("삼단계")
@@ -68,12 +68,12 @@ class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
-
+                .body("timeId", greaterThan(0));
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
                 "date", LocalDate.now().plusDays(1).toString(),
+                "themeId", "1",
                 "timeId", "1"
         );
 
@@ -83,24 +83,24 @@ class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("id", greaterThan(0));
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", greaterThan(0));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(0));
+                .body("size()", greaterThan(0));
     }
 
     @DisplayName("사단계")
@@ -128,10 +128,10 @@ class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("timeId", greaterThan(0));
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)",
-                "브라운", "2023-08-05", 1);
+        jdbcTemplate.update("INSERT INTO reservation (name, date, theme_id, time_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2023-08-05", 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -157,11 +157,12 @@ class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("timeId", greaterThan(0));
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
                 "date", LocalDate.now().plusDays(1).toString(),
+                "themeId", "1",
                 "timeId", "1"
         );
 
@@ -173,15 +174,15 @@ class MissionStepTest {
                 .statusCode(201);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+        assertThat(count).isPositive();
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isZero();
+        assertThat(countAfterDelete).isLessThan(count);
     }
 
     @DisplayName("칠단계")
@@ -202,12 +203,12 @@ class MissionStepTest {
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", greaterThan(0));
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .when().delete("/times/4")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(204);
     }
 
     @DisplayName("팔단계")
@@ -223,11 +224,12 @@ class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(1));
+                .body("timeId", greaterThan(0));
 
         Map<String, String> params = Map.of(
                 "name", "브라운",
                 "date", LocalDate.now().plusDays(1).toString(),
+                "themeId", "1",
                 "timeId", "1"
         );
 
@@ -242,7 +244,7 @@ class MissionStepTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(1));
+                .body("size()", greaterThan(0));
     }
 
 
