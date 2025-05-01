@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +13,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.entity.ReservationTime;
-
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.repository.ReservationTimeDao;
+import roomescape.infrastructure.H2ReservationTimeDao;
 
 @JdbcTest
 @ActiveProfiles("test")
@@ -64,14 +65,14 @@ class H2ReservationTimeDaoTest {
         ReservationTime expected = new ReservationTime(2L, LocalTime.of(12, 0));
 
         assertThat(reservationTimeDao.findById(2L).get())
-            .isEqualTo(expected);
+                .isEqualTo(expected);
     }
 
     @Test
     void 동일한_시간이_존재하는지_확인한다() {
         assertAll(
-            () -> assertThat(reservationTimeDao.isExistByTime(LocalTime.of(10, 0))).isTrue(),
-            () -> assertThat(reservationTimeDao.isExistByTime(LocalTime.of(23, 0))).isFalse()
+                () -> assertThat(reservationTimeDao.existByTime(LocalTime.of(10, 0))).isTrue(),
+                () -> assertThat(reservationTimeDao.existByTime(LocalTime.of(23, 0))).isFalse()
         );
     }
 }

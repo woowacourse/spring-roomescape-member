@@ -8,11 +8,12 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.dto.request.ThemeRequest;
-import roomescape.dto.response.ThemeResponse;
-import roomescape.entity.Theme;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ThemeDao;
+import roomescape.business.model.entity.Theme;
+import roomescape.business.model.repository.ReservationDao;
+import roomescape.business.model.repository.ThemeDao;
+import roomescape.business.service.ThemeService;
+import roomescape.presentation.dto.request.ThemeRequest;
+import roomescape.presentation.dto.response.ThemeResponse;
 
 class ThemeServiceTest {
 
@@ -48,7 +49,7 @@ class ThemeServiceTest {
     void 테마를_생성한다() {
         ThemeRequest request = new ThemeRequest("아이언맨", "", "");
 
-        Mockito.when(themeDao.isExistByName(Mockito.any()))
+        Mockito.when(themeDao.existByName(Mockito.any()))
                 .thenReturn(false);
 
         Mockito.when(themeDao.save(Mockito.any()))
@@ -63,7 +64,7 @@ class ThemeServiceTest {
     void id로_테마를_삭제한다() {
         Long id = 1L;
 
-        Mockito.when(reservationDao.isExistByTimeId(Mockito.any()))
+        Mockito.when(reservationDao.existByTimeId(Mockito.any()))
                 .thenReturn(false);
 
         Mockito.when(themeDao.findById(Mockito.any()))

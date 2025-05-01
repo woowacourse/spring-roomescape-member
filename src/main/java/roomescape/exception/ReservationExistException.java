@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class ReservationExistException extends RuntimeException {
+public class ReservationExistException extends RoomescapeException {
     public ReservationExistException(String message) {
         super(message);
     }

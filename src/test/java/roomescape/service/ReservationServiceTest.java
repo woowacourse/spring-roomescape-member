@@ -10,17 +10,18 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.dto.request.ReservationRequest;
-import roomescape.dto.response.AvailableReservationTimeResponse;
-import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.dto.response.ThemeResponse;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
-import roomescape.repository.ThemeDao;
+import roomescape.business.model.entity.Reservation;
+import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.entity.Theme;
+import roomescape.business.model.repository.ReservationDao;
+import roomescape.business.model.repository.ReservationTimeDao;
+import roomescape.business.model.repository.ThemeDao;
+import roomescape.business.service.ReservationService;
+import roomescape.presentation.dto.request.ReservationRequest;
+import roomescape.presentation.dto.response.AvailableReservationTimeResponse;
+import roomescape.presentation.dto.response.ReservationResponse;
+import roomescape.presentation.dto.response.ReservationTimeResponse;
+import roomescape.presentation.dto.response.ThemeResponse;
 
 class ReservationServiceTest {
 

@@ -1,6 +1,6 @@
 package roomescape.exception;
 
-public class ReservationTimeConflictException extends RuntimeException {
+public class ReservationTimeConflictException extends RoomescapeException {
     public ReservationTimeConflictException(String message) {
         super(message);
     }

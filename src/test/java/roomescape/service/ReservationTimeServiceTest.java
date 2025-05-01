@@ -9,11 +9,12 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.dto.request.ReservationTimeRequest;
-import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.entity.ReservationTime;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
+import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.repository.ReservationDao;
+import roomescape.business.model.repository.ReservationTimeDao;
+import roomescape.business.service.ReservationTimeService;
+import roomescape.presentation.dto.request.ReservationTimeRequest;
+import roomescape.presentation.dto.response.ReservationTimeResponse;
 
 class ReservationTimeServiceTest {
 
@@ -31,7 +32,7 @@ class ReservationTimeServiceTest {
     @Test
     void 예약시간을_추가한다() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(23, 0));
-        Mockito.when(reservationTimeDao.isExistByTime(Mockito.any()))
+        Mockito.when(reservationTimeDao.existByTime(Mockito.any()))
                 .thenReturn(false);
 
         Mockito.when(reservationTimeDao.save(Mockito.any()))
@@ -62,7 +63,7 @@ class ReservationTimeServiceTest {
     void 예약시간을_삭제한다() {
         Long id = 1L;
 
-        Mockito.when(reservationDao.isExistByTimeId(Mockito.any()))
+        Mockito.when(reservationDao.existByTimeId(Mockito.any()))
                 .thenReturn(false);
 
         Mockito.when(reservationTimeDao.findById(Mockito.any()))

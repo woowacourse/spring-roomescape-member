@@ -1,5 +1,9 @@
 package roomescape.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +12,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.entity.Theme;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import roomescape.business.model.entity.Theme;
+import roomescape.business.model.repository.ThemeDao;
+import roomescape.infrastructure.H2ThemeDao;
 
 @JdbcTest
 @ActiveProfiles("test")
@@ -63,9 +64,9 @@ class H2ThemeDaoTest {
         List<Theme> themes = themeDao.sortByRank();
 
         List<Object> expected = List.of(
-            new Theme(2L, "", "", ""),
-            new Theme(1L, "", "", ""),
-            new Theme(3L, "", "", "")
+                new Theme(2L, "", "", ""),
+                new Theme(1L, "", "", ""),
+                new Theme(3L, "", "", "")
         );
         assertThat(themes).isEqualTo(expected);
     }
@@ -73,8 +74,8 @@ class H2ThemeDaoTest {
     @Test
     void 동일한_이름의_테마를_확인한다() {
         assertAll(
-            () -> assertThat(themeDao.isExistByName("인터스텔라")).isTrue(),
-            () -> assertThat(themeDao.isExistByName("고질라")).isFalse()
+                () -> assertThat(themeDao.existByName("인터스텔라")).isTrue(),
+                () -> assertThat(themeDao.existByName("고질라")).isFalse()
         );
     }
 }
