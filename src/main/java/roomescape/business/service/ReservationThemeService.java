@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.ReservationTheme;
 import roomescape.exception.ReservationThemeException;
 import roomescape.persistence.ReservationRepository;
@@ -12,7 +13,8 @@ import roomescape.presentation.dto.ReservationThemeRequestDto;
 import roomescape.presentation.dto.ReservationThemeResponseDto;
 
 @Service
-public final class ReservationThemeService {
+@Transactional
+public class ReservationThemeService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationThemeRepository reservationThemeRepository;
