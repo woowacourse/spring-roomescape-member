@@ -27,11 +27,10 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public List<ThemeResponse> getRanking() {
-        // TODO 인자로 받기
+        final int count = 10;
         final int dateRange = 7;
         final LocalDate endDate = LocalDate.now();
         final LocalDate startDate = endDate.minusDays(dateRange);
-        final int count = 10;
 
         return ThemeConverter.toDto(
                 themeQueryUseCase.getRanking(

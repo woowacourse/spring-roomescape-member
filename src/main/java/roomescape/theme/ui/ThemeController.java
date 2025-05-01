@@ -33,10 +33,7 @@ public class ThemeController {
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ThemeResponse>> getRanking() {
-        // TODO 주단위 랭킹말고도 가능하도록
-        final List<ThemeResponse> ranking = themeService.getRanking();
-        System.out.println(ranking);
-        return ResponseEntity.ok(ranking);
+        return ResponseEntity.ok(themeService.getRanking());
     }
 
     @PostMapping

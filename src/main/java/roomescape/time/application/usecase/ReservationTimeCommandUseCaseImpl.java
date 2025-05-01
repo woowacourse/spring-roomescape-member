@@ -30,9 +30,8 @@ public class ReservationTimeCommandUseCaseImpl implements ReservationTimeCommand
 
     @Override
     public void delete(final ReservationTimeId id) {
-        // TODO 쿼리 유즈케이스에서 하면 더 좋을 듯
-        if (!reservationTimeRepository.existsById(id)) {
-            throw new NoSuchElementException();
+        if (!reservationTimeQueryUseCase.existById(id)) {
+            throw new NoSuchElementException("삭제할 시간이 존재하지 않습니다.");
         }
         if (reservationQueryUseCase.existsByTimeId(id)) {
             throw new IllegalStateException("예약에서 참조 중인 시간은 삭제할 수 없습니다.");

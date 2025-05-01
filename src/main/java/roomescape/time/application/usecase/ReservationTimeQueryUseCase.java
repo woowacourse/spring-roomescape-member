@@ -13,4 +13,6 @@ public interface ReservationTimeQueryUseCase {
     List<ReservationTime> getAll();
 
     boolean existsByStartAt(LocalTime time);
+
+    boolean existById(ReservationTimeId id);
 }

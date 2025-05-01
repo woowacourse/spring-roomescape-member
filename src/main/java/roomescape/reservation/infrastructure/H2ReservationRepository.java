@@ -138,7 +138,6 @@ public class H2ReservationRepository implements ReservationRepository {
                     r.date = ? and t.id = ?
                 """;
 
-        // TODO DB entity 필드에 대해서 생각해보고 수정
         return jdbcTemplate.query(
                         sql,
                         (rs, rowNum) -> rs.getLong("time_id"),

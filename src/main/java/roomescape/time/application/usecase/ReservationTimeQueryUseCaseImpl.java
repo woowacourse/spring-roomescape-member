@@ -31,4 +31,9 @@ public class ReservationTimeQueryUseCaseImpl implements ReservationTimeQueryUseC
     public boolean existsByStartAt(final LocalTime startAt) {
         return reservationTimeRepository.existsByStartAt(startAt);
     }
+
+    @Override
+    public boolean existById(final ReservationTimeId id) {
+        return reservationTimeRepository.existsById(id);
+    }
 }
