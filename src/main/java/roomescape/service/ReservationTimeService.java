@@ -10,6 +10,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationAvailableTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.ResourceNotExistException;
 
 @Service
 public class ReservationTimeService {
@@ -40,9 +41,11 @@ public class ReservationTimeService {
             .toList();
     }
 
-    public boolean deleteReservationTime(Long id) {
+    public void deleteReservationTime(Long id) {
         int deleteCount = reservationTimeDao.deleteById(id);
-        return deleteCount != 0;
+        if (deleteCount == 0) {
+            throw new ResourceNotExistException();
+        }
     }
 
     public List<ReservationAvailableTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {

@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -15,6 +16,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.ResourceNotExistException;
 
 @Service
 public class ReservationService {
@@ -70,9 +72,11 @@ public class ReservationService {
         }
     }
 
-    public boolean deleteReservation(Long id) {
+    public void deleteReservation(Long id) {
         int deleteCount = reservationDao.deleteById(id);
-        return deleteCount != 0;
+        if(deleteCount == 0) {
+            throw new ResourceNotExistException();
+        }
     }
 
     private void validateDateTime(LocalDate date, ReservationTime time) {

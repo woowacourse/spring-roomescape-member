@@ -38,10 +38,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable(name = "id") Long id) {
-        boolean isDeleted = reservationService.deleteReservation(id);
-        if(isDeleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        reservationService.deleteReservation(id);
+        return ResponseEntity.noContent().build();
     }
 }
