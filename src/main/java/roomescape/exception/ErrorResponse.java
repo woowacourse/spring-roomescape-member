@@ -18,12 +18,12 @@ public record ErrorResponse(
         );
     }
 
-    public static ErrorResponse internalServerError(Exception e) {
+    public static ErrorResponse internalServerError() {
         return new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                e.getClass().getSimpleName(),
-                e.getMessage()
+                "",
+                "서버에서 심각한 오류가 발생하였습니다."
         );
     }
 }

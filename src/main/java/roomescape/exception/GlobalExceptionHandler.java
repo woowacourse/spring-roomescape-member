@@ -20,6 +20,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handle(Exception e) {
         logger.error("Handled Exception: {}", e.getMessage(), e);
-        return ResponseEntity.internalServerError().body(ErrorResponse.internalServerError(e));
+        return ResponseEntity.internalServerError().body(ErrorResponse.internalServerError());
     }
 }
