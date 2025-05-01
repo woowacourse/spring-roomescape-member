@@ -6,7 +6,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReserverName;
-import roomescape.reservation.infrastructure.entity.ReservationEntity;
+import roomescape.reservation.infrastructure.entity.ReservationDBEntity;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.application.converter.ThemeConverter;
@@ -18,13 +18,13 @@ import java.util.List;
 
 public class ReservationConverter {
 
-    public static Reservation toDomain(final ReservationEntity reservationEntity) {
+    public static Reservation toDomain(final ReservationDBEntity reservationDBEntity) {
         return Reservation.withId(
-                ReservationId.from(reservationEntity.getId()),
-                ReserverName.from(reservationEntity.getName()),
-                ReservationDate.from(reservationEntity.getDate().toLocalDate()),
-                ReservationTimeConverter.toDomain(reservationEntity.getTime()),
-                ThemeConverter.toDomain(reservationEntity.getTheme()));
+                ReservationId.from(reservationDBEntity.getId()),
+                ReserverName.from(reservationDBEntity.getName()),
+                ReservationDate.from(reservationDBEntity.getDate().toLocalDate()),
+                ReservationTimeConverter.toDomain(reservationDBEntity.getTime()),
+                ThemeConverter.toDomain(reservationDBEntity.getTheme()));
     }
 
     public static Reservation toDomain(final CreateReservationServiceRequest request,

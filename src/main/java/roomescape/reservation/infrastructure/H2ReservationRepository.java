@@ -12,15 +12,15 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.infrastructure.entity.ReservationEntity;
+import roomescape.reservation.infrastructure.entity.ReservationDBEntity;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.theme.infrastructure.entity.ThemeEntity;
+import roomescape.theme.infrastructure.entity.ThemeDBEntity;
 import roomescape.time.domain.ReservationTimeId;
-import roomescape.time.infrastructure.entity.ReservationTimeEntity;
+import roomescape.time.infrastructure.entity.ReservationTimeDBEntity;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -41,20 +41,20 @@ public class H2ReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ReservationEntity> reservationMapper = (resultSet, rowNum) -> {
-        ReservationTimeEntity time = ReservationTimeEntity.of(
+    private final RowMapper<ReservationDBEntity> reservationMapper = (resultSet, rowNum) -> {
+        ReservationTimeDBEntity time = ReservationTimeDBEntity.of(
                 resultSet.getLong("time_id"),
                 resultSet.getTime("start_at")
         );
 
-        ThemeEntity theme = ThemeEntity.of(
+        ThemeDBEntity theme = ThemeDBEntity.of(
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
         );
 
-        return ReservationEntity.of(
+        return ReservationDBEntity.of(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getDate("date"),

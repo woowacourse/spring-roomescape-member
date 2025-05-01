@@ -11,7 +11,7 @@ import roomescape.theme.application.converter.ThemeConverter;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.infrastructure.entity.ThemeEntity;
+import roomescape.theme.infrastructure.entity.ThemeDBEntity;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -24,8 +24,8 @@ public class H2ThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ThemeEntity> themeMapper = (resultSet, rowNum) ->
-            ThemeEntity.of(
+    private final RowMapper<ThemeDBEntity> themeMapper = (resultSet, rowNum) ->
+            ThemeDBEntity.of(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),

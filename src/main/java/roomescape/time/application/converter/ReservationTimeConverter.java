@@ -3,7 +3,7 @@ package roomescape.time.application.converter;
 import roomescape.time.application.dto.CreateReservationTimeServiceRequest;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
-import roomescape.time.infrastructure.entity.ReservationTimeEntity;
+import roomescape.time.infrastructure.entity.ReservationTimeDBEntity;
 import roomescape.time.ui.dto.ReservationTimeResponse;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class ReservationTimeConverter {
                 request.startAt());
     }
 
-    public static ReservationTime toDomain(final ReservationTimeEntity entity) {
+    public static ReservationTime toDomain(final ReservationTimeDBEntity entity) {
         return ReservationTime.withId(
                 ReservationTimeId.from(entity.getId()),
                 entity.getTime().toLocalTime());

@@ -6,7 +6,7 @@ import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.theme.infrastructure.entity.ThemeEntity;
+import roomescape.theme.infrastructure.entity.ThemeDBEntity;
 import roomescape.theme.ui.dto.CreateThemeWebRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
 
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ThemeConverter {
 
-    public static Theme toDomain(final ThemeEntity entity) {
+    public static Theme toDomain(final ThemeDBEntity entity) {
         return Theme.withId(
                 ThemeId.from(entity.getId()),
                 ThemeName.from(entity.getName()),

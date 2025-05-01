@@ -11,7 +11,7 @@ import roomescape.time.application.converter.ReservationTimeConverter;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.domain.ReservationTimeRepository;
-import roomescape.time.infrastructure.entity.ReservationTimeEntity;
+import roomescape.time.infrastructure.entity.ReservationTimeDBEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
@@ -26,7 +26,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ReservationTimeEntity> reservationTimeMapper = (resultSet, rowNum) -> ReservationTimeEntity.of(
+    private final RowMapper<ReservationTimeDBEntity> reservationTimeMapper = (resultSet, rowNum) -> ReservationTimeDBEntity.of(
             resultSet.getLong("id"),
             resultSet.getTime("start_at")
     );

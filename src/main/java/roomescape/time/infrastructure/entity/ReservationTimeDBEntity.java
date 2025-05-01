@@ -8,12 +8,12 @@ import java.sql.Time;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ReservationTimeEntity {
+public class ReservationTimeDBEntity {
 
     private final Long id;
     private final Time time;
 
-    public static ReservationTimeEntity of(final Long id, final Time time) {
-        return new ReservationTimeEntity(id, time);
+    public static ReservationTimeDBEntity of(final Long id, final Time time) {
+        return new ReservationTimeDBEntity(id, time);
     }
 }
