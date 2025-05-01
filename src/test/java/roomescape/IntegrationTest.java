@@ -20,9 +20,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+        properties = {
+                "spring.sql.init.mode=always",
+                "spring.sql.init.data-locations=classpath:/test-data.sql"
+        })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class MissionStepTest {
+public class IntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -107,6 +111,8 @@ public class MissionStepTest {
                 .statusCode(201);
 
         RestAssured.given().log().all()
+                .param("theme_id", "1")
+                .param("date", LocalDate.now().toString())
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
@@ -142,11 +148,25 @@ public class MissionStepTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
+
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "test");
+        theme.put("description", "test");
+        theme.put("thumbnail", "test");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().toString());
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -168,11 +188,24 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "test");
+        theme.put("description", "test");
+        theme.put("thumbnail", "test");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().toString());
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -202,11 +235,24 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
+        Map<String, Object> theme = new HashMap<>();
+        theme.put("name", "test");
+        theme.put("description", "test");
+        theme.put("thumbnail", "test");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
         Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().toString());
+        reservation.put("date", LocalDate.now().plusDays(1).toString());
         reservation.put("timeId", 1);
+        reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
