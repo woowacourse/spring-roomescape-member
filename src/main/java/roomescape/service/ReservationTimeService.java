@@ -48,7 +48,6 @@ public class ReservationTimeService {
     public List<AvailableTimeResponse> findAvailableTimes(final LocalDate date, final long themeId) {
         final List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         final List<Reservation> reservations = reservationDao.findAllByDateAndThemeId(date, themeId);
-        final List<AvailableTimeResponse> responses = new ArrayList<>();
         return reservationTimes.stream()
                 .map(time -> new AvailableTimeResponse(time.getId(), time.getStartAt(),
                         isAlreadyBooked(time, reservations)))
