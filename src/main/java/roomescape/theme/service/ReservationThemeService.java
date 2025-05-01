@@ -46,7 +46,7 @@ public class ReservationThemeService {
     public List<ReservationThemeResponse> getPopularThemes(final int limit) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusWeeks(1);
-        return themeRepository.findPopularDescendingUpTo(startDate, endDate, limit)
+        return themeRepository.findPopularThemesByDateRangeAndLimit(startDate, endDate, limit)
                 .stream()
                 .map(ReservationThemeResponse::from)
                 .toList();

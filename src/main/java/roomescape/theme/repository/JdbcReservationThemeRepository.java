@@ -112,7 +112,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeEntity> findPopularDescendingUpTo(
+    public List<ReservationThemeEntity> findPopularThemesByDateRangeAndLimit(
             LocalDate startDate,
             LocalDate endDate,
             final int limit

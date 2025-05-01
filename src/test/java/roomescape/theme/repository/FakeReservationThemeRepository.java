@@ -43,7 +43,7 @@ public class FakeReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeEntity> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, final int limit) {
+    public List<ReservationThemeEntity> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, final int limit) {
         // TODO: 테스트 로직 작성하기
         return null;
     }

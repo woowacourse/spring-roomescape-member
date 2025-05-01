@@ -17,5 +17,5 @@ public interface ReservationThemeRepository {
 
     Optional<ReservationThemeEntity> findByName(String name);
 
-    List<ReservationThemeEntity> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, int limit);
+    List<ReservationThemeEntity> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, int limit);
 }
