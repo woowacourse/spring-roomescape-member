@@ -19,12 +19,12 @@ public class AdminViewController {
     }
 
     @GetMapping("/time")
-    public String getTimes() {
+    public String getAdminTime() {
         return "admin/time";
     }
 
     @GetMapping("/theme")
-    public String getThemes() {
+    public String getAdminTheme() {
         return "admin/theme";
     }
 }
