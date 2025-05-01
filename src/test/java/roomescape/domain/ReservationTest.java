@@ -60,6 +60,15 @@ class ReservationTest {
                 .hasMessage("[ERROR] 비어있는 예약시간으로는 예약을 생성할 수 없습니다.");
     }
 
+    @DisplayName("비어있는 테마로는 예약을 생성할 수 없다")
+    @Test
+    void cannotCreateReservationWithNullTheme() {
+        Theme nullTheme = null;
+        assertThatThrownBy(() -> new Reservation(1L, "reservation", LocalDate.now(), EXAMPLE_RESERVATION_TIME, nullTheme))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 비어있는 테마로는 예약을 생성할 수 없습니다.");
+    }
+
     @DisplayName("과거 예약인지 검증할 수 있다")
     @Test
     void canValidateFieldPastReservation() {
