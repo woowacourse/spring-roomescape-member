@@ -1,6 +1,7 @@
 package roomescape.service.reservation;
 
 public final class ThemeDescription {
+    
     private final String description;
 
     public ThemeDescription(final String description) {

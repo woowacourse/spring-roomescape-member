@@ -10,8 +10,22 @@ public final class ReservationDateTime {
     private final ReservationTime time;
 
     public ReservationDateTime(final LocalDate date, final ReservationTime time) {
+        validateDate(date);
+        validateTime(time);
         this.date = date;
         this.time = time;
+    }
+
+    private void validateDate(final LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜를 입력해야 합니다.");
+        }
+    }
+
+    private void validateTime(final ReservationTime time) {
+        if (time == null) {
+            throw new IllegalArgumentException("시간을 입력해야 합니다.");
+        }
     }
 
     public boolean isBefore(final LocalDateTime other) {

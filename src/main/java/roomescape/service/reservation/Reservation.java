@@ -13,10 +13,17 @@ public final class Reservation {
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
                        final Theme theme) {
+        validateTheme(theme);
         this.id = id;
         this.name = new MemberName(name);
         this.dateTime = new ReservationDateTime(date, time);
         this.theme = theme;
+    }
+
+    private void validateTheme(final Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("테마를 입력해야 합니다.");
+        }
     }
 
     public boolean isBefore(final LocalDateTime other) {

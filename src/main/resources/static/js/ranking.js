@@ -39,7 +39,7 @@ function requestRead(endpoint) {
     return fetch(endpoint)
         .then(response => {
             if (response.status === 200) return response.json();
-            response.text().then(errorMessage => alert(errorMessage));
+            response.json().then(error => alert(error.message));
             throw new Error('Read failed');
         });
 }
