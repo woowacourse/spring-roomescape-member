@@ -6,6 +6,10 @@ public record Theme(Long id, String name, String description, String thumbnail) 
         validate(name, description, thumbnail);
     }
 
+    public boolean equalsThemeName(Theme theme) {
+        return this.name.equals(theme.name);
+    }
+
     private void validate(String name, String description, String thumbnail) {
         validateName(name);
         validateDescription(description);

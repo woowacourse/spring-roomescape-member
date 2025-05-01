@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
@@ -12,6 +11,8 @@ import roomescape.exceptions.ReservationDuplicateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,11 +39,11 @@ public class ReservationService {
     @Transactional
     public ReservationResponse postReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
-        Theme theme = themeRepository.findById(request.timeId());
+        Theme theme = themeRepository.findById(request.themeId());
         Reservation reservation = Reservation.createIfDateTimeValid(request.name(), request.date(), time, theme);
-        if (isAnyMatchDateTime(reservation)) {
+        if (isDuplicate(reservation)) {
             throw new ReservationDuplicateException("해당 시각의 중복된 예약이 존재합니다.", reservation.date(),
-                    reservation.time().startAt());
+                    reservation.time().startAt(), reservation.theme().name());
         }
 
         Reservation newReservation = reservationRepository.save(reservation);
@@ -54,8 +55,8 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    private boolean isAnyMatchDateTime(Reservation reservation) {
+    private boolean isDuplicate(Reservation reservation) {
         return reservationRepository.findAll().stream()
-                .anyMatch(current -> current.equalDateTime(reservation));
+                .anyMatch(current -> current.isDuplicate(reservation));
     }
 }

@@ -1,5 +1,11 @@
 package roomescape.fake;
 
+import roomescape.entity.Reservation;
+import roomescape.entity.ReservationTime;
+import roomescape.entity.Theme;
+import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.ReservationRepository;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -7,11 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ReservationRepository;
 
 public class ReservationFakeRepository implements ReservationRepository {
 
@@ -53,8 +54,12 @@ public class ReservationFakeRepository implements ReservationRepository {
             throw new EntityNotFoundException("예약 시간을 찾을 수 없습니다: " + timeId);
         }
 
-        ReservationTime time = reservationTimes.get(timeId);
         Long themeId = reservation.theme().id();
+        if (!themes.containsKey(themeId)) {
+            throw new EntityNotFoundException("테마를 찾을 수 없습니다: " + themeId);
+        }
+
+        ReservationTime time = reservationTimes.get(timeId);
         Theme theme = themes.get(themeId);
 
         long newId = idGenerator.getAndIncrement();

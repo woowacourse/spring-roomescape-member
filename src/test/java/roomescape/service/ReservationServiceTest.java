@@ -1,10 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationRequest;
@@ -17,6 +12,12 @@ import roomescape.fake.ThemeFakeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class ReservationServiceTest {
 
@@ -69,8 +70,8 @@ public class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("예약 생성 시, 중복된 날짜,시간일 경우 예외가 발생한다.")
-    void error_postReservationIfDuplicationDatetime() {
+    @DisplayName("예약 생성 시, 날짜, 시간, 테마가 중복될 경우 예외가 발생한다.")
+    void error_postReservationIfDuplication() {
         //given
         LocalDate givenDate = LocalDate.MAX;
         long timeId = 1L;

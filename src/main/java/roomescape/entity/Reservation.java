@@ -16,16 +16,11 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         return new Reservation(null, name, date, time, theme);
     }
 
-    public boolean equalDateTime(Reservation reservation) {
-        return equalsDate(reservation) && equalsTime(reservation);
-    }
-
-    private boolean equalsDate(Reservation reservation) {
-        return this.date.equals(reservation.date);
-    }
-
-    private boolean equalsTime(Reservation reservation) {
-        return this.time.equalsTime(reservation.time);
+    public boolean isDuplicate(Reservation reservation) {
+        boolean equalsDate = this.date.equals(reservation.date);
+        boolean equalsTime = this.time.equalsTime(reservation.time);
+        boolean equalsTheme = this.theme.equalsThemeName(reservation.theme);
+        return equalsDate && equalsTime && equalsTheme;
     }
 
     private static void validateDateTime(LocalDate date, ReservationTime time) {
