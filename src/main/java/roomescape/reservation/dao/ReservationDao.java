@@ -9,9 +9,9 @@ import roomescape.reservation.Reservation;
 public interface ReservationDao {
     List<Reservation> findAll();
 
-    Long create(Reservation reservation);
+    Reservation create(Reservation reservation);
 
-    Integer delete(Long id);
+    void delete(Long id);
 
     Optional<Reservation> findByTimeId(Long id);
 

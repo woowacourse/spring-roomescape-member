@@ -37,7 +37,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Long create(ReservationTime reservationTime) {
+    public ReservationTime create(ReservationTime reservationTime) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -51,7 +51,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return reservationTime.withId(keyHolder.getKey().longValue());
     }
 
     @Override

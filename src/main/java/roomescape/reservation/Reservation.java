@@ -59,6 +59,10 @@ public class Reservation {
         }
     }
 
+    public Reservation withId(Long id) {
+        return new Reservation(id, name, date, reservationTime, theme);
+    }
+
     public Long getId() {
         return id;
     }

@@ -9,7 +9,7 @@ import roomescape.reservationtime.dto.response.AvailableTimeResponse;
 public interface ReservationTimeDao {
     List<ReservationTime> findAll();
 
-    Long create(ReservationTime reservationTime);
+    ReservationTime create(ReservationTime reservationTime);
 
     void delete(Long id);
 

@@ -26,11 +26,11 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Long create(ReservationTime reservationTime) {
+    public ReservationTime create(ReservationTime reservationTime) {
         ReservationTime reservationTimeWithId = new ReservationTime(index.getAndIncrement(),
                 reservationTime.getStartAt());
         fakeReservationTimes.add(reservationTime);
-        return reservationTimeWithId.getId();
+        return reservationTimeWithId;
     }
 
     @Override

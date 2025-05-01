@@ -14,6 +14,7 @@ import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.dao.ReservationTimeDao;
+import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.ThemeDao;
 
@@ -37,7 +38,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public Long create(ReservationCreateRequest request) {
+    public ReservationResponse create(ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
                 .orElseThrow(NoSuchElementException::new);
         Theme theme = themeDao.findById(request.themeId()).orElseThrow(NoSuchElementException::new);
@@ -48,7 +49,16 @@ public class ReservationService {
                 theme
         );
         validateDuplicate(request.date(), reservationTime.getStartAt());
-        return reservationDao.create(reservation);
+        Reservation savedReservation = reservationDao.create(reservation);
+        return new ReservationResponse(
+                savedReservation.getId(),
+                savedReservation.getName(),
+                savedReservation.getDate(),
+                new ReservationTimeResponse(
+                        savedReservation.getId(), savedReservation.getReservationTime().getStartAt()
+                ),
+                savedReservation.getTheme().getName()
+        );
     }
 
     private void validateDuplicate(@NotNull LocalDate date, LocalTime startAt) {
@@ -57,8 +67,8 @@ public class ReservationService {
         }
     }
 
-    public Integer delete(Long id) {
+    public void delete(Long id) {
         reservationDao.findById(id).orElseThrow(ReservationNotFoundException::new);
-        return reservationDao.delete(id);
+        reservationDao.delete(id);
     }
 }

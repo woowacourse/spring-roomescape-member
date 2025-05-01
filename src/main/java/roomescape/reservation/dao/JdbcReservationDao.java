@@ -66,7 +66,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long create(Reservation reservation) {
+    public Reservation create(Reservation reservation) {
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -82,13 +82,14 @@ public class JdbcReservationDao implements ReservationDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        long id = keyHolder.getKey().longValue();
+        return reservation.withId(id);
     }
 
     @Override
-    public Integer delete(Long id) {
+    public void delete(Long id) {
         String sql = "delete from reservation where id = ?";
-        return this.jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(sql, id);
     }
 
     @Override

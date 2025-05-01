@@ -1,11 +1,8 @@
 package roomescape.reservationtime.service;
 
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.reservation.dao.ReservationDao;
@@ -30,18 +27,20 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimeDaoAll = reservationTimeDao.findAll();
 
         return reservationTimeDaoAll.stream()
-                .map(time -> {
-                    return ReservationTimeResponse.toDto(time);
-                })
+                .map(ReservationTimeResponse::toDto)
                 .toList();
     }
 
-    public Long create(@Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
+    public ReservationTimeResponse create(ReservationTimeRequest reservationTimeRequest) {
         ReservationTime reservationTime = reservationTimeRequest.toTime();
-        return reservationTimeDao.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
+        return new ReservationTimeResponse(
+                savedReservationTime.getId(),
+                savedReservationTime.getStartAt()
+        );
     }
 
-    public void delete(@PathVariable Long id) {
+    public void delete(Long id) {
         if (reservationTimeDao.findById(id).isEmpty()) {
             throw new ReservationTimeNotFoundException();
         }
