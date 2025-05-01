@@ -28,7 +28,10 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public List<ReservationTime> findAll() {
-        String query = "select id, start_at from reservation_time";
+        String query = """
+                SELECT id, start_at 
+                FROM reservation_time
+                """;
         return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTime(
                 rs.getLong("id"),
                 rs.getObject("start_at", LocalTime.class)
@@ -37,7 +40,11 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public ReservationTime findById(Long id) {
-        String query = "select id, start_at from reservation_time where id = ?";
+        String query = """
+                SELECT id, start_at 
+                FROM reservation_time 
+                WHERE id = ?
+                """;
         return jdbcTemplate.queryForObject(query, (rs, rowNum) -> new ReservationTime(
                 rs.getLong("id"),
                 rs.getObject("start_at", LocalTime.class)), id);
@@ -54,7 +61,10 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public void deleteById(Long id) {
-        String query = "delete from reservation_time where id=?";
+        String query = """
+                DELETE FROM reservation_time
+                WHERE id = ?
+                """;
         jdbcTemplate.update(query, id);
     }
 

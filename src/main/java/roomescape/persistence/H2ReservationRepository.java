@@ -31,12 +31,12 @@ public class H2ReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         String query = """
                 SELECT
-                    r.id as reservation_id, r.name, r.date,
-                    t.id as time_id, t.start_at,
-                    th.id as theme_id, th.name AS theme_name, th.description, th.thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t
-                INNER JOIN theme as th
+                    r.id AS reservation_id, r.name, r.date,
+                    t.id AS time_id, t.start_at,
+                    th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS t
+                JOIN theme AS th
                 ON r.time_id = t.id AND r.theme_id = th.id
                 """;
         return jdbcTemplate.query(query, (rs, rowNum) -> new Reservation(
@@ -61,12 +61,12 @@ public class H2ReservationRepository implements ReservationRepository {
     public Reservation findById(Long id) {
         String query = """
                 SELECT
-                    r.id as reservation_id, r.name, r.date,
-                    t.id as time_id, t.start_at,
-                    th.id as theme_id, th.name AS theme_name, th.description, th.thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t
-                INNER JOIN theme as th
+                    r.id AS reservation_id, r.name, r.date,
+                    t.id AS time_id, t.start_at,
+                    th.id AS theme_id, th.name AS theme_name, th.description, th.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS t
+                JOIN theme AS th
                 ON r.time_id = t.id AND r.theme_id = th.id
                 WHERE r.id = ?
                 """;
@@ -102,7 +102,10 @@ public class H2ReservationRepository implements ReservationRepository {
 
     @Override
     public void deleteById(Long id) {
-        String query = "delete from RESERVATION where id=?";
+        String query = """
+                DELETE FROM reservation 
+                WHERE id = ?
+                """;
         jdbcTemplate.update(query, id);
     }
 
