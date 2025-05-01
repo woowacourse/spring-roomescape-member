@@ -48,10 +48,10 @@ public class ReservationRestController {
 
         return ResponseEntity.ok(createReservationRespons);
     }
-    
+
     @PostMapping("/available-times")
     public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimes(
-            @RequestBody AvailableReservationTimeRequest request) {
+            @RequestBody final AvailableReservationTimeRequest request) {
 
         return ResponseEntity.ok(
                 reservationService.findAvailableReservationTimes(request.date(), request.themeId()).stream()

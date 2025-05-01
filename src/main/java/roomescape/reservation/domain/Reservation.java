@@ -45,7 +45,7 @@ public class Reservation {
         }
     }
 
-    private void validateTime(ReservationTime time) {
+    private void validateTime(final ReservationTime time) {
         if (time == null) {
             throw new IllegalArgumentException("Time cannot be null");
         }
