@@ -34,7 +34,7 @@ public class ThemeService {
     }
 
     public void deleteThemeById(final Long id) {
-        if (reservationRepository.existByThemeId(id)) {
+        if (reservationRepository.existBy(id)) {
             throw new IllegalArgumentException("삭제할 수 없는 테마입니다.");
         }
         int count = themeRepository.deleteById(id);
