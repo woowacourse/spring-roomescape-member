@@ -1,4 +1,4 @@
-package roomescape.reservationTime;
+package roomescape.reservationtime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,11 +8,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.globalException.BadRequestException;
-import roomescape.globalException.ConflictException;
-import roomescape.reservationTime.dto.AvailableReservationTimeResponse;
-import roomescape.reservationTime.dto.ReservationTimeRequest;
-import roomescape.reservationTime.dto.ReservationTimeResponse;
+import roomescape.globalexception.BadRequestException;
+import roomescape.globalexception.ConflictException;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
+import roomescape.reservationtime.dto.ReservationTimeRequest;
+import roomescape.reservationtime.dto.ReservationTimeResponse;
 
 @Service
 public class ReservationTimeService {

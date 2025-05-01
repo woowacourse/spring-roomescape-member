@@ -1,4 +1,4 @@
-package roomescape.reservationTime;
+package roomescape.reservationtime;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.reservationTime.dto.AvailableReservationTimeResponse;
-import roomescape.reservationTime.dto.ReservationTimeRequest;
-import roomescape.reservationTime.dto.ReservationTimeResponse;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
+import roomescape.reservationtime.dto.ReservationTimeRequest;
+import roomescape.reservationtime.dto.ReservationTimeResponse;
 
 @RestController
 @RequestMapping("/times")

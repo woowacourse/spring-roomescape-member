@@ -5,12 +5,12 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import roomescape.globalException.BadRequestException;
-import roomescape.globalException.ConflictException;
+import roomescape.globalexception.BadRequestException;
+import roomescape.globalexception.ConflictException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservationTime.ReservationTime;
-import roomescape.reservationTime.ReservationTimeRepository;
+import roomescape.reservationtime.ReservationTime;
+import roomescape.reservationtime.ReservationTimeRepository;
 
 @Service
 public class ReservationService {

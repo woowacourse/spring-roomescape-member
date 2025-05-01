@@ -1,9 +1,9 @@
 package roomescape.reservation.dto;
 
 import java.time.LocalDate;
-import roomescape.globalException.ResponseInvalidException;
+import roomescape.globalexception.ResponseInvalidException;
 import roomescape.reservation.Reservation;
-import roomescape.reservationTime.dto.ReservationTimeResponse;
+import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.theme.dto.ThemeResponse;
 
 public record ReservationResponse(
