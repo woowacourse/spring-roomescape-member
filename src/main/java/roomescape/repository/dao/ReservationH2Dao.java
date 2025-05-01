@@ -97,8 +97,9 @@ public class ReservationH2Dao implements ReservationDao {
                 FROM reservation
                 WHERE time_id = ? AND date = ? AND theme_id = ?
                 """;
-        // TODO : npe 가능성 점검
-        int duplicatedCount = jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId);
+        int duplicatedCount = Optional.ofNullable(
+                jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId)
+        ).orElse(0);
         return duplicatedCount > 0;
     }
 }
