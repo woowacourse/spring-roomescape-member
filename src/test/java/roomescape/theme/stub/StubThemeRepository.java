@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.dto.PopularThemeResponse;
 import roomescape.theme.repository.ThemeRepository;
 
 public class StubThemeRepository implements ThemeRepository {
@@ -32,6 +33,11 @@ public class StubThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return List.copyOf(data);
+    }
+
+    @Override
+    public List<PopularThemeResponse> findAllPopular() {
+        return List.of();
     }
 
     @Override

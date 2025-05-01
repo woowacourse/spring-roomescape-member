@@ -1,10 +1,12 @@
 package roomescape.reservationtime.stub;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 public class StubReservationTimeRepository implements ReservationTimeRepository {
@@ -25,6 +27,11 @@ public class StubReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return List.copyOf(data);
+    }
+
+    @Override
+    public List<AvailableReservationTimeResponse> findAllAvailable(final LocalDate date, final Long themeId) {
+        return List.of();
     }
 
     @Override
