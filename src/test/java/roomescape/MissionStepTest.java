@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.ui.ReservationController;
-import roomescape.reservation.ui.dto.ReservationResponse;
+import roomescape.reservation.controller.ReservationController;
+import roomescape.reservation.controller.dto.ReservationResponse;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
