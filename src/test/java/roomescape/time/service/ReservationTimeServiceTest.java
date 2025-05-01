@@ -1,9 +1,10 @@
 package roomescape.time.service;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.H2ReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.domain.ReservationTime;
@@ -25,34 +25,23 @@ class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private ReservationTimeRepository reservationTimeRepository;
 
-    @Test
-    void 예약시간을_추가한다() {
-        // given
-        final LocalTime startAt = LocalTime.of(19,55);
-
+    @ParameterizedTest
+    @CsvSource(value = {
+            "10:00", "22:00"
+    })
+    void 예약시간을_추가한다(final LocalTime startAt) {
         // when & then
         Assertions.assertThatCode(() -> reservationTimeService.save(startAt))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    void 이미_존재하는_예약시간을_추가하면_예외가_발생한다() {
-        // given
-        final LocalTime startAt = LocalTime.of(19,55);
-        reservationTimeService.save(startAt);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> reservationTimeService.save(startAt))
-                .isInstanceOf(DataExistException.class);
-    }
-
-    @Test
     void 예약시간을_삭제한다() {
         // given
-        final LocalTime startAt = LocalTime.of(20,28);
-        final Long id = reservationTimeService.save(startAt);
+        final LocalTime startAt = LocalTime.of(20, 28);
+        final Long id = reservationTimeRepository.save(new ReservationTime(startAt));
 
         // when & then
         Assertions.assertThatCode(() -> reservationTimeService.deleteById(id))
@@ -60,31 +49,38 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void 예약시간을_id로_조회한다() {
+        // given
+        final LocalTime startAt = LocalTime.of(20, 28);
+        final ReservationTime reservationTime = new ReservationTime(startAt);
+        final Long id = reservationTimeRepository.save(reservationTime);
+
+        // when
+        final ReservationTime found = reservationTimeService.getById(id);
+
+        // then
+        Assertions.assertThat(found.getStartAt()).isEqualTo(reservationTime.getStartAt());
+    }
+
+    @Test
+    void 이미_존재하는_예약시간을_추가하면_예외가_발생한다() {
+        // given
+        final LocalTime startAt = LocalTime.of(19, 55);
+        reservationTimeRepository.save(new ReservationTime(startAt));
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationTimeService.save(startAt))
+                .isInstanceOf(DataExistException.class);
+    }
+
+    @Test
     void 삭제할_예약시간이_없으면_예외가_발생한다() {
         // given
-        final Long id = 1L;
+        final Long id = Long.MAX_VALUE;
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationTimeService.deleteById(id))
                 .isInstanceOf(DataNotFoundException.class);
-    }
-
-    @Test
-    void 삭제할_예약시간을_사용하고있는_예약정보가_있으면_예외가_발생한다() {
-        // given
-        final LocalTime startAt = LocalTime.of(20,28);
-        final Long savedTimeId = reservationTimeService.save(startAt);
-        final ReservationTime reservationTime = reservationTimeService.getById(savedTimeId);
-        final Reservation reservation = new Reservation(
-                "우가",
-                LocalDate.of(2025,4,29),
-                reservationTime
-        );
-        reservationRepository.save(reservation);
-
-        // when & then
-        Assertions.assertThatThrownBy(() -> reservationTimeService.deleteById(savedTimeId))
-                .isInstanceOf(DataExistException.class);
     }
 
     @TestConfiguration
@@ -106,10 +102,9 @@ class ReservationTimeServiceTest {
 
         @Bean
         public ReservationTimeService reservationTimeService(
-                final ReservationTimeRepository reservationTimeRepository,
-                final ReservationRepository reservationRepository
+                final ReservationTimeRepository reservationTimeRepository
         ) {
-            return new ReservationTimeService(reservationTimeRepository, reservationRepository);
+            return new ReservationTimeService(reservationTimeRepository);
         }
     }
 }
