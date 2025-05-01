@@ -2,11 +2,15 @@ package roomescape.persistence.dao;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Theme;
+import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ThemeEntity;
 
 @Repository
@@ -33,6 +37,17 @@ public class JdbcThemeDao implements ThemeDao {
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    @Override
+    public Optional<Theme> find(final Long id) {
+        final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        try {
+            final ThemeEntity themeEntity = jdbcTemplate.queryForObject(sql, ThemeEntity.getDefaultRowMapper(), id);
+            return Optional.of(themeEntity.toDomain());
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

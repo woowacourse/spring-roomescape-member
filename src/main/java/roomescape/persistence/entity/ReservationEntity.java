@@ -9,7 +9,8 @@ public record ReservationEntity(
         Long id,
         String name,
         String date,
-        PlayTimeEntity playTimeEntity
+        PlayTimeEntity playTimeEntity,
+        ThemeEntity themeEntity
 ) {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -18,7 +19,8 @@ public record ReservationEntity(
                     rs.getLong(1),
                     rs.getString(2),
                     rs.getString(3),
-                    new PlayTimeEntity(rs.getLong(4), rs.getString(5))
+                    new PlayTimeEntity(rs.getLong(4), rs.getString(5)),
+                    new ThemeEntity(rs.getLong(6), rs.getString(7), rs.getString(8), rs.getString(9))
             );
 
     public Reservation toDomain() {
@@ -26,7 +28,9 @@ public record ReservationEntity(
                 id,
                 name,
                 LocalDate.parse(date, DATE_FORMATTER),
-                playTimeEntity.toDomain());
+                playTimeEntity.toDomain(),
+                themeEntity.toDomain()
+        );
     }
 
     public static String formatDate(final LocalDate date) {
@@ -38,7 +42,8 @@ public record ReservationEntity(
                 reservation.getId(),
                 reservation.getName(),
                 DATE_FORMATTER.format(reservation.getDate()),
-                PlayTimeEntity.from(reservation.getTime())
+                PlayTimeEntity.from(reservation.getPlayTime()),
+                ThemeEntity.from(reservation.getTheme())
         );
     }
 

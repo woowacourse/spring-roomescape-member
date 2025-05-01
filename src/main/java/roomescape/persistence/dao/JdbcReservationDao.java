@@ -23,7 +23,7 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Long save(final Reservation reservation) {
         final ReservationEntity reservationEntity = ReservationEntity.from(reservation);
-        final String sql = "INSERT INTO RESERVATION (name, date, time_id) values (?, ?, ?)";
+        final String sql = "INSERT INTO RESERVATION (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         final KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -31,6 +31,7 @@ public class JdbcReservationDao implements ReservationDao {
             ps.setString(1, reservationEntity.name());
             ps.setString(2, reservationEntity.date());
             ps.setLong(3, reservationEntity.playTimeEntity().id());
+            ps.setLong(4, reservationEntity.themeEntity().id());
             return ps;
         }, keyHolder);
 
@@ -42,14 +43,20 @@ public class JdbcReservationDao implements ReservationDao {
         final String sql =
                 """
                 SELECT
-                r.id as reservation_id,
+                r.id AS reservation_id,
                 r.name,
                 r.date,
-                t.id as time_id,
-                t.start_at as time_value
-                FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
+                rt.id AS time_id,
+                rt.start_at AS time_value,
+                t.id AS theme_id,
+                t.name AS theme_name,
+                t.description AS theme_description,
+                t.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                INNER JOIN reservation_time AS rt
+                ON r.time_id = rt.id 
+                INNER JOIN theme AS t 
+                ON r.theme_id = t.id
                 """;
 
         return jdbcTemplate.query(sql, ReservationEntity.getDefaultRowMapper()).stream()

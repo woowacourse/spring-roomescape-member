@@ -5,7 +5,11 @@ import java.time.LocalTime;
 import roomescape.business.domain.Reservation;
 
 public record ReservationResponse(
-        Long id, String name, LocalDate date, LocalTime time
+        Long id,
+        String name,
+        LocalDate date,
+        PlayTimeResponse time,
+        ThemeResponse theme
 ) {
 
     public static ReservationResponse from(final Reservation reservation) {
@@ -13,7 +17,8 @@ public record ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime().getStartAt()
+                PlayTimeResponse.from(reservation.getPlayTime()),
+                ThemeResponse.from(reservation.getTheme())
         );
     }
 
@@ -22,7 +27,8 @@ public record ReservationResponse(
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime().getStartAt()
+                PlayTimeResponse.from(reservation.getPlayTime()),
+                ThemeResponse.from(reservation.getTheme())
         );
     }
 }

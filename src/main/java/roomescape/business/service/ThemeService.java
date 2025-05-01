@@ -18,6 +18,11 @@ public class ThemeService {
         this.themeDao = themeDao;
     }
 
+    public Theme find(final Long id) {
+        return themeDao.find(id)
+                .orElseThrow(() -> new ThemeNotFoundException(id));
+    }
+
     public ThemeResponse create(final ThemeRequest themeRequest) {
         final Theme theme = themeRequest.toDomain();
         final Long id = themeDao.save(theme);

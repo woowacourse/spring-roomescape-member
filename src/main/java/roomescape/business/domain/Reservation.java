@@ -11,18 +11,31 @@ public class Reservation {
     private final String name;
     private final LocalDate date;
     private final PlayTime playTime;
+    private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final PlayTime playTime) {
-        this(null, name, date, playTime);
+    public Reservation(
+            final String name,
+            final LocalDate date,
+            final PlayTime playTime,
+            final Theme theme
+    ) {
+        this(null, name, date, playTime, theme);
     }
 
-    private Reservation(final Long id, final String name, final LocalDate date, final PlayTime playTime) {
-        validateNonNull(name, date, playTime);
+    private Reservation(
+            final Long id,
+            final String name,
+            final LocalDate date,
+            final PlayTime playTime,
+            final Theme theme
+    ) {
+        validateNonNull(name, date, playTime, theme);
         validateNameIsNotBlank(name);
         this.id = id;
         this.name = name;
         this.date = date;
         this.playTime = playTime;
+        this.theme = theme;
     }
 
     public boolean isBefore(final LocalDateTime dateTime) {
@@ -38,7 +51,10 @@ public class Reservation {
     }
 
     private void validateNonNull(
-            final String name, final LocalDate date, final PlayTime playTime
+            final String name,
+            final LocalDate date,
+            final PlayTime playTime,
+            final Theme theme
     ) {
         if (name == null) {
             throw new IllegalArgumentException("name이 null 입니다.");
@@ -49,19 +65,23 @@ public class Reservation {
         if (playTime == null) {
             throw new IllegalArgumentException("time이 null 입니다.");
         }
+        if (theme == null) {
+            throw new IllegalArgumentException("theme가 null 입니다.");
+        }
     }
 
     public static Reservation createWithId(
             final Long id,
             final String name,
             final LocalDate date,
-            final PlayTime playTime
+            final PlayTime playTime,
+            final Theme theme
     ) {
         if (id == null) {
             throw new IllegalArgumentException("id가 null 입니다.");
         }
 
-        return new Reservation(id, name, date, playTime);
+        return new Reservation(id, name, date, playTime, theme);
     }
 
     public Long getId() {
@@ -76,8 +96,12 @@ public class Reservation {
         return date;
     }
 
-    public PlayTime getTime() {
+    public PlayTime getPlayTime() {
         return playTime;
+    }
+
+    public Theme getTheme() {
+        return theme;
     }
 
     @Override

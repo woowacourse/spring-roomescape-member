@@ -2,6 +2,7 @@ package roomescape.fake;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ThemeDao;
@@ -32,6 +33,16 @@ public class FakeThemeDao implements ThemeDao {
         themes.add(index, themeEntity);
 
         return (long) index++;
+    }
+
+    @Override
+    public Optional<Theme> find(final Long id) {
+        try {
+            final ThemeEntity themeEntity = themes.get(Math.toIntExact(id));
+            return Optional.of(themeEntity.toDomain());
+        } catch (IndexOutOfBoundsException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
