@@ -7,12 +7,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.repository.ReservationFakeRepository;
 import roomescape.domain.repository.ReservationTimeFakeRepository;
 import roomescape.domain.repository.ThemeFakeRepository;
+import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
@@ -32,7 +34,7 @@ class ReservationServiceTest {
     void setup() {
         ReservationRepository reservationRepository = new ReservationFakeRepository();
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
-        ThemeRepository themeRepository = new ThemeFakeRepository();
+        ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
 
         List<ReservationTime> times = List.of(
                 new ReservationTime(null, LocalTime.of(3, 12)),
@@ -147,7 +149,7 @@ class ReservationServiceTest {
 
     @DisplayName("동일한 날짜, 시간, 테마에 대한 중복 예약을 하면 예외가 발생한다")
     @Test
-    void reservation_duplicate_exception(){
+    void reservation_duplicate_exception() {
         // given
         ReservationRequest request = new ReservationRequest("루키", LocalDate.of(2025, 5, 15), 3L, 3L);
 
@@ -155,6 +157,21 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.add(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 날짜, 시간, 테마에 대한 동일한 예약이 존재합니다.");
+    }
+
+    @DisplayName("날짜, 테마 ID에 해당하는 예약 가능 시간 정보를 반환한다")
+    @Test
+    void get_available_times_test() {
+        // given
+        LocalDate date = LocalDate.of(2025, 3, 28);
+        Long themeId = 1L;
+
+        // when
+        List<AvailableTimeResponse> availableTimes = reservationService.getAvailableTimes(date, themeId);
+
+        // then
+        Assertions.assertThat(availableTimes.get(0).alreadyBooked()).isTrue();
+        Assertions.assertThat(availableTimes.get(1).alreadyBooked()).isFalse();
     }
 
 }

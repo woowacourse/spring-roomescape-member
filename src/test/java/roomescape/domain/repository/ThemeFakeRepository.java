@@ -1,17 +1,28 @@
 package roomescape.domain.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.domain.repository.ThemeRepository;
 
 public class ThemeFakeRepository implements ThemeRepository {
 
     private final Map<Long, Theme> themes = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong();
+
+    private final ReservationRepository reservationRepository;
+
+    public ThemeFakeRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     @Override
     public Long saveAndReturnId(Theme themeWithoutId) {
@@ -39,9 +50,28 @@ public class ThemeFakeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(Long id) {
-        if(themes.containsKey(id)){
+        if (themes.containsKey(id)) {
             return Optional.of(themes.get(id));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<Theme> findByPeriodAndLimit(LocalDate start, LocalDate end, int limit) {
+        List<Reservation> reservations = reservationRepository.findAll();
+        return reservations.stream()
+                .filter(reservation -> isWithinPeriod(reservation.getDate(), start, end))
+                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .sorted(Entry.<Theme, Long>comparingByValue().reversed())
+                .limit(limit)
+                .map(Entry::getKey)
+                .toList();
+    }
+
+    private boolean isWithinPeriod(LocalDate target, LocalDate start, LocalDate end) {
+        return (target.isEqual(start) || target.isAfter(start)) &&
+                (target.isEqual(end) || target.isBefore(end));
     }
 }

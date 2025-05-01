@@ -30,7 +30,7 @@ class ReservationTimeServiceTest {
     void setup() {
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ReservationRepository reservationRepository = new ReservationFakeRepository();
-        ThemeRepository themeRepository = new ThemeFakeRepository();
+        ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
 
         List<ReservationTime> times = List.of(
                 new ReservationTime(null, LocalTime.of(3, 12)),
