@@ -58,8 +58,10 @@ public class ThemeService {
         }
     }
 
-    public List<ThemeResponseDto> findPopularThemes(final LocalDate today) {
-        return themeDao.findPopularThemes(today, POPULAR_DAY_RANGE).stream()
+    public List<ThemeResponseDto> findPopularThemes(final String date) {
+        LocalDate parsedDate = LocalDate.parse(date);
+
+        return themeDao.findPopularThemes(parsedDate, POPULAR_DAY_RANGE).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }
