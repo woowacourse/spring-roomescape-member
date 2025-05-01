@@ -74,7 +74,7 @@ public class ThemeDAO implements ThemeRepository {
         int deleteRowCount = jdbcTemplate.update(deleteSql, params);
 
         if (deleteRowCount != 1) {
-            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
+            throw new EntityNotFoundException("Theme with id " + id + "not found");
         }
     }
 
@@ -89,7 +89,7 @@ public class ThemeDAO implements ThemeRepository {
             );
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("Theme with id " + id + " not found");
+            return Optional.empty();
         }
     }
 

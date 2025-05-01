@@ -96,7 +96,7 @@ class ReservationTimeDAOTest {
             String sql = "insert into reservation_time(id, start_at) values(?, ?)";
             jdbcTemplate.update(sql, id, now);
 
-            jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES (?, ?, ?)", "꾹", now,
+            jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES (?, ?, ?)", "꾹", LocalDate.now(),
                     id);
 
             // when
