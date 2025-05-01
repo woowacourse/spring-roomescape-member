@@ -56,16 +56,11 @@ public class H2ThemeDao implements ThemeDao {
                 t.name AS theme_name,
                 t.description,
                 t.thumbnail
-            FROM
-                reservation r
-            JOIN
-                theme t ON r.theme_id = t.id
-            WHERE
-                PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN CURRENT_DATE - 7 AND CURRENT_DATE - 1
-            GROUP BY
-                t.id, t.name, t.description, t.thumbnail
-            ORDER BY
-                COUNT(r.id) DESC
+            FROM reservation r
+            JOIN theme t ON r.theme_id = t.id
+            WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN CURRENT_DATE - 7 AND CURRENT_DATE - 1
+            GROUP BY t.id, t.name, t.description, t.thumbnail
+            ORDER BY COUNT(r.id) DESC
             LIMIT 10;
             """;
 
