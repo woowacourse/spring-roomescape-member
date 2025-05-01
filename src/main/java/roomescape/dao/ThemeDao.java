@@ -73,6 +73,7 @@ public class ThemeDao {
             as r on t.id = r.theme_id
             group by t.id
             order by count(*) desc
+            limit 10
             """;
         return jdbcTemplate.query(sql, mapToTheme());
     }

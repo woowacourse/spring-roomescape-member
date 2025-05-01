@@ -18,7 +18,8 @@ class ReservationTest {
                 null,
                 LocalDate.now().plusDays(1),
                 DEFAULT_TIME,
-                DEFAULT_THEME);
+                DEFAULT_THEME
+            );
         }).isInstanceOf(NullPointerException.class);
     }
 
@@ -30,7 +31,8 @@ class ReservationTest {
                 "두리",
                 null,
                 DEFAULT_TIME,
-                DEFAULT_THEME);
+                DEFAULT_THEME
+            );
         }).isInstanceOf(NullPointerException.class);
     }
 
