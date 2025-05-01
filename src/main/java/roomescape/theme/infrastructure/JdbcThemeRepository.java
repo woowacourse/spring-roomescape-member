@@ -1,5 +1,7 @@
 package roomescape.theme.infrastructure;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,25 @@ public class JdbcThemeRepository implements ThemeRepository {
         params.put("description", theme.getDescription());
         params.put("thumbnail", theme.getThumbnail());
         return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(final LocalDate start, final LocalDate end) {
+        String sql = """
+                SELECT
+                    count(*) as count,
+                    t.id as id,
+                    t.name as name,
+                    t.description as description,
+                    t.thumbnail as thumbnail
+                FROM theme as t
+                LEFT JOIN reservation as r ON t.id = r.theme_id
+                WHERE r.date >= ? AND r.date <= ?
+                GROUP BY id, name, description, thumbnail
+                ORDER BY count DESC
+                """;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(start), Date.valueOf(end));
     }
 
     @Override

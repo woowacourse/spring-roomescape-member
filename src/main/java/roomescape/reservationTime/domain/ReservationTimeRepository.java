@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface ReservationTimeRepository {
 
-    Long save(final ReservationTime reservationTime);
+    Long save(ReservationTime reservationTime);
 
-    int deleteById(final Long id);
+    int deleteById(Long id);
 
     ReservationTime findById(Long id);
 
