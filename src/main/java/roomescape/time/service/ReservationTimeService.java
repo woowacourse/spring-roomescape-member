@@ -50,6 +50,5 @@ public class ReservationTimeService {
         } catch (final DataIntegrityViolationException e) {
             throw new DataExistException("해당 예약 시간을 사용하고 있는 예약 정보가 존재합니다. id = " + id);
         }
-
     }
 }
