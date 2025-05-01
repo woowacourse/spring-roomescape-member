@@ -9,12 +9,14 @@ import static roomescape.test.fixture.ThemeFixture.addThemeInRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeCreationRequest;
+import roomescape.dto.ReservationTimeWithBookState;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -42,6 +44,24 @@ class ReservationTimeServiceTest {
         List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTime();
 
         assertThat(reservationTimes).hasSize(3);
+    }
+
+    @DisplayName("ID를 통해 예약 시간을 조회할 수 있다")
+    @Test
+    void canGetReservationTimeById() {
+        ReservationTime expectedTime = addReservationTimeInRepository(timeRepository, LocalTime.of(10, 0));
+
+        ReservationTime actualTime = reservationTimeService.getReservationTimeById(1L);
+
+        assertThat(actualTime).isEqualTo(expectedTime);
+    }
+
+    @DisplayName("ID를 통해 예약을 조회할 때 데이터가 없으면 예외를 발생시킨다")
+    @Test
+    void cannotGetReservationTimeByIdWhenEmptyTime() {
+        assertThatThrownBy(()->reservationTimeService.getReservationTimeById(1L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] ID에 해당하는 예약 시간이 존재하지 않습니다.");
     }
 
     @DisplayName("예약 가능 시간을 추가할 수 있다")

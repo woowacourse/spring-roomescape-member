@@ -34,4 +34,12 @@ class ReservationCreationRequestTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 시간은 빈 값을 허용하지 않습니다.");
     }
+
+    @DisplayName("비어있는 테마를 허용하지 않는다.")
+    @Test
+    void validateFieldTheme() {
+        assertThatThrownBy(() -> new ReservationCreationRequest("kim", LocalDate.now(), 1L, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 테마는 빈 값을 허용하지 않습니다.");
+    }
 }

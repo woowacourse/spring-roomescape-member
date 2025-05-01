@@ -1,5 +1,6 @@
 package roomescape.test.fake;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.ReservationTimeWithBookState;
 import roomescape.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository extends ReservationTimeRepository {
