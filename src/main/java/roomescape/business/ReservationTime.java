@@ -2,7 +2,7 @@ package roomescape.business;
 
 import java.time.LocalTime;
 
-public class ReservationTime {
+public final class ReservationTime {
 
     private Long id;
     private final LocalTime startAt;

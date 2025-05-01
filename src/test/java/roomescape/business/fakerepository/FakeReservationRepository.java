@@ -1,15 +1,12 @@
 package roomescape.business.fakerepository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import roomescape.business.Reservation;
 import roomescape.persistence.ReservationRepository;
 
-public class FakeReservationRepository implements ReservationRepository {
+public final class FakeReservationRepository implements ReservationRepository {
 
     private final List<Reservation> reservations = new ArrayList<>();
 

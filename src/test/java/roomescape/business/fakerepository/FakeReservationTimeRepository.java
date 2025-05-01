@@ -8,7 +8,7 @@ import roomescape.business.ReservationTime;
 import roomescape.business.dto.AvailableTimesResponseDto;
 import roomescape.persistence.ReservationTimeRepository;
 
-public class FakeReservationTimeRepository implements ReservationTimeRepository {
+public final class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
 
