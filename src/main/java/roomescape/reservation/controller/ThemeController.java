@@ -25,12 +25,6 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    public ThemeResponse addTheme(@RequestBody ThemeRequest request) {
-        return themeService.add(request);
-    }
-
     @GetMapping
     public List<ThemeResponse> getThemes() {
         return themeService.getThemes();
@@ -41,9 +35,15 @@ public class ThemeController {
         return themeService.getThemeRankings();
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    public ThemeResponse addTheme(@RequestBody ThemeRequest request) {
+        return themeService.add(request);
+    }
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
-    public void deleteTheme(@PathVariable("id") Long id) {
-        themeService.remove(id);
+    @DeleteMapping("/{themeId}")
+    public void deleteTheme(@PathVariable("themeId") Long themeId) {
+        themeService.remove(themeId);
     }
 }

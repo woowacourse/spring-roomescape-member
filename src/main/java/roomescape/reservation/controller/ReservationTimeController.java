@@ -25,21 +25,21 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @GetMapping
+    public List<ReservationTimeResponse> getTimes(){
+        return reservationTimeService.getTimes();
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ReservationTimeResponse addTime(@RequestBody ReservationTimeRequest request){
         return reservationTimeService.add(request);
     }
 
-    @GetMapping
-    public List<ReservationTimeResponse> getTimes(){
-        return reservationTimeService.getTimes();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTime(@PathVariable("id") Long id){
-        reservationTimeService.remove(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{timeId}")
+    public void deleteTime(@PathVariable("timeId") Long timeId){
+        reservationTimeService.remove(timeId);
     }
 
 }

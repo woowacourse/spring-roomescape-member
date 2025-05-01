@@ -47,10 +47,10 @@ public class ReservationController {
         return reservationService.add(request);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
-        reservationService.remove(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{reservationId}")
+    public void deleteReservation(@PathVariable("reservationId") Long reservationId) {
+        reservationService.remove(reservationId);
     }
 
     private void validateThemeId(Long themeId) {
