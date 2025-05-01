@@ -10,6 +10,8 @@ public interface ReservationRepository {
 
     int deleteById(final Long id);
 
+    List<Reservation> findBy(LocalDate date, Long themeId);
+
     Reservation findById(final Long id);
 
     List<Reservation> findAll();
@@ -19,4 +21,5 @@ public interface ReservationRepository {
     boolean existByDateTime(final LocalDate date, final LocalTime time);
 
     boolean existByThemeId(final Long themeId);
+
 }

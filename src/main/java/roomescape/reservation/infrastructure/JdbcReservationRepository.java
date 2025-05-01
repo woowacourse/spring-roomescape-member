@@ -60,6 +60,28 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findBy(LocalDate date, Long themeId) {
+        String sql = """               
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description,
+                    th.thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t ON r.time_id = t.id 
+                INNER JOIN theme as th ON th.id = r.theme_id
+                WHERE th.id = ? AND r.date = ?
+                """;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER, themeId, Date.valueOf(date));
+    }
+
+    @Override
     public Reservation findById(final Long id) {
         String sql = """               
                 SELECT
@@ -108,7 +130,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByReservationTimeId(final Long timeId){
+    public boolean existByReservationTimeId(final Long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
         return count != 0;
@@ -128,7 +150,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByThemeId(final Long themeId){
+    public boolean existByThemeId(final Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
         return count != 0;
