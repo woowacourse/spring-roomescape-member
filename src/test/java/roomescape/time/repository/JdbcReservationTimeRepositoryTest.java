@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.repository.dto.ReservationTimeWithBookedDataResponse;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,5 +65,33 @@ class JdbcReservationTimeRepositoryTest {
         // then
         assertThat(entity).isNotEmpty();
         assertThat(entity.get().getId()).isEqualTo(1L);
+    }
+
+    @DisplayName("날짜, 테마가 주어지면 예약 여부를 같이 반환할 수 있다.")
+    @Test
+    void findAllByDateAndTheme() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1, "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 2, "12:00");
+        jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1, "hello", "hi", "thumbnail");
+        jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (?, ?, ?, ?, ?)", 1, "test", "2025-01-01", 1, 1);
+        List<ReservationTimeWithBookedDataResponse> expected = List.of(
+                new ReservationTimeWithBookedDataResponse(
+                        1L,
+                        LocalTime.of(10, 0),
+                        true
+                ),
+                new ReservationTimeWithBookedDataResponse(
+                        2L,
+                        LocalTime.of(12, 0),
+                        false
+                )
+        );
+
+        // when
+        List<ReservationTimeWithBookedDataResponse> allWithBooked = timeRepository.findAllWithBooked(LocalDate.of(2025, 1, 1), 1L);
+
+        // then
+        assertThat(allWithBooked).containsExactlyInAnyOrderElementsOf(expected);
     }
 }
