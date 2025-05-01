@@ -21,6 +21,20 @@
    발생하는 상황이 너무 광범위하지 않을까 하는 우려가 있었습니다. DELETE 를 수정하지 않은 이유는 DELETE 과정에서 `DataIntegrityViolationException` 가 발생하는 상황은 외래키
    제약 조건이 어겨질 때 밖에 없기 때문에 상대적으로 Exception 의 종류가 광범위하지 않고 특정된다고 생각했습니다.
 
+3. AvailableReservationTime 도메인 클래스 분리 여부에 대한 고민
+   현재 reservation_time 테이블에서 예약 가능 시간 정보를 조회할 때, 단순히 시간만을 사용하는 경우(ReservationTime)와 더불어, 
+   특정 날짜/테마 조합에 따라 해당 시간이 이미 예약되었는지 여부까지 함께 판단해야 하는 경우(AvailableReservationTime)가 존재합니다.
+   이때 AvailableReservationTime은 ReservationTime의 속성(startAt 등)을 대부분 포함하고 있으며, 여기에 예약 여부(already_booked) 속성만 추가된 형태입니다.
+   - ReservationTime을 상속받은 AvailableReservationTime 클래스를 만들어 사용하는 방식
+   - ReservationTime을 내부에 필드로 갖는 조합 방식 (Composition)
+   - 현재처럼 별도의 클래스(AvailableReservationTime)로 독립적으로 사용하는 방
+   
+   저희의 선택: 별도의 클래스로 유지 (합치지 않음, 상속/조합도 사용하지 않음)
+   현재 시점에서는 AvailableReservationTime이 예약 가능 여부를 함께 나타내는 특수한 도메인으로, 컨텍스트가 기존 ReservationTime과 분리된다고 판단했습니다. 
+   ReservationTime은 단순히 시간 정보만을 표현하는 기본 도메인이고, AvailableReservationTime은 특정 날짜와 테마에 따라 해당 시간이 예약되었는지를 판단하는 조회용 결과 도메인에 가까운 성격을 가집니다.
+   따라서 상속이나 조합을 사용하는 것은 구조적으로 과하게 추상화된 설계가 될 수 있으며, 현재처럼 목적에 맞게 독립된 클래스를 유지하는 것이 가독성과 의도를 명확히 드러내는 데에 더 적합하다고 판단했습니다.
+   특히 already_booked의 유무에 따라 도메인의 의미 자체가 달라지기 때문에, 이를 하나의 도메인으로 뭉뚱그리는 것보다는 분리해서 각각 명확한 책임을 가지게 하는 설계가 유지보수와 코드 해석에 유리하다고 생각했습니다.
+
 ---
 
 1. 정상 작동
