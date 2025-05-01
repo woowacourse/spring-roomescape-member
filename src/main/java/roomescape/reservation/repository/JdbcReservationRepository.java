@@ -18,6 +18,20 @@ import roomescape.theme.domain.Theme;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+
+    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        final LocalTime time = LocalTime.parse(resultSet.getString("time_value"), timeFormatter);
+        return new Reservation(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getObject("date", LocalDate.class),
+                new ReservationTime(resultSet.getLong("time_id"), time),
+                new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
+                        resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
+        );
+    };
+
     private final JdbcTemplate template;
     private final SimpleJdbcInsert inserter;
 
@@ -32,7 +46,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         final String sql = """
                 select 
-                    r.id as reservation_id, 
+                    r.id, 
                     r.name, r.date, 
                     t.id as time_id, 
                     t.start_at as time_value,
@@ -103,7 +117,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(final Long id) {
         final String sql = """
                 select 
-                    r.id as reservation_id, 
+                    r.id, 
                     r.name, r.date, 
                     t.id as time_id, 
                     t.start_at as time_value,
@@ -131,17 +145,4 @@ public class JdbcReservationRepository implements ReservationRepository {
             throw new NoSuchElementException("삭제하려고 하는 예약이 존재하지 않습니다. " + id);
         }
     }
-
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
-        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        final LocalTime time = LocalTime.parse(resultSet.getString("time_value"), timeFormatter);
-        return new Reservation(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getObject("date", LocalDate.class),
-                new ReservationTime(resultSet.getLong("time_id"), time),
-                new Theme(resultSet.getLong("theme_id"), resultSet.getString("theme_name"),
-                        resultSet.getString("theme_description"), resultSet.getString("theme_thumbnail"))
-        );
-    };
 }
