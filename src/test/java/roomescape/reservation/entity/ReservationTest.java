@@ -21,8 +21,8 @@ class ReservationTest {
         LocalDate date = LocalDate.of(2025, 1, 2);
         LocalTime time = LocalTime.of(10, 0);
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
-        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity, null);
-        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, timeEntity, null);
+        ReservationEntity reservation = new ReservationEntity(1L, "test", date, timeEntity, 1L);
+        ReservationEntity otherReservation = new ReservationEntity(2L, "test2", date, timeEntity, 1L);
 
         // when
         final boolean isSame = reservation.isDuplicatedWith(otherReservation);
@@ -39,9 +39,9 @@ class ReservationTest {
         LocalDate date = LocalDate.of(2025, 1, 2);
         LocalTime time = LocalTime.of(10, 0);
         ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
-        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity, null);
+        ReservationEntity reservation = new ReservationEntity(1L, "test", date, timeEntity, 1L);
         ReservationTimeEntity otherTimeEntity = new ReservationTimeEntity(2L, otherTime);
-        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, otherTimeEntity, null);
+        ReservationEntity otherReservation = new ReservationEntity(2L, "test2", date, otherTimeEntity, 1L);
 
         // when
         final boolean isDuplicated = reservation.isDuplicatedWith(otherReservation);

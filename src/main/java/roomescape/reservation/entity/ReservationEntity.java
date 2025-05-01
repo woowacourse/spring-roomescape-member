@@ -1,5 +1,6 @@
 package roomescape.reservation.entity;
 
+import roomescape.exception.BadRequestException;
 import roomescape.time.entity.ReservationTimeEntity;
 
 import java.time.LocalDate;
@@ -13,6 +14,9 @@ public class ReservationEntity {
     private Long themeId;
 
     public ReservationEntity(Long id, String name, LocalDate date, ReservationTimeEntity time, Long themeId) {
+        if (id == null || name == null || date == null || time == null || themeId == null) {
+            throw new BadRequestException("필요한 예약 정보가 모두 입력되지 않았습니다.");
+        }
         this.id = id;
         this.name = name;
         this.date = date;

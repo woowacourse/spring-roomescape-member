@@ -50,7 +50,7 @@ class ReservationTimeEntityTest {
     @MethodSource
     void checkIsAvailable(LocalTime startAt, final boolean expected) {
         // given
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(null, startAt);
+        ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, startAt);
 
         // when
         final boolean actual = timeEntity.isAvailable();
