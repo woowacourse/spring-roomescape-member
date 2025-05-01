@@ -113,6 +113,7 @@ public class ThemeDAO implements ThemeRepository {
         params.put("name", theme.getName());
         params.put("description", theme.getDescription());
         params.put("thumbnail", theme.getThumbnail());
+        params.put("id", theme.getId());
 
         int updateRowCount = jdbcTemplate.update(sql, params);
 

@@ -29,7 +29,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
             return Optional.of(reservationTimes.get(id));
         }
 
-        throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
+        return Optional.empty();
     }
 
     @Override

@@ -53,7 +53,7 @@ public class ReservationService {
         }
 
         Reservation reservation = getReservation(request);
-        validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStratTime());
+        validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStartTime());
 
         Reservation savedReservation = reservationRepository.save(reservation);
 

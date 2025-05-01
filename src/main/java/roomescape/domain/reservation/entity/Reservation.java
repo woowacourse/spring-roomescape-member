@@ -64,7 +64,7 @@ public class Reservation {
         return reservationTime;
     }
 
-    public LocalTime getReservationStratTime() {
+    public LocalTime getReservationStartTime() {
         return reservationTime.getStartAt();
     }
 

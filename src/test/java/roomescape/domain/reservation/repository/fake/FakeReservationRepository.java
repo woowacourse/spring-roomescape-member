@@ -30,7 +30,7 @@ public class FakeReservationRepository implements ReservationRepository {
             return Optional.ofNullable(reservations.get(id));
         }
 
-        throw new EntityNotFoundException("Reservation with id " + id + " not found");
+        return Optional.empty();
     }
 
     @Override

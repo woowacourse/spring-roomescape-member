@@ -115,7 +115,8 @@ public class ReservationDAO implements ReservationRepository {
         Map<String, Object> params = Map.of("date", date, "time_id", timeId);
 
         int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
-        return count != 0;
+
+        return count > 0;
     }
 
     @Override
@@ -125,7 +126,7 @@ public class ReservationDAO implements ReservationRepository {
 
         int rowCountByTimeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
 
-        return rowCountByTimeId == 1;
+        return rowCountByTimeId > 0;
     }
 
     @Override
@@ -136,7 +137,7 @@ public class ReservationDAO implements ReservationRepository {
 
         int rowCountByThemeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
 
-        return rowCountByThemeId == 1;
+        return rowCountByThemeId > 0;
     }
 
     private Optional<Reservation> reservationOf(String sql, Map<String, Long> params) {
@@ -146,7 +147,7 @@ public class ReservationDAO implements ReservationRepository {
                     (resultSet, rowNum) -> reservationOf(resultSet));
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("entity not found");
+            return Optional.empty();
         }
     }
 

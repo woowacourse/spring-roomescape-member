@@ -59,13 +59,6 @@ class ReservationTimeDAOTest {
 
     }
 
-    @DisplayName("해당 ID가 DB에 없다면 예외를 반환한다.")
-    @Test
-    void test7() {
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(1L))
-                .isInstanceOf(EntityNotFoundException.class);
-    }
-
     @AfterEach
     void cleanUp() {
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
@@ -99,7 +92,7 @@ class ReservationTimeDAOTest {
         void test2() {
             // given
             Long id = 1L;
-            LocalDate now = LocalDate.of(2024, 12, 8);
+            LocalTime now = LocalTime.of(10, 0);
             String sql = "insert into reservation_time(id, start_at) values(?, ?)";
             jdbcTemplate.update(sql, id, now);
 

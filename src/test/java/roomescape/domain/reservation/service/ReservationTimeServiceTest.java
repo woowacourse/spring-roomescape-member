@@ -82,6 +82,8 @@ public class ReservationTimeServiceTest {
 
         // when & then
         assertThatCode(() -> reservationTimeService.delete(id)).doesNotThrowAnyException();
+
+        assertThat(reservationRepository.findById(id)).isEmpty();
     }
 
     @DisplayName("예약 시간이 존재하지 않으면 예외를 반환한다.")
@@ -89,7 +91,7 @@ public class ReservationTimeServiceTest {
     void test5() {
         Long id = 1L;
 
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(id))
+        assertThatThrownBy(() -> reservationTimeService.delete(id))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 }

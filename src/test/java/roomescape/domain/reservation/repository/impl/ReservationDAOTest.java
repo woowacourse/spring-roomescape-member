@@ -24,6 +24,12 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
+/**
+ * DAO 테스트 비활성화
+ * 단순한 SQL 쿼리에 대하여 검증하는 구간이라고 느끼게 되서 DAO 대한 테스트 비활성화
+ * 대신, Fake를 활용한 서비스 테스트와 서비스 + 실제 레포지토리를 함친 테스트를 하여 테스트 문제점을 파악할 수 있다고 보았음
+ */
+
 @Disabled
 class ReservationDAOTest {
 
@@ -91,7 +97,7 @@ class ReservationDAOTest {
 
     @DisplayName("존재하지 않는 id를 save한다면 예외를 반환한다.")
     @Test
-    void test8() {
+    void test5() {
         // given
         ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, RESERVATION_TIME_START_TIME);
         Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
@@ -105,7 +111,7 @@ class ReservationDAOTest {
 
     @DisplayName("id로 예약 정보를 가져온다")
     @Test
-    void test5() {
+    void test6() {
         // given
         LocalDateTime now = LocalDateTime.now();
 
@@ -123,13 +129,13 @@ class ReservationDAOTest {
         assertThat(result.getName()).isEqualTo(name);
         assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
         assertThat(result.getReservationTimeId()).isEqualTo(RESERVATION_TIME_ID);
-        assertThat(result.getReservationStratTime()).isEqualTo(now.toLocalTime());
+        assertThat(result.getReservationStartTime()).isEqualTo(now.toLocalTime());
         assertThat(result.getThemeId()).isEqualTo(THEME_ID);
     }
 
     @DisplayName("모든 예약 정보를 가져온다.")
     @Test
-    void test6() {
+    void test7() {
         // given
         LocalDate date = LocalDate.now();
 
@@ -180,7 +186,7 @@ class ReservationDAOTest {
 
     @DisplayName("예약 정보를 삭제한다.")
     @Test
-    void test7() {
+    void test8() {
         // given
         Long reservationId = 2L;
         String name = "꾹";
@@ -205,7 +211,7 @@ class ReservationDAOTest {
             "28,29,false"
     })
     @ParameterizedTest
-    void test8(int day1, int day2, boolean expected) {
+    void test9(int day1, int day2, boolean expected) {
         // given
         Long reservationId = 2L;
         String name = "꾹";

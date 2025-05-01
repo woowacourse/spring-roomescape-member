@@ -30,7 +30,7 @@ public class FakeThemeRepository implements ThemeRepository {
             return Optional.of(themes.get(id));
         }
 
-        throw new EntityNotFoundException("theme with id " + id + " not found");
+        return Optional.empty();
     }
 
     @Override

@@ -41,7 +41,7 @@ public class ThemeService {
 
     public void delete(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new AlreadyInUseException("Theme with id " + id + " not found");
+            throw new AlreadyInUseException("Theme with id " + id + " is currently in use by reservations");
         }
 
         themeRepository.deleteById(id);

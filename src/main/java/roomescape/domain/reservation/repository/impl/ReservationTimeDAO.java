@@ -56,7 +56,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
 
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
+            return Optional.empty();
         }
     }
 
