@@ -24,10 +24,6 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    //    @PostMapping()
-//    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequestDto reservationRequestDto) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.addReservation(reservationRequestDto));
-//    }
     @PostMapping
     public ResponseEntity<Theme> addTheme(@RequestBody ThemeRequestDto themeRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(themeService.addTheme(themeRequestDto));
