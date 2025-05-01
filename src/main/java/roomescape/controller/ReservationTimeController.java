@@ -30,13 +30,13 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> create(
             @RequestBody @Valid final ReservationTimeRequest reservationTimeRequest
     ) {
-        ReservationTimeResponse response = reservationTimeService.createReservationTime(reservationTimeRequest);
+        final ReservationTimeResponse response = reservationTimeService.createReservationTime(reservationTimeRequest);
         return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 
     @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
-        List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
+        final List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
         return ResponseEntity.ok().body(responses);
     }
 
@@ -51,7 +51,7 @@ public class ReservationTimeController {
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") long themeId
     ) {
-        List<AvailableTimeResponse> responses = reservationTimeService.findAvailableTimes(date, themeId);
+        final List<AvailableTimeResponse> responses = reservationTimeService.findAvailableTimes(date, themeId);
         return ResponseEntity.ok().body(responses);
     }
 }
