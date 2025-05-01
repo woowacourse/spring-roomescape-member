@@ -4,11 +4,11 @@ import java.time.LocalTime;
 
 public record AvailableReservationTime(
         Long id,
-        LocalTime statAt,
+        LocalTime startAt,
         Boolean alreadyBooked
 ) {
     public AvailableReservationTime{
-        validateRequiredFields(id, statAt, alreadyBooked);
+        validateRequiredFields(id, startAt, alreadyBooked);
     }
 
     private void validateRequiredFields(Long id, LocalTime statAt, Boolean alreadyBooked) {
