@@ -17,8 +17,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ReservationRequest;
-import roomescape.presentation.dto.response.AdminReservationResponse;
-import roomescape.presentation.dto.response.TimeResponse;
 import roomescape.testRepository.FakeReservationRepository;
 import roomescape.testRepository.FakeThemeRepository;
 import roomescape.testRepository.FakeTimeRepository;
@@ -131,8 +129,8 @@ class ReservationServiceTest {
     void cancelReservation() {
         // given
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
+        timeRepository.save(time);
         reservationRepository.save(Reservation.of(1L, "브라운", THEME_1, LocalDate.of(2024, 4, 1), time));
-
         assertThat(reservationRepository.findAll()).hasSize(1);
 
         // when

@@ -2,6 +2,7 @@ package roomescape.application;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
@@ -34,12 +35,20 @@ public class TimeService {
     }
 
     public void deleteTime(Long id) {
-        repository.deleteById(id);
+        boolean deleted;
+        try {
+            deleted = repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+        }
+        if (!deleted) {
+            throw new NotFoundException("삭제하려는 id가 존재하지 않습니다. id: " + id);
+        }
     }
 
     public ReservationTime getTimeById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("삭제하려는 id가 존재하지 않습니다, id: " + id));
+                .orElseThrow(() -> new NotFoundException("찾으려는 id가 존재하지 않습니다. id: " + id));
     }
 
     public List<TimeDataWithBookingInfo> getTimesWithBookingInfo(LocalDate date, Long themeId) {

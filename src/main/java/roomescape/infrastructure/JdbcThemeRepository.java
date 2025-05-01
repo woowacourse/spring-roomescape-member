@@ -62,10 +62,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        // TODO: id가 존재하지 않는 경우 예외 처리 추가
+    public boolean deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) > 0;
     }
 
     @Override

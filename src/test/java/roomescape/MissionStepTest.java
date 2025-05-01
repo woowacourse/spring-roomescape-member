@@ -128,6 +128,13 @@ public class MissionStepTest {
     @DisplayName("3단계 - id로 예약을 삭제할 수 있다.")
     @Test
     void requestDeleteReservation() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
+        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
+                1L, "10:00");
+
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", "2023-08-05", 1L, 1L
+        );
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()

@@ -13,7 +13,7 @@ public interface TimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    void deleteById(Long id);
+    boolean deleteById(Long id);
 
     List<TimeDataWithBookingInfo> getTimesWithBookingInfo(LocalDate date, Long themeId);
 }

@@ -7,6 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ReservationRequest;
 
 @Service
@@ -55,6 +56,9 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
+        boolean deleted = reservationRepository.deleteById(id);
+        if (!deleted) {
+            throw new NotFoundException("삭제하려는 예약 id가 존재하지 않습니다. id: " + id);
+        }
     }
 }

@@ -13,7 +13,6 @@ import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.presentation.dto.request.TimeRequest;
-import roomescape.presentation.dto.response.TimeResponse;
 import roomescape.testRepository.FakeTimeRepository;
 
 class TimeServiceTest {
@@ -72,7 +71,7 @@ class TimeServiceTest {
     @Test
     void deleteTime() {
         // given
-        timeRepository.save(ReservationTime.of(1L, LocalTime.of(10,0)));
+        timeRepository.save(ReservationTime.of(1L, LocalTime.of(10, 0)));
         assertThat(timeRepository.findAll()).hasSize(1);
 
         // when
@@ -86,7 +85,7 @@ class TimeServiceTest {
     @Test
     void getReservationTime_byId() {
         // given
-        timeRepository.save(ReservationTime.of(1L, LocalTime.of(10,0)));
+        timeRepository.save(ReservationTime.of(1L, LocalTime.of(10, 0)));
 
         // when
         ReservationTime reservationTime = timeService.getTimeById(1L);
@@ -94,7 +93,7 @@ class TimeServiceTest {
         // then
         assertAll(
                 () -> assertThat(reservationTime.getId()).isEqualTo(1L),
-                () ->assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10,0))
+                () -> assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 0))
         );
     }
 
@@ -106,6 +105,6 @@ class TimeServiceTest {
 
         assertThatThrownBy(() -> timeService.getTimeById(id))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("삭제하려는 id가 존재하지 않습니다, id: " + id);
+                .hasMessage("찾으려는 id가 존재하지 않습니다. id: " + id);
     }
 }

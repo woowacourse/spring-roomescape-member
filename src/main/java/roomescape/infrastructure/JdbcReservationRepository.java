@@ -17,12 +17,6 @@ import roomescape.domain.repository.ReservationRepository;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private final static RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (rs, rowNum) -> {
                 Long id = rs.getLong("reservation_id");
@@ -42,6 +36,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                         ReservationTime.of(time_id, time)
                 );
             };
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public List<Reservation> findAll() {
@@ -83,8 +82,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         String deleteSql = "DELETE FROM reservation WHERE id=?";
-        jdbcTemplate.update(deleteSql, id);
+        return jdbcTemplate.update(deleteSql, id) > 0;
     }
 }

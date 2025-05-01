@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
@@ -107,6 +108,6 @@ class JdbcTimeRepositoryTest {
 
         // when & then
         assertThatThrownBy(() -> timeRepository.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.ThemeDto;
 import roomescape.domain.Theme;
@@ -35,7 +36,15 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.deleteById(id);
+        boolean deleted;
+        try {
+            deleted = themeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("예약이 존재하는 테마는 삭제할 수 없습니다.");
+        }
+        if (!deleted) {
+            throw new NotFoundException("삭제하려는 id가 존재하지 않습니다. id: " + id);
+        }
     }
 
     public Theme getThemeById(@NotNull Long id) {
