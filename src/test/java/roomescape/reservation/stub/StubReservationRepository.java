@@ -31,7 +31,7 @@ public class StubReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTime(LocalDate date, LocalTime time) {
+    public boolean existsByDateAndTimeAndTheme(LocalDate date, LocalTime time, Long themeId) {
         return data.stream()
                 .anyMatch(reservation -> reservation.getDate().equals(date) && reservation.getTime().getStartAt()
                         .equals(time));

@@ -10,7 +10,7 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    boolean existsByDateAndTime(final LocalDate date, final LocalTime time);
+    boolean existsByDateAndTimeAndTheme(final LocalDate date, final LocalTime time, final Long themeId);
 
     boolean existsByReservationTimeId(final Long id);
 

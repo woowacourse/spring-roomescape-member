@@ -82,8 +82,8 @@ class JdbcReservationRepositoryTest {
         // when
         // then
         SoftAssertions.assertSoftly(soft -> {
-            soft.assertThat(repository.existsByDateAndTime(existedDate, existedTime)).isTrue();
-            soft.assertThat(repository.existsByDateAndTime(date, time)).isFalse();
+            soft.assertThat(repository.existsByDateAndTimeAndTheme(existedDate, existedTime, 1L)).isTrue();
+            soft.assertThat(repository.existsByDateAndTimeAndTheme(date, time, 1L)).isFalse();
         });
     }
 

@@ -50,7 +50,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTime(final LocalDate date, final LocalTime time) {
+    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final LocalTime time, final Long themeId) {
         final String sql = """
                 select count(*) 
                 from reservation as r                
@@ -58,8 +58,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.time_id = rt.id
                 where r.date = ? 
                   and rt.start_at = ?
+                  and r.theme_id = ?
                 """;
-        final Integer count = template.queryForObject(sql, Integer.class, date, time);
+        final Integer count = template.queryForObject(sql, Integer.class, date, time, themeId);
         return count != null && count > 0;
     }
 

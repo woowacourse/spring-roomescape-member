@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
 
 class JdbcReservationTimeRepositoryTest {
 
     private static EmbeddedDatabase db;
     private JdbcReservationTimeRepository repository;
+    private JdbcReservationRepository jdbcReservationRepository;
 
     @BeforeEach
     void setUp() {
@@ -26,6 +28,7 @@ class JdbcReservationTimeRepositoryTest {
                 .addScript("classpath:data.sql")
                 .build();
         repository = new JdbcReservationTimeRepository(db);
+        jdbcReservationRepository = new JdbcReservationRepository(db);
     }
 
     @AfterEach
