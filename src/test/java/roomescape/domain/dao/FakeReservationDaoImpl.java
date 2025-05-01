@@ -46,4 +46,9 @@ public class FakeReservationDaoImpl implements ReservationDao {
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호 입니다."));
     }
+
+    @Override
+    public int findAlreadyExistReservationBy(String date, long timeId, Long themeId) {
+        return 0;
+    }
 }

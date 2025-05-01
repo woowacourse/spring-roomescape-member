@@ -26,7 +26,7 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
-INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '안녕, 자두야', '자두', 'https://jado.com');
+/*INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '안녕, 자두야', '자두', 'https://jado.com');
 INSERT INTO theme (id, name, description, thumbnail) VALUES (2, '안녕, 도기야', '도가', 'https://dogi.com');
 INSERT INTO theme (id, name, description, thumbnail) VALUES (3, '안녕, 젠슨아', '젠슨', 'https://jenson.com');
 
@@ -41,3 +41,4 @@ INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (3, '김덕�
 INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (4, '김다배', '2025-04-27', 1, 2);
 INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (5, '김덕배', '2025-04-28', 1, 2);
 INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (6, '김덕배', '2025-05-01', 2, 3);
+*/
