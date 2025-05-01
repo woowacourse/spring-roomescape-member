@@ -1,7 +1,8 @@
 INSERT INTO RESERVATION_TIME(start_at)
 VALUES ('13:40'),
        ('14:40'),
-       ('15:40')
+       ('15:40'),
+       ('23:58')
 ;
 
 INSERT INTO THEME(name, description, thumbnail)
@@ -19,7 +20,8 @@ VALUES ('첫번째', '일번방', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94
        ('열두번째', '십이번방', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('열세번째', '십삼번방', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
        ('열네번째', '십사번방', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
-       ('열다섯번째', '십오번방', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg')
+       ('열다섯번째', '십오번방', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+       ('열여섯번째', '십육번방', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg')
 ;
 
 

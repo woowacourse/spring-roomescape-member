@@ -20,7 +20,9 @@ class ReservationTimeDaoTest {
 
     @BeforeEach
     void setUp() {
-        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("schema.sql")
+        DataSource dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+                .addScript("schema.sql")
+                .addScript("data.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(dataSource);
         dao = new ReservationTimeDao(jdbcTemplate);
@@ -28,24 +30,36 @@ class ReservationTimeDaoTest {
 
     @Test
     void 예약시간_저장() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
+        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(23, 59));
         ReservationTime saved = dao.save(reservationTime);
         List<ReservationTime> all = dao.findAll();
 
-        assertThat(all).hasSize(1);
-        assertThat(all.getFirst().getId()).isEqualTo(saved.getId());
-        assertThat(all.getFirst().getStartAt()).isEqualTo(saved.getStartAt());
+        assertThat(all).hasSize(5);
+        assertThat(all.getLast().getId()).isEqualTo(saved.getId());
+        assertThat(all.getLast().getStartAt()).isEqualTo(saved.getStartAt());
     }
 
     @Test
     void 예약시간_삭제() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(10, 0));
-        ReservationTime saved = dao.save(reservationTime);
-        boolean isDeleted = dao.deleteById(saved.getId());
+        boolean isDeleted = dao.deleteById(4L);
 
         List<ReservationTime> all = dao.findAll();
         assertThat(isDeleted).isTrue();
-        assertThat(all).isEmpty();
+        assertThat(all).hasSize(3);
+    }
+
+    @Test
+    void 삭제할_id가_없는_경우() {
+        // given
+        Long id = 999L;
+
+        // when
+        boolean isDeleted = dao.deleteById(id);
+
+        // then
+        List<ReservationTime> all = dao.findAll();
+        assertThat(isDeleted).isFalse();
+        assertThat(all).hasSize(4);
     }
 
     @Test
@@ -57,5 +71,26 @@ class ReservationTimeDaoTest {
         assertThat(foundReservationTime).isPresent();
         assertThat(foundReservationTime.get().getId()).isEqualTo(saved.getId());
         assertThat(foundReservationTime.get().getStartAt()).isEqualTo(saved.getStartAt());
+    }
+
+    @Test
+    void id_로_조회_시_예약_시간이_없는_경우() {
+        // given
+        Long id = 99L;
+
+        // when
+        Optional<ReservationTime> reservationTime = dao.findById(id);
+
+        // then
+        assertThat(reservationTime).isEmpty();
+    }
+
+    @Test
+    void 모든_예약_시간_반환() {
+        // when
+        List<ReservationTime> all = dao.findAll();
+
+        // then
+        assertThat(all).hasSize(4);
     }
 }
