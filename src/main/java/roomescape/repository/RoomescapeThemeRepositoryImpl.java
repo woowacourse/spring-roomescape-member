@@ -31,7 +31,7 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
     }
 
     @Override
-    public List<ReservationTheme> findPopularThemes() {
+    public List<ReservationTheme> findWeeklyThemeOrderByCountDesc() {
         String sql = """
                 SELECT th.id, th.name, th.description, th.thumbnail, COUNT(*) AS reservation_count
                 FROM reservation r

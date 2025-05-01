@@ -49,7 +49,7 @@ public class RoomescapeService {
     }
 
     public List<ReservationThemeResponse> findPopularReservations() {
-        List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository.findPopularThemes();
+        List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository.findWeeklyThemeOrderByCountDesc();
         return popularReservationThemes.stream().map(ReservationThemeResponse::of).toList();
     }
 
@@ -117,9 +117,6 @@ public class RoomescapeService {
     }
 
     private boolean existsSameReservation(final Reservation reservation) {
-        // 방법1
-        // return roomescapeRepository.existsByDateAndTime(reservation.getDate(), reservation.getTime());
-        // 방법2
         List<Reservation> reservations = roomescapeRepository.findByDate(reservation.getDate());
         return reservations.stream()
                 .anyMatch(candidate -> candidate.isDuplicateReservation(reservation));

@@ -7,7 +7,7 @@ public interface RoomescapeThemeRepository {
 
     ReservationTheme findById(final Long id);
 
-    List<ReservationTheme> findPopularThemes();
+    List<ReservationTheme> findWeeklyThemeOrderByCountDesc();
 
     List<ReservationTheme> findAll();
 
