@@ -47,7 +47,8 @@ class ReservationTimeControllerTest {
             Map<String, String> params = Map.of(
                     "name", "브라운",
                     "date", LocalDate.now().plusDays(2).toString(),
-                    "timeId", "1"
+                    "timeId", "1",
+                    "themeId", "1"
             );
 
             RestAssured.given().log().all()

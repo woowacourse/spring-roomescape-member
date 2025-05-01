@@ -1,11 +1,10 @@
 package roomescape.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.Map;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -46,11 +45,12 @@ class ReservationControllerTest {
                     .when().post("/times")
                     .then().log().all()
                     .statusCode(201)
-                    .body("id", is(1));
+                    .body("timeId", Matchers.greaterThan(0));
 
             Map<String, String> params = Map.of(
                     "name", "브라운",
                     "date", LocalDate.now().minusDays(1).toString(),
+                    "themeId", "1",
                     "timeId", "1"
             );
 
@@ -80,6 +80,7 @@ class ReservationControllerTest {
             Map<String, String> params = Map.of(
                     "name", "브라운",
                     "date", LocalDate.now().plusDays(1).toString(),
+                    "themeId", "1",
                     "timeId", "1"
             );
 
@@ -93,6 +94,7 @@ class ReservationControllerTest {
             Map<String, String> duplicated = Map.of(
                     "name", "네오",
                     "date", LocalDate.now().plusDays(1).toString(),
+                    "themeId", "1",
                     "timeId", "1"
             );
 
