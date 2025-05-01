@@ -153,11 +153,11 @@ public class JdbcReservationDao implements ReservationRepository {
                 th.thumbnail
                 FROM reservation as r
                 INNER JOIN reservation_time as t on r.time_id = t.id
-                INNER JOIN theme as th on r.theme_id = ?
-                WHERE r.date = ?
+                INNER JOIN theme as th on r.theme_id = th.id
+                WHERE r.date = ? AND th.id = ?
                 """;
         try {
-            return jdbcTemplate.query(sql, rowMapper, themeId, date);
+            return jdbcTemplate.query(sql, rowMapper, date, themeId);
         } catch (EmptyResultDataAccessException e) {
             return List.of();
         }
