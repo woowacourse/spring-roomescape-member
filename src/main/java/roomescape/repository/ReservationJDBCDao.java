@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.jdbc.core.RowMapper;
@@ -61,6 +62,25 @@ public class ReservationJDBCDao implements ReservationRepository {
         if (result == 0) {
             throw new EntityNotFoundException("예약 데이터를 찾을 수 없습니다:" + id);
         }
+    }
+
+    @Override
+    public List<Long> findBookedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                select t.id as time_id
+                from reservation as r 
+                inner join reservation_time as t 
+                on r.time_id = t.id
+                inner join theme as th
+                on r.theme_id = th.id
+                where r.date = :date
+                and th.id = :themeId
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("themeId", themeId);
+
+        return namedJdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getLong("time_id"));
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
