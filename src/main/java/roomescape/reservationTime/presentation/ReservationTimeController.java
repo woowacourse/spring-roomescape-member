@@ -24,12 +24,12 @@ public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody ReservationTimeRequest request) {
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody final ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
         return ResponseEntity.created(URI.create("/admin/time")).body(response);
     }
@@ -47,7 +47,7 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> deleteReservationTimeById(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteReservationTimeById(@PathVariable("id") final Long id) {
         reservationTimeService.deleteReservationTimeById(id);
         return ResponseEntity.noContent().build();
     }

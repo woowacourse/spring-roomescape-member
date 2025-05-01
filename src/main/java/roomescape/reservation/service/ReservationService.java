@@ -22,10 +22,10 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     public ReservationService(
-            DateTime dateTime,
-            ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository
+            final DateTime dateTime,
+            final ReservationRepository reservationRepository,
+            final ReservationTimeRepository reservationTimeRepository,
+            final ThemeRepository themeRepository
     ) {
         this.dateTime = dateTime;
         this.reservationRepository = reservationRepository;

@@ -9,22 +9,22 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    private Theme(Long id, String name, String description, String thumbnail) {
+    private Theme(final Long id, final String name, final String description, final String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public static Theme createWithoutId(String name, String description, String thumbnail) {
+    public static Theme createWithoutId(final String name, final String description, final String thumbnail) {
         return new Theme(null, name, description, thumbnail);
     }
 
-    public static Theme createWithId(Long id, String name, String description, String thumbnail) {
+    public static Theme createWithId(final Long id, final String name, final String description, final String thumbnail) {
         return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
     }
 
-    public Theme assignId(Long id) {
+    public Theme assignId(final Long id) {
         return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
     }
 
@@ -45,7 +45,7 @@ public class Theme {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         if (!(object instanceof Theme theme)) {
             return false;
         }
