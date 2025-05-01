@@ -7,10 +7,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.utils.JdbcUtils;
-import roomescape.time.service.converter.ReservationTimeConverter;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
-import roomescape.time.repository.entity.ReservationTimeEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
@@ -25,9 +23,9 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ReservationTimeEntity> reservationTimeMapper = (resultSet, rowNum) -> ReservationTimeEntity.of(
-            resultSet.getLong("id"),
-            resultSet.getTime("start_at")
+    private final RowMapper<ReservationTime> reservationTimeMapper = (resultSet, rowNum) -> ReservationTime.withId(
+            ReservationTimeId.from(resultSet.getLong("id")),
+            resultSet.getObject("start_at", LocalTime.class)
     );
 
     @Override
@@ -55,8 +53,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     @Override
     public Optional<ReservationTime> findById(final ReservationTimeId id) {
         final String sql = "select id, start_at from reservation_time where id = ?";
-        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationTimeMapper, id.getValue())
-                .map(ReservationTimeConverter::toDomain);
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationTimeMapper, id.getValue());
     }
 
     @Override
@@ -64,7 +61,6 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         final String sql = "select id, start_at from reservation_time";
 
         return jdbcTemplate.query(sql, reservationTimeMapper).stream()
-                .map(ReservationTimeConverter::toDomain)
                 .toList();
     }
 

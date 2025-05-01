@@ -1,5 +1,7 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -7,19 +9,17 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.utils.JdbcUtils;
-import roomescape.reservation.service.converter.ReservationConverter;
+import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
-import roomescape.reservation.repository.entity.ReservationEntity;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.theme.repository.entity.ThemeEntity;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
-import roomescape.time.repository.entity.ReservationTimeEntity;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -40,23 +40,23 @@ public class H2ReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ReservationEntity> reservationMapper = (resultSet, rowNum) -> {
-        ReservationTimeEntity time = ReservationTimeEntity.of(
-                resultSet.getLong("time_id"),
-                resultSet.getTime("start_at")
+    private final RowMapper<Reservation> reservationMapper = (resultSet, rowNum) -> {
+        ReservationTime time = ReservationTime.withId(
+                ReservationTimeId.from(resultSet.getLong("time_id")),
+                resultSet.getObject("start_at", LocalTime.class)
         );
 
-        ThemeEntity theme = ThemeEntity.of(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
+        Theme theme = Theme.withId(
+                ThemeId.from(resultSet.getLong("theme_id")),
+                ThemeName.from(resultSet.getString("theme_name")),
+                ThemeDescription.from(resultSet.getString("description")),
+                ThemeThumbnail.from(resultSet.getString("thumbnail"))
         );
 
-        return ReservationEntity.of(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date"),
+        return Reservation.withId(
+                ReservationId.from(resultSet.getLong("id")),
+                ReserverName.from(resultSet.getString("name")),
+                ReservationDate.from(resultSet.getObject("date", LocalDate.class)),
                 time,
                 theme
         );
@@ -119,8 +119,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 where r.id = ?
                 """;
 
-        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationMapper, id.getValue())
-                .map(ReservationConverter::toDomain);
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationMapper, id.getValue());
     }
 
     @Override
@@ -167,7 +166,6 @@ public class H2ReservationRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, reservationMapper).stream()
-                .map(ReservationConverter::toDomain)
                 .toList();
     }
 

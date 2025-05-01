@@ -3,25 +3,14 @@ package roomescape.theme.service.converter;
 import roomescape.theme.service.dto.CreateThemeServiceRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
-import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.theme.repository.entity.ThemeEntity;
 import roomescape.theme.controller.dto.CreateThemeWebRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
 
 import java.util.List;
 
 public class ThemeConverter {
-
-    public static Theme toDomain(final ThemeEntity entity) {
-        return Theme.withId(
-                ThemeId.from(entity.getId()),
-                ThemeName.from(entity.getName()),
-                ThemeDescription.from(entity.getDescription()),
-                ThemeThumbnail.from(entity.getThumbnail())
-        );
-    }
 
     public static Theme toDomain(final CreateThemeServiceRequest createThemeServiceRequest) {
         return Theme.withoutId(
