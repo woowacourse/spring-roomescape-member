@@ -68,7 +68,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopularThemesInLastWeek(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findPopularThemesInRecentSevenDays(LocalDate startDate, LocalDate endDate) {
         final String sql = """
                 SELECT th.id, th.name, th.description, th.thumbnail
                 FROM theme th

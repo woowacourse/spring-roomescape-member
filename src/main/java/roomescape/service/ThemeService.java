@@ -51,9 +51,9 @@ public class ThemeService {
         throw new ReservationExistException("이 시간에 대한 예약이 존재합니다.");
     }
 
-    public List<ThemeResponse> findPopularThemesInLastWeek() {
+    public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
         LocalDate today = LocalDate.now();
-        return themeDao.findPopularThemesInLastWeek(today.minusDays(7), today.minusDays(1)).stream()
+        return themeDao.findPopularThemesInRecentSevenDays(today.minusDays(7), today.minusDays(1)).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
