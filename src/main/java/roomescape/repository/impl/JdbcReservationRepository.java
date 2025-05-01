@@ -51,15 +51,15 @@ public class JdbcReservationRepository implements ReservationRepository {
                         resultSet.getString("reservation_name"),
                         resultSet.getDate("reservation_date").toLocalDate(),
                         new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            resultSet.getTime("time_start_at").toLocalTime()
+                                resultSet.getLong("time_id"),
+                                resultSet.getTime("time_start_at").toLocalTime()
                         ),
                         new Theme(
-                            resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
-                            resultSet.getString("theme_description"),
-                            resultSet.getString("theme_thumbnail")
-                            )
+                                resultSet.getLong("theme_id"),
+                                resultSet.getString("theme_name"),
+                                resultSet.getString("theme_description"),
+                                resultSet.getString("theme_thumbnail")
+                        )
                 )
         );
     }

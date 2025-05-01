@@ -14,5 +14,6 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long id);
 
     List<Theme> readByAsc(Long listNum);
+
     List<Theme> readByDesc(Long listNum);
 }

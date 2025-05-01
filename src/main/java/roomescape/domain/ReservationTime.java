@@ -17,18 +17,18 @@ public class ReservationTime {
         return new ReservationTime(newPrimaryKey, reservationTime.startAt);
     }
 
+    private void validate(LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("startAt(시작 시간)은 비어있을 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    private void validate(LocalTime startAt) {
-        if (startAt == null) {
-            throw new IllegalArgumentException("startAt(시작 시간)은 비어있을 수 없습니다.");
-        }
     }
 
     @Override

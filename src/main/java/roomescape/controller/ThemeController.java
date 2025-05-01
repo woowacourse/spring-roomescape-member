@@ -49,7 +49,7 @@ public class ThemeController {
     public ResponseEntity<List<Theme>> readLists(
             @RequestParam(value = "order_type", required = false) String orderType,
             @RequestParam(value = "list_num", required = false) Long listNum
-            ) {
+    ) {
 
         // TODO: 정렬 조건을 ENUM으로 관리하기.
         orderType = "popular_desc"; // 현재는 내림차순으로 고정

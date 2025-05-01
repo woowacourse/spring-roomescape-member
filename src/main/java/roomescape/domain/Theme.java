@@ -20,6 +20,12 @@ public class Theme {
         return new Theme(newPrimaryKey, theme.name, theme.description, theme.thumbnail);
     }
 
+    private void validate(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("테마 이름은 비워둘 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -34,12 +40,6 @@ public class Theme {
 
     public String getThumbnail() {
         return thumbnail;
-    }
-
-    private void validate(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 비워둘 수 없습니다.");
-        }
     }
 
     @Override

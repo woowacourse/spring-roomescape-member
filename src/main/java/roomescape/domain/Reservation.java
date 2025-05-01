@@ -23,6 +23,15 @@ public class Reservation {
         return new Reservation(newPrimaryKey, reservation.name, reservation.date, reservation.time, reservation.theme);
     }
 
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        if (name == null || date == null || time == null || theme == null) {
+            throw new IllegalArgumentException("예약 정보가 비어있습니다.");
+        }
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("예약자명은 비워둘 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -43,15 +52,6 @@ public class Reservation {
         return theme;
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || date == null || time == null || theme == null) {
-            throw new IllegalArgumentException("예약 정보가 비어있습니다.");
-        }
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("예약자명은 비워둘 수 없습니다.");
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -61,7 +61,7 @@ public class Reservation {
             return false;
         }
         Reservation that = (Reservation) o;
-        if(id == null && that.id == null ) {
+        if (id == null && that.id == null) {
             return false;
         }
         return Objects.equals(getId(), that.getId());
