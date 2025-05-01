@@ -61,7 +61,8 @@ public class ReservationService {
     }
 
     private Reservation createReservationWithoutId(ReservationRequest request) {
-        ReservationTime findTime = reservationTimeRepository.findById(request.timeId());
+        ReservationTime findTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new IllegalStateException("해당하는 시간 정보가 존재하지 않습니다."));
 
         validateDateAndTime(request.date(), findTime.getStartAt());
         validateDuplicateReservation(request.date(), request.timeId(), request.themeId());
