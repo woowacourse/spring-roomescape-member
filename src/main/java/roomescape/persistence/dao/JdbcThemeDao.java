@@ -71,15 +71,18 @@ public class JdbcThemeDao implements ThemeDao {
             final String endDate
     ) {
         final String sql = """
-                SELECT id, name, description, thumbnail 
-                FROM theme as t INNER JOIN
-                (SELECT theme_id
-                    FROM reservation
-                    WHERE date BETWEEN ? AND ?
-                    GROUP BY theme_id
-                    ORDER BY COUNT(*)
-                ) as ot
-                ON t.id = ot.theme_id
+                SELECT
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail,
+                    COUNT(r.id) AS reservation_count
+                FROM theme AS t
+                LEFT JOIN reservation AS r
+                    ON t.id = r.theme_id
+                    AND r.date BETWEEN ? AND ?
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY reservation_count DESC
                 """;
 
         return jdbcTemplate.query(
