@@ -33,7 +33,13 @@ public class RoomThemeService {
                 themeCreation.thumbnail());
         final long id = themeDAO.insert(theme);
 
-        return RoomThemeResponse.from(theme.withId(id));
+        final RoomTheme savedTheme = findById(id);
+        return RoomThemeResponse.from(savedTheme);
+    }
+
+    private RoomTheme findById(final long id) {
+        return themeDAO.findById(id)
+                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마입니다"));
     }
 
     public List<RoomThemeResponse> findAllThemes() {

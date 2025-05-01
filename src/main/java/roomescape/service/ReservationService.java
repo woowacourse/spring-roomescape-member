@@ -40,8 +40,7 @@ public class ReservationService {
         validateDuplicateReservation(reservation);
 
         final long savedId = reservationDAO.insert(reservation);
-        final Reservation savedReservation = reservationDAO.findById(savedId)
-                .orElseThrow(NotExistedValueException::new);
+        final Reservation savedReservation = findById(savedId);
 
         return ReservationResponse.from(savedReservation);
     }
@@ -81,7 +80,12 @@ public class ReservationService {
                 reservation.getTheme().getId());
     }
 
-    public List<ReservationResponse> findAll() {
+    private Reservation findById(final long savedId) {
+        return reservationDAO.findById(savedId)
+                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약입니다"));
+    }
+
+    public List<ReservationResponse> findAllReservations() {
         return reservationDAO.findAll()
                 .stream()
                 .map(ReservationResponse::from)

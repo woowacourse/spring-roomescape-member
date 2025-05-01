@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
-import roomescape.domain.Reservation;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.exception.custom.PharmaceuticalViolationException;
@@ -95,7 +94,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 조회한다")
     void findReservation() {
         //given //when
-        List<Reservation> actual = reservationService.findAll();
+        List<ReservationResponse> actual = reservationService.findAllReservations();
 
         //then
         assertThat(actual).hasSize(1);

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.response.AvailableReservationTimeResponse;
-import roomescape.domain.ReservationTime;
+import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.exception.custom.PharmaceuticalViolationException;
