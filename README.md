@@ -166,10 +166,10 @@ localhost:8080/times/available?date=2025-05-02&themeId=1
 ````
 
 #### 2. 인기 테마
-- [ ] 인기 테마 페이지를 접속할 수 있다.
-- [ ] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 반환한다.
-  - [ ] 요청 스펙: GET, /themes/popular/weekly, HTTP/1.1
-  - [ ] 응답 스펙: HTTP/1.1, 200, application/json
+- [X] 인기 테마 페이지를 접속할 수 있다.
+- [X] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 반환한다.
+  - [X] 요청 스펙: GET, /themes/popular/weekly, HTTP/1.1
+  - [X] 응답 스펙: HTTP/1.1, 200, application/json
 
 - 응답 예시
 ````
