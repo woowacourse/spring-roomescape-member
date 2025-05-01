@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,5 +65,30 @@ public class JdbcThemeDaoImpl implements ThemeDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate) {
+        System.out.println(startDate);
+        System.out.println(currentDate);
+        String query = """
+            SELECT id, name, description, thumbnail
+            FROM
+            (
+                SELECT theme_id, COUNT(*) AS reservation_count
+                FROM reservation
+                WHERE date >= ? AND date <= ?
+                GROUP BY theme_id
+            ) AS sub
+            INNER JOIN theme ON sub.theme_id = theme.id;     
+            """;
+
+        return jdbcTemplate.query(query,
+            (resultSet, rowNum) -> new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+            ), startDate, currentDate);
     }
 }

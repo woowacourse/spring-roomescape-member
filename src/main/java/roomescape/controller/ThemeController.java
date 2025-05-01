@@ -22,6 +22,11 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @GetMapping("/themes/ranks")
+    public List<ThemeResponseDto> readThemeRanks() {
+        return themeService.getAllThemeOfRanks();
+    }
+
     @GetMapping("/themes")
     public List<ThemeResponseDto> readThemes() {
         return themeService.getAllThemes();
