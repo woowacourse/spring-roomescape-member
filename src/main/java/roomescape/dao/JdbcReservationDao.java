@@ -98,4 +98,26 @@ public class JdbcReservationDao implements ReservationDao {
                 themeId
         );
     }
+
+    @Override
+    public List<Long> findRank(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                SELECT
+                    t.id AS theme_id
+                FROM
+                    theme t
+                LEFT JOIN reservation r
+                    ON t.id = r.theme_id
+                    AND r.date BETWEEN ? AND ?
+                GROUP BY t.id
+                ORDER BY COUNT(r.id) DESC
+                LIMIT 10;
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> rs.getLong("theme_id"),
+                startDate,
+                endDate
+        );
+    }
 }

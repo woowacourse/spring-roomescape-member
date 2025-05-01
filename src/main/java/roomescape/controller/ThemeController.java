@@ -38,6 +38,12 @@ public class ThemeController {
         return ResponseEntity.ok().body(themeResponseDtos);
     }
 
+    @GetMapping("/themes/rank")
+    public ResponseEntity<List<ThemeResponseDto>> readThemeRank() {
+        List<ThemeResponseDto> themeResponseDtos = themeService.findThemeRank();
+        return ResponseEntity.ok().body(themeResponseDtos);
+    }
+
     @PostMapping("/themes")
     public ResponseEntity<ThemeResponseDto> createTheme(
             @RequestBody ThemeRequestDto themeRequest
