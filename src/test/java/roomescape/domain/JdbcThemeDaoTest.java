@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -87,5 +88,25 @@ public class JdbcThemeDaoTest {
         assertThat(theme.getThumbnail()).isEqualTo(
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     }
+
+    @DisplayName("인기 테마 목록을 조회한다")
+    @Test
+    void find_by_period_and_limit() {
+        // given
+        LocalDate start = LocalDate.of(2025, 4, 24);
+        LocalDate end = LocalDate.of(2025, 4, 30);
+        int limit = 10;
+
+        // when
+        List<Theme> themeRankings = jdbcThemeDao.findByPeriodAndLimit(start, end, limit);
+
+        // then
+        assertThat(themeRankings.get(0).getId()).isEqualTo(3L);
+        assertThat(themeRankings.get(0).getName()).isEqualTo("레벨3 탈출");
+        assertThat(themeRankings.get(0).getDescription()).isEqualTo("우테코 레벨3를 탈출하는 내용입니다.");
+        assertThat(themeRankings.get(0).getThumbnail()).isEqualTo(
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+    }
+
 
 }

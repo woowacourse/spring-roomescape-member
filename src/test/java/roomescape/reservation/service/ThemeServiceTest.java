@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.repository.ReservationFakeRepository;
 import roomescape.domain.repository.ReservationTimeFakeRepository;
 import roomescape.domain.repository.ThemeFakeRepository;
+import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.domain.Reservation;
@@ -31,7 +32,7 @@ public class ThemeServiceTest {
     void setup() {
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ReservationRepository reservationRepository = new ReservationFakeRepository();
-        ThemeRepository themeRepository = new ThemeFakeRepository();
+        ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
 
         List<ReservationTime> times = List.of(
                 new ReservationTime(null, LocalTime.of(3, 12)),
@@ -109,6 +110,16 @@ public class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.remove(deleteId))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("해당 테마에 대한 예약이 존재합니다.");
+    }
+
+    @DisplayName("인기 테마 정보를 조회한다")
+    @Test
+    void get_theme_rankings_test() {
+        // when
+        List<ThemeRankingResponse> themeRankings = themeService.getThemeRankings();
+
+        // then
+        assertThat(themeRankings).isNotEmpty();
     }
 
 }
