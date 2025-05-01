@@ -20,9 +20,14 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
 
     @Override
     public Long add(ReservationTheme reservationTheme) {
-        long id = idGenerator.incrementAndGet();
-        themes.add(reservationTheme);
-        return id;
+        ReservationTheme savedReservationTheme = new ReservationTheme(
+                idGenerator.getAndIncrement(),
+                reservationTheme.getName(),
+                reservationTheme.getDescription(),
+                reservationTheme.getThumbnail()
+        );
+        themes.add(savedReservationTheme);
+        return savedReservationTheme.getId();
     }
 
     @Override

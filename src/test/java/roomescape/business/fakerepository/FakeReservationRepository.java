@@ -34,7 +34,7 @@ public final class FakeReservationRepository implements ReservationRepository {
                 reservation.getTime(),
                 reservation.getTheme()
         );
-        reservations.add(reservation);
+        reservations.add(savedReservation);
         return savedReservation.getId();
     }
 
