@@ -1,4 +1,4 @@
-package roomescape.theme.dto;
+package roomescape.theme.service.dto.response;
 
 import roomescape.theme.entity.ReservationThemeEntity;
 

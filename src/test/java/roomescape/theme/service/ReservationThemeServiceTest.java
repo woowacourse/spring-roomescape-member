@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.repository.FakeReservationThemeRepository;
 import roomescape.theme.repository.ReservationThemeRepository;
-import roomescape.theme.dto.ReservationThemeRequest;
+import roomescape.theme.service.dto.request.ReservationThemeRequest;
 import roomescape.theme.entity.ReservationThemeEntity;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;

@@ -6,9 +6,8 @@ import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.dto.AvailableReservationTimeResponse;
-import roomescape.time.dto.ReservationTimeRequest;
-import roomescape.time.dto.ReservationTimeResponse;
+import roomescape.time.service.dto.request.ReservationTimeRequest;
+import roomescape.time.service.dto.response.ReservationTimeResponse;
 import roomescape.time.entity.ReservationTimeEntity;
 import roomescape.time.repository.ReservationTimeRepository;
 

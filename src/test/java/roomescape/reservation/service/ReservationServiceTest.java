@@ -10,7 +10,7 @@ import roomescape.theme.repository.ReservationThemeRepository;
 import roomescape.time.repository.FakeTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.service.dto.request.ReservationRequest;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.time.entity.ReservationTimeEntity;
 

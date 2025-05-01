@@ -1,4 +1,4 @@
-package roomescape.reservation.dto;
+package roomescape.reservation.service.dto.request;
 
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.time.entity.ReservationTimeEntity;

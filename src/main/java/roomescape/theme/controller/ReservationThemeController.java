@@ -3,8 +3,8 @@ package roomescape.theme.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.theme.dto.ReservationThemeRequest;
-import roomescape.theme.dto.ReservationThemeResponse;
+import roomescape.theme.service.dto.request.ReservationThemeRequest;
+import roomescape.theme.service.dto.response.ReservationThemeResponse;
 import roomescape.theme.service.ReservationThemeService;
 
 import java.util.List;

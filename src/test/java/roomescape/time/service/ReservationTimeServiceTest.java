@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.dto.ReservationTimeRequest;
+import roomescape.time.service.dto.request.ReservationTimeRequest;
 import roomescape.time.entity.ReservationTimeEntity;
 import roomescape.time.repository.FakeTimeRepository;
 import roomescape.time.repository.ReservationTimeRepository;

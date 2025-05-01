@@ -2,8 +2,8 @@ package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.theme.repository.ReservationThemeRepository;
-import roomescape.theme.dto.ReservationThemeRequest;
-import roomescape.theme.dto.ReservationThemeResponse;
+import roomescape.theme.service.dto.request.ReservationThemeRequest;
+import roomescape.theme.service.dto.response.ReservationThemeResponse;
 import roomescape.theme.entity.ReservationThemeEntity;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
