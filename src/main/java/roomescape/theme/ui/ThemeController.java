@@ -32,6 +32,14 @@ public class ThemeController {
         return ResponseEntity.ok(themeService.getAll());
     }
 
+    @GetMapping("/ranking")
+    public ResponseEntity<List<ThemeResponse>> getRanking() {
+        // TODO 주단위 랭킹말고도 가능하도록
+        final List<ThemeResponse> ranking = themeService.getRanking();
+        System.out.println(ranking);
+        return ResponseEntity.ok(ranking);
+    }
+
     @PostMapping
     public ResponseEntity<ThemeResponse> create(@RequestBody final CreateThemeWebRequest createThemeWebRequest) {
         final ThemeResponse themeResponse = themeService.create(createThemeWebRequest);

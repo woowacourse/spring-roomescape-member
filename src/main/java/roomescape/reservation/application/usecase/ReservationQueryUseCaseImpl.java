@@ -53,6 +53,17 @@ public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
     }
 
     @Override
+    public List<ThemeToBookCountServiceResponse> getRanking(final ReservationDate startDate,
+                                                            final ReservationDate endDate,
+                                                            final int bookCount) {
+
+        return reservationRepository.findThemesToBookedCountByParamsOrderByBookedCount(startDate, endDate, bookCount)
+                .entrySet().stream()
+                .map(entry -> new ThemeToBookCountServiceResponse(entry.getKey(), entry.getValue()))
+                .toList();
+    }
+
+    @Override
     public boolean existsByTimeId(final ReservationTimeId timeId) {
         return reservationRepository.existsByParams(timeId);
     }

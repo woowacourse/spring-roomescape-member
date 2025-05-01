@@ -15,6 +15,8 @@ public interface ReservationQueryUseCase {
 
     List<AvailableReservationTimeServiceResponse> getTimesWithAvailability(AvailableReservationTimeServiceRequest availableReservationTimeServiceRequest);
 
+    List<ThemeToBookCountServiceResponse> getRanking(ReservationDate startDate, ReservationDate endDate, int count);
+
     boolean existsByTimeId(ReservationTimeId timeId);
 
     boolean existsByParams(ReservationDate date, ReservationTimeId timeId, ThemeId themeId);

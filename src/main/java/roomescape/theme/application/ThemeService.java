@@ -10,6 +10,8 @@ public interface ThemeService {
 
     List<ThemeResponse> getAll();
 
+    List<ThemeResponse> getRanking();
+
     ThemeResponse create(CreateThemeWebRequest createThemeWebRequest);
 
     void delete(ThemeId id);

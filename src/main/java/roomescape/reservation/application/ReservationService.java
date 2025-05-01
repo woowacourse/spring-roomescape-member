@@ -1,6 +1,7 @@
 package roomescape.reservation.application;
 
 import roomescape.reservation.domain.ReservationId;
+import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
 import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.domain.ThemeId;

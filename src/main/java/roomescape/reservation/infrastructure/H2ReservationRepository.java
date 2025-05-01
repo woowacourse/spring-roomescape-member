@@ -13,7 +13,11 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.infrastructure.entity.ReservationEntity;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.theme.infrastructure.entity.ThemeEntity;
 import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.infrastructure.entity.ReservationTimeEntity;
@@ -21,9 +25,15 @@ import roomescape.time.infrastructure.entity.ReservationTimeEntity;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.Map.Entry;
+import static java.util.Map.entry;
 
 @Repository
 @RequiredArgsConstructor
@@ -192,5 +202,53 @@ public class H2ReservationRepository implements ReservationRepository {
     public void deleteById(final ReservationId id) {
         final String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id.getValue());
+    }
+
+    @Override
+    public Map<Theme, Integer> findThemesToBookedCountByParamsOrderByBookedCount(final ReservationDate startDate,
+                                                                                 final ReservationDate endDate,
+                                                                                 final int count) {
+        final String sql = """
+                select
+                    t.id,
+                    t.name,
+                    t.description,
+                    t.thumbnail,
+                    count(*) as booked_count
+                from reservation r
+                join theme t
+                    on r.theme_id = t.id
+                where
+                    r.date between ? and ?
+                group by 
+                    t.id, t.name, t.description, t.thumbnail
+                order by
+                    booked_count desc  
+                limit
+                    ?
+                """;
+
+        return jdbcTemplate.query(
+                        sql,
+                        (rs, rowNum) -> {
+                            final Theme theme = Theme.withId(
+                                    ThemeId.from(rs.getLong("id")),
+                                    ThemeName.from(rs.getString("name")),
+                                    ThemeDescription.from(rs.getString("description")),
+                                    ThemeThumbnail.from(rs.getString("thumbnail"))
+                            );
+                            final int bookedCount = rs.getInt("booked_count");
+                            return entry(theme, bookedCount);
+                        },
+                        startDate.getValue(),
+                        endDate.getValue(),
+                        count)
+                .stream()
+                .collect(Collectors.toMap(
+                        Entry::getKey,
+                        Entry::getValue,
+                        (v1, v2) -> v1,
+                        LinkedHashMap::new
+                ));
     }
 }
