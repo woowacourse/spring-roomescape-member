@@ -58,6 +58,4 @@ public class ThemeController {
         themeService.deleteThemeById(id);
         return ResponseEntity.noContent().build();
     }
-
-    
 }

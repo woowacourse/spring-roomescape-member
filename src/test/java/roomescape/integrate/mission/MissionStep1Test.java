@@ -36,7 +36,7 @@ public class MissionStep1Test {
     }
 
     @Test
-    void 일단계_메인페이지에_접근가능하다() {
+    void 일단계() {
         given()
                 .when().get("/")
                 .then()

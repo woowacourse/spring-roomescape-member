@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationSlot;
 import roomescape.domain.ReservationSlotTimes;
 import roomescape.domain.Theme;
 import roomescape.dto.AddReservationDto;
@@ -65,8 +66,9 @@ public class ReservationController {
             @Valid @ModelAttribute AvailableTimeRequestDto availableTimeRequestDto) {
         ReservationSlotTimes reservationSlotTimes = reservationService.availableReservationTimes(
                 availableTimeRequestDto);
-        List<ReservationTimeSlotResponseDto> reservationTimeSlotResponseDtos = reservationSlotTimes.getAvailableBookTimes()
-                .stream()
+        List<ReservationSlot> availableBookTimes = reservationSlotTimes.getAvailableBookTimes();
+
+        List<ReservationTimeSlotResponseDto> reservationTimeSlotResponseDtos = availableBookTimes.stream()
                 .map((time) -> new ReservationTimeSlotResponseDto(time.getId(), time.getTime(), time.isReserved()))
                 .toList();
         return ResponseEntity.ok(reservationTimeSlotResponseDtos);
