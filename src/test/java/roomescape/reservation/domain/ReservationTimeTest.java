@@ -1,11 +1,10 @@
-package roomescape.time.domain;
+package roomescape.reservation.domain;
 
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTimeTest {
 
@@ -20,7 +19,7 @@ class ReservationTimeTest {
     }
 
     @ParameterizedTest
-    @CsvSource(value = {"09:59","22:01"})
+    @CsvSource(value = {"09:59", "22:01"})
     void 영업시간이_아니면_예외가_발생한다(final LocalTime time) {
         // when & then
         Assertions.assertThatThrownBy(() -> new ReservationTime(time))

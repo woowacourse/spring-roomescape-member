@@ -1,4 +1,4 @@
-package roomescape.time.service;
+package roomescape.reservation.service;
 
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
@@ -12,11 +12,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.H2ReservationRepository;
+import roomescape.reservation.repository.H2ReservationTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.H2ReservationTimeRepository;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
 
 @JdbcTest
 class ReservationTimeServiceTest {

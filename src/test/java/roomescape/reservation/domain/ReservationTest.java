@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
 

@@ -1,7 +1,5 @@
 package roomescape.reservation.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -16,17 +14,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.H2ReservationRepository;
+import roomescape.reservation.repository.H2ReservationTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.service.dto.AvailableReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.H2ThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.H2ReservationTimeRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.service.ReservationTimeService;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @JdbcTest

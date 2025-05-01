@@ -1,6 +1,4 @@
-package roomescape.time.repository;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package roomescape.reservation.repository;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -9,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.time.domain.ReservationTime;
+import roomescape.reservation.domain.ReservationTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(H2ReservationTimeRepository.class)

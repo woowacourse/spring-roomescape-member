@@ -1,4 +1,4 @@
-package roomescape.time.service;
+package roomescape.reservation.service;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.repository.ReservationTimeRepository;
 
 @Service
 @RequiredArgsConstructor
