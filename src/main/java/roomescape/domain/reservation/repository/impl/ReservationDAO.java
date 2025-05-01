@@ -7,13 +7,16 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
@@ -136,7 +139,7 @@ public class ReservationDAO implements ReservationRepository {
 
         int rowCountByThemeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
 
-        return rowCountByThemeId == 1;
+        return rowCountByThemeId > 0;
     }
 
     private Optional<Reservation> reservationOf(String sql, Map<String, Long> params) {
