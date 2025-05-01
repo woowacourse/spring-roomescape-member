@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import static org.hamcrest.Matchers.is;
 
@@ -22,7 +22,7 @@ public class TimeControllerTest {
             .when().get("/times")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(0));
+            .body("size()", is(5));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class TimeControllerTest {
             .when().get("/times")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(1));
+            .body("size()", is(6));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class TimeControllerTest {
             .when().get("/times")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(1));
+            .body("size()", is(6));
 
         RestAssured.given().log().all()
             .when().delete("/times/1")
@@ -67,12 +67,12 @@ public class TimeControllerTest {
             .when().get("/times")
             .then().log().all()
             .statusCode(200)
-            .body("size()", is(0));
+            .body("size()", is(5));
     }
 
     private Map<String, String> getTestParamsWithReservationTime() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "11:00");
         return params;
     }
 }

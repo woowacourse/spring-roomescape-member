@@ -1,5 +1,6 @@
 package roomescape.dao.jdbc;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.exception.TimeDoesNotExistException;
+import roomescape.exception.ThemeDoesNotExistException;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
@@ -51,12 +52,12 @@ public class JdbcThemeDao implements ThemeDao {
         try {
             return jdbcTemplate.queryForObject(sql, createThemeMapper(), id);
         } catch (DataAccessException exception) {
-            throw new TimeDoesNotExistException();
+            throw new ThemeDoesNotExistException();
         }
     }
 
     @Override
-    public List<Theme> findTopReservedThemesInPeriodWithLimit(int period, int limitCount) {
+    public List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate, LocalDate endDate, int limitCount) {
         String sql = """
                 SELECT
                   t.id,
@@ -68,15 +69,15 @@ public class JdbcThemeDao implements ThemeDao {
                   INNER JOIN theme as t
                   ON r.theme_id = t.id
                 WHERE
-                  PARSEDATETIME(r.date, 'yyyy-MM-dd') >= DATEADD('DAY', -?, NOW())
-                    AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < NOW()
+                  PARSEDATETIME(r.date, 'yyyy-MM-dd') >= ?
+                    AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < ?
                 GROUP BY
                   theme_id
                 ORDER BY
                   COUNT(theme_id) DESC
                 LIMIT ?;
             """;
-        return jdbcTemplate.query(sql, createThemeMapper(), period, limitCount);
+        return jdbcTemplate.query(sql, createThemeMapper(), startDate, endDate, limitCount);
     }
 
     public boolean existThemeByName(String name) {

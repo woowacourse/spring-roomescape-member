@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
@@ -24,7 +25,8 @@ public class ThemeService {
     }
 
     public List<Theme> findTopReservedThemes() {
-        return themeDao.findTopReservedThemesInPeriodWithLimit(TOP_RANK_PERIOD_DAYS,
+        LocalDate today = LocalDate.now();
+        return themeDao.findTopReservedThemesInPeriodWithLimit(today.minusDays(TOP_RANK_PERIOD_DAYS), today,
             TOP_RANK_THRESHOLD);
     }
 

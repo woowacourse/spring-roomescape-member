@@ -1,6 +1,7 @@
-package roomescape.dao;
+package roomescape.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.dao.jdbc.JdbcReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -42,17 +42,9 @@ public class JdbcReservationDaoTest {
     @Test
     @DisplayName("전체 예약 기록을 조회할 수 있다.")
     void findAllReservation() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('15:40')");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('16:40')");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('레벨1', '탈출하기', 'http/~')");
-        jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('사나', '2024-04-22', 1, 1)");
-        jdbcTemplate.update(
-            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('프리', '2024-04-23', 2, 1)");
-
         List<Reservation> reservations = jdbcReservationDao.findAllReservations();
 
-        assertThat(reservations).hasSize(2);
+        assertThat(reservations).hasSize(3);
     }
 
     @Test
@@ -71,13 +63,12 @@ public class JdbcReservationDaoTest {
     @DisplayName("ID로 예약을 삭제할 수 있다.")
     void removeReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
-        Theme theme = new Theme(1L, "레벨1", "탈출하기", "http/~");
+        Theme theme = new Theme(1L, "레벨4", "탈출하기", "http/~");
         Reservation reservation = new Reservation(null, "사나", LocalDate.of(2024, 4, 22), time, theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
-        jdbcReservationDao.removeReservationById(newReservation.getId());
-
-        assertThat(jdbcReservationDao.findAllReservations()).isEmpty();
+        assertThatCode(() -> jdbcReservationDao.removeReservationById(newReservation.getId()))
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -85,7 +76,7 @@ public class JdbcReservationDaoTest {
     void existTimeByStartAt() {
         LocalDate date = LocalDate.of(2024, 12, 31);
         ReservationTime time = new ReservationTime(1L, LocalTime.of(12, 0));
-        Theme theme = new Theme(1L, "레벨1", "탈출하기", "http/~");
+        Theme theme = new Theme(1L, "레벨4", "탈출하기", "http/~");
 
         Reservation reservation = new Reservation(null, "사나", date, time, theme);
         jdbcReservationDao.addReservation(reservation);

@@ -45,7 +45,8 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                     AND r.theme_id = ?
                     AND r.date = ?
               ) as alreadyBooked
-            FROM reservation_time as rt;
+            FROM reservation_time as rt
+            ORDER BY rt.start_at ASC;
             """;
         return jdbcTemplate.query(sql, createReservationWithBookedMapper(), themeId, date);
     }

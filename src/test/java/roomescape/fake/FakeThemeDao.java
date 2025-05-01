@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,5 +40,16 @@ public class FakeThemeDao implements ThemeDao {
             .filter(theme -> theme.getId().equals(id))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("테마를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate,
+        LocalDate endDate, int limitCount) {
+        return List.of();
+    }
+
+    @Override
+    public boolean existThemeByName(String name) {
+        return false;
     }
 }
