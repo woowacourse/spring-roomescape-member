@@ -11,6 +11,11 @@
 - [X] `/reservation` 요청 시 사용자 예약 페이지를 응답한다.
   - 페이지는 `templates/reservation.html` 파일을 이용
 
+### 사용자 인기 테마 조회
+- [X] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 확인할 수 있다.
+  - 오늘이 4월 8일인 경우, 게임 날짜가 4월 1일부터 4월 7일까지인 예약 건수가 많은 순서대로 10개의 테마를 조회할 수 있다.
+- [X] `/` 요청 시 인기 테마 페이지를 응답한다.
+  - 페이지는 `templates/index.html` 파일을 이용
 
 ## 유효성 검증
 
@@ -115,7 +120,7 @@
 
   - Request
     ```
-    GET /reservations/available?date={date}&themeId={themeId} HTTP/1.1
+    GET /themes/ranking HTTP/1.1
     ```
 
   - Response
@@ -135,3 +140,28 @@
       }
     ]
     ```
+
+### 사용자 인기 테마 조회
+
+- Request
+  ```
+  GET /themes HTTP/1.1
+  ```
+
+- Response
+  ```
+  HTTP/1.1 200
+
+  [
+    {
+      "name": "레벨1 탈출",
+      "description": "우테코 레벨1를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    },
+    {
+      "name": "레벨2 탈출",
+      "description": "우테코 레벨2를 탈출하는 내용입니다.",
+      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d45.jpg"
+    }
+  ]
+  ```

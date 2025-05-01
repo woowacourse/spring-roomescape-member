@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.reservation.controller.dto.ThemeRankingResponse;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.service.ThemeService;
@@ -33,6 +34,11 @@ public class ThemeController {
     @GetMapping
     public List<ThemeResponse> getThemes() {
         return themeService.getThemes();
+    }
+
+    @GetMapping("/ranking")
+    public List<ThemeRankingResponse> getThemeRankings() {
+        return themeService.getThemeRankings();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

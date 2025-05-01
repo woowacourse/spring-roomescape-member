@@ -2,6 +2,7 @@ package roomescape.reservation.domain.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,5 +61,23 @@ public class JdbcThemeDao implements ThemeRepository {
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+    }
+
+    @Override
+    public List<Theme> findByPeriodAndLimit(LocalDate start, LocalDate end, int limit) {
+        String sql = """
+                SELECT th.id, th.name, th.description, th.thumbnail, r.theme_count FROM theme AS th
+                JOIN
+                (
+                    SELECT COUNT(theme_id) AS theme_count, theme_id FROM reservation
+                    WHERE date BETWEEN ? AND ?
+                    GROUP BY theme_id
+                ) AS r
+                ON th.id = r.theme_id
+                ORDER BY theme_count DESC
+                LIMIT ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, start, end, limit);
     }
 }
