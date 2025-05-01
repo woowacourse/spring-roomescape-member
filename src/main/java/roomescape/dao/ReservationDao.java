@@ -15,4 +15,6 @@ public interface ReservationDao {
     int findByTimeId(Long id);
 
     int findByDateAndTime(ReservationDate date, Long timeId);
+
+    int findAlreadyExistReservationBy(String date, long timeId, Long themeId);
 }
