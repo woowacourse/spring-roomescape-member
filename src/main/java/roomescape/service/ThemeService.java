@@ -13,7 +13,6 @@ public class ThemeService {
 
     private static final int AGGREGATE_START_DATE_INTERVAL = 7;
     private static final int AGGREGATE_END_DATE_INTERVAL = 1;
-    private static final int AGGREGATE_COUNT = 10;
     
     private final ThemeRepository themeRepository;
 
@@ -30,12 +29,12 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public List<Theme> getPopularThemes() {
+    public List<Theme> getPopularThemes(int size) {
         LocalDate now = LocalDate.now();
         return themeRepository.findPopularThemes(
                 now.minusDays(AGGREGATE_START_DATE_INTERVAL),
                 now.minusDays(AGGREGATE_END_DATE_INTERVAL),
-                AGGREGATE_COUNT
+                size
         );
     }
 

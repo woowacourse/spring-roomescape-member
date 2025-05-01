@@ -33,8 +33,8 @@ public class ThemeApiController {
     }
 
     @GetMapping("/themes/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes() {
-        List<Theme> popularThemes = themeService.getPopularThemes();
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam(value = "size", defaultValue = "10") int size) {
+        List<Theme> popularThemes = themeService.getPopularThemes(size);
         List<ThemeResponse> responses = ThemeResponse.from(popularThemes);
         return ResponseEntity.ok(responses);
     }
