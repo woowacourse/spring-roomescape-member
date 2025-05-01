@@ -8,7 +8,6 @@ import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.ReservationExistException;
 import roomescape.exception.ReservationTimeExistException;
-import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationTimeService reservationTimeService, ReservationService reservationService) {
+    public ReservationTimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
