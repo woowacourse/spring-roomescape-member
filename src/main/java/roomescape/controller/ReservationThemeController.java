@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,11 +42,12 @@ public class ReservationThemeController {
 
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<String> reservationThemeRemove(@PathVariable(name = "id") long id) {
-        try {
-            roomescapeService.removeReservationTheme(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        roomescapeService.removeReservationTheme(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException() {
+        return ResponseEntity.badRequest().build();
     }
 }

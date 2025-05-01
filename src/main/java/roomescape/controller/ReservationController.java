@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,21 +40,17 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> reservationAdd(@RequestBody ReservationRequest request) {
-        try {
-            return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(roomescapeService.addReservation(request));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(roomescapeService.addReservation(request));
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> reservationRemove(@PathVariable(name = "id") long id) {
-        try {
-            roomescapeService.removeReservation(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        roomescapeService.removeReservation(id);
+        return ResponseEntity.noContent().build();
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException() {
+        return ResponseEntity.notFound().build();
+    }
 }
