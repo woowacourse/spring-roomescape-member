@@ -1,7 +1,7 @@
 package roomescape.time.repository;
 
 import roomescape.time.entity.ReservationTimeEntity;
-import roomescape.time.repository.dto.AvailableTimeResponse;
+import roomescape.time.repository.dto.ReservationTimeWithBookedDataResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,5 +16,5 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTimeEntity> findById(Long id);
 
-    List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId);
+    List<ReservationTimeWithBookedDataResponse> findAllWithBooked(LocalDate date, Long themeId);
 }

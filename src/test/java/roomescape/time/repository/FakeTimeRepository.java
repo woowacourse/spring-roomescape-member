@@ -1,7 +1,7 @@
 package roomescape.time.repository;
 
 import roomescape.time.entity.ReservationTimeEntity;
-import roomescape.time.repository.dto.AvailableTimeResponse;
+import roomescape.time.repository.dto.ReservationTimeWithBookedDataResponse;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class FakeTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
+    public List<ReservationTimeWithBookedDataResponse> findAllWithBooked(LocalDate date, Long themeId) {
         // TODO: fake 코드 작성하기
         return null;
     }

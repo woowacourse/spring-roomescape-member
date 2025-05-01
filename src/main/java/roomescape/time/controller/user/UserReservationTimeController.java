@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.service.dto.response.AvailableReservationTimeResponse;
+import roomescape.time.service.dto.response.ReservationTimeWithBookedResponse;
 import roomescape.time.service.ReservationTimeService;
 
 import java.time.LocalDate;
@@ -20,10 +20,10 @@ public class UserReservationTimeController {
     }
 
     @GetMapping("/times")
-    public List<AvailableReservationTimeResponse> getAvailableTimes(
+    public List<ReservationTimeWithBookedResponse> getAvailableTimes(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId")Long themeId
     ) {
-        return timeService.getAvailableTimes(date, themeId);
+        return timeService.getAllTimesWithBooked(date, themeId);
     }
 }
