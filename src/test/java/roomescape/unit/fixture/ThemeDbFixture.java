@@ -1,4 +1,4 @@
-package roomescape.reservation.fixture;
+package roomescape.unit.fixture;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

@@ -1,4 +1,4 @@
-package roomescape.reservation.fixture;
+package roomescape.unit.fixture;
 
 import java.time.LocalDate;
 import org.springframework.jdbc.core.JdbcTemplate;

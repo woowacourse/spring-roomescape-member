@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.fixture.ReservationDateFixture;
-import roomescape.reservation.fixture.ReservationDbFixture;
-import roomescape.reservation.fixture.ReservationTimeDbFixture;
-import roomescape.reservation.fixture.ThemeDbFixture;
+import roomescape.unit.fixture.ReservationDateFixture;
+import roomescape.unit.fixture.ReservationDbFixture;
+import roomescape.unit.fixture.ReservationTimeDbFixture;
+import roomescape.unit.fixture.ThemeDbFixture;
 import roomescape.theme.controller.request.CreateThemeRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;

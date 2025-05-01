@@ -1,4 +1,4 @@
-package roomescape.reservation.fixture;
+package roomescape.unit.fixture;
 
 import roomescape.reservation.domain.ReserverName;
 
