@@ -8,9 +8,7 @@ public record ReservationTimeRequestDto(
         String startAt
 ) {
     public ReservationTimeRequestDto {
-        if (startAt == null || startAt.isBlank()) {
-            throw new IllegalArgumentException("시작 시각은 null이거나 공백일 수 없습니다");
-        }
+        validateRequiredFields(startAt);
     }
 
     public ReservationTime convertToTime() {
@@ -19,6 +17,12 @@ public record ReservationTimeRequestDto(
             return new ReservationTime(startTime);
         } catch (DateTimeParseException e) {
             throw new IllegalStateException("시간형식이 잘못되었습니다");
+        }
+    }
+
+    private void validateRequiredFields(String startAt) {
+        if (startAt == null || startAt.isBlank()) {
+            throw new IllegalArgumentException("시작 시각은 null이거나 공백일 수 없습니다");
         }
     }
 }
