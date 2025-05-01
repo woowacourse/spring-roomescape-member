@@ -21,20 +21,25 @@ public class JdbcReservationDao implements ReservationRepository {
 
     private final RowMapper<Reservation> rowMapper =
             (rs, rowNum) -> {
-                Long reservationId = rs.getLong("reservation_id");
-                String name = rs.getString("name");
-                LocalDate date = LocalDate.parse(rs.getString("date"));
-                Long timeId = rs.getLong("time_id");
-                LocalTime startAt = LocalTime.parse(rs.getString("start_at"));
-                ReservationTime time = new ReservationTime(timeId, startAt);
+                ReservationTime time = new ReservationTime(
+                        rs.getLong("time_id"),
+                        LocalTime.parse(rs.getString("start_at"))
+                );
 
-                Long themeId = rs.getLong("theme_id");
-                String themeName = rs.getString("theme_name");
-                String themeDescription = rs.getString("theme_des");
-                String themeThumbnail = rs.getString("theme_thumb");
-                Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
+                Theme theme = new Theme(
+                        rs.getLong("theme_id"),
+                        rs.getString("theme_name"),
+                        rs.getString("theme_des"),
+                        rs.getString("theme_thumb")
+                        );
 
-                return new Reservation(reservationId, name, date, time, theme);
+                return new Reservation(
+                        rs.getLong("reservation_id"),
+                        rs.getString("name"),
+                        LocalDate.parse(rs.getString("date")),
+                        time,
+                        theme
+                );
             };
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {

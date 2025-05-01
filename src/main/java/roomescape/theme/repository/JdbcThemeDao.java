@@ -15,13 +15,13 @@ import roomescape.theme.domain.Theme;
 @Repository
 public class JdbcThemeDao implements ThemeRepository {
 
-    private final RowMapper<Theme> rowMapper = (rs, rowNum) -> {
-        Long id = rs.getLong("id");
-        String name = rs.getString("name");
-        String description = rs.getString("description");
-        String thumbnail = rs.getString("thumbnail");
-        return new Theme(id, name, description, thumbnail);
-    };
+    private final RowMapper<Theme> rowMapper = (rs, rowNum) ->
+        new Theme(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("thumbnail")
+        );
 
     private final JdbcTemplate jdbcTemplate;
 

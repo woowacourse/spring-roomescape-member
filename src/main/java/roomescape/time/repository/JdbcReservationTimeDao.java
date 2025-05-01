@@ -14,11 +14,11 @@ import roomescape.time.domain.ReservationTime;
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeRepository {
 
-    private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) -> {
-        Long id = rs.getLong("id");
-        LocalTime startAt = LocalTime.parse(rs.getString("start_at"));
-        return new ReservationTime(id, startAt);
-    };
+    private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) ->
+        new ReservationTime(
+                rs.getLong("id"),
+                LocalTime.parse(rs.getString("start_at"))
+        );
 
     private final JdbcTemplate jdbcTemplate;
 
