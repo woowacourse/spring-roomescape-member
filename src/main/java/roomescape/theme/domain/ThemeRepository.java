@@ -7,7 +7,7 @@ public interface ThemeRepository {
 
     Long save(Theme theme);
 
-    List<Theme> findPopularThemes(LocalDate start, LocalDate end);
+    List<Theme> findPopularThemes(LocalDate start, LocalDate end, int popularCount);
 
     List<Theme> findAll();
 

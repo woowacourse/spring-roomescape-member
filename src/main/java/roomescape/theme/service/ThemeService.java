@@ -14,6 +14,8 @@ import roomescape.theme.dto.ThemeResponse;
 @Service
 public class ThemeService {
 
+    private static final int POPULAR_THEME_COUNT = 10;
+
     private final DateTime dateTime;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
@@ -59,7 +61,7 @@ public class ThemeService {
         LocalDate start = now.minusDays(8);
         LocalDate end = now.minusDays(1);
 
-        return themeRepository.findPopularThemes(start, end).stream()
+        return themeRepository.findPopularThemes(start, end, POPULAR_THEME_COUNT).stream()
                 .map(theme -> new PopularThemeResponse(theme.getName(), theme.getThumbnail(), theme.getDescription()))
                 .toList();
     }

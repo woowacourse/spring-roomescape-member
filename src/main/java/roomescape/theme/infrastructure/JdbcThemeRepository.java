@@ -43,7 +43,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(final LocalDate start, final LocalDate end) {
+    public List<Theme> findPopularThemes(final LocalDate start, final LocalDate end, final int popularCount) {
         String sql = """
                 SELECT
                     count(*) as count,
@@ -56,9 +56,10 @@ public class JdbcThemeRepository implements ThemeRepository {
                 WHERE r.date >= ? AND r.date <= ?
                 GROUP BY id, name, description, thumbnail
                 ORDER BY count DESC
+                LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(start), Date.valueOf(end));
+        return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(start), Date.valueOf(end), popularCount);
     }
 
     @Override
