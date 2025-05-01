@@ -1,8 +1,8 @@
 INSERT INTO reservation_time (start_at) VALUES
-('2023-04-25 10:00:00'),
-('2023-04-25 12:00:00'),
-('2023-04-25 14:00:00'),
-('2023-04-25 16:00:00');
+('10:00'),
+('12:00'),
+('14:00'),
+('16:00');
 
 INSERT INTO theme (name, description, thumbnail) VALUES
 ('테마1', '설명1', 'https://leisure-web.yanolja.com/_next/image?url=https%3A%2F%2Fimage6.yanolja.com%2Fleisure%2FoK3Zfq3B5N7dbRYz&w=3840&q=90'),
