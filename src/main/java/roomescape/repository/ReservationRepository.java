@@ -72,13 +72,13 @@ public class ReservationRepository {
         }
     }
 
-    public boolean checkExistenceByDateTime(LocalDate date, long timeId) {
+    public boolean checkAlreadyReserved(LocalDate date, long timeId, long themeId) {
         String sql = "SELECT EXISTS ( "
                 + "SELECT * "
                 + "FROM reservation AS r "
                 + "INNER JOIN reservation_time AS rt ON r.time_id = rt.id "
-                + "WHERE r.date = ? AND r.time_id = ?)";
-        return template.queryForObject(sql, Boolean.class, date, timeId);
+                + "WHERE r.date = ? AND r.time_id = ? AND r.theme_id = ?)";
+        return template.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     public boolean checkExistenceInTime(long reservationTimeId) {
