@@ -67,7 +67,7 @@ public class ThemeIntegrationTest {
         params.put("description", "hi");
         params.put("thumbnail", "http");
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/themes");
+        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 테마 이름이 비어있을 수 없습니다.", "/themes");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -90,7 +90,7 @@ public class ThemeIntegrationTest {
         params.put("description", null);
         params.put("thumbnail", "http");
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/themes");
+        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 테마 설명이 비어있을 수 없습니다.", "/themes");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -113,7 +113,7 @@ public class ThemeIntegrationTest {
         params.put("description", "hi");
         params.put("thumbnail", null);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/themes");
+        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 테마 썸네일이 비어있을 수 없습니다.", "/themes");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
