@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationDao;
 import roomescape.business.model.repository.ThemeDao;
+import roomescape.exception.impl.EntityNotFoundException;
+import roomescape.exception.impl.ReservationExistException;
+import roomescape.exception.impl.ThemeExistException;
 import roomescape.presentation.dto.request.ThemeRequest;
 import roomescape.presentation.dto.response.ThemeResponse;
-import roomescape.exception.EntityNotFoundException;
-import roomescape.exception.ReservationExistException;
-import roomescape.exception.ThemeExistException;
 
 @Service
 public class ThemeService {
