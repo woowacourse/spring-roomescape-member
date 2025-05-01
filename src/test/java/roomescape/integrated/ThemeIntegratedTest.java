@@ -6,7 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 public class ThemeIntegratedTest {
 
     @Test
-    @Disabled
     @DisplayName("테마 페이지를 렌더링한다.")
     void displayThemeAdmin() {
         RestAssured.given().log().all()
@@ -27,7 +25,6 @@ public class ThemeIntegratedTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("전체 테마 데이터를 조회한다.")
     void readAllTheme() {
         setUpTheme();
