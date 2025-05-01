@@ -43,7 +43,6 @@ public class TimeSlotService {
     }
 
     public List<AvailableTimeSlotDto> findAvailableTimeSlots(LocalDate date, long themeId) {
-        // TODO: timeSlotRepository가 filter된 timeslot 바로 반환하기
         var filteredReservations = reservationRepository.findByDateAndThemeId(date, themeId);
         var filteredTimeSlots = filteredReservations.stream()
             .map(Reservation::timeSlot)
