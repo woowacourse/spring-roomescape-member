@@ -13,11 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.test.context.jdbc.Sql;
 import roomescape.Fixtures;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 import roomescape.model.TimeSlot;
 
+@Sql(scripts = {"/test-schema.sql"})
 @JdbcTest
 public class ReservationJdbcRepositoryTest {
 
@@ -95,7 +97,8 @@ public class ReservationJdbcRepositoryTest {
     }
 
     private Reservation readyReservation() {
-        return Reservation.create(
+        return new Reservation(
+            1L,
             "브라운",
             LocalDate.of(2023, 12, 1),
             Fixtures.JUNK_TIME_SLOT,

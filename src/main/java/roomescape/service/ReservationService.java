@@ -33,13 +33,12 @@ public class ReservationService {
     public Reservation reserve(final String name, final LocalDate date, final Long timeId, final Long themeId) {
         var timeSlot = findTimeSlot(timeId);
         var theme = findTheme(themeId);
-        // TODO : 정적 팩토리 메서드로 임시 예약 생성하기
-        var reservation = Reservation.create(name, date, timeSlot, theme);
+        var reservation = new Reservation(name, date, timeSlot, theme);
         // TODO : now 테스트 어려움 해결하기
         validatePastDateTime(reservation);
         validateDuplicateReservation(reservation);
         var id = reservationRepository.save(reservation);
-        return Reservation.register(id, name, date, timeSlot, theme);
+        return new Reservation(id, name, date, timeSlot, theme);
     }
 
     private void validatePastDateTime(final Reservation reservation) {

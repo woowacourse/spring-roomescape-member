@@ -13,7 +13,7 @@ public class TimeSlotTest {
     @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
     void anyValueNullException() {
         // given & when & then
-        assertThatThrownBy(() -> TimeSlot.register(1L, null))
+        assertThatThrownBy(() -> new TimeSlot(1L, null))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -21,7 +21,7 @@ public class TimeSlotTest {
     @DisplayName("타임 슬롯이 주어진 시간보다 이전인지 확인한다")
     void isBefore() {
         // given
-        TimeSlot timeSlot = TimeSlot.register(1L, LocalTime.of(10, 0));
+        TimeSlot timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
 
         // when
         boolean isBefore = timeSlot.isBefore(LocalTime.of(11, 0));
@@ -34,8 +34,8 @@ public class TimeSlotTest {
     @DisplayName("타임 슬롯이 주어진 타임 슬롯과 같은 시간인지 확인한다")
     void isSameDateTime() {
         // given
-        TimeSlot timeSlot = TimeSlot.register(1L, LocalTime.of(10, 0));
-        TimeSlot otherTimeSlot = TimeSlot.register(1L, LocalTime.of(10, 0));
+        TimeSlot timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
+        TimeSlot otherTimeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
 
         // when
         boolean isSameDateTime = timeSlot.isSameTimeSlot(otherTimeSlot);

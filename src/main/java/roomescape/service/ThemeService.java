@@ -22,9 +22,9 @@ public class ThemeService {
     }
 
     public Theme add(String name, String description, String thumbnail) {
-        var theme = Theme.create(name, description, thumbnail);
+        var theme = new Theme(name, description, thumbnail);
         var id = themeRepository.save(theme);
-        return Theme.register(id, name, description, thumbnail);
+        return new Theme(id, name, description, thumbnail);
     }
 
     public List<Theme> allThemes() {

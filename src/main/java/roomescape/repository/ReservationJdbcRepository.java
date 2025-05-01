@@ -27,7 +27,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
             var themeName = rs.getString("theme_name");
             var themeDescription = rs.getString("theme_description");
             var themeThumbnail = rs.getString("theme_thumbnail");
-            return Reservation.register(id, name, date, TimeSlot.register(timeSlotId, time), Theme.register(themeId, themeName, themeDescription, themeThumbnail));
+
+            var timeSlot = new TimeSlot(timeSlotId, time);
+            var theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
+            return new Reservation(id, name, date, timeSlot, theme);
         };
 
     private final JdbcTemplate jdbcTemplate;

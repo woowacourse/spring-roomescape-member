@@ -20,7 +20,11 @@ public class Theme {
     // TODO: 별도의 thumbnail 자료형 구현하기
     private final String thumbnail;
 
-    private Theme(final Long id, final String name, final String description, final String thumbnail) {
+    public Theme(final String name, final String description, final String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
+    public Theme(final Long id, final String name, final String description, final String thumbnail) {
         validateNotNull(name, description, thumbnail);
         validateNameLength(name);
         validateDescriptionLength(description);
@@ -28,14 +32,6 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
-    }
-
-    public static Theme register(final Long id, final String name, final String description, final String thumbnail) {
-        return new Theme(id, name, description, thumbnail);
-    }
-
-    public static Theme create(final String name, final String description, final String thumbnail) {
-        return new Theme(null, name, description, thumbnail);
     }
 
     private void validateNotNull(

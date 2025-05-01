@@ -70,7 +70,7 @@ class TimeSlotServiceTest {
 
         var name = "포포";
         var date = Fixtures.ofTomorrow();
-        var reservation = Reservation.create(name, date, timeSlot, JUNK_THEME);
+        var reservation = new Reservation(name, date, timeSlot, JUNK_THEME);
         reservationRepository.save(reservation);
 
         // when & then

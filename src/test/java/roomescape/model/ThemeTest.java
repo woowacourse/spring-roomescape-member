@@ -16,7 +16,7 @@ public class ThemeTest {
     @DisplayName("테마 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
     void anyValueNullException(String name, String description, String thumbnail) {
         // given & when & then
-        assertThatThrownBy(() -> Theme.register(1L, name, description, thumbnail))
+        assertThatThrownBy(() -> new Theme(1L, name, description, thumbnail))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -24,7 +24,7 @@ public class ThemeTest {
     @DisplayName("이름이 10자 초과이면 예외가 발생한다")
     void nameLengthException() {
         // given & when & then
-        assertThatThrownBy(() -> Theme.register(
+        assertThatThrownBy(() -> new Theme(
             1L,
             "가".repeat(11),
             "우테코 레벨2를 탈출하는 내용입니다.",
@@ -36,7 +36,7 @@ public class ThemeTest {
     @DisplayName("설명이 50자 초과이면 예외가 발생한다")
     void descriptionLengthException() {
         // given & when & then
-        assertThatThrownBy(() -> Theme.register(
+        assertThatThrownBy(() -> new Theme(
             1L,
             "레벨2 탈출",
             "가".repeat(51),

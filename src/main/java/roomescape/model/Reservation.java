@@ -21,7 +21,11 @@ public class Reservation {
     private final TimeSlot timeSlot;
     private final Theme theme;
 
-    private Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+    public Reservation(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        this(null, name, date, timeSlot, theme);
+    }
+
+    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
         validateNotNull(name, date, timeSlot, theme);
         validateNameLength(name);
         this.id = id;
@@ -40,15 +44,6 @@ public class Reservation {
 
     public boolean isSameDateTime(final Reservation reservation) {
         return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
-    }
-
-    // TODO : 메서드명
-    public static Reservation register(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        return new Reservation(id, name, date, timeSlot, theme);
-    }
-
-    public static Reservation create(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        return new Reservation(null, name, date, timeSlot, theme);
     }
 
     private void validateNotNull(

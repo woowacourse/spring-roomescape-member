@@ -21,7 +21,7 @@ public class ThemeFakeRepository implements ThemeRepository {
     @Override
     public long save(final Theme theme) {
         var id = index.getAndIncrement();
-        var created = Theme.register(id, theme.name(), theme.description(), theme.thumbnail());
+        var created = new Theme(id, theme.name(), theme.description(), theme.thumbnail());
         themes.put(id, created);
         return id;
     }

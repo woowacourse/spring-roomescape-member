@@ -15,7 +15,11 @@ public class TimeSlot {
     private final Long id;
     private final LocalTime startAt;
 
-    private TimeSlot(final Long id, final LocalTime startAt) {
+    public TimeSlot(final LocalTime startAt) {
+        this(null, startAt);
+    }
+
+    public TimeSlot(final Long id, final LocalTime startAt) {
         validateNotNull(startAt);
         this.id = id;
         this.startAt = startAt;
@@ -27,14 +31,6 @@ public class TimeSlot {
 
     public boolean isSameTimeSlot(final TimeSlot timeSlot) {
         return this.id.equals(timeSlot.id());
-    }
-
-    public static TimeSlot register(final Long id, final LocalTime startAt) {
-        return new TimeSlot(id, startAt);
-    }
-
-    public static TimeSlot create(final LocalTime startAt) {
-        return new TimeSlot(null, startAt);
     }
 
     private void validateNotNull(final LocalTime time) {

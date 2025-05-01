@@ -20,7 +20,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
             var name = rs.getString("name");
             var description = rs.getString("description");
             var thumbnail = rs.getString("thumbnail");
-            return Theme.register(id, name, description, thumbnail);
+            return new Theme(id, name, description, thumbnail);
         };
 
     private final JdbcTemplate jdbcTemplate;
