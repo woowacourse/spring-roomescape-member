@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode(of = {"id"})
 public class Theme {
+
     private final Long id;
     private final String name;
     private final String description;
