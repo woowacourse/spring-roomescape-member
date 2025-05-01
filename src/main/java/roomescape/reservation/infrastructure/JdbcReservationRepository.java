@@ -137,20 +137,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByDateTime(LocalDate date, LocalTime time) {
+    public boolean existBy(Long themeId, LocalDate date, LocalTime time) {
         String sql = """               
                 SELECT COUNT(*)
                 FROM reservation as r
                 INNER JOIN reservation_time as t
+                INNER JOIN theme as th
                 ON r.time_id = t.id
-                WHERE r.date = ? and t.start_at = ?
+                WHERE r.date = ? and t.start_at = ? and th.id = ?
                 """;
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, Date.valueOf(date), Time.valueOf(time));
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, Date.valueOf(date), Time.valueOf(time), themeId);
         return count != 0;
     }
 
     @Override
-    public boolean existByThemeId(final Long themeId) {
+    public boolean existBy(final Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
         return count != 0;

@@ -33,7 +33,7 @@ class ReservationServiceTest {
             }
         };
         ThemeRepository themeRepository = new FakeThemeRepository(null);
-        Theme theme = new Theme(null, "테스트1", "설명", "localhost:8080");
+        Theme theme = new Theme(1L, "테스트1", "설명", "localhost:8080");
         themeRepository.save(theme);
 
         ReservationTime reservationTime1 = new ReservationTime(null, LocalTime.of(10, 0));

@@ -44,8 +44,7 @@ public class ReservationService {
             throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
         }
 
-        // TODO: 테마에 대한 조건 추가
-        if (reservationRepository.existByDateTime(request.date(), time.getStartAt())) {
+        if (reservationRepository.existBy(request.themeId(), request.date(), time.getStartAt())) {
             throw new IllegalArgumentException("이미 예약이 존재합니다.");
         }
 
