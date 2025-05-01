@@ -22,6 +22,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
+import roomescape.domain_entity.Theme;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.service.ReservationTimeService;
 
@@ -123,7 +124,10 @@ public class ReservationIntegratedTest {
     void retrieveReservationsWhenRead() {
         ReservationTime time = new ReservationTime(new Id(1L), LocalTime.of(10, 0, 0));
         timeDao.create(time);
-        reservationDao.create(new Reservation("브라운", LocalDate.of(2025, 4, 26), time));
+        reservationDao.create(new Reservation(
+                "브라운", LocalDate.of(2025, 4, 26), time,
+                new Theme("moda", "description", "thumbnail")
+        ));
 
         /**
          * todo : Id는 레코드임에도 불구하고 역직렬화 시 1이 역직렬화되지 않음

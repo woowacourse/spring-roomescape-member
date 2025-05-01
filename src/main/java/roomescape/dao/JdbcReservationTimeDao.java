@@ -12,11 +12,11 @@ import roomescape.domain_entity.ReservationTime;
 import roomescape.mapper.ReservationTimeMapper;
 
 @Component
-public class JdbcReservationReservationTimeDao implements ReservationTimeDao {
+public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcReservationReservationTimeDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
+import roomescape.domain_entity.Theme;
 
 public class ReservationMapper implements RowMapper<Reservation> {
 
@@ -20,6 +21,12 @@ public class ReservationMapper implements RowMapper<Reservation> {
                 new ReservationTime(
                         new Id(rs.getLong("time_id")),
                         rs.getObject("start_at", LocalTime.class)
+                ),
+                new Theme(
+                        rs.getLong("theme_id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
                 )
         );
     }

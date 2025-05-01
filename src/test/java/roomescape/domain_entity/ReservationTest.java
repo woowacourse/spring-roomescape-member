@@ -20,7 +20,8 @@ class ReservationTest {
                 new Id(1L),
                 TEST_NAME,
                 now.toLocalDate().minusDays(1),
-                new ReservationTime(now.toLocalTime())
+                new ReservationTime(now.toLocalTime()),
+                new Theme("moda", "description", "thumbnail")
         );
 
         //when & then
@@ -38,7 +39,8 @@ class ReservationTest {
                 new Id(1L),
                 TEST_NAME,
                 now.toLocalDate(),
-                new ReservationTime(now.toLocalTime().minusMinutes(1))
+                new ReservationTime(now.toLocalTime().minusMinutes(1)),
+                new Theme("moda", "description", "thumbnail")
         );
 
         //when & then
@@ -56,7 +58,8 @@ class ReservationTest {
                 new Id(1L),
                 TEST_NAME,
                 now.toLocalDate(),
-                new ReservationTime(now.toLocalTime())
+                new ReservationTime(now.toLocalTime()),
+                new Theme("moda", "description", "thumbnail")
         );
 
         //when & then
@@ -72,7 +75,8 @@ class ReservationTest {
                 new Id(1L),
                 TEST_NAME,
                 now.toLocalDate().plusDays(1),
-                new ReservationTime(now.toLocalTime())
+                new ReservationTime(now.toLocalTime()),
+                new Theme("moda", "description", "thumbnail")
         );
 
         //when & then
