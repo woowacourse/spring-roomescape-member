@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.entity.Reservation;
 import roomescape.model.entity.ReservationTime;
 import roomescape.model.entity.Theme;
+import roomescape.model.repository.ReservationRepository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;

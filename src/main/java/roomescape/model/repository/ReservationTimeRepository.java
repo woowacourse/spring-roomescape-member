@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.model.repository;
 
 import roomescape.model.entity.ReservationTime;
 

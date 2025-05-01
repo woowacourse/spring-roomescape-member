@@ -5,8 +5,8 @@ import roomescape.model.entity.ReservationTime;
 import roomescape.exception.impl.ConnectedReservationExistException;
 import roomescape.exception.impl.HasDuplicatedTimeException;
 import roomescape.exception.impl.ReservationTimeIntervalException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.model.repository.ReservationRepository;
+import roomescape.model.repository.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.model.entity.Theme;
+import roomescape.model.repository.ThemeRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;

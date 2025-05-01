@@ -6,9 +6,9 @@ import roomescape.model.entity.ReservationTime;
 import roomescape.model.entity.Theme;
 import roomescape.exception.impl.AlreadyReservedException;
 import roomescape.exception.impl.ReservationNotFoundException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.model.repository.ReservationRepository;
+import roomescape.model.repository.ReservationTimeRepository;
+import roomescape.model.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
