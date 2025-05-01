@@ -1,10 +1,14 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dto.AvailableTimeResponseDto;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ReservedChecker;
 import roomescape.repository.ReservedTimeChecker;
 
 @Service
@@ -12,11 +16,13 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservedTimeChecker reservedTimeChecker;
+    private final ReservedChecker reservedChecker;
 
     public ReservationTimeService(ReservationTimeRepository jdbcReservationTimeRepository,
-                                  ReservedTimeChecker reservedTimeChecker) {
+                                  ReservedTimeChecker reservedTimeChecker, ReservedChecker reservedChecker) {
         this.reservationTimeRepository = jdbcReservationTimeRepository;
         this.reservedTimeChecker = reservedTimeChecker;
+        this.reservedChecker = reservedChecker;
     }
 
     public ReservationTime addTime(LocalTime startAt) {
@@ -37,5 +43,19 @@ public class ReservationTimeService {
 
     public ReservationTime getReservationTimeById(Long id) {
         return reservationTimeRepository.findById(id);
+    }
+
+    public List<AvailableTimeResponseDto> getAvailableTimes(Long themeId, LocalDate date) {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.getAllTime();
+        List<AvailableTimeResponseDto> availableTimeResponseDtos = new ArrayList<>();
+        for (ReservationTime reservationTime : reservationTimes) {
+            boolean alreadyBooked = false;
+            if (reservedChecker.contains(date, reservationTime.getId(), themeId)) {
+                alreadyBooked = true;
+            }
+            availableTimeResponseDtos.add(
+                    new AvailableTimeResponseDto(reservationTime.getId(), reservationTime.getStartAt(), alreadyBooked));
+        }
+        return availableTimeResponseDtos;
     }
 }

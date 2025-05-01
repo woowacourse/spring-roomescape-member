@@ -10,16 +10,19 @@ import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservedChecker;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
+    private final ReservedChecker reservedChecker;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
 
-    public ReservationService(ReservationRepository reservationRepository,
+    public ReservationService(ReservationRepository reservationRepository, ReservedChecker reservedChecker,
                               ReservationTimeService reservationTimeService, ThemeService themeService) {
         this.reservationRepository = reservationRepository;
+        this.reservedChecker = reservedChecker;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
     }
@@ -37,7 +40,8 @@ public class ReservationService {
 
         validateFutureDateTime(reservationDateTime);
 
-        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId())) {
+        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId(),
+                reservationRequestDto.themeId())) {
             throw new IllegalArgumentException("Reservation already exists");
         }
 
@@ -59,8 +63,8 @@ public class ReservationService {
         }
     }
 
-    private boolean isAlreadyExist(LocalDate reservationDate, Long timeId) {
-        return reservationRepository.contains(reservationDate, timeId);
+    private boolean isAlreadyExist(LocalDate reservationDate, Long timeId, Long themeId) {
+        return reservedChecker.contains(reservationDate, timeId, themeId);
     }
 
 }
