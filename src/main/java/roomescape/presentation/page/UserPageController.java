@@ -1,4 +1,4 @@
-package roomescape.presentation;
+package roomescape.presentation.page;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ public final class UserPageController {
         return "index";
     }
 
-    @GetMapping("reservation")
+    @GetMapping("/reservation")
     public String reservation() {
         return "reservation";
     }
