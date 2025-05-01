@@ -23,18 +23,18 @@ public class ReservationApiController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping
-    public ResponseEntity<ReservationResponse> add(@RequestBody ReservationRequest reservationRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.add(reservationRequest));
-    }
-
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
         return ResponseEntity.ok(reservationService.findAll());
     }
 
+    @PostMapping
+    public ResponseEntity<ReservationResponse> add(@RequestBody ReservationRequest reservationRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.add(reservationRequest));
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         reservationService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

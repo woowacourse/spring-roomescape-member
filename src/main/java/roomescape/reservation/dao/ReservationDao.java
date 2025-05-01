@@ -30,13 +30,57 @@ public class ReservationDao implements Dao<Reservation> {
     }
 
     @Override
-    public Reservation add(Reservation reservation) {
+    public List<Reservation> findAll() {
+        String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date, 
+                       t.id AS time_id, t.start_at AS time_value, 
+                       e.id AS theme_id, e.name AS theme_name, 
+                       e.description AS theme_description, 
+                       e.thumbnail AS theme_thumbnail 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS e 
+                ON r.theme_id = e.id 
+                """;
+
+        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> createReservation(resultSet));
+    }
+
+    @Override
+    public Optional<Reservation> findById(final Long id) {
+        String sql = """
+                SELECT r.id AS reservation_id, r.name, r.date, 
+                t.id AS time_id, t.start_at AS time_value, 
+                e.id AS theme_id, e.name AS theme_name, 
+                e.description AS theme_description, 
+                e.thumbnail AS theme_thumbnail 
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id 
+                INNER JOIN theme AS e 
+                ON r.theme_id = e.id 
+                WHERE r.id = :id 
+                """;
+        Map<String, Object> parameter = Map.of("id", id);
+
+        try {
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
+                    (resultSet, rowNum) -> createReservation(resultSet)));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Reservation add(final Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", reservation.getName());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+
         return new Reservation(
                 id,
                 reservation.getName(),
@@ -47,56 +91,14 @@ public class ReservationDao implements Dao<Reservation> {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        String sql = "SELECT r.id AS reservation_id, r.name, r.date, "
-                + "t.id AS time_id, "
-                + "t.start_at AS time_value, "
-                + "e.id AS theme_id, "
-                + "e.name AS theme_name, "
-                + "e.description AS theme_description, "
-                + "e.thumbnail AS theme_thumbnail "
-                + "FROM reservation AS r "
-                + "INNER JOIN reservation_time AS t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme AS e "
-                + "ON r.theme_id = e.id "
-                + "WHERE r.id = :id";
-        Map<String, Object> parameter = Map.of("id", id);
-        try {
-            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
-                    (resultSet, rowNum) -> createReservation(resultSet)));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public List<Reservation> findAll() {
-        String sql = "SELECT r.id AS reservation_id, r.name, r.date, "
-                + "t.id AS time_id, "
-                + "t.start_at AS time_value, "
-                + "e.id AS theme_id, "
-                + "e.name AS theme_name, "
-                + "e.description AS theme_description, "
-                + "e.thumbnail AS theme_thumbnail "
-                + "FROM reservation AS r "
-                + "INNER JOIN reservation_time AS t "
-                + "ON r.time_id = t.id "
-                + "INNER JOIN theme AS e "
-                + "ON r.theme_id = e.id ";
-
-        return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> createReservation(resultSet));
-    }
-
-    @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String sql = "DELETE FROM reservation WHERE id = :id";
         Map<String, Object> parameter = Map.of("id", id);
 
         namedParameterJdbcTemplate.update(sql, parameter);
     }
 
-    private Reservation createReservation(ResultSet resultSet) throws SQLException {
+    private Reservation createReservation(final ResultSet resultSet) throws SQLException {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),

@@ -1,36 +1,25 @@
 package roomescape.reservation.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 class ReservationTest {
 
-    @DisplayName("지나간 날짜에 대한 예약을 생성할 시 예외가 발생한다")
+    @DisplayName("예약 아이디와 얘약 일자, 예약 시간 및 테마가 같은 경우 동일하다")
     @Test
-    void test1() {
-        //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+    void isEqual() {
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.parse("10:00"));
+        Theme theme = new Theme(1L, "roomescape", "timeAttack", "timeAttack.jpg");
 
-        //when&then
-        Assertions.assertThatThrownBy(() -> new Reservation(
-                1L, "riwon", LocalDate.now().minusDays(1), reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 지난 날짜로는 예약할 수 없습니다.");
-    }
+        Reservation reservation1 = new Reservation(1L, "user", LocalDate.parse("2025-05-05"), reservationTime, theme);
+        Reservation reservation2 = new Reservation(1L, "user", LocalDate.parse("2025-05-05"), reservationTime, theme);
 
-    @DisplayName("지나간 시간에 대한 예약을 생성할 시 예외가 발생한다")
-    @Test
-    void test2() {
-        //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().minusMinutes(1));
-
-        //when&then
-        Assertions.assertThatThrownBy(() -> new Reservation(1L, "riwon", LocalDate.now(), reservationTime))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
+        assertThat(reservation1.equals(reservation2)).isTrue();
     }
 }
