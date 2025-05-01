@@ -32,7 +32,7 @@ public class Reservation {
 
     public void validateReservationDateInFuture() {
         if (!this.date.isAfter(LocalDate.now())) {
-            throw new IllegalStateException("과거 및 당일 예약은 불가능합니다."); //TODO : exception 뭐로 하지?
+            throw new IllegalStateException("과거 및 당일 예약은 불가능합니다.");
         }
     }
 
