@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 
 public class FakeReservationDaoImpl implements ReservationDao {
 
@@ -27,6 +28,16 @@ public class FakeReservationDaoImpl implements ReservationDao {
     public void deleteReservation(Long id) {
         Reservation reservation = findById(id);
         reservations.remove(reservation);
+    }
+
+    @Override
+    public int findByTimeId(Long id) {
+        return 0;
+    }
+
+    @Override
+    public int findByDateAndTime(ReservationDate date, Long timeId) {
+        return 0;
     }
 
     private Reservation findById(long id) {

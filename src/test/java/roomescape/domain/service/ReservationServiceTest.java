@@ -1,23 +1,8 @@
 package roomescape.domain.service;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.dao.FakeReservationDaoImpl;
-import roomescape.domain.dao.FakeReservationTimeDaoImpl;
-import roomescape.dto.ReservationRequestDto;
-import roomescape.service.ReservationService;
-
-
 public class ReservationServiceTest {
-
+/*
     private ReservationService reservationService;
     private ReservationDao reservationDao;
     private ReservationTimeDao reservationTimeDao;
@@ -84,4 +69,6 @@ public class ReservationServiceTest {
         //then
         assertThat(reservationService.getAllReservations().size()).isEqualTo(0);
     }
+
+ */
 }

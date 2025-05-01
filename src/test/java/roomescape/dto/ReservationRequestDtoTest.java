@@ -17,6 +17,7 @@ class ReservationRequestDtoTest {
         assertThatThrownBy(() -> new ReservationRequestDto(
             text,
             "2024-12-02",
+            1L,
             1L
         ));
     }
@@ -28,6 +29,7 @@ class ReservationRequestDtoTest {
         assertThatThrownBy(() -> new ReservationRequestDto(
             "hi",
             text,
+            1L,
             1L
         ));
     }
@@ -38,6 +40,7 @@ class ReservationRequestDtoTest {
         assertThatThrownBy(() -> new ReservationRequestDto(
             "hi",
             "2024-13-12",
+            1L,
             1L
         ));
     }
@@ -48,7 +51,8 @@ class ReservationRequestDtoTest {
         assertThatThrownBy(() -> new ReservationRequestDto(
             "hi",
             "2024-12-02",
-            null
+            null,
+            1L
         ));
     }
 
@@ -58,6 +62,7 @@ class ReservationRequestDtoTest {
         assertThatCode(() -> new ReservationRequestDto(
             "hi",
             "2024-12-02",
+            1L,
             1L
         ));
     }
