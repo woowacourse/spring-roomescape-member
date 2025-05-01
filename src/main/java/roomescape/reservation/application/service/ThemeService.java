@@ -38,4 +38,10 @@ public class ThemeService {
 
         themeRepository.delete(id);
     }
+
+    public List<ThemeResponse> getPopularThemes() {
+        return themeRepository.findPopularThemes().stream()
+                .map(ThemeResponse::new)
+                .toList();
+    }
 }

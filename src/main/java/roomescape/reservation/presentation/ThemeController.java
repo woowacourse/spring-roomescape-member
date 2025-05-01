@@ -51,6 +51,14 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(
+    ){
+        return ResponseEntity.ok().body(
+                themeService.getPopularThemes()
+        );
+    }
+
     private URI createUri(Long themeId){
         return ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

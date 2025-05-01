@@ -84,4 +84,24 @@ public class ThemeDao implements ThemeRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public List<Theme> findPopularThemes() {
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail
+                FROM theme t
+                INNER JOIN reservation r ON t.id = r.theme_id
+                WHERE CAST(r.date AS DATE) BETWEEN DATEADD('DAY', -7, CURRENT_DATE()) AND DATEADD('DAY', -1, CURRENT_DATE())
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY COUNT(*) DESC
+                LIMIT 10;
+                """;
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        ));
+    }
 }

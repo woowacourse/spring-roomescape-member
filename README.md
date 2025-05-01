@@ -30,7 +30,7 @@
 
 ##  화면 명세서
 ###  1. 인기 테마 화면
-- [ ] `localhost:8080` 요청 시 인기 테마 랭킹 페이지 응답
+- [x] `localhost:8080` 요청 시 인기 테마 랭킹 페이지 응답
 
 ### 2. 관리자 화면
 - [x] `localhost:8080/admin` 요청 시 어드민 메인 페이지 응답
@@ -45,7 +45,7 @@
 - [x] `/admin/theme` 요청 시 테마 관리 페이지 응답
 
 ### 6. 사용자 예약 화면
-- [ ] `/reservation` 요청 시 사용자 예약 페이지 응답
+- [x] `/reservation` 요청 시 사용자 예약 페이지 응답
 
 ## API 명세서
 ## 예약 API
@@ -218,6 +218,28 @@ Content-Type: application/json
 #### Request
 ```
 GET /themes HTTP/1.1
+```
+
+#### Response
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+### 인기 테마 조회 API
+- [x] 인기 테마 조회 API 구현
+  - [x] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 조회한다.
+#### Request
+```
+GET /themes/popular HTTP/1.1
 ```
 
 #### Response
