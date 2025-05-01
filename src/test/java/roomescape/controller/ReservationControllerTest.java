@@ -1,91 +1,72 @@
 package roomescape.controller;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import org.assertj.core.api.Assertions;
+import static org.hamcrest.Matchers.equalTo;
+import java.util.HashMap;
+import java.util.Map;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.http.ResponseEntity;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationRequest;
-import roomescape.dto.response.ReservationResponse;
-import roomescape.repository.fake.FakeReservationRepository;
-import roomescape.repository.fake.FakeReservationTimeRepository;
-import roomescape.service.ReservationService;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import roomescape.service.stub.StubReservationService;
+import roomescape.service.stub.StubReservationTimeService;
 
-class ReservationControllerTest {
-    private final FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
-    private final FakeReservationTimeRepository fakeReservationTimeRepository = new FakeReservationTimeRepository();
-    private final ReservationController reservationController = new ReservationController(new ReservationService(fakeReservationRepository, fakeReservationTimeRepository));
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+public class ReservationControllerTest {
 
-    private void makeStubReservationTime(LocalTime startAt) {
-        fakeReservationTimeRepository.saveReservationTime(new ReservationTime(null, startAt));
-    }
-
-    @ParameterizedTest
-    @CsvSource(value = {"히스타, 2002-12-02, 18:00"})
-    void create(String nickname, LocalDate date, LocalTime time) {
-        // given
-        makeStubReservationTime(time);
-        ReservationRequest reservationRequest = new ReservationRequest(nickname, date, 1L);
-
-        // when
-        ResponseEntity<ReservationResponse> actualResponse = reservationController.create(reservationRequest);
-
-        // then
-        Assertions.assertThat(actualResponse).isNotNull();
-        Assertions.assertThat(actualResponse.getBody()).isNotNull();
-        assertAll(
-                () -> Assertions.assertThat(actualResponse.getStatusCode().is2xxSuccessful()).isTrue(),
-                () -> Assertions.assertThat(actualResponse.getBody().name()).isEqualTo(reservationRequest.name()),
-                () -> Assertions.assertThat(actualResponse.getBody().date()).isEqualTo(reservationRequest.date()),
-                () -> Assertions.assertThat(actualResponse.getBody().reservationTime().getId()).isEqualTo(1L),
-                () -> Assertions.assertThat(actualResponse.getBody().reservationTime().getStartAt()).isEqualTo(time)
-        );
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public ReservationController reservationController() {
+            return new ReservationController(new StubReservationService());
+        }
     }
 
     @Test
-    void read() {
-        // given
-        LocalDate givenDate = LocalDate.now();
-        LocalTime givenTime = LocalTime.now();
-        String givenName = "히스타";
+    void createReservation() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "히스타");
+        params.put("date", "2025-05-01");
+        params.put("themeId", "1");
+        params.put("timeId", "1");
 
-        makeStubReservationTime(givenTime);
-        ReservationRequest reservationRequest = new ReservationRequest(givenName, givenDate, 1L);
-        reservationController.create(reservationRequest);
-
-        // when
-        ResponseEntity<List<ReservationResponse>> actualResponse = reservationController.read();
-
-        // then
-        List<ReservationResponse> reservationList = actualResponse.getBody();
-
-        Assertions.assertThat(reservationList).hasSize(1);
-        assertAll(
-                () -> Assertions.assertThat(reservationList.getFirst().name()).isEqualTo(givenName),
-                () -> Assertions.assertThat(reservationList.getFirst().date()).isEqualTo(givenDate),
-                () -> Assertions.assertThat(reservationList.getFirst().reservationTime().getId()).isEqualTo(1L),
-                () -> Assertions.assertThat(reservationList.getFirst().reservationTime().getStartAt()).isEqualTo(givenTime)
-        );
+        RestAssured.given().log().all()
+                .contentType("application/json")
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .body("name", equalTo("히스타"))
+                .body("date", equalTo("2025-05-01"))
+                .body("theme.id", equalTo(1))
+                .body("time.id", equalTo(1))
+                .body("time.startAt", equalTo("12:00:00"))
+                .body("theme.name", equalTo("name"))
+                .body("theme.description", equalTo("description"))
+                .body("theme.thumbnail", equalTo("thumbnail"))
+                .statusCode(201);
     }
 
     @Test
-    void delete() {
-        // given
-        makeStubReservationTime(LocalTime.now());
-        ReservationRequest reservationRequest = new ReservationRequest("히스타", LocalDate.now(), 1L);
-        reservationController.create(reservationRequest);
+    void readReservation() {
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .body("[0].name", equalTo("히스타"))
+                .body("[0].date", equalTo("2025-05-01"))
+                .body("[0].theme.id", equalTo(1))
+                .body("[0].time.id", equalTo(1))
+                .body("[0].time.startAt", equalTo("12:00:00"))
+                .body("[0].theme.name", equalTo("name"))
+                .body("[0].theme.description", equalTo("description"))
+                .body("[0].theme.thumbnail", equalTo("thumbnail"))
+                .statusCode(200);
+    }
 
-
-        // when
-        reservationController.delete(1L);
-
-        // then
-        List<ReservationResponse> actualResponse = reservationController.read().getBody();
-        Assertions.assertThat(actualResponse).isEmpty();
+    @Test
+    void deleteReservation() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(204);
     }
 }
