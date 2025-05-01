@@ -80,4 +80,17 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
         String sql = "select exists (select 1 from reservation where theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
+
+    @Override
+    public List<Long> getBestThemesIdInDays(LocalDate startDate, LocalDate endDate) {
+        String sql = "select theme_id from reservation where date between ? and ? group by theme_id order by count(*) desc limit 10";
+
+        List<Long> longs = jdbcTemplate.queryForList(
+                sql,
+                Long.class,
+                startDate.toString(),
+                endDate.toString()
+        );
+        return longs;
+    }
 }
