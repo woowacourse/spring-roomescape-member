@@ -66,11 +66,11 @@ public class ReservationTimeRepository {
                 + "rt.id, "
                 + "rt.start_at, "
                 + "EXISTS ("
-                    + "SELECT * "
-                    + "FROM reservation AS r "
-                    + "WHERE r.time_id = rt.id "
-                    + "AND r.date = ? "
-                    + "AND r.theme_id = ? "
+                + "SELECT * "
+                + "FROM reservation AS r "
+                + "WHERE r.time_id = rt.id "
+                + "AND r.date = ? "
+                + "AND r.theme_id = ? "
                 + ") AS book_state "
                 + "FROM reservation_time AS rt ";
         return template.query(sql, reservationTimeWithBookStateMapper, date, themeId);

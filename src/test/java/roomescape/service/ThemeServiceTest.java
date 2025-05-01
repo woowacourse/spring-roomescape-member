@@ -1,14 +1,13 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static roomescape.test.fixture.ReservationTimeFixture.*;
-import static roomescape.test.fixture.ThemeFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.test.fixture.ReservationTimeFixture.addReservationTimeInRepository;
+import static roomescape.test.fixture.ThemeFixture.addThemeInRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
@@ -23,8 +22,6 @@ import roomescape.repository.ThemeRepository;
 import roomescape.test.fake.FakeReservationRepository;
 import roomescape.test.fake.FakeReservationTimeRepository;
 import roomescape.test.fake.FakeThemeRepository;
-import roomescape.test.fixture.ReservationTimeFixture;
-import roomescape.test.fixture.ThemeFixture;
 
 class ThemeServiceTest {
 
@@ -80,7 +77,7 @@ class ThemeServiceTest {
     @DisplayName("삭제할 테마가 존재하지 않는 경우 예외를 발생시킨다.")
     @Test
     void cannotDeleteThemeWhenEmptyTheme() {
-        assertThatThrownBy(()->  themeService.deleteThemeById(1L))
+        assertThatThrownBy(() -> themeService.deleteThemeById(1L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
     }
@@ -89,10 +86,11 @@ class ThemeServiceTest {
     @Test
     void cannotDeleteThemeWhenReservationExist() {
         ReservationTime reservationTime = addReservationTimeInRepository(reservationTimeRepository, LocalTime.now());
-        Theme theme = addThemeInRepository(themeRepository,"이름", "설명", "썸네일" );
-        reservationRepository.add(Reservation.createWithoutId("이름", LocalDate.now().plusDays(1), reservationTime, theme));
+        Theme theme = addThemeInRepository(themeRepository, "이름", "설명", "썸네일");
+        reservationRepository.add(
+                Reservation.createWithoutId("이름", LocalDate.now().plusDays(1), reservationTime, theme));
 
-        assertThatThrownBy(()-> themeService.deleteThemeById(theme.getId()))
+        assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 예약이 이미 존재하는 테마를 제거할 수 없습니다.");
     }

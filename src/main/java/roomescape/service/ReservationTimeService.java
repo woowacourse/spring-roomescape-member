@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeWithBookState;
 import roomescape.dto.ReservationTimeCreationRequest;
+import roomescape.dto.ReservationTimeWithBookState;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -72,7 +72,7 @@ public class ReservationTimeService {
 
     private void validateReservationTimeById(long reservationId) {
         Optional<ReservationTime> reservationTime = reservationTimeRepository.findById(reservationId);
-        if (reservationTime.isEmpty()){
+        if (reservationTime.isEmpty()) {
             throw new NotFoundException("[ERROR] ID에 해당하는 예약 시간이 존재하지 않습니다.");
         }
     }

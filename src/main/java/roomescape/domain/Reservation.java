@@ -17,7 +17,7 @@ public final class Reservation {
     private final Theme theme;
 
     public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
-                       final Theme theme) {
+            final Theme theme) {
         validateField(id, name, date, time, theme);
         this.id = id;
         this.name = name;

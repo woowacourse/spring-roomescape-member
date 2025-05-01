@@ -32,7 +32,8 @@ class ReservationServiceTest {
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
     private final ReservationTimeRepository timeRepository = new FakeReservationTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository();
-    private final ReservationService reservationService = new ReservationService(reservationRepository, timeRepository, themeRepository);
+    private final ReservationService reservationService = new ReservationService(reservationRepository, timeRepository,
+            themeRepository);
 
     @DisplayName("저장된 예약들을 조회할 수 있다")
     @Test

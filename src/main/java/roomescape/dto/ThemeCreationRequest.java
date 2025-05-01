@@ -1,7 +1,5 @@
 package roomescape.dto;
 
-import java.time.LocalDate;
-
 public record ThemeCreationRequest(String name, String description, String thumbnail) {
 
     public ThemeCreationRequest {

@@ -10,6 +10,7 @@ import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
+
     private final Map<Long, Theme> themes = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1);
 

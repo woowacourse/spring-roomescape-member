@@ -21,8 +21,8 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     public ReservationService(final ReservationRepository reservationRepository,
-                              final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
+            final ReservationTimeRepository reservationTimeRepository,
+            final ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
