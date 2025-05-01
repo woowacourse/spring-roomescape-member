@@ -32,30 +32,17 @@ public class ThemeService {
     }
 
     public ThemeResponse save(ThemeRequest request) {
-        if (themeDao.getCountByName(request.name()) != 0) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
-        }
-
+        validateThemeName(request);
         Theme theme = new Theme(
             request.name(),
             request.description(),
             request.thumbnail()
         );
-
-        try {
-            return ThemeResponse.from(themeDao.save(theme));
-        } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 테마 생성에 실패했습니다.");
-        }
+        return getThemeResponse(theme);
     }
 
     public void deleteById(Long id) {
-        if (reservationDao.getCountByThemeId(id) != 0) {
-            // TODO: dao에서 던지는 예외와 service에서 던지는 예외가 과연 같아도 되는가
-            throw new ThemeConstraintException();
-        }
+        validateIsConstraint(id);
         int count;
         try {
             count = themeDao.deleteById(id);
@@ -72,5 +59,27 @@ public class ThemeService {
         return themes.stream()
             .map(ThemeResponse::from)
             .toList();
+    }
+
+    private void validateThemeName(ThemeRequest request) {
+        if (themeDao.getCountByName(request.name()) != 0) {
+            throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
+        }
+    }
+
+    private void validateIsConstraint(Long id) {
+        if (reservationDao.getCountByThemeId(id) != 0) {
+            throw new ThemeConstraintException();
+        }
+    }
+
+    private ThemeResponse getThemeResponse(Theme theme) {
+        try {
+            return ThemeResponse.from(themeDao.save(theme));
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 테마 생성에 실패했습니다.");
+        }
     }
 }

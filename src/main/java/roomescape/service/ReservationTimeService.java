@@ -20,8 +20,10 @@ public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
     private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao,
-        ReservationDao reservationDao) {
+    public ReservationTimeService(
+        ReservationTimeDao reservationTimeDao,
+        ReservationDao reservationDao
+    ) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
     }
@@ -30,10 +32,10 @@ public class ReservationTimeService {
         ReservationTime reservationTime = new ReservationTime(request.startAt());
         try {
             reservationTime = reservationTimeDao.save(reservationTime);
+            return ReservationTimeResponse.from(reservationTime);
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 예약 시간 생성에 실패하였습니다");
         }
-        return ReservationTimeResponse.from(reservationTime);
     }
 
     public List<ReservationTimeResponse> findAll() {
@@ -62,7 +64,7 @@ public class ReservationTimeService {
             .map(time -> {
                 Long timeId = time.getId();
                 boolean isBooked = (reservationDao.getCountByTimeIdAndThemeIdAndDate(timeId, themeId, date) != 0);
-                return new ReservationAvailableTimeResponse(timeId, time.getStartAt(), isBooked);
+                return ReservationAvailableTimeResponse.from(time, isBooked);
             }).toList();
     }
 }

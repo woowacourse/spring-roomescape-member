@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.TimeConstraintException;
 
 @Repository
 public class ReservationTimeDao {
@@ -58,16 +56,10 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query(
-            "select * from reservation_time",
-            rowMapper
-        );
+        return jdbcTemplate.query("select * from reservation_time", rowMapper);
     }
 
     public int deleteById(Long id) {
-        return jdbcTemplate.update(
-            "delete from reservation_time where id = ?",
-            id
-        );
+        return jdbcTemplate.update("delete from reservation_time where id = ?", id);
     }
 }

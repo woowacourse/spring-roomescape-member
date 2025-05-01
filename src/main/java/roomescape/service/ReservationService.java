@@ -3,7 +3,6 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -41,37 +40,6 @@ public class ReservationService {
             .toList();
     }
 
-    public ReservationResponse save(ReservationRequest request) {
-        int count = reservationDao.getCountByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
-        if (count != 0) {
-            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
-        }
-
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(request.timeId());
-        Optional<Theme> theme = themeDao.findById(request.themeId());
-        if (reservationTime.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다");
-        }
-        if (theme.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다");
-        }
-        validateDateTime(request.date(), reservationTime.get());
-        Reservation reservation = new Reservation(
-            request.name(),
-            request.date(),
-            reservationTime.get(),
-            theme.get()
-        );
-        try {
-            return ReservationResponse.from(reservationDao.save(reservation));
-            // TODO: 이 예외는 어디서 catch하는게 맞을가? service vs dao
-        } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
-        }
-    }
-
     public void deleteReservation(Long id) {
         int deleteCount = reservationDao.deleteById(id);
         if(deleteCount == 0) {
@@ -79,10 +47,63 @@ public class ReservationService {
         }
     }
 
-    private void validateDateTime(LocalDate date, ReservationTime time) {
+    public ReservationResponse save(ReservationRequest request) {
+        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(request.timeId());
+        Optional<Theme> theme = themeDao.findById(request.themeId());
+        validateSaveReservation(request, reservationTime, theme);
+        Reservation reservation = new Reservation(
+            request.name(),
+            request.date(),
+            reservationTime.get(),
+            theme.get()
+        );
+        return getReservationResponse(reservation);
+    }
+
+    private void validateSaveReservation(
+        ReservationRequest request,
+        Optional<ReservationTime> reservationTime,
+        Optional<Theme> theme
+    ) {
+        validateIsDuplicate(request);
+        validateHasTime(reservationTime);
+        validateHasTheme(theme);
+        validateNotPast(request.date(), reservationTime.get());
+    }
+
+    private void validateIsDuplicate(ReservationRequest request) {
+        int count = reservationDao.getCountByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
+        if (count != 0) {
+            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
+        }
+    }
+
+    private void validateHasTime(Optional<ReservationTime> reservationTime) {
+        if (reservationTime.isEmpty()) {
+            throw new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다");
+        }
+    }
+
+    private void validateHasTheme(Optional<Theme> theme) {
+        if (theme.isEmpty()) {
+            throw new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다");
+        }
+    }
+
+    private void validateNotPast(LocalDate date, ReservationTime time) {
         LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
         if(dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("[ERROR] 현재보다 과거 시간에는 예약이 불가능합니다.");
+        }
+    }
+
+    private ReservationResponse getReservationResponse(Reservation reservation) {
+        try {
+            return ReservationResponse.from(reservationDao.save(reservation));
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
         }
     }
 }

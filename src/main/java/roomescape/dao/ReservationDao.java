@@ -81,15 +81,17 @@ public class ReservationDao {
         parameters.put("theme_id", reservation.getTheme().getId());
 
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(),
-            reservation.getTime(), reservation.getTheme());
+        return new Reservation(
+            id,
+            reservation.getName(),
+            reservation.getDate(),
+            reservation.getTime(),
+            reservation.getTheme()
+        );
     }
 
     public int deleteById(Long id) {
-        return jdbcTemplate.update(
-            "delete from reservation where id = ?",
-            id
-        );
+        return jdbcTemplate.update("delete from reservation where id = ?", id);
     }
 
     public int getCountByThemeId(Long themeId) {

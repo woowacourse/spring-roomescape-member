@@ -11,9 +11,9 @@ public class Theme {
 
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
-        this.name = Objects.requireNonNull(name);
-        this.description = Objects.requireNonNull(description);
-        this.thumbnail = Objects.requireNonNull(thumbnail);
+        this.name = Objects.requireNonNull(name, "[ERROR] 테마명은 null이 될 수 없습니다.");
+        this.description = Objects.requireNonNull(description, "[ERROR] 설명은 null이 될 수 없습니다.");
+        this.thumbnail = Objects.requireNonNull(thumbnail, "[ERROR] 섬네일은 nulll이 될 수 없습니다.");
     }
 
     public Theme(String name, String description, String thumbnail) {

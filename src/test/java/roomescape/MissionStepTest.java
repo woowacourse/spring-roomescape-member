@@ -174,7 +174,7 @@ public class MissionStepTest {
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
-        //TODO: id값 의존성 제거?
+
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(params)

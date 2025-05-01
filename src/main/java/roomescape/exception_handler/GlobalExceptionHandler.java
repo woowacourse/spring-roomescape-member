@@ -1,6 +1,5 @@
 package roomescape.exception_handler;
 
-import java.util.NoSuchElementException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

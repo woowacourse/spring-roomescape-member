@@ -30,7 +30,6 @@ class ReservationDaoTest {
 
     Reservation savedReservation;
 
-    //TODO: dao 테스트에서 dao 코드를 사용해도 될까?
     @BeforeEach
     void beforeEach() {
         reservationDao = new ReservationDao(jdbcTemplate);
