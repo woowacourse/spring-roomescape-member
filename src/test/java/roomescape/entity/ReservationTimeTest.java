@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class ReservationTimeTest {
 
     @Test
-    @DisplayName("start_at 값이 null이나 공백을 입력할 경우, 예외가 발생한다.")
+    @DisplayName("start_at 값이 null일 경우, 예외가 발생한다.")
     void error_validationTime() {
         assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(IllegalArgumentException.class)

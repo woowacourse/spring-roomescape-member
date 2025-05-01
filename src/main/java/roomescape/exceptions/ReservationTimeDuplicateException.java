@@ -5,6 +5,6 @@ import java.time.LocalTime;
 public class ReservationTimeDuplicateException extends EntityDuplicateException {
 
     public ReservationTimeDuplicateException(String message, LocalTime time) {
-        super("[ERROR] " + message + " " + time);
+        super(message + " " + time);
     }
 }
