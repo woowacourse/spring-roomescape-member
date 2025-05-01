@@ -197,6 +197,7 @@ function requestRead(endpoint) {
     return fetch(endpoint)
         .then(response => {
             if (response.status === 200) return response.json();
+            response.text().then(errorMessage => alert(errorMessage));
             throw new Error('Read failed');
         });
 }

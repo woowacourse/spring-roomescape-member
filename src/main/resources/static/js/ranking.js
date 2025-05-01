@@ -15,9 +15,9 @@ function render(data) {
           response 명세에 맞춰 name, thumbnail, description 값 설정
     */
     data.forEach(theme => {
-        const name = '';
-        const thumbnail = '';
-        const description = '';
+        const name = theme.name;
+        const thumbnail = theme.thumbnail;
+        const description = theme.description;
 
         const htmlContent = `
             <img class="mr-3 img-thumbnail" src="${thumbnail}" alt="${name}">
@@ -39,6 +39,7 @@ function requestRead(endpoint) {
     return fetch(endpoint)
         .then(response => {
             if (response.status === 200) return response.json();
+            response.text().then(errorMessage => alert(errorMessage));
             throw new Error('Read failed');
         });
 }

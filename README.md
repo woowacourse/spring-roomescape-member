@@ -23,6 +23,7 @@
 - [x] 테마 이름은 최소 1글자, 최대 20글자이다.
 - [x] 테마 소개는 최소 5글자, 최대 200글자이다.
 - [x] 테마 이름은 중복될 수 없다.
+- [ ] 인기 테마는 최근 일주일을 기준으로 가장 예약이 많은 상위 10개의 테마이다.
 
 ## 페이지 목록
 
@@ -194,6 +195,30 @@ DELETE /times/1 HTTP/1.1
 HTTP/1.1 204
 ```
 
+#### 예약 가능 시간 조회 API
+
+**Request**
+
+```
+GET /available-times?date=2025-03-30&themeId=1 HTTP/1.1
+```
+
+**Response**
+
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+        "startAt": "10:00",
+        "alreadyBooked": false
+    }
+]
+```
+
+
 ### 테마 API
 
 #### 테마 추가 API
@@ -246,7 +271,7 @@ Content-Type: application/json
         "name": "레벨2 탈출",
         "description": "우테코 레벨2를 탈출하는 내용입니다.",
         "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    }
+   }
 ]
 ```
 
@@ -264,12 +289,12 @@ DELETE /themes/1 HTTP/1.1
 HTTP/1.1 204
 ```
 
-#### 예약 가능 시간 조회 API
+#### 인기 테마 조회 API
 
 **Request**
 
 ```
-GET /available-times?date=2025-03-30&themeId=1 HTTP/1.1
+GET /popular-themes HTTP/1.1
 ```
 
 **Response**
@@ -279,10 +304,17 @@ HTTP/1.1 200
 Content-Type: application/json
 
 [
-    {
+   {
+        "id": 2,
+        "name": "레벨1 탈출",
+        "description": "우테코 레벨1을 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+   },
+   {
         "id": 1,
-        "startAt": "10:00",
-        "alreadyBooked": false
-    }
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+   }
 ]
 ```
