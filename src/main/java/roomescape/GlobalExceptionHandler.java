@@ -9,11 +9,12 @@ import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.ThemeNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = {ReservationNotFoundException.class, PlayTimeNotFoundException.class})
+    @ExceptionHandler(value = {ReservationNotFoundException.class, PlayTimeNotFoundException.class, ThemeNotFoundException.class})
     public ResponseEntity<Void> handleNotFoundException(final NoSuchElementException e) {
         return ResponseEntity.notFound().build();
     }

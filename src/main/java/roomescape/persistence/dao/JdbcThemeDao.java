@@ -6,9 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Theme;
-import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ThemeEntity;
 
 @Repository
@@ -44,5 +42,13 @@ public class JdbcThemeDao implements ThemeDao {
         return jdbcTemplate.query(sql, ThemeEntity.getDefaultRowMapper()).stream()
                 .map(ThemeEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public boolean remove(final Long id) {
+        final String sql = "DELETE FROM theme WHERE id = ?";
+        final int rowNum = jdbcTemplate.update(sql, id);
+
+        return rowNum == 1;
     }
 }

@@ -8,4 +8,6 @@ public interface ThemeDao {
     Long save(Theme theme);
 
     List<Theme> findAll();
+
+    boolean remove(Long id);
 }

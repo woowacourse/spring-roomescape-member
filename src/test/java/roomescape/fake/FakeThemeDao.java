@@ -41,4 +41,15 @@ public class FakeThemeDao implements ThemeDao {
                 .map(ThemeEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean remove(final Long id) {
+        try {
+            themes.remove(themes.get(Math.toIntExact(id)));
+            index--;
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
+    }
 }

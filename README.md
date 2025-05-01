@@ -34,5 +34,5 @@
   - [x] 모든 테마 조회에 성공하면 HTTP status code 200을 응답한다.
 - [x] 테마를 추가한다.
   - [x] 테마 추가에 성공하면 HTTP status code 201을 응답한다.
-- [ ] 테마를 삭제한다.
-  - [ ] 테마 삭제에 성공하면 HTTP status code 204를 응답한다.
+- [x] 테마를 삭제한다.
+  - [x] 테마 삭제에 성공하면 HTTP status code 204를 응답한다.
