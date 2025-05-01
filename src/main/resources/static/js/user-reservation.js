@@ -1,5 +1,5 @@
 const THEME_API_ENDPOINT = '/themes';
-const TIME_API_ENDPOINT = '/times';
+const TIME_AVAILABLE_ENDPOINT = '/times/available';
 
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
@@ -83,7 +83,7 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
-    fetch(`${TIME_API_ENDPOINT}?date=${date}&themeId=${themeId}`, {
+    fetch(`${TIME_AVAILABLE_ENDPOINT}?date=${date}&themeId=${themeId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
