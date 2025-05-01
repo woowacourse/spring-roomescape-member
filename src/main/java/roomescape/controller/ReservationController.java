@@ -1,7 +1,7 @@
 package roomescape.controller;
 
 import java.util.List;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,7 +32,7 @@ public class ReservationController {
 
     @PostMapping()
     public ResponseEntity<ReservationResponse> reservationAdd(@RequestBody ReservationRequest request) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(roomescapeService.addReservation(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(roomescapeService.addReservation(request));
     }
 
     @DeleteMapping("/{id}")
