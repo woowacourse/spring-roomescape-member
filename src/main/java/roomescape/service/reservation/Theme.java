@@ -29,6 +29,10 @@ public final class Theme {
         return name.getName();
     }
 
+    public ThemeName getThemeName() {
+        return name;
+    }
+
     public String getDescription() {
         return description.getDescription();
     }

@@ -35,7 +35,7 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
         final long id = insertReservationTimeAndRetrieveKey(reservationTime);
-        return findById(id);
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override

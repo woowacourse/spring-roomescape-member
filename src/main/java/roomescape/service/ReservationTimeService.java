@@ -27,9 +27,9 @@ public class ReservationTimeService {
         if (reservationTimeDao.isExistsByTime(reservationTimeRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
-        final ReservationTime convertedRequest = reservationTimeRequest.converToReservationTime();
-        final ReservationTime reservationTime = reservationTimeDao.save(convertedRequest);
-        return new ReservationTimeResponse(reservationTime);
+        final ReservationTime reservationTime = reservationTimeRequest.converToReservationTime();
+        final ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
+        return new ReservationTimeResponse(savedReservationTime);
     }
 
     public List<ReservationTimeResponse> getReservationTimes() {
@@ -46,21 +46,21 @@ public class ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> findAvailableTimes(final LocalDate date, final long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        List<Reservation> reservations = reservationDao.findAllByDateAndThemeId(date, themeId);
-        List<AvailableTimeResponse> responses = new ArrayList<>();
-        for (ReservationTime reservationTime : reservationTimes) {
-            boolean alreadyBooked = false;
-            for (Reservation reservation : reservations) {
-                if (reservation.isSameTime(reservationTime)) {
-                    alreadyBooked = true;
-                    break;
-                }
+        final List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        final List<Reservation> reservations = reservationDao.findAllByDateAndThemeId(date, themeId);
+        final List<AvailableTimeResponse> responses = new ArrayList<>();
+        return reservationTimes.stream()
+                .map(time -> new AvailableTimeResponse(time.getId(), time.getStartAt(),
+                        isAlreadyBooked(time, reservations)))
+                .toList();
+    }
+
+    private boolean isAlreadyBooked(final ReservationTime reservationTime, final List<Reservation> reservations) {
+        for (final Reservation reservation : reservations) {
+            if (reservation.isSameTime(reservationTime)) {
+                return true;
             }
-            AvailableTimeResponse response = new AvailableTimeResponse(reservationTime.getId(),
-                    reservationTime.getStartAt(), alreadyBooked);
-            responses.add(response);
         }
-        return responses;
+        return false;
     }
 }

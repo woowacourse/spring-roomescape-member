@@ -62,7 +62,7 @@ public class H2ThemeDao implements ThemeDao {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         final String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
@@ -79,5 +79,12 @@ public class H2ThemeDao implements ThemeDao {
                      LIMIT ?
                 """;
         return jdbcTemplate.query(sql, themeMapper, from , to, count);
+    }
+
+    @Override
+    public boolean isNotExistsById(long id) {
+        final String sql = "SELECT COUNT(*) FROM theme WHERE id = ?";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, id);
+        return count == 0;
     }
 }

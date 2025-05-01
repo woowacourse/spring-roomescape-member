@@ -39,7 +39,7 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         Theme theme = findById(id);
         themes.remove(theme);
     }
@@ -51,5 +51,11 @@ public class FakeThemeDao implements ThemeDao {
     @Override
     public List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count) {
         return null;
+    }
+
+    @Override
+    public boolean isNotExistsById(long id) {
+        return themes.stream()
+                .noneMatch(theme -> theme.getId() == id);
     }
 }

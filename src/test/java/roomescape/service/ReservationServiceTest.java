@@ -55,6 +55,20 @@ class ReservationServiceTest {
                 .hasMessage("예약 시간이 존재하지 않습니다.");
     }
 
+    @DisplayName("테마가 존재하지 않을 경우 예외가 발생한다.")
+    @Test
+    void testValidateTheme() {
+        // given
+        ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
+        ReservationTime savedTime = reservationTimeDao.save(time);
+        ReservationRequest request = new ReservationRequest("leo", tomorrow, savedTime.getId(), 1L);
+        // when
+        // then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("테마가 존재하지 않습니다.");
+    }
+
     @DisplayName("과거 시간에 예약할 경우 예외가 발생한다.")
     @Test
     void testValidatePastTime() {

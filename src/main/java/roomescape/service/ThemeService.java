@@ -8,7 +8,6 @@ import roomescape.controller.dto.ThemeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 import roomescape.service.reservation.Theme;
-import roomescape.service.reservation.ThemeName;
 
 @Service
 public class ThemeService {
@@ -22,16 +21,16 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(final ThemeRequest themeRequest) {
-        final ThemeName name = new ThemeName(themeRequest.name());
-        if (themeDao.isExists(name)) {
+        Theme theme = themeRequest.convertToTheme();
+        if (themeDao.isExists(theme.getThemeName())) {
             throw new IllegalArgumentException("해당 이름의 테마는 이미 존재합니다.");
         }
-        Theme savedTheme = themeDao.save(themeRequest.convertToTheme());
+        final Theme savedTheme = themeDao.save(theme);
         return new ThemeResponse(savedTheme);
     }
 
     public List<ThemeResponse> findAll() {
-        List<Theme> themes = themeDao.findAll();
+        final List<Theme> themes = themeDao.findAll();
         return themes.stream()
                 .map(ThemeResponse::new)
                 .toList();
@@ -45,9 +44,9 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        LocalDate from = LocalDate.now().minusDays(7);
-        LocalDate to = LocalDate.now().minusDays(1);
-        List<Theme> popularThemes = themeDao.findPopularThemes(from, to, 10);
+        final LocalDate from = LocalDate.now().minusDays(7);
+        final LocalDate to = LocalDate.now().minusDays(1);
+        final List<Theme> popularThemes = themeDao.findPopularThemes(from, to, 10);
         return popularThemes.stream()
                 .map(ThemeResponse::new)
                 .toList();

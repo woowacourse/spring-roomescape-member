@@ -27,18 +27,14 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
-        if (reservationDao.isExistsByDateAndTimeId(reservationRequest.date(), reservationRequest.timeId())) {
-            throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다.");
-        }
-        if (reservationTimeDao.isNotExistsById(reservationRequest.timeId())) {
-            throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
-        }
-        // TODO 테마가 존재하지 않습니다
-        final ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        final Theme theme = themeDao.findById(reservationRequest.themeId());
+        final ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
+        final Theme theme = findTheme(reservationRequest.themeId());
         final Reservation reservation = reservationRequest.convertToReservation(reservationTime, theme);
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
+        }
+        if (reservationDao.isExistsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
+            throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다.");
         }
         final Reservation savedReservation = reservationDao.save(reservation);
         return new ReservationResponse(savedReservation);
@@ -52,5 +48,19 @@ public class ReservationService {
 
     public void cancelReservationById(final long id) {
         reservationDao.deleteById(id);
+    }
+
+    private ReservationTime findReservationTime(final long timeId) {
+        if (reservationTimeDao.isNotExistsById(timeId)) {
+            throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
+        }
+        return reservationTimeDao.findById(timeId);
+    }
+
+    private Theme findTheme(final long themeId) {
+        if (themeDao.isNotExistsById(themeId)) {
+            throw new IllegalArgumentException("테마가 존재하지 않습니다.");
+        }
+        return themeDao.findById(themeId);
     }
 }

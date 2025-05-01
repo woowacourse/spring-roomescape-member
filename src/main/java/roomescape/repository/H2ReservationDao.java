@@ -68,7 +68,8 @@ public class H2ReservationDao implements ReservationDao {
     @Override
     public Reservation save(final Reservation reservation) {
         long id = insertReservationAndRetrieveKey(reservation);
-        return getReservationById(id);
+        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
+                reservation.getTheme());
     }
 
     @Override

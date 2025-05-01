@@ -15,7 +15,9 @@ public interface ThemeDao {
 
     Theme findById(long id);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
     List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count);
+
+    boolean isNotExistsById(long id);
 }
