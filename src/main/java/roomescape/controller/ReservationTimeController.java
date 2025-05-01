@@ -31,8 +31,8 @@ public class ReservationTimeController {
 
     @GetMapping("/{date}/{themeId}/times")
     public List<ReservationTimeWithBookState> getReservationTimesInThemeAndDate(
-            @PathVariable("date")LocalDate date, @PathVariable("themeId") Long themId) {
-        return reservationTimeService.getAllReservationTimeWithBookState(date,themId);
+            @PathVariable("date") LocalDate date, @PathVariable("themeId") Long themId) {
+        return reservationTimeService.getAllReservationTimeWithBookState(date, themId);
     }
 
     @PostMapping("/times")

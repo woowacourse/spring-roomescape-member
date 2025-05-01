@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import java.time.LocalTime;
 import java.util.Objects;
 
 public class Theme {
@@ -61,6 +60,7 @@ public class Theme {
         validateNullThumbnail(thumbnail);
 
     }
+
     private void validateNullId(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("[ERROR] 비어있는 ID로 테마를 생성할 수 없습니다.");

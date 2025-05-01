@@ -10,11 +10,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
 @Repository
-public class H2ThemeRepository implements ThemeRepository{
+public class H2ThemeRepository implements ThemeRepository {
 
     private static final RowMapper<Theme> mapper;
     private final JdbcTemplate jdbcTemplate;
@@ -67,17 +66,17 @@ public class H2ThemeRepository implements ThemeRepository{
 
     public List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate) {
         String sql =
-            """
-            SELECT t.id, t.name, t.description, t.thumbnail
-            FROM theme AS t
-            ORDER BY (
-                SELECT COUNT(*)
-                FROM reservation AS r
-                WHERE r.theme_id = t.id 
-                AND r.date >= ? AND r.date <= ?
-            ) DESC 
-            LIMIT 10;
-            """;
+                """
+                        SELECT t.id, t.name, t.description, t.thumbnail
+                        FROM theme AS t
+                        ORDER BY (
+                            SELECT COUNT(*)
+                            FROM reservation AS r
+                            WHERE r.theme_id = t.id 
+                            AND r.date >= ? AND r.date <= ?
+                        ) DESC 
+                        LIMIT 10;
+                        """;
 
         return jdbcTemplate.query(sql, mapper, startDate, endDate);
     }
