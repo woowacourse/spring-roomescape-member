@@ -179,4 +179,10 @@ class ReservationServiceTest {
             assertThat(top10Theme.get(2).getId()).isEqualTo(3L);
         });
     }
+
+    @Test
+    void 존재하지_않는_예약을_조회시_예외가_발생한다() {
+        assertThatThrownBy(() -> reservationService.getReservationById(-1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

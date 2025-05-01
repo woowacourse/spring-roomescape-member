@@ -84,4 +84,10 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(duplicateAddReservationTime))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 존재하지_않는_시간을_조회시_예외가_발생한다() {
+        assertThatThrownBy(() -> reservationTimeService.getReservationTimeById(-1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

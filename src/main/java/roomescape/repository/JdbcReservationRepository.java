@@ -102,6 +102,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existsByThemeId(long themeId) {
+        String sql = "select count(id) from reservation where theme_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, themeId) > 0;
+    }
+
+    @Override
     public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
                 select 
