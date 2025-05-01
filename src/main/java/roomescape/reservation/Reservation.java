@@ -1,8 +1,6 @@
 package roomescape.reservation;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import roomescape.globalexception.BadRequestException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 
@@ -24,23 +22,6 @@ public class Reservation {
 
     public Reservation(final String name, final LocalDate date) {
         this(null, name, date, null, null);
-    }
-
-    public static Reservation of(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
-        validateTense(dateTime);
-        return new Reservation(null, name, date, reservationTime, theme);
-    }
-
-    private static void validateTense(final LocalDateTime dateTime) {
-        if (isPastTense(dateTime)) {
-            throw new BadRequestException("과거시점으로 예약을 진행할 수 없습니다.");
-        }
-    }
-
-    private static boolean isPastTense(final LocalDateTime dateTime) {
-        LocalDateTime now = LocalDateTime.now();
-        return dateTime.isBefore(now);
     }
 
     public Long getId() {
