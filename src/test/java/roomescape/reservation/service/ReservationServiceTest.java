@@ -1,5 +1,7 @@
 package roomescape.reservation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -25,8 +27,6 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.H2ReservationTimeRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.service.ReservationTimeService;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 @JdbcTest
@@ -106,7 +106,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_정보를_아이디로_조회한다() {
+    void 예약_정보를_id로_조회한다() {
         // given
         final String name = "헤일러";
         final LocalTime time = LocalTime.parse("10:00");
@@ -222,9 +222,8 @@ class ReservationServiceTest {
     void 예약_정보를_저장할_때_예약시간이_존재하지않으면_예외가_발생한다() {
         // given
         final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
         final LocalDate date = LocalDate.parse("2023-08-05");
-        final Long timeId = 999L;
+        final Long timeId = Long.MAX_VALUE;
 
         final String themeName = "공포";
         final String description = "무섭다";
@@ -234,6 +233,33 @@ class ReservationServiceTest {
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.save(name, date, timeId, themeId))
                 .isInstanceOf(DataNotFoundException.class);
+    }
+
+    @Test
+    void 한_테마의_날짜와_시간이_중복_될_수_없다() {
+        // given
+        final String name = "헤일러";
+        final LocalTime time = LocalTime.parse("10:00");
+        final LocalDate date = LocalDate.parse("2023-08-05");
+        final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
+
+        final String themeName = "공포";
+        final String description = "무섭다";
+        final String thumbnail = "귀신사진";
+        final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
+
+        reservationRepository.save(
+                new Reservation(
+                        name,
+                        date,
+                        new ReservationTime(timeId, time),
+                        new Theme(themeId, themeName, description, thumbnail)
+                )
+        );
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> reservationService.save("우가", date, timeId, themeId))
+                .isInstanceOf(DataExistException.class);
     }
 
     @TestConfiguration
