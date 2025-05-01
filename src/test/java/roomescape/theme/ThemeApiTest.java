@@ -31,6 +31,7 @@ public class ThemeApiTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM theme");
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
@@ -79,7 +80,7 @@ public class ThemeApiTest {
         @DisplayName("theme 삭제")
         @Test
         void delete1() {
-            jdbcTemplate.update("INSERT INTO THEME(name, description, thumbnail), (?, ?, ?)", "", "", "");
+            jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES(?, ?, ?)", "", "", "");
 
             RestAssured.given().log().all()
                     .port(port)
