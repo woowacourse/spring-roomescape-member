@@ -65,13 +65,9 @@ public class ReservationTimeDao {
     }
 
     public int deleteById(Long id) {
-        try {
-            return jdbcTemplate.update(
-                "delete from reservation_time where id = ?",
-                id
-            );
-        } catch (DataIntegrityViolationException e) {
-            throw new TimeConstraintException();
-        }
+        return jdbcTemplate.update(
+            "delete from reservation_time where id = ?",
+            id
+        );
     }
 }

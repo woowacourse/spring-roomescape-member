@@ -3,7 +3,6 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.exception.ThemeConstraintException;
 
 @Repository
 public class ThemeDao {
@@ -46,12 +44,8 @@ public class ThemeDao {
     }
 
     public int deleteById(Long id) {
-        try {
-            String query = "DELETE FROM theme WHERE id = ?";
-            return jdbcTemplate.update(query, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new ThemeConstraintException();
-        }
+        String query = "DELETE FROM theme WHERE id = ?";
+        return jdbcTemplate.update(query, id);
     }
 
     public Optional<Theme> findById(Long id) {

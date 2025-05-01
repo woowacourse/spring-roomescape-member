@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -55,8 +56,12 @@ public class ThemeService {
             // TODO: dao에서 던지는 예외와 service에서 던지는 예외가 과연 같아도 되는가
             throw new ThemeConstraintException();
         }
-
-        int count = themeDao.deleteById(id);
+        int count;
+        try {
+            count = themeDao.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new ThemeConstraintException();
+        }
         if (count == 0) {
             throw new ResourceNotExistException();
         }

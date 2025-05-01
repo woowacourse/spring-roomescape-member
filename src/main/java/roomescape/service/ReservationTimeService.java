@@ -3,6 +3,7 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -11,6 +12,7 @@ import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationAvailableTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ResourceNotExistException;
+import roomescape.exception.TimeConstraintException;
 
 @Service
 public class ReservationTimeService {
@@ -42,7 +44,12 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        int deleteCount = reservationTimeDao.deleteById(id);
+        int deleteCount;
+        try {
+            deleteCount = reservationTimeDao.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new TimeConstraintException();
+        }
         if (deleteCount == 0) {
             throw new ResourceNotExistException();
         }
