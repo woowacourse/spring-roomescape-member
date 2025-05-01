@@ -17,10 +17,6 @@ public class ReservationTime {
         return new ReservationTime(newPrimaryKey, reservationTime.startAt);
     }
 
-    public boolean isSameId(Long id) {
-        return Objects.equals(this.id, id);
-    }
-
     public Long getId() {
         return id;
     }
@@ -44,6 +40,9 @@ public class ReservationTime {
             return false;
         }
         ReservationTime that = (ReservationTime) o;
+        if (that.getId() == null || id == null) {
+            return false;
+        }
         return Objects.equals(getId(), that.getId());
     }
 

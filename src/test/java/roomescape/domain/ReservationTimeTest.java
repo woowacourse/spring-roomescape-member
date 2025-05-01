@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.*;
 import java.util.function.Supplier;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ class ReservationTimeTest {
         Supplier<ReservationTime> supplier = () -> new ReservationTime(1L, null);
 
         // when & then
-        Assertions.assertThatNullPointerException().isThrownBy(
+        assertThatIllegalArgumentException().isThrownBy(
                 supplier::get
         );
     }
