@@ -176,4 +176,31 @@ class MissionStepTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
+    @DisplayName("테마 생성, 조회, 삭제 테스트")
+    @Test
+    void theme_test() {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "레벨1 탈출");
+        params.put("description", "우테코 레벨1를 탈출하는 내용입니다.");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(7));
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/7")
+                .then().log().all()
+                .statusCode(204);
+    }
+
 }
