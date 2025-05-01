@@ -13,9 +13,13 @@ import roomescape.reservationtime.entity.ReservationTimeEntity;
 @Repository
 public class JDBCReservationTimeRepository implements ReservationTimeRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JDBCReservationTimeRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -34,10 +38,6 @@ public class JDBCReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime put(final ReservationTime reservationTime) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
-
         long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("start_at", reservationTime.getStartAt())).longValue();
 

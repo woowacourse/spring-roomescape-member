@@ -14,9 +14,13 @@ import roomescape.theme.entity.ThemeEntity;
 @Repository
 public class JDBCReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JDBCReservationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -62,10 +66,6 @@ public class JDBCReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation put(final Reservation reservation) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
         long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("name", reservation.getName(), "date", reservation.getDate(), "time_id",
                         reservation.getTime().getId(), "theme_id", reservation.getTheme().getId())

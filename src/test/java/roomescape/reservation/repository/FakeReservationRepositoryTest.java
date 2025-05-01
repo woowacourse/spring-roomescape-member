@@ -41,7 +41,7 @@ class FakeReservationRepositoryTest {
 
     @Test
     void getAll_shouldReturnAllSavedReservations() {
-        Reservation reservation2 = Reservation.of(1L, "대니", futureDate, ReservationTime.of(1L, "16:00"),
+        Reservation reservation2 = Reservation.of(2L, "대니", futureDate, ReservationTime.of(1L, "16:00"),
                 theme);
 
         reservationRepository.put(reservation);
