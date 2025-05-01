@@ -14,7 +14,7 @@ class ReservationRequestDtoTest {
     @DisplayName("name 필드가 null일 경우 예외가 발생한다.")
     void failIfNameFieldIsNull() {
         assertThatThrownBy(() -> {
-            new ReservationRequestDto(null, LocalDate.of(2025, 4, 30), 1);
+            new ReservationRequestDto(null, LocalDate.of(2025, 4, 30), 1, 1L);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잘못된 name 입력입니다.");
     }
@@ -23,7 +23,7 @@ class ReservationRequestDtoTest {
     @DisplayName("date 필드가 null일 경우 예외가 발생한다.")
     void failIfDateFieldIsNull() {
         assertThatThrownBy(() -> {
-            new ReservationRequestDto("moda", null, 1);
+            new ReservationRequestDto("moda", null, 1, 1L);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잘못된 date 입력입니다.");
     }
@@ -31,10 +31,29 @@ class ReservationRequestDtoTest {
     @ParameterizedTest
     @DisplayName("timeId 필드가 1 미만일 경우 예외가 발생한다.")
     @ValueSource(longs = {0, -1})
-    void failIfTimeIdFieldIsNull(long id) {
+    void failIfTimeIdFieldIsNull(long timeId) {
         assertThatThrownBy(() -> {
-            new ReservationRequestDto("moda", LocalDate.of(2025, 4, 30), id);
+            new ReservationRequestDto("moda", LocalDate.of(2025, 4, 30), timeId, 1L);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잘못된 timeId 입력입니다.");
+    }
+
+    @ParameterizedTest
+    @DisplayName("themeId 필드가 1 미만일 경우 예외가 발생한다.")
+    @ValueSource(longs = {0, -1})
+    void failIfThemeIdFieldIsInvalid(Long themeId) {
+        assertThatThrownBy(() -> {
+            new ReservationRequestDto("moda", LocalDate.of(2025, 4, 30), 1L, themeId);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("잘못된 themeId 입력입니다.");
+    }
+
+    @Test
+    @DisplayName("themeId 필드가 null일 경우 예외가 발생한다.")
+    void failIfThemeIdFieldIsNull() {
+        assertThatThrownBy(() -> {
+            new ReservationRequestDto("moda", LocalDate.of(2025, 4, 30), 1L, null);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("잘못된 themeId 입력입니다.");
     }
 }
