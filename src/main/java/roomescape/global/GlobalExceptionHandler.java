@@ -14,16 +14,18 @@ import roomescape.exception.DBFKException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    public static final String ERROR_MESSAGE_PREFIX = "[ERROR] ";
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = DBFKException.class)
     public String handleDBFKException(DBFKException e) {
-        return "[ERROR] " + e.getMessage();
+        return ERROR_MESSAGE_PREFIX + e.getMessage();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException e) {
-        return "[ERROR] " + e.getMessage();
+        return ERROR_MESSAGE_PREFIX + e.getMessage();
     }
 
     // TODO: 코드 개선점 고민해보기(근본 예외 타입에 따른 구체적인 조치가 필요할지?)
@@ -31,17 +33,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public String handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         if (e.getRootCause() instanceof DateTimeException) {
-            return "[ERROR] 잘못된 날짜 또는 시간 형식입니다.";
+            return ERROR_MESSAGE_PREFIX + "잘못된 날짜 또는 시간 형식입니다.";
         }
         if (e.getRootCause() instanceof IllegalArgumentException) {
-            return "[ERROR] " + e.getMostSpecificCause().getMessage();
+            return ERROR_MESSAGE_PREFIX + e.getMostSpecificCause().getMessage();
         }
-        return "[ERROR] 잘못된 값이 입력되었습니다.";
+        return ERROR_MESSAGE_PREFIX + "잘못된 값이 입력되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public String handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        return "[ERROR] 필수 정보가 누락되었습니다.";
+        return ERROR_MESSAGE_PREFIX + "필수 정보가 누락되었습니다.";
     }
 }
