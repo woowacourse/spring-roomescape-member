@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationResponse;
-import roomescape.reservation.application.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
@@ -52,7 +52,7 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    private URI createUri(Long reservationId){
+    private URI createUri(Long reservationId) {
         return ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(reservationId)

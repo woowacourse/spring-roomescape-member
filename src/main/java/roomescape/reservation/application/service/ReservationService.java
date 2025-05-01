@@ -84,7 +84,7 @@ public class ReservationService {
     }
 
     private void validateIsDuplicate(LocalDateTime reservationDateTime) {
-        if(reservationRepository.existsByDateTime(reservationDateTime)){
+        if (reservationRepository.existsByDateTime(reservationDateTime)) {
             throw new DuplicateReservationException("[ERROR] 중복된 일시의 예약은 불가능합니다.");
         }
     }

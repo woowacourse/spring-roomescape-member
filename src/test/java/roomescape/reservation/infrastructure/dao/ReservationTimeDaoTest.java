@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.global.exception.DeleteTimeException;
-import roomescape.global.exception.DuplicateTimeException;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 
 @JdbcTest

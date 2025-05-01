@@ -66,7 +66,7 @@ public class FakeReservationDao implements ReservationRepository {
         return store.values().stream()
                 .anyMatch(reservation ->
                         reservation.getDate().getReservationDate().equals(date) &&
-                        reservation.getReservationTime().getId().equals(timeId) &&
-                        reservation.getTheme().getId().equals(themeId));
+                                reservation.getReservationTime().getId().equals(timeId) &&
+                                reservation.getTheme().getId().equals(themeId));
     }
 }

@@ -36,16 +36,16 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes(
-    ){
-         return ResponseEntity.ok().body(
-                 themeService.getThemes()
-         );
+    ) {
+        return ResponseEntity.ok().body(
+                themeService.getThemes()
+        );
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(
             final @PathVariable Long id
-    ){
+    ) {
         themeService.deleteTheme(id);
 
         return ResponseEntity.noContent().build();
@@ -53,13 +53,13 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(
-    ){
+    ) {
         return ResponseEntity.ok().body(
                 themeService.getPopularThemes()
         );
     }
 
-    private URI createUri(Long themeId){
+    private URI createUri(Long themeId) {
         return ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(themeId)

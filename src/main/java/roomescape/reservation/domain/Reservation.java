@@ -4,11 +4,10 @@ public class Reservation {
 
     private final Long id;
     private final ReservationName name;
-
     private final Theme theme;
-
     private final ReservationDate date;
     private final ReservationTime reservationTime;
+
     public Reservation(final Long id, final ReservationName name, final Theme theme, final ReservationDate date,
                        final ReservationTime reservationTime) {
         this.id = id;

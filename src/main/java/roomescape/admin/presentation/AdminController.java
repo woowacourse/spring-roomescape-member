@@ -28,7 +28,7 @@ public class AdminController {
 
     @GetMapping("/theme")
     public String theme(
-    ){
+    ) {
         return "/admin/theme";
     }
 }

@@ -27,7 +27,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 추가 테스트")
-    void createThemeTest(){
+    void createThemeTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -44,7 +44,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 전체 조회 테스트")
-    void getThemesTest(){
+    void getThemesTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -62,7 +62,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("테마 삭제 테스트")
-    void deleteThemeTest(){
+    void deleteThemeTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
