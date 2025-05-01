@@ -9,6 +9,9 @@ public record ReservationTime(Long id, LocalTime startAt) {
     }
 
     public boolean equalsTime(ReservationTime time) {
+        if (time == null) {
+            return false;
+        }
         return this.startAt.equals(time.startAt());
     }
 

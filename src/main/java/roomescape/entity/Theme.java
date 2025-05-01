@@ -7,6 +7,9 @@ public record Theme(Long id, String name, String description, String thumbnail) 
     }
 
     public boolean equalsThemeName(Theme theme) {
+        if (theme == null) {
+            return false;
+        }
         return this.name.equals(theme.name);
     }
 
