@@ -21,11 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class H2ThemeDaoTest {
 
-    /**
-     * data.sql에 초기값이 설정되어 있습니다.
-     * 테마 데이터가 3개 들어가있고, 테스트 전 data.sql 확인바랍니다.
-     */
-
     private ThemeDao themeDao;
 
     @Autowired

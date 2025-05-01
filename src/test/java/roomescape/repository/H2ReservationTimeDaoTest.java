@@ -22,11 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class H2ReservationTimeDaoTest {
 
-    /**
-     * test.sql에 초기값이 설정되어 있습니다.
-     * 시간 데이터가 6개 들어가있고, 테스트 전 data.sql 확인바랍니다.
-     */
-
     private ReservationTimeDao reservationTimeDao;
 
     @Autowired
