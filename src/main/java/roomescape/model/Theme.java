@@ -8,6 +8,7 @@ public class Theme {
 
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
+        validateName(name);
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;

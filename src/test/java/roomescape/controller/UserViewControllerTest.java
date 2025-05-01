@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayNameGeneration(ReplaceUnderscores.class)
 @ActiveProfiles(value = "test")
-class AdminViewControllerTest {
+class UserViewControllerTest {
 
     @LocalServerPort
     int port;
@@ -25,33 +25,9 @@ class AdminViewControllerTest {
     }
 
     @Test
-    void 관리_페이지_접근시_정상응답() {
+    void 사용자_예약_페이지_접근시_정상응답() {
         RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    void 관리_예약_페이지_접근시_정상응답() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    void 관리_시간_페이지_접근시_정상응답() {
-        RestAssured.given().log().all()
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
-    }
-
-    @Test
-    void 관리_테마_페이지_접근시_정상응답() {
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
+                .when().get("/reservation")
                 .then().log().all()
                 .statusCode(200);
     }
