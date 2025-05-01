@@ -12,24 +12,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.time.controller.request.AvailableReservationTimeRequest;
-import roomescape.time.controller.request.ReservationTimeCreateRequest;
+import roomescape.time.controller.request.CreateReservationTimeRequest;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
-import roomescape.time.service.ReservationTimeServiceImpl;
+import roomescape.time.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeApiController {
 
-    private final ReservationTimeServiceImpl reservationTimeService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeApiController(ReservationTimeServiceImpl reservationTimeService) {
+    public ReservationTimeApiController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createTime(
-            @RequestBody ReservationTimeCreateRequest request
+            @RequestBody CreateReservationTimeRequest request
     ) {
         ReservationTimeResponse response = reservationTimeService.create(request);
 

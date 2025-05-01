@@ -9,18 +9,16 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.service.ThemeRepository;
 
 @Repository
-public class ThemeJdbcRepository implements ThemeRepository {
+public class ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
+    public ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
     public Theme save(String name, String description, String thumbnail) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
@@ -36,13 +34,11 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return new Theme(id, name, description, thumbnail);
     }
 
-    @Override
     public void deleteById(Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
     }
 
-    @Override
     public List<Theme> findAll() {
         String sql = "select * from theme";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
@@ -53,7 +49,6 @@ public class ThemeJdbcRepository implements ThemeRepository {
         ));
     }
 
-    @Override
     public Optional<Theme> findById(Long id) {
         String sql = "select * from theme where id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
@@ -66,7 +61,6 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 .findFirst();
     }
 
-    @Override
     public List<Theme> findPopularThemeDuringAWeek(int limit, LocalDate now) {
         String sql = """
                 SELECT

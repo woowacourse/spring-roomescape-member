@@ -100,3 +100,10 @@
             }
           ]
           ```
+          
+## TODO
+1. DTO검증 달아주기(@NotNull, @NotBlank)
+2. 서비스 로직 리팩터링
+3. 테스트 리팩터링
+4. 슬라이스 테스트 추가
+    - repository, RestAssured, domain, service

@@ -5,10 +5,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.service.ReservationRepository;
-import roomescape.theme.controller.request.ThemeCreateRequest;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.controller.request.CreateThemeRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
@@ -31,7 +32,7 @@ public class ThemeService {
         themeRepository.deleteById(theme.getId());
     }
 
-    public ThemeResponse create(ThemeCreateRequest request) {
+    public ThemeResponse create(CreateThemeRequest request) {
         Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
         return ThemeResponse.from(theme);
     }

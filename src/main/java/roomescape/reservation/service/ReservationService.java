@@ -10,6 +10,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.domain.ReserverName;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
@@ -23,10 +24,12 @@ public class ReservationService {
     private final ThemeService themeService;
     private final Clock clock;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeService reservationTimeService,
-                              ThemeService themeService,
-                              Clock clock) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeService reservationTimeService,
+            ThemeService themeService,
+            Clock clock
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;

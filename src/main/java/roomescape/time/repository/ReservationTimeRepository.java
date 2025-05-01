@@ -13,27 +13,26 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.service.ReservationTimeRepository;
 
 @Repository
-public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
+public class ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public ReservationTime save(ReservationTime reservationTime) {
+    public ReservationTime save(LocalTime time) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
+                .addValue("start_at", time);
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return new ReservationTime(id, time);
     }
 
     public List<ReservationTime> findAll() {
@@ -67,14 +66,12 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         return Optional.of(Objects.requireNonNull(reservationTime));
     }
 
-    @Override
     public boolean existByStartAt(LocalTime startAt) {
         String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
         return count > 0;
     }
 
-    @Override
     public List<AvailableReservationTimeResponse> findAllAvailableReservationTimes(LocalDate date, Long themeId) {
         String sql = """
                 SELECT

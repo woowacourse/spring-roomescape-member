@@ -13,16 +13,15 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.domain.ReserverName;
-import roomescape.reservation.service.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
-public class ReservationJdbcRepository implements ReservationRepository {
+public class ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
+    public ReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -75,7 +74,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 reservation.getTheme());
     }
 
-    @Override
     public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -135,21 +133,18 @@ public class ReservationJdbcRepository implements ReservationRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    @Override
     public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, reservationDate.getDate(), timeId);
         return count > 0;
     }
 
-    @Override
     public boolean existReservationByTimeId(Long timeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count > 0;
     }
 
-    @Override
     public boolean existReservationByThemeId(Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);

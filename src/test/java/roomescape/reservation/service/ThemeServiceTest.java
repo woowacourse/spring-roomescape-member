@@ -14,7 +14,7 @@ import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
 import roomescape.reservation.fixture.ReservationTimeDbFixture;
 import roomescape.reservation.fixture.ThemeDbFixture;
-import roomescape.theme.controller.request.ThemeCreateRequest;
+import roomescape.theme.controller.request.CreateThemeRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
@@ -35,7 +35,7 @@ public class ThemeServiceTest extends BaseTest {
 
     @Test
     void 테마를_생성한다() {
-        ThemeCreateRequest request = new ThemeCreateRequest("공포", "공포 테마", "공포.jpg");
+        CreateThemeRequest request = new CreateThemeRequest("공포", "공포 테마", "공포.jpg");
 
         ThemeResponse response = themeService.create(request);
 

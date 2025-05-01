@@ -13,7 +13,7 @@ import roomescape.reservation.fixture.ReservationDbFixture;
 import roomescape.reservation.fixture.ReservationTimeDbFixture;
 import roomescape.reservation.fixture.ThemeDbFixture;
 import roomescape.theme.domain.Theme;
-import roomescape.time.controller.request.ReservationTimeCreateRequest;
+import roomescape.time.controller.request.CreateReservationTimeRequest;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
@@ -34,7 +34,7 @@ public class ReservationTimeServiceTest extends BaseTest {
 
     @Test
     void 예약시간을_생성한다() {
-        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10, 0));
+        CreateReservationTimeRequest request = new CreateReservationTimeRequest(LocalTime.of(10, 0));
 
         ReservationTimeResponse response = reservationTimeService.create(request);
 
@@ -79,7 +79,7 @@ public class ReservationTimeServiceTest extends BaseTest {
     @Test
     void 이미_존재하는_시간은_추가할_수_없다() {
         reservationTimeDbFixture.예약시간_10시();
-        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(
+        CreateReservationTimeRequest request = new CreateReservationTimeRequest(
                 LocalTime.of(10, 0));
 
         assertThatThrownBy(() -> reservationTimeService.create(request))
