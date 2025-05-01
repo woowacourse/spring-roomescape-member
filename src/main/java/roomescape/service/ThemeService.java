@@ -48,7 +48,7 @@ public class ThemeService {
         if (themeDao.deleteIfNoReservation(theme.getId())) {
             return;
         }
-        throw new ReservationExistException("이 시간에 대한 예약이 존재합니다.");
+        throw new ReservationExistException("이 테마에 대한 예약이 존재합니다.");
     }
 
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
