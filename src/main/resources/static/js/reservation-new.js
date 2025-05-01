@@ -23,9 +23,6 @@ function render(data) {
   data.forEach(item => {
     const row = tableBody.insertRow();
 
-    /*
-    TODO: 불필요한 데이터를 API에서 넘기지 않도록 DTO 수정
-    */
     row.insertCell(0).textContent = item.id;            // 예약 id
     row.insertCell(1).textContent = item.name;          // 예약자명
     row.insertCell(2).textContent = item.theme.name;    // 테마명

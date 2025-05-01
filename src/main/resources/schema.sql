@@ -1,7 +1,6 @@
 CREATE TABLE reservation_time
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
---     TODO: UNIQUE 속성 넣을지 고민하기
     start_at VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
