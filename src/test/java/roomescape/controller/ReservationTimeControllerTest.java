@@ -2,14 +2,14 @@ package roomescape.controller;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.response.ReservationTimeResponseDto;
+import roomescape.model.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -26,6 +27,20 @@ class ReservationTimeControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    private ReservationTime savedReservationTime;
+
+    @BeforeEach
+    void setUp() {
+        List<ReservationTime> reservationTimes = findReservationTimesByJdbcTemplate();
+        if (!reservationTimes.isEmpty()) {
+            LocalTime time = LocalTime.of(20, 0);
+            Long savedId = insertNewReservationTimeWithJdbcTemplate(time);
+            this.savedReservationTime = new ReservationTime(savedId, time);
+            return;
+        }
+        this.savedReservationTime = reservationTimes.getLast();
+    }
 
     @Test
     @DisplayName("예약 시각 조회 시 저장된 예약 시각 내역을 모두 가져온다")
@@ -63,11 +78,10 @@ class ReservationTimeControllerTest {
     @DisplayName("이미 존재하는 예약 시각을 이용해 등록하고자 한다면 409 를 반환한다.")
     void test3() {
         // given
-        LocalDate now = LocalDate.now();
-        insertNewReservationTimeWithJdbcTemplate(now);
+        LocalTime savedTime = savedReservationTime.getStartAt();
 
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", now.toString());
+        params.put("startAt", savedTime.toString());
 
         // when & then
         RestAssured.given().log().all()
@@ -82,7 +96,7 @@ class ReservationTimeControllerTest {
     @DisplayName("특정 예약 시각을 삭제하는 경우 성공 시 204를 반환한다")
     void test7() {
         // given
-        Long savedId = insertNewReservationTimeWithJdbcTemplate(LocalDate.now());
+        Long savedId = savedReservationTime.getId();
 
         // when & then
         RestAssured.given().log().all()
@@ -92,13 +106,22 @@ class ReservationTimeControllerTest {
                 .statusCode(204);
     }
 
-    private Long insertNewReservationTimeWithJdbcTemplate(final LocalDate date) {
+    private List<ReservationTime> findReservationTimesByJdbcTemplate() {
+        return jdbcTemplate.query(
+                "SELECT * FROM reservation_time", (resultSet, rowNum) ->
+                        new ReservationTime(
+                                resultSet.getLong("id"),
+                                resultSet.getTime("start_at").toLocalTime()
+                        ));
+    }
+
+    private Long insertNewReservationTimeWithJdbcTemplate(final LocalTime now) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO reservation_time (start_at) VALUES (?)", new String[]{"id"});
-            ps.setDate(1, Date.valueOf(date));
+            ps.setTime(1, Time.valueOf(now));
             return ps;
         }, keyHolder);
 
