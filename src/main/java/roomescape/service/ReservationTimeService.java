@@ -31,7 +31,7 @@ public class ReservationTimeService {
                     .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약시간을 생성 실패하였습니다."));
 
             return ReservationTimeResponseDto.from(savedTime);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalStateException e) {
             throw new DuplicateContentException(e.getMessage());
         }
     }

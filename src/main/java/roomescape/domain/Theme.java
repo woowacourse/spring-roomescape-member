@@ -16,13 +16,13 @@ public record Theme(Long id, String name, String description, String thumbnail) 
 
     private void validateDescription(String description) {
         if (description == null) {
-            throw new IllegalArgumentException("[ERROR] 테마 설명은 반드시 입력해야 합니다.");
+            throw new IllegalArgumentException("[ERROR] 테마 설명이 없습니다.");
         }
     }
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null) {
-            throw new IllegalArgumentException("[ERROR] 테마 이미지는 반드시 입력해야 합니다.");
+            throw new IllegalArgumentException("[ERROR] 테마 이미지가 없습니다.");
         }
     }
 }

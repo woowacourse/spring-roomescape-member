@@ -26,7 +26,7 @@ public class ThemeService {
                     .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 테마를 생성 실패하였습니다."));
 
             return ThemeResponseDto.from(savedTheme);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalStateException e) {
             throw new DuplicateContentException(e.getMessage());
         }
     }
@@ -34,7 +34,7 @@ public class ThemeService {
     public List<ThemeResponseDto> findAllThemes() {
         List<Theme> allTheme = themeRepository.findAll();
         return allTheme.stream()
-                .map(reservationTheme -> ThemeResponseDto.from(reservationTheme))
+                .map(ThemeResponseDto::from)
                 .toList();
     }
 
