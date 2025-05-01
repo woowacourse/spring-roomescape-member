@@ -5,9 +5,11 @@ import roomescape.domain_entity.Theme;
 
 public interface ThemeDao {
 
-    Long create(Theme theme);
-
     List<Theme> findAll();
+
+    Theme findById(Long id);
+
+    Long create(Theme theme);
 
     void deleteById(Long idRequest);
 }
