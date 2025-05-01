@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservation.Reservation;
+import roomescape.reservationtime.ReservationTime;
 
 public interface ReservationDao {
     List<Reservation> findAll();
@@ -18,5 +19,7 @@ public interface ReservationDao {
     Optional<Reservation> findById(Long id);
 
     Optional<Reservation> findByDateTime(LocalDate date, LocalTime time);
+
+    List<ReservationTime> findAvailableTimesByDateAndThemeId(LocalDate date, Long themeId);
 }
 

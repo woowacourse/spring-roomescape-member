@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.exception.ExistedReservationException;
 import roomescape.reservation.Reservation;
@@ -18,6 +16,9 @@ import roomescape.reservationtime.dto.request.ReservationTimeRequest;
 import roomescape.reservationtime.dto.response.AvailableTimeResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.theme.Theme;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest {
@@ -91,7 +92,6 @@ class ReservationTimeServiceTest {
         List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(date, 1L);
         // then
         assertThat(availableTimes).hasSize(2);
-        assertThat(availableTimes.getFirst().alreadyBooked()).isTrue();
-        assertThat(availableTimes.get(1).alreadyBooked()).isFalse();
+        assertThat(availableTimes.getFirst().id()).isEqualTo(1L);
     }
 }

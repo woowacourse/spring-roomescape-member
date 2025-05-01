@@ -184,9 +184,9 @@ public class JdbcReservationDao implements ReservationDao {
     public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
         String sql = """
                 SELECT * FROM reservation as r 
-                    INNER JOIN reservation_time as rt ON rt.id = r.id 
-                         INNER JOIN theme as t ON r.theme_id = t.id
-                         WHERE r.date = ? and rt.start_at = ?""";
+                INNER JOIN reservation_time as rt ON rt.id = r.time_id 
+                INNER JOIN theme as t ON r.theme_id = t.id
+                WHERE r.date = ? and rt.start_at = ?""";
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
@@ -213,5 +213,29 @@ public class JdbcReservationDao implements ReservationDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableTimesByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT rt.id as time_id, rt.start_at as time_start_at
+                FROM reservation_time as rt
+                WHERE rt.id NOT IN (
+                    SELECT r.time_id
+                    FROM reservation as r
+                    WHERE r.date = ? AND r.theme_id = ?
+                )
+                ORDER BY rt.start_at
+                """;
+
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) ->
+                        new ReservationTime(
+                                rs.getLong("time_id"),
+                                rs.getTime("time_start_at").toLocalTime()
+                        ),
+                date,
+                themeId
+        );
     }
 }
