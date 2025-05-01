@@ -7,7 +7,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
 
-public class FakeReservationReservationTimeDao implements ReservationTimeDao {
+public class FakeReservationTimeDao implements ReservationTimeDao {
 
     private final List<ReservationTime> fakeMemory = new ArrayList<>();
     private long id = 1L;

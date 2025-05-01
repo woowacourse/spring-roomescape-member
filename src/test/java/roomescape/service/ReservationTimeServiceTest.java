@@ -12,11 +12,11 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.fake_dao.FakeReservationDao;
-import roomescape.service.fake_dao.FakeReservationReservationTimeDao;
+import roomescape.service.fake_dao.FakeReservationTimeDao;
 
 class ReservationTimeServiceTest {
 
-    private final ReservationTimeDao reservationTimeDao = new FakeReservationReservationTimeDao();
+    private final ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
     private final ReservationDao reservationDao = new FakeReservationDao();
     private final ReservationTimeService timeService = new ReservationTimeService(reservationDao, reservationTimeDao);
 
