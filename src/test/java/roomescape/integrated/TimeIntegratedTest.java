@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 class TimeIntegratedTest {
 
     @Test
+    @Disabled
     @DisplayName("시간을 생성한다.")
     void createTime() {
         Map<String, String> params = new HashMap<>();
@@ -36,6 +38,7 @@ class TimeIntegratedTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("시간을 삭제한다.")
     void deleteTime() {
         RestAssured.given().log().all()

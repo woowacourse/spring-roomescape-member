@@ -3,6 +3,7 @@ package roomescape.domain_entity;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class ReservationTest {
         //given
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
-                new Id(1L),
+                1L,
                 TEST_NAME,
                 now.toLocalDate().minusDays(1),
                 new ReservationTime(now.toLocalTime()),
@@ -36,7 +37,7 @@ class ReservationTest {
         //given
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
-                new Id(1L),
+                1L,
                 TEST_NAME,
                 now.toLocalDate(),
                 new ReservationTime(now.toLocalTime().minusMinutes(1)),
@@ -55,7 +56,7 @@ class ReservationTest {
         //given
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
-                new Id(1L),
+                1L,
                 TEST_NAME,
                 now.toLocalDate(),
                 new ReservationTime(now.toLocalTime()),
@@ -72,7 +73,7 @@ class ReservationTest {
         //given
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
-                new Id(1L),
+                1L,
                 TEST_NAME,
                 now.toLocalDate().plusDays(1),
                 new ReservationTime(now.toLocalTime()),

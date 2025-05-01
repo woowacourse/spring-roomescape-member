@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.dto.ReservationTimeAvailableResponse;
 import roomescape.dto.ReservationTimeRequestDto;
@@ -25,7 +24,7 @@ public class ReservationTimeService {
     public ReservationTimeResponseDto createTime(ReservationTimeRequestDto timeRequest) {
         ReservationTime reservationTimeWithoutId = timeRequest.toTime();
         long id = reservationTimeDao.create(reservationTimeWithoutId);
-        ReservationTime reservationTime = reservationTimeWithoutId.copyWithId(new Id(id));
+        ReservationTime reservationTime = reservationTimeWithoutId.copyWithId(id);
         return ReservationTimeResponseDto.from(reservationTime);
     }
 
@@ -36,13 +35,13 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(long id) {
-        Boolean hasTime = reservationDao.existByTimeId(new Id(id));
+        Boolean hasTime = reservationDao.existByTimeId(id);
 
         if (hasTime) {
             throw new IllegalArgumentException("예약 시간에 존재하는 예약 정보가 있습니다.");
         }
 
-        reservationTimeDao.deleteById(new Id(id));
+        reservationTimeDao.deleteById(id);
     }
 
     public List<ReservationTimeAvailableResponse> findAvailableTimes(LocalDate date, Long themeId) {

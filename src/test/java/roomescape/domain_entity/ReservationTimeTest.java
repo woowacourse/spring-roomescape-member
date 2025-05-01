@@ -2,6 +2,7 @@ package roomescape.domain_entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
@@ -25,7 +26,7 @@ class ReservationTimeTest {
     void isPastReservationTimeReturnsTrue() {
         // given
         LocalTime now = LocalTime.now();
-        ReservationTime reservationTime = new ReservationTime(new Id(1L), now.minusMinutes(1));
+        ReservationTime reservationTime = new ReservationTime(1L, now.minusMinutes(1));
 
         // when
         boolean result = reservationTime.isPastTime();
@@ -39,7 +40,7 @@ class ReservationTimeTest {
     @DisplayName("미래 예약 시간인 경우 FALSE 반환한다.")
     void isFutureReservationTimeReturnsFalse(LocalTime time) {
         // given
-        ReservationTime reservationTime = new ReservationTime(new Id(1L), time);
+        ReservationTime reservationTime = new ReservationTime(1L, time);
 
         // when
         boolean result = reservationTime.isPastTime();

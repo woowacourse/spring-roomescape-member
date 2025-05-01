@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
 
     private final List<ReservationTime> fakeMemory = new ArrayList<>();
-    private long id = 1L;
+    private Long id = 1L;
 
     @Override
     public List<ReservationTime> findAll() {
@@ -18,7 +17,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(long id) {
+    public ReservationTime findById(Long id) {
         return fakeMemory.stream()
                 .filter(reservationTime -> reservationTime.getId() == id)
                 .findFirst()
@@ -26,14 +25,14 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public long create(ReservationTime time) {
-        long timeId = id++;
-        fakeMemory.add(time.copyWithId(new Id(timeId)));
+    public Long create(ReservationTime time) {
+        Long timeId = id++;
+        fakeMemory.add(time.copyWithId(timeId));
         return timeId;
     }
 
     @Override
-    public void deleteById(Id id) {
-        fakeMemory.removeIf(reservationTime -> reservationTime.getId() == id.value());
+    public void deleteById(Long id) {
+        fakeMemory.removeIf(reservationTime -> reservationTime.getId() == id);
     }
 }

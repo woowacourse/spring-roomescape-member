@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import roomescape.domain_entity.Id;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.mapper.ReservationMapper;
@@ -29,15 +28,14 @@ public class JdbcReservationDao implements ReservationDao {
                 inner join reservation_time as rt on r.time_id = rt.id
                 inner join theme as t on r.theme_id = t.id
                 """;
-        List<Reservation> reservations = jdbcTemplate.query(
+        return jdbcTemplate.query(
                 sql,
                 new ReservationMapper()
         );
-        return reservations;
     }
 
     @Override
-    public long create(Reservation newReservation) {
+    public Long create(Reservation newReservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(
@@ -58,21 +56,21 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void deleteById(Id id) {
+    public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(
                 sql,
-                id.value()
+                id
         );
     }
 
     @Override
-    public Boolean existByTimeId(Id timeId) {
+    public Boolean existByTimeId(Long timeId) {
         String sql = "select exists(select 1 from reservation where time_id = ?)";
         return jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
-                timeId.value()
+                timeId
         );
     }
 

@@ -4,26 +4,19 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 public class ReservationTime {
-    private Id id;
-    private LocalTime startAt;
+    private final Long id;
+    private final LocalTime startAt;
 
-    public ReservationTime() {
-    }
-
-    public ReservationTime(LocalTime startAt) {
-        this(Id.empty(), startAt);
-    }
-
-    public ReservationTime(Id id) {
-        this(id, null);
-    }
-
-    public ReservationTime(Id id, LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime copyWithId(Id id) {
+    public ReservationTime(LocalTime startAt) {
+        this(null, startAt);
+    }
+
+    public ReservationTime copyWithId(Long id) {
         return new ReservationTime(id, startAt);
     }
 
@@ -33,7 +26,7 @@ public class ReservationTime {
     }
 
     public long getId() {
-        return id.value();
+        return id;
     }
 
     public LocalTime getStartAt() {

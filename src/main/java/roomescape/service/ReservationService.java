@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain_entity.Id;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.domain_entity.Theme;
@@ -43,11 +42,11 @@ public class ReservationService {
 
         long reservationId = reservationDao.create(reservationWithoutId);
 
-        Reservation reservation = reservationWithoutId.copyWithId(new Id(reservationId));
+        Reservation reservation = reservationWithoutId.copyWithId(reservationId);
         return ReservationResponseDto.from(reservation);
     }
 
-    public void deleteReservation(long id) {
-        reservationDao.deleteById(new Id(id));
+    public void deleteReservation(Long id) {
+        reservationDao.deleteById(id);
     }
 }

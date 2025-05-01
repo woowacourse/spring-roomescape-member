@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
@@ -30,7 +29,7 @@ class ReservationServiceTest {
     @Test
     @Disabled
     void createReservation() {
-        ReservationTime time = new ReservationTime(new Id(1L), LocalTime.of(10, 0, 0));
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0, 0));
         timeDao.create(time);
 
         ReservationResponseDto reservation = reservationService.createReservation(new ReservationRequestDto(

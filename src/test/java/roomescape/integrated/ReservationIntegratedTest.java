@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain_entity.Id;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.domain_entity.Theme;
@@ -122,7 +121,7 @@ public class ReservationIntegratedTest {
     @Disabled
     @DisplayName("Read 요청 수행 시 DB 전체 데이터를 조회한다.")
     void retrieveReservationsWhenRead() {
-        ReservationTime time = new ReservationTime(new Id(1L), LocalTime.of(10, 0, 0));
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0, 0));
         timeDao.create(time);
         reservationDao.create(new Reservation(
                 "브라운", LocalDate.of(2025, 4, 26), time,

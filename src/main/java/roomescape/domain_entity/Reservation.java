@@ -3,17 +3,13 @@ package roomescape.domain_entity;
 import java.time.LocalDate;
 
 public class Reservation {
-    private final Id id;
+    private final Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(Id.empty(), name, date, time, theme);
-    }
-
-    public Reservation(Id id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateMaxLength(name);
         this.id = id;
         this.name = name;
@@ -22,7 +18,11 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation copyWithId(Id id) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, name, date, time, theme);
+    }
+
+    public Reservation copyWithId(Long id) {
         return new Reservation(id, name, date, time, theme);
     }
 
@@ -40,7 +40,7 @@ public class Reservation {
     }
 
     public long getId() {
-        return id.value();
+        return id;
     }
 
     public String getName() {
