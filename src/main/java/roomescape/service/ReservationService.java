@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlotTimes;
 import roomescape.domain.ReservationTime;
@@ -25,9 +24,10 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
-    public static final int THEME_RANKING_END_RANGE = 7;
-    public static final int THEME_RANKING_START_RANGE = 1;
-    public static final int RANKING_SIZE = 10;
+    private static final int THEME_RANKING_END_RANGE = 7;
+    private static final int THEME_RANKING_START_RANGE = 1;
+    private static final int RANKING_SIZE = 10;
+
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -43,7 +43,6 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    @Transactional
     public long addReservation(AddReservationDto newReservation) {
         ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
