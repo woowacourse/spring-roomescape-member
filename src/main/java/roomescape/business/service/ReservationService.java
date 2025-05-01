@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
+import roomescape.business.dto.AvailableTimesResponseDto;
 import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationResponseDto;
 import roomescape.business.dto.ReservationThemeRequestDto;
@@ -106,14 +107,8 @@ public class ReservationService {
         return reservationTimeRepository.add(new ReservationTime(reservationTimeRequestDto.startAt()));
     }
 
-    public List<ReservationTimeResponseDto> readTimeAll() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        return reservationTimes.stream()
-                .map(reservationTime -> new ReservationTimeResponseDto(
-                        reservationTime.getId(),
-                        reservationTime.getStartAt()
-                ))
-                .toList();
+    public List<AvailableTimesResponseDto> readAvailableTimes(LocalDate date, Long themeId) {
+        return reservationTimeRepository.findAvailableTimes(date, themeId);
     }
 
     public ReservationTimeResponseDto readTimeOne(Long id) {

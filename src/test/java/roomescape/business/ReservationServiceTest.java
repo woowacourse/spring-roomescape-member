@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.business.dto.AvailableTimesResponseDto;
 import roomescape.business.dto.ReservationRequestDto;
 import roomescape.business.dto.ReservationThemeRequestDto;
 import roomescape.business.dto.ReservationThemeResponseDto;
@@ -121,12 +122,12 @@ class ReservationServiceTest {
 
     @DisplayName("모든 시간을 조회한다")
     @Test
-    void readTimeAll() {
+    void readAvailableTimes() {
         // given
         Long two = reservationTimeRepository.add(new ReservationTime(2L, LocalTime.now()));
 
         // when
-        List<ReservationTimeResponseDto> reservationTimes = reservationService.readTimeAll();
+        List<AvailableTimesResponseDto> reservationTimes = reservationService.readAvailableTimes(LocalDate.now(), themeId);
 
         // then
         assertThat(reservationTimes).hasSize(2);
@@ -143,7 +144,7 @@ class ReservationServiceTest {
     @Test
     void deleteTime() {
         reservationService.deleteTime(1L);
-        assertThat(reservationService.readTimeAll()).isEmpty();
+        assertThat(reservationService.readAvailableTimes(LocalDate.now(), themeId)).isEmpty();
     }
 
     @DisplayName("예약이 참조하는 시간대 하나를 삭제한다")

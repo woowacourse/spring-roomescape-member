@@ -1,5 +1,6 @@
 package roomescape.persistence;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.ReservationTime;
+import roomescape.business.dto.AvailableTimesResponseDto;
 
 @Repository
 public class H2ReservationTimeRepository implements ReservationTimeRepository {
@@ -54,5 +56,31 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     public void deleteById(Long id) {
         String query = "delete from reservation_time where id=?";
         jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
+        String query = """
+                SELECT
+                    t.id,
+                    t.start_at,
+                    CASE
+                        WHEN r.id IS NOT NULL THEN TRUE
+                        ELSE FALSE
+                    END AS is_booked
+                FROM reservation_time t
+                LEFT JOIN reservation r
+                    ON t.id = r.time_id
+                    AND r.date = ?
+                    AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(query, (rs, rowNum) -> new AvailableTimesResponseDto(
+                        rs.getLong("id"),
+                        rs.getObject("start_at", LocalTime.class),
+                        rs.getBoolean("is_booked")
+                ),
+                date,
+                themeId
+        );
     }
 }

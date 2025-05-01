@@ -1,9 +1,11 @@
 package roomescape.business.fakerepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import roomescape.business.ReservationTime;
+import roomescape.business.dto.AvailableTimesResponseDto;
 import roomescape.persistence.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
@@ -36,5 +38,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public void deleteById(Long id) {
         ReservationTime reservationTime = findById(id);
         reservationTimes.remove(reservationTime);
+    }
+
+    @Override
+    public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
+        return List.of();
     }
 }
