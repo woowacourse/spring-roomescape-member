@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
-import roomescape.reservationtime.dto.CreateTimeRequest;
+import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.service.ReservationTimeService;
 
@@ -29,8 +29,8 @@ public class ReservationTimeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse saveTime(@Valid @RequestBody final CreateTimeRequest createTimeRequest) {
-        return reservationTimeService.saveTime(createTimeRequest.startAt());
+    public ReservationTimeResponse saveTime(@Valid @RequestBody final ReservationTimeRequest request) {
+        return reservationTimeService.saveTime(request);
     }
 
     @GetMapping

@@ -13,6 +13,7 @@ import roomescape.error.ReservationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.stub.StubReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.reservationtime.stub.StubReservationTimeRepository;
 import roomescape.theme.domain.Theme;
@@ -41,17 +42,17 @@ class ReservationTimeServiceTest {
     @Test
     void 예약_시간이_저장된다() {
         // given
-        LocalTime newTime = LocalTime.of(12, 30);
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(12, 30));
 
         // when
-        ReservationTimeResponse response = service.saveTime(newTime);
+        ReservationTimeResponse response = service.saveTime(request);
 
         // then
         SoftAssertions.assertSoftly(soft -> {
-            soft.assertThat(response.startAt()).isEqualTo(newTime);
+            soft.assertThat(response.startAt()).isEqualTo(request.startAt());
             soft.assertThat(stubReservationTimeRepo.findAll())
                     .extracting(ReservationTime::getStartAt)
-                    .contains(newTime);
+                    .contains(request.startAt());
         });
     }
 

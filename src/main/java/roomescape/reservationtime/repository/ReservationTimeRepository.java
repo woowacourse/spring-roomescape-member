@@ -1,7 +1,6 @@
 package roomescape.reservationtime.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -9,7 +8,7 @@ import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 
 public interface ReservationTimeRepository {
 
-    ReservationTime save(final LocalTime startAt);
+    ReservationTime save(final ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
 

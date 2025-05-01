@@ -41,12 +41,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(final LocalTime startAt) {
-        final String time = startAt.format(DateTimeFormatter.ofPattern("HH:mm"));
+    public ReservationTime save(final ReservationTime reservationTime) {
         final MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", time);
+                .addValue("start_at", reservationTime.getStartAt());
         final Long newId = inserter.executeAndReturnKey(params).longValue();
-        return new ReservationTime(newId, startAt);
+        return new ReservationTime(newId, reservationTime.getStartAt());
     }
 
     @Override

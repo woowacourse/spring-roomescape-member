@@ -1,7 +1,6 @@
 package roomescape.reservationtime.stub;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +17,8 @@ public class StubReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(final LocalTime startAt) {
-        ReservationTime newTime = new ReservationTime(3L, startAt);
+    public ReservationTime save(final ReservationTime reservationTime) {
+        ReservationTime newTime = new ReservationTime(3L, reservationTime.getStartAt());
         data.add(newTime);
         return newTime;
     }

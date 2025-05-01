@@ -43,15 +43,15 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void 예약_시간을_올바르게_저장한다() {
         // given
-        LocalTime startAt = LocalTime.of(13, 0);
+        ReservationTime reservationTime = new ReservationTime(3L, LocalTime.of(11, 0));
 
         // when
-        ReservationTime reservationTime = repository.save(startAt);
+        ReservationTime savedReservationTime = repository.save(reservationTime);
 
         // then
         SoftAssertions.assertSoftly(soft -> {
             soft.assertThat(reservationTime.getId()).isNotNull();
-            soft.assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
+            soft.assertThat(reservationTime.getStartAt()).isEqualTo(savedReservationTime.getStartAt());
         });
     }
 
