@@ -1,5 +1,14 @@
 # 🚪방탈출 사용자 예약 애플리케이션
 
+### 관리자 페이지
+* http://localhost:8080/admin/time: 사용자가 예약할 수 있는 시간 관리 페이지
+* http://localhost:8080/admin/theme: 사용자가 이용할 수 있는 방탈출 테마 관리 페이지
+* http://localhost:8080/admin/reservation: 사용자 예약 관리 페이지
+
+### 사용자 페이지
+* http://localhost:8080/: 사용자 예약 기준으로 탑10 방탈출 테마 확인 페이지
+* http://localhost:8080/reservation: 사용자가 예약을 할 수 있는 페이지
+
 ## 요구사항 분석
 
 ### 1. 예외 처리
@@ -19,25 +28,11 @@
   - [x] 특정 시간에 대한 예약이 존재하면 그 시간은 삭제가 불가능하다.
   - [x] 특정 테마에 대한 예약이 존재하면 그 테마는 삭제가 불가능하다.
 
-SELECT
-  id,
-  start_at,
-  EXISTS(
-    SELECT rt.id
-    FROM reservation_time as rt
-      INNER JOIN reservation as r
-      ON r.time_id = rt.id
-    WHERE r.theme_id = ?;
-  ) as alreadyBooked
-FROM reservation_time;
-
-1. 내가 선택한 테마에 대해서 시간대를 
-
 ### 2. 예외 응답
 
 - [x] null, 생성할 때의 예외는 BadRequest로 응답한다.
   - null: InvalidInputException
-  - 생성: TimeDoesNotExistException, NotCorrectDateTimeException 
+  - 생성: TimeDoesNotExistException, ThemeDoesNotExistException, NotCorrectDateTimeException 
 - [x] 중복, 삭제할 때의 예외는 Conflict로 응답한다.
   - 중복: DuplicateTimeException, DuplicateReservationException
 
@@ -63,177 +58,10 @@ FROM reservation_time;
 
 ## CRUD API 명세
 
-### 예약 목록 조회
-
-* Request
-    ```
-    GET /reservations HTTP/1.1
-    ```
-* Response
-    ```
-    HTTP/1.1 200 
-    Content-Type: application/json
-
-    [
-      {
-        "id": 1,
-        "name": "브라운",
-        "date": "2023-01-01",
-        "time": {
-            "id": 1,
-            "startAt": "10:00"
-        }
-      }
-    ]
-    ```
-
-### 예약 추가
-
-* Request
-    ```
-    POST /reservations HTTP/1.1
-    content-type: application/json
-
-    {
-      "date": "2023-08-05",
-      "name": "브라운",
-      "timeId": 1
-    }
-    ```
-* Response
-    ```
-    HTTP/1.1 200 
-    Content-Type: application/json
-
-    {
-      "id": 1,
-      "name": "브라운",
-      "date": "2023-08-05",
-      "time" : {
-        "id": 1,
-        "startAt" : "10:00"
-      }
-    }
-    ```
-
-### 예약 취소
-
-* Request
-    ```
-    DELETE /reservations/1 HTTP/1.1
-    ```
-* Response
-    ```
-    HTTP/1.1 200
-    ```
-
-### 시간 추가
-
-* Request
-    ```
-    POST /times HTTP/1.1
-    content-type: application/json
-
-    {
-      "startAt": "10:00"
-    }
-    ```
-* Response
-    ```
-    HTTP/1.1 200
-    Content-Type: application/json
-
-    {
-       "id": 1,
-       "startAt": "10:00"
-    }
-    ```
+### 예약 생성
+* 사용자: `/reservations` 
+* 관리자: `/reservations/admin`
 
 ### 시간 조회
-
-* Request
-    ```
-    GET /times HTTP/1.1
-    ```
-* Response
-    ```
-    HTTP/1.1 200 
-    Content-Type: application/json
-  
-    [
-      {
-        "id": 1,
-        "startAt": "10:00"
-      }
-    ]
-    ```
-
-### 시간 삭제
-
-* Request
-    ```
-    DELETE /times/1 HTTP/1.1
-    ```
-* Response
-    ```
-    HTTP/1.1 200
-    ```
-
-### 테마 추가
-
-* Request
-    ```
-    POST /themes HTTP/1.1
-    content-type: application/json
-
-    {
-      "name": "레벨2 탈출",
-      "description": "우테코 레벨2를 탈출하는 내용입니다.",
-      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    }
-    ```
-* Response
-    ```
-    HTTP/1.1 201
-    Location: /themes/1
-    Content-Type: application/json
-
-    {
-      "id": 1,
-      "name": "레벨2 탈출",
-      "description": "우테코 레벨2를 탈출하는 내용입니다.",
-      "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-    }
-    ```
-
-### 테마 조회
-
-* Request
-    ```
-    GET /themes HTTP/1.1
-    ```
-* Response
-    ```
-    HTTP/1.1 200 
-    Content-Type: application/json
-
-    [
-      {
-        "id": 1,
-        "name": "레벨2 탈출",
-        "description": "우테코 레벨2를 탈출하는 내용입니다.",
-        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-      }
-    ]
-    ```
-
-### 테마 삭제
-
-* Request
-    ```
-    DELETE /themes/1 HTTP/1.1
-    ```
-* Response
-    ```
-    HTTP/1.1 204
-    ```
+* 사용자: `/times/{date}/{themeId}`
+* 관리자: `/times`
