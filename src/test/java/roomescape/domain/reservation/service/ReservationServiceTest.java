@@ -25,7 +25,7 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
 import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
 import roomescape.domain.reservation.repository.fake.FakeThemeRepository;
-import roomescape.domain.reservation.FixedClock;
+import roomescape.domain.reservation.utils.FixedClock;
 
 class ReservationServiceTest {
 

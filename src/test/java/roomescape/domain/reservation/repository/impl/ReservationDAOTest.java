@@ -22,7 +22,7 @@ import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
-import roomescape.domain.reservation.JdbcTemplateUtils;
+import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @Disabled
 class ReservationDAOTest {

@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.domain.reservation.FixedClock;
+import roomescape.domain.reservation.utils.FixedClock;
 import roomescape.domain.reservation.dto.ThemeRequest;
 import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.entity.Reservation;
