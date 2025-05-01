@@ -1,8 +1,7 @@
 package roomescape.repository;
 
-import roomescape.entity.Theme;
-
 import java.util.List;
+import roomescape.entity.Theme;
 
 public interface ThemeRepository {
 
@@ -15,4 +14,6 @@ public interface ThemeRepository {
     void deleteById(Long id);
 
     List<Theme> findPopularThemesThisWeek();
+
+    boolean existsByName(String name);
 }

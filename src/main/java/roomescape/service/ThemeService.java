@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.PopularThemeResponse;
@@ -8,8 +9,6 @@ import roomescape.dto.ThemeResponse;
 import roomescape.entity.Theme;
 import roomescape.exceptions.ThemeDuplicateException;
 import roomescape.repository.ThemeRepository;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,7 +28,7 @@ public class ThemeService {
 
     @Transactional
     public ThemeResponse postTheme(ThemeRequest request) {
-        if (isAnyMatchName(request.name())) {
+        if (repository.existsByName(request.name())) {
             throw new ThemeDuplicateException("중복된 테마명이 존재합니다.", request.name());
         }
         Theme newTheme = repository.save(request.toEntity());
@@ -46,10 +45,5 @@ public class ThemeService {
         return repository.findPopularThemesThisWeek().stream()
                 .map(PopularThemeResponse::from)
                 .toList();
-    }
-
-    private boolean isAnyMatchName(String name) {
-        return repository.findAll().stream()
-                .anyMatch(current -> current.name().equals(name));
     }
 }

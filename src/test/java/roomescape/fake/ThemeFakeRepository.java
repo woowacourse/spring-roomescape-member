@@ -1,14 +1,13 @@
 package roomescape.fake;
 
-import roomescape.entity.Theme;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ThemeRepository;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.entity.Theme;
+import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.ThemeRepository;
 
 public class ThemeFakeRepository implements ThemeRepository {
 
@@ -57,5 +56,11 @@ public class ThemeFakeRepository implements ThemeRepository {
     @Override
     public List<Theme> findPopularThemesThisWeek() {
         return List.of();
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return themes.values().stream()
+                .anyMatch(current -> current.name().equals(name));
     }
 }

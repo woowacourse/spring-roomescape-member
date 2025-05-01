@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import java.util.List;
+import java.util.Objects;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -8,9 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Theme;
 import roomescape.exceptions.EntityNotFoundException;
-
-import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class ThemeJDBCDao implements ThemeRepository {
@@ -74,6 +73,14 @@ public class ThemeJDBCDao implements ThemeRepository {
                 limit 10
                 """;
         return namedJdbcTemplate.query(sql, getReservationRowMapper());
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        String sql = "select count(*) from theme where name = :name";
+        MapSqlParameterSource params = new MapSqlParameterSource("name", name);
+        Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != null && count > 0;
     }
 
     private RowMapper<Theme> getReservationRowMapper() {
