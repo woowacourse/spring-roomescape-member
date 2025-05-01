@@ -60,6 +60,22 @@ public class ThemeJDBCDao implements ThemeRepository {
         }
     }
 
+    @Override
+    public List<Theme> findPopularThemesThisWeek() {
+        String sql = """
+                select th.id, th.name, th.description, th.thumbnail, count(*) as reservation_count
+                from theme as th
+                inner join reservation as r
+                on th.id = r.theme_id
+                where r.date >= CURRENT_DATE() -7
+                AND r.date <= CURRENT_DATE()
+                group by th.id
+                order by reservation_count desc
+                limit 10
+                """;
+        return namedJdbcTemplate.query(sql, getReservationRowMapper());
+    }
+
     private RowMapper<Theme> getReservationRowMapper() {
         return (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),

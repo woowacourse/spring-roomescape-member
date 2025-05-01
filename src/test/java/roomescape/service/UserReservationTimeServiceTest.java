@@ -1,10 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationAvailableTimeResponse;
@@ -12,6 +7,12 @@ import roomescape.fake.ReservationFakeRepository;
 import roomescape.fake.ReservationTimeFakeRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class UserReservationTimeServiceTest {
 
@@ -41,7 +42,5 @@ class UserReservationTimeServiceTest {
                 .findFirst()
                 .get();
         assertThat(availableResponse.isBooked()).isFalse();
-
-
     }
 }

@@ -53,4 +53,9 @@ public class ThemeFakeRepository implements ThemeRepository {
 
         themes.remove(id);
     }
+
+    @Override
+    public List<Theme> findPopularThemesThisWeek() {
+        return List.of();
+    }
 }

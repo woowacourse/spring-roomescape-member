@@ -1,12 +1,14 @@
 package roomescape.service;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.entity.Theme;
 import roomescape.repository.ThemeRepository;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,5 +35,12 @@ public class ThemeService {
     @Transactional
     public void deleteTheme(long id) {
         repository.deleteById(id);
+    }
+
+    @Transactional
+    public List<PopularThemeResponse> readRecentPopularThemes() {
+        return repository.findPopularThemesThisWeek().stream()
+                .map(PopularThemeResponse::from)
+                .toList();
     }
 }
