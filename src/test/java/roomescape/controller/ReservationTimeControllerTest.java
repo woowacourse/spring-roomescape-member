@@ -1,63 +1,70 @@
 package roomescape.controller;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import java.time.LocalTime;
-import java.util.List;
-import org.assertj.core.api.Assertions;
+import static org.hamcrest.Matchers.equalTo;
+import java.util.HashMap;
+import java.util.Map;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.http.ResponseEntity;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeRequest;
-import roomescape.repository.fake.FakeReservationTimeRepository;
-import roomescape.service.ReservationTimeService;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import roomescape.service.stub.StubReservationTimeService;
 
-class ReservationTimeControllerTest {
-    private final ReservationTimeService fakeReservationTimeService = new ReservationTimeService(new FakeReservationTimeRepository());
-    private final ReservationTimeController reservationTimeController = new ReservationTimeController(fakeReservationTimeService);
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+public class ReservationTimeControllerTest {
 
-    @ParameterizedTest
-    @CsvSource(value = {"18:00"})
-    void create(LocalTime startAt) {
-        // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(startAt);
-
-        // when
-        ResponseEntity<ReservationTime> actualResponse = reservationTimeController.create(reservationTimeRequest);
-
-        // then
-        assertAll(
-                () -> Assertions.assertThat(actualResponse.getStatusCode().is2xxSuccessful()).isTrue(),
-                () -> Assertions.assertThat(actualResponse.getBody().getStartAt()).isEqualTo(reservationTimeRequest.startAt())
-        );
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public ReservationTimeController reservationTimeController() {
+            return new ReservationTimeController(new StubReservationTimeService());
+        }
     }
 
     @Test
-    void read() {
-        // given
-        LocalTime givenLocalTime = LocalTime.now();
-        reservationTimeController.create(new ReservationTimeRequest(givenLocalTime));
+    void createReservationTime() {
+        Map<String, String> params = new HashMap<>();
+        params.put("startAt", "12:00");
 
-        // when
-        List<ReservationTime> actualResponse = reservationTimeController.read().getBody();
-
-        // then
-        Assertions.assertThat(actualResponse).hasSize(1);
-        Assertions.assertThat(actualResponse.getFirst().getStartAt()).isEqualTo(givenLocalTime);
+        RestAssured.given().log().all()
+                .contentType("application/json")
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .body("startAt", equalTo("12:00:00"))
+                .statusCode(201);
     }
 
     @Test
-    void delete() {
-        // given
-        LocalTime givenLocalTime = LocalTime.now();
-        reservationTimeController.create(new ReservationTimeRequest(givenLocalTime));
+    void readReservationTime() {
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .body("[0].startAt", equalTo("12:00:00"))
+                .statusCode(200);
+    }
 
-        // when
-        reservationTimeController.delete(1L);
+    @Test
+    void deleteReservationTime() {
+        RestAssured.given().log().all()
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(204);
+    }
 
-        // then
-        List<ReservationTime> actualResponse = reservationTimeController.read().getBody();
-        Assertions.assertThat(actualResponse).isEmpty();
+    @Test
+    void readAvailableTimesBy() {
+        Map<String, String> params = new HashMap<>();
+        params.put("date", "2024-05-01");
+        params.put("themeId", "1");
+
+        RestAssured.given().log().all()
+                .contentType("application/json")
+                .body(params)
+                .when().get("times/search")
+                .then().log().all()
+                .body("[0].startAt", equalTo("12:00:00"))
+                .body("[0].booked", equalTo(false))
+                .statusCode(200);
     }
 }
