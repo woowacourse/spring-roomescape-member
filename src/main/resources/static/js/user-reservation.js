@@ -146,8 +146,7 @@ function onReservationButtonClick() {
     if (selectedDate && selectedThemeId && selectedTimeId) {
 
         /*
-        TODO: [3단계] 사용자 예약 - 예약 요청 API 호출
-              [5단계] 예약 생성 기능 변경 - 사용자
+        TODO: [5단계] 예약 생성 기능 변경 - 사용자
               request 명세에 맞게 설정
         */
         const reservationData = {
@@ -164,17 +163,19 @@ function onReservationButtonClick() {
             },
             body: JSON.stringify(reservationData)
         })
-            .then(response => {
-                if (!response.ok) throw new Error('Reservation failed');
+            .then(async response => {
+                if (!response.ok) {
+                    const errorMessage = await response.json();
+                    throw new Error(errorMessage.message || '예약이 실패했습니다.');
+                }
                 return response.json();
             })
             .then(data => {
-                alert("Reservation successful!");
+                alert("성공적으로 예약되었습니다!");
                 location.reload();
             })
             .catch(error => {
-                alert("An error occurred while making the reservation.");
-                console.error(error);
+                alert(error.message);
             });
     } else {
         alert("Please select a date, theme, and time before making a reservation.");
@@ -183,8 +184,13 @@ function onReservationButtonClick() {
 
 function requestRead(endpoint) {
     return fetch(endpoint)
-        .then(response => {
+        .then(async response => {
             if (response.status === 200) return response.json();
-            throw new Error('Read failed');
+
+            const errorMessage = await response.json();
+            throw new Error(errorMessage.message || '서버에 오류가 발생했습니다.');
+        })
+        .catch(error => {
+            alert(error.message);
         });
 }

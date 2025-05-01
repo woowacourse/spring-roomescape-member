@@ -47,6 +47,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponseDto> createReservation(
             @RequestBody ReservationRequestDto reservationRequest
     ) {
+        System.out.println(reservationRequest.date());
         ReservationResponseDto newReservation = reservationService.createReservation(reservationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(newReservation);
     }
