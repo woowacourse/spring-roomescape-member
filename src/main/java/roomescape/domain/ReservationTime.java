@@ -25,10 +25,6 @@ public class ReservationTime {
         }
     }
 
-    public ReservationTime withId(final long id) {
-        return new ReservationTime(id, this.startAt);
-    }
-
     public long getId() {
         return id;
     }

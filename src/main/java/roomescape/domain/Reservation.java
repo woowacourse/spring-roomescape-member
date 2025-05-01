@@ -48,14 +48,6 @@ public class Reservation {
         }
     }
 
-    public Reservation withId(final long id) {
-        return new Reservation(id, this.name, this.date, this.time, this.theme);
-    }
-
-    public boolean isSameDateTime(final LocalDate date, final long timeId) {
-        return this.date.equals(date) && this.time.getId() == timeId;
-    }
-
     public long getId() {
         return id;
     }

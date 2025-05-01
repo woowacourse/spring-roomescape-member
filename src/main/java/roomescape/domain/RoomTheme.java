@@ -35,10 +35,6 @@ public class RoomTheme {
         }
     }
 
-    public RoomTheme withId(final long id) {
-        return new RoomTheme(id, this.name, this.description, this.thumbnail);
-    }
-
     public long getId() {
         return id;
     }
