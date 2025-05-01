@@ -13,39 +13,39 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.CreateThemeRequest;
 import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
-import roomescape.service.RoonThemeService;
+import roomescape.service.RoomThemeService;
 import roomescape.service.dto.RoomThemeCreation;
 
 @RequestMapping("/themes")
 @RestController
 public class RoomThemeController {
 
-    private final RoonThemeService roonThemeService;
+    private final RoomThemeService roomThemeService;
 
-    public RoomThemeController(RoonThemeService roonThemeService) {
-        this.roonThemeService = roonThemeService;
+    public RoomThemeController(RoomThemeService roomThemeService) {
+        this.roomThemeService = roomThemeService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RoomThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
         final RoomThemeCreation creation = RoomThemeCreation.from(request);
-        return roonThemeService.addTheme(creation);
+        return roomThemeService.addTheme(creation);
     }
 
     @GetMapping
     public List<RoomThemeResponse> findAllThemes() {
-        return roonThemeService.findAllThemes();
+        return roomThemeService.findAllThemes();
     }
 
     @GetMapping("/popular")
     public List<PopularThemeResponse> findPopularThemes() {
-        return roonThemeService.findPopularThemes();
+        return roomThemeService.findPopularThemes();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(@PathVariable long id) {
-        roonThemeService.deleteTheme(id);
+        roomThemeService.deleteTheme(id);
     }
 }

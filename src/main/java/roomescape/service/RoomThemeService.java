@@ -14,12 +14,12 @@ import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.RoomThemeCreation;
 
 @Service
-public class RoonThemeService {
+public class RoomThemeService {
 
     private final ReservationDAO reservationDAO;
     private final RoomThemeDAO themeDAO;
 
-    public RoonThemeService(final ReservationDAO reservationDAO, final RoomThemeDAO themeDAO) {
+    public RoomThemeService(final ReservationDAO reservationDAO, final RoomThemeDAO themeDAO) {
         this.reservationDAO = reservationDAO;
         this.themeDAO = themeDAO;
     }
