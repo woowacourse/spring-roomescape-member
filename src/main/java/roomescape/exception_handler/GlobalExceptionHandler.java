@@ -4,8 +4,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import roomescape.exception.ConstraintException;
 import roomescape.exception.ResourceNotExistException;
-import roomescape.exception.TimeConstraintException;
 
 @ControllerAdvice
 // TODO: Global이라는 네이밍이 맞을까?
@@ -16,8 +16,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(TimeConstraintException.class)
-    public ResponseEntity<String> handleTimeConstraintException(TimeConstraintException e) {
+    @ExceptionHandler(ConstraintException.class)
+    public ResponseEntity<String> handleConstraintException(ConstraintException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
