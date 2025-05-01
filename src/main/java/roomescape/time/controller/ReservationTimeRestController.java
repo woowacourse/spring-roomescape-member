@@ -48,6 +48,6 @@ public class ReservationTimeRestController {
     ) {
         reservationTimeService.deleteById(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
