@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.global.exception.DeleteTimeException;
+import roomescape.global.exception.DuplicateTimeException;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 
 @JdbcTest
@@ -41,6 +42,31 @@ public class ReservationTimeDaoTest {
 
         // then
         assertThat(count()).isEqualTo(count());
+    }
+
+    @Test
+    @DisplayName("시간 전체 조회 테스트")
+    void findAllTimesTest() {
+        // given
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        reservationTimeDao.insert(reservationTimeRequest.getStartAt());
+
+        // when
+        assertThat(reservationTimeDao.findAllTimes()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("중복된 시간은 추가하려 하면 예외가 발생한다.")
+    void duplicateTimeTest() {
+        // given
+        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        reservationTimeDao.insert(reservationTimeRequest.getStartAt());
+        ReservationTimeRequest duplicateReservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+
+        // when - then
+        assertThatThrownBy(() -> reservationTimeDao.insert(duplicateReservationTimeRequest.getStartAt()))
+                .isInstanceOf(DuplicateTimeException.class)
+                .hasMessage("[ERROR] 중복된 시간은 추가할 수 없습니다.");
     }
 
     @Test

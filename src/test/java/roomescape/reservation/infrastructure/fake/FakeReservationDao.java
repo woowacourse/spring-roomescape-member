@@ -60,4 +60,13 @@ public class FakeReservationDao implements ReservationRepository {
         return store.values().stream()
                 .anyMatch(reservation -> reservation.getTheme().getId().equals(themeId));
     }
+
+    @Override
+    public boolean existsByDateAndThemeIdAndTimeId(LocalDate date, Long timeId, Long themeId) {
+        return store.values().stream()
+                .anyMatch(reservation ->
+                        reservation.getDate().getReservationDate().equals(date) &&
+                        reservation.getReservationTime().getId().equals(timeId) &&
+                        reservation.getTheme().getId().equals(themeId));
+    }
 }
