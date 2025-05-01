@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -44,6 +45,8 @@ public class ThemeService {
             return ThemeResponse.from(themeDao.save(theme));
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 테마 생성에 실패했습니다.");
         }
     }
 

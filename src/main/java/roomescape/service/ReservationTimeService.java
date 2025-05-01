@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -22,9 +23,13 @@ public class ReservationTimeService {
         this.reservationDao = reservationDao;
     }
 
-    public ReservationTimeResponse create(ReservationTimeRequest request) {
+    public ReservationTimeResponse save(ReservationTimeRequest request) {
         ReservationTime reservationTime = new ReservationTime(request.startAt());
-        reservationTime = reservationTimeDao.save(reservationTime);
+        try {
+            reservationTime = reservationTimeDao.save(reservationTime);
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 예약 시간 생성에 실패하였습니다");
+        }
         return ReservationTimeResponse.from(reservationTime);
     }
 

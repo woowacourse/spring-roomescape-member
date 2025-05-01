@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.create(request);
+        ReservationResponse response = reservationService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

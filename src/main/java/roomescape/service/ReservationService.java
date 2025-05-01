@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
@@ -38,7 +39,7 @@ public class ReservationService {
             .toList();
     }
 
-    public ReservationResponse create(ReservationRequest request) {
+    public ReservationResponse save(ReservationRequest request) {
         int count = reservationDao.getCountByDateAndTimeId(request.date(), request.timeId());
         if (count != 0) {
             throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
@@ -64,6 +65,8 @@ public class ReservationService {
             // TODO: 이 예외는 어디서 catch하는게 맞을가? service vs dao
         } catch (DuplicateKeyException e) {
             throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
+        } catch (DataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
         }
     }
 
