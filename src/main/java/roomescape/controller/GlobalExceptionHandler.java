@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
             DuplicateContentException.class,
             InvalidRequestException.class
     })
-    public ResponseEntity<String> handleBadRequestException(DuplicateContentException ex) {
+    public ResponseEntity<String> handleBadRequestException(Exception ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

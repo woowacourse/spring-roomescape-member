@@ -82,7 +82,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 th.description,
                 th.thumbnail
                 FROM reservation as r
-                inner join reservation_time as t on r.time_id = t.id 
+                inner join reservation_time as t on r.time_id = t.id
                 inner join theme as th on r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
