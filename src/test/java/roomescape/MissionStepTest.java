@@ -196,7 +196,6 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(201);
 
-        // TODO : main, test sql resource 분리
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()

@@ -16,16 +16,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    // TODO: not found body 포함 여부 결정
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    // TODO : 적합한 상태코드 알아보기
     @ExceptionHandler(ReservationTimeInUseException.class)
     public ResponseEntity<String> handleReservationTimeInUseException(ReservationTimeInUseException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
