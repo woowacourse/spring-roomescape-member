@@ -38,11 +38,16 @@ public class ThemeService {
     }
 
     public void deleteThemeById(final Long id) {
+        validateExistIdToDelete(id);
+        
+        boolean isDeleted = themeRepository.deleteById(id);
+        validateIsExistsReservationTimeId(isDeleted);
+    }
+
+    private void validateExistIdToDelete(Long id) {
         if (reservationRepository.existBy(id)) {
             throw new IllegalArgumentException("삭제할 수 없는 테마입니다.");
         }
-        boolean isDeleted = themeRepository.deleteById(id);
-        validateIsExistsReservationTimeId(isDeleted);
     }
 
     private void validateIsExistsReservationTimeId(boolean isDeleted) {

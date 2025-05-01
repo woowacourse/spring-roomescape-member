@@ -31,12 +31,16 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTimeById(final Long id) {
-        if (reservationRepository.existByReservationTimeId(id)) {
-            throw new IllegalArgumentException("삭제할 수 없는 예약 시간입니다.");
-        }
+        validateExistIdToDelete(id);
 
         boolean isDeleted = reservationTimeRepository.deleteById(id);
         validateIsExistsReservationTimeId(isDeleted);
+    }
+
+    private void validateExistIdToDelete(Long id) {
+        if (reservationRepository.existByReservationTimeId(id)) {
+            throw new IllegalArgumentException("삭제할 수 없는 예약 시간입니다.");
+        }
     }
 
     private void validateIsExistsReservationTimeId(boolean isDeleted) {
