@@ -38,10 +38,7 @@ public class ReservationTimeController {
 
     @GetMapping
     public List<ReservationTimeResponse> findAll() {
-        return reservationTimeService.findAll()
-                .stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+        return reservationTimeService.findAll();
     }
 
     @GetMapping("/avaliable")

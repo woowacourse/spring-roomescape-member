@@ -33,7 +33,7 @@ public class ReservationService {
 
     public ReservationResponse addReservation(final ReservationCreation creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
-        final RoomTheme theme = findThemeByThemeId(creation);
+        final RoomTheme theme = findThemeByThemeId(creation.themeId());
         final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
 
         validatePastDateAndTime(reservation.getDate(), reservation.getTime());
@@ -52,10 +52,8 @@ public class ReservationService {
                         .formatted(timeId)));
     }
 
-    // TODO : 맞추기
-
-    private RoomTheme findThemeByThemeId(final ReservationCreation creation) {
-        return themeDAO.findById(creation.themeId())
+    private RoomTheme findThemeByThemeId(final long themeId) {
+        return themeDAO.findById(themeId)
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
     }
 
@@ -83,8 +81,11 @@ public class ReservationService {
                 reservation.getTheme().getId());
     }
 
-    public List<Reservation> findAll() {
-        return reservationDAO.findAll();
+    public List<ReservationResponse> findAll() {
+        return reservationDAO.findAll()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public void removeReservationById(final long id) {
