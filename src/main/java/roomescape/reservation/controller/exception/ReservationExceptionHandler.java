@@ -10,12 +10,12 @@ import roomescape.reservation.domain.exception.ReserverNameEmptyException;
 public class ReservationExceptionHandler {
 
     @ExceptionHandler(ReserverNameEmptyException.class)
-    public ResponseEntity<Void> handleReserverNameEmptyException(ReserverNameEmptyException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> handleReserverNameEmptyException(ReserverNameEmptyException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(PastReservationException.class)
-    public ResponseEntity<Void> handlePastReservationException(PastReservationException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> handlePastReservationException(PastReservationException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
