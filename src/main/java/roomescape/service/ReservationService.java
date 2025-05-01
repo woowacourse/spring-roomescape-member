@@ -62,7 +62,8 @@ public class ReservationService {
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        Theme selectedTheme = themeDao.findById(themeId).orElseThrow(RuntimeException::new);
+        Theme selectedTheme = themeDao.findById(themeId)
+            .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
         List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(date, themeId);
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
     }

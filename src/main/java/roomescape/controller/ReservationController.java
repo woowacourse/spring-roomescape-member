@@ -8,6 +8,7 @@ import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.PastReservationException;
 import roomescape.exception.ReservationTimeConflictException;
 import roomescape.service.ReservationService;
@@ -51,7 +52,8 @@ public class ReservationController {
     @ExceptionHandler({
         PastReservationException.class,
         DuplicateReservationException.class,
-        ReservationTimeConflictException.class})
+        ReservationTimeConflictException.class,
+        EntityNotFoundException.class})
     public ResponseEntity<String> handleCreateReservationException(final RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
