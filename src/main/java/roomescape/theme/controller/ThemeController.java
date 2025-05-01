@@ -26,7 +26,7 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponse saveTime(@Valid @RequestBody final ThemeRequest request) {
+    public ThemeResponse saveTheme(@Valid @RequestBody final ThemeRequest request) {
         return themeService.saveTheme(request);
     }
 
