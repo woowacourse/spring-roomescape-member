@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.DBFKException;
 
 @Component
 @RequiredArgsConstructor
@@ -67,7 +68,6 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         }
     }
 
-    // TODO: FK 제약 위배에 대한 예외처리 필요
     @Override
     public void deleteById(Long id) {
         String deleteQuery = "DELETE FROM reservation_time WHERE id = ?";
@@ -75,7 +75,7 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         try {
             jdbcTemplate.update(deleteQuery, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("삭제하려는 시간을 사용중인 예약이 있습니다.");
+            throw new DBFKException("삭제하려는 시간을 사용중인 예약이 있습니다.", e);
         }
     }
 

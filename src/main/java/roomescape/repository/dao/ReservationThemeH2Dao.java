@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTheme;
+import roomescape.exception.DBFKException;
 
 @Component
 @RequiredArgsConstructor
@@ -78,8 +79,7 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
         try {
             jdbcTemplate.update(deleteQuery, id);
         } catch (DataIntegrityViolationException e) {
-            // TODO: 커스텀 익셉션을 만들어서 서비스에서 DBFKException 캐치하도록 수정
-            throw new IllegalArgumentException("삭제하려는 테마에 예약이 존재합니다.");
+            throw new DBFKException("삭제하려는 테마에 예약이 존재합니다.", e);
         }
     }
 
