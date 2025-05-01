@@ -2,7 +2,7 @@ package roomescape.business;
 
 public final class ReservationTheme {
 
-    private Long id;
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
@@ -32,9 +32,5 @@ public final class ReservationTheme {
 
     public String getThumbnail() {
         return thumbnail;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 }
