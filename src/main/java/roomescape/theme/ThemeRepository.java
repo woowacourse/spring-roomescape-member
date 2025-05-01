@@ -12,4 +12,6 @@ public interface ThemeRepository {
     List<Theme> findAllOrderByRank(LocalDate from, LocalDate to, int size);
 
     void deleteById(Long id);
+
+    Boolean existsById(Long id);
 }

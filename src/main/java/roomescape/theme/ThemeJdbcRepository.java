@@ -75,6 +75,12 @@ public class ThemeJdbcRepository implements ThemeRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public Boolean existsById(final Long id) {
+        final String sql = "SELECT COUNT(*) FROM theme WHERE id=?";
+        return jdbcTemplate.queryForObject(sql, Long.class, id) >= 1;
+    }
+
     private static RowMapper<Theme> getRowMapper() {
         return (resultSet, rowNum) ->
                 new Theme(

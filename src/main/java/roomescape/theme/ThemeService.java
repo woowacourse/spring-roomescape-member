@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.globalexception.NotFoundException;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 
@@ -53,6 +54,9 @@ public class ThemeService {
     public void deleteById(
             final Long id
     ) {
+        if(!themeRepository.existsById(id)){
+            throw new NotFoundException("테마가 존재하지 않습니다.");
+        }
         themeRepository.deleteById(id);
     }
 }
