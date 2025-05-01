@@ -4,13 +4,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import roomescape.domain_entity.ReservationTime;
 
-public record ReservationTimeResponseDto(
+public record ReservationTimeResponse(
         Long id, LocalTime startAt
 ) {
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static ReservationTimeResponseDto from(ReservationTime reservationTime) {
-        return new ReservationTimeResponseDto(reservationTime.getId(), reservationTime.getStartAt());
+    public static ReservationTimeResponse from(ReservationTime reservationTime) {
+        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
     }
 
     public String getStartAt() {

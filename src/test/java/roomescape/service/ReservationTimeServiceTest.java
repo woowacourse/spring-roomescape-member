@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
 import roomescape.service.fake_dao.FakeReservationDao;
 import roomescape.service.fake_dao.FakeReservationTimeDao;
 
@@ -23,8 +23,8 @@ class ReservationTimeServiceTest {
     @Test
     void createReservationTime() {
         LocalTime startAt = LocalTime.of(10, 0, 0);
-        ReservationTimeResponseDto time = timeService.createTime(
-                new ReservationTimeRequestDto(startAt)
+        ReservationTimeResponse time = timeService.createTime(
+                new ReservationTimeRequest(startAt)
         );
 
         assertThat(time.startAt()).isEqualTo(startAt);
@@ -34,7 +34,7 @@ class ReservationTimeServiceTest {
     void findAllReservationTimes() {
         createReservationTime();
 
-        List<ReservationTimeResponseDto> times = timeService.findAllTimes();
+        List<ReservationTimeResponse> times = timeService.findAllTimes();
 
         assertThat(times).hasSize(1);
     }

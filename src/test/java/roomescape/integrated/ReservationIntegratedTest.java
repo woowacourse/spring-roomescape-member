@@ -22,7 +22,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.domain_entity.Theme;
-import roomescape.dto.ReservationTimeRequestDto;
+import roomescape.dto.ReservationTimeRequest;
 import roomescape.service.ReservationTimeService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -52,7 +52,7 @@ public class ReservationIntegratedTest {
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         //given
-        reservationTimeService.createTime(new ReservationTimeRequestDto(LocalTime.of(10, 0, 0)));
+        reservationTimeService.createTime(new ReservationTimeRequest(LocalTime.of(10, 0, 0)));
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
