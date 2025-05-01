@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.controller.dto.AvailableReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -41,17 +42,15 @@ class ReservationRestControllerTest {
                     .then().log().all()
                     .statusCode(HttpStatus.CREATED.value());
         }
-    }
 
-    @Test
-    void 예약_정보_저장에_성공하는_경우_ok를_반환한다() {
-        final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2025-04-15", "1");
-
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", "우가우가");
+        params.put("description", "우가우가 설명");
+        params.put("thumbnail", "따봉우가.jpg");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/reservations")
+                .when().post("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
     }
@@ -59,7 +58,7 @@ class ReservationRestControllerTest {
     @Test
     void 요청_형식이_맞지_않아_예약_정보_저장에_실패하는_경우_bad_request를_반환한다() {
         final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2025 04 15", "10 00");
+                = createReservationRequestJsonMap("헤일러", "2025 04 15", "10 00", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -70,27 +69,40 @@ class ReservationRestControllerTest {
     }
 
     @Test
-    void 예약_정보를_삭제한다() {
+    void 예약_정보를_저장한다() {
         final Map<String, String> params
-                = createReservationRequestJsonMap("포스티", "2023-08-05", "1");
+                = createReservationRequestJsonMap("헤일러", "2023-08-05", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void 예약_정보를_삭제한다() {
+        final Map<String, String> params
+                = createReservationRequestJsonMap("포스티", "2023-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -110,6 +122,57 @@ class ReservationRestControllerTest {
     }
 
     @Test
+    void 예약_정보_목록을_조회한다() {
+        final Map<String, String> params
+                = createReservationRequestJsonMap("헤일러", "2023-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1));
+    }
+
+    @Test
+    void 예약_가능한_시간_목록을_조회한다() {
+        final Map<String, String> params
+                = createReservationRequestJsonMap("헤일러", "2023-08-05", "1", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        final Map<String, String> availableParams = new HashMap<>();
+        availableParams.put("date", "2023-08-05");
+        availableParams.put("themeId", "1");
+
+        final List<AvailableReservationTimeResponse> availableReservationTimeResponses = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(availableParams)
+                .when().post("/reservations/available-times")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().jsonPath()
+                .getList(".", AvailableReservationTimeResponse.class);
+
+        final long count = availableReservationTimeResponses.stream()
+                .filter(AvailableReservationTimeResponse::alreadyBooked)
+                .count();
+
+        assertThat(count).isEqualTo(1);
+    }
+
+    @Test
     void 컨트롤러는_JdbcTemplate_타입의_필드를_갖고_있지_않다() {
         boolean isJdbcTemplateInjected = false;
 
@@ -123,11 +186,13 @@ class ReservationRestControllerTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
-    private Map<String, String> createReservationRequestJsonMap(String name, String date, String timeId) {
+    private Map<String, String> createReservationRequestJsonMap(String name, String date, String timeId,
+                                                                String themeId) {
         return Map.ofEntries(
                 Map.entry("name", name),
                 Map.entry("date", date),
-                Map.entry("timeId", timeId)
+                Map.entry("timeId", timeId),
+                Map.entry("themeId", themeId)
         );
     }
 }
