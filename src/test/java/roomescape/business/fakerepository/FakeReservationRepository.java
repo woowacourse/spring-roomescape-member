@@ -3,12 +3,14 @@ package roomescape.business.fakerepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.Reservation;
 import roomescape.persistence.ReservationRepository;
 
 public final class FakeReservationRepository implements ReservationRepository {
 
     private final List<Reservation> reservations = new ArrayList<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public List<Reservation> findAll() {
@@ -25,17 +27,20 @@ public final class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Long add(Reservation reservation) {
-        if (reservation.getId() == null) {
-            reservation.setId(1L);
-        }
+        Reservation savedReservation = new Reservation(
+                idGenerator.getAndIncrement(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime(),
+                reservation.getTheme()
+        );
         reservations.add(reservation);
-        return reservation.getId();
+        return savedReservation.getId();
     }
 
     @Override
     public void deleteById(Long id) {
-        Reservation reservation = findById(id);
-        reservations.remove(reservation);
+        reservations.removeIf(reservation -> Objects.equals(reservation.getId(), id));
     }
 
     @Override

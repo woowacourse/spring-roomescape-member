@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.ReservationTime;
 import roomescape.business.dto.AvailableTimesResponseDto;
 import roomescape.persistence.ReservationTimeRepository;
@@ -11,6 +12,7 @@ import roomescape.persistence.ReservationTimeRepository;
 public final class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public List<ReservationTime> findAll() {
@@ -27,17 +29,17 @@ public final class FakeReservationTimeRepository implements ReservationTimeRepos
 
     @Override
     public Long add(ReservationTime reservationTime) {
-        if (reservationTime.getId() == null) {
-            reservationTime.setId(1L);
-        }
-        reservationTimes.add(reservationTime);
-        return reservationTime.getId();
+        ReservationTime savedReservationTime = new ReservationTime(
+                idGenerator.getAndIncrement(),
+                reservationTime.getStartAt()
+        );
+        reservationTimes.add(savedReservationTime);
+        return savedReservationTime.getId();
     }
 
     @Override
     public void deleteById(Long id) {
-        ReservationTime reservationTime = findById(id);
-        reservationTimes.remove(reservationTime);
+        reservationTimes.removeIf(reservationTime -> Objects.equals(reservationTime.getId(), id));
     }
 
     @Override

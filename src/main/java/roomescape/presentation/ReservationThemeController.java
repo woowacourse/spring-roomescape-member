@@ -14,42 +14,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.dto.ReservationThemeRequestDto;
 import roomescape.business.dto.ReservationThemeResponseDto;
-import roomescape.business.service.ReservationService;
+import roomescape.business.service.ReservationThemeService;
 
 @RestController
 @RequestMapping("/themes")
 public final class ReservationThemeController {
 
-    private final ReservationService reservationService;
+    private final ReservationThemeService reservationThemeService;
 
     @Autowired
-    public ReservationThemeController(ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public ReservationThemeController(ReservationThemeService reservationThemeService) {
+        this.reservationThemeService = reservationThemeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationThemeResponseDto>> readReservationThemes() {
-        List<ReservationThemeResponseDto> reservationThemes = reservationService.readThemeAll();
+        List<ReservationThemeResponseDto> reservationThemes = reservationThemeService.readThemeAll();
         return ResponseEntity.ok(reservationThemes);
     }
 
     @GetMapping("/ranks")
     public ResponseEntity<List<ReservationThemeResponseDto>> readBestReservedReservationThemes() {
-        List<ReservationThemeResponseDto> bestReservedThemes = reservationService.readBestReservedThemes();
+        List<ReservationThemeResponseDto> bestReservedThemes = reservationThemeService.readBestReservedThemes();
         return ResponseEntity.ok(bestReservedThemes);
     }
 
     @PostMapping
     public ResponseEntity<ReservationThemeResponseDto> create(
             @Valid @RequestBody ReservationThemeRequestDto reservationThemeDto) {
-        ReservationThemeResponseDto reservationTheme = reservationService.createTheme(reservationThemeDto);
+        ReservationThemeResponseDto reservationTheme = reservationThemeService.createTheme(reservationThemeDto);
         String location = "/themes/" + reservationTheme.id();
         return ResponseEntity.created(URI.create(location)).body(reservationTheme);
     }
 
     @DeleteMapping("/{themeId}")
     public ResponseEntity<Void> deleteReservationTheme(@PathVariable("themeId") Long id) {
-        reservationService.deleteTheme(id);
+        reservationThemeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 }
