@@ -1,12 +1,15 @@
 package roomescape;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -191,7 +194,8 @@ public class MissionStepTest {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
-        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        params.put("thumbnail",
+            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
@@ -252,27 +256,65 @@ public class MissionStepTest {
             .statusCode(404);
     }
 
-    // TODO : 서비스 테스트 작성하기
+    @Test
+    @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 400 코드를 반환한다")
+    void cannot_delete_theme_if_reservation_exist() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "브라운");
+        params.put("date", LocalDate.now().plusDays(1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
 
-//    @Test
-//    @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 400 코드를 반환한다")
-//    void cannot_delete_theme_if_reservation_exist() {
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("name", "브라운");
-//        params.put("date", LocalDate.now().plusDays(1));
-//        params.put("timeId", 1);
-//        //TODO: id값 의존성 제거?
-//        RestAssured.given().log().all()
-//            .contentType(ContentType.JSON)
-//            .body(params)
-//            .when().post("/reservations")
-//            .then().log().all()
-//            .statusCode(201);
-//
-//        RestAssured.given().log().all()
-//            .when().delete("/times/1")
-//            .then().log().all()
-//            .statusCode(400);
-//    }
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(params)
+            .when().post("/reservations")
+            .then().log().all()
+            .statusCode(201);
 
+        RestAssured.given().log().all()
+            .when().delete("/themes/1")
+            .then().log().all()
+            .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("/themes/top10 GET 요청을 통해 인기 테마 상위 10개를 조회할 수 있다.")
+    void theme_top_10() {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 1L, 1L);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 2L, 1L);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 3L, 1L);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 1L, 2L);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 2L, 2L);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 3L, 2L);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 4L, 2L);
+        jdbcTemplate.update(
+            "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "두리",
+            yesterday, 1L, 3L);
+
+        List<Integer> ids = RestAssured.given().log().all()
+            .when().get("/themes/top10")
+            .andReturn().body().jsonPath().getList("id");
+        assertAll(
+            () -> assertThat(ids.get(0)).isEqualTo(2),
+            () -> assertThat(ids.get(1)).isEqualTo(1),
+            () -> assertThat(ids.get(2)).isEqualTo(3),
+            () -> assertThat(ids.get(3)).isEqualTo(4)
+        );
+    }
 }

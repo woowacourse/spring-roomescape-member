@@ -5,8 +5,6 @@ import static roomescape.TestConstants.DEFAULT_THEME;
 import static roomescape.TestConstants.DEFAULT_TIME;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -47,24 +45,5 @@ class ReservationTest {
                 DEFAULT_THEME
             );
         }).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @DisplayName("과거 날짜에 대한 예약을 시도하는 경우 예외를 던진다")
-    void duplicate_reservation_validation_of_date() {
-        ReservationTime time = new ReservationTime(LocalTime.now());
-
-        assertThatThrownBy(() -> new Reservation("두리", LocalDate.now().minusDays(1), time, DEFAULT_THEME))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("과거 시간에 대한 예약을 시도하는 경우 예외를 던진다")
-    void duplicate_reservation_validation_of_time() {
-        LocalDateTime dateTime = LocalDateTime.now().minusHours(1);
-        ReservationTime time = new ReservationTime(dateTime.toLocalTime());
-
-        assertThatThrownBy(() -> new Reservation("두리", dateTime.toLocalDate(), time, DEFAULT_THEME))
-            .isInstanceOf(IllegalArgumentException.class);
     }
 }

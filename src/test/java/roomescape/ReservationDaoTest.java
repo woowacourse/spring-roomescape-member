@@ -43,7 +43,7 @@ class ReservationDaoTest {
         );
         Theme savedTheme = themeDao.save(
             new Theme(
-                "탈출2",
+                "탈출 테스트",
                 "탈출하는 내용",
                 "abc.jpg"
             )
