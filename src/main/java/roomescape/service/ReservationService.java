@@ -40,7 +40,7 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest request) {
-        int count = reservationDao.getCountByDateAndTimeId(request.date(), request.timeId());
+        int count = reservationDao.getCountByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
         if (count != 0) {
             throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
         }

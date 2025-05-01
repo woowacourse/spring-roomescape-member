@@ -8,7 +8,6 @@ import roomescape.exception.ConstraintException;
 import roomescape.exception.ResourceNotExistException;
 
 @ControllerAdvice
-// TODO: Global이라는 네이밍이 맞을까?
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)

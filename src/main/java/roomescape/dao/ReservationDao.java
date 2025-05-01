@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -91,11 +90,6 @@ public class ReservationDao {
             "delete from reservation where id = ?",
             id
         );
-    }
-
-    public int getCountByDateAndTimeId(LocalDate date, Long timeId) {
-        String query = "SELECT count(*) FROM reservation WHERE date = ? and time_id = ?";
-        return jdbcTemplate.queryForObject(query, Integer.class, date, timeId);
     }
 
     public int getCountByThemeId(Long themeId) {
