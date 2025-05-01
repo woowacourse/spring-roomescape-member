@@ -1,5 +1,6 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,41 +12,46 @@ import roomescape.repository.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
 
-    // TODO: static 남겨둘지?
-    private static final List<Reservation> REPOSITORY = new ArrayList<>();
-    private static final AtomicLong AUTO_INCREMENT = new AtomicLong(1);
+    private final List<Reservation> repository = new ArrayList<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
     @Override
     public Reservation save(Reservation reservation) {
         Reservation saveTarget = new Reservation(
-                AUTO_INCREMENT.getAndIncrement(),
+                idGenerator.getAndIncrement(),
                 reservation.name(),
                 reservation.date(),
-                reservation.time()
+                reservation.time(),
+                reservation.theme()
         );
-        REPOSITORY.add(saveTarget);
+        repository.add(saveTarget);
         return saveTarget;
     }
 
     @Override
     public List<Reservation> getAll() {
-        return new ArrayList<>(REPOSITORY);
+        return new ArrayList<>(repository);
     }
 
     @Override
     public Optional<Reservation> findById(Long id) {
-        return REPOSITORY.stream()
+        return repository.stream()
                 .filter(reservation -> Objects.equals(id, reservation.id()))
                 .findFirst();
     }
 
     @Override
-    public void remove(Reservation reservation) {
-        REPOSITORY.remove(reservation);
+    public Reservation getById(Long id) {
+        return null;
     }
 
-    public static void clear() {
-        REPOSITORY.clear();
-        AUTO_INCREMENT.set(1);
+    @Override
+    public void remove(Reservation reservation) {
+        repository.remove(reservation);
+    }
+
+    @Override
+    public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
+        return false;
     }
 }
