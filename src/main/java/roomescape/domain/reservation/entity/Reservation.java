@@ -82,13 +82,11 @@ public class Reservation {
             return false;
         }
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
-               && Objects.equals(reservationDate, that.reservationDate) && Objects.equals(
-                reservationTime, that.reservationTime);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, reservationDate, reservationTime);
+        return Objects.hashCode(id);
     }
 }

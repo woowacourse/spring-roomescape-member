@@ -9,6 +9,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
+    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
+
     Optional<Reservation> findById(Long id);
 
     Reservation save(Reservation reservation);
@@ -16,8 +18,6 @@ public interface ReservationRepository {
     void deleteById(Long id);
 
     boolean existsByDateAndTimeId(LocalDate date, Long timeId);
-
-    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
 
     boolean existsByTimeId(Long timeId);
 

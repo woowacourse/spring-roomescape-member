@@ -53,12 +53,11 @@ public class ReservationService {
         }
 
         Reservation reservation = getReservation(request);
-
         validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStratTime());
 
-        Reservation saved = reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        return ReservationResponse.from(saved);
+        return ReservationResponse.from(savedReservation);
     }
 
     private Reservation getReservation(ReservationRequest request) {
@@ -86,8 +85,6 @@ public class ReservationService {
     }
 
     private LocalDateTime now() {
-        System.out.println(LocalDateTime.now(clock));
-
         return LocalDateTime.now(clock);
     }
 

@@ -39,13 +39,23 @@ public class ThemeDAO implements ThemeRepository {
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> themeOf(resultSet));
     }
 
-    private Theme themeOf(ResultSet resultSet) throws SQLException {
-        return new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        );
+    @Override
+    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                select T.*, count(R.id) as reservation_count
+                from theme T
+                inner join reservation R
+                ON T.id = R.theme_id AND R.date between :start_date and :end_date
+                group by T.id
+                order by reservation_count desc
+                limit 10
+                """;
+
+        Map<String, LocalDate> params = Map.of("start_date", startDate, "end_date", endDate);
+
+        return jdbcTemplate.query(sql,
+                params,
+                (resultSet, rowNum) -> themeOf(resultSet));
     }
 
     @Override
@@ -54,6 +64,42 @@ public class ThemeDAO implements ThemeRepository {
             return update(theme);
         }
         return create(theme);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String deleteSql = "delete from theme where id = :id";
+        Map<String, Long> params = Map.of("id", id);
+
+        int deleteRowCount = jdbcTemplate.update(deleteSql, params);
+
+        if (deleteRowCount != 1) {
+            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
+        }
+    }
+
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String sql = "select id, name, description, thumbnail from theme where id = :id";
+
+        Map<String, Long> params = Map.of("id", id);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, params,
+                    (resultSet, rowNum) -> themeOf(resultSet)
+            );
+            return Optional.ofNullable(theme);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Theme with id " + id + " not found");
+        }
+    }
+
+    private Theme themeOf(ResultSet resultSet) throws SQLException {
+        return new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
     }
 
     private Theme update(Theme theme) {
@@ -86,51 +132,5 @@ public class ThemeDAO implements ThemeRepository {
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
         return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        String deleteSql = "delete from theme where id = :id";
-        Map<String, Long> params = Map.of("id", id);
-
-        int deleteRowCount = jdbcTemplate.update(deleteSql, params);
-
-        if (deleteRowCount != 1) {
-            throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
-        }
-    }
-
-    @Override
-    public Optional<Theme> findById(Long id) {
-        String sql = "select id, name, description, thumbnail from theme where id = :id";
-
-        Map<String, Long> params = Map.of("id", id);
-        try {
-            Theme theme = jdbcTemplate.queryForObject(sql, params,
-                    (resultSet, rowNum) -> themeOf(resultSet)
-            );
-            return Optional.ofNullable(theme);
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException("Theme with id " + id + " not found");
-        }
-    }
-
-    @Override
-    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate) {
-        String sql = """
-                select T.*, count(R.id) as reservation_count
-                from theme T
-                inner join reservation R
-                ON T.id = R.theme_id AND R.date between :start_date and :end_date
-                group by T.id
-                order by reservation_count desc
-                limit 10
-                """;
-
-        Map<String, LocalDate> params = Map.of("start_date", startDate, "end_date", endDate);
-
-        return jdbcTemplate.query(sql,
-                params,
-                (resultSet, rowNum) -> themeOf(resultSet));
     }
 }

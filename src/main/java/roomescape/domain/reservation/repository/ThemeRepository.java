@@ -1,6 +1,5 @@
 package roomescape.domain.reservation.repository;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +9,11 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
+    List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate);
+
     Theme save(Theme Theme);
 
     void deleteById(Long id);
 
-    Optional<Theme> findById(@NotNull Long id);
-
-    List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate);
+    Optional<Theme> findById(Long id);
 }

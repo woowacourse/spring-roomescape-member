@@ -32,9 +32,9 @@ public class ReservationTimeService {
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         ReservationTime reservationTime = ReservationTime.withoutId(request.startAt());
 
-        ReservationTime saved = reservationTimeRepository.save(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 
-        return ReservationTimeResponse.from(saved);
+        return ReservationTimeResponse.from(savedReservationTime);
     }
 
     public void delete(Long id) {

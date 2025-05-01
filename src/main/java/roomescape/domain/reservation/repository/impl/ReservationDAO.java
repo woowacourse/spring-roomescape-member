@@ -53,6 +53,25 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                select rs.id as reservation_id, rs.name, rs.date,
+                    rst.id as reservation_time_id, rst.start_at,
+                    th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                from reservation rs
+                inner join reservation_time rst on rs.time_id = rst.id
+                inner join theme th on rs.theme_id = th.id
+                where th.id = :theme_id and rs.date = :date
+                """;
+
+        Map<String, Object> params = Map.of("theme_id", themeId, "date", date);
+
+        return jdbcTemplate.query(sql, params,
+                (resultSet, rowNum) -> reservationOf(resultSet)
+        );
+    }
+
+    @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 select rs.id as reservation_id, rs.name, rs.date,
@@ -67,6 +86,57 @@ public class ReservationDAO implements ReservationRepository {
         Map<String, Long> params = Map.of("reservation_id", id);
 
         return reservationOf(sql, params);
+    }
+
+    @Override
+    public Reservation save(Reservation reservation) {
+        if (reservation.existId()) {
+            return update(reservation);
+        }
+
+        return create(reservation);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "delete from reservation where id = :id";
+        Map<String, Long> params = Map.of("id", id);
+
+        int updatedRowCount = jdbcTemplate.update(sql, params);
+
+        if (updatedRowCount != 1) {
+            throw new EntityNotFoundException("Reservation with id " + id + " not found");
+        }
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+        String sql = "select count(*) from reservation where date = :date and time_id = :time_id";
+        Map<String, Object> params = Map.of("date", date, "time_id", timeId);
+
+        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != 0;
+    }
+
+    @Override
+    public boolean existsByTimeId(Long timeId) {
+        String selectSql = "select count(*) from reservation where time_id = :time_id";
+        Map<String, Long> params = Map.of("time_id", timeId);
+
+        int rowCountByTimeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
+
+        return rowCountByTimeId == 1;
+    }
+
+    @Override
+    public boolean existsByThemeId(Long themeId) {
+        String selectSql = "select count(*) from reservation where theme_id = :theme_id";
+
+        Map<String, Long> params = Map.of("theme_id", themeId);
+
+        int rowCountByThemeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
+
+        return rowCountByThemeId == 1;
     }
 
     private Optional<Reservation> reservationOf(String sql, Map<String, Long> params) {
@@ -106,15 +176,6 @@ public class ReservationDAO implements ReservationRepository {
         );
     }
 
-    @Override
-    public Reservation save(Reservation reservation) {
-        if (reservation.existId()) {
-            return update(reservation);
-        }
-
-        return create(reservation);
-    }
-
     private Reservation create(Reservation reservation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
@@ -129,7 +190,12 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     private Reservation update(Reservation reservation) {
-        String updateReservationSql = "update reservation set name = :name, date = :date, time_id = :time_id, theme_id = :theme_id where id =:id";
+        String updateReservationSql = """
+                update reservation 
+                set name = :name, date = :date, time_id = :time_id, theme_id = :theme_id
+                where id =:id
+                """;
+
         checkReservation(reservation);
 
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -138,7 +204,6 @@ public class ReservationDAO implements ReservationRepository {
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId())
                 .addValue("id", reservation.getId());
-                ;
 
         int updatedRowCount = jdbcTemplate.update(updateReservationSql, params);
 
@@ -153,66 +218,5 @@ public class ReservationDAO implements ReservationRepository {
         if (reservation.getReservationTime() == null || reservation.getTheme() == null) {
             throw new EntityNotFoundException("reservation field is null");
         }
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        String sql = "delete from reservation where id = :id";
-        Map<String, Long> params = Map.of("id", id);
-
-        int updatedRowCount = jdbcTemplate.update(sql, params);
-
-        if (updatedRowCount != 1) {
-            throw new EntityNotFoundException("Reservation with id " + id + " not found");
-        }
-    }
-
-    @Override
-    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
-        String sql = "select count(*) from reservation where date = :date and time_id = :time_id";
-        Map<String, Object> params = Map.of("date", date, "time_id", timeId);
-
-        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
-        return count != 0;
-    }
-
-    @Override
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = """
-                    select rs.id as reservation_id, rs.name, rs.date,
-                       rst.id as reservation_time_id, rst.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
-                from reservation rs
-                INNER JOIN reservation_time rst ON rs.time_id = rst.id
-                INNER JOIN theme th ON rs.theme_id = th.id
-                WHERE th.id = :theme_id and rs.date = :date
-                """;
-
-        Map<String, Object> params = Map.of("theme_id", themeId, "date", date);
-
-        return jdbcTemplate.query(sql, params,
-                (resultSet, rowNum) -> reservationOf(resultSet)
-        );
-    }
-
-    @Override
-    public boolean existsByTimeId(Long timeId){
-        String selectSql = "select count(*) from reservation where time_id = :time_id";
-        Map<String, Long> params = Map.of("time_id", timeId);
-
-        int rowCountByTimeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
-
-        return rowCountByTimeId == 1;
-    }
-
-    @Override
-    public boolean existsByThemeId(Long themeId){
-        String selectSql = "select count(*) from reservation where theme_id = :theme_id";
-
-        Map<String, Long> params = Map.of("theme_id", themeId);
-
-        int rowCountByThemeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
-
-        return rowCountByThemeId == 1;
     }
 }

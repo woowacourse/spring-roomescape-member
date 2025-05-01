@@ -3,7 +3,6 @@ package roomescape.domain.reservation.repository.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,9 +83,8 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     private ReservationTime update(ReservationTime reservationTime) {
         String sql = "update reservation_time set start_at = :start_at where id = :id";
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("start_at", reservationTime.getStartAt());
-        params.put("id", reservationTime.getId());
+        Map<String, Object> params = Map.of("start_at", reservationTime.getStartAt(),
+                "id", reservationTime.getId());
 
         int updateRowCount = jdbcTemplate.update(sql, params);
 
@@ -98,8 +96,8 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     }
 
     private ReservationTime create(ReservationTime reservationTime) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("start_at",
-                reservationTime.getStartAt());
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", reservationTime.getStartAt());
 
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
