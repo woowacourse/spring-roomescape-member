@@ -44,9 +44,9 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes(final int limit) {
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusWeeks(1);
-        return themeRepository.findPopularThemesByDateRangeAndLimit(startDate, endDate, limit)
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate startDate = yesterday.minusWeeks(1);
+        return themeRepository.findPopularThemesByDateRangeAndLimit(startDate, yesterday, limit)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
