@@ -26,8 +26,9 @@ public class Reservation {
     @NonNull
     private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime reservationTime,
-                       final Theme theme) {
+    public Reservation(@NonNull final String name, @NonNull final LocalDate date,
+                       @NonNull final ReservationTime reservationTime,
+                       @NonNull final Theme theme) {
         this.id = null;
         this.name = name;
         this.date = date;

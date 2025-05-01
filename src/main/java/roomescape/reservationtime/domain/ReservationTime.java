@@ -14,7 +14,7 @@ public class ReservationTime {
     @NonNull
     private LocalTime startAt;
 
-    public ReservationTime(final LocalTime startAt) {
+    public ReservationTime(@NonNull final LocalTime startAt) {
         this.id = null;
         this.startAt = startAt;
     }

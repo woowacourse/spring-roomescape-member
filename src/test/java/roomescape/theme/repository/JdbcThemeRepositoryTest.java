@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import roomescape.error.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -103,6 +105,16 @@ class JdbcThemeRepositoryTest {
         assertThat(themes).hasSize(1)
                 .extracting(Theme::getId)
                 .doesNotContain(1L);
+    }
+
+    @Test
+    void 존재하지_않는_테마를_삭제할_때_예외_처리() {
+        // given
+        // when
+        // then
+        assertThatThrownBy(() -> repository.deleteById(999L))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("삭제할 테마가 없습니다. id=999");
     }
 
     @Test

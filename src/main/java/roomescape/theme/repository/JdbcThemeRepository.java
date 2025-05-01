@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.error.NotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.PopularThemeResponse;
 
@@ -78,7 +79,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         final int rowsAffected = template.update(sql, id);
 
         if (rowsAffected != 1) {
-            throw new IllegalArgumentException("삭제할 테마가 없습니다. id=" + id);
+            throw new NotFoundException("삭제할 테마가 없습니다. id=" + id);
         }
     }
 

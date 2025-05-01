@@ -9,6 +9,7 @@ import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -135,7 +136,7 @@ class ReservationServiceTest {
         // when
         // then
         assertThatThrownBy(() -> service.deleteReservation(999L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 예약입니다.");
     }
 }

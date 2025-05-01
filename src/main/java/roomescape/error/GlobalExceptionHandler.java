@@ -12,18 +12,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({
-            ReservationException.class,
-            NullPointerException.class,
-    })
-    public ResponseEntity<Object> handleReservationException(final Exception ex, final WebRequest request) {
+    @ExceptionHandler({ReservationException.class, IllegalArgumentException.class})
+    public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
         final ProblemDetail body = super.createProblemDetail(ex, HttpStatus.BAD_REQUEST, ex.getMessage(), null,
                 null, request);
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgumentException(final Exception ex, final WebRequest request) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleNotFoundException(final Exception ex, final WebRequest request) {
         final ProblemDetail body = super.createProblemDetail(ex, HttpStatus.NOT_FOUND, ex.getMessage(), null,
                 null, request);
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
