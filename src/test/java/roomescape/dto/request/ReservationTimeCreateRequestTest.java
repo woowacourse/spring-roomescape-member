@@ -29,5 +29,4 @@ class ReservationTimeCreateRequestTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약 시간 형식은 HH:mm 입니다.");
     }
-
 }
