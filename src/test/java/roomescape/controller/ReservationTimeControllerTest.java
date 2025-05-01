@@ -28,7 +28,7 @@ class ReservationTimeControllerTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    @DisplayName("예약 조회 시 저장된 예약 내역을 모두 가져온다")
+    @DisplayName("예약 시각 조회 시 저장된 예약 시각 내역을 모두 가져온다")
     void test1() {
         // given
         List<ReservationTimeResponseDto> reservationTimes = RestAssured.given().log().all()
