@@ -16,13 +16,6 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         return new Reservation(null, name, date, time, theme);
     }
 
-    public boolean isDuplicate(Reservation reservation) {
-        boolean equalsDate = this.date.equals(reservation.date);
-        boolean equalsTime = this.time.equalsTime(reservation.time);
-        boolean equalsTheme = this.theme.equalsThemeName(reservation.theme);
-        return equalsDate && equalsTime && equalsTheme;
-    }
-
     private static void validateDateTime(LocalDate date, ReservationTime time) {
         LocalDateTime dateTime = LocalDateTime.of(date, time.startAt());
         if (dateTime.isBefore(LocalDateTime.now())) {

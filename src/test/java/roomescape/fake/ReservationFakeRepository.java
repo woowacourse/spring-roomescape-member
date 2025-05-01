@@ -92,4 +92,13 @@ public class ReservationFakeRepository implements ReservationRepository {
                 .map(reservation -> reservation.time().id())
                 .toList();
     }
+
+    @Override
+    public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme) {
+        return reservations.values().stream()
+                .anyMatch(reservation ->
+                        reservation.date().equals(date) &&
+                                reservation.time().id().equals(time.id()) &&
+                                reservation.theme().id().equals(theme.id()));
+    }
 }

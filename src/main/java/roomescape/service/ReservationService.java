@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
@@ -11,8 +12,6 @@ import roomescape.exceptions.ReservationDuplicateException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,7 +55,7 @@ public class ReservationService {
     }
 
     private boolean isDuplicate(Reservation reservation) {
-        return reservationRepository.findAll().stream()
-                .anyMatch(current -> current.isDuplicate(reservation));
+        return reservationRepository.existsByDateAndTimeAndTheme(
+                reservation.date(), reservation.time(), reservation.theme());
     }
 }
