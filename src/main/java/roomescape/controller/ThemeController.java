@@ -22,6 +22,11 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
+    @GetMapping
+    public String displayThemeRank() {
+        return "/index";
+    }
+
     @GetMapping("/admin/theme")
     public String displayAdminTheme() {
         return "/admin/theme";
