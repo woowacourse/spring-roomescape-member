@@ -11,7 +11,7 @@ public interface ReservationDao {
 
     Long create(Reservation reservation);
 
-    Integer delete(Long id);
+    void delete(Long id);
 
     Optional<Reservation> findByTimeId(Long id);
 

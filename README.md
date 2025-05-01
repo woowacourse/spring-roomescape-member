@@ -46,7 +46,7 @@ HTTP/1.1 200
 Content-Type: application/json
 [
     {
-        "id": "Long",
+        "id": Long,
         "name": String,
         "date": LocalDate (YYYY-MM-DD),
         "reservationTime": {
@@ -75,19 +75,12 @@ Response
 Content-Type: application/json
 HTTP/1.1 200 
 {
-    "id": Long,
-    "name": String,
-    "date": LocalDate (YYYY-MM-DD),
-    "reservationTime": {
-        "id": Long,
-        "startAt" : LocalTime (HH:mm)
-    },
-    "themeName" : String
+    "id": Long
 }
 
 ```
 
-### 예약 취소
+### 예약 삭제
 
 ```
 Request
@@ -113,8 +106,7 @@ HTTP/1.1 200
 Content-Type: application/json
 
 {
-    "id": Long,
-    "startAt": LocalTime (HH:mm)
+    "id": Long
 }
 ```
 
@@ -158,10 +150,10 @@ Content-Type: application/json
 
 [
    {
-        "id": 1,
-        "name": "레벨2 탈출",
-        "description": "우테코 레벨2를 탈출하는 내용입니다.",
-        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        "id": Long,
+        "name": String,
+        "description": String,
+        "thumbnail": String
     }
 ]
 ```
@@ -174,9 +166,9 @@ POST /themes HTTP/1.1
 content-type: application/json
 
 {
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    "name": String
+    "description": String,
+    "thumbnail": String
 }
 
 Response
@@ -185,10 +177,7 @@ HTTP/1.1 201
 Content-Type: application/json
 
 {
-    "id": 1,
-    "name": "레벨2 탈출",
-    "description": "우테코 레벨2를 탈출하는 내용입니다.",
-    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    "id": Long
 }
 ```
 

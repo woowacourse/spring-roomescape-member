@@ -57,8 +57,8 @@ public class ReservationService {
         }
     }
 
-    public Integer delete(Long id) {
+    public void delete(Long id) {
         reservationDao.findById(id).orElseThrow(ReservationNotFoundException::new);
-        return reservationDao.delete(id);
+        reservationDao.delete(id);
     }
 }

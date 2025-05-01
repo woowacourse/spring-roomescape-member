@@ -32,8 +32,7 @@ public class ThemeService {
         }
 
         Theme theme = Theme.createWithoutId(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
-        Long id = themeDao.create(theme);
-        return id;
+        return themeDao.create(theme);
     }
 
     public List<ThemeResponse> findAll() {
@@ -50,8 +49,8 @@ public class ThemeService {
                 .toList();
     }
 
-    public int delete(long id) {
-        return themeDao.delete(id);
+    public void delete(long id) {
+        themeDao.delete(id);
     }
 
     public List<ThemeResponse> getTop10Themes() {
