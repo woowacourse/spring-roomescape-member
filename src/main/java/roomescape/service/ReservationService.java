@@ -69,14 +69,14 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(final Reservation reservation) {
-        if (existsSameDateTimeAndTheme(reservation)) {
+        if (existsSameReservation(reservation)) {
             throw new ExistedDuplicateValueException("이미 예약이 존재하는 시간입니다: date=%s, time=%s"
                     .formatted(reservation.getDate(), reservation.getTime().getStartAt()));
         }
     }
 
-    private boolean existsSameDateTimeAndTheme(final Reservation reservation) {
-        return reservationDAO.existsByDateAndTimeIdAndThemeId(reservation.getDate(),
+    private boolean existsSameReservation(final Reservation reservation) {
+        return reservationDAO.existSameReservation(reservation.getDate(),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId());
     }

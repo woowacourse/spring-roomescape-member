@@ -37,8 +37,8 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> findAll() {
-        return reservationTimeService.findAll();
+    public List<ReservationTimeResponse> findAllReservationTimes() {
+        return reservationTimeService.findAllReservationTimes();
     }
 
     @GetMapping("/avaliable")

@@ -34,7 +34,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.addReservationTime(creation);
 
         //then
-        assertThat(reservationTimeService.findAll()).hasSize(3);
+        assertThat(reservationTimeService.findAllReservationTimes()).hasSize(3);
     }
 
     @Test
@@ -51,9 +51,9 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("시간 데이터를 조회할 수 있어야 한다")
-    void findAll() {
+    void findAllReservationTimes() {
         //given //when
-        List<ReservationTime> actual = reservationTimeService.findAll();
+        List<ReservationTimeResponse> actual = reservationTimeService.findAllReservationTimes();
 
         //then
         assertThat(actual).hasSize(2);

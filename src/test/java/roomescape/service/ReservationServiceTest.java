@@ -39,7 +39,7 @@ class ReservationServiceTest {
 
         //then
         assertAll(
-                () -> assertThat(reservationService.findAll()).hasSize(2),
+                () -> assertThat(reservationService.findAllReservations()).hasSize(2),
                 () -> assertThat(actual.id()).isEqualTo(2L)
         );
     }

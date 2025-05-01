@@ -43,7 +43,7 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 시간입니다"));
     }
 
-    public List<ReservationTimeResponse> findAll() {
+    public List<ReservationTimeResponse> findAllReservationTimes() {
         return reservationTimeDAO.findAll()
                 .stream()
                 .map(ReservationTimeResponse::from)

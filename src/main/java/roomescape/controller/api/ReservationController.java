@@ -34,7 +34,7 @@ public class ReservationController {
 
     @GetMapping
     public List<ReservationResponse> findAllReservations() {
-        return reservationService.findAll();
+        return reservationService.findAllReservations();
     }
 
     @DeleteMapping("/{id}")
