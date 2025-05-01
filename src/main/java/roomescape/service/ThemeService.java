@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.ThemeRequest;
@@ -41,5 +42,14 @@ public class ThemeService {
             throw new IllegalArgumentException("예약이 존재하는 테마는 삭제할 수 없습니다.");
         }
         themeDao.deleteById(id);
+    }
+
+    public List<ThemeResponse> findPopularThemes() {
+        LocalDate from = LocalDate.now().minusDays(7);
+        LocalDate to = LocalDate.now().minusDays(1);
+        List<Theme> popularThemes = themeDao.findPopularThemes(from, to, 10);
+        return popularThemes.stream()
+                .map(ThemeResponse::new)
+                .toList();
     }
 }

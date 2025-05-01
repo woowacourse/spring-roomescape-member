@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.service.reservation.Theme;
 import roomescape.service.reservation.ThemeName;
@@ -15,4 +16,6 @@ public interface ThemeDao {
     Theme findById(long id);
 
     void deleteById(Long id);
+
+    List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count);
 }

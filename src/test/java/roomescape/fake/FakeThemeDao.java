@@ -1,9 +1,9 @@
 package roomescape.fake;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import roomescape.repository.ThemeDao;
-import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.Theme;
 import roomescape.service.reservation.ThemeName;
 
@@ -42,5 +42,14 @@ public class FakeThemeDao implements ThemeDao {
     public void deleteById(Long id) {
         Theme theme = findById(id);
         themes.remove(theme);
+    }
+
+    /**
+     * TODO
+     * JOIN을 구현할 방법 찾기
+     */
+    @Override
+    public List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count) {
+        return null;
     }
 }

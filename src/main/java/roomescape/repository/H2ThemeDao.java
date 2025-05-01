@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -64,5 +65,19 @@ public class H2ThemeDao implements ThemeDao {
     public void deleteById(final Long id) {
         final String sql = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(final LocalDate from, final LocalDate to, final int count) {
+        final String sql = """
+                     SELECT t.id, t.name, t.description, t.thumbnail
+                     FROM theme AS t
+                     INNER JOIN reservation AS r ON t.id = r.theme_id
+                     WHERE r.date >= ? AND r.date <= ?
+                     GROUP BY t.id
+                     ORDER BY COUNT(*) DESC
+                     LIMIT ?
+                """;
+        return jdbcTemplate.query(sql, themeMapper, from , to, count);
     }
 }
