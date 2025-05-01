@@ -40,8 +40,6 @@ public class RoomEscapeApplicationTest {
                 .body("[6].name", is("우테코 레벨7 탈출"))
                 .body("[7].name", is("우테코 레벨8 탈출"))
                 .body("[8].name", is("우테코 레벨9 탈출"))
-                .body("[9].name", is("우테코 레벨10 탈출"))
-
-        ;
+                .body("[9].name", is("우테코 레벨10 탈출"));
     }
 }
