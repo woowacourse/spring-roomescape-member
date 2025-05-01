@@ -1,7 +1,5 @@
 package roomescape.reservation.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.global_exception.BadRequestException;
 import roomescape.global_exception.ConflictException;
@@ -14,9 +12,13 @@ import roomescape.reservation_time.ReservationTimeMapper;
 import roomescape.reservation_time.domain.ReservationTime;
 import roomescape.reservation_time.domain.dto.ReservationTimeResDto;
 import roomescape.reservation_time.repository.ReservationTimeRepository;
+import roomescape.theme.ThemeMapper;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.ThemeResDto;
 import roomescape.theme.repository.ThemeRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -72,7 +74,7 @@ public class ReservationService {
 
     private ReservationResDto convertReservationResDto(Reservation reservation) {
         ReservationTimeResDto reservationTimeResDto = ReservationTimeMapper.toResDto(reservation.getReservationTime());
-        ThemeResDto themeResDto = ThemeResDto.from(reservation.getTheme());
+        ThemeResDto themeResDto = ThemeMapper.toResDto(reservation.getTheme());
         return ReservationMapper.toResDto(reservation, reservationTimeResDto, themeResDto);
     }
 }
