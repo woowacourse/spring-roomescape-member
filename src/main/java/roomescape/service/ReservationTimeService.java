@@ -29,7 +29,7 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(Long id) {
-        if (reservedTimeChecker.isReserved(id)) {
+        if (reservedTimeChecker.isReservedTime(id)) {
             throw new IllegalArgumentException("Reservation time is already reserved.");
         }
         reservationTimeRepository.deleteTime(id);

@@ -15,7 +15,7 @@ import roomescape.model.Theme;
 import roomescape.model.UserName;
 
 @Repository
-public class JdbcReservationRepository implements ReservationRepository, ReservedTimeChecker {
+public class JdbcReservationRepository implements ReservationRepository, ReservedTimeChecker, ReservedThemeChecker {
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
@@ -69,8 +69,14 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
     }
 
     @Override
-    public boolean isReserved(Long timeId) {
+    public boolean isReservedTime(Long timeId) {
         String sql = "select exists (select 1 from reservation where time_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
+    }
+
+    @Override
+    public boolean isReservedTheme(Long themeId) {
+        String sql = "select exists (select 1 from reservation where theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 }
