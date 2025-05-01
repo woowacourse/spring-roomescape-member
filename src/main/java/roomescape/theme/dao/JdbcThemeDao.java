@@ -109,8 +109,9 @@ public class JdbcThemeDao implements ThemeDao {
                 FROM reservation
                 WHERE date BETWEEN ? AND ?
                 GROUP BY theme_id
-                ORDER BY count DESC) AS r
-                JOIN theme AS t ON r.theme_id = t.id
+                ) AS r
+                RIGHT JOIN theme AS t ON r.theme_id = t.id
+                ORDER BY count DESC, name
                 LIMIT ?
                 """;
         return jdbcTemplate.query(
