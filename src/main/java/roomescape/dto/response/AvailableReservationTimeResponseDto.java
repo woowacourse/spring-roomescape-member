@@ -11,7 +11,7 @@ public record AvailableReservationTimeResponseDto(
     public static AvailableReservationTimeResponseDto from(AvailableReservationTime availableReservationTime) {
         return new AvailableReservationTimeResponseDto(
                 availableReservationTime.id(),
-                availableReservationTime.statAt(),
+                availableReservationTime.startAt(),
                 availableReservationTime.alreadyBooked()
         );
     }
