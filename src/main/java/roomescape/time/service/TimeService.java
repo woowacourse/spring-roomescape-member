@@ -1,11 +1,9 @@
 package roomescape.time.service;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.domain.Theme;
 import roomescape.time.domain.Time;
 import roomescape.time.dto.AvailableTimeRequest;
 import roomescape.time.dto.AvailableTimeResponse;
