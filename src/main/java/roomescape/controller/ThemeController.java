@@ -34,9 +34,15 @@ public class ThemeController {
         return ResponseEntity.status(HttpStatus.OK).body(themeService.getAllThemes());
     }
 
+    @GetMapping("/best/weekly")
+    public ResponseEntity<List<Theme>> getBestWeeklyThemes() {
+        return ResponseEntity.ok(themeService.getWeeklyBestThemes());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
 }
