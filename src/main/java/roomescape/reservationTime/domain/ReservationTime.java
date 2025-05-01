@@ -8,24 +8,24 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
-    private ReservationTime(Long id, LocalTime startAt) {
+    private ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public static ReservationTime createWithoutId(LocalTime startAt) {
+    public static ReservationTime createWithoutId(final LocalTime startAt) {
         return new ReservationTime(null, startAt);
     }
 
-    public static ReservationTime createWithId(Long id, LocalTime startAt) {
+    public static ReservationTime createWithId(final Long id, final LocalTime startAt) {
         return new ReservationTime(Objects.requireNonNull(id), startAt);
     }
 
-    public ReservationTime assignId(Long id) {
+    public ReservationTime assignId(final Long id) {
         return new ReservationTime(Objects.requireNonNull(id), startAt);
     }
 
-    public boolean isSameTime(ReservationTime time) {
+    public boolean isSameTime(final ReservationTime time) {
         return startAt.equals(time.startAt);
     }
 

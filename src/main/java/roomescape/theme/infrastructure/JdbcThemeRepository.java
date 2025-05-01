@@ -26,7 +26,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcThemeRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public JdbcThemeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
@@ -34,7 +34,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Long save(Theme theme) {
+    public Long save(final Theme theme) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", theme.getName());
         params.put("description", theme.getDescription());
@@ -69,7 +69,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(final Long id) {
         String sql = "DELETE FROM theme where id =?";
         int count = jdbcTemplate.update(sql, id);
 

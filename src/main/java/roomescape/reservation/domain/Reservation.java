@@ -13,7 +13,12 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(final Long id,
+                        final String name,
+                        final LocalDate date,
+                        final ReservationTime time,
+                        final Theme theme
+    ) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -21,19 +26,28 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation createWithoutId(final String name,
+                                              final LocalDate date,
+                                              final ReservationTime time,
+                                              final Theme theme
+    ) {
         return new Reservation(null, name, date, time, theme);
     }
 
-    public static Reservation createWithId(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation createWithId(final Long id,
+                                           final String name,
+                                           final LocalDate date,
+                                           final ReservationTime time,
+                                           final Theme theme
+    ) {
         return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
     }
 
-    public Reservation assignId(Long id) {
+    public Reservation assignId(final Long id) {
         return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
     }
 
-    public boolean isSameTime(ReservationTime time) {
+    public boolean isSameTime(final ReservationTime time) {
         return this.time.isSameTime(time);
     }
 
@@ -58,7 +72,7 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         if (!(object instanceof Reservation that)) {
             return false;
         }

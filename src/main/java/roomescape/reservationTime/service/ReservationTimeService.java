@@ -39,7 +39,7 @@ public class ReservationTimeService {
         validateIsExistsReservationTimeId(isDeleted);
     }
 
-    private void validateIsExistsReservationTimeId(final boolean isDeleted) {
+    private void validateIsExistsReservationTimeId(boolean isDeleted) {
         if (!isDeleted) {
             throw new IllegalArgumentException("존재하지 않는 예약 시간입니다.");
         }

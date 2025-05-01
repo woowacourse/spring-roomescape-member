@@ -60,7 +60,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findBy(LocalDate date, Long themeId) {
+    public List<Reservation> findBy(final LocalDate date, final Long themeId) {
         String sql = """               
                 SELECT
                     r.id as reservation_id,
@@ -118,7 +118,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existBy(Long themeId, LocalDate date, LocalTime time) {
+    public boolean existBy(final Long themeId, final LocalDate date, final LocalTime time) {
         String sql = """               
                 SELECT COUNT(*)
                 FROM reservation as r
