@@ -70,16 +70,6 @@ public class JdbcThemeDao implements ThemeRepository {
     }
 
     @Override
-    public int deleteById(long id) {
-        String sql = "delete from theme where id = ?";
-        try {
-            return jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("[ERROR] 이 테마는 이미 존재합니다. id : " + id);
-        }
-    }
-
-    @Override
     public List<Theme> findPopular(LocalDate start, LocalDate end) {
         String sql = """
                 SELECT
@@ -95,5 +85,15 @@ public class JdbcThemeDao implements ThemeRepository {
                 LIMIT 10
                 """;
         return jdbcTemplate.query(sql, rowMapper, start, end);
+    }
+
+    @Override
+    public int deleteById(long id) {
+        String sql = "delete from theme where id = ?";
+        try {
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("[ERROR] 이 테마는 이미 존재합니다. id : " + id);
+        }
     }
 }

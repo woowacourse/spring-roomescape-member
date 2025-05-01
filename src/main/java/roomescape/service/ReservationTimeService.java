@@ -1,5 +1,7 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -11,15 +13,11 @@ import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class ReservationTimeService {
 
-    private ReservationTimeRepository reservationTimeRepository;
-    private ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
     public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, ReservationRepository reservationRepository) {
         this.reservationTimeRepository = reservationTimeRepository;
@@ -41,7 +39,7 @@ public class ReservationTimeService {
     public List<ReservationTimeResponseDto> findAllReservationTimes() {
         List<ReservationTime> allReservationTime = reservationTimeRepository.findAll();
         return allReservationTime.stream()
-                .map(reservationTime -> ReservationTimeResponseDto.from(reservationTime))
+                .map(ReservationTimeResponseDto::from)
                 .toList();
     }
 
@@ -49,17 +47,17 @@ public class ReservationTimeService {
         List<ReservationTime> allReservationTimes = reservationTimeRepository.findAll();
         List<Reservation> availableReservationsByDate = reservationRepository.findByDate(date);
 
-        List<ReservationTime> availableReservationTimes = availableReservationsByDate.stream().map(reservation -> reservation.time()).toList();
-        List<AvailableReservationTimeResponseDto> dtos = new ArrayList<>();
-        for (ReservationTime reservationTime : allReservationTimes) {
-            if(availableReservationTimes.contains(reservationTime)) {
-                dtos.add(new AvailableReservationTimeResponseDto(reservationTime.id(),reservationTime.startAt(),true));
-                continue;
-            }
-            dtos.add(new AvailableReservationTimeResponseDto(reservationTime.id(),reservationTime.startAt(),false));
-        }
+        List<ReservationTime> availableReservationTimes = availableReservationsByDate.stream()
+                .map(Reservation::time)
+                .toList();
 
-        return dtos;
+        return allReservationTimes.stream()
+                .map(reservationTime -> new AvailableReservationTimeResponseDto(
+                        reservationTime.id(),
+                        reservationTime.startAt(),
+                        availableReservationTimes.contains(reservationTime)
+                ))
+                .toList();
     }
 
     public void deleteReservationTimeById(final Long id) {

@@ -33,6 +33,18 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public Optional<Theme> findById(long id) {
+        return themes.stream()
+                .filter(theme -> Objects.equals(theme.id(), id))
+                .findFirst();
+    }
+
+    @Override
+    public List<Theme> findPopular(LocalDate start, LocalDate end) {
+        return List.of();
+    }
+
+    @Override
     public int deleteById(long id) {
         Theme deleteTheme = themes.stream()
                 .filter(theme -> Objects.equals(theme.id(), id))
@@ -55,19 +67,7 @@ public class FakeThemeRepository implements ThemeRepository {
         return 0;
     }
 
-    @Override
-    public List<Theme> findPopular(LocalDate start, LocalDate end) {
-        return List.of();
-    }
-
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
-    }
-
-    @Override
-    public Optional<Theme> findById(long id) {
-        return themes.stream()
-                .filter(theme -> Objects.equals(theme.id(), id))
-                .findFirst();
     }
 }

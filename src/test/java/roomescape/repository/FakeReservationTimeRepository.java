@@ -2,13 +2,12 @@ package roomescape.repository;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
@@ -31,6 +30,13 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTime> findAll() {
         return reservationTimes;
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(long id) {
+        return reservationTimes.stream()
+                .filter(reservationTime -> Objects.equals(reservationTime.id(), id))
+                .findFirst();
     }
 
     @Override
@@ -57,12 +63,5 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
-    }
-
-    @Override
-    public Optional<ReservationTime> findById(long id) {
-        return reservationTimes.stream()
-                .filter(reservationTime -> Objects.equals(reservationTime.id(), id))
-                .findFirst();
     }
 }

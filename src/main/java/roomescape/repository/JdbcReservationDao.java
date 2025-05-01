@@ -1,5 +1,10 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,12 +16,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-
-import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcReservationDao implements ReservationRepository {
@@ -54,6 +53,22 @@ public class JdbcReservationDao implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> save(final Reservation reservation) {
+        try {
+            SqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("name", reservation.name())
+                    .addValue("date", reservation.date())
+                    .addValue("time_id", reservation.time().id())
+                    .addValue("theme_id", reservation.theme().id());
+
+            long id = jdbcInsert.executeAndReturnKey(params).longValue();
+            return findById(id);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalStateException("[ERROR] 이미 등록된 예약 입니다.");
+        }
+    }
+
+    @Override
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
@@ -71,22 +86,6 @@ public class JdbcReservationDao implements ReservationRepository {
                 inner join theme as th on r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, rowMapper);
-    }
-
-    @Override
-    public Optional<Reservation> save(final Reservation reservation) {
-        try {
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", reservation.name())
-                    .addValue("date", reservation.date())
-                    .addValue("time_id", reservation.time().id())
-                    .addValue("theme_id", reservation.theme().id());
-
-            long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return findById(id);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalStateException("[ERROR] 이미 등록된 예약 입니다.");
-        }
     }
 
     @Override
@@ -112,12 +111,6 @@ public class JdbcReservationDao implements ReservationRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public int deleteById(final long id) {
-        String sql = "delete from reservation where id = ?";
-        return jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -168,5 +161,11 @@ public class JdbcReservationDao implements ReservationRepository {
         } catch (EmptyResultDataAccessException e) {
             return List.of();
         }
+    }
+
+    @Override
+    public int deleteById(final long id) {
+        String sql = "delete from reservation where id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 }

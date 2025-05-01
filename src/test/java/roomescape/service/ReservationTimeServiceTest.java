@@ -1,17 +1,18 @@
 package roomescape.service;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationTimeCreateRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
-
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -19,7 +20,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 class ReservationTimeServiceTest {
 
     ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
-    ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository);
+    ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
+    ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
 
     @DisplayName("ReservationTime을 생성할 수 있다")
     @Test

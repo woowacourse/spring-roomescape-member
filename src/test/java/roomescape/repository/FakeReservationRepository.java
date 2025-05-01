@@ -19,6 +19,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Optional<Reservation> save(final Reservation reservation) {
+        Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.name(), reservation.date(), reservation.time(), reservation.theme());
+        reservations.add(newReservation);
+        return findById(newReservation.id());
+    }
+
+    @Override
     public List<Reservation> findAll() {
         return reservations;
     }
@@ -31,10 +38,17 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> save(final Reservation reservation) {
-        Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.name(), reservation.date(), reservation.time(), reservation.theme());
-        reservations.add(newReservation);
-        return findById(newReservation.id());
+    public List<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+        return reservations.stream()
+                .filter(reservation -> reservation.date().equals(date) && reservation.time().equals(time))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Reservation> findByDate(LocalDate date) {
+        return reservations.stream()
+                .filter(reservation -> reservation.date().equals(date))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -52,12 +66,5 @@ public class FakeReservationRepository implements ReservationRepository {
             return affectedRows;
         }
         return 0;
-    }
-
-    @Override
-    public List<Reservation> findByDateTime(LocalDate date, LocalTime time) {
-        return reservations.stream()
-                .filter(reservation -> reservation.date().equals(date) && reservation.time().equals(time))
-                .collect(Collectors.toList());
     }
 }
