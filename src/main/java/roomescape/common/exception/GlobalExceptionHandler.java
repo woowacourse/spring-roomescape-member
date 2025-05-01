@@ -27,4 +27,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> illegalArgumentExceptionHandler(IllegalArgumentException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NotAbleDeleteException.class)
+    public ResponseEntity<String> notAbleDeleteExceptionHandler(NotAbleDeleteException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

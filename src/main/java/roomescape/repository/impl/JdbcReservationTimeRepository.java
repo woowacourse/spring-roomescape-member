@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -55,7 +56,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     public void deleteReservationTime(Long id) {
         final String query = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        int affectedRows = jdbcTemplate.update(query, id);
+        if (affectedRows == 0) {
+            throw new NotAbleDeleteException("예약 시간을 삭제할 수 없습니다. 존재하지 않는 ID입니다.");
+        }
     }
 
     public List<ReservationTime> findAvailableTimesBy(LocalDate localDate, Long themeId) {

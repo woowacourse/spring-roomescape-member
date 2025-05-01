@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -90,6 +91,9 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     public void deleteReservation(Long id) {
         final String query = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        int affectedRows = jdbcTemplate.update(query, id);
+        if (affectedRows == 0) {
+            throw new NotAbleDeleteException("예약을 삭제할 수 없습니다. 존재하지 않는 예약입니다.");
+        }
     }
 }
