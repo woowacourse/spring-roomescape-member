@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.common.jdbc.JdbcUtils;
+import roomescape.common.utils.JdbcUtils;
 import roomescape.reservation.application.converter.ReservationConverter;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;

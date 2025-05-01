@@ -1,4 +1,4 @@
-package roomescape.common.jdbc;
+package roomescape.common.utils;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

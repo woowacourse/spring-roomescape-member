@@ -2,7 +2,7 @@ package roomescape.theme.application.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
-import roomescape.common.validate.Validator;
+import roomescape.common.utils.Validator;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record CreateThemeServiceRequest(

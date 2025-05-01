@@ -1,4 +1,4 @@
-package roomescape.common.validate;
+package roomescape.common.utils;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

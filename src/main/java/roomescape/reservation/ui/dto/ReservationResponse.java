@@ -2,7 +2,7 @@ package roomescape.reservation.ui.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
-import roomescape.common.validate.Validator;
+import roomescape.common.utils.Validator;
 import roomescape.theme.ui.dto.ThemeResponse;
 import roomescape.time.ui.dto.ReservationTimeResponse;
 

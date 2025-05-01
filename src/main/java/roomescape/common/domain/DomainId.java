@@ -2,7 +2,7 @@ package roomescape.common.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
-import roomescape.common.validate.Validator;
+import roomescape.common.utils.Validator;
 
 @FieldNameConstants
 @EqualsAndHashCode

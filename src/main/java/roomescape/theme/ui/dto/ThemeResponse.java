@@ -1,7 +1,7 @@
 package roomescape.theme.ui.dto;
 
 import lombok.experimental.FieldNameConstants;
-import roomescape.common.validate.Validator;
+import roomescape.common.utils.Validator;
 
 @FieldNameConstants
 public record ThemeResponse(

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
-import roomescape.common.validate.Validator;
+import roomescape.common.utils.Validator;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 

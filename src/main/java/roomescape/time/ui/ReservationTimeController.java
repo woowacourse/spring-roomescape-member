@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.common.uri.UriFactory;
+import roomescape.common.utils.UriFactory;
 import roomescape.time.application.ReservationTimeService;
 import roomescape.time.ui.dto.CreateReservationTimeWebRequest;
 import roomescape.time.ui.dto.ReservationTimeResponse;

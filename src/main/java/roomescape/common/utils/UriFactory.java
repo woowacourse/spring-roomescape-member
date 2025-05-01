@@ -1,4 +1,4 @@
-package roomescape.common.uri;
+package roomescape.common.utils;
 
 import org.springframework.web.util.UriComponentsBuilder;
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import roomescape.common.utils.UriFactory;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;

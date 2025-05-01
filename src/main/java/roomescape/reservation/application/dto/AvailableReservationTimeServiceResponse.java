@@ -2,7 +2,7 @@ package roomescape.reservation.application.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
-import roomescape.common.validate.Validator;
+import roomescape.common.utils.Validator;
 
 import java.time.LocalTime;
 
