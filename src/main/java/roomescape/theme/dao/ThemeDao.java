@@ -1,6 +1,5 @@
 package roomescape.theme.dao;
 
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -13,10 +12,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.common.Dao;
 import roomescape.theme.domain.Theme;
 
 @Repository
-public class ThemeDao {
+public class ThemeDao implements Dao<Theme> {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -25,26 +25,6 @@ public class ThemeDao {
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-    }
-
-    public Theme add(Theme theme) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", theme.getName());
-        parameters.put("description", theme.getDescription());
-        parameters.put("thumbnail", theme.getThumbnail());
-        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
-    }
-
-    public Optional<Theme> findById(Long id) {
-        String sql = "SELECT id, name, description, thumbnail from theme where id = :id";
-        Map<String, Object> parameter = Map.of("id", id);
-        try {
-            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
-                    (resultSet, rowNum) -> createTheme(resultSet)));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
     }
 
     public List<Theme> findBest(LocalDate startDate, LocalDate endDate) {
@@ -64,12 +44,36 @@ public class ThemeDao {
                 (resultSet, rowNum) -> createTheme(resultSet));
     }
 
+    @Override
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
         return namedParameterJdbcTemplate.query(sql,
                 (resultSet, rowNum) -> createTheme(resultSet));
     }
 
+    @Override
+    public Optional<Theme> findById(Long id) {
+        String sql = "SELECT id, name, description, thumbnail from theme where id = :id";
+        Map<String, Object> parameter = Map.of("id", id);
+        try {
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
+                    (resultSet, rowNum) -> createTheme(resultSet)));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Theme add(Theme theme) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", theme.getName());
+        parameters.put("description", theme.getDescription());
+        parameters.put("thumbnail", theme.getThumbnail());
+        long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
         Map<String, Object> parameter = Map.of("id", id);

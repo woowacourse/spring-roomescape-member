@@ -27,11 +27,10 @@ public class ReservationTimeDao implements Dao<ReservationTime> {
     }
 
     @Override
-    public ReservationTime add(ReservationTime time) {
-        Map<String, Object> parameters = new HashMap<>(1);
-        parameters.put("start_at", time.getStartAt());
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return new ReservationTime(id, time.getStartAt());
+    public List<ReservationTime> findAll() {
+        String sql = "SELECT id, start_at FROM reservation_time";
+        return namedParameterJdbcTemplate.query(sql,
+                (resultSet, rowNum) -> createReservationTime(resultSet));
     }
 
     @Override
@@ -47,10 +46,11 @@ public class ReservationTimeDao implements Dao<ReservationTime> {
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time";
-        return namedParameterJdbcTemplate.query(sql,
-                (resultSet, rowNum) -> createReservationTime(resultSet));
+    public ReservationTime add(ReservationTime time) {
+        Map<String, Object> parameters = new HashMap<>(1);
+        parameters.put("start_at", time.getStartAt());
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return new ReservationTime(id, time.getStartAt());
     }
 
     @Override
