@@ -78,9 +78,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(Long reservationId) {
-        String sql = """
-                SELECT 
-                """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(
                     "SELECT \n"
