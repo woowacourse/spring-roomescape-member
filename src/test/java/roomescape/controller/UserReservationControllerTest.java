@@ -47,17 +47,17 @@ class UserReservationControllerTest {
         long expectedTimeId = 1L;
         long expectedThemeId = 1L;
 
-        ReservationRequest dto = new ReservationRequest("브라운", fixedDate, expectedTimeId, expectedThemeId);
+        ReservationRequest request = new ReservationRequest("브라운", fixedDate, expectedTimeId, expectedThemeId);
         ReservationTimeResponse givenTime = new ReservationTimeResponse(expectedTimeId, LocalTime.MAX);
 
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
         ReservationResponse response = new ReservationResponse(expectedId, "브라운", fixedDate, givenTime, givenTheme);
-        given(reservationService.postReservation(dto)).willReturn(response);
+        given(reservationService.postReservation(request)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(dto)
-                .when().post("/reservations")
+                .body(request)
+                .when().post("/user/reservations")
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is((int) expectedId))
