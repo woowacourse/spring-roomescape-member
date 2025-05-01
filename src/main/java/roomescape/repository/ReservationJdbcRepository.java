@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -104,5 +105,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
             """;
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+    }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, long themeId) {
+        var sql = """
+            select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
+            left join RESERVATION_TIME RT on R.time_id = RT.id 
+            left join THEME T on T.id = R.theme_id
+            WHERE R.date = ? AND R.theme_id = ?
+            """;
+
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, date, themeId);
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.controller.timeslot;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,13 +13,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import roomescape.service.dto.AvailableTimeSlotDto;
 import roomescape.controller.timeslot.dto.CreateTimeSlotRequest;
 import roomescape.controller.timeslot.dto.TimeSlotResponse;
 import roomescape.service.TimeSlotService;
 
 @Controller
-@RequestMapping("/times")
 public class TimeSlotController {
 
     private final TimeSlotService service;
@@ -28,7 +29,7 @@ public class TimeSlotController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/times")
     public ResponseEntity<TimeSlotResponse> add(@RequestBody CreateTimeSlotRequest request) {
         // TODO : 시간 바인딩 예외 응답 처리하기
         var timeSlot = service.add(request.startAt());
@@ -36,20 +37,26 @@ public class TimeSlotController {
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);
     }
 
-    @GetMapping
+    @GetMapping("/times")
     public ResponseEntity<List<TimeSlotResponse>> allTimeSlots() {
         var timeSlots = service.allTimeSlots();
         var response = TimeSlotResponse.from(timeSlots);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/availableTimes", params = {"date", "themeId"})
+    public ResponseEntity<List<AvailableTimeSlotDto>> availableTimes(@RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId) {
+        var availableTimeSlots = service.availableTimeSlots(date, themeId);
+        return ResponseEntity.ok(availableTimeSlots);
     }
 
     @ExceptionHandler(value = IllegalStateException.class)
