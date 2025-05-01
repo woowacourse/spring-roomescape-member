@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.ReservationTime;
+import roomescape.business.dto.AvailableTimesResponseDto;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 
@@ -40,6 +41,11 @@ public final class FakeReservationTimeRepository implements ReservationTimeRepos
     @Override
     public void deleteById(Long id) {
         reservationTimes.removeIf(reservationTime -> Objects.equals(reservationTime.getId(), id));
+    }
+
+    @Override
+    public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
+        return List.of();
     }
 
     @Override

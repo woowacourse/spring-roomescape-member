@@ -1,12 +1,15 @@
 package roomescape.presentation;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import roomescape.business.dto.AvailableTimesResponseDto;
 import roomescape.business.dto.ReservationResponseDto;
 import roomescape.business.dto.ReservationThemeResponseDto;
 import roomescape.business.dto.ReservationTimeResponseDto;
@@ -38,8 +41,9 @@ public class ReservationQueryController {
 
     @GetMapping("times")
     @ResponseBody
-    public ResponseEntity<List<ReservationTimeResponseDto>> readReservationTimes() {
-        List<ReservationTimeResponseDto> reservationTimes = reservationService.readTimeAll();
+    public ResponseEntity<List<AvailableTimesResponseDto>> readReservationAvailableTimes(
+            @RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId) {
+        List<AvailableTimesResponseDto> reservationTimes = reservationService.readAvailableTimes(date, themeId);
         return ResponseEntity.ok(reservationTimes);
     }
 
