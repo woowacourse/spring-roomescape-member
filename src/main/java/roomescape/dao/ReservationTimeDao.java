@@ -2,6 +2,7 @@ package roomescape.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
@@ -72,5 +73,16 @@ public class ReservationTimeDao {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public boolean isExistTime(LocalTime time) {
+        String sql = """
+                SELECT EXISTS (SELECT 1 FROM RESERVATION_TIME WHERE start_at = ?)
+                """;
+        return jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                time
+        );
     }
 }

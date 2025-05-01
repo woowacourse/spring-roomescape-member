@@ -28,6 +28,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse addTime(ReservationTimeRequest reservationTimeRequest) {
+        if (reservationTimeDao.isExistTime(reservationTimeRequest.startAt())) {
+            throw new IllegalStateException("이미 존재하는 시간입니다.");
+        }
         ReservationTime time = reservationTimeRequest.toEntity();
         ReservationTime savedTime = reservationTimeDao.save(time);
         return ReservationTimeResponse.fromEntity(savedTime);

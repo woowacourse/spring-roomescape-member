@@ -96,4 +96,15 @@ public class ThemeDao {
                 rs.getString("thumbnail")
         ));
     }
+
+    public boolean isExistThemeName(String name) {
+        String sql = """
+                SELECT EXISTS (SELECT 1 FROM theme WHERE name = ?)
+                """;
+        return jdbcTemplate.queryForObject(
+                sql,
+                Boolean.class,
+                name
+        );
+    }
 }

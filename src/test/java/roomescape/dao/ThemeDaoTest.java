@@ -114,6 +114,21 @@ class ThemeDaoTest {
         assertThat(topTenIds).contains(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
     }
 
+    @Test
+    void 이미_존재하는_테마의_여부_확인() {
+        // given
+        String existName = "첫번째";
+        String nonExistName = "test";
+
+        // when
+        boolean exist = dao.isExistThemeName(existName);
+        boolean nonExist = dao.isExistThemeName(nonExistName);
+
+        // then
+        assertThat(exist).isTrue();
+        assertThat(nonExist).isFalse();
+    }
+
     private List<Theme> findByJdbc() {
         return jdbcTemplate.query("""
                         SELECT id, name, description, thumbnail

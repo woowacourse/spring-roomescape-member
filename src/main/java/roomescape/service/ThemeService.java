@@ -19,6 +19,9 @@ public class ThemeService {
     }
 
     public ThemeResponse addTheme(ThemeRequest themeRequest) {
+        if (themeDao.isExistThemeName(themeRequest.name())) {
+            throw new IllegalStateException("이미 존재하는 테마입니다.");
+        }
         Theme saved = themeDao.save(themeRequest.toEntity());
         return ThemeResponse.from(saved);
     }

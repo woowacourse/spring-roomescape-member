@@ -93,4 +93,19 @@ class ReservationTimeDaoTest {
         // then
         assertThat(all).hasSize(4);
     }
+
+    @Test
+    void 예약시간_중복_여부_확인() {
+        // given
+        LocalTime existTime = LocalTime.of(13, 40);
+        LocalTime nonExistTime = LocalTime.of(0, 1);
+
+        // when
+        boolean exist = dao.isExistTime(existTime);
+        boolean nonExist = dao.isExistTime(nonExistTime);
+
+        // then
+        assertThat(exist).isTrue();
+        assertThat(nonExist).isFalse();
+    }
 }
