@@ -27,7 +27,7 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.request.CreateReservationThemeServiceRequest;
 import roomescape.service.dto.response.ReservationThemeServiceResponse;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationThemeServiceTest extends DataBasedTest {
 
     @Autowired

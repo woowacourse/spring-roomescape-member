@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.DataBasedTest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
@@ -26,8 +27,8 @@ import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.request.CreateReservationTimeServiceRequest;
 import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
-@SpringBootTest
-class ReservationTimeServiceTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+class ReservationTimeServiceTest extends DataBasedTest {
 
     @Autowired
     ReservationTimeService reservationTimeService;
