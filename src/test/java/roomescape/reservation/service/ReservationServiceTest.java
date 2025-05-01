@@ -32,7 +32,7 @@ class ReservationServiceTest {
                 return LocalDateTime.of(2025, 10, 5, 10, 0);
             }
         };
-        ThemeRepository themeRepository = new FakeThemeRepository();
+        ThemeRepository themeRepository = new FakeThemeRepository(null);
         Theme theme = new Theme(null, "테스트1", "설명", "localhost:8080");
         themeRepository.save(theme);
 
