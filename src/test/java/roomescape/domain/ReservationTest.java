@@ -20,8 +20,9 @@ class ReservationTest {
     void equalIdTest(final long firstId, final long secondId, boolean result) {
 
         // given
-        Reservation reservation = new Reservation(firstId, "체체", LocalDate.now(),
-                new ReservationTime(1L, LocalTime.now().plusHours(1)));
+        Reservation reservation = Reservation.load(firstId, "체체", LocalDate.now(),
+                new ReservationTime(1L, LocalTime.now().plusHours(1)),
+                new Theme(1L, "test", "test", "test"));
 
         // when & then
         assertThat(reservation.isEqualId(secondId)).isEqualTo(result);
@@ -31,12 +32,13 @@ class ReservationTest {
     @Test
     void inValidateNameLengthThrowExceptionTest() {
         // given
-        String nameOver255 = "a".repeat(11);
+        String nameOver10 = "a".repeat(11);
         LocalDate date = LocalDate.now();
         ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
+        Theme theme = new Theme(1L, "test", "test", "test");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(nameOver255, date, time))
+        assertThatThrownBy(() -> Reservation.create(nameOver10, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약자명은 10자 이하여야합니다.");
     }
@@ -48,9 +50,10 @@ class ReservationTest {
         // given
         LocalDate date = LocalDate.of(2024, 12, 12);
         ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
+        Theme theme = new Theme(1L, "test", "test", "test");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation("test", date, time))
+        assertThatThrownBy(() -> Reservation.create("test", date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약은 미래만 가능합니다.");
     }
@@ -62,9 +65,10 @@ class ReservationTest {
         // given
         LocalDate date = LocalDate.now();
         ReservationTime time = new ReservationTime(LocalTime.now().minusHours(1));
+        Theme theme = new Theme(1L, "test", "test", "test");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation("test", date, time))
+        assertThatThrownBy(() -> Reservation.create("test", date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("예약은 미래만 가능합니다.");
     }
