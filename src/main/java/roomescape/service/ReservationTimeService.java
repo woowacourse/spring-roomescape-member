@@ -1,11 +1,13 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.Id;
 import roomescape.domain_entity.ReservationTime;
+import roomescape.dto.ReservationTimeAvailableResponse;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 
@@ -41,5 +43,14 @@ public class ReservationTimeService {
         }
 
         reservationTimeDao.deleteById(new Id(id));
+    }
+
+    public List<ReservationTimeAvailableResponse> findAvailableTimes(LocalDate date, Long themeId) {
+        List<ReservationTime> times = reservationTimeDao.findAll();
+        return times.stream()
+                .map(time -> {
+                    boolean alreadyBooked = reservationDao.existByDateTimeAndTheme(date, time, themeId);
+                    return new ReservationTimeAvailableResponse(time, alreadyBooked);
+                }).toList();
     }
 }
