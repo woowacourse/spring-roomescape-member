@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.presentation.dto.response.ReservationResponse;
 
 import java.sql.Connection;
 import java.sql.SQLException;

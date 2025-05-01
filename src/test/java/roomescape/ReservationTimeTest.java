@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.model.entity.ReservationTime;
+import roomescape.business.model.entity.ReservationTime;
 import roomescape.exception.impl.InvalidReservationTimeException;
 
 class ReservationTimeTest {
