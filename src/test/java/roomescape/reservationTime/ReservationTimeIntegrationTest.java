@@ -55,7 +55,7 @@ public class ReservationTimeIntegrationTest {
         Map<String, Object> reservationTime = new HashMap<>();
         reservationTime.put("startAt", null);
 
-        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 요청 입력이 잘못되었습니다.", "/times");
+        ExceptionResponse expected = new ExceptionResponse(400, "[ERROR] 시간은 null 일 수 없습니다.", "/times");
 
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
