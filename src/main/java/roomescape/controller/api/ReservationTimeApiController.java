@@ -17,7 +17,7 @@ public class ReservationTimeApiController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeApiController(ReservationTimeService reservationTimeService) {
+    public ReservationTimeApiController(final ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 

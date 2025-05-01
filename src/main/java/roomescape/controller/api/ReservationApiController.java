@@ -20,18 +20,18 @@ public class ReservationApiController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.getReservations();
-        List<ReservationResponse> responses = ReservationResponse.from(reservations);
-        return ResponseEntity.ok(responses);
-    }
-
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request) {
         Reservation reservation = reservationService.createReservation(request.name(), request.date(), request.timeId(), request.themeId());
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations")).body(response);
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> getReservations() {
+        List<Reservation> reservations = reservationService.getReservations();
+        List<ReservationResponse> responses = ReservationResponse.from(reservations);
+        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/reservations/{id}")
