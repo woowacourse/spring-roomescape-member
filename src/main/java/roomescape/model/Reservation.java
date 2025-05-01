@@ -28,7 +28,7 @@ public class Reservation {
     }
 
     public boolean isPast(LocalDate other) {
-        return date.isBefore(other);
+        return !date.isAfter(other);
     }
 
     public boolean isSameTime(ReservationTime other) {

@@ -41,9 +41,9 @@
 4. 테스트 코드
 
 - [ ] Reservation
-    - [ ] Reservation 모델
-        - [ ] 예약자의 이름이 유효하지 않은 경우
-        - [ ] 예약 시간 비교 테스트
+    - [x] Reservation 모델
+        - [x] 예약자의 이름이 유효하지 않은 경우
+        - [x] 예약 시간 비교 테스트
     - [ ] ReservationDao
         - [x] 저장 성공 테스트
         - [ ] 삭제
@@ -81,8 +81,8 @@
         - [ ] DELETE 요청 실패 - 404
 
 - [ ] ReservationTime
-    - [ ] ReservationTime 모델
-        - [ ] 예약 시간이 같은지 판단
+    - [x] ReservationTime 모델
+        - [x] 예약 시간이 같은지 판단
     - [ ] ReservationTimeDao
         -[x] 저장 성공 테스트
         -[ ] 삭제
@@ -113,8 +113,8 @@
         - [ ] DELETE 요청 실패 - 404
 
 - [ ] Theme
-    - [ ] Theme 모델
-        - [ ] 테마 이름에 대한 유효성 검증
+    - [x] Theme 모델
+        - [x] 테마 이름에 대한 유효성 검증
     - [ ] ThemeDao
         -[ ] 저장 성공 테스트
             -[ ] 삭제
