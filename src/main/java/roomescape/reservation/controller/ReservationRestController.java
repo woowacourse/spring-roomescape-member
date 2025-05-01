@@ -39,6 +39,13 @@ public class ReservationRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(CreateReservationResponse.from(found));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
+        reservationService.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     public ResponseEntity<List<CreateReservationResponse>> getReservations() {
         final List<Reservation> reservations = reservationService.findAll();
@@ -62,12 +69,5 @@ public class ReservationRestController {
                         ))
                         .toList()
         );
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
-        reservationService.deleteById(id);
-
-        return ResponseEntity.ok().build();
     }
 }
