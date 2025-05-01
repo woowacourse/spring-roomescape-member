@@ -29,6 +29,8 @@ class MissionStepTest {
                 ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
                 TRUNCATE TABLE reservation_time;
                 ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
+                TRUNCATE TABLE theme;
+                ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
                 SET REFERENTIAL_INTEGRITY TRUE;
                 """);
     }
@@ -36,7 +38,7 @@ class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
-                .when().get("/admin")
+                .when().get("/")
                 .then().log().all()
                 .statusCode(200);
     }
@@ -49,7 +51,7 @@ class MissionStepTest {
                 .statusCode(200);
 
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
@@ -58,13 +60,25 @@ class MissionStepTest {
 
     @Test
     void 삼단계() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        Map<String, Object> timeParams = new HashMap<>();
+        timeParams.put("startAt", "10:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
+                .body(timeParams)
+                .when().post("/admin/times")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, Object> themeParams = new HashMap<>();
+        themeParams.put("name", "테마1");
+        themeParams.put("description", "설명");
+        themeParams.put("thumbnail", "썸네일");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(themeParams)
+                .when().post("/admin/themes")
                 .then().log().all()
                 .statusCode(201);
 
@@ -72,6 +86,7 @@ class MissionStepTest {
         params2.put("name", "브라운");
         params2.put("date", LocalDate.now().plusDays(20));
         params2.put("timeId", "1");
+        params2.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -81,16 +96,16 @@ class MissionStepTest {
                 .statusCode(201)
                 .body("id", is(1));
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
         RestAssured.given().log().all()
-                .when().delete("/reservations/1")
+                .when().delete("/admin/reservations/1")
                 .then().log().all()
                 .statusCode(204);
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .when().get("/admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
