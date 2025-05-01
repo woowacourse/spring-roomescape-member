@@ -10,9 +10,9 @@ public record AvailableReservationTimeResponseDto(
 ) {
     public static AvailableReservationTimeResponseDto from(AvailableReservationTime availableReservationTime) {
         return new AvailableReservationTimeResponseDto(
-                availableReservationTime.id(),
-                availableReservationTime.startAt(),
-                availableReservationTime.alreadyBooked()
+                availableReservationTime.getId(),
+                availableReservationTime.getStartAt(),
+                availableReservationTime.getAlreadyBooked()
         );
     }
 
