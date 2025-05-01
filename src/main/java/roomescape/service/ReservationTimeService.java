@@ -7,8 +7,8 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.dto.ReservationTimeAvailableResponse;
-import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.ReservationTimeRequest;
+import roomescape.dto.ReservationTimeResponse;
 
 @Component
 public class ReservationTimeService {
@@ -21,16 +21,16 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTimeResponseDto createTime(ReservationTimeRequestDto timeRequest) {
+    public ReservationTimeResponse createTime(ReservationTimeRequest timeRequest) {
         ReservationTime reservationTimeWithoutId = timeRequest.toTime();
         long id = reservationTimeDao.create(reservationTimeWithoutId);
         ReservationTime reservationTime = reservationTimeWithoutId.copyWithId(id);
-        return ReservationTimeResponseDto.from(reservationTime);
+        return ReservationTimeResponse.from(reservationTime);
     }
 
-    public List<ReservationTimeResponseDto> findAllTimes() {
+    public List<ReservationTimeResponse> findAllTimes() {
         return reservationTimeDao.findAll().stream()
-                .map(ReservationTimeResponseDto::from)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 

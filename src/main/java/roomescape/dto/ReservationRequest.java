@@ -5,10 +5,10 @@ import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
 import roomescape.domain_entity.Theme;
 
-public record ReservationRequestDto(
+public record ReservationRequest(
         String name, LocalDate date, long timeId, Long themeId
 ) {
-    public ReservationRequestDto {
+    public ReservationRequest {
         validateNotNull(name, date, timeId, themeId);
     }
 

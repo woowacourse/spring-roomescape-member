@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain_entity.Theme;
-import roomescape.dto.ThemeRequestDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeResponse;
 
 @Component
 public class ThemeService {
@@ -20,13 +20,13 @@ public class ThemeService {
         this.reservationDao = reservationDao;
     }
 
-    public List<ThemeResponseDto> findAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         return themeDao.findAll().stream()
-                .map(ThemeResponseDto::new)
+                .map(ThemeResponse::new)
                 .toList();
     }
 
-    public List<ThemeResponseDto> findThemeRank() {
+    public List<ThemeResponse> findThemeRank() {
         LocalDate now = LocalDate.now();
         LocalDate startDate = now.minusDays(8);
         LocalDate endDate = now.minusDays(1);
@@ -34,15 +34,15 @@ public class ThemeService {
 
         return rank.stream().map(themeId -> {
             Theme theme = themeDao.findById(themeId);
-            return new ThemeResponseDto(theme);
+            return new ThemeResponse(theme);
         }).toList();
     }
 
-    public ThemeResponseDto createTheme(ThemeRequestDto themeRequestDto) {
-        Theme themeWithoutId = themeRequestDto.toTheme();
+    public ThemeResponse createTheme(ThemeRequest themeRequest) {
+        Theme themeWithoutId = themeRequest.toTheme();
         Long id = themeDao.create(themeWithoutId);
         Theme created = themeWithoutId.copyWithId(id);
-        return new ThemeResponseDto(created);
+        return new ThemeResponse(created);
     }
 
     public void deleteTheme(Long idRequest) {
