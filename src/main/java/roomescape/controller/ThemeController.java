@@ -33,20 +33,20 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponseDto addTheme(@RequestBody ThemeRequestDto themeRequestDto) {
+    public ThemeResponseDto addTheme(@RequestBody final ThemeRequestDto themeRequestDto) {
         return themeService.saveTheme(themeRequestDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTheme(@PathVariable("id") Long id) {
+    public void deleteTheme(@PathVariable("id") final Long id) {
         themeService.deleteTheme(id);
     }
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponseDto> getPopularThemes(
-            @RequestParam String date
+            @RequestParam final String date
     ) {
         return themeService.findPopularThemes(date);
     }
