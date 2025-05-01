@@ -1,5 +1,6 @@
 package roomescape.presentation.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,8 +56,9 @@ public class ReservationController {
 
     @GetMapping("/available-times")
     public ResponseEntity<List<ReservationAvailableTimeResponse>> readAvailableTimes(
-            @RequestParam("date") final String date,
-            @RequestParam("themeId") final Long themeId) {
+            @RequestParam("date") final LocalDate date,
+            @RequestParam("themeId") final Long themeId
+    ) {
         final List<ReservationAvailableTimeResponse> availableTimeResponses =
                 reservationService.findAvailableTimes(date, themeId);
 

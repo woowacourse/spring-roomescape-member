@@ -1,4 +1,5 @@
 const THEME_API_ENDPOINT = '/themes';
+const AVAILABLE_TIME_API_ENDPOINT = '/reservations/available-times'
 
 document.addEventListener('DOMContentLoaded', () => {
   requestRead(THEME_API_ENDPOINT)
@@ -118,9 +119,9 @@ function renderAvailableTimes(times) {
     TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
     */
-    const startAt = '';
-    const timeId = '';
-    const alreadyBooked = false;
+    const startAt = time.startAt;
+    const timeId = time.timeId;
+    const alreadyBooked = time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);

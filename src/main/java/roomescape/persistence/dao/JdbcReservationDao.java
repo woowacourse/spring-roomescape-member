@@ -11,6 +11,7 @@ import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
 import roomescape.persistence.entity.ReservationEntity;
+import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -43,22 +44,22 @@ public class JdbcReservationDao implements ReservationDao {
     public List<Reservation> findAll() {
         final String sql =
                 """
-                SELECT
-                r.id AS reservation_id,
-                r.name,
-                r.date,
-                rt.id AS time_id,
-                rt.start_at AS time_value,
-                t.id AS theme_id,
-                t.name AS theme_name,
-                t.description AS theme_description,
-                t.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                INNER JOIN reservation_time AS rt
-                ON r.time_id = rt.id 
-                INNER JOIN theme AS t 
-                ON r.theme_id = t.id
-                """;
+                        SELECT
+                        r.id AS reservation_id,
+                        r.name,
+                        r.date,
+                        rt.id AS time_id,
+                        rt.start_at AS time_value,
+                        t.id AS theme_id,
+                        t.name AS theme_name,
+                        t.description AS theme_description,
+                        t.thumbnail AS theme_thumbnail
+                        FROM reservation AS r
+                        INNER JOIN reservation_time AS rt
+                        ON r.time_id = rt.id 
+                        INNER JOIN theme AS t 
+                        ON r.theme_id = t.id
+                        """;
 
         return jdbcTemplate.query(sql, ReservationEntity.getDefaultRowMapper()).stream()
                 .map(ReservationEntity::toDomain)
@@ -88,5 +89,37 @@ public class JdbcReservationDao implements ReservationDao {
         );
 
         return flag == 1;
+    }
+
+    @Override
+    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(
+            final LocalDate date,
+            final Theme theme
+    ) {
+        final String sql = """
+                SELECT 
+                    start_at, 
+                    t.id AS time_id,                 
+                    r.id AS reservation_id
+                FROM
+                    reservation_time AS t
+                    LEFT JOIN ( 
+                        SELECT *
+                        FROM reservation
+                        WHERE date = ? and theme_id = ?
+                    ) AS r 
+                    ON t.id = r.time_id
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new ReservationAvailableTimeResponse(
+                        rs.getString(1),
+                        rs.getLong(2),
+                        rs.getLong(3) != 0
+                ),
+                ReservationEntity.formatDate(date),
+                theme.getId()
+        );
     }
 }

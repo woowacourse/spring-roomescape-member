@@ -3,6 +3,7 @@ package roomescape.business.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
@@ -11,6 +12,7 @@ import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.persistence.dao.ReservationDao;
+import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 
@@ -72,5 +74,14 @@ public class ReservationService {
         if (!reservationDao.remove(id)) {
             throw new ReservationNotFoundException(id);
         }
+    }
+
+    public List<ReservationAvailableTimeResponse> findAvailableTimes(
+            final LocalDate date,
+            final Long themeId
+    ) {
+        final Theme theme = themeService.find(themeId);
+
+        return reservationDao.findAvailableTimesByDateAndTheme(date, theme);
     }
 }
