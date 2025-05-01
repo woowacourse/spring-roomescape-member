@@ -40,7 +40,6 @@ public class ThemeService {
         repository.deleteById(id);
     }
 
-    @Transactional
     public List<PopularThemeResponse> readRecentPopularThemes() {
         return repository.findPopularThemesThisWeek().stream()
                 .map(PopularThemeResponse::from)
