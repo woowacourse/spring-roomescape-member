@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
+import roomescape.exception.ReservationException;
+import roomescape.persistence.ReservationRepository;
+import roomescape.persistence.ReservationThemeRepository;
+import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
 import roomescape.presentation.dto.ReservationThemeResponseDto;
 import roomescape.presentation.dto.ReservationTimeResponseDto;
-import roomescape.persistence.ReservationRepository;
-import roomescape.persistence.ReservationThemeRepository;
-import roomescape.persistence.ReservationTimeRepository;
 
 @Service
 public final class ReservationService {
@@ -86,13 +87,13 @@ public final class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
         if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("과거 일시로 예약을 생성할 수 없습니다.");
+            throw new ReservationException("과거 일시로 예약을 생성할 수 없습니다.");
         }
     }
 
     private void validateDuplicatedReservation(Reservation reservation) {
         if (reservationRepository.existsByReservation(reservation)) {
-            throw new IllegalArgumentException("이미 예약되었습니다.");
+            throw new ReservationException("이미 예약되었습니다.");
         }
     }
 

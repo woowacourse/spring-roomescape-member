@@ -17,11 +17,9 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
         return themes;
     }
 
-    // TODO: 매개변수로 받은 객체의 상태를 바꾸며 사용해도 되나?
     @Override
     public Long add(ReservationTheme reservationTheme) {
         long id = idGenerator.incrementAndGet();
-        reservationTheme.setId(id);
         themes.add(reservationTheme);
         return id;
     }

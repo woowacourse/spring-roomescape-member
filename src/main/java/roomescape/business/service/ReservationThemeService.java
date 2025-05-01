@@ -5,10 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.business.ReservationTheme;
-import roomescape.presentation.dto.ReservationThemeRequestDto;
-import roomescape.presentation.dto.ReservationThemeResponseDto;
+import roomescape.exception.ReservationThemeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
+import roomescape.presentation.dto.ReservationThemeRequestDto;
+import roomescape.presentation.dto.ReservationThemeResponseDto;
 
 @Service
 public final class ReservationThemeService {
@@ -63,7 +64,7 @@ public final class ReservationThemeService {
 
     public ReservationThemeResponseDto createTheme(ReservationThemeRequestDto reservationThemeDto) {
         if (reservationThemeRepository.existByName(reservationThemeDto.name())) {
-            throw new IllegalArgumentException("동일한 이름의 테마를 추가할 수 없습니다.");
+            throw new ReservationThemeException("동일한 이름의 테마를 추가할 수 없습니다.");
         }
         Long id = reservationThemeRepository.add(new ReservationTheme(
                         reservationThemeDto.name(),
@@ -81,7 +82,7 @@ public final class ReservationThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new IllegalArgumentException("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
+            throw new ReservationThemeException("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationThemeRepository.deleteById(id);
     }

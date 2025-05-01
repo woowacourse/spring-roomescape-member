@@ -13,12 +13,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTime;
-import roomescape.presentation.dto.ReservationTimeRequestDto;
-import roomescape.presentation.dto.ReservationTimeResponseDto;
 import roomescape.business.fakerepository.FakeReservationRepository;
 import roomescape.business.fakerepository.FakeReservationTimeRepository;
+import roomescape.exception.ReservationTimeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.presentation.dto.ReservationTimeRequestDto;
+import roomescape.presentation.dto.ReservationTimeResponseDto;
 
 class ReservationTimeServiceTest {
 
@@ -101,7 +102,7 @@ class ReservationTimeServiceTest {
         // when
         // then
         assertThatCode(() -> reservationTimeService.deleteTime(timeId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationTimeException.class)
                 .hasMessage("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");
     }
 }
