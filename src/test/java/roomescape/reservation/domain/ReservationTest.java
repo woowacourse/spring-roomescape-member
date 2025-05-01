@@ -9,7 +9,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
-    private Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
+    private final Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
 
 
     @Test
