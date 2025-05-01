@@ -8,6 +8,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
         validateName(name);
         validateDate(date);
         validateReservationTime(time);
+        validateTheme(theme);
     }
 
     private void validateName(String name) {
@@ -25,6 +26,12 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     private void validateReservationTime(ReservationTime reservationTime) {
         if (reservationTime == null) {
             throw new IllegalArgumentException("[ERROR] 예약 시간을 반드시 입력해야 합니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new IllegalArgumentException("[ERROR] 테마는 반드시 입력해야 합니다.");
         }
     }
 }
