@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.globalexception.BadRequestException;
 import roomescape.globalexception.ConflictException;
@@ -31,9 +32,13 @@ public class ReservationService {
         validatePastDateTime(request);
 
         final Reservation reservation = new Reservation(request.name(), request.date());
-        final long id = reservationRepository.save(reservation, request.timeId(), request.themeId());
-        final Reservation savedReservation = reservationRepository.findById(id);
-        return ReservationResponse.from(savedReservation);
+        try {
+            final long id = reservationRepository.save(reservation, request.timeId(), request.themeId());
+            final Reservation savedReservation = reservationRepository.findById(id);
+            return ReservationResponse.from(savedReservation);
+        } catch (final DataIntegrityViolationException e){
+            throw new BadRequestException("시간 또는 테마가 존재하지 않습니다.");
+        }
     }
 
     public List<ReservationResponse> readAll() {
