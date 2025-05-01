@@ -40,18 +40,25 @@ public class ReservationService {
         LocalDateTime now = dateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 
-        if (reservationDateTime.isBefore(now)) {
-            throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
-        }
-
-        if (reservationRepository.existBy(request.themeId(), request.date(), time.getStartAt())) {
-            throw new IllegalArgumentException("이미 예약이 존재합니다.");
-        }
+        validateCanReserveDateTime(reservationDateTime, now);
+        validateExistDuplicateReservation(request, time);
 
         Reservation reservation = Reservation.createWithoutId(request.name(), request.date(), time, theme);
         Long id = reservationRepository.save(reservation);
 
         return ReservationResponse.from(reservation.assignId(id));
+    }
+
+    private void validateExistDuplicateReservation(ReservationRequest request, ReservationTime time) {
+        if (reservationRepository.existBy(request.themeId(), request.date(), time.getStartAt())) {
+            throw new IllegalArgumentException("이미 예약이 존재합니다.");
+        }
+    }
+
+    private void validateCanReserveDateTime(LocalDateTime reservationDateTime, LocalDateTime now) {
+        if (reservationDateTime.isBefore(now)) {
+            throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
+        }
     }
 
     public List<ReservationResponse> getReservations() {
@@ -67,7 +74,7 @@ public class ReservationService {
 
     private void validateExistIdToDelete(boolean isDeleted) {
         if (!isDeleted) {
-            throw new IllegalArgumentException("[ERROR] 존재하지 않는 예약입니다.");
+            throw new IllegalArgumentException("존재하지 않는 예약입니다.");
         }
     }
 }
