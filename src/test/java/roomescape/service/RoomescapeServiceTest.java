@@ -29,10 +29,10 @@ class RoomescapeServiceTest {
         ReservationTimeResponse response = service.addReservationTime(
                 new ReservationTimeRequest(LocalTime.parse("10:10")));
 
-        service.addReservation(new ReservationRequest("test", date, response.id()));
+        service.addReservation(new ReservationRequest("test", date, 1L, response.timeId()));
 
         //when & then
-        ReservationRequest duplicated = new ReservationRequest("test2", date, response.id());
+        ReservationRequest duplicated = new ReservationRequest("test2", date, 1L, response.timeId());
         assertThatThrownBy(() -> service.addReservation(duplicated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약시간입니다.");
@@ -45,7 +45,7 @@ class RoomescapeServiceTest {
         // given
         service.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
         LocalDate date = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest("호떡", date, 1L);
+        ReservationRequest request = new ReservationRequest("호떡", date, 1L, 1L);
 
         // then & when
         assertThatThrownBy(() -> service.addReservation(request))
