@@ -11,20 +11,20 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.repository.ReservationFakeRepository;
-import roomescape.domain.repository.ReservationTimeFakeRepository;
-import roomescape.domain.repository.ThemeFakeRepository;
-import roomescape.reservation.controller.dto.AvailableTimeResponse;
+import roomescape.util.repository.ReservationFakeRepository;
+import roomescape.util.repository.ReservationTimeFakeRepository;
+import roomescape.util.repository.ThemeFakeRepository;
+import roomescape.time.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
-import roomescape.reservation.controller.dto.ReservationTimeResponse;
-import roomescape.reservation.controller.dto.ThemeResponse;
+import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
-import roomescape.reservation.domain.repository.ReservationRepository;
-import roomescape.reservation.domain.repository.ReservationTimeRepository;
-import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.theme.repository.ThemeRepository;
 
 class ReservationServiceTest {
 
