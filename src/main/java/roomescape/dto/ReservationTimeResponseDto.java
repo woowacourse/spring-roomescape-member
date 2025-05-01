@@ -3,7 +3,7 @@ package roomescape.dto;
 import java.time.format.DateTimeFormatter;
 import roomescape.domain.ReservationTime;
 
-public record ReservationTimeResponseDto(long id, String startAt) {
+public record ReservationTimeResponseDto(long timeId, String startAt) {
 
     public static ReservationTimeResponseDto from(ReservationTime reservationTime) {
         return new ReservationTimeResponseDto(
