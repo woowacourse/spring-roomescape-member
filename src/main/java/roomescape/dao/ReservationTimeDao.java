@@ -34,7 +34,6 @@ public class ReservationTimeDao {
         return availableReservationTime;
     };
 
-
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

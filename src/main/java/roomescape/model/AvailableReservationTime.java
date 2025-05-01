@@ -7,7 +7,7 @@ public record AvailableReservationTime(
         LocalTime startAt,
         Boolean alreadyBooked
 ) {
-    public AvailableReservationTime{
+    public AvailableReservationTime {
         validateRequiredFields(id, startAt, alreadyBooked);
     }
 
@@ -24,5 +24,4 @@ public record AvailableReservationTime(
             throw new IllegalArgumentException("예약 여부 결과는 null 일 수 없습니다.");
         }
     }
-
 }

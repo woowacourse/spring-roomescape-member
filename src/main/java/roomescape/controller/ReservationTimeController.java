@@ -48,7 +48,7 @@ public class ReservationTimeController {
     @GetMapping("/available")
     @ResponseStatus(HttpStatus.OK)
     public List<AvailableReservationTimeResponseDto> findAvailableTimes(@RequestParam String date,
-                                                                        @RequestParam Long themeId){
+                                                                        @RequestParam Long themeId) {
         return reservationTimeService.getAvailableTimes(date, themeId);
     }
 }

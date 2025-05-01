@@ -15,5 +15,4 @@ public record AvailableReservationTimeResponseDto(
                 availableReservationTime.alreadyBooked()
         );
     }
-
 }

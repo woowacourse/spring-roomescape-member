@@ -43,13 +43,6 @@ public class ThemeService {
         );
     }
 
-    private void validateTheme(ThemeRequestDto themeRequestDto) {
-        boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRequestDto.name());
-        if (duplicatedNameExisted) {
-            throw new DuplicatedException("중복된 예약시각은 등록할 수 없습니다.");
-        }
-    }
-
     public void deleteTheme(Long id) {
         try {
             themeDao.deleteById(id);
@@ -62,5 +55,12 @@ public class ThemeService {
         return themeDao.findPopularThemes(today, POPULAR_DAY_RANGE).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
+    }
+
+    private void validateTheme(ThemeRequestDto themeRequestDto) {
+        boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRequestDto.name());
+        if (duplicatedNameExisted) {
+            throw new DuplicatedException("중복된 예약시각은 등록할 수 없습니다.");
+        }
     }
 }
