@@ -6,13 +6,13 @@ import roomescape.domain_entity.ReservationTime;
 import roomescape.domain_entity.Theme;
 
 public record ReservationRequestDto(
-        String name, LocalDate date, long timeId
+        String name, LocalDate date, long timeId, Long themeId
 ) {
     public ReservationRequestDto {
-        validateNotNull(name, date, timeId);
+        validateNotNull(name, date, timeId, themeId);
     }
 
-    private void validateNotNull(String name, LocalDate date, long timeId) {
+    private void validateNotNull(String name, LocalDate date, long timeId, Long themeId) {
         if (name == null) {
             throw new IllegalArgumentException("잘못된 name 입력입니다.");
         }
@@ -21,6 +21,9 @@ public record ReservationRequestDto(
         }
         if (timeId < 1) {
             throw new IllegalArgumentException("잘못된 timeId 입력입니다.");
+        }
+        if (themeId == null || themeId < 1) {
+            throw new IllegalArgumentException("잘못된 themeId 입력입니다.");
         }
     }
 
