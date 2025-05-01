@@ -1,12 +1,12 @@
-package roomescape.service;
+package roomescape.service.theme;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.PopularThemeResponse;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.theme.PopularThemeResponse;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
 import roomescape.entity.ThemeEntity;
 import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
@@ -24,7 +24,7 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public ThemeResponse create(ThemeRequest request) {
-        Theme theme = request.toEntity();
+        Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
         return ThemeResponse.from(themeRepository.add(theme));
     }
 

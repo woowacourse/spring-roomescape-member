@@ -1,10 +1,10 @@
-package roomescape.service;
+package roomescape.service.reservation;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.reservation.ReservationRequest;
+import roomescape.dto.reservation.ReservationResponse;
 import roomescape.entity.ReservationTimeEntity;
 import roomescape.entity.ThemeEntity;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
@@ -16,13 +16,13 @@ import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 @Service
-public class ReservationService {
+public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository timeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository timeRepository,
-                              ThemeRepository themeRepository) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, ReservationTimeRepository timeRepository,
+                                  ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
@@ -37,6 +37,7 @@ public class ReservationService {
 
         Reservation newReservation = new Reservation(request.name(), request.date(),
                 timeEntity.toDomain(), themeEntity.toDomain());
+
         if (reservationRepository.existsByDateAndTime(request.date(), timeEntity.id())) {
             throw new ReservationAlreadyExistsException();
         }
@@ -50,7 +51,7 @@ public class ReservationService {
 
     public void deleteById(Long id) {
         int affectedCount = reservationRepository.deleteById(id);
-        if (affectedCount == 0) {
+        if (affectedCount != 1) {
             throw new ReservationNotFoundException(id);
         }
     }

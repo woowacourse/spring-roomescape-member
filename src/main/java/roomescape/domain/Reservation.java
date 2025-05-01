@@ -26,8 +26,42 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    public Reservation withId(Long id) {
-        return new Reservation(id, this.name, this.date, this.time, this.theme);
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateTime(time);
+        validateInPast(date, time.getStartAt());
+        validateTheme(theme);
+    }
+
+    private void validateInPast(LocalDate date, LocalTime startAt) {
+        if (LocalDateTime.now().isAfter(LocalDateTime.of(date, startAt))) {
+            throw new ReservationInPastException();
+        }
+    }
+
+    private void validateName(String name) {
+        if (name.isBlank()) {
+            throw new ReservationFieldRequiredException("이름");
+        }
+    }
+
+    private void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new ReservationFieldRequiredException("날짜");
+        }
+    }
+
+    private void validateTime(ReservationTime time) {
+        if (time == null) {
+            throw new ReservationFieldRequiredException("시간");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new ReservationFieldRequiredException("테마");
+        }
     }
 
     public Long getId() {
@@ -44,46 +78,6 @@ public class Reservation {
 
     public ReservationTime getTime() {
         return time;
-    }
-
-
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        validateName(name);
-        validateDate(date);
-        validateTime(time);
-        validateInPast(date, time.getStartAt());
-        validateTheme(theme);
-    }
-
-    //TODO: dto단에서 검증되는 유효성 검사 빼기  (2025-04-30, 수, 11:25)
-    private void validateTheme(Theme theme) {
-        if (theme == null) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private void validateInPast(LocalDate date, LocalTime startAt) {
-        if (LocalDateTime.now().isAfter(LocalDateTime.of(date, startAt))) {
-            throw new ReservationInPastException();
-        }
-    }
-
-    private void validateTime(ReservationTime time) {
-        if (time == null) {
-            throw new ReservationFieldRequiredException("시간");
-        }
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new ReservationFieldRequiredException("이름");
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new ReservationFieldRequiredException("날짜");
-        }
     }
 
     public Theme getTheme() {

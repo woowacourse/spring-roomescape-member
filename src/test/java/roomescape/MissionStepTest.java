@@ -20,7 +20,7 @@
 //import org.springframework.test.annotation.DirtiesContext;
 //import org.springframework.test.context.jdbc.Sql;
 //import roomescape.controller.ReservationController;
-//import roomescape.dto.ReservationResponse;
+//import roomescape.dto.reservation.ReservationResponse;
 //
 //@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 //@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

@@ -75,14 +75,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
                             resultSet.getString("theme_description"),
                             resultSet.getString("theme_thumbnail"));
 
-                    ReservationEntity reservationEntity = new ReservationEntity(
+                    return new ReservationEntity(
                             resultSet.getLong("reservation_id"),
                             resultSet.getString("reservation_name"),
                             resultSet.getDate("reservation_date").toLocalDate(),
                             reservationTimeEntity,
                             themeEntity
                     );
-                    return reservationEntity;
                 }
         );
     }
@@ -122,10 +121,12 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 ORDER BY COUNT(*) DESC
                 LIMIT 10
                 """;
-        List<Long> themeIds = jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Long themeId = resultSet.getLong("theme_id");
-            return themeId;
-        }, startDate, endDate);
+        List<Long> themeIds = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> resultSet.getLong("theme_id"),
+                startDate,
+                endDate
+        );
         return themeIds;
     }
 }

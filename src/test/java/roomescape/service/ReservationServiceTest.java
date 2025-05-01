@@ -10,8 +10,8 @@
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
 //import roomescape.domain.ReservationTime;
-//import roomescape.dto.ReservationRequest;
-//import roomescape.dto.ReservationResponse;
+//import roomescape.dto.reservation.ReservationRequest;
+//import roomescape.dto.reservation.ReservationResponse;
 //import roomescape.exception.reservation.ReservationAlreadyExistsException;
 //import roomescape.exception.reservation.ReservationNotFoundException;
 //import roomescape.fixture.ReservationRepositoryStub;

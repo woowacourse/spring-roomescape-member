@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.exception.theme.ThemeFieldRequiredException;
+
 public class Theme {
     private final Long id;
     private final String name;
@@ -30,19 +32,19 @@ public class Theme {
 
     private void validateThumbnail(String thumbnail) {
         if (thumbnail.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new ThemeFieldRequiredException("썸네일");
         }
     }
 
     private void validateDescription(String description) {
         if (description.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new ThemeFieldRequiredException("설명");
         }
     }
 
     private void validateName(String name) {
         if (name.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new ThemeFieldRequiredException("이름");
         }
     }
 

@@ -6,9 +6,9 @@
 //import java.util.Map;
 //import roomescape.domain.Reservation;
 //import roomescape.domain.ReservationTime;
-//import roomescape.dto.ReservationRequest;
-//import roomescape.dto.ReservationResponse;
-//import roomescape.service.ReservationService;
+//import roomescape.dto.reservation.ReservationRequest;
+//import roomescape.dto.reservation.ReservationResponse;
+//import roomescape.service.reservation.ReservationService;
 //
 //public class ReservationServiceStub extends ReservationService {
 //    private final Map<Long, Reservation> reservations = new HashMap<>();

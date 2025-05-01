@@ -9,8 +9,8 @@
 //import org.junit.jupiter.api.Test;
 //import org.springframework.http.HttpStatus;
 //import org.springframework.http.ResponseEntity;
-//import roomescape.dto.ReservationRequest;
-//import roomescape.dto.ReservationResponse;
+//import roomescape.dto.reservation.ReservationRequest;
+//import roomescape.dto.reservation.ReservationResponse;
 //import roomescape.fixture.ReservationServiceStub;
 //
 //class ReservationControllerTest {

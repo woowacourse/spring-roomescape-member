@@ -1,12 +1,12 @@
-package roomescape.service;
+package roomescape.service.reservationtime;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableTimeResponse;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.reservationtime.AvailableTimeResponse;
+import roomescape.dto.reservationtime.ReservationTimeRequest;
+import roomescape.dto.reservationtime.ReservationTimeResponse;
 import roomescape.entity.ReservationTimeEntity;
 import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
@@ -15,12 +15,12 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @Service
-public class ReservationTimeService {
+public class ReservationTimeServiceImpl implements ReservationTimeService {
     private final ReservationTimeRepository timeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository timeRepository,
-                                  ReservationRepository reservationRepository) {
+    public ReservationTimeServiceImpl(ReservationTimeRepository timeRepository,
+                                      ReservationRepository reservationRepository) {
         this.timeRepository = timeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -44,7 +44,7 @@ public class ReservationTimeService {
         }
 
         int affectedCount = timeRepository.deleteById(id);
-        if (affectedCount == 0) {
+        if (affectedCount != 1) {
             throw new ReservationTimeNotFoundException(id);
         }
     }
@@ -54,12 +54,12 @@ public class ReservationTimeService {
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        List<Long> reservedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
+        List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
         List<ReservationTimeEntity> reservationTimeEntities = timeRepository.findAll();
 
         List<AvailableTimeResponse> availableTimeResponses = reservationTimeEntities.stream()
                 .map(timeEntity -> {
-                    boolean alreadyBooked = reservedTimeIds.contains(timeEntity.id());
+                    boolean alreadyBooked = bookedTimeIds.contains(timeEntity.id());
                     return AvailableTimeResponse.of(timeEntity, alreadyBooked);
                 })
                 .toList();

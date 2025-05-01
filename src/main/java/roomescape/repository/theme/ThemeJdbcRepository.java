@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -12,6 +13,14 @@ import roomescape.entity.ThemeEntity;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
+    private static final RowMapper<ThemeEntity> ROW_MAPPER = (resultSet, rowNumber) ->
+            new ThemeEntity(
+                    resultSet.getLong("id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail")
+            );
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -38,15 +47,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         String sql = "select * from theme";
         List<ThemeEntity> themes = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNumber) -> {
-                    ThemeEntity theme = new ThemeEntity(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("description"),
-                            resultSet.getString("thumbnail")
-                    );
-                    return theme;
-                }
+                ROW_MAPPER
         );
         return themes;
     }
@@ -62,13 +63,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         String sql = "select * from theme where id=?";
         List<ThemeEntity> theme = jdbcTemplate.query(
                 sql,
-                (resultSet, rowNumber) ->
-                        new ThemeEntity(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getString("description"),
-                                resultSet.getString("thumbnail")
-                        ),
+                ROW_MAPPER,
                 id
         );
         return theme.stream().findFirst();

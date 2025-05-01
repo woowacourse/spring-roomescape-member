@@ -1,17 +1,10 @@
-package roomescape.dto;
+package roomescape.dto.reservationtime;
 
 import java.time.LocalTime;
 import java.util.List;
 import roomescape.entity.ReservationTimeEntity;
 
-public class ReservationTimeResponse {
-    private final Long id;
-    private final LocalTime startAt;
-
-    private ReservationTimeResponse(Long id, LocalTime startAt) {
-        this.id = id;
-        this.startAt = startAt;
-    }
+public record ReservationTimeResponse(Long id, LocalTime startAt) {
 
     public static ReservationTimeResponse from(ReservationTimeEntity time) {
         return new ReservationTimeResponse(time.id(), time.startAt());
@@ -21,13 +14,5 @@ public class ReservationTimeResponse {
         return times.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
     }
 }

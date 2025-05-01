@@ -1,9 +1,9 @@
-package roomescape.service;
+package roomescape.service.theme;
 
 import java.util.List;
-import roomescape.dto.PopularThemeResponse;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.theme.PopularThemeResponse;
+import roomescape.dto.theme.ThemeRequest;
+import roomescape.dto.theme.ThemeResponse;
 
 public interface ThemeService {
     ThemeResponse create(ThemeRequest request);
