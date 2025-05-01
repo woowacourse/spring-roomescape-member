@@ -5,6 +5,13 @@
 - [X] 시간 관리, 예약 관리 API가 적절한 응답을 하도록 변경
 - [X] 어드민의 시간 관리 페이지, 방탈출 예약 페이지에서 모든 기능이 정상적으로 동작하는지 확인합니다.
 
+## 사용자 예약
+- [ ] 사용자는 원하는 시간에 예약을 할 수 있다.
+- [ ] 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있다.
+- [X] `/reservation` 요청 시 사용자 예약 페이지를 응답한다.
+  - 페이지는 `templates/reservation.html` 파일을 이용
+
+
 ## 유효성 검증
 
 ### 시간
@@ -103,4 +110,33 @@
   - Response
     ```
     HTTP/1.1 204
+    ```
+
+### 사용자 예약 가능 시간 조회
+
+  - Request
+    ```
+    GET /user/reservations HTTP/1.1
+    {
+      "date": "2025-05-05",
+      "themeId": "1"
+    }
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 200
+  
+    [
+      {
+        "startAt": "10:00",
+        "timeId": "1",
+        "alreadyBooked": "true"
+      },
+      {
+        "startAt": "10:10",
+        "timeId": "2",
+        "alreadyBooked": "false"
+      }
+    ]
     ```
