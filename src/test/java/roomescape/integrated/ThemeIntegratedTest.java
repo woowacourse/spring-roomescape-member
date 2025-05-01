@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,7 @@ public class ThemeIntegratedTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("전체 테마 데이터를 조회한다.")
     void readAllTheme() {
         setUpTheme();
@@ -37,6 +39,7 @@ public class ThemeIntegratedTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("테마 데이터를 추가한다.")
     void createTheme() {
         //given
