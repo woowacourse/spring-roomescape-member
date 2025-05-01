@@ -111,7 +111,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     }
 
     @Override
-    public List<ReservationThemeEntity> findPopularDescendingUpTo(int limit) {
+    public List<ReservationThemeEntity> findPopularDescendingUpTo(final int limit) {
         String query = """
                 SELECT
                     t.id as theme_id,
@@ -119,8 +119,8 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                     t.description,
                     t.thumbnail,
                     r_stats.cnt
-                FROM theme t
-                JOIN (
+                FROM theme as t
+                LEFT JOIN (
                     SELECT
                         theme_id,
                         COUNT(*) as cnt
@@ -130,6 +130,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                 ) as r_stats
                 ON t.id = r_stats.theme_id
                 ORDER BY cnt DESC
+                FETCH FIRST :limit ROWS ONLY
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("limit", limit);
