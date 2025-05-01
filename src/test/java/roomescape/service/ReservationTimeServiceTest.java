@@ -3,30 +3,17 @@ package roomescape.service;
 import java.time.LocalTime;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.FakeReservationTimeDao;
 import roomescape.dto.request.ReservationTimeRequestDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeServiceTest {
 
-    private ReservationTimeService reservationTimeService;
-    private FakeReservationTimeDao fakeReservationTimeDao;
+    private final ReservationTimeService reservationTimeService;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        fakeReservationTimeDao = new FakeReservationTimeDao(jdbcTemplate);
-        reservationTimeService = new ReservationTimeService(fakeReservationTimeDao);
+    public ReservationTimeServiceTest() {
+        this.reservationTimeService = new ReservationTimeService(new FakeReservationTimeDao());
     }
 
     @Test

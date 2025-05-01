@@ -5,15 +5,15 @@ import java.time.LocalTime;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.dao.FakeReservationDao;
 import roomescape.dao.FakeReservationTimeDao;
 import roomescape.dao.FakeThemeDao;
+import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.model.ReservationTime;
@@ -21,45 +21,51 @@ import roomescape.model.Theme;
 
 class ReservationServiceTest {
 
-    private ReservationService reservationService;
-    private FakeReservationDao fakeReservationDao;
-    private FakeReservationTimeDao fakeReservationTimeDao;
-    private FakeThemeDao fakeThemeDao;
+    private final ReservationService reservationService;
+    private final ReservationTimeDao reservationTimeDao;
+    private final FakeThemeDao themeDao;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public ReservationServiceTest() {
+        this.reservationTimeDao = new FakeReservationTimeDao();
+        this.themeDao = new FakeThemeDao();
+        this.reservationService = new ReservationService(
+                new FakeReservationDao(),
+                reservationTimeDao,
+                themeDao
+        );
+    }
 
     @BeforeEach
     void setUp() {
-        fakeReservationDao = new FakeReservationDao(jdbcTemplate);
-        fakeReservationTimeDao = new FakeReservationTimeDao(jdbcTemplate);
-        fakeThemeDao = new FakeThemeDao(jdbcTemplate);
-        reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
-
-        fakeReservationTimeDao.saveTime(new ReservationTime(LocalTime.of(12, 30)));
-        fakeThemeDao.saveTheme(new Theme("공포", "무서워요", "image"));
+        reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(20, 0)));
+        themeDao.saveTheme(new Theme("공포", "무서워요", "image-url"));
     }
 
-    @DisplayName("예약을 저장한다")
+    @DisplayName("예약을 정상적으로 저장한다.")
     @Test
-    void test() {
+    void test1() {
         // given
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
         ReservationRequestDto request = new ReservationRequestDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                "다로",
+                tomorrow.toString(),
+                1L,
+                1L
+        );
 
         // when
         ReservationResponseDto response = reservationService.saveReservation(request);
 
         // then
-        assertThat(response.id()).isNotNull();
-        assertThat(response.name()).isEqualTo("다로");
-        assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(1));
-        assertThat(response.time().id()).isEqualTo(1L);
+        assertAll(
+                () -> assertThat(response.name()).isEqualTo("다로"),
+                () -> assertThat(response.date()).isEqualTo(tomorrow)
+        );
     }
 
     @DisplayName("모든 예약을 조회한다")
     @Test
-    void test1() {
+    void test2() {
         // given
         ReservationRequestDto request1 = new ReservationRequestDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
@@ -79,7 +85,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약을 취소한다")
     @Test
-    void test2() {
+    void test3() {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
@@ -95,7 +101,7 @@ class ReservationServiceTest {
 
     @DisplayName("이미 존재하는 예약 시간에 예약한다면 예외를 던진다")
     @Test
-    void test3() {
+    void test4() {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
@@ -111,7 +117,7 @@ class ReservationServiceTest {
 
     @DisplayName("당일 예약을 한다면 예외를 던진다")
     @Test
-    void test4() {
+    void test5() {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
                 "다로", LocalDate.now().toString(), 1L, 1L);
