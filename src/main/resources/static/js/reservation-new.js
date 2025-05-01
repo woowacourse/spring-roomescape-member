@@ -168,9 +168,15 @@ function requestCreate(reservation) {
     };
 
     return fetch(RESERVATION_API_ENDPOINT, requestOptions)
-        .then(response => {
-            if (response.status === 201) return response.json();
-            throw new Error('Create failed');
+        .then(async response => {
+            if (response.status !== 201) {
+                const errorMessage = await response.json();
+                throw new Error(errorMessage.message || 'Create failed');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            alert(error.message);
         });
 }
 
@@ -180,15 +186,26 @@ function requestDelete(id) {
     };
 
     return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
-        .then(response => {
-            if (response.status !== 204) throw new Error('Delete failed');
+        .then(async response => {
+            if (response.status !== 204) {
+                const errorMessage = await response.json();
+                throw new Error(errorMessage.message || 'Delete failed');
+            }
+        }).catch(error => {
+            alert(error.message);
         });
 }
 
 function requestRead(endpoint) {
     return fetch(endpoint)
-        .then(response => {
-            if (response.status === 200) return response.json();
-            throw new Error('Read failed');
+        .then(async response => {
+            if (response.status !== 200) {
+                const errorMessage = await response.json();
+                throw new Error(errorMessage.message || 'Read failed');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            alert(error.message);
         });
 }
