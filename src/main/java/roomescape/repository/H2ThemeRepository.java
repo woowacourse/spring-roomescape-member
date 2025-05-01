@@ -66,13 +66,18 @@ public class H2ThemeRepository implements ThemeRepository{
     }
 
     public List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate) {
-        String sql = "SELECT t.id, t.name, t.description, t.thumbnail "
-                + "FROM reservation AS r "
-                + "INNER JOIN theme AS t ON r.theme_id = t.id "
-                + "WHERE r.date >= ? AND r.date <= ? "
-                + "GROUP BY r.theme_id "
-                + "ORDER BY COUNT(r.theme_id) DESC "
-                + "LIMIT 10";
+        String sql =
+            """
+            SELECT t.id, t.name, t.description, t.thumbnail
+            FROM theme AS t
+            ORDER BY (
+                SELECT COUNT(*)
+                FROM reservation AS r
+                WHERE r.theme_id = t.id 
+                AND r.date >= ? AND r.date <= ?
+            ) DESC 
+            LIMIT 10;
+            """;
 
         return jdbcTemplate.query(sql, mapper, startDate, endDate);
     }
