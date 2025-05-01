@@ -12,8 +12,13 @@ public class ViewMappingController {
     }
 
     @GetMapping("/admin/reservation")
-    public String reservation() {
+    public String adminReservation() {
         return "admin/reservation-new";
+    }
+
+    @GetMapping("/reservation")
+    public String reservation() {
+        return "/reservation";
     }
 
     @GetMapping("/admin/time")
