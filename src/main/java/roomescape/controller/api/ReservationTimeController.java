@@ -36,14 +36,21 @@ public class ReservationTimeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<roomescape.controller.api.dto.response.ReservationTimeResponse> getAll(
-            @RequestParam("themeId") Long themeId,
-            @RequestParam("date") LocalDate date
+    public List<roomescape.controller.api.dto.response.ReservationTimeResponse> getAllByThemeIdAndDate(
+            @RequestParam(value = "themeId", required = false) Long themeId,
+            @RequestParam(value = "date", required = false) LocalDate date
     ) {
-        List<ReservationTimeServiceResponse> reservationTimes = reservationTimeService.getAll(themeId, date);
+        List<ReservationTimeServiceResponse> reservationTimes = getAllReservationTimeResponse(themeId, date);
         return reservationTimes.stream()
                 .map(roomescape.controller.api.dto.response.ReservationTimeResponse::from)
                 .toList();
+    }
+
+    private List<ReservationTimeServiceResponse> getAllReservationTimeResponse(Long themeId, LocalDate date) {
+        if (themeId == null && date == null) {
+            return reservationTimeService.getAll();
+        }
+        return reservationTimeService.getAllByThemeIdAndDate(themeId, date);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

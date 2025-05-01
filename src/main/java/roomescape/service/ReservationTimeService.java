@@ -22,7 +22,13 @@ public class ReservationTimeService {
         return ReservationTimeServiceResponse.withoutBook(reservationTime);
     }
 
-    public List<ReservationTimeServiceResponse> getAll(Long themeId, LocalDate date) {
+    public List<ReservationTimeServiceResponse> getAll() {
+        return reservationTimeRepository.getAll().stream()
+                .map(ReservationTimeServiceResponse::withoutBook)
+                .toList();
+    }
+
+    public List<ReservationTimeServiceResponse> getAllByThemeIdAndDate(Long themeId, LocalDate date) {
         List<ReservationTime> allTimes = reservationTimeRepository.getAll();
         List<ReservationTime> bookedTimes = reservationTimeRepository.getAllByThemeIdAndDate(themeId, date);
 
