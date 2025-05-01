@@ -28,5 +28,4 @@ public class BaseTest {
         });
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE;");
     }
-
 }

@@ -35,5 +35,4 @@ public class ReservationDateTimeTest {
         assertThatCode(() -> new ReservationDateTime(reservationDate, futureTime, Constant.FIXED_CLOCK))
                 .doesNotThrowAnyException();
     }
-
 }

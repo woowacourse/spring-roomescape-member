@@ -29,9 +29,7 @@ public class ReservationTest extends BaseTest {
     private ThemeRepository themeRepository;
 
     private Theme theme;
-
     private Map<String, Object> reservation;
-
     private Map<String, String> reservationTime;
 
     @BeforeEach

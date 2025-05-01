@@ -30,6 +30,7 @@ public class ThemeServiceTest extends BaseTest {
 
     @Autowired
     private ThemeDbFixture themeDbFixture;
+
     @Autowired
     private ThemeService themeService;
 

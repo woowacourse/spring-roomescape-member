@@ -10,7 +10,7 @@ import roomescape.time.domain.ReservationTime;
 @Component
 public class ReservationTimeDbFixture {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public ReservationTimeDbFixture(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
