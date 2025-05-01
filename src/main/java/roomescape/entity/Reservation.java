@@ -21,7 +21,7 @@ public record Reservation(Long id, String name, LocalDate date, ReservationTime 
     }
 
     private boolean equalsDate(Reservation reservation) {
-        return this.date == reservation.date;
+        return this.date.equals(reservation.date);
     }
 
     private boolean equalsTime(Reservation reservation) {

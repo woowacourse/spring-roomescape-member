@@ -7,9 +7,9 @@ public record ReservationTime(Long id, LocalTime startAt) {
     public ReservationTime {
         validate(startAt);
     }
-    
+
     public boolean equalsTime(ReservationTime time) {
-        return this.startAt == time.startAt();
+        return this.startAt.equals(time.startAt());
     }
 
     private void validate(LocalTime startAt) {
