@@ -23,20 +23,6 @@
 - [x] 과거 시점 예약 생성 예외 처리
 - [x] / 요청 시 인기 테마 페이지를 응답 (최근 일주일 예약 건수 내림차순 10개 조회)
 
-
-## .isBefore(PR);
-- [x] 테스트 코드 작성하기
-- [ ] 리팩토링 사항 찾기
+### 추후 할 것
 - [ ] H2 DB - In memory 에서 Embedded 모드로 변경
 - [ ] H2 DB - DB 초기화 쿼리 작성 (불필요한 DirtiesContext 제거)
-
-## API
-- localhost:8080/times?date={}&themeId={}
-
-
-
----
-
-null
-return Theme
-ret
