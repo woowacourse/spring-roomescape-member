@@ -62,6 +62,8 @@ public class ThemeIntegratedTest {
     @Test
     @DisplayName("테마 데이터를 삭제한다.")
     void deleteTheme() {
+        setUpTheme();
+
         RestAssured.given().log().all()
                 .when().delete("/themes/1")
                 .then().log().all()
