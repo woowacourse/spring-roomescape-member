@@ -16,4 +16,5 @@ public interface ThemeRepository {
     Optional<Theme> findById(Long id);
 
     List<Theme> findByPeriodAndLimit(LocalDate start, LocalDate end, int limit);
+
 }

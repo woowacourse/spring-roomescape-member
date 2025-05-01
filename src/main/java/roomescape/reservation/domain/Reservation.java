@@ -47,4 +47,5 @@ public class Reservation {
     public Long getTimeId() {
         return time.getId();
     }
+
 }

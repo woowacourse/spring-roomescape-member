@@ -106,7 +106,7 @@ class ReservationServiceTest {
         // given
         Long removeId = 3L;
 
-        // when && then
+        // when & then
         assertThatCode(() -> reservationService.remove(removeId))
                 .doesNotThrowAnyException();
     }
@@ -144,7 +144,6 @@ class ReservationServiceTest {
         // when & then
         assertThatCode(() -> reservationService.add(request))
                 .doesNotThrowAnyException();
-
     }
 
     @DisplayName("동일한 날짜, 시간, 테마에 대한 중복 예약을 하면 예외가 발생한다")

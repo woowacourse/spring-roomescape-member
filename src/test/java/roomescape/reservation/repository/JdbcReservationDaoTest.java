@@ -61,7 +61,7 @@ class JdbcReservationDaoTest {
         // when
         jdbcReservationDao.deleteById(id);
 
-        String sql = "SELECT COUNT(*) FROM reservation";
+        String sql = "SELECT COUNT(1) FROM reservation";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
 
         // then
@@ -83,6 +83,7 @@ class JdbcReservationDaoTest {
     void same_time_id_test() {
         // when
         Boolean actual = jdbcReservationDao.existReservationByTimeId(1L);
+
         // then
         assertThat(actual).isTrue();
     }
@@ -91,8 +92,8 @@ class JdbcReservationDaoTest {
     @Test
     void same_time_id_and_date_test() {
         // when
-        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L,
-                1L);
+        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L, 1L);
+
         // then
         assertThat(actual).isTrue();
     }
@@ -105,7 +106,6 @@ class JdbcReservationDaoTest {
 
         // then
         assertThat(actual).isTrue();
-
     }
 
     @DisplayName("날짜와 테마 id가 일치하는 모든 예약을 찾는다")

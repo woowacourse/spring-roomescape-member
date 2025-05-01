@@ -71,4 +71,5 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, time);
     }
+
 }

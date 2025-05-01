@@ -12,4 +12,5 @@ public record AvailableTimeResponse(
     public static AvailableTimeResponse from(LocalTime startAt, Long timeId, Boolean alreadyBooked) {
         return new AvailableTimeResponse(startAt, timeId, alreadyBooked);
     }
+
 }

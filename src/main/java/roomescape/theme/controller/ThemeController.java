@@ -46,4 +46,5 @@ public class ThemeController {
     public void deleteTheme(@PathVariable("themeId") Long themeId) {
         themeService.remove(themeId);
     }
+
 }

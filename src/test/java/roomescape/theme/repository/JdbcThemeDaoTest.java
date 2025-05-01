@@ -11,10 +11,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.JdbcThemeDao;
 import roomescape.util.TestDataSourceFactory;
 
-public class JdbcThemeDaoTest {
+class JdbcThemeDaoTest {
 
     private JdbcThemeDao jdbcThemeDao;
 
@@ -69,7 +68,7 @@ public class JdbcThemeDaoTest {
         jdbcThemeDao.deleteById(deleteId);
 
         // then
-        String sql = "SELECT COUNT(*) FROM theme";
+        String sql = "SELECT COUNT(1) FROM theme";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
         assertThat(count).isEqualTo(5);
     }
@@ -107,6 +106,5 @@ public class JdbcThemeDaoTest {
         assertThat(themeRankings.get(0).getThumbnail()).isEqualTo(
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     }
-
 
 }

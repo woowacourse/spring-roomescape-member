@@ -31,4 +31,5 @@ public record ThemeRequest(String name, String description, String thumbnail) {
             throw new IllegalArgumentException("대표 이미지는 필수입니다.");
         }
     }
+
 }

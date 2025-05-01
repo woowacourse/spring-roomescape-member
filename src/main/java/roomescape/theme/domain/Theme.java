@@ -33,4 +33,5 @@ public class Theme {
     public String getThumbnail() {
         return thumbnail;
     }
+
 }

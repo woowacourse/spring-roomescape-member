@@ -17,7 +17,6 @@ public class ThemeFakeRepository implements ThemeRepository {
 
     private final Map<Long, Theme> themes = new ConcurrentHashMap<>();
     private final AtomicLong idGenerator = new AtomicLong();
-
     private final ReservationRepository reservationRepository;
 
     public ThemeFakeRepository(ReservationRepository reservationRepository) {
@@ -74,4 +73,5 @@ public class ThemeFakeRepository implements ThemeRepository {
         return (target.isEqual(start) || target.isAfter(start)) &&
                 (target.isEqual(end) || target.isBefore(end));
     }
+
 }

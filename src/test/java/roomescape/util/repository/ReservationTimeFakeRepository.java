@@ -45,4 +45,5 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
         return times.values().stream()
                 .anyMatch(reservationTime -> reservationTime.getStartAt().equals(time));
     }
+
 }

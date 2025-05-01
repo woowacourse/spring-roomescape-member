@@ -55,8 +55,6 @@ class ReservationTimeServiceTest {
             themeRepository.saveAndReturnId(theme);
         }
 
-
-
         Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29), reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get());
 
         reservationRepository.saveAndReturnId(reservation);
@@ -84,7 +82,7 @@ class ReservationTimeServiceTest {
         // given
         Long removeId = 3L;
 
-        // when && then
+        // when & then
         assertThatCode(() -> reservationTimeService.remove(removeId))
                 .doesNotThrowAnyException();
     }
@@ -116,9 +114,11 @@ class ReservationTimeServiceTest {
     void duplicate_time_test() {
         // given
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(3, 12));
+
         // when & then
         assertThatThrownBy(() -> reservationTimeService.add(reservationTimeRequest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 시간은 이미 존재합니다.");
     }
+
 }

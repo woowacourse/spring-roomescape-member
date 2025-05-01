@@ -103,7 +103,6 @@ public class JdbcReservationDao implements ReservationRepository {
                     WHERE time_id = ?
                 )
                 """;
-
         return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
@@ -116,7 +115,6 @@ public class JdbcReservationDao implements ReservationRepository {
                     WHERE theme_id = ?
                 )
                 """;
-
         return jdbcTemplate.queryForObject(sql, Boolean.class, themeId);
     }
 
@@ -133,7 +131,6 @@ public class JdbcReservationDao implements ReservationRepository {
                     WHERE r.date = ? AND t.id = ? AND th.id = ?
                 );                  
                 """;
-
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
@@ -157,7 +154,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 ON r.theme_id = th.id
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
-
         return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
+
 }

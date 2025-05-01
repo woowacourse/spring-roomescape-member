@@ -80,4 +80,5 @@ public class JdbcThemeDao implements ThemeRepository {
                 """;
         return jdbcTemplate.query(sql, rowMapper, start, end, limit);
     }
+
 }

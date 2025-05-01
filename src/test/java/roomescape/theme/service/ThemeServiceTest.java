@@ -1,4 +1,4 @@
-package roomescape.time.service;
+package roomescape.theme.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +25,7 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
-public class ThemeServiceTest {
+class ThemeServiceTest {
 
     private ThemeService themeService;
 
@@ -86,6 +86,7 @@ public class ThemeServiceTest {
     void get_themes() {
         // when
         List<ThemeResponse> actual = themeService.getThemes();
+
         // then
         assertThat(actual).hasSize(3);
     }
