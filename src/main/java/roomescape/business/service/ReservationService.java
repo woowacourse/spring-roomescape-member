@@ -10,6 +10,8 @@ import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
 import roomescape.exception.ReservationException;
+import roomescape.exception.ReservationThemeException;
+import roomescape.exception.ReservationTimeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
@@ -56,7 +58,8 @@ public final class ReservationService {
     }
 
     public ReservationResponseDto readReservationOne(Long id) {
-        Reservation reservation = reservationRepository.findById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ReservationException("존재하지 않는 예약입니다."));
         return new ReservationResponseDto(
                 reservation.getId(),
                 reservation.getName(),
@@ -75,8 +78,10 @@ public final class ReservationService {
     }
 
     public Long createReservation(ReservationRequestDto reservationDto) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(reservationDto.timeId());
-        ReservationTheme theme = reservationThemeRepository.findById(reservationDto.themeId());
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationDto.timeId())
+                .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
+        ReservationTheme theme = reservationThemeRepository.findById(reservationDto.themeId())
+                .orElseThrow(() -> new ReservationThemeException("존재하지 않는 예약 테마입니다."));
         validatePastDateTime(reservationDto.date(), reservationTime.getStartAt());
         Reservation reservation = new Reservation(reservationDto.name(), reservationDto.date(), reservationTime, theme);
         validateDuplicatedReservation(reservation);

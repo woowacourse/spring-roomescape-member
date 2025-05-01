@@ -36,7 +36,8 @@ public final class ReservationTimeService {
     }
 
     public ReservationTimeResponseDto readTimeOne(Long id) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(id);
+        ReservationTime reservationTime = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
         return new ReservationTimeResponseDto(
                 reservationTime.getId(),
                 reservationTime.getStartAt()

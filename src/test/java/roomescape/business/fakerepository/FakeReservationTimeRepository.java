@@ -4,10 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.ReservationTime;
-import roomescape.presentation.dto.AvailableTimesResponseDto;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.presentation.dto.AvailableTimesResponseDto;
 
 public final class FakeReservationTimeRepository implements ReservationTimeRepository {
 
@@ -20,11 +21,10 @@ public final class FakeReservationTimeRepository implements ReservationTimeRepos
     }
 
     @Override
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         return reservationTimes.stream()
                 .filter(time -> Objects.equals(time.getId(), id))
-                .findFirst()
-                .get();
+                .findFirst();
     }
 
     @Override

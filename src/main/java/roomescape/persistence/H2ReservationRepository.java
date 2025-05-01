@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -58,7 +59,7 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         String query = """
                 SELECT
                     r.id AS reservation_id, r.name, r.date,
@@ -70,22 +71,26 @@ public class H2ReservationRepository implements ReservationRepository {
                 ON r.time_id = t.id AND r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.queryForObject(query,
-                (rs, rowNum) -> new Reservation(
-                        rs.getLong("reservation_id"),
-                        rs.getString("name"),
-                        rs.getObject("date", LocalDate.class),
-                        new ReservationTime(
-                                rs.getLong("time_id"),
-                                rs.getObject("start_at", LocalTime.class)
+        return jdbcTemplate.query(query,
+                        (rs, rowNum) -> new Reservation(
+                                rs.getLong("reservation_id"),
+                                rs.getString("name"),
+                                rs.getObject("date", LocalDate.class),
+                                new ReservationTime(
+                                        rs.getLong("time_id"),
+                                        rs.getObject("start_at", LocalTime.class)
+                                ),
+                                new ReservationTheme(
+                                        rs.getLong("theme_id"),
+                                        rs.getString("theme_name"),
+                                        rs.getString("description"),
+                                        rs.getString("thumbnail")
+                                )
                         ),
-                        new ReservationTheme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("description"),
-                                rs.getString("thumbnail")
-                        )
-                ), id);
+                        id
+                )
+                .stream()
+                .findFirst();
     }
 
     @Override

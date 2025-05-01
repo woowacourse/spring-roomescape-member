@@ -3,6 +3,7 @@ package roomescape.business.fakerepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.Reservation;
 import roomescape.persistence.ReservationRepository;
@@ -18,11 +19,10 @@ public final class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         return reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
-                .findFirst()
-                .get();
+                .findFirst();
     }
 
     @Override

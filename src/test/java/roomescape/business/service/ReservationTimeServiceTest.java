@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,7 +63,7 @@ class ReservationTimeServiceTest {
         Long timeId = reservationTimeService.createTime(reservationTimeRequestDto);
 
         // then
-        ReservationTime saved = reservationTimeRepository.findById(timeId);
+        ReservationTime saved = reservationTimeRepository.findById(timeId).get();
         assertAll(
                 () -> assertThat(saved.getId())
                         .isEqualTo(timeId),
@@ -85,8 +84,8 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteTime(timeId);
 
         // then
-        assertThatCode(() -> reservationTimeRepository.findById(timeId))
-                .isInstanceOf(NoSuchElementException.class);
+        assertThat(reservationTimeRepository.findById(timeId))
+                .isNotPresent();
     }
 
     @DisplayName("예약이 참조하는 시간대 하나를 삭제한다")

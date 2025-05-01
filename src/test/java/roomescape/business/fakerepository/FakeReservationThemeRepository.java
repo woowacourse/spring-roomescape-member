@@ -3,6 +3,7 @@ package roomescape.business.fakerepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.ReservationTheme;
 import roomescape.persistence.ReservationThemeRepository;
@@ -36,15 +37,15 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
     }
 
     @Override
-    public ReservationTheme findById(Long id) {
+    public Optional<ReservationTheme> findById(Long id) {
         return themes.stream()
                 .filter(theme -> theme.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .findFirst();
     }
 
     @Override
-    public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start, LocalDate end, int limit) {
+    public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start, LocalDate end,
+                                                                               int limit) {
         return themes;
     }
 }
