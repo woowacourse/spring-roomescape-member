@@ -11,6 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -31,18 +32,37 @@ class ReservationTimeRestControllerTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(HttpStatus.CREATED.value());
+    }
 
+    @Test
+    void 예약_가능한_시간을_목록에서_조회한다() {
         RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
                 .when().get("/times")
                 .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(0));
+    }
+
+    @Test
+    void 예약_가능한_시간을_목록에서_삭제한다() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("startAt", "10:00");
+
+        final Integer id = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().path("id");
 
         RestAssured.given().log().all()
-                .when().delete("/times/1")
+                .contentType(ContentType.JSON)
+                .when().delete("/times/{id}", id)
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
