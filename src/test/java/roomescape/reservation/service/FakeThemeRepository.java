@@ -1,20 +1,28 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> themes;
+    private final ReservationRepository reservationRepository;
     private AtomicLong index = new AtomicLong(0);
 
-    public FakeThemeRepository() {
+    public FakeThemeRepository(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
         this.themes = new ArrayList<>();
     }
 
@@ -23,6 +31,25 @@ public class FakeThemeRepository implements ThemeRepository {
         long currentIndex = index.incrementAndGet();
         themes.add(new Theme(currentIndex, theme.getName(), theme.getDescription(), theme.getThumbnail()));
         return currentIndex;
+    }
+
+    @Override
+    public List<Theme> findPopularThemes(LocalDate start, LocalDate end) {
+        List<Reservation> reservations = reservationRepository.findAll();
+        List<Reservation> filterReservations = reservations.stream()
+                .filter(reservation -> !(reservation.getDate().isBefore(start) || reservation.getDate().isAfter(end)))
+                .toList();
+
+        Map<Theme, Long> themes = new HashMap<>();
+        for (Reservation filterReservation : filterReservations) {
+            themes.put(filterReservation.getTheme(), themes.getOrDefault(filterReservation.getTheme(), 0L) + 1);
+        }
+
+        return themes.entrySet().stream()
+                .sorted(Map.Entry.<Theme, Long>comparingByValue().reversed())
+                .limit(10)
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
     @Override
