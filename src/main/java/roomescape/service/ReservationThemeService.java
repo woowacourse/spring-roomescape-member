@@ -29,8 +29,8 @@ public class ReservationThemeService {
     }
 
     public void delete(Long id) {
-        ReservationTheme reservation = reservationThemeRepository.getById(id);
-        reservationThemeRepository.remove(reservation);
+        reservationThemeRepository.findById(id)
+                .ifPresent(reservationThemeRepository::remove);
     }
 
     public List<ReservationThemeServiceResponse> getPopularThemes(int limit) {
