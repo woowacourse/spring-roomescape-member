@@ -13,5 +13,4 @@ public record ReservationRequest(
         @NotNull Long timeId,
         @NotNull Long themeId
 ) {
-
 }

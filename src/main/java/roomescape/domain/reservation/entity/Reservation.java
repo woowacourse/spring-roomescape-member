@@ -7,6 +7,7 @@ import java.util.Objects;
 public class Reservation {
 
     private static final int MAX_NAME_LENGTH = 25;
+
     private final Long id;
     private final String name;
     private final LocalDate reservationDate;

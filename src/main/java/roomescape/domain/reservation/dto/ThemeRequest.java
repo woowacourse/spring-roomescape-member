@@ -6,6 +6,6 @@ import jakarta.validation.constraints.Size;
 public record ThemeRequest(
         @NotBlank String name,
         @NotBlank String description,
-        @Size(max = 255) @NotBlank String thumbnail) {
-
+        @Size(max = 255) @NotBlank String thumbnail
+) {
 }
