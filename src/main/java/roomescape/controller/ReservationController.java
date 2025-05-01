@@ -32,6 +32,11 @@ public class ReservationController {
         return "/admin/reservation-new";
     }
 
+    @GetMapping("/reservation")
+    public String displayReservation() {
+        return "reservation";
+    }
+
     @GetMapping("/reservations")
     public ResponseEntity<List<ReservationResponseDto>> readReservations() {
         List<ReservationResponseDto> reservationResponseDtos = reservationService.findAllReservations();
