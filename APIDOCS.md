@@ -3,8 +3,8 @@
 ### 페이지 응답
 
 - GET /
-    - 설명 : 웰컴 페이지 응답 (메인 페이지로 리다이렉션)
-    - 정상 응답 (308)
+    - 설명 : 랭킹 페이지 응답
+    - 정상 응답 (200)
 
 - GET /admin
     - 설명 : 메인페이지 응답
@@ -49,21 +49,19 @@
       ```
       [
           {
-              Long "id": 1,
-              String "name": "브라운",
-              LocalDate "date": "2023-01-01",
-              ReservationTime "time": {
-                  Long "id": 1,
-                  LocalTime "startAt" : "10:00"
-          },
-          {
-              Long "id": 2,
-              String "name": "브라운",
-              LocalDate "date": "2023-01-02",
-              ReservationTime "time": {
-                  Long "id": 1,
-                  LocalTime "startAt" : "10:00"
-              },
+             "id": 1,
+             "name": "랜디",
+             "date": "2025-04-30",
+             "time": {
+                "id": 1,
+                "startAt": "10:00:00"
+             },
+             "theme": {
+                "id": 12,
+                "name": "테마12",
+                "description": "서커스의신",
+                "thumbnail": "http://localhost:8080/image/theme.jpg"
+             }
           },
           ...
       ]
@@ -76,6 +74,7 @@
           String "name": "브라운",          // NotNull, NotBlank
           LocalDate "date": "2023-08-05",  // NotNull, (과거 날짜 허용X)
           Long "timeId": 1                 // NotNull, (과거 시간 허용X)
+          Long "themeId": 1                 // NotNull, (과거 시간 허용X)
       }
       ```
     - 정상 응답 (201)
@@ -88,13 +87,19 @@
              Long "id": 1,
              LocalTime "startAt" : "10:00"
           }
+          Theme "theme": {
+                Long "id": 12,
+                String "name": "테마12",
+                String "description": "서커스의신",
+                String "thumbnail": "http://localhost:8080/image/theme.jpg"
+          }
       }
       ```
     - 예외 응답 (400)
         - API 입력값 입력되지 않은 경우
         - 비어있거나 공백 이름이 입력된 경우
         - 과거의 날짜나 시간인 경우
-        - 이미 예약이 완료된 날짜와 시간인 경우
+        - 중복 예약인 경우
 
 - DELETE /reservations/{reservationId}
     - 설명 : 예약 취소
@@ -137,6 +142,19 @@
           ...
       ]
       ```
+- GET /{date}/{themeId}/times
+    - 설명 : 예약 여부와 함께 예약 가능한 시간 모두 조회
+    - 정상 응답 (200)
+      ```
+      [
+          {
+             Long "id": 1,
+             LocalTime "startAt": "10:00"
+             Boolean "bookState": true
+          },
+          ...
+      ]
+      ```
 
 - DELETE /times/{reservationTimeId}
     - 설명 : ID에 해당하는 예약 가능한 시간 삭제
@@ -150,6 +168,21 @@
 
 - GET /themes
     - 설명 : 모든 테마를 조회
+    - 정상 응답 (200)
+      ```
+      [
+          {
+              Long "id": 1,                                                                             
+              String "name": "레벨2 탈출",
+              String description": "우테코 레벨2를 탈출하는 내용입니다.",
+              String "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+          },
+          ...
+      ]
+      ```
+
+- GET /themes/top
+    - 설명 : 일주일간 인기 테마 최대 10개 조회
     - 정상 응답 (200)
       ```
       [
