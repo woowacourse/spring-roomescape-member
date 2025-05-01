@@ -33,7 +33,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate start, LocalDate end) {
+    public List<Theme> findPopularThemes(LocalDate start, LocalDate end, int popularCount) {
         List<Reservation> reservations = reservationRepository.findAll();
         List<Reservation> filterReservations = reservations.stream()
                 .filter(reservation -> !(reservation.getDate().isBefore(start) || reservation.getDate().isAfter(end)))
@@ -46,7 +46,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
         return themes.entrySet().stream()
                 .sorted(Map.Entry.<Theme, Long>comparingByValue().reversed())
-                .limit(10)
+                .limit(popularCount)
                 .map(Map.Entry::getKey)
                 .toList();
     }
