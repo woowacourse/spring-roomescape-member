@@ -20,11 +20,6 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean isBefore(LocalDateTime dateTime) {
-        return date.isBefore(dateTime.toLocalDate()) ||
-            (date.isEqual(dateTime.toLocalDate()) && time.isBefore(dateTime.toLocalTime()));
-    }
-
     public Long getId() {
         return id;
     }
