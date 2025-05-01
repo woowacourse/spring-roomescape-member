@@ -1,6 +1,6 @@
 package roomescape.reservationtime.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
@@ -21,15 +21,14 @@ public class ReservationTimeControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        Long id = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .extract().as(Long.class);
+                .body("startAt", equalTo("10:00"));
 
-        assertThat(id).isEqualTo(5L);
     }
 
     @Test

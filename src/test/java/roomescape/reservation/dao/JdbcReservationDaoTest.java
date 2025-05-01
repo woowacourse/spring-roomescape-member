@@ -33,13 +33,13 @@ class JdbcReservationDaoTest {
     void 예약_시간을_추가할_수_있다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        Long id = reservationTimeDao.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
         themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
-                new ReservationTime(id, reservationTime.getStartAt()),
+                savedReservationTime,
                 theme
         );
 
@@ -55,13 +55,13 @@ class JdbcReservationDaoTest {
     void 예약_시간을_조회할_수_있다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        Long id = reservationTimeDao.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
         Theme savedTheme = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
-                new ReservationTime(id, reservationTime.getStartAt()),
+                savedReservationTime,
                 savedTheme
         );
         reservationDao.create(reservation);
@@ -77,19 +77,19 @@ class JdbcReservationDaoTest {
     void 예약_시간을_삭제할_수_있다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        Long id = reservationTimeDao.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
         Theme savedTheme = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
-                new ReservationTime(id, reservationTime.getStartAt()),
+                savedReservationTime,
                 savedTheme);
         reservationDao.create(reservation);
         int beforeSize = reservationDao.findAll().size();
 
         // when
-        reservationDao.delete(id);
+        reservationDao.delete(savedReservationTime.getId());
         int afterSize = reservationDao.findAll().size();
 
         // then
@@ -101,17 +101,17 @@ class JdbcReservationDaoTest {
     void timeId로_예약을_조회한다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        Long id = reservationTimeDao.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
         Theme savedTheme = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
-                new ReservationTime(id, reservationTime.getStartAt()),
+                savedReservationTime,
                 savedTheme);
         reservationDao.create(reservation);
         // when
-        Optional<Reservation> foundReservation = reservationDao.findByTimeId(id);
+        Optional<Reservation> foundReservation = reservationDao.findByTimeId(1L);
         // then
         assertThat(foundReservation.isPresent()).isTrue();
         assertThat(foundReservation.get().getName()).isEqualTo("포라");
@@ -121,13 +121,13 @@ class JdbcReservationDaoTest {
     void id로_예약을_조회한다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        Long id = reservationTimeDao.create(reservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.create(reservationTime);
         Theme theme = new Theme(1L, "themeName", "des", "th");
         Theme savedTheme = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
-                new ReservationTime(id, reservationTime.getStartAt()),
+                savedReservationTime,
                 savedTheme);
         reservationDao.create(reservation);
         // when

@@ -49,11 +49,11 @@ class JdbcReservationTimeDaoTest {
     void 예약_시간을_삭제할_수_있다() {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
-        Long id = reservationTimeDao.create(reservationTime);
+        reservationTimeDao.create(reservationTime);
         int beforeSize = reservationTimeDao.findAll().size();
 
         // when
-        reservationTimeDao.delete(id);
+        reservationTimeDao.delete(1L);
         int afterSize = reservationTimeDao.findAll().size();
 
         // then
