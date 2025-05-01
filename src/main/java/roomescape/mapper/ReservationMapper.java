@@ -16,7 +16,7 @@ public class ReservationMapper implements RowMapper<Reservation> {
     public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Reservation(
                 new Id(rs.getLong("id")),
-                rs.getString("name"),
+                rs.getString("reservation_name"),
                 rs.getObject("date", LocalDate.class),
                 new ReservationTime(
                         new Id(rs.getLong("time_id")),
@@ -24,7 +24,7 @@ public class ReservationMapper implements RowMapper<Reservation> {
                 ),
                 new Theme(
                         rs.getLong("theme_id"),
-                        rs.getString("name"),
+                        rs.getString("theme_name"),
                         rs.getString("description"),
                         rs.getString("thumbnail")
                 )
