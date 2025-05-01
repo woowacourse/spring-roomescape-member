@@ -1,17 +1,16 @@
-package roomescape.dto;
-
-import roomescape.entity.ReservationTime;
+package roomescape.dto.response;
 
 import java.time.LocalTime;
+import roomescape.entity.ReservationTime;
 
 public record ReservationTimeResponse(
-    Long id,
-    LocalTime startAt
+        Long id,
+        LocalTime startAt
 ) {
     public static ReservationTimeResponse of(ReservationTime reservationTime) {
         return new ReservationTimeResponse(
-            reservationTime.getId(),
-            reservationTime.getStartAt()
+                reservationTime.getId(),
+                reservationTime.getStartAt()
         );
     }
 }

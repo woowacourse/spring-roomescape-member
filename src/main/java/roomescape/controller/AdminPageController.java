@@ -13,14 +13,14 @@ public class AdminPageController {
         return "admin/index";
     }
 
-    @GetMapping("/time")
-    public String adminReservationTimeDashboard() {
-        return "admin/time";
-    }
-
     @GetMapping("/reservation")
     public String adminReservationDashboard() {
         return "admin/reservation-new";
+    }
+
+    @GetMapping("/time")
+    public String adminReservationTimeDashboard() {
+        return "admin/time";
     }
 
     @GetMapping("/theme")

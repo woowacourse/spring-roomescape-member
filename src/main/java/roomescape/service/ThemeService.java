@@ -1,16 +1,15 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.entity.Theme;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ReservationExistException;
 import roomescape.exception.ThemeExistException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
-
-import java.util.List;
 
 @Service
 public class ThemeService {
@@ -26,8 +25,8 @@ public class ThemeService {
     public List<ThemeResponse> findAll() {
         List<Theme> themes = themeDao.findAll();
         return themes.stream()
-            .map(ThemeResponse::of)
-            .toList();
+                .map(ThemeResponse::of)
+                .toList();
     }
 
     public ThemeResponse add(ThemeRequest requestDto) {
@@ -43,17 +42,15 @@ public class ThemeService {
         if (reservationDao.isExistByTimeId(id)) {
             throw new ReservationExistException("이 시간의 예약이 존재합니다.");
         }
-
         themeDao.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("삭제할 예약시간이 없습니다."));
-
+                .orElseThrow(() -> new EntityNotFoundException("삭제할 예약시간이 없습니다."));
         themeDao.deleteById(id);
     }
 
     public List<ThemeResponse> sortByRank() {
         List<Theme> themes = themeDao.sortByRank();
         return themes.stream()
-            .map(ThemeResponse::of)
-            .toList();
+                .map(ThemeResponse::of)
+                .toList();
     }
 }

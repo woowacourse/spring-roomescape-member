@@ -1,16 +1,22 @@
 package roomescape.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ReservationExistException;
 import roomescape.exception.ThemeExistException;
 import roomescape.service.ThemeService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
@@ -22,25 +28,25 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @PostMapping
-    public ResponseEntity<ThemeResponse> add(@Valid @RequestBody ThemeRequest requestDto) {
-        return new ResponseEntity<>(themeService.add(requestDto), HttpStatus.CREATED);
-    }
-
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {
         return ResponseEntity.ok(themeService.findAll());
     }
 
-    @GetMapping("/rank")
-    public ResponseEntity<List<ThemeResponse>> sortByRank() {
-        return ResponseEntity.ok(themeService.sortByRank());
+    @PostMapping
+    public ResponseEntity<ThemeResponse> add(@Valid @RequestBody ThemeRequest requestDto) {
+        return new ResponseEntity<>(themeService.add(requestDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<List<ThemeResponse>> sortByRank() {
+        return ResponseEntity.ok(themeService.sortByRank());
     }
 
     @ExceptionHandler({ReservationExistException.class, ThemeExistException.class})

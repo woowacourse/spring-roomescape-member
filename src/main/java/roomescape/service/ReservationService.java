@@ -1,9 +1,14 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.dto.ReservationRequest;
-import roomescape.dto.ReservationResponse;
+import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.response.AvailableReservationTimeResponse;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.entity.Reservation;
 import roomescape.entity.ReservationTime;
 import roomescape.entity.Theme;
@@ -13,12 +18,6 @@ import roomescape.exception.ReservationTimeConflictException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.repository.ThemeDao;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class ReservationService {
@@ -36,14 +35,15 @@ public class ReservationService {
     public List<ReservationResponse> findAll() {
         List<Reservation> reservations = reservationDao.findAll();
         return reservations.stream()
-            .map(ReservationResponse::of)
-            .toList();
+                .map(ReservationResponse::of)
+                .toList();
     }
 
     public ReservationResponse add(ReservationRequest requestDto) {
         ReservationTime reservationTime = getReservationTime(requestDto);
         Theme theme = getTheme(requestDto);
-        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(), requestDto.themeId());
+        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(),
+                requestDto.themeId());
 
         validateIsBooked(sameTimeReservations, reservationTime, theme);
         validatePastDateTime(requestDto.date(), reservationTime.getStartAt());
@@ -55,7 +55,7 @@ public class ReservationService {
 
     public void deleteById(Long id) {
         reservationDao.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("삭제할 예약정보가 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("삭제할 예약정보가 없습니다."));
 
         reservationDao.deleteById(id);
     }
@@ -69,17 +69,18 @@ public class ReservationService {
 
     private ReservationTime getReservationTime(ReservationRequest requestDto) {
         return reservationTimeDao.findById(requestDto.timeId())
-            .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
     }
 
     private Theme getTheme(ReservationRequest requestDto) {
         return themeDao.findById(requestDto.themeId())
-            .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
     }
 
-    private void validateIsBooked(List<Reservation> sameTimeReservations, ReservationTime reservationTime, Theme theme) {
+    private void validateIsBooked(List<Reservation> sameTimeReservations, ReservationTime reservationTime,
+                                  Theme theme) {
         boolean isBooked = sameTimeReservations.stream()
-            .anyMatch(reservation -> reservation.isBooked(reservationTime, theme));
+                .anyMatch(reservation -> reservation.isBooked(reservationTime, theme));
         if (isBooked) {
             throw new ReservationTimeConflictException("해당 테마 이용시간이 겹칩니다.");
         }
@@ -93,12 +94,14 @@ public class ReservationService {
         }
     }
 
-    private List<AvailableReservationTimeResponse> getAvailableReservationTimeResponses(List<ReservationTime> reservationTimes, List<Reservation> bookedReservations, Theme selectedTheme) {
+    private List<AvailableReservationTimeResponse> getAvailableReservationTimeResponses(
+            List<ReservationTime> reservationTimes, List<Reservation> bookedReservations, Theme selectedTheme) {
         List<AvailableReservationTimeResponse> responses = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             boolean isBooked = bookedReservations.stream()
-                .anyMatch(reservation -> reservation.isBooked(reservationTime, selectedTheme));
-            AvailableReservationTimeResponse response = AvailableReservationTimeResponse.from(reservationTime, isBooked);
+                    .anyMatch(reservation -> reservation.isBooked(reservationTime, selectedTheme));
+            AvailableReservationTimeResponse response = AvailableReservationTimeResponse.from(reservationTime,
+                    isBooked);
             responses.add(response);
         }
         return responses;

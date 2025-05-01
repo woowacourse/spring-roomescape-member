@@ -1,20 +1,19 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.entity.ReservationTime;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.entity.ReservationTime;
+import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationTimeDao;
 
 class ReservationTimeServiceTest {
 
@@ -33,12 +32,12 @@ class ReservationTimeServiceTest {
     void 예약시간을_추가한다() {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(23, 0));
         Mockito.when(reservationTimeDao.isExistByTime(Mockito.any()))
-            .thenReturn(false);
+                .thenReturn(false);
 
         Mockito.when(reservationTimeDao.save(Mockito.any()))
-            .thenReturn(
-                new ReservationTime(1L, LocalTime.of(23, 0))
-            );
+                .thenReturn(
+                        new ReservationTime(1L, LocalTime.of(23, 0))
+                );
 
         ReservationTimeResponse result = reservationTimeService.add(request);
 
@@ -49,12 +48,13 @@ class ReservationTimeServiceTest {
     @Test
     void 모든_예약시간을_조회한다() {
         Mockito.when(reservationTimeDao.findAll())
-            .thenReturn(
-                List.of(new ReservationTime(1L, LocalTime.of(23, 0)))
-            );
+                .thenReturn(
+                        List.of(new ReservationTime(1L, LocalTime.of(23, 0)))
+                );
 
         List<ReservationTimeResponse> result = reservationTimeService.findAll();
-        List<ReservationTimeResponse> expected = List.of(ReservationTimeResponse.of(new ReservationTime(1L, LocalTime.of(23, 0))));
+        List<ReservationTimeResponse> expected = List.of(
+                ReservationTimeResponse.of(new ReservationTime(1L, LocalTime.of(23, 0))));
         assertThat(result).isEqualTo(expected);
     }
 
@@ -63,10 +63,10 @@ class ReservationTimeServiceTest {
         Long id = 1L;
 
         Mockito.when(reservationDao.isExistByTimeId(Mockito.any()))
-            .thenReturn(false);
+                .thenReturn(false);
 
         Mockito.when(reservationTimeDao.findById(Mockito.any()))
-            .thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(23, 0))));
+                .thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(23, 0))));
 
         assertThatCode(() -> reservationTimeService.deleteById(id)).doesNotThrowAnyException();
     }
