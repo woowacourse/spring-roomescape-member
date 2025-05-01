@@ -90,10 +90,37 @@ class JdbcReservationDaoTest {
 
     @DisplayName("시간과 날짜 일치 여부를 반환한다")
     @Test
-    void same_time_id_and_date_test(){
+    void same_time_id_and_date_test() {
         // when
-        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L, 1L);
+        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L,
+                1L);
         // then
         assertThat(actual).isTrue();
     }
+
+    @DisplayName("해당 테마 id에 예약이 존재하는지 반환한다")
+    @Test
+    void exist_reservation_by_theme_id_test() {
+        // when
+        Boolean actual = jdbcReservationDao.existReservationByThemeId(1L);
+
+        // then
+        assertThat(actual).isTrue();
+
+    }
+
+    @DisplayName("날짜와 테마 id가 일치하는 모든 예약을 찾는다")
+    @Test
+    void find_all_by_date_and_theme_id_test() {
+        // given
+        LocalDate date = LocalDate.of(2025, 4, 25);
+        Long themeId = 1L;
+
+        // when
+        List<Reservation> actual = jdbcReservationDao.findAllByDateAndThemeId(date, themeId);
+
+        // then
+        assertThat(actual).hasSize(2);
+    }
+
 }
