@@ -34,20 +34,20 @@ public final class ReservationTimeService {
                 .toList();
     }
 
-    public Long createTime(ReservationTimeRequestDto reservationTimeRequestDto) {
-        return reservationTimeRepository.add(new ReservationTime(reservationTimeRequestDto.startAt()));
-    }
-
-    public List<AvailableTimesResponseDto> readAvailableTimes(LocalDate date, Long themeId) {
-        return reservationTimeRepository.findAvailableTimes(date, themeId);
-    }
-
     public ReservationTimeResponseDto readTimeOne(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id);
         return new ReservationTimeResponseDto(
                 reservationTime.getId(),
                 reservationTime.getStartAt()
         );
+    }
+
+    public List<AvailableTimesResponseDto> readAvailableTimes(LocalDate date, Long themeId) {
+        return reservationTimeRepository.findAvailableTimes(date, themeId);
+    }
+
+    public Long createTime(ReservationTimeRequestDto reservationTimeRequestDto) {
+        return reservationTimeRepository.add(new ReservationTime(reservationTimeRequestDto.startAt()));
     }
 
     public void deleteTime(Long timeId) {

@@ -23,14 +23,6 @@ public final class ReservationThemeService {
         this.reservationThemeRepository = reservationThemeRepository;
     }
 
-    private static LocalDate calculateEndDate(LocalDate nowDate) {
-        return nowDate.minusDays(1);
-    }
-
-    private static LocalDate calculateStartDate(LocalDate nowDate) {
-        return nowDate.minusDays(7);
-    }
-
     public List<ReservationThemeResponseDto> readThemeAll() {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
         return reservationThemes.stream()
@@ -42,6 +34,31 @@ public final class ReservationThemeService {
                         )
                 )
                 .toList();
+    }
+
+    public List<ReservationThemeResponseDto> readBestReservedThemes() {
+        LocalDate now = LocalDate.now();
+        LocalDate start = calculateStartDate(now);
+        LocalDate end = calculateEndDate(now);
+        List<ReservationTheme> bestReservedReservationThemes = reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(
+                start, end, 10);
+        return bestReservedReservationThemes.stream()
+                .map(bestTheme -> new ReservationThemeResponseDto(
+                                bestTheme.getId(),
+                                bestTheme.getName(),
+                                bestTheme.getDescription(),
+                                bestTheme.getThumbnail()
+                        )
+                )
+                .toList();
+    }
+
+    private static LocalDate calculateEndDate(LocalDate nowDate) {
+        return nowDate.minusDays(1);
+    }
+
+    private static LocalDate calculateStartDate(LocalDate nowDate) {
+        return nowDate.minusDays(7);
     }
 
     public ReservationThemeResponseDto createTheme(ReservationThemeRequestDto reservationThemeDto) {
@@ -67,22 +84,5 @@ public final class ReservationThemeService {
             throw new IllegalArgumentException("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationThemeRepository.deleteById(id);
-    }
-
-    public List<ReservationThemeResponseDto> readBestReservedThemes() {
-        LocalDate now = LocalDate.now();
-        LocalDate start = calculateStartDate(now);
-        LocalDate end = calculateEndDate(now);
-        List<ReservationTheme> bestReservedReservationThemes = reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(
-                start, end, 10);
-        return bestReservedReservationThemes.stream()
-                .map(bestTheme -> new ReservationThemeResponseDto(
-                                bestTheme.getId(),
-                                bestTheme.getName(),
-                                bestTheme.getDescription(),
-                                bestTheme.getThumbnail()
-                        )
-                )
-                .toList();
     }
 }
