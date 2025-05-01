@@ -48,7 +48,6 @@ class ReservationApiTest {
 
     @BeforeEach
     void init() {
-
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
@@ -145,7 +144,7 @@ class ReservationApiTest {
                 .statusCode(404);
     }
 
-    @DisplayName("존재하지 않는 테마  ID 를 추가하면 예외를 반환한다.")
+    @DisplayName("존재하지 않는 테마 ID 를 추가하면 예외를 반환한다.")
     @Test
     void notExistThemeId() {
         // given

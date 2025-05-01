@@ -86,6 +86,8 @@ public class ReservationService {
     }
 
     private LocalDateTime now() {
+        System.out.println(LocalDateTime.now(clock));
+
         return LocalDateTime.now(clock);
     }
 

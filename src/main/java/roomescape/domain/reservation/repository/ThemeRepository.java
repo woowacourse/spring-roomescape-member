@@ -16,5 +16,5 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(@NotNull Long id);
 
-    List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate);
+    List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate);
 }

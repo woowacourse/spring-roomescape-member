@@ -13,4 +13,5 @@ spring:
       mode: always
       schema-locations: schema.sql
       data-locations:
-
+  main:
+    allow-bean-definition-overriding: true

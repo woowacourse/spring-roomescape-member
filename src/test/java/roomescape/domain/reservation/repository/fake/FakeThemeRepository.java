@@ -34,7 +34,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate) {
         throw new UnsupportedOperationException();
     }
 

@@ -72,11 +72,9 @@ public class ReservationServiceIntegrationTest {
     void test1() {
         // given
         Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
-        Long themeId = savedTheme.getId();
 
         LocalTime time = LocalTime.of(8, 0);
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
-        Long timeId = savedTime.getId();
 
         LocalDate date = LocalDate.of(2024, 4, 29);
         reservationRepository.save(Reservation.withoutId("꾹", date, savedTime, savedTheme));

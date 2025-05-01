@@ -116,7 +116,7 @@ public class ThemeDAO implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 select T.*, count(R.id) as reservation_count
                 from theme T
