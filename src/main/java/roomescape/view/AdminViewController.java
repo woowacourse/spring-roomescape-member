@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminReservationViewController {
+public class AdminViewController {
 
     @GetMapping
     public String showAdminWelcome() {
