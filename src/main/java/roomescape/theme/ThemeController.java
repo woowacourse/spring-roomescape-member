@@ -1,7 +1,8 @@
-package roomescape.theme.controller;
+package roomescape.theme;
 
 import java.net.URI;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.domain.dto.ThemeReqDto;
-import roomescape.theme.domain.dto.ThemeResDto;
-import roomescape.theme.service.ThemeService;
+import roomescape.theme.dto.ThemeRequest;
+import roomescape.theme.dto.ThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -22,35 +22,38 @@ public class ThemeController {
     private final ThemeService themeService;
 
     public ThemeController(
-        ThemeService themeService
+        @Autowired final ThemeService themeService
     ) {
         this.themeService = themeService;
     }
 
 
+    @PostMapping
+    public ResponseEntity<ThemeResponse> create(
+        @RequestBody final ThemeRequest request
+    ) {
+        final ThemeResponse response = themeService.create(request);
+        return ResponseEntity
+                .created(URI.create("/themes/" + response.id()))
+                .body(response);
+    }
+
     @GetMapping
-    public ResponseEntity<List<ThemeResDto>> findAll() {
+    public ResponseEntity<List<ThemeResponse>> readAll() {
         return ResponseEntity.ok(themeService.findAll());
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResDto>> findTopRankThemes(
-        @RequestParam(value = "size", defaultValue = "10") int size) {
-        List<ThemeResDto> topRankThemes = themeService.findTopRankThemes(size);
-        return ResponseEntity.ok(topRankThemes);
-    }
-
-    @PostMapping
-    public ResponseEntity<ThemeResDto> add(
-        @RequestBody ThemeReqDto reqDto
+    public ResponseEntity<List<ThemeResponse>> readTopRankThemes(
+            @RequestParam(value = "size", defaultValue = "10") final int size
     ) {
-        ThemeResDto resDto = themeService.add(reqDto);
-        return ResponseEntity.created(URI.create("/themes/" + resDto.id())).body(resDto);
+        final List<ThemeResponse> topRankThemes = themeService.findTopRankThemes(size);
+        return ResponseEntity.ok(topRankThemes);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-        @PathVariable("id") Long id
+        @PathVariable("id") final Long id
     ) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();
