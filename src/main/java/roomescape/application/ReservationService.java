@@ -1,8 +1,5 @@
 package roomescape.application;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.ReservationDto;
@@ -29,8 +26,8 @@ public class ReservationService {
     public ReservationDto registerReservation(ReservationRequest request) {
         Theme theme = themeService.getThemeById(request.themeId());
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
-        validateNotPast(request.date(), reservationTime.getStartAt());
         Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
+        validateNotPast(reservation);
         validteNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);
 
@@ -46,10 +43,8 @@ public class ReservationService {
         }
     }
 
-    private void validateNotPast(LocalDate date, LocalTime startAt) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, startAt);
-        if (reservationDateTime.isBefore(now)) {
+    private void validateNotPast(Reservation reservation) {
+        if (reservation.isPast()) {
             throw new IllegalArgumentException("과거 일시로 예약할 수 없습니다.");
         }
     }

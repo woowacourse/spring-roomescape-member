@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
     private final Long id;
@@ -29,6 +30,12 @@ public class Reservation {
     public static Reservation assignId(Long id, Reservation reservation) {
         return new Reservation(id, reservation.getName(), reservation.getTheme(), reservation.getReservationDate(),
                 reservation.getReservationTime());
+    }
+
+    public boolean isPast() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, reservationTime.getStartAt());
+        return reservationDateTime.isBefore(now);
     }
 
     public boolean isDuplicated(Reservation other) {
