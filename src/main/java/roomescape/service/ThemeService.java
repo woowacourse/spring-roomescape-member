@@ -28,7 +28,7 @@ public class ThemeService {
     }
 
     public List<Theme> readLists(String orderType, Long listNum) {
-        if (orderType.equals("desc")) {
+        if (orderType.equals("popular_desc")) {
             return themeRepository.readByDesc(listNum);
         }
 

@@ -52,7 +52,7 @@ public class ThemeController {
             ) {
 
         // TODO: 정렬 조건을 ENUM으로 관리하기.
-        orderType = "desc"; // 현재는 내림차순으로 고정
+        orderType = "popular_desc"; // 현재는 내림차순으로 고정
         listNum = 10L;
         List<Theme> listedTheme = themeService.readLists(orderType, listNum);
         return ResponseEntity.ok(listedTheme);
