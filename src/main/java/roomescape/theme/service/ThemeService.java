@@ -15,6 +15,8 @@ import roomescape.theme.dto.ThemeResponse;
 public class ThemeService {
 
     private static final int POPULAR_THEME_COUNT = 10;
+    public static final int POPULAR_THEME_RANGE_START_SUBTRACT = 8;
+    public static final int POPULAR_THEME_RANGE_END_SUBTRACT = 1;
 
     private final DateTime dateTime;
     private final ThemeRepository themeRepository;
@@ -58,8 +60,8 @@ public class ThemeService {
     public List<PopularThemeResponse> getPopularThemes() {
         LocalDate now = dateTime.now().toLocalDate();
 
-        LocalDate start = now.minusDays(8);
-        LocalDate end = now.minusDays(1);
+        LocalDate start = now.minusDays(POPULAR_THEME_RANGE_START_SUBTRACT);
+        LocalDate end = now.minusDays(POPULAR_THEME_RANGE_END_SUBTRACT);
 
         return themeRepository.findPopularThemes(start, end, POPULAR_THEME_COUNT).stream()
                 .map(theme -> new PopularThemeResponse(theme.getName(), theme.getThumbnail(), theme.getDescription()))
