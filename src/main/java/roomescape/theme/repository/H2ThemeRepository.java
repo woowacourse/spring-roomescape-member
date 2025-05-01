@@ -53,6 +53,26 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public void deleteById(final Long id) {
+        final String sql = """
+                DELETE FROM themes 
+                WHERE id = ?
+                """;
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public long countByName(final String name) {
+        final String sql = """
+                SELECT COUNT(*) AS count
+                FROM themes
+                WHERE name = ? 
+                """;
+
+        return jdbcTemplate.queryForObject(sql, Long.class, name);
+    }
+
+    @Override
     public Optional<Theme> findById(final Long id) {
         final String sql = """
                 SELECT
@@ -72,17 +92,6 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public long countByName(final String name) {
-        final String sql = """
-                SELECT COUNT(*) AS count
-                FROM themes
-                WHERE name = ? 
-                """;
-
-        return jdbcTemplate.queryForObject(sql, Long.class, name);
-    }
-
-    @Override
     public List<Theme> findAll() {
         final String sql = """
                 SELECT
@@ -94,15 +103,6 @@ public class H2ThemeRepository implements ThemeRepository {
                 """;
 
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
-    }
-
-    @Override
-    public void deleteById(final Long id) {
-        final String sql = """
-                DELETE FROM themes 
-                WHERE id = ?
-                """;
-        jdbcTemplate.update(sql, id);
     }
 
     @Override

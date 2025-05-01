@@ -10,13 +10,13 @@ public interface ReservationRepository {
 
     Long save(Reservation reservation);
 
-    Optional<Reservation> findById(Long id);
-
-    long countByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+    void deleteById(Long id);
 
     boolean existsByDateAndStartAtAndThemeId(LocalDate date, LocalTime startAt, Long themeId);
 
-    List<Reservation> findAll();
+    long countByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
-    void deleteById(Long id);
+    Optional<Reservation> findById(Long id);
+
+    List<Reservation> findAll();
 }

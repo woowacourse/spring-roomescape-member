@@ -28,7 +28,7 @@ public class ReservationService {
         if (count >= 1) {
             throw new DataExistException("해당 시간에 이미 예약된 테마입니다.");
         }
-        
+
         final ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new DataNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + timeId));
         final Theme theme = themeRepository.findById(themeId)
@@ -38,6 +38,13 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
+    public void deleteById(final Long id) {
+        reservationRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
+
+        reservationRepository.deleteById(id);
+    }
+
     public Reservation getById(final Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
@@ -45,13 +52,6 @@ public class ReservationService {
 
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
-    }
-
-    public void deleteById(final Long id) {
-        reservationRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("해당 예약 데이터가 존재하지 않습니다. id = " + id));
-
-        reservationRepository.deleteById(id);
     }
 
 

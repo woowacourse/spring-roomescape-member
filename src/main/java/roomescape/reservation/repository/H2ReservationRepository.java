@@ -66,41 +66,9 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
-        final String sql = """
-                SELECT 
-                    r.id AS id,
-                    r.name AS name,
-                    r.date AS date,
-                    rt.id AS time_id,
-                    rt.start_at AS start_at,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS description,
-                    th.thumbnail AS thumbnail
-                FROM reservations AS r
-                INNER JOIN reservation_times AS rt
-                ON r.time_id = rt.id
-                INNER JOIN themes AS th
-                ON r.theme_id = th.id
-                WHERE r.id = ?
-                """;
-        final List<Reservation> reservations = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
-        if (!reservations.isEmpty()) {
-            return Optional.of(reservations.getFirst());
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public long countByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
-        final String sql = """
-                SELECT COUNT(*) AS count
-                FROM reservations
-                WHERE date = ? AND time_id = ? AND theme_id = ?
-                """;
-
-        return jdbcTemplate.queryForObject(sql, Long.class, date, timeId, themeId);
+    public void deleteById(Long id) {
+        final String sql = "DELETE FROM reservations WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -131,6 +99,44 @@ public class H2ReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public long countByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
+        final String sql = """
+                SELECT COUNT(*) AS count
+                FROM reservations
+                WHERE date = ? AND time_id = ? AND theme_id = ?
+                """;
+
+        return jdbcTemplate.queryForObject(sql, Long.class, date, timeId, themeId);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        final String sql = """
+                SELECT 
+                    r.id AS id,
+                    r.name AS name,
+                    r.date AS date,
+                    rt.id AS time_id,
+                    rt.start_at AS start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS description,
+                    th.thumbnail AS thumbnail
+                FROM reservations AS r
+                INNER JOIN reservation_times AS rt
+                ON r.time_id = rt.id
+                INNER JOIN themes AS th
+                ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+        final List<Reservation> reservations = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+        if (!reservations.isEmpty()) {
+            return Optional.of(reservations.getFirst());
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public List<Reservation> findAll() {
         final String sql = """
                 SELECT 
@@ -150,11 +156,5 @@ public class H2ReservationRepository implements ReservationRepository {
                 ON r.theme_id = th.id
                 """;
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        final String sql = "DELETE FROM reservations WHERE id = ?";
-        jdbcTemplate.update(sql, id);
     }
 }

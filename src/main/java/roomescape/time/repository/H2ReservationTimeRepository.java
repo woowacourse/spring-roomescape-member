@@ -47,6 +47,12 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
+    public void deleteById(final Long id) {
+        final String sql = "DELETE FROM reservation_times WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public Optional<ReservationTime> findById(final Long id) {
         final String sql = """
                 SELECT
@@ -85,11 +91,5 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                 FROM reservation_times
                 """;
         return jdbcTemplate.query(sql, RESERVATION_TIME_ROW_MAPPER);
-    }
-
-    @Override
-    public void deleteById(final Long id) {
-        final String sql = "DELETE FROM reservation_times WHERE id = ?";
-        jdbcTemplate.update(sql, id);
     }
 }

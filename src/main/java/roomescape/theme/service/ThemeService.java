@@ -37,13 +37,13 @@ public class ThemeService {
         }
     }
 
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
-    }
-
     public Theme getById(final Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+    }
+
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
     }
 
     public List<Theme> findPopularThemes() {
