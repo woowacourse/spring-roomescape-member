@@ -11,6 +11,8 @@
     - [x] 모든 예약 목록 조회에 성공하면 HTTP status code 200을 응답한다.
 - [x] 예약을 추가한다.
     - [x] 예약 추가에 성공하면 HTTP status code 201을 응답한다.
+    - [x] 존재하지 않는 방탈출 시간에 대해 예약을 추가하면 HTTP status code 404를 응답한다.
+    - [ ] 존재하지 않는 테마에 대해 예약을 추가하면 HTTP status code 404를 응답한다. 
     - [x] 중복된 예약에 대해 예약을 추가하면 HTTP status code 409를 응답한다.
     - [x] 지나간 날짜와 시간에 대해 예약을 추가하면 HTTP status code 422를 응답한다.
 - [x] 예약을 취소(삭제)한다.
