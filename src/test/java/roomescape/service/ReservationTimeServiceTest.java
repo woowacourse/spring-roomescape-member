@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
+import roomescape.exceptions.ReservationTimeDuplicateException;
 import roomescape.fake.ReservationTimeFakeRepository;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -32,11 +33,12 @@ public class ReservationTimeServiceTest {
     @DisplayName("엔티티를 저장한 후, DTO로 반환한다.")
     void test_postReservationTime() {
         //given
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.MAX);
+        LocalTime time = LocalTime.MIN;
+        ReservationTimeRequest request = new ReservationTimeRequest(time);
         //when
         ReservationTimeResponse actual = reservationService.postReservationTime(request);
         //then
-        assertThat(actual.startAt()).isEqualTo(LocalTime.MAX);
+        assertThat(actual.startAt()).isEqualTo(time);
     }
 
     @Test
@@ -44,5 +46,16 @@ public class ReservationTimeServiceTest {
     void test_deleteReservationTime() {
         assertThatThrownBy(() -> reservationService.deleteReservationTime(999L))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("예약 시간 생성 시, 중복된 시간일 경우 예외가 발생한다.")
+    void error_postReservationTimeIfDuplicationDatetime() {
+        //given
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.MAX);
+        //when&then
+        assertThatThrownBy(() -> reservationService.postReservationTime(request))
+                .isInstanceOf(ReservationTimeDuplicateException.class)
+                .hasMessageContaining("중복된 예약 시간이 존재합니다.");
     }
 }

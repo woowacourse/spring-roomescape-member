@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, ReservationDuplicateException.class,})
+    @ExceptionHandler({IllegalArgumentException.class, EntityDuplicateException.class})
     public ResponseEntity<ErrorResponse> handleServiceLogicException(IllegalArgumentException e) {
         ErrorResponse error = ErrorResponse.create(e, HttpStatus.BAD_REQUEST, e.getMessage());
         e.printStackTrace();

@@ -1,11 +1,13 @@
 package roomescape.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
+import roomescape.exceptions.ReservationTimeDuplicateException;
 import roomescape.repository.ReservationTimeRepository;
 
 @Service
@@ -26,13 +28,21 @@ public class ReservationTimeService {
 
     @Transactional
     public ReservationTimeResponse postReservationTime(ReservationTimeRequest request) {
+        if (isAnyMatchTime(request.startAt())) {
+            throw new ReservationTimeDuplicateException("중복된 예약 시간이 존재합니다.", request.startAt());
+        }
+
         ReservationTime newReservation = repository.save(request.toEntity());
         return ReservationTimeResponse.from(newReservation);
     }
 
     @Transactional
     public void deleteReservationTime(long id) {
-        
         repository.deleteById(id);
+    }
+
+    private boolean isAnyMatchTime(LocalTime time) {
+        return repository.findAll().stream()
+                .anyMatch(current -> current.startAt().equals(time));
     }
 }
