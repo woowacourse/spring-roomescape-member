@@ -22,14 +22,14 @@ class ThemeServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        Theme theme1 = new Theme(1L, "테스트1", "설명", "썸네일");
-        Theme theme2 = new Theme(2L, "테스트2", "설명", "썸네일");
-        Theme theme3 = new Theme(3L, "테스트3", "설명", "썸네일");
+        Theme theme1 = Theme.createWithId(1L, "테스트1", "설명", "썸네일");
+        Theme theme2 = Theme.createWithId(2L, "테스트2", "설명", "썸네일");
+        Theme theme3 = Theme.createWithId(3L, "테스트3", "설명", "썸네일");
 
         ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationRepository.save(new Reservation(null, "홍길동1", LocalDate.of(2025, 12, 5), null, theme1));
-        reservationRepository.save(new Reservation(null, "홍길동2", LocalDate.of(2025, 12, 6), null, theme1));
-        reservationRepository.save(new Reservation(null, "홍길동3", LocalDate.of(2025, 12, 4), null, theme3));
+        reservationRepository.save(Reservation.createWithoutId("홍길동1", LocalDate.of(2025, 12, 5), null, theme1));
+        reservationRepository.save(Reservation.createWithoutId("홍길동2", LocalDate.of(2025, 12, 6), null, theme1));
+        reservationRepository.save(Reservation.createWithoutId("홍길동3", LocalDate.of(2025, 12, 4), null, theme3));
 
         ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
         themeRepository.save(theme1);

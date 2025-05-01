@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -29,7 +28,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Long save(Theme theme) {
         long currentIndex = index.incrementAndGet();
-        themes.add(new Theme(currentIndex, theme.getName(), theme.getDescription(), theme.getThumbnail()));
+        themes.add(Theme.createWithId(currentIndex, theme.getName(), theme.getDescription(), theme.getThumbnail()));
         return currentIndex;
     }
 

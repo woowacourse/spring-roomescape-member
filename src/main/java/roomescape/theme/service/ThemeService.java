@@ -27,10 +27,10 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(final ThemeRequest request) {
-        Long id = themeRepository.save(new Theme(null, request.name(), request.description(), request.thumbnail()));
-        Theme findTheme = themeRepository.findById(id);
+        Theme theme = Theme.createWithoutId(request.name(), request.description(), request.thumbnail());
+        Long id = themeRepository.save(theme);
 
-        return ThemeResponse.from(findTheme);
+        return ThemeResponse.from(theme.assignId(id));
     }
 
     public void deleteThemeById(final Long id) {

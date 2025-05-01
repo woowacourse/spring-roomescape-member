@@ -24,10 +24,10 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest request) {
-        Long id = reservationTimeRepository.save(new ReservationTime(null, request.startAt()));
-        ReservationTime findReservationTime = reservationTimeRepository.findById(id);
+        ReservationTime reservationTime = ReservationTime.createWithoutId(request.startAt());
+        Long id = reservationTimeRepository.save(reservationTime);
 
-        return ReservationTimeResponse.from(findReservationTime);
+        return ReservationTimeResponse.from(reservationTime.assignId(id));
     }
 
     public void deleteReservationTimeById(final Long id) {

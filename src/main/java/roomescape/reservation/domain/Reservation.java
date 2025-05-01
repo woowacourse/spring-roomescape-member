@@ -13,12 +13,24 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    public static Reservation createWithId(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
+    }
+
+    public Reservation assignId(Long id) {
+        return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
     }
 
     public boolean isSameTime(ReservationTime time) {
