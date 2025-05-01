@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import roomescape.exception.InvalidReservationException;
 
@@ -28,6 +29,11 @@ public class Reservation {
         if (date == null || time == null) {
             throw new InvalidReservationException("시간은 공백일 수 없습니다.");
         }
+    }
+
+    public boolean isBefore(LocalDateTime compareDateTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, getStartAt());
+        return reservationDateTime.isBefore(compareDateTime);
     }
 
     public Long getId() {

@@ -21,8 +21,12 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTime> allReservationTimes() {
-        return reservationTimeRepository.findAll();
+    public Long addReservationTime(AddReservationTimeDto addReservationTimeDto) {
+        ReservationTime reservationTime = addReservationTimeDto.toEntity();
+        if (reservationTimeRepository.existsByTime(reservationTime.getTime())) {
+            throw new InvalidReservationTimeException("중복된 예약시간입니다");
+        }
+        return reservationTimeRepository.add(reservationTime);
     }
 
     public void deleteReservationTime(Long id) {
@@ -32,16 +36,12 @@ public class ReservationTimeService {
         reservationTimeRepository.deleteById(id);
     }
 
-    public Long addReservationTime(AddReservationTimeDto addReservationTimeDto) {
-        ReservationTime reservationTime = addReservationTimeDto.toEntity();
-        if (reservationTimeRepository.existsByTime(reservationTime.getTime())) {
-            throw new InvalidReservationTimeException("중복된 예약시간입니다");
-        }
-        return reservationTimeRepository.add(reservationTime);
-    }
-
     public ReservationTime getReservationTimeById(long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간입니다."));
+    }
+
+    public List<ReservationTime> allReservationTimes() {
+        return reservationTimeRepository.findAll();
     }
 }

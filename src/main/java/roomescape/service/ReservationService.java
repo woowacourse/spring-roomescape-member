@@ -30,14 +30,11 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              ReservationTimeRepository reservationTimeRepository,
+                              ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
-    }
-
-    public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
     }
 
     public long addReservation(AddReservationDto newReservation) {
@@ -48,23 +45,26 @@ public class ReservationService {
 
         Reservation reservation = newReservation.toReservation(reservationTime, theme);
 
-        validateSameReservation(reservation);
+        validateDuplicateReservation(reservation);
         LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
         validateAddReservationDateTime(reservation, currentDateTime);
         return reservationRepository.add(reservation);
     }
 
-    private void validateSameReservation(Reservation reservation) {
+    private void validateDuplicateReservation(Reservation reservation) {
         if (reservationRepository.existsByDateAndTimeIdAndTheme(reservation)) {
             throw new InvalidReservationException("중복된 예약신청입니다");
         }
     }
 
     private void validateAddReservationDateTime(Reservation newReservation, LocalDateTime currentDateTime) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(newReservation.getDate(), newReservation.getStartAt());
-        if (reservationDateTime.isBefore(currentDateTime)) {
+        if (newReservation.isBefore(currentDateTime)) {
             throw new InvalidReservationException("과거 시간에 예약할 수 없습니다.");
         }
+    }
+
+    public void deleteReservation(Long id) {
+        reservationRepository.deleteById(id);
     }
 
     public List<Reservation> allReservations() {
