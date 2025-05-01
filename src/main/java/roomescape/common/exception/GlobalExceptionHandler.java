@@ -16,19 +16,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(final IllegalArgumentException e) {
-        String message = e.getMessage();
-        if (message == null) {
-            message = "잘못된 입력입니다.";
-        }
+        String message = getMessage(e);
         return ResponseEntity.badRequest().body(message);
     }
 
     @ExceptionHandler(value = IllegalStateException.class)
     public ResponseEntity<String> handleIllegalStateException(final IllegalStateException e) {
+        String message = getMessage(e);
+        return ResponseEntity.badRequest().body(message);
+    }
+
+    private static String getMessage(Exception e) {
         String message = e.getMessage();
         if (message == null) {
-            message = "실행할 수 없는 상태입니다.";
+            message = "잘못된 입력입니다.";
         }
-        return ResponseEntity.badRequest().body(message);
+        return message;
     }
 }

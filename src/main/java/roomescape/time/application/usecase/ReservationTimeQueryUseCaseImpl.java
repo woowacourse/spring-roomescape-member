@@ -36,4 +36,5 @@ public class ReservationTimeQueryUseCaseImpl implements ReservationTimeQueryUseC
     public boolean existById(final ReservationTimeId id) {
         return reservationTimeRepository.existsById(id);
     }
+
 }
