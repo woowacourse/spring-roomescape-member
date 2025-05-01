@@ -1,4 +1,9 @@
 package roomescape.theme.controller.request;
 
-public record ThemeCreateRequest(String name, String description, String thumbnail) {
+import jakarta.validation.constraints.NotBlank;
+
+public record ThemeCreateRequest(
+        @NotBlank String name,
+        @NotBlank String description,
+        @NotBlank String thumbnail) {
 }
