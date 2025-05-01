@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.fake;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.model.Reservation;
+import roomescape.repository.ReservationRepository;
 
 public class ReservationFakeRepository implements ReservationRepository {
 

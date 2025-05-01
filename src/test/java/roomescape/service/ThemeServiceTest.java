@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.model.Theme;
-import roomescape.repository.ReservationFakeRepository;
-import roomescape.repository.ThemeFakeRepository;
+import roomescape.repository.fake.ReservationFakeRepository;
+import roomescape.repository.fake.ThemeFakeRepository;
 
 class ThemeServiceTest {
 

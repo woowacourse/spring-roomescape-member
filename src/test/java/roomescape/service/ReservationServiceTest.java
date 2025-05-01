@@ -12,9 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.Fixtures;
 import roomescape.model.Reservation;
-import roomescape.repository.ReservationFakeRepository;
-import roomescape.repository.ThemeFakeRepository;
-import roomescape.repository.TimeSlotFakeRepository;
+import roomescape.repository.fake.ReservationFakeRepository;
+import roomescape.repository.fake.ThemeFakeRepository;
+import roomescape.repository.fake.TimeSlotFakeRepository;
 
 public class ReservationServiceTest {
 

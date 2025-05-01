@@ -25,6 +25,7 @@ public class ReservationJdbcRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private ReservationRepository repository;
 
     @DisplayName("타임 슬롯과 테마를 미리 세팅")
     @BeforeEach
@@ -36,13 +37,14 @@ public class ReservationJdbcRepositoryTest {
             "우테코 레벨2를 탈출하는 내용입니다.",
             "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
+
+        repository = new ReservationJdbcRepository(jdbcTemplate);
     }
 
     @Test
     @DisplayName("예약을 아이디로 조회한다.")
     void findById() {
         // given
-        var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
         var savedId = repository.save(reservation);
 
@@ -57,7 +59,6 @@ public class ReservationJdbcRepositoryTest {
     @DisplayName("예약을 저장한다.")
     void save() {
         // given
-        var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
 
         // when
@@ -71,7 +72,6 @@ public class ReservationJdbcRepositoryTest {
     @DisplayName("예약을 삭제한다.")
     void removeById() {
         // given
-        var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
         var savedId = repository.save(reservation);
 
@@ -86,7 +86,6 @@ public class ReservationJdbcRepositoryTest {
     @DisplayName("모든 예약을 조회한다.")
     void findAll() {
         // given
-        var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation1 = readyReservation();
         var reservation2 = readyReservation();
         repository.save(reservation1);
@@ -100,7 +99,6 @@ public class ReservationJdbcRepositoryTest {
     @DisplayName("타임 슬롯 아이디에 해당하는 예약을 조회한다.")
     void findByTimeSlotId() {
         // given
-        var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
         repository.save(reservation);
 
@@ -115,7 +113,6 @@ public class ReservationJdbcRepositoryTest {
     @DisplayName("테마 아이디에 해당하는 예약을 조회한다.")
     void findByThemeId() {
         // given
-        var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
         repository.save(reservation);
 
@@ -130,7 +127,6 @@ public class ReservationJdbcRepositoryTest {
     @DisplayName("날짜와 테마 아이디에 해당하는 예약을 조회한다.")
     void findByDateAndThemeId() {
         // given
-        var repository = new ReservationJdbcRepository(jdbcTemplate);
         var reservation = readyReservation();
         repository.save(reservation);
 

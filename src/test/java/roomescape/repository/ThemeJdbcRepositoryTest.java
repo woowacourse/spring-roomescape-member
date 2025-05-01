@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,56 +10,54 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.model.TimeSlot;
-import roomescape.repository.fake.TimeSlotFakeRepository;
+import roomescape.model.Theme;
 
 @Sql(scripts = {"/test-schema.sql"})
 @JdbcTest
-public class TimeSlotJdbcRepositoryTest {
+public class ThemeJdbcRepositoryTest {
 
-    private TimeSlotRepository repository;
+    private ThemeRepository repository;
 
-     @Autowired
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        repository = new TimeSlotJdbcRepository(jdbcTemplate);
+        repository = new ThemeJdbcRepository(jdbcTemplate);
     }
-
     @Test
-    @DisplayName("타임 슬롯을 아이디로 조회한다.")
+    @DisplayName("테마를 아이디로 조회한다.")
     void findById() {
         // given
-        var timeSlot = readyTimeSlot();
-        var savedId = repository.save(timeSlot);
+        var theme = readyTheme();
+        var savedId = repository.save(theme);
 
         // when
-        Optional<TimeSlot> found = repository.findById(savedId);
+        Optional<Theme> found = repository.findById(savedId);
 
         // then
         assertThat(found).isPresent();
     }
 
     @Test
-    @DisplayName("타임 슬롯을 저장한다.")
+    @DisplayName("테마를 저장한다.")
     void save() {
         // given
-        var timeSlot = readyTimeSlot();
+        var theme = readyTheme();
 
         // when
-        repository.save(timeSlot);
+        repository.save(theme);
 
         // then
         assertThat(repository.findAll()).hasSize(1);
     }
 
     @Test
-    @DisplayName("타임 슬롯을 삭제한다.")
+    @DisplayName("테마를 삭제한다.")
     void removeById() {
         // given
-        var timeSlot = readyTimeSlot();
-        var savedId = repository.save(timeSlot);
+        var theme = readyTheme();
+        var savedId = repository.save(theme);
 
         // when
         repository.removeById(savedId);
@@ -70,19 +67,19 @@ public class TimeSlotJdbcRepositoryTest {
     }
 
     @Test
-    @DisplayName("모든 타임 슬롯을 조회한다.")
+    @DisplayName("모든 테마를 조회한다.")
     void findAll() {
         // given
-        var timeSlot1 = readyTimeSlot();
-        var timeSlot2 = readyTimeSlot();
-        repository.save(timeSlot1);
-        repository.save(timeSlot2);
+        var theme1 = new Theme(1L, "테마1", "설명", "썸네일");
+        var theme2 = new Theme(2L, "테마2", "설명", "썸네일");
+        repository.save(theme1);
+        repository.save(theme2);
 
         // when & then
         assertThat(repository.findAll()).hasSize(2);
     }
 
-    private TimeSlot readyTimeSlot() {
-        return new TimeSlot(LocalTime.of(10, 0));
+    private Theme readyTheme() {
+        return new Theme(1L, "테마", "설명", "썸네일");
     }
 }

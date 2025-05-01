@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.Fixtures;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
-import roomescape.repository.ReservationFakeRepository;
-import roomescape.repository.TimeSlotFakeRepository;
+import roomescape.repository.fake.ReservationFakeRepository;
+import roomescape.repository.fake.TimeSlotFakeRepository;
 
 class TimeSlotServiceTest {
 
