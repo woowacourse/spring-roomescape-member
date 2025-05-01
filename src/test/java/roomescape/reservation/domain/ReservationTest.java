@@ -7,10 +7,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.globalException.BadRequestException;
+import roomescape.global_exception.BadRequestException;
 import roomescape.reservation.fixture.ReservationFixture;
-import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.fixture.ReservationTimeFixture;
+import roomescape.reservation_time.domain.ReservationTime;
+import roomescape.reservation_time.fixture.ReservationTimeFixture;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {

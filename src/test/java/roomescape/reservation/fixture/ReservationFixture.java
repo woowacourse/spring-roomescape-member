@@ -3,7 +3,7 @@ package roomescape.reservation.fixture;
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
-import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservation_time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 public class ReservationFixture {
