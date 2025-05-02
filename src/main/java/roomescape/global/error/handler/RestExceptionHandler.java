@@ -1,13 +1,13 @@
-package roomescape.exception.handler;
+package roomescape.global.error.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.BadRequestException;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
+import roomescape.global.error.exception.BadRequestException;
+import roomescape.global.error.exception.ConflictException;
+import roomescape.global.error.exception.NotFoundException;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class RestExceptionHandler {

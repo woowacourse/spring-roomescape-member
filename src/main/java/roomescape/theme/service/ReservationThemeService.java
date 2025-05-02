@@ -5,8 +5,8 @@ import roomescape.theme.repository.ReservationThemeRepository;
 import roomescape.theme.dto.ReservationThemeRequest;
 import roomescape.theme.dto.ReservationThemeResponse;
 import roomescape.theme.entity.ReservationThemeEntity;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
+import roomescape.global.error.exception.ConflictException;
+import roomescape.global.error.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;

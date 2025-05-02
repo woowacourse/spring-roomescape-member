@@ -9,9 +9,9 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.time.entity.ReservationTimeEntity;
-import roomescape.exception.BadRequestException;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
+import roomescape.global.error.exception.BadRequestException;
+import roomescape.global.error.exception.ConflictException;
+import roomescape.global.error.exception.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;

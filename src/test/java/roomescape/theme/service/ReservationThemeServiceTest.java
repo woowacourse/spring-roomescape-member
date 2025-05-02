@@ -6,8 +6,8 @@ import roomescape.theme.repository.FakeReservationThemeRepository;
 import roomescape.theme.repository.ReservationThemeRepository;
 import roomescape.theme.dto.ReservationThemeRequest;
 import roomescape.theme.entity.ReservationThemeEntity;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
+import roomescape.global.error.exception.ConflictException;
+import roomescape.global.error.exception.NotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
