@@ -17,23 +17,23 @@ import roomescape.domain.repository.ReservationRepository;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private final static RowMapper<Reservation> RESERVATION_ROW_MAPPER =
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
             (rs, rowNum) -> {
                 Long id = rs.getLong("reservation_id");
                 String name = rs.getString("reservation_name");
                 LocalDate date = rs.getObject("reservation_date", LocalDate.class);
-                Long time_id = rs.getLong("time_id");
+                Long timeId = rs.getLong("time_id");
                 LocalTime time = rs.getObject("time_value", LocalTime.class);
-                long theme_id = rs.getLong("theme_id");
-                String theme_name = rs.getString("theme_name");
-                String theme_description = rs.getString("theme_description");
-                String theme_thumbnail = rs.getString("theme_thumbnail");
+                Long themeId = rs.getLong("theme_id");
+                String themeName = rs.getString("theme_name");
+                String themeDescription = rs.getString("theme_description");
+                String themeThumbnail = rs.getString("theme_thumbnail");
                 return Reservation.of(
                         id,
                         name,
-                        Theme.of(theme_id, theme_name, theme_description, theme_thumbnail),
+                        Theme.of(themeId, themeName, themeDescription, themeThumbnail),
                         date,
-                        ReservationTime.of(time_id, time)
+                        ReservationTime.of(timeId, time)
                 );
             };
     private final JdbcTemplate jdbcTemplate;
