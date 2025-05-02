@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/reservation")
 public class MainPageController {
 
-    @GetMapping("reservation")
+    @GetMapping
     public String mainPage() {
         return "reservation";
     }
