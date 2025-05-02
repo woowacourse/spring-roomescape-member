@@ -29,7 +29,7 @@ public class ThemeController {
         return ResponseEntity.ok().body(responses);
     }
 
-    @GetMapping("/themes/popular")
+    @GetMapping("/popular-themes")
     public ResponseEntity<List<PopularThemeResponse>> getPopularThemes() {
         List<PopularThemeResponse> responses = themeService.getPopularThemes();
         return ResponseEntity.ok().body(responses);
