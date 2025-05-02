@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.service.FakeReservationRepository;
 import roomescape.reservation.service.FakeThemeRepository;
+import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.dto.PopularThemeResponse;
@@ -27,9 +29,9 @@ class ThemeServiceTest {
         Theme theme3 = Theme.createWithId(3L, "테스트3", "설명", "썸네일");
 
         ReservationRepository reservationRepository = new FakeReservationRepository();
-        reservationRepository.save(Reservation.createWithoutId("홍길동1", LocalDate.of(2025, 12, 5), null, theme1));
-        reservationRepository.save(Reservation.createWithoutId("홍길동2", LocalDate.of(2025, 12, 6), null, theme1));
-        reservationRepository.save(Reservation.createWithoutId("홍길동3", LocalDate.of(2025, 12, 4), null, theme3));
+        reservationRepository.save(Reservation.createWithoutId("홍길동1", LocalDate.of(2025, 12, 5), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme1));
+        reservationRepository.save(Reservation.createWithoutId("홍길동2", LocalDate.of(2025, 12, 6), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme1));
+        reservationRepository.save(Reservation.createWithoutId("홍길동3", LocalDate.of(2025, 12, 4), ReservationTime.createWithoutId(LocalTime.of(1, 0)), theme3));
 
         ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
         themeRepository.save(theme1);
@@ -59,8 +61,8 @@ class ThemeServiceTest {
         List<PopularThemeResponse> popularThemes = themeService.getPopularThemes();
 
         Assertions.assertThat(popularThemes).containsExactly(
-                new PopularThemeResponse("테스트1", "썸네일", "설명"),
-                new PopularThemeResponse("테스트3", "썸네일", "설명")
+                new PopularThemeResponse("테스트1", "설명", "썸네일"),
+                new PopularThemeResponse("테스트3", "설명", "썸네일")
         );
     }
 }
