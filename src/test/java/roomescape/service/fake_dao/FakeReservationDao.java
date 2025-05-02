@@ -31,18 +31,18 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existByTimeId(Long timeId) {
+    public boolean existByTimeId(Long timeId) {
         return true;
     }
 
     @Override
-    public Boolean existBySameDateTime(Reservation reservation) {
+    public boolean existBySameDateTime(Reservation reservation) {
         return true;
     }
 
     @Override
-    public Boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId) {
-        return null;
+    public boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId) {
+        return true;
     }
 
     @Override

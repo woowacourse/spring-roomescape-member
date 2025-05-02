@@ -13,11 +13,11 @@ public interface ReservationDao {
 
     void deleteById(Long id);
 
-    Boolean existByTimeId(Long timeId);
+    boolean existByTimeId(Long timeId);
 
-    Boolean existBySameDateTime(Reservation reservation);
+    boolean existBySameDateTime(Reservation reservation);
 
-    Boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId);
+    boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId);
 
     List<Long> findRank(LocalDate startDate, LocalDate endDate);
 }

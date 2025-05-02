@@ -65,7 +65,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existByTimeId(Long timeId) {
+    public boolean existByTimeId(Long timeId) {
         String sql = "select exists(select 1 from reservation where time_id = ?)";
         return jdbcTemplate.queryForObject(
                 sql,
@@ -75,7 +75,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existBySameDateTime(Reservation reservation) {
+    public boolean existBySameDateTime(Reservation reservation) {
         String sql = "select exists(select 1 from reservation where date = ? AND time_id = ?)";
         return jdbcTemplate.queryForObject(
                 sql,
@@ -86,7 +86,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId) {
+    public boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId) {
         String sql = "select exists(select 1 from reservation where date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(
                 sql,
