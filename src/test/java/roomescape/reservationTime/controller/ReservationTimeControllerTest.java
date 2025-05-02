@@ -1,11 +1,7 @@
 package roomescape.reservationTime.controller;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,6 +17,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
     ReservationTimeTestDataConfig.class})
@@ -122,7 +123,7 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
-            Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+            Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time WHERE id = 1", Integer.class);
             assertThat(countAfterDelete).isEqualTo(0);
         }
 
