@@ -9,7 +9,7 @@ public class ReservationTime {
 
     private static final LocalTime START_RESERVATION_TIME = LocalTime.of(10, 0);
     private static final LocalTime LAST_RESERVATION_TIME = LocalTime.of(23, 0);
-    private static final int MAX_MIN_INTERVAL = 30;
+    private static final int RESERVATION_TIME_INTERVAL = 30;
 
     private final Long id;
     private final LocalTime startAt;
@@ -36,7 +36,7 @@ public class ReservationTime {
 
     public boolean isInTimeInterval(LocalTime otherTime) {
         long minuteDifference = Duration.between(startAt, otherTime).abs().toMinutes();
-        return minuteDifference < MAX_MIN_INTERVAL;
+        return minuteDifference < RESERVATION_TIME_INTERVAL;
     }
 
     public Long getId() {
