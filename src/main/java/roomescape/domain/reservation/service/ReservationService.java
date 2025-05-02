@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -66,15 +65,23 @@ public class ReservationService {
     }
 
     private Reservation getReservation(ReservationRequest request) {
-        Long timeId = request.timeId();
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
-
-        Long themeId = request.themeId();
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+        ReservationTime reservationTime = getReservationTime(request);
+        Theme theme = getTheme(request);
 
         return Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
+    }
+
+    private Theme getTheme(final ReservationRequest request) {
+        Long themeId = request.themeId();
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+    }
+
+    private ReservationTime getReservationTime(final ReservationRequest request) {
+        Long timeId = request.timeId();
+
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
     }
 
     private void validateDateTime(LocalDateTime now, LocalDate date, LocalTime time) {
@@ -101,7 +108,7 @@ public class ReservationService {
 
         return allTimes.entrySet()
                 .stream()
-                .map(this::bookedReservationTimeResponseOf)
+                .map(entry -> bookedReservationTimeResponseOf(entry.getKey(), entry.getValue()))
                 .toList();
     }
 
@@ -117,8 +124,8 @@ public class ReservationService {
     }
 
     private BookedReservationTimeResponse bookedReservationTimeResponseOf(
-            Entry<ReservationTime, Boolean> entry) {
+            ReservationTime reservationTime, boolean alreadyBooked) {
         return new BookedReservationTimeResponse(
-                ReservationTimeResponse.from(entry.getKey()), entry.getValue());
+                ReservationTimeResponse.from(reservationTime), alreadyBooked);
     }
 }
