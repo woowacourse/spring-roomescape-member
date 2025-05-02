@@ -2,6 +2,7 @@ package roomescape.theme.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -15,7 +16,18 @@ import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-
+    private final RowMapper<ThemeEntity> ROW_MAPPER = (resultSet, rowNum) -> {
+        final long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        String description = resultSet.getString("description");
+        String thumbnail = resultSet.getString("thumbnail");
+        return new ThemeEntity(
+                id,
+                name,
+                description,
+                thumbnail
+        );
+    };
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
@@ -24,7 +36,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public ThemeEntity save(ThemeEntity entity) {
-        String query = "insert into theme (name, description, thumbnail) values (:name, :description, :thumbnail)";
+        String query = "INSERT INTO theme (name, description, thumbnail) VALUES (:name, :description, :thumbnail)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", entity.getName())
                 .addValue("description", entity.getDescription())
@@ -42,24 +54,13 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public List<ThemeEntity> findAll() {
-        String query = "select * from theme";
-        return jdbcTemplate.query(query, (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String thumbnail = resultSet.getString("thumbnail");
-            return new ThemeEntity(
-                    id,
-                    name,
-                    description,
-                    thumbnail
-            );
-        });
+        String query = "SELECT * FROM theme";
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     @Override
     public boolean deleteById(Long id) {
-        String query = "delete from theme where id = :id";
+        String query = "DELETE FROM theme WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
         final int updated = jdbcTemplate.update(query, params);
@@ -68,21 +69,11 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<ThemeEntity> findById(Long id) {
-        String query = "select * from theme where id = :id";
+        String query = "SELECT * FROM theme WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
         try {
-            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, params, (resultSet, rowNum) -> {
-                String name = resultSet.getString("name");
-                String description = resultSet.getString("description");
-                String thumbnail = resultSet.getString("thumbnail");
-                return new ThemeEntity(
-                        id,
-                        name,
-                        description,
-                        thumbnail
-                );
-            });
+            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, params, ROW_MAPPER);
             return Optional.of(themeEntity);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -95,17 +86,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", name);
         try {
-            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, param, (resultSet, rowNum) -> {
-                final long id = resultSet.getLong("id");
-                String description = resultSet.getString("description");
-                String thumbnail = resultSet.getString("thumbnail");
-                return new ThemeEntity(
-                        id,
-                        name,
-                        description,
-                        thumbnail
-                );
-            });
+            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, param, ROW_MAPPER);
             return Optional.of(themeEntity);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -120,7 +101,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     ) {
         String query = """
                 SELECT
-                    t.id as theme_id,
+                    t.id,
                     t.name,
                     t.description,
                     t.thumbnail,
@@ -142,17 +123,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("startDate", startDate)
                 .addValue("endDate", endDate)
                 .addValue("limit", limit);
-        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
-            long id = resultSet.getLong("theme_id");
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String thumbnail = resultSet.getString("thumbnail");
-            return new ThemeEntity(
-                    id,
-                    name,
-                    description,
-                    thumbnail
-            );
-        });
+        return jdbcTemplate.query(query, params, ROW_MAPPER);
     }
 }

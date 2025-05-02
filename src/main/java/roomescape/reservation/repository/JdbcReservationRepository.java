@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -15,6 +16,22 @@ import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
+    private final RowMapper<ReservationEntity> ROW_MAPPER = (resultSet, rowNum) -> {
+        final long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        LocalDate date = resultSet.getObject("date", LocalDate.class);
+        final long timeId = resultSet.getLong("time_id");
+        LocalTime timeValue = resultSet.getObject("start_at", LocalTime.class);
+        ReservationTimeEntity timeEntity = new ReservationTimeEntity(timeId, timeValue);
+        final long themeId = resultSet.getLong("theme_id");
+        return new ReservationEntity(
+                id,
+                name,
+                date,
+                timeEntity,
+                themeId
+        );
+    };
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
@@ -50,39 +67,30 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     public List<ReservationEntity> findAll() {
         String query = """
-        SELECT 
-        r.id as reservation_id, 
-        r.name, 
-        r.date, 
-        t.id as time_id, 
-        t.start_at as time_value, 
-        r.theme_id 
-        FROM reservation as r 
-        inner join reservation_time as t 
-        on r.time_id = t.id
-        """;
-        return jdbcTemplate.query(query, (resultSet, rowNum) -> {
-            final long id = resultSet.getLong("reservation_id");
-            String name = resultSet.getString("name");
-            LocalDate date = resultSet.getObject("date", LocalDate.class);
-            final long timeId = resultSet.getLong("time_id");
-            LocalTime timeValue = resultSet.getObject("time_value", LocalTime.class);
-            ReservationTimeEntity timeEntity = new ReservationTimeEntity(timeId, timeValue);
-            final long themeId = resultSet.getLong("theme_id");
-            return new ReservationEntity(
-                    id,
-                    name,
-                    date,
-                    timeEntity,
-                    themeId
-            );
-        });
+                SELECT 
+                    r.id, 
+                    r.name, 
+                    r.date, 
+                    t.id as time_id, 
+                    t.start_at, 
+                    r.theme_id 
+                FROM reservation as r 
+                inner join reservation_time as t 
+                on r.time_id = t.id
+                """;
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     @Override
     public List<ReservationEntity> findAllByTimeId(Long id) {
         String query = """
-                SELECT r.id, r.name, r.date, rt.start_at, r.theme_id
+                SELECT 
+                    r.id, 
+                    r.name, 
+                    r.date, 
+                    rt.start_at, 
+                    r.theme_id, 
+                    rt.id as time_id
                 FROM reservation as r
                 INNER JOIN reservation_time as rt
                 ON r.time_id = rt.id
@@ -90,20 +98,6 @@ public class JdbcReservationRepository implements ReservationRepository {
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
-        return jdbcTemplate.query(query, params, (resultSet, rowNum) -> {
-            long reservationId = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            LocalDate date = resultSet.getObject("date", LocalDate.class);
-            LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
-            final long themeId = resultSet.getLong("theme_id");
-            ReservationTimeEntity timeEntity = new ReservationTimeEntity(id, startAt);
-            return new ReservationEntity(
-                    reservationId,
-                    name,
-                    date,
-                    timeEntity,
-                    themeId
-            );
-        });
+        return jdbcTemplate.query(query, params, ROW_MAPPER);
     }
 }

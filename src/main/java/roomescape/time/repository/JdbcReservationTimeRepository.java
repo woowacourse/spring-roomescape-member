@@ -2,6 +2,7 @@ package roomescape.time.repository;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,6 +17,11 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
+    private final RowMapper<ReservationTimeEntity> ROW_MAPPER = (resultSet, rowNum) -> {
+        Long id = resultSet.getLong("id");
+        LocalTime time = resultSet.getObject("start_at", LocalTime.class);
+        return new ReservationTimeEntity(id, time);
+    };
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
@@ -36,11 +42,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public List<ReservationTimeEntity> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
-            Long id = resultSet.getLong("id");
-            LocalTime time = resultSet.getObject("start_at", LocalTime.class);
-            return new ReservationTimeEntity(id, time);
-        });
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
@@ -58,10 +60,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
         try {
-            ReservationTimeEntity timeEntity = jdbcTemplate.queryForObject(sql, params, (resultSet, rowNum) -> {
-                LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
-                return new ReservationTimeEntity(id, startAt);
-            });
+            ReservationTimeEntity timeEntity = jdbcTemplate.queryForObject(sql, params, ROW_MAPPER);
             return Optional.of(timeEntity);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -72,9 +71,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public List<ReservationTimeWithBookedDataResponse> findAllWithBooked(LocalDate date, final Long themeId) {
         String query = """
                 SELECT
-                        rt.id,
-                        rt.start_at,
-                        r.id IS NOT NULL as alreadyBooked
+                    rt.id,
+                    rt.start_at,
+                    r.id IS NOT NULL as alreadyBooked
                 FROM reservation_time as rt
                 LEFT JOIN (
                     SELECT id, time_id
