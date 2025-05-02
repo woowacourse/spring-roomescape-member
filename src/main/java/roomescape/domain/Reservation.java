@@ -38,7 +38,7 @@ public class Reservation {
         return reservationDateTime.isBefore(now);
     }
 
-    public boolean isDuplicated(Reservation other) {
+    public boolean isDuplicatedWith(Reservation other) {
         return this.reservationDate.equals(other.reservationDate)
                && this.reservationTime.equals(other.reservationTime)
                && this.theme.equals(other.theme);

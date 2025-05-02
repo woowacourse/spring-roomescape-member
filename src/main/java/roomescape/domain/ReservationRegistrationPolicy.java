@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import static roomescape.exception.ReservationErrorCode.ALREADY_RESERVED;
+import static roomescape.exception.ReservationErrorCode.PAST_RESERVATION;
+
 import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.domain.exception.ImpossibleReservationException;
@@ -8,11 +11,21 @@ import roomescape.domain.exception.ImpossibleReservationException;
 public class ReservationRegistrationPolicy {
 
     public void validate(Reservation candidate, List<Reservation> existingReservations) {
-        if (candidate.isPast()) {
-            throw new ImpossibleReservationException("과거 일시로 예약할 수 없습니다.");
+        validateNotPast(candidate);
+        validateNotDuplicated(candidate, existingReservations);
+    }
+
+    private void validateNotDuplicated(Reservation candidate, List<Reservation> existingReservations) {
+        boolean isDuplicated = existingReservations.stream()
+                .anyMatch(r -> r.isDuplicatedWith(candidate));
+        if (isDuplicated) {
+            throw new ImpossibleReservationException(ALREADY_RESERVED.getMessage());
         }
-        if (existingReservations.stream().anyMatch(r -> r.isDuplicated(candidate))) {
-            throw new ImpossibleReservationException("이미 예약된 일시입니다.");
+    }
+
+    private void validateNotPast(Reservation candidate) {
+        if (candidate.isPast()) {
+            throw new ImpossibleReservationException(PAST_RESERVATION.getMessage());
         }
     }
 }
