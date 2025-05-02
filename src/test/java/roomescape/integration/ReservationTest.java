@@ -219,4 +219,17 @@ public class ReservationTest extends BaseTest {
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
+
+    @Test
+    void 예약_생성_시_null_값을_허용하지_않는다() {
+        reservation.remove("name");
+        reservation.put("name", null);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
 }

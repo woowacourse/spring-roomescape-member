@@ -1,9 +1,7 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import roomescape.reservation.domain.exception.PastReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -27,15 +25,6 @@ public class Reservation {
         this.reservationDate = new ReservationDate(reservationDate);
         this.reservationTime = reservationTime;
         this.theme = theme;
-    }
-
-    public static Reservation create(
-            String reserverName,
-            LocalDate reservationDate,
-            ReservationTime reservationTime,
-            Theme theme
-    ) {
-        return new Reservation(null, reserverName, reservationDate, reservationTime, theme);
     }
 
     public Long getId() {
