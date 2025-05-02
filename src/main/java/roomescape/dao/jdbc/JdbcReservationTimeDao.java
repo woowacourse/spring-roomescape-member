@@ -1,6 +1,5 @@
 package roomescape.dao.jdbc;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -28,12 +27,12 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             .usingGeneratedKeyColumns("id");
     }
 
-    public List<ReservationTime> findAllTimes() {
-        String sql = "SELECT id, start_at FROM reservation_time";
-        return jdbcTemplate.query(sql, createReservationMapper());
+    public List<ReservationTime> findAll() {
+        String sql = "SELECT id, start_at FROM reservation_time ORDER BY start_at";
+        return jdbcTemplate.query(sql, mapResultsToReservationTime());
     }
 
-    public List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId) {
+    public List<ReservationTime> findByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId) {
         String sql = """
             SELECT
               rt.id,
@@ -44,41 +43,41 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                 WHERE r.time_id = rt.id
                     AND r.theme_id = ?
                     AND r.date = ?
-              ) as alreadyBooked
+              ) as isBooked
             FROM reservation_time as rt
-            ORDER BY rt.start_at ASC;
+            ORDER BY rt.start_at;
             """;
         return jdbcTemplate.query(sql, createReservationWithBookedMapper(), themeId, date);
     }
 
-    public ReservationTime findTimeById(Long id) {
+    public ReservationTime findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, createReservationMapper(), id);
+            return jdbcTemplate.queryForObject(sql, mapResultsToReservationTime(), id);
         } catch (DataAccessException e) {
             throw new TimeDoesNotExistException();
         }
     }
 
-    public ReservationTime addTime(ReservationTime reservationTime) {
+    public ReservationTime add(ReservationTime reservationTime) {
         Map<String, Object> param = new HashMap<>();
-        param.put("start_at", Time.valueOf(reservationTime.getStartAt()));
+        param.put("start_at", reservationTime.getStartAt());
 
         Number key = jdbcInsert.executeAndReturnKey(param);
         return new ReservationTime(key.longValue(), reservationTime.getStartAt());
     }
 
-    public boolean existTimeByStartAt(LocalTime startAt) {
+    public boolean existByStartAt(LocalTime startAt) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation_time WHERE start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
-    public void removeTimeById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
-    private RowMapper<ReservationTime> createReservationMapper() {
+    private RowMapper<ReservationTime> mapResultsToReservationTime() {
         return (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime());
@@ -88,6 +87,6 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime(),
-            rs.getBoolean("alreadyBooked"));
+            rs.getBoolean("isBooked"));
     }
 }

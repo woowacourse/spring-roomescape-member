@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.TimeRequest;
-import roomescape.dto.TimeResponse;
+import roomescape.dto.TimeCreateRequest;
+import roomescape.dto.TimeGetResponse;
 import roomescape.exception.DuplicateTimeException;
 import roomescape.service.TimeService;
 
@@ -29,34 +29,33 @@ public class TimeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TimeResponse createReservationTime(@RequestBody TimeRequest request) {
-        return TimeResponse.from(timeService.addReservationTime(request));
+    public TimeGetResponse createReservationTime(@RequestBody TimeCreateRequest timeCreateRequest) {
+        return TimeGetResponse.from(timeService.createReservationTime(timeCreateRequest));
     }
 
     @GetMapping
-    public List<TimeResponse> readReservationTimes() {
+    public List<TimeGetResponse> readAllReservationTimes() {
         return timeService.findAllReservationTimes().stream()
-            .map(TimeResponse::from)
+            .map(TimeGetResponse::from)
             .toList();
     }
 
     @GetMapping("/{date}/{themeId}")
-    public List<TimeResponse> readReservationTimesWithBooked(@PathVariable("date") LocalDate date,
-        @PathVariable("themeId") Long themeId) {
-        return timeService.findAllTimesWithBooked(date, themeId).stream()
-            .map(TimeResponse::from)
+    public List<TimeGetResponse> readReservationTimesByDateAndThemeIdWithIsBooked(@PathVariable("date") LocalDate date, @PathVariable("themeId") Long themeId) {
+        return timeService.findReservationTimeByDateAndThemeIdWithIsBooked(date, themeId).stream()
+            .map(TimeGetResponse::from)
             .toList();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservationTime(@PathVariable("id") Long id) {
-        timeService.removeReservationTime(id);
+    public void deleteReservationTimeById(@PathVariable("id") Long id) {
+        timeService.deleteReservationTimeById(id);
     }
 
     @ExceptionHandler(value = DuplicateTimeException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleDuplicateException(DuplicateTimeException ex) {
-        return ex.getMessage();
+    public String handleDuplicateException(DuplicateTimeException exception) {
+        return exception.getMessage();
     }
 }

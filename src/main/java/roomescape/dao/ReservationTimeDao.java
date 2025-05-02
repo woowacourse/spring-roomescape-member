@@ -7,15 +7,15 @@ import roomescape.domain.ReservationTime;
 
 public interface ReservationTimeDao {
 
-    List<ReservationTime> findAllTimes();
+    List<ReservationTime> findAll();
 
-    ReservationTime findTimeById(Long id);
+    ReservationTime findById(Long id);
 
-    List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId);
+    List<ReservationTime> findByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId);
 
-    ReservationTime addTime(ReservationTime reservationTime);
+    ReservationTime add(ReservationTime reservationTime);
 
-    boolean existTimeByStartAt(LocalTime startAt);
+    boolean existByStartAt(LocalTime startAt);
 
-    void removeTimeById(Long id);
+    int deleteById(Long id);
 }

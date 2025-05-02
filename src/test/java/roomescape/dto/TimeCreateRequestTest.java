@@ -6,12 +6,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.InvalidInputException;
 
-public class TimeRequestTest {
+public class TimeCreateRequestTest {
 
     @Test
     @DisplayName("시간은 빈 값이 들어올 수 없다.")
     void validateNull() {
-        assertThatThrownBy(() -> new TimeRequest(null))
+        assertThatThrownBy(() -> new TimeCreateRequest(null))
             .isInstanceOf(InvalidInputException.class)
             .hasMessage("시간을 선택해라.");
     }

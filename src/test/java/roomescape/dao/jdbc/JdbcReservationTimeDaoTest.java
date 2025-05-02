@@ -28,7 +28,7 @@ public class JdbcReservationTimeDaoTest {
     @Test
     @DisplayName("전체 시간을 조회할 수 있다.")
     void findAllReservationTime() {
-        List<ReservationTime> times = jdbcReservationTimeDao.findAllTimes();
+        List<ReservationTime> times = jdbcReservationTimeDao.findAll();
 
         assertThat(times).hasSize(5);
     }
@@ -38,7 +38,7 @@ public class JdbcReservationTimeDaoTest {
     void findAllTimesWithBooked() {
         LocalDate date = LocalDate.of(2025, 4, 28);
         Long themeId = 2L;
-        List<ReservationTime> times = jdbcReservationTimeDao.findAllTimesWithBooked(date, themeId);
+        List<ReservationTime> times = jdbcReservationTimeDao.findByDateAndThemeIdWithIsBooked(date, themeId);
 
         assertAll(() -> {
             assertThat(times.get(0).getAlreadyBooked()).isTrue();
@@ -53,9 +53,9 @@ public class JdbcReservationTimeDaoTest {
     @DisplayName("ID로 시간이 존재한다면 조회할 수 있다.")
     void findTimeByExistedTime() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
-        ReservationTime actual = jdbcReservationTimeDao.addTime(reservationTime);
+        ReservationTime actual = jdbcReservationTimeDao.add(reservationTime);
 
-        ReservationTime expected = jdbcReservationTimeDao.findTimeById(actual.getId());
+        ReservationTime expected = jdbcReservationTimeDao.findById(actual.getId());
 
         assertAll(() -> {
             assertThat(actual.getId()).isEqualTo(expected.getId());
@@ -66,7 +66,7 @@ public class JdbcReservationTimeDaoTest {
     @Test
     @DisplayName("ID로 시간이 존재하지 않는다면 예외가 발생한다.")
     void findTimeByNotExistedTime() {
-        assertThatThrownBy(() -> jdbcReservationTimeDao.findTimeById(100L))
+        assertThatThrownBy(() -> jdbcReservationTimeDao.findById(100L))
             .isInstanceOf(TimeDoesNotExistException.class)
             .hasMessage("예약 시간을 찾을 수 없다.");
     }
@@ -75,7 +75,7 @@ public class JdbcReservationTimeDaoTest {
     @DisplayName("시간을 추가할 수 있다.")
     void addReservationTime() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
-        ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
+        ReservationTime newReservationTime = jdbcReservationTimeDao.add(reservationTime);
 
         assertThat(newReservationTime).isNotNull();
     }
@@ -84,12 +84,12 @@ public class JdbcReservationTimeDaoTest {
     @DisplayName("ID로 시간을 삭제할 수 있다.")
     void removeReservation() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
-        ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
+        ReservationTime newReservationTime = jdbcReservationTimeDao.add(reservationTime);
         Long id = newReservationTime.getId();
 
-        jdbcReservationTimeDao.removeTimeById(id);
+        jdbcReservationTimeDao.deleteById(id);
 
-        assertThatThrownBy(() -> jdbcReservationTimeDao.findTimeById(id))
+        assertThatThrownBy(() -> jdbcReservationTimeDao.findById(id))
             .isInstanceOf(TimeDoesNotExistException.class);
     }
 
@@ -98,7 +98,7 @@ public class JdbcReservationTimeDaoTest {
     void existTimeByStartAt() {
         LocalTime startAt = LocalTime.of(13, 0);
         ReservationTime reservationTime = new ReservationTime(null, startAt);
-        jdbcReservationTimeDao.addTime(reservationTime);
-        assertThat(jdbcReservationTimeDao.existTimeByStartAt(startAt)).isTrue();
+        jdbcReservationTimeDao.add(reservationTime);
+        assertThat(jdbcReservationTimeDao.existByStartAt(startAt)).isTrue();
     }
 }

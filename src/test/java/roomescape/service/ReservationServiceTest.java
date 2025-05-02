@@ -30,7 +30,7 @@ public class ReservationServiceTest {
         ThemeDao themeDao = new FakeThemeDao();
         reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
 
-        reservationTimeDao.addTime(new ReservationTime(1L, LocalTime.of(10, 0)));
+        reservationTimeDao.add(new ReservationTime(1L, LocalTime.of(10, 0)));
         themeDao.add(new Theme(1L, "레벨1", "탈출하기", "http://~"));
     }
 

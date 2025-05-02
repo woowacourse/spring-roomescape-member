@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 import roomescape.exception.InvalidInputException;
 
-public record TimeRequest(
+public record TimeCreateRequest(
     @JsonFormat(pattern = "HH:mm") LocalTime startAt) {
 
-    public TimeRequest {
+    public TimeCreateRequest {
         validateTime(startAt);
     }
 

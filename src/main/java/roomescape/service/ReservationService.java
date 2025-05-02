@@ -30,7 +30,7 @@ public class ReservationService {
 
     public Reservation addReservationAfterNow(ReservationRequest request) {
         LocalDate date = request.date();
-        ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
+        ReservationTime time = reservationTimeDao.findById(request.timeId());
         validateDateTimeAfterNow(date, time);
 
         return addReservation(request);
@@ -46,7 +46,7 @@ public class ReservationService {
 
     public Reservation addReservation(ReservationRequest reservationRequest) {
         validateDuplicateReservation(reservationRequest);
-        ReservationTime time = reservationTimeDao.findTimeById(reservationRequest.timeId());
+        ReservationTime time = reservationTimeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
         return reservationDao.addReservation(
             new Reservation(null, reservationRequest.name(), reservationRequest.date(), time,

@@ -13,11 +13,11 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     private final List<ReservationTime> times = new ArrayList<>();
     private final AtomicLong index = new AtomicLong(1);
 
-    public List<ReservationTime> findAllTimes() {
+    public List<ReservationTime> findAll() {
         return new ArrayList<>(times);
     }
 
-    public ReservationTime findTimeById(Long id) {
+    public ReservationTime findById(Long id) {
         return times.stream()
             .filter(time -> time.getId().equals(id))
             .findFirst()
@@ -25,11 +25,11 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId) {
+    public List<ReservationTime> findByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId) {
         return List.of();
     }
 
-    public ReservationTime addTime(ReservationTime reservationTime) {
+    public ReservationTime add(ReservationTime reservationTime) {
         ReservationTime saved = new ReservationTime(
             index.getAndIncrement(),
             reservationTime.getStartAt()
@@ -38,12 +38,12 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
         return saved;
     }
 
-    public void removeTimeById(Long id) {
+    public void deleteById(Long id) {
         times.removeIf(time -> time.getId().equals(id));
     }
 
     @Override
-    public boolean existTimeByStartAt(LocalTime startAt) {
+    public boolean existByStartAt(LocalTime startAt) {
         return times.stream()
             .anyMatch(time -> time.getStartAt().equals(startAt));
     }
