@@ -1,0 +1,47 @@
+### 모든 예약 조회
+GET localhost:8080/reservations
+
+### 모든 테마 조회
+GET localhost:8080/themes
+
+### 모든 예약 시간 조회
+GET localhost:8080/times
+
+### 예약 추가 (사용 시, 과거 시간인지 확인 필요)
+POST http://localhost:8080/reservations
+Content-Type: application/json
+
+{
+  "name": "hula",
+  "date": "2025-06-25",
+  "timeId": 1,
+  "themeId": 1
+}
+
+### 예약 시간 추가
+POST http://localhost:8080/times
+Content-Type: application/json
+
+{
+  "startAt": "10:30"
+}
+
+
+### 테마 추가
+POST http://localhost:8080/themes
+Content-Type: application/json
+
+{
+  "name": "레벨2 탈출",
+  "description": "우테코 레벨2를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+
+### 테마 삭제
+DELETE http://localhost:8080/themes/1
+
+### 어드민 메인 페이지
+GET http://localhost:8080/admin
+
+### 어드민 테마 관리 페이지
+GET http://localhost:8080/admin/theme
