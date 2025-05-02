@@ -7,6 +7,8 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.error.exception.ConflictException;
+import roomescape.global.error.exception.NotFoundException;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.Theme;
@@ -44,7 +46,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.createReservation(requestDto);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("과거 날짜/시간 예약은 생성할 수 없다.")
@@ -57,7 +59,7 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.createReservation(requestDto);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("같은 날짜, 같은 시각에 이미 예약이 존재하는 경우, 재생성할 수 없다.")
@@ -77,6 +79,6 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.createReservation(requestDto);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ConflictException.class);
     }
 }
