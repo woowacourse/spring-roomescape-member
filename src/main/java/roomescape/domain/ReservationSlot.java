@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationSlot {
+
     private final Long id;
     private final LocalTime time;
     private final boolean reserved;
