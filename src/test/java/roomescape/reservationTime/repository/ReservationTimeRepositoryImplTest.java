@@ -1,7 +1,5 @@
 package roomescape.reservationTime.repository;
 
-import java.time.LocalTime;
-import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,9 @@ import roomescape.globalException.NotFoundException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 
+import java.time.LocalTime;
+import java.util.List;
+
 @JdbcTest
 @Import({ReservationTimeRepositoryImpl.class})
 class ReservationTimeRepositoryImplTest {
@@ -19,7 +20,7 @@ class ReservationTimeRepositoryImplTest {
     @Autowired
     private ReservationTimeRepositoryImpl repository;
 
-    @DisplayName("존재하지 않는 예약 ID로 조회하면 예외가 발생한다.")
+    @DisplayName("존재하지 않는 예약 시간 ID로 조회하면 예외가 발생한다.")
     @Test
     void findById_throwsExceptionByNonExistentId() {
         // given
@@ -31,8 +32,8 @@ class ReservationTimeRepositoryImplTest {
 
         List<ReservationTime> reservationTimes = List.of(reservationTime1, reservationTime2);
 
-        for (ReservationTime reservation : reservationTimes) {
-            repository.add(reservation);
+        for (ReservationTime reservationTime : reservationTimes) {
+            repository.add(reservationTime);
         }
 
         // when & then
