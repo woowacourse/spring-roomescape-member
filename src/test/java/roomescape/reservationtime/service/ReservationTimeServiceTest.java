@@ -92,6 +92,7 @@ class ReservationTimeServiceTest {
         List<AvailableTimeResponse> availableTimes = reservationTimeService.findAvailableTimes(date, 1L);
         // then
         assertThat(availableTimes).hasSize(2);
-        assertThat(availableTimes.getFirst().id()).isEqualTo(1L);
+        assertThat(availableTimes.getFirst().alreadyBooked()).isTrue();
+        assertThat(availableTimes.get(1).alreadyBooked()).isFalse();
     }
 }
