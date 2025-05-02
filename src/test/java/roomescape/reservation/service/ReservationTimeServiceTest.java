@@ -9,11 +9,14 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
+import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
 import roomescape.reservation.fixture.ReservationTimeDbFixture;
 import roomescape.reservation.fixture.ThemeDbFixture;
 import roomescape.theme.domain.Theme;
+import roomescape.time.controller.request.AvailableReservationTimeRequest;
 import roomescape.time.controller.request.ReservationTimeCreateRequest;
+import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
@@ -22,13 +25,10 @@ public class ReservationTimeServiceTest extends BaseTest {
 
     @Autowired
     private ReservationTimeService reservationTimeService;
-
     @Autowired
     private ReservationTimeDbFixture reservationTimeDbFixture;
-
     @Autowired
     private ReservationDbFixture reservationDbFixture;
-
     @Autowired
     private ThemeDbFixture themeDbFixture;
 
@@ -84,5 +84,24 @@ public class ReservationTimeServiceTest extends BaseTest {
 
         assertThatThrownBy(() -> reservationTimeService.create(request))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 예약_가능한_시간을_조회한다() {
+        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
+        Theme theme = themeDbFixture.공포();
+
+        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
+
+        AvailableReservationTimeRequest request = new AvailableReservationTimeRequest(
+                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                theme.getId()
+        );
+
+        List<AvailableReservationTimeResponse> responses = reservationTimeService.getAvailableReservationTimes(request);
+
+        assertThat(responses.get(0).id()).isEqualTo(theme.getId());
+        assertThat(responses.get(0).startAt()).isEqualTo(reservationTime.getStartAt());
+        assertThat(responses.get(0).isReserved()).isEqualTo(true);
     }
 }
