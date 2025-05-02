@@ -1,4 +1,4 @@
-package roomescape.theme.dto;
+package roomescape.theme.presentation.dto;
 
 public record PopularThemeResponse(String name, String description, String thumbnail) {
     public PopularThemeResponse {

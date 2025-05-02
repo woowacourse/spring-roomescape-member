@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.common.util.DateTime;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
