@@ -217,7 +217,7 @@ class ReservationIntegrateTest {
         reservationRepository.add(reservation6);
 
         Response response = RestAssured.given().log().all()
-                .when().get("/reservations/popular-themes")
+                .when().get("/themes/popular")
                 .then().log().all()
                 .extract().response();
 

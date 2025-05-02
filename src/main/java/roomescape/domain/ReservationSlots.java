@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ReservationSlotTimes {
+public class ReservationSlots {
 
     private final List<ReservationSlot> reservationSlots;
 
-    public ReservationSlotTimes(List<ReservationTime> times, List<Reservation> alreadyReservedReservations) {
+    public ReservationSlots(List<ReservationTime> times, List<Reservation> alreadyReservedReservations) {
         List<ReservationSlot> reservationSlots = new ArrayList<>();
         Set<ReservationTime> alreadyReservationTimes = alreadyReservedReservations.stream()
                 .map(Reservation::getReservationTime)
@@ -26,7 +26,7 @@ public class ReservationSlotTimes {
         this.reservationSlots = reservationSlots;
     }
 
-    public List<ReservationSlot> getAvailableBookTimes() {
+    public List<ReservationSlot> getReservationSlots() {
         return Collections.unmodifiableList(reservationSlots);
     }
 }

@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationSlotTimes;
+import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRanking;
@@ -71,13 +71,13 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public ReservationSlotTimes availableReservationTimes(AvailableTimeRequest availableTimeRequest) {
+    public ReservationSlots availableReservationTimes(AvailableTimeRequest availableTimeRequest) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
                 availableTimeRequest.date(), availableTimeRequest.themeId());
 
-        return new ReservationSlotTimes(times, alreadyReservedReservations);
+        return new ReservationSlots(times, alreadyReservedReservations);
     }
 
     public Reservation getReservationById(long addedReservationId) {

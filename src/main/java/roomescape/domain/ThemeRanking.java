@@ -9,19 +9,19 @@ public class ThemeRanking {
 
     private static final int RANKING_SIZE = 10;
 
-    private final Map<Theme, Integer> themeRankCount;
+    private final Map<Theme, Integer> reservationCountByTheme;
 
-    public ThemeRanking(List<Reservation> inRangeReservations) {
-        HashMap<Theme, Integer> calculateThemeRankCount = new HashMap<>();
-        for (Reservation inRangeReservation : inRangeReservations) {
-            Theme theme = inRangeReservation.getTheme();
-            calculateThemeRankCount.put(theme, calculateThemeRankCount.getOrDefault(theme, 0) + 1);
+    public ThemeRanking(List<Reservation> reservations) {
+        Map<Theme, Integer> reservationCountByTheme = new HashMap<>();
+        for (Reservation reservation : reservations) {
+            Theme theme = reservation.getTheme();
+            reservationCountByTheme.put(theme, reservationCountByTheme.getOrDefault(theme, 0) + 1);
         }
-        this.themeRankCount = calculateThemeRankCount;
+        this.reservationCountByTheme = reservationCountByTheme;
     }
 
     public List<Theme> getAscendingRanking() {
-        return themeRankCount.entrySet().stream()
+        return reservationCountByTheme.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey)
                 .limit(RANKING_SIZE)

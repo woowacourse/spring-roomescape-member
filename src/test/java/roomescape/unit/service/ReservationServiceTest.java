@@ -150,7 +150,7 @@ class ReservationServiceTest {
         AvailableTimeRequest availableTimeRequest = new AvailableTimeRequest(today, theme.getId());
         List<ReservationSlot> reservationAvailabilities = reservationService.availableReservationTimes(
                         availableTimeRequest)
-                .getAvailableBookTimes();
+                .getReservationSlots();
 
         List<ReservationSlot> reservationSlots = List.of(new ReservationSlot(1L, firstTime, true),
                 new ReservationSlot(2L, secondTime, false));

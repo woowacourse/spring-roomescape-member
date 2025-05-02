@@ -102,7 +102,7 @@ class AvailableReservationTimeTest {
     void 예약_가능한_시간을_확인할_수_있다() {
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/reservations/available-times?date=" + todayDateString + "&themeId=1")
+                .when().get("/times/available?date=" + todayDateString + "&themeId=1")
                 .then().log().all()
                 .statusCode(200)
                 .extract().response();
