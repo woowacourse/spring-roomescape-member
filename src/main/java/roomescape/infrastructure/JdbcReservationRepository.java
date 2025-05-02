@@ -32,8 +32,8 @@ public class JdbcReservationRepository implements ReservationRepository {
             Theme.afterSave(
                     resultSet.getLong("theme_id"),
                     resultSet.getString("theme_name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail")
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
             )
     );
 
@@ -83,10 +83,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                      t.description as theme_description,
                      t.thumbnail as theme_thumbnail
                     FROM reservation as r
-                    INNER JOIN reservation_time as rt
-                    INNER JOIN theme as t
-                    ON r.time_id = rt.id
-                    ON r.theme_id = t.id
+                    INNER JOIN reservation_time as rt ON r.time_id = rt.id
+                    INNER JOIN theme as t ON r.theme_id = t.id
                     WHERE r.id = ?
                     """;
 
@@ -110,10 +108,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                  t.description as theme_description,
                  t.thumbnail as theme_thumbnail
                 FROM reservation as r
-                INNER JOIN reservation_time as rt
-                INNER JOIN theme as t
-                ON r.time_id = rt.id
-                ON r.theme_id = t.id
+                INNER JOIN reservation_time as rt ON r.time_id = rt.id
+                INNER JOIN theme as t ON r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -134,7 +130,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON t.id = r.time_id
                 WHERE r.date = ?
                 AND t.start_at = ?
-                AND r.time_id = ?
+                AND r.theme_id = ?
                 """;
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time, theme.getId());
         return count != null && count > 0;
