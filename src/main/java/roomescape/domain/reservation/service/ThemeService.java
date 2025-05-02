@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.domain.reservation.dto.ThemeRequest;
 import roomescape.domain.reservation.dto.ThemeResponse;
@@ -27,6 +28,7 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<ThemeResponse> getAll() {
         return themeRepository.findAll()
                 .stream()
@@ -34,11 +36,13 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional
     public ThemeResponse create(ThemeRequest request) {
         Theme theme = themeRepository.save(Theme.withoutId(request.name(), request.description(), request.thumbnail()));
         return ThemeResponse.from(theme);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new AlreadyInUseException("해당 테마에 대한 예약이 존재합니다! id = " + id);
@@ -47,6 +51,7 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<ThemeResponse> getPopularThemes() {
         LocalDate now = getNow();
 

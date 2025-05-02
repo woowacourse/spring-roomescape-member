@@ -2,6 +2,7 @@ package roomescape.domain.reservation.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.domain.reservation.dto.ReservationTimeRequest;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
@@ -21,6 +22,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationTimeResponse> getAll() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
@@ -29,6 +31,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional
     public ReservationTimeResponse create(ReservationTimeRequest request) {
         ReservationTime reservationTime = ReservationTime.withoutId(request.startAt());
 
@@ -37,6 +40,7 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(savedReservationTime);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new AlreadyInUseException("해당 시간대에 예약이 존재하여 삭제할 수 없습니다 id = " + id);

@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.common.exception.InvalidArgumentException;
@@ -41,6 +42,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationResponse> getAll() {
         List<Reservation> reservations = reservationRepository.findAll();
 
@@ -49,6 +51,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public ReservationResponse create(ReservationRequest request) {
         if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
             throw new AlreadyInUseException("해당 예약은 이미 존재합니다!");
@@ -82,6 +85,7 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public void delete(Long id) {
         reservationRepository.deleteById(id);
     }
@@ -90,6 +94,7 @@ public class ReservationService {
         return LocalDateTime.now(clock);
     }
 
+    @Transactional(readOnly = true)
     public List<BookedReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
         Map<ReservationTime, Boolean> allTimes = processAlreadyBookedTimesMap(
                 date, themeId);
