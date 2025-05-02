@@ -31,12 +31,12 @@ public class ReservationService {
 
     public ReservationResponse add(ReservationRequest request) {
         Time time = findReservationTimeOrThrow(request.timeId());
-        Theme theme = findThemeOrThrow(request.themeId());
 
         LocalDate date = request.date();
         validateReservationTimeNotInPast(date, time);
         validateNoDuplicateReservation(date, request.timeId(), request.themeId());
 
+        Theme theme = findThemeOrThrow(request.themeId());
         Reservation reservation = new Reservation(null, request.name(), date, time, theme);
 
         return ReservationResponse.from(reservationRepository.add(reservation));
