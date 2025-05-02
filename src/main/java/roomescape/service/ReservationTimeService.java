@@ -50,7 +50,7 @@ public class ReservationTimeService {
         List<AvailableTimeResponseDto> availableTimeResponseDtos = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             boolean alreadyBooked = false;
-            if (reservedChecker.contains(date, reservationTime.getId(), themeId)) {
+            if (reservedChecker.contains()) {
                 alreadyBooked = true;
             }
             availableTimeResponseDtos.add(

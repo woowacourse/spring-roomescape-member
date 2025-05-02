@@ -1,10 +1,10 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.ReservationValueDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
@@ -34,20 +34,22 @@ public class ReservationService {
     public Reservation addReservation(ReservationRequestDto reservationRequestDto) {
         ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
                 reservationRequestDto.timeId());
-
         ReservationDateTime reservationDateTime = new ReservationDateTime(
                 reservationRequestDto.date(), reservationTime);
 
         validateFutureDateTime(reservationDateTime);
+        Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
+        Reservation reservation = reservationRequestDto.toEntity(null, reservationTime, theme);
 
-        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId(),
-                reservationRequestDto.themeId())) {
+        ReservationValueDto reservationValueDto = ReservationValueDto.of(reservation);
+        validateUniqueReservation(reservationValueDto);
+        return reservationRepository.addReservation(reservationValueDto);
+    }
+
+    private void validateUniqueReservation(ReservationValueDto reservationValueDto) {
+        if (reservedChecker.contains(reservationValueDto)) {
             throw new IllegalArgumentException("Reservation already exists");
         }
-
-        Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
-
-        return reservationRepository.addReservation(reservationRequestDto.toEntity(null, reservationTime, theme));
     }
 
     public void deleteReservation(long id) {
@@ -61,10 +63,6 @@ public class ReservationService {
         if (dateTime.isBefore(now)) {
             throw new IllegalArgumentException("과거 예약은 불가능합니다.");
         }
-    }
-
-    private boolean isAlreadyExist(LocalDate reservationDate, Long timeId, Long themeId) {
-        return reservedChecker.contains(reservationDate, timeId, themeId);
     }
 
 }

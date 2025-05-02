@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.dto.ReservationValueDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
@@ -18,9 +19,12 @@ import roomescape.model.UserName;
 public class JdbcReservationRepository implements ReservationRepository, ReservedTimeChecker, ReservedThemeChecker,
         ReservedChecker {
     private final JdbcTemplate jdbcTemplate;
+    private final JdbcReservationTimeRepository jdbcReservationTimeRepository;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate,
+                                     JdbcReservationTimeRepository jdbcReservationTimeRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcReservationTimeRepository = jdbcReservationTimeRepository;
     }
 
     @Override
@@ -42,20 +46,22 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
     }
 
     @Override
-    public Reservation addReservation(Reservation reservation) {
+    public Reservation addReservation(ReservationValueDto reservationValueDto) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql, new String[]{"id"});
-            ps.setString(1, reservation.getUserName().getName());
-            ps.setString(2, reservation.getReservationDateTime().getDate().toString());
-            ps.setLong(3, reservation.getReservationDateTime().getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
+            ps.setString(1, reservationValueDto.userName().getName());
+            ps.setString(2, reservationValueDto.reservationDateTime().getDate().toString());
+            ps.setLong(3, reservationValueDto.reservationDateTime().getTime().getId());
+            ps.setLong(4, reservationValueDto.theme().getId());
             return ps;
         }, keyHolder);
-        return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservation.getUserName(),
-                reservation.getReservationDateTime(), reservation.getTheme());
+        return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                reservationValueDto.userName(),
+                reservationValueDto.reservationDateTime(),
+                reservationValueDto.theme());
     }
 
     @Override
@@ -64,9 +70,12 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
     }
 
     @Override
-    public boolean contains(LocalDate reservationDate, Long timeId, Long themeId) {
+    public boolean contains(ReservationValueDto reservationValueDto) {
         String sql = "select exists (select 1 from reservation where date = ? and time_id = ? and theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationDate, timeId, themeId);
+        LocalDate date = reservationValueDto.reservationDateTime().getDate();
+        Long timeId = reservationValueDto.reservationDateTime().getTime().getId();
+        Long themeId = reservationValueDto.theme().getId();
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override
