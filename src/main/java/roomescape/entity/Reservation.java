@@ -72,7 +72,8 @@ public class Reservation {
     }
 
     private static void validateDateInterval(final LocalDate date) {
-        long minusDays = Period.between(date, LocalDate.now()).getDays();
+        long minusDays = Period.between(LocalDate.now(), date).getDays();
+        System.out.println(minusDays);
         if (minusDays > RESERVATION_START_INTERVAL) {
             throw new ReservationBeforeOpenDayException();
         }
