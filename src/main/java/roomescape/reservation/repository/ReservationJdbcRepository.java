@@ -26,6 +26,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Reservation> findAll() {
         String sql = """
                 select r.id as reservation_id, 
@@ -59,6 +60,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                         )));
     }
 
+    @Override
     public Reservation save(Reservation reservation) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -94,6 +96,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 theme);
     }
 
+    @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id as reservation_id, 
@@ -130,6 +133,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .findFirst();
     }
 
+    @Override
     public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(sql, id);
@@ -156,4 +160,15 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return count > 0;
     }
 
+    @Override
+    public boolean existsByTimeIdAndDateAndThemeId(Long id, LocalDate date, Long themeId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE time_id = ? AND date = ? AND theme_id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id, date, themeId);
+    }
 }

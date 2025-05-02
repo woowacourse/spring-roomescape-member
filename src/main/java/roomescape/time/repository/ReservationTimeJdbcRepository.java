@@ -1,6 +1,5 @@
 package roomescape.time.repository;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.time.controller.response.AvailableReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeRepository;
 
@@ -72,27 +70,5 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
         return count > 0;
-    }
-
-    @Override
-    public List<AvailableReservationTimeResponse> findAllAvailableReservationTimes(LocalDate date, Long themeId) {
-        String sql = """
-                SELECT
-                    rt.id,
-                    rt.start_at,
-                    r.id is NOT NULL as is_reserved
-                FROM
-                    reservation_time rt
-                LEFT JOIN
-                    reservation r ON r.time_id = rt.id AND r.date = ? AND r.theme_id = ? 
-                GROUP BY
-                    rt.id
-                """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new AvailableReservationTimeResponse(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at")),
-                        resultSet.getBoolean("is_reserved")
-                ), date, themeId);
     }
 }

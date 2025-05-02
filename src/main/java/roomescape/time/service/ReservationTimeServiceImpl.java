@@ -1,5 +1,6 @@
 package roomescape.time.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,7 +25,6 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeCreateRequest request) {
-
         LocalTime startAt = request.startAt();
         if (reservationTimeRepository.existByStartAt(startAt)) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 시간입니다.");
@@ -58,6 +58,20 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(
             AvailableReservationTimeRequest request) {
-        return reservationTimeRepository.findAllAvailableReservationTimes(request.date(), request.themeId());
+        return reservationTimeRepository.findAll()
+                .stream()
+                .map(time -> addIfAvailableTime(time, request.date(), request.themeId()))
+                .toList();
+    }
+
+    private AvailableReservationTimeResponse addIfAvailableTime(
+            ReservationTime time,
+            LocalDate date,
+            Long themeId
+    ) {
+        boolean isReserved = reservationRepository.existsByTimeIdAndDateAndThemeId(
+                time.getId(), date, themeId);
+
+        return new AvailableReservationTimeResponse(time.getId(), time.getStartAt(), isReserved);
     }
 }
