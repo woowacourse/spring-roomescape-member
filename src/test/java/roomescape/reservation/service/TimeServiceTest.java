@@ -36,7 +36,7 @@ class TimeServiceTest {
 
         // when
         assertThatCode(() -> {
-            service.create(requestDto);
+            service.createTime(requestDto);
         }).doesNotThrowAnyException();
     }
 
@@ -55,7 +55,7 @@ class TimeServiceTest {
         TimeRequest requestDto = new TimeRequest(startAt);
         // when & then
         assertThatThrownBy(() -> {
-            service.create(requestDto);
+            service.createTime(requestDto);
         }).isInstanceOf(BadRequestException.class);
     }
 
@@ -78,13 +78,13 @@ class TimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> {
-            service.create(requestDto);
+            service.createTime(requestDto);
         }).isInstanceOf(ConflictException.class);
     }
 
     @DisplayName("예약 내역이 존재하는 시간은 삭제할 수 없다.")
     @Test
-    void deleteExistReservationTime() {
+    void deleteTimeExistReservationTime() {
         // given
         LocalTime time = LocalTime.of(12, 0);
         Time timeEntity = new Time(1L, time);
@@ -94,7 +94,7 @@ class TimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> {
-            service.delete(1L);
+            service.deleteTime(1L);
         }).isInstanceOf(BadRequestException.class);
     }
 }

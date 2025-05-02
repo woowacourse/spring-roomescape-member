@@ -1,15 +1,14 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ThemeRepository;
+import roomescape.global.error.exception.ConflictException;
+import roomescape.global.error.exception.NotFoundException;
 import roomescape.reservation.dto.request.ThemeRequest;
 import roomescape.reservation.dto.response.ThemeResponse;
 import roomescape.reservation.entity.Theme;
-import roomescape.global.error.exception.ConflictException;
-import roomescape.global.error.exception.NotFoundException;
-
-import java.time.LocalDate;
-import java.util.List;
+import roomescape.reservation.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
@@ -37,13 +36,6 @@ public class ThemeService {
                 .toList();
     }
 
-    public void deleteTheme(final Long id) {
-        final boolean deleted = themeRepository.deleteById(id);
-        if (!deleted) {
-            throw new NotFoundException("존재하지 않는 id 입니다.");
-        }
-    }
-
     public List<ThemeResponse> getPopularThemes(final int limit) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusWeeks(1);
@@ -51,5 +43,12 @@ public class ThemeService {
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    public void deleteTheme(final Long id) {
+        final boolean deleted = themeRepository.deleteById(id);
+        if (!deleted) {
+            throw new NotFoundException("존재하지 않는 id 입니다.");
+        }
     }
 }

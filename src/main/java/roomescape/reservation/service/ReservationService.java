@@ -32,16 +32,6 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponse> getAllReservation() {
-        return reservationRepository.findAll().stream()
-                .map(reservation -> {
-                    Theme theme = themeRepository.findById(reservation.getThemeId())
-                            .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
-                    return ReservationResponse.from(reservation, theme);
-                })
-                .toList();
-    }
-
     public ReservationResponse createReservation(ReservationRequest request) {
         Time time = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간 입니다."));
@@ -54,6 +44,16 @@ public class ReservationService {
 
         Reservation saved = reservationRepository.save(newReservation);
         return ReservationResponse.from(saved, theme);
+    }
+
+    public List<ReservationResponse> getAllReservations() {
+        return reservationRepository.findAll().stream()
+                .map(reservation -> {
+                    Theme theme = themeRepository.findById(reservation.getThemeId())
+                            .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
+                    return ReservationResponse.from(reservation, theme);
+                })
+                .toList();
     }
 
     public void deleteReservation(final Long id) {

@@ -28,12 +28,33 @@ public class TimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public TimeResponse create(TimeRequest request) {
+    public TimeResponse createTime(TimeRequest request) {
         Time time = request.toEntity();
         validateOperatingTime(time);
         validateDuplicated(time);
         Time saved = timeRepository.save(time);
         return TimeResponse.from(saved);
+    }
+
+    public List<TimeResponse> getAllTimes() {
+        return timeRepository.findAll().stream()
+                .map(TimeResponse::from)
+                .toList();
+    }
+
+    public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, final Long themeId) {
+        return timeRepository.findAvailableTimes(date, themeId);
+    }
+
+    public void deleteTime(final Long id) {
+        List<Reservation> reservations = reservationRepository.findAllByTimeId(id);
+        if (!reservations.isEmpty()) {
+            throw new BadRequestException("해당 시간에 예약된 내역이 존재하므로 삭제할 수 없습니다.");
+        }
+        final boolean deleted = timeRepository.deleteById(id);
+        if (!deleted) {
+            throw new NotFoundException("존재하지 않는 id 입니다.");
+        }
     }
 
     private void validateOperatingTime(Time entity) {
@@ -47,26 +68,5 @@ public class TimeService {
         if (times.stream().anyMatch(time -> time.isDuplicatedWith(entity))) {
             throw new ConflictException("러닝 타임이 겹치는 시간이 존재합니다.");
         }
-    }
-
-    public List<TimeResponse> getAllTimes() {
-        return timeRepository.findAll().stream()
-                .map(TimeResponse::from)
-                .toList();
-    }
-
-    public void delete(final Long id) {
-        List<Reservation> reservations = reservationRepository.findAllByTimeId(id);
-        if (!reservations.isEmpty()) {
-            throw new BadRequestException("해당 시간에 예약된 내역이 존재하므로 삭제할 수 없습니다.");
-        }
-        final boolean deleted = timeRepository.deleteById(id);
-        if (!deleted) {
-            throw new NotFoundException("존재하지 않는 id 입니다.");
-        }
-    }
-
-    public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, final Long themeId) {
-        return timeRepository.findAvailableTimes(date, themeId);
     }
 }
