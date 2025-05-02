@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationTimeIntegrateTest {
 
     static Map<String, String> params;
@@ -33,11 +33,14 @@ class ReservationTimeIntegrateTest {
         params.put("time", "15:40");
     }
 
-    @BeforeEach
-    void setup(@Autowired JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("delete from reservation");
-        jdbcTemplate.execute("delete from reservation_time");
-        jdbcTemplate.execute("delete from theme");
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    void cleanUp() {
+        jdbcTemplate.execute("drop table reservation");  // 자식 테이블 먼저
+        jdbcTemplate.execute("drop table reservation_time");
+        jdbcTemplate.execute("drop table theme");
     }
 
     @Test

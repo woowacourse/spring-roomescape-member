@@ -11,7 +11,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -29,10 +29,13 @@ import roomescape.repository.ReservationRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationIntegrateTest {
 
     static Map<String, String> params;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     static {
         params = new HashMap<>();
@@ -41,11 +44,11 @@ class ReservationIntegrateTest {
         params.put("time", "15:40");
     }
 
-    @BeforeEach
-    void setup(@Autowired JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("delete from reservation");
-        jdbcTemplate.execute("delete from reservation_time");
-        jdbcTemplate.execute("delete from theme");
+    @AfterEach
+    void cleanup() {
+        jdbcTemplate.execute("drop table reservation");  // 자식 테이블 먼저
+        jdbcTemplate.execute("drop table reservation_time");
+        jdbcTemplate.execute("drop table theme");
     }
 
     @Test

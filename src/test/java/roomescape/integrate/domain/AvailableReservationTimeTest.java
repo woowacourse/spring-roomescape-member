@@ -24,10 +24,20 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class AvailableReservationTimeTest {
 
     private static String todayDateString;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    void cleanup() {
+        jdbcTemplate.execute("drop table reservation");  // 자식 테이블 먼저
+        jdbcTemplate.execute("drop table reservation_time");
+        jdbcTemplate.execute("drop table theme");
+    }
 
     @BeforeEach
     void setup() {
@@ -89,13 +99,6 @@ class AvailableReservationTimeTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
-    }
-
-    @AfterEach
-    void tearDown(@Autowired JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("delete from reservation");
-        jdbcTemplate.execute("delete from reservation_time");
-        jdbcTemplate.execute("delete from theme");
     }
 
     @Test

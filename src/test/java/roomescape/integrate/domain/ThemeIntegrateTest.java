@@ -6,7 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ThemeIntegrateTest {
 
     static Map<String, String> params;
@@ -34,11 +34,11 @@ class ThemeIntegrateTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
-    void setup() {
-        jdbcTemplate.execute("delete from reservation_time");
-        jdbcTemplate.execute("delete from theme");
-        jdbcTemplate.execute("delete from reservation");
+    @AfterEach
+    void cleanup() {
+        jdbcTemplate.execute("drop from reservation");  // 자식 테이블 먼저
+        jdbcTemplate.execute("drop from reservation_time");
+        jdbcTemplate.execute("drop from theme");
     }
 
     @Test
