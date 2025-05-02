@@ -171,4 +171,16 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, id, date, themeId);
     }
+
+    @Override
+    public int countReservationByThemeIdAndDuration(LocalDate from, LocalDate to, Long themeId) {
+        String sql = """
+                SELECT count(*)
+                FROM reservation
+                WHERE theme_id = ?
+                AND date >= ?
+                ANd date < ?
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, themeId, from, to);
+    }
 }

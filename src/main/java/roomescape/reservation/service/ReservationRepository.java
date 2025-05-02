@@ -28,4 +28,6 @@ public interface ReservationRepository {
     boolean existReservationByThemeId(Long themeId);
 
     boolean existsByTimeIdAndDateAndThemeId(Long id, LocalDate date, Long themeId);
+
+    int countReservationByThemeIdAndDuration(LocalDate from, LocalDate to, Long themeId);
 }

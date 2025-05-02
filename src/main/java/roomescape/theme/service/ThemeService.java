@@ -47,7 +47,17 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10, LocalDate.now(clock));
-        return ThemeResponse.from(themes);
+        int limit = 10;
+        LocalDate from = LocalDate.now(clock);
+        LocalDate to = from.plusDays(7);
+        
+        return themeRepository.findAll().stream()
+                .sorted((t1, t2) -> Integer.compare(
+                        reservationRepository.countReservationByThemeIdAndDuration(from, to, t1.getId()),
+                        reservationRepository.countReservationByThemeIdAndDuration(from, to, t2.getId())
+                ))
+                .limit(limit)
+                .map(ThemeResponse::from)
+                .toList();
     }
 }
