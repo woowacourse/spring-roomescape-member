@@ -32,7 +32,7 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     @Override
     public Theme add(Theme theme) {
-        String sql = "insert into theme (name,description,thumbnail) values(?,?,?)";
+        String sql = "insert into theme (name, description, thumbnail) values(?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
@@ -61,7 +61,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         try {
-            String sql = "select id, name, description, thumbnail from theme where id=?";
+            String sql = "select id, name, description, thumbnail from theme where id = ?";
             return Optional.of(jdbcTemplate.queryForObject(sql, themeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

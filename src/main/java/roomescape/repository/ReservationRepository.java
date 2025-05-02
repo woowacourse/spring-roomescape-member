@@ -11,17 +11,17 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    void deleteById(Long id);
-
-    boolean existsByTimeId(Long id);
+    Optional<Reservation> findById(long addedReservationId);
 
     List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId);
 
-    Optional<Reservation> findById(long addedReservationId);
-
     List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end);
+
+    boolean existsByTimeId(Long id);
+
+    boolean existsByThemeId(long id);
 
     boolean existsByDateAndTimeIdAndTheme(Reservation reservation);
 
-    boolean existsByThemeId(long id);
+    void deleteById(Long id);
 }

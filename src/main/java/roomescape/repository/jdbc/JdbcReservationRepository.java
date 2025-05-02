@@ -46,7 +46,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation add(Reservation reservation) {
-        String sql = "insert into reservation (name,date,time_id, theme_id) values(?,?,?,?)";
+        String sql = "insert into reservation (name, `date`, time_id, theme_id) values(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -74,70 +74,21 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 select 
                     r.id as reservation_id,
-                        r.name,
-                        r.date,
-                        rt.id as time_id,
-                        rt.start_at as time_value,
-                        t.id as theme_id,
-                        t.name as theme_name,
-                        t.description as theme_description,
-                        t.thumbnail as theme_thumbnail
-                    from reservation as r
-                    inner join reservation_time as rt
-                    on r.time_id = rt.id
-                    inner join theme as t
-                    on r.theme_id = t.id
+                    r.name,
+                    r.`date`,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as theme_description,
+                    t.thumbnail as theme_thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        String sql = "delete from reservation where id=?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public boolean existsByTimeId(Long id) {
-        String sql = "select count(id) from reservation where time_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
-    }
-
-    @Override
-    public boolean existsByDateAndTimeIdAndTheme(Reservation reservation) {
-        String sql = "select count(id) from reservation where date = ? and time_id = ? and theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, reservation.getDate(),
-                reservation.getReservationTime().getId(),
-                reservation.getTheme().getId()) > 0;
-    }
-
-    @Override
-    public boolean existsByThemeId(long themeId) {
-        String sql = "select count(id) from reservation where theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, themeId) > 0;
-    }
-
-    @Override
-    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = """
-                select 
-                    r.id as reservation_id,
-                        r.name,
-                        r.date,
-                        rt.id as time_id,
-                        rt.start_at as time_value,
-                        t.id as theme_id,
-                        t.name as theme_name,
-                        t.description as theme_description,
-                        t.thumbnail as theme_thumbnail
-                    from reservation as r
-                    inner join reservation_time as rt
-                    on r.time_id = rt.id
-                    inner join theme as t
-                    on r.theme_id = t.id
-                where date = ? and theme_id = ?               
-                """;
-        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
     @Override
@@ -145,19 +96,19 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """
                 select 
                     r.id as reservation_id,
-                        r.name,
-                        r.date,
-                        rt.id as time_id,
-                        rt.start_at as time_value,
-                        t.id as theme_id,
-                        t.name as theme_name,
-                        t.description as theme_description,
-                        t.thumbnail as theme_thumbnail
-                    from reservation as r
-                    inner join reservation_time as rt
-                    on r.time_id = rt.id
-                    inner join theme as t
-                    on r.theme_id = t.id
+                    r.name,
+                    r.`date`,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as theme_description,
+                    t.thumbnail as theme_thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
                 where r.id = ?
                 """;
         try {
@@ -168,25 +119,79 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                select 
+                    r.id as reservation_id,
+                    r.name,
+                    r.`date`,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as theme_description,
+                    t.thumbnail as theme_thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
+                where `date` = ? and theme_id = ?               
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
+    }
+
+    @Override
     public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
         String sql = """
                 select 
                     r.id as reservation_id,
-                        r.name,
-                        r.date,
-                        rt.id as time_id,
-                        rt.start_at as time_value,
-                        t.id as theme_id,
-                        t.name as theme_name,
-                        t.description as theme_description,
-                        t.thumbnail as theme_thumbnail
-                    from reservation as r
-                    inner join reservation_time as rt
-                    on r.time_id = rt.id
-                    inner join theme as t
-                    on r.theme_id = t.id
-                    where r.date between ? and ?
+                    r.name,
+                    r.`date`,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as theme_description,
+                    t.thumbnail as theme_thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
+                where r.`date` between ? and ?
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper, start, end);
+    }
+
+    @Override
+    public boolean existsByTimeId(Long id) {
+        String sql = "select count(id) from reservation where time_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id) > 0;
+    }
+
+    @Override
+    public boolean existsByThemeId(long themeId) {
+        String sql = "select count(id) from reservation where theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count > 0;
+    }
+
+    @Override
+    public boolean existsByDateAndTimeIdAndTheme(Reservation reservation) {
+        String sql = "select count(id) from reservation where `date` = ? and time_id = ? and theme_id = ?";
+
+        Integer count = jdbcTemplate.queryForObject(sql,
+                Integer.class,
+                reservation.getDate(),
+                reservation.getReservationTime().getId(),
+                reservation.getTheme().getId());
+        return count > 0;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "delete from reservation where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

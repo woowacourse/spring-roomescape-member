@@ -46,20 +46,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(Long id) {
-        String sql = "delete from reservation_time where id=?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public boolean existsByTime(LocalTime time) {
-        String sql = "select count(id) from reservation_time where start_at = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, time) > 0;
+    public List<ReservationTime> findAll() {
+        String sql = "select id, start_at from reservation_time";
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select id,start_at from reservation_time where id=?";
+        String sql = "select id, start_at from reservation_time where id = ?";
         try {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
             return Optional.of(reservationTime);
@@ -69,8 +63,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        String sql = "select id,start_at from reservation_time";
-        return jdbcTemplate.query(sql, reservationRowMapper);
+    public boolean existsByTime(LocalTime time) {
+        String sql = "select count(id) from reservation_time where start_at = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, time) > 0;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        String sql = "delete from reservation_time where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
