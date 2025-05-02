@@ -9,11 +9,15 @@ import roomescape.entity.Theme;
 import roomescape.exceptions.ThemeDuplicateException;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class ThemeService {
+
+    private static final int START_DATE_INTERVAL = 7;
+    private static final int END_DATE_INTERVAL = 1;
 
     private final ThemeRepository repository;
 
@@ -42,8 +46,12 @@ public class ThemeService {
     }
 
     @Transactional
-    public List<PopularThemeResponse> readRecentPopularThemes() {
-        return repository.findPopularThemesThisWeek().stream()
+    public List<PopularThemeResponse> readRecentPopularThemes(int count) {
+        LocalDate today = LocalDate.now();
+        return repository.findPopularThemesThisWeek(
+                today.minusDays(START_DATE_INTERVAL), today.minusDays(END_DATE_INTERVAL)
+                , count)
+                .stream()
                 .map(PopularThemeResponse::from)
                 .toList();
     }

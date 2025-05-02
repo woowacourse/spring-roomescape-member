@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.entity.Theme;
 import roomescape.exceptions.EntityNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,19 +62,23 @@ public class ThemeJDBCDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemesThisWeek() {
+    public List<Theme> findPopularThemesThisWeek(LocalDate startInclusive, LocalDate endInclusive, int count) {
         String sql = """
                 select th.id, th.name, th.description, th.thumbnail, count(*) as reservation_count
                 from theme as th
                 inner join reservation as r
                 on th.id = r.theme_id
-                where r.date >= CURRENT_DATE() -7
-                AND r.date <= CURRENT_DATE()
+                where r.date between :start and :end
                 group by th.id
                 order by reservation_count desc
-                limit 10
+                limit :count
                 """;
-        return namedJdbcTemplate.query(sql, getThemeRowMapper());
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start", startInclusive)
+                .addValue("end", endInclusive)
+                .addValue("count", count);
+
+        return namedJdbcTemplate.query(sql, params, getThemeRowMapper());
     }
 
     private RowMapper<Theme> getThemeRowMapper() {

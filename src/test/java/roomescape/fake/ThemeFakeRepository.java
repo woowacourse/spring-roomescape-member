@@ -4,6 +4,7 @@ import roomescape.entity.Theme;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.repository.ThemeRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +56,7 @@ public class ThemeFakeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemesThisWeek() {
+    public List<Theme> findPopularThemesThisWeek(LocalDate startInclusive, LocalDate endInclusive, int count) {
         return List.of();
     }
 }
