@@ -53,7 +53,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update(
                 "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
 
-        Reservation reservation = Reservation.withoutId(
+        Reservation reservation = Reservation.createNew(
                 "테스트행님",
                 Theme.of(1L, "테마1", "테마 1입니다.", "썸네일"),
                 LocalDate.of(2025, 4, 30),

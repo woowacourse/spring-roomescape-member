@@ -54,7 +54,7 @@ class JdbcThemeRepositoryTest {
     @Test
     void save() {
         //given
-        Theme themeWithoutId = Theme.withoutId("테마1", "테마 1입니다.", "썸네일");
+        Theme themeWithoutId = Theme.createNew("테마1", "테마 1입니다.", "썸네일");
 
         //when
         Long id = jdbcThemeRepository.save(themeWithoutId);

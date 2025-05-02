@@ -29,7 +29,7 @@ public class TimeService {
     }
 
     public TimeDto registerNewTime(TimeRequest request) {
-        ReservationTime newReservationTime = ReservationTime.withoutId(request.startAt());
+        ReservationTime newReservationTime = ReservationTime.createNew(request.startAt());
         Long id = repository.save(newReservationTime);
 
         ReservationTime saved = ReservationTime.assignId(id, newReservationTime);

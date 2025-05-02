@@ -29,7 +29,7 @@ public class ReservationService {
     public ReservationDto registerReservation(ReservationRequest request) {
         Theme theme = themeService.getThemeById(request.themeId());
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
-        Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
+        Reservation reservation = Reservation.createNew(request.name(), theme, request.date(), reservationTime);
         validateCanRegister(request, reservation);
         Long id = reservationRepository.save(reservation);
 

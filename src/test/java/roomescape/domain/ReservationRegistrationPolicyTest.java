@@ -19,7 +19,7 @@ class ReservationRegistrationPolicyTest {
     void error_when_register_isPast() {
         // given
         LocalDate pastDate = LocalDate.now().minusDays(1);
-        Reservation candidate = Reservation.withoutId("멍구", THEME_1, pastDate, RESERVATION_TIME_1);
+        Reservation candidate = Reservation.createNew("멍구", THEME_1, pastDate, RESERVATION_TIME_1);
         ReservationRegistrationPolicy reservationRegistrationPolicy = new ReservationRegistrationPolicy();
 
         boolean existsDuplicatedReservation = false;

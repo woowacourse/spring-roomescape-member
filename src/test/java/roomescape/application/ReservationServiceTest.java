@@ -64,7 +64,7 @@ class ReservationServiceTest {
 
         Theme theme =  Theme.of(1L, "호러 테마", "완전 호러입니다.", "thumbnail.url");
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.withoutId("멍구", theme, request.date(), time);
+        Reservation reservation = Reservation.createNew("멍구", theme, request.date(), time);
 
         given(themeService.getThemeById(1L)).willReturn(theme);
         given(timeService.getTimeById(1L)).willReturn(time);

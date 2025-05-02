@@ -23,7 +23,7 @@ public class Reservation {
         return new Reservation(id, name, theme, date, time);
     }
 
-    public static Reservation withoutId(String name, Theme theme, LocalDate reservationDate,
+    public static Reservation createNew(String name, Theme theme, LocalDate reservationDate,
                                         ReservationTime reservationTime) {
         return new Reservation(null, name, theme, reservationDate, reservationTime);
     }
@@ -41,8 +41,8 @@ public class Reservation {
 
     public boolean isDuplicatedWith(Reservation other) {
         return this.reservationDate.equals(other.reservationDate)
-               && this.reservationTime.equals(other.reservationTime)
-               && this.theme.equals(other.theme);
+                && this.reservationTime.equals(other.reservationTime)
+                && this.theme.equals(other.theme);
     }
 
     public Long getId() {

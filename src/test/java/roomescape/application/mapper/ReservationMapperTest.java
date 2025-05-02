@@ -25,7 +25,7 @@ class ReservationMapperTest {
         ReservationRequest request = new ReservationRequest(1L, reservationDate, "멍구", 1L);
 
         // when
-        Reservation reservation = Reservation.withoutId(request.name(), THEME_1, request.date(), reservationTime);
+        Reservation reservation = Reservation.createNew(request.name(), THEME_1, request.date(), reservationTime);
 
         // then
         assertAll(

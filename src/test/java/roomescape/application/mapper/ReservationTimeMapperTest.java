@@ -21,7 +21,7 @@ class ReservationTimeMapperTest {
         TimeRequest request = new TimeRequest(time);
 
         // when
-        ReservationTime reservationTime = ReservationTime.withoutId(request.startAt());
+        ReservationTime reservationTime = ReservationTime.createNew(request.startAt());
 
         // then
         assertAll(

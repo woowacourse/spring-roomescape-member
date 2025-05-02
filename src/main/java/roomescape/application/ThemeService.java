@@ -31,7 +31,7 @@ public class ThemeService {
     }
 
     public ThemeDto registerTheme(@Valid ThemeRequest themeRequest) {
-        Theme themeWithoutId = Theme.withoutId(themeRequest.name(), themeRequest.description(),
+        Theme themeWithoutId = Theme.createNew(themeRequest.name(), themeRequest.description(),
                 themeRequest.thumbnail());
         Long id = themeRepository.save(themeWithoutId);
         Theme theme = Theme.assignId(id, themeWithoutId);

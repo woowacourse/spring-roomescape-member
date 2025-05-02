@@ -19,7 +19,7 @@ public class Theme {
         return new Theme(id, name, description, thumbnail);
     }
 
-    public static Theme withoutId(String name, String description, String thumbnail) {
+    public static Theme createNew(String name, String description, String thumbnail) {
         return new Theme(null, name, description, thumbnail);
     }
 
