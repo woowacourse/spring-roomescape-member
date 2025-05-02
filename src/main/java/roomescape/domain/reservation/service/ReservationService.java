@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -99,16 +100,14 @@ public class ReservationService {
     }
 
     private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(LocalDate date, Long themeId) {
-        Map<ReservationTime, Boolean> allTimes = reservationTimeRepository.findAll()
-                .stream()
-                .collect(Collectors.toMap(Function.identity(), t -> false));
-
-        reservationRepository.findByDateAndThemeId(date, themeId)
+        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
+        Set<ReservationTime> bookedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getReservationTime)
-                .forEach(bookedTime -> allTimes.put(bookedTime, true));
+                .collect(Collectors.toSet());
 
-        return allTimes;
+        return allTimes.stream()
+                .collect(Collectors.toMap(Function.identity(), bookedTimes::contains));
     }
 
     private BookedReservationTimeResponse bookedReservationTimeResponseOf(
