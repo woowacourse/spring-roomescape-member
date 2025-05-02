@@ -9,7 +9,7 @@ public record ReservationResponse(
         Long id,
         String name,
         LocalDate date,
-        TimeResponse time,
+        ReservationTimeResponse time,
         ThemeResponse theme
 ) {
 
@@ -18,7 +18,7 @@ public record ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                TimeResponse.from(reservation.getTime()),
+                ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(theme)
         );
     }

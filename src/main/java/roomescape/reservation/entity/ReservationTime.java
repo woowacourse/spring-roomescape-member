@@ -2,7 +2,7 @@ package roomescape.reservation.entity;
 
 import java.time.LocalTime;
 
-public class Time {
+public class ReservationTime {
 
     private static final LocalTime RUNNING_TIME = LocalTime.of(2, 0);
     private static final LocalTime OPERATING_START = LocalTime.of(10, 0);
@@ -11,12 +11,12 @@ public class Time {
     private final Long id;
     private LocalTime startAt;
 
-    public Time(Long id, LocalTime startAt) {
+    public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public boolean isDuplicatedWith(Time other) {
+    public boolean isDuplicatedWith(ReservationTime other) {
         LocalTime otherStartAt = other.startAt;
         final int interval = Math.abs(otherStartAt.toSecondOfDay() - startAt.toSecondOfDay());
         return interval < RUNNING_TIME.toSecondOfDay();

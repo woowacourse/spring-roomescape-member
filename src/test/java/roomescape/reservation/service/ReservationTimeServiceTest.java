@@ -13,26 +13,27 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.global.error.exception.BadRequestException;
 import roomescape.global.error.exception.ConflictException;
-import roomescape.reservation.dto.request.TimeRequest;
+import roomescape.reservation.dto.request.ReservationTimeRequest;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.Time;
+import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.repository.FakeReservationRepository;
-import roomescape.reservation.repository.FakeTimeRepository;
+import roomescape.reservation.repository.FakeReservationTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.TimeRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
 
-class TimeServiceTest {
+class ReservationTimeServiceTest {
 
-    private final TimeRepository timeRepository = new FakeTimeRepository();
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
-    private final TimeService service = new TimeService(timeRepository, reservationRepository);
+    private final ReservationTimeService service = new ReservationTimeService(reservationTimeRepository,
+            reservationRepository);
 
     @DisplayName("예약 생성이 가능한 시간은 10:00 ~ 22:00 이다.")
     @ParameterizedTest
     @MethodSource
     void validOperatingTime(LocalTime startAt) {
         // given
-        TimeRequest requestDto = new TimeRequest(startAt);
+        ReservationTimeRequest requestDto = new ReservationTimeRequest(startAt);
 
         // when
         assertThatCode(() -> {
@@ -52,7 +53,7 @@ class TimeServiceTest {
     @MethodSource
     void invalidOperatingTime(LocalTime startAt) {
         // given
-        TimeRequest requestDto = new TimeRequest(startAt);
+        ReservationTimeRequest requestDto = new ReservationTimeRequest(startAt);
         // when & then
         assertThatThrownBy(() -> {
             service.createTime(requestDto);
@@ -72,9 +73,9 @@ class TimeServiceTest {
         // given
         LocalTime time = LocalTime.of(10, 0);
         LocalTime duplicatedTime = time.plusHours(1);
-        timeRepository.save(new Time(1L, time));
+        reservationTimeRepository.save(new ReservationTime(1L, time));
 
-        TimeRequest requestDto = new TimeRequest(duplicatedTime);
+        ReservationTimeRequest requestDto = new ReservationTimeRequest(duplicatedTime);
 
         // when & then
         assertThatThrownBy(() -> {
@@ -87,10 +88,10 @@ class TimeServiceTest {
     void deleteTimeExistReservationTime() {
         // given
         LocalTime time = LocalTime.of(12, 0);
-        Time timeEntity = new Time(1L, time);
-        timeRepository.save(timeEntity);
+        ReservationTime reservationTime = new ReservationTime(1L, time);
+        reservationTimeRepository.save(reservationTime);
         LocalDate date = LocalDate.of(2025, 1, 2);
-        reservationRepository.save(new Reservation(1L, "test1", date, timeEntity, null));
+        reservationRepository.save(new Reservation(1L, "test1", date, reservationTime, null));
 
         // when & then
         assertThatThrownBy(() -> {

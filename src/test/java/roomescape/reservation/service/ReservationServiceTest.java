@@ -11,11 +11,11 @@ import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.Time;
+import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.repository.FakeReservationRepository;
-import roomescape.reservation.repository.FakeTimeRepository;
+import roomescape.reservation.repository.FakeReservationTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.TimeRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -23,11 +23,11 @@ import roomescape.theme.repository.ThemeRepository;
 class ReservationServiceTest {
 
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
-    private final TimeRepository timeRepository = new FakeTimeRepository();
+    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository();
     private final ReservationService service = new ReservationService(
             reservationRepository,
-            timeRepository,
+            reservationTimeRepository,
             themeRepository
     );
 
@@ -69,12 +69,12 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         LocalDate date = now.plusDays(1);
 
-        Time timeEntity = new Time(1L, LocalTime.of(12, 0));
-        Reservation reservation = new Reservation(1L, "test", date, timeEntity, 1L);
-        timeRepository.save(timeEntity);
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(12, 0));
+        Reservation reservation = new Reservation(1L, "test", date, reservationTime, 1L);
+        reservationTimeRepository.save(reservationTime);
         reservationRepository.save(reservation);
 
-        ReservationRequest requestDto = new ReservationRequest(date, "test", timeEntity.getId(), 1L);
+        ReservationRequest requestDto = new ReservationRequest(date, "test", reservationTime.getId(), 1L);
 
         // when & then
         assertThatThrownBy(() -> {

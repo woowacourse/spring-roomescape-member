@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.Time;
+import roomescape.reservation.entity.ReservationTime;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
@@ -90,7 +90,7 @@ public class H2ReservationRepository implements ReservationRepository {
             LocalDate date = resultSet.getObject("date", LocalDate.class);
             final long timeId = resultSet.getLong("time_id");
             LocalTime timeValue = resultSet.getObject("time_value", LocalTime.class);
-            Time timeEntity = new Time(timeId, timeValue);
+            ReservationTime timeEntity = new ReservationTime(timeId, timeValue);
             final long themeId = resultSet.getLong("theme_id");
 
             return new Reservation(
@@ -122,7 +122,7 @@ public class H2ReservationRepository implements ReservationRepository {
             LocalDate date = resultSet.getObject("date", LocalDate.class);
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
             final long themeId = resultSet.getLong("theme_id");
-            Time timeEntity = new Time(id, startAt);
+            ReservationTime timeEntity = new ReservationTime(id, startAt);
 
             return new Reservation(
                     reservationId,

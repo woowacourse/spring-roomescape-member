@@ -10,7 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class TimeTest {
+class ReservationTimeTest {
 
     @DisplayName("게임 러닝 타임(2시간)을 고려하여 예약 중복 여부를 판단할 수 있다.")
     @Test
@@ -18,11 +18,11 @@ class TimeTest {
         // given
         LocalTime time = LocalTime.of(10, 0);
         LocalTime duplicateTime = time.plusHours(1);
-        Time timeEntity = new Time(1L, time);
-        Time otherTimeEntity = new Time(2L, duplicateTime);
+        ReservationTime reservationTime = new ReservationTime(1L, time);
+        ReservationTime otherTime = new ReservationTime(2L, duplicateTime);
 
         // when
-        final boolean isDuplicated = timeEntity.isDuplicatedWith(otherTimeEntity);
+        final boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
 
         // then
         assertThat(isDuplicated).isTrue();
@@ -34,11 +34,11 @@ class TimeTest {
         // given
         LocalTime time = LocalTime.of(10, 0);
         LocalTime duplicateTime = time.plusHours(2);
-        Time timeEntity = new Time(1L, time);
-        Time otherTimeEntity = new Time(2L, duplicateTime);
+        ReservationTime reservationTime = new ReservationTime(1L, time);
+        ReservationTime otherTime = new ReservationTime(2L, duplicateTime);
 
         // when
-        final boolean isDuplicated = timeEntity.isDuplicatedWith(otherTimeEntity);
+        final boolean isDuplicated = reservationTime.isDuplicatedWith(otherTime);
 
         // then
         assertThat(isDuplicated).isFalse();
@@ -49,10 +49,10 @@ class TimeTest {
     @MethodSource
     void checkIsAvailable(LocalTime startAt, final boolean expected) {
         // given
-        Time timeEntity = new Time(null, startAt);
+        ReservationTime time = new ReservationTime(null, startAt);
 
         // when
-        final boolean actual = timeEntity.isAvailable();
+        final boolean actual = time.isAvailable();
 
         // then
         assertThat(actual).isSameAs(expected);

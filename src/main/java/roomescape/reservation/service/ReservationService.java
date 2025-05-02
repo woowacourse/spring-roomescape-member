@@ -9,9 +9,9 @@ import roomescape.global.error.exception.NotFoundException;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.Time;
+import roomescape.reservation.entity.ReservationTime;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.TimeRepository;
+import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -19,21 +19,21 @@ import roomescape.theme.repository.ThemeRepository;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final TimeRepository timeRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            TimeRepository timeRepository,
+            ReservationTimeRepository reservationTimeRepository,
             ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
-        this.timeRepository = timeRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
-        Time time = timeRepository.findById(request.timeId())
+        ReservationTime time = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간 입니다."));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));

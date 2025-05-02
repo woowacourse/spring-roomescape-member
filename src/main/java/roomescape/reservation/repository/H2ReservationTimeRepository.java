@@ -9,20 +9,20 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.dto.response.AvailableTimeResponse;
-import roomescape.reservation.entity.Time;
+import roomescape.reservation.dto.response.AvailableReservationTimeResponse;
+import roomescape.reservation.entity.ReservationTime;
 
 @Repository
-public class H2TimeRepository implements TimeRepository {
+public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public H2TimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public H2ReservationTimeRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Time save(Time time) {
+    public ReservationTime save(ReservationTime time) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (:start_at)";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -32,21 +32,21 @@ public class H2TimeRepository implements TimeRepository {
 
         jdbcTemplate.update(sql, params, keyHolder);
 
-        return new Time(
+        return new ReservationTime(
                 keyHolder.getKey().longValue(),
                 time.getStartAt()
         );
     }
 
     @Override
-    public List<Time> findAll() {
+    public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> {
             Long id = resultSet.getLong("id");
             LocalTime time = resultSet.getObject("start_at", LocalTime.class);
 
-            return new Time(
+            return new ReservationTime(
                     id,
                     time
             );
@@ -66,17 +66,17 @@ public class H2TimeRepository implements TimeRepository {
     }
 
     @Override
-    public Optional<Time> findById(final Long id) {
+    public Optional<ReservationTime> findById(final Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
 
         try {
-            Time time = jdbcTemplate.queryForObject(sql, params, (resultSet, rowNum) -> {
+            ReservationTime time = jdbcTemplate.queryForObject(sql, params, (resultSet, rowNum) -> {
                 LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
 
-                return new Time(
+                return new ReservationTime(
                         id,
                         startAt
                 );
@@ -88,7 +88,7 @@ public class H2TimeRepository implements TimeRepository {
     }
 
     @Override
-    public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, final Long themeId) {
+    public List<AvailableReservationTimeResponse> findAvailableTimes(LocalDate date, final Long themeId) {
         String query = """
                 SELECT
                         rt.id,
@@ -112,7 +112,7 @@ public class H2TimeRepository implements TimeRepository {
             LocalTime startAt = resultSet.getObject("start_at", LocalTime.class);
             final boolean alreadyBooked = resultSet.getBoolean("alreadyBooked");
 
-            return new AvailableTimeResponse(
+            return new AvailableReservationTimeResponse(
                     id,
                     startAt.toString(),
                     alreadyBooked
