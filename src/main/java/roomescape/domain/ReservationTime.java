@@ -4,8 +4,8 @@ import java.time.LocalTime;
 
 public record ReservationTime(Long id, LocalTime startAt) {
 
-    public static final LocalTime RESERVATION_START_TIME = LocalTime.of(12, 0);
-    public static final LocalTime RESERVATION_END_TIME = LocalTime.of(22, 0);
+    private static final LocalTime RESERVATION_START_TIME = LocalTime.of(12, 0);
+    private static final LocalTime RESERVATION_END_TIME = LocalTime.of(22, 0);
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
