@@ -17,11 +17,11 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlot;
 import roomescape.domain.ReservationSlotTimes;
 import roomescape.domain.Theme;
-import roomescape.dto.AddReservationDto;
-import roomescape.dto.AvailableTimeRequestDto;
-import roomescape.dto.ReservationResponseDto;
-import roomescape.dto.ReservationTimeSlotResponseDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.request.AddReservationRequest;
+import roomescape.dto.request.AvailableTimeRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ReservationTimeSlotResponse;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -35,24 +35,24 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> reservations() {
+    public ResponseEntity<List<ReservationResponse>> reservations() {
         List<Reservation> reservations = reservationService.allReservations();
-        List<ReservationResponseDto> reservationDtos = reservations.stream()
-                .map((reservation) -> new ReservationResponseDto(reservation.getId(), reservation.getName(),
+        List<ReservationResponse> reservationDtos = reservations.stream()
+                .map((reservation) -> new ReservationResponse(reservation.getId(), reservation.getName(),
                         reservation.getStartAt(), reservation.getDate(), reservation.getThemeName()))
                 .toList();
         return ResponseEntity.ok(reservationDtos);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> addReservations(
-            @RequestBody @Valid AddReservationDto newReservationDto) {
+    public ResponseEntity<ReservationResponse> addReservations(
+            @RequestBody @Valid AddReservationRequest newReservationDto) {
         long addedReservationId = reservationService.addReservation(newReservationDto);
         Reservation reservation = reservationService.getReservationById(addedReservationId);
 
-        ReservationResponseDto reservationResponseDto = new ReservationResponseDto(reservation.getId(),
+        ReservationResponse reservationResponse = new ReservationResponse(reservation.getId(),
                 reservation.getName(), reservation.getStartAt(), reservation.getDate(), reservation.getThemeName());
-        return ResponseEntity.created(URI.create("/reservations/" + addedReservationId)).body(reservationResponseDto);
+        return ResponseEntity.created(URI.create("/reservations/" + addedReservationId)).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -62,26 +62,26 @@ public class ReservationController {
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<ReservationTimeSlotResponseDto>> availableReservationTimes(
-            @Valid @ModelAttribute AvailableTimeRequestDto availableTimeRequestDto) {
+    public ResponseEntity<List<ReservationTimeSlotResponse>> availableReservationTimes(
+            @Valid @ModelAttribute AvailableTimeRequest availableTimeRequest) {
         ReservationSlotTimes reservationSlotTimes = reservationService.availableReservationTimes(
-                availableTimeRequestDto);
+                availableTimeRequest);
         List<ReservationSlot> availableBookTimes = reservationSlotTimes.getAvailableBookTimes();
 
-        List<ReservationTimeSlotResponseDto> reservationTimeSlotResponseDtos = availableBookTimes.stream()
-                .map((time) -> new ReservationTimeSlotResponseDto(time.getId(), time.getTime(), time.isReserved()))
+        List<ReservationTimeSlotResponse> reservationTimeSlotResponses = availableBookTimes.stream()
+                .map((time) -> new ReservationTimeSlotResponse(time.getId(), time.getTime(), time.isReserved()))
                 .toList();
-        return ResponseEntity.ok(reservationTimeSlotResponseDtos);
+        return ResponseEntity.ok(reservationTimeSlotResponses);
     }
 
     @GetMapping("/popular-themes")
-    public ResponseEntity<List<ThemeResponseDto>> popularThemes() {
+    public ResponseEntity<List<ThemeResponse>> popularThemes() {
         List<Theme> rankingThemes = reservationService.getRankingThemes(LocalDate.now());
 
-        List<ThemeResponseDto> themeResponseDtos = rankingThemes.stream()
-                .map((theme) -> new ThemeResponseDto(theme.getId(), theme.getDescription(),
+        List<ThemeResponse> themeResponses = rankingThemes.stream()
+                .map((theme) -> new ThemeResponse(theme.getId(), theme.getDescription(),
                         theme.getName(), theme.getThumbnail()))
                 .toList();
-        return ResponseEntity.ok(themeResponseDtos);
+        return ResponseEntity.ok(themeResponses);
     }
 }

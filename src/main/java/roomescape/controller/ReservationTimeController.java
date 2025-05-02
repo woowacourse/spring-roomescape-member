@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AddReservationTimeDto;
-import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.dto.request.AddReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -27,24 +27,24 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponseDto>> allReservationTimes() {
+    public ResponseEntity<List<ReservationTimeResponse>> allReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.allReservationTimes();
-        List<ReservationTimeResponseDto> reservationTimeResponseDtos = reservationTimes.stream()
-                .map((reservationTime) -> new ReservationTimeResponseDto(reservationTime.getId(),
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimes.stream()
+                .map((reservationTime) -> new ReservationTimeResponse(reservationTime.getId(),
                         reservationTime.getTime()))
                 .toList();
 
-        return ResponseEntity.ok(reservationTimeResponseDtos);
+        return ResponseEntity.ok(reservationTimeResponses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> addReservationTime(
-            @RequestBody @Valid AddReservationTimeDto newReservationTimeDto) {
+    public ResponseEntity<ReservationTimeResponse> addReservationTime(
+            @RequestBody @Valid AddReservationTimeRequest newReservationTimeDto) {
         long id = reservationTimeService.addReservationTime(newReservationTimeDto);
         ReservationTime reservationTime = reservationTimeService.getReservationTimeById(id);
-        ReservationTimeResponseDto reservationTimeResponseDto = new ReservationTimeResponseDto(reservationTime.getId(),
+        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(reservationTime.getId(),
                 reservationTime.getTime());
-        return ResponseEntity.created(URI.create("/times/")).body(reservationTimeResponseDto);
+        return ResponseEntity.created(URI.create("/times/")).body(reservationTimeResponse);
     }
 
     @DeleteMapping("/{id}")

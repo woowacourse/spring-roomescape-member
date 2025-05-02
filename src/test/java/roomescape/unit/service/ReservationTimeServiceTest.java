@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.AddReservationTimeDto;
+import roomescape.dto.request.AddReservationTimeRequest;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.ReservationTimeService;
@@ -39,14 +39,14 @@ class ReservationTimeServiceTest {
 
     @Test
     void 예약시간을_추가하고_조회할_수_있다() {
-        reservationTimeService.addReservationTime(new AddReservationTimeDto(LocalTime.now().plusMinutes(30L)));
+        reservationTimeService.addReservationTime(new AddReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
         assertThat(reservationTimeService.allReservationTimes().size()).isEqualTo(1);
     }
 
     @Test
     void 예약시간을_삭제하고_조회할_수_있다() {
         long id = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(LocalTime.now().plusMinutes(30L)));
+                new AddReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
 
         int before = reservationTimeService.allReservationTimes().size();
         reservationTimeService.deleteReservationTime(id);
@@ -62,7 +62,7 @@ class ReservationTimeServiceTest {
     void 특정_시간에_대한_예약이_존재할때_시간을_삭제하려고하면_예외가_발생한다() {
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
         Long id = reservationTimeService.addReservationTime(
-                new AddReservationTimeDto(startAt));
+                new AddReservationTimeRequest(startAt));
         ReservationTime reservationTime = new ReservationTime(id, startAt);
         Theme theme = new Theme(0L, "공포", "공포테마입니다.", "ㅁㄴㅇㄹ");
         Reservation reservation = new Reservation(null, "praisebak", LocalDate.now().plusDays(1), reservationTime,
@@ -76,10 +76,10 @@ class ReservationTimeServiceTest {
     @Test
     void 중복_시간을_설정할_수_없다() {
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
-        AddReservationTimeDto initialReservationTime = new AddReservationTimeDto(startAt);
+        AddReservationTimeRequest initialReservationTime = new AddReservationTimeRequest(startAt);
         reservationTimeService.addReservationTime(initialReservationTime);
 
-        AddReservationTimeDto duplicateAddReservationTime = new AddReservationTimeDto(startAt);
+        AddReservationTimeRequest duplicateAddReservationTime = new AddReservationTimeRequest(startAt);
 
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(duplicateAddReservationTime))
                 .isInstanceOf(IllegalArgumentException.class);

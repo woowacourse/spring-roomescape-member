@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.AddThemeDto;
+import roomescape.dto.request.AddThemeRequest;
 import roomescape.exception.InvalidThemeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
@@ -19,8 +19,8 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public long addTheme(AddThemeDto addThemeDto) {
-        Theme theme = addThemeDto.toEntity();
+    public long addTheme(AddThemeRequest addThemeRequest) {
+        Theme theme = addThemeRequest.toEntity();
         return themeRepository.add(theme);
     }
 

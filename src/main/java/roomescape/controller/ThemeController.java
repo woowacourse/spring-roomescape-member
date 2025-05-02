@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
-import roomescape.dto.AddThemeDto;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.request.AddThemeRequest;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -27,12 +27,12 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponseDto> addTheme(@Valid @RequestBody AddThemeDto addThemeDto) {
-        long id = themeService.addTheme(addThemeDto);
+    public ResponseEntity<ThemeResponse> addTheme(@Valid @RequestBody AddThemeRequest addThemeRequest) {
+        long id = themeService.addTheme(addThemeRequest);
         Theme theme = themeService.getThemeById(id);
-        ThemeResponseDto themeResponseDto = new ThemeResponseDto(theme.getId(), theme.getDescription(), theme.getName(),
+        ThemeResponse themeResponse = new ThemeResponse(theme.getId(), theme.getDescription(), theme.getName(),
                 theme.getThumbnail());
-        return ResponseEntity.created(URI.create("/themes/" + id)).body(themeResponseDto);
+        return ResponseEntity.created(URI.create("/themes/" + id)).body(themeResponse);
     }
 
     @DeleteMapping("/{id}")
@@ -42,20 +42,20 @@ public class ThemeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ThemeResponseDto> getTheme(@PathVariable Long id) {
+    public ResponseEntity<ThemeResponse> getTheme(@PathVariable Long id) {
         Theme theme = themeService.getThemeById(id);
-        ThemeResponseDto themeResponseDto = new ThemeResponseDto(theme.getId(), theme.getDescription(), theme.getName(),
+        ThemeResponse themeResponse = new ThemeResponse(theme.getId(), theme.getDescription(), theme.getName(),
                 theme.getThumbnail());
-        return ResponseEntity.ok(themeResponseDto);
+        return ResponseEntity.ok(themeResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponseDto>> getThemes() {
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<Theme> themes = themeService.findAll();
-        List<ThemeResponseDto> themeResponseDtos = themes.stream()
-                .map((theme) -> new ThemeResponseDto(theme.getId(), theme.getDescription(),
+        List<ThemeResponse> themeResponses = themes.stream()
+                .map((theme) -> new ThemeResponse(theme.getId(), theme.getDescription(),
                         theme.getName(), theme.getThumbnail()))
                 .toList();
-        return ResponseEntity.ok(themeResponseDtos);
+        return ResponseEntity.ok(themeResponses);
     }
 }

@@ -10,8 +10,8 @@ import roomescape.domain.ReservationSlotTimes;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRanking;
-import roomescape.dto.AddReservationDto;
-import roomescape.dto.AvailableTimeRequestDto;
+import roomescape.dto.request.AddReservationRequest;
+import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidReservationTimeException;
 import roomescape.exception.InvalidThemeException;
@@ -37,7 +37,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public long addReservation(AddReservationDto newReservation) {
+    public long addReservation(AddReservationRequest newReservation) {
         ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
         Theme theme = themeRepository.findById(newReservation.themeId())
@@ -71,11 +71,11 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public ReservationSlotTimes availableReservationTimes(AvailableTimeRequestDto availableTimeRequestDto) {
+    public ReservationSlotTimes availableReservationTimes(AvailableTimeRequest availableTimeRequest) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
-                availableTimeRequestDto.date(), availableTimeRequestDto.themeId());
+                availableTimeRequest.date(), availableTimeRequest.themeId());
 
         return new ReservationSlotTimes(times, alreadyReservedReservations);
     }

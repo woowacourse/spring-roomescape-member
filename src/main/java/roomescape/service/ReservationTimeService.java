@@ -3,7 +3,7 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AddReservationTimeDto;
+import roomescape.dto.request.AddReservationTimeRequest;
 import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidReservationTimeException;
 import roomescape.repository.ReservationRepository;
@@ -21,8 +21,8 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public Long addReservationTime(AddReservationTimeDto addReservationTimeDto) {
-        ReservationTime reservationTime = addReservationTimeDto.toEntity();
+    public Long addReservationTime(AddReservationTimeRequest addReservationTimeRequest) {
+        ReservationTime reservationTime = addReservationTimeRequest.toEntity();
         if (reservationTimeRepository.existsByTime(reservationTime.getTime())) {
             throw new InvalidReservationTimeException("중복된 예약시간입니다");
         }

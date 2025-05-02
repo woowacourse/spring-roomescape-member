@@ -24,7 +24,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeResponseDto;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -221,9 +221,9 @@ class ReservationIntegrateTest {
                 .then().log().all()
                 .extract().response();
 
-        List<ThemeResponseDto> rankingThemes = response.jsonPath().getList("", ThemeResponseDto.class);
+        List<ThemeResponse> rankingThemes = response.jsonPath().getList("", ThemeResponse.class);
         List<Long> rankingThemeIds = rankingThemes.stream()
-                .map(ThemeResponseDto::id)
+                .map(ThemeResponse::id)
                 .toList();
 
         assertThat(rankingThemeIds).containsExactlyElementsOf(List.of(1L, 2L, 3L));
