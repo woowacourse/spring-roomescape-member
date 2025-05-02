@@ -197,8 +197,6 @@ public class ReservationDAO implements ReservationRepository {
                 where id =:id
                 """;
 
-        checkReservation(reservation);
-
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", reservation.getName())
                 .addValue("date", reservation.getReservationDate())
@@ -213,11 +211,5 @@ public class ReservationDAO implements ReservationRepository {
         }
 
         return reservation;
-    }
-
-    private void checkReservation(Reservation reservation) {
-        if (reservation.getReservationTime() == null || reservation.getTheme() == null) {
-            throw new EntityNotFoundException("reservation field is null");
-        }
     }
 }
