@@ -54,10 +54,10 @@ public class ReservationService {
     }
 
     public void deleteById(Long id) {
-        reservationDao.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("삭제할 예약정보가 없습니다."));
-
-        reservationDao.deleteById(id);
+        int affectedRows = reservationDao.deleteById(id);
+        if (affectedRows == 0) {
+            throw new EntityNotFoundException("삭제할 예약정보가 없습니다.");
+        }
     }
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, String date) {

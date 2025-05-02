@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -67,8 +66,8 @@ class ThemeServiceTest {
         Mockito.when(reservationDao.existByTimeId(Mockito.any()))
                 .thenReturn(false);
 
-        Mockito.when(themeDao.findById(Mockito.any()))
-                .thenReturn(Optional.of(new Theme(1L, "", "", "")));
+        Mockito.when(themeDao.deleteById(Mockito.any()))
+                .thenReturn(1);
 
         assertThatCode(() -> themeService.deleteById(id)).doesNotThrowAnyException();
     }

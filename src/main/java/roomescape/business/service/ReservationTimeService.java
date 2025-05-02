@@ -42,8 +42,9 @@ public class ReservationTimeService {
         if (reservationDao.existByTimeId(id)) {
             throw new ReservationExistException("이 시간의 예약이 존재합니다.");
         }
-        reservationTimeDao.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("삭제할 예약시간이 없습니다."));
-        reservationTimeDao.deleteById(id);
+        int affectedRows = reservationTimeDao.deleteById(id);
+        if (affectedRows == 0) {
+            throw new EntityNotFoundException("삭제할 예약시간이 없습니다.");
+        }
     }
 }

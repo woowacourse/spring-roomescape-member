@@ -42,9 +42,10 @@ public class ThemeService {
         if (reservationDao.existByTimeId(id)) {
             throw new ReservationExistException("이 테마의 예약이 존재합니다.");
         }
-        themeDao.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("삭제할 테마가 없습니다."));
-        themeDao.deleteById(id);
+        int affectedRows = themeDao.deleteById(id);
+        if (affectedRows == 0) {
+            throw new EntityNotFoundException("삭제할 테마가 없습니다.");
+        }
     }
 
     public List<ThemeResponse> sortByRank() {

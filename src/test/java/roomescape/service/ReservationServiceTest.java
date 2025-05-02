@@ -86,8 +86,8 @@ class ReservationServiceTest {
     @Test
     void 예약을_삭제한다() {
         Long id = 1L;
-        Mockito.when(reservationDao.findById(Mockito.any()))
-                .thenReturn(Optional.of(new Reservation(1L, "드라고", null, null, null)));
+        Mockito.when(reservationDao.deleteById(Mockito.any()))
+                .thenReturn(1);
 
         assertThatCode(() -> reservationService.deleteById(id))
                 .doesNotThrowAnyException();

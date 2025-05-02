@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -66,8 +65,8 @@ class ReservationTimeServiceTest {
         Mockito.when(reservationDao.existByTimeId(Mockito.any()))
                 .thenReturn(false);
 
-        Mockito.when(reservationTimeDao.findById(Mockito.any()))
-                .thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(23, 0))));
+        Mockito.when(reservationTimeDao.deleteById(Mockito.any()))
+                .thenReturn(1);
 
         assertThatCode(() -> reservationTimeService.deleteById(id)).doesNotThrowAnyException();
     }

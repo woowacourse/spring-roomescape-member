@@ -11,7 +11,7 @@ public interface ReservationDao {
 
     Reservation save(Reservation reservation);
 
-    void deleteById(Long id);
+    int deleteById(Long id);
 
     Optional<Reservation> findById(Long id);
 
