@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
 
@@ -25,7 +26,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public List<ReservationTime> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId) {
+    public List<ReservationTimeWithIsBookedGetResponse> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId) {
         return List.of();
     }
 
@@ -38,8 +39,9 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
         return saved;
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         times.removeIf(time -> time.getId().equals(id));
+        return 1;
     }
 
     @Override

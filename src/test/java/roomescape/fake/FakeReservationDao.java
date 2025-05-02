@@ -28,8 +28,9 @@ public class FakeReservationDao implements ReservationDao {
         return saved;
     }
 
-    public void deleteById(Long id) {
+    public int deleteById(Long id) {
         reservations.removeIf(reservation -> reservation.getId().equals(id));
+        return 1;
     }
 
     @Override

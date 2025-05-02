@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 import roomescape.exception.TimeDoesNotExistException;
 
 @JdbcTest
@@ -38,14 +39,14 @@ public class JdbcReservationTimeDaoTest {
     void findAllTimesWithBooked() {
         LocalDate date = LocalDate.of(2025, 4, 28);
         Long themeId = 2L;
-        List<ReservationTime> times = jdbcReservationTimeDao.findByDateAndThemeIdWithIsBookedOrderByStartAt(date, themeId);
+        List<ReservationTimeWithIsBookedGetResponse> timeResponses = jdbcReservationTimeDao.findByDateAndThemeIdWithIsBookedOrderByStartAt(date, themeId);
 
         assertAll(() -> {
-            assertThat(times.get(0).getAlreadyBooked()).isTrue();
-            assertThat(times.get(1).getAlreadyBooked()).isTrue();
-            assertThat(times.get(2).getAlreadyBooked()).isFalse();
-            assertThat(times.get(3).getAlreadyBooked()).isFalse();
-            assertThat(times.get(4).getAlreadyBooked()).isFalse();
+            assertThat(timeResponses.get(0).isBooked()).isTrue();
+            assertThat(timeResponses.get(1).isBooked()).isTrue();
+            assertThat(timeResponses.get(2).isBooked()).isFalse();
+            assertThat(timeResponses.get(3).isBooked()).isFalse();
+            assertThat(timeResponses.get(4).isBooked()).isFalse();
         });
     }
 
