@@ -15,13 +15,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationTimeDao;
-import roomescape.infrastructure.H2ReservationTimeDao;
+import roomescape.infrastructure.ReservationTimeDaoImpl;
 
 @JdbcTest
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class H2ReservationTimeDaoTest {
+class ReservationTimeDaoImplTest {
 
     private ReservationTimeDao reservationTimeDao;
 
@@ -30,7 +30,7 @@ class H2ReservationTimeDaoTest {
 
     @BeforeEach
     void setUp() {
-        reservationTimeDao = new H2ReservationTimeDao(jdbcTemplate);
+        reservationTimeDao = new ReservationTimeDaoImpl(jdbcTemplate);
     }
 
     @Test

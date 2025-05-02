@@ -14,13 +14,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ThemeDao;
-import roomescape.infrastructure.H2ThemeDao;
+import roomescape.infrastructure.ThemeDaoImpl;
 
 @JdbcTest
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class H2ThemeDaoTest {
+class ThemeDaoImplTest {
 
     private ThemeDao themeDao;
 
@@ -29,7 +29,7 @@ class H2ThemeDaoTest {
 
     @BeforeEach
     public void setUp() {
-        themeDao = new H2ThemeDao(jdbcTemplate);
+        themeDao = new ThemeDaoImpl(jdbcTemplate);
     }
 
     @Test

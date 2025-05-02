@@ -19,13 +19,13 @@ import roomescape.business.model.entity.Reservation;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationDao;
-import roomescape.infrastructure.H2ReservationDao;
+import roomescape.infrastructure.ReservationDaoImpl;
 
 @JdbcTest
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class H2ReservationDaoTest {
+class ReservationDaoImplTest {
 
     private ReservationDao reservationDao;
 
@@ -34,7 +34,7 @@ class H2ReservationDaoTest {
 
     @BeforeEach
     void setUp() {
-        reservationDao = new H2ReservationDao(jdbcTemplate);
+        reservationDao = new ReservationDaoImpl(jdbcTemplate);
     }
 
     @Test
