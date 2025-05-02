@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.repository.jdbc;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+import roomescape.repository.ThemeRepository;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -30,10 +31,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public long add(Theme theme) {
+    public Theme add(Theme theme) {
         String sql = "insert into theme (name,description,thumbnail) values(?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int update = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, theme.getName());
             ps.setString(2, theme.getDescription());
@@ -41,7 +42,14 @@ public class JdbcThemeRepository implements ThemeRepository {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        long generatedId = keyHolder.getKey().longValue();
+
+        return new Theme(
+                generatedId,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
     }
 
     @Override

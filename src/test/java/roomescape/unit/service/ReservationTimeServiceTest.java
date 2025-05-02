@@ -45,11 +45,11 @@ class ReservationTimeServiceTest {
 
     @Test
     void 예약시간을_삭제하고_조회할_수_있다() {
-        long id = reservationTimeService.addReservationTime(
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(
                 new AddReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
 
         int before = reservationTimeService.allReservationTimes().size();
-        reservationTimeService.deleteReservationTime(id);
+        reservationTimeService.deleteReservationTime(reservationTime.getId());
         int after = reservationTimeService.allReservationTimes().size();
 
         assertAll(() -> {
@@ -61,15 +61,14 @@ class ReservationTimeServiceTest {
     @Test
     void 특정_시간에_대한_예약이_존재할때_시간을_삭제하려고하면_예외가_발생한다() {
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
-        Long id = reservationTimeService.addReservationTime(
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(
                 new AddReservationTimeRequest(startAt));
-        ReservationTime reservationTime = new ReservationTime(id, startAt);
         Theme theme = new Theme(0L, "공포", "공포테마입니다.", "ㅁㄴㅇㄹ");
         Reservation reservation = new Reservation(null, "praisebak", LocalDate.now().plusDays(1), reservationTime,
                 theme);
         reservationRepository.add(reservation);
 
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(id))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(reservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

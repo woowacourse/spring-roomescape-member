@@ -19,7 +19,7 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public long addTheme(AddThemeRequest addThemeRequest) {
+    public Theme addTheme(AddThemeRequest addThemeRequest) {
         Theme theme = addThemeRequest.toEntity();
         return themeRepository.add(theme);
     }

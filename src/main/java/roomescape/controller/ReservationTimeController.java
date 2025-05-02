@@ -40,10 +40,10 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(
             @RequestBody @Valid AddReservationTimeRequest newReservationTimeDto) {
-        long id = reservationTimeService.addReservationTime(newReservationTimeDto);
-        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(id);
-        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(reservationTime.getId(),
-                reservationTime.getTime());
+        ReservationTime addedReservationTime = reservationTimeService.addReservationTime(newReservationTimeDto);
+        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(
+                addedReservationTime.getId(), addedReservationTime.getTime());
+
         return ResponseEntity.created(URI.create("/times/")).body(reservationTimeResponse);
     }
 

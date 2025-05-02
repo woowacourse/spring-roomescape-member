@@ -14,10 +14,11 @@ public class FakeThemeRepository implements ThemeRepository {
     List<Theme> themes = new ArrayList<>();
 
     @Override
-    public long add(Theme theme) {
+    public Theme add(Theme theme) {
         long id = index.getAndIncrement();
-        themes.add(new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail()));
-        return id;
+        Theme addTheme = new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        themes.add(addTheme);
+        return addTheme;
     }
 
     @Override

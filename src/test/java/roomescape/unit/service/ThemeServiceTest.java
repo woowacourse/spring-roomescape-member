@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.AddReservationRequest;
 import roomescape.dto.request.AddReservationTimeRequest;
@@ -42,9 +43,9 @@ class ThemeServiceTest {
     @Test
     void 테마를_추가할_수_있다() {
         AddThemeRequest addThemeRequest = new AddThemeRequest("방탈출", "게임입니다.", "thumbnail");
-        long id = themeService.addTheme(addThemeRequest);
+        Theme addedTheme = themeService.addTheme(addThemeRequest);
 
-        assertThat(id).isEqualTo(1L);
+        assertThat(addedTheme.getId()).isEqualTo(1L);
     }
 
     @Test
@@ -68,8 +69,10 @@ class ThemeServiceTest {
         Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
         themeRepository.add(theme);
 
-        Long timeId = reservationTimeService.addReservationTime(new AddReservationTimeRequest(LocalTime.now()));
-        reservationService.addReservation(new AddReservationRequest("praisebak", LocalDate.now().plusDays(1L), timeId, 1L));
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(
+                new AddReservationTimeRequest(LocalTime.now()));
+        reservationService.addReservation(
+                new AddReservationRequest("praisebak", LocalDate.now().plusDays(1L), reservationTime.getId(), 1L));
         assertThatThrownBy(() -> themeService.deleteThemeById(1L)).isInstanceOf(IllegalArgumentException.class);
     }
 

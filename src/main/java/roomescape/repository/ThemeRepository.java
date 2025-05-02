@@ -7,7 +7,7 @@ import roomescape.domain.Theme;
 
 @Repository
 public interface ThemeRepository {
-    long add(Theme theme);
+    Theme add(Theme theme);
 
     List<Theme> findAll();
 

@@ -28,11 +28,10 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> addTheme(@Valid @RequestBody AddThemeRequest addThemeRequest) {
-        long id = themeService.addTheme(addThemeRequest);
-        Theme theme = themeService.getThemeById(id);
-        ThemeResponse themeResponse = new ThemeResponse(theme.getId(), theme.getDescription(), theme.getName(),
-                theme.getThumbnail());
-        return ResponseEntity.created(URI.create("/themes/" + id)).body(themeResponse);
+        Theme addedTheme = themeService.addTheme(addThemeRequest);
+        ThemeResponse themeResponse = new ThemeResponse(addedTheme.getId(), addedTheme.getDescription(), addedTheme.getName(),
+                addedTheme.getThumbnail());
+        return ResponseEntity.created(URI.create("/themes/" + themeResponse.id())).body(themeResponse);
     }
 
     @DeleteMapping("/{id}")

@@ -47,12 +47,18 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> addReservations(
             @RequestBody @Valid AddReservationRequest newReservationDto) {
-        long addedReservationId = reservationService.addReservation(newReservationDto);
-        Reservation reservation = reservationService.getReservationById(addedReservationId);
+        Reservation addedReservation = reservationService.addReservation(newReservationDto);
+//        Reservation reservation = reservationService.getReservationById(addedReservationId);
 
-        ReservationResponse reservationResponse = new ReservationResponse(reservation.getId(),
-                reservation.getName(), reservation.getStartAt(), reservation.getDate(), reservation.getThemeName());
-        return ResponseEntity.created(URI.create("/reservations/" + addedReservationId)).body(reservationResponse);
+        ReservationResponse reservationResponse = new ReservationResponse(
+                addedReservation.getId(),
+                addedReservation.getName(),
+                addedReservation.getStartAt(),
+                addedReservation.getDate(),
+                addedReservation.getThemeName()
+        );
+//        return ResponseEntity.created(URI.create("/reservations/" + addedReservationId)).body(reservationResponse);
+        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id())).body(reservationResponse);
     }
 
     @DeleteMapping("/{id}")

@@ -37,7 +37,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public long addReservation(AddReservationRequest newReservation) {
+    public Reservation addReservation(AddReservationRequest newReservation) {
         ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
         Theme theme = themeRepository.findById(newReservation.themeId())
