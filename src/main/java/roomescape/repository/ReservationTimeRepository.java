@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.ReservationTimeWithBookState;
+import roomescape.dto.other.ReservationTimeWithBookState;
 
 @Repository
 public class ReservationTimeRepository {

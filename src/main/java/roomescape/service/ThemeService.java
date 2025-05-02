@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreationRequest;
+import roomescape.dto.request.ThemeCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
