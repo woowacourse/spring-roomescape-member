@@ -17,6 +17,7 @@ public class ThemeService {
 
     private static final int START_DATE_OFFSET = 8;
     private static final int END_DATE_OFFSET = 1;
+    private static final long THEME_RANKING_COUNT = 10;
 
     private final Clock clock;
     private final ThemeRepository themeRepository;
@@ -58,7 +59,7 @@ public class ThemeService {
         LocalDate startDate = now.minusDays(START_DATE_OFFSET);
         LocalDate endDate = now.minusDays(END_DATE_OFFSET);
 
-        return themeRepository.findThemeRankingByReservation(startDate, endDate)
+        return themeRepository.findThemeRankingByReservation(startDate, endDate, 10)
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();

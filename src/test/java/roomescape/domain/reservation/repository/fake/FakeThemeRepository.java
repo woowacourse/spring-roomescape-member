@@ -25,6 +25,12 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findThemeRankingByReservation(final LocalDate startDate, final LocalDate endDate,
+                                                     final long count) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Optional<Theme> findById(Long id) {
         if (themes.containsKey(id)) {
             return Optional.of(themes.get(id));
@@ -33,10 +39,6 @@ public class FakeThemeRepository implements ThemeRepository {
         return Optional.empty();
     }
 
-    @Override
-    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public Theme save(Theme theme) {

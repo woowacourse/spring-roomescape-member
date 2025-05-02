@@ -9,7 +9,7 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate);
+    List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate, long count);
 
     Theme save(Theme Theme);
 
