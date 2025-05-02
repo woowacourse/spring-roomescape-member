@@ -20,7 +20,8 @@ public class Theme {
         return new Theme(null, name, description, thumbnail);
     }
 
-    public static Theme createWithId(final Long id, final String name, final String description, final String thumbnail) {
+    public static Theme createWithId(final Long id, final String name, final String description,
+                                     final String thumbnail) {
         return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
     }
 

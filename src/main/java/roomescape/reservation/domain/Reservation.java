@@ -13,11 +13,8 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(final Long id,
-                        final String name,
-                        final LocalDate date,
-                        final ReservationTime time,
-                        final Theme theme
+    private Reservation(final Long id, final String name, final LocalDate date,
+                        final ReservationTime time, final Theme theme
     ) {
         this.id = id;
         this.name = name;
@@ -26,19 +23,14 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation createWithoutId(final String name,
-                                              final LocalDate date,
-                                              final ReservationTime time,
-                                              final Theme theme
+    public static Reservation createWithoutId(final String name, final LocalDate date,
+                                              final ReservationTime time, final Theme theme
     ) {
         return new Reservation(null, name, date, time, theme);
     }
 
-    public static Reservation createWithId(final Long id,
-                                           final String name,
-                                           final LocalDate date,
-                                           final ReservationTime time,
-                                           final Theme theme
+    public static Reservation createWithId(final Long id, final String name, final LocalDate date,
+                                           final ReservationTime time, final Theme theme
     ) {
         return new Reservation(Objects.requireNonNull(id), name, date, time, theme);
     }
