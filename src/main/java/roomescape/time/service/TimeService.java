@@ -44,7 +44,8 @@ public class TimeService {
     public List<AvailableTimeResponse> findByDateAndTheme(AvailableTimeRequest request) {
         ensureThemeExists(request.themeId());
 
-        List<Long> occupiedTimeIds = reservationRepository.findTimeIdByDateAndThemeId(request.date(), request.themeId());;
+        List<Long> occupiedTimeIds = reservationRepository.findTimeIdByDateAndThemeId(request.date(),
+                request.themeId());
 
         return timeRepository.findAll().stream()
                 .map(time -> new AvailableTimeResponse(
@@ -67,7 +68,7 @@ public class TimeService {
     }
 
     private void validateNoDuplicateTime(LocalTime startAt) {
-        if(timeRepository.existsByStartAt(startAt)) {
+        if (timeRepository.existsByStartAt(startAt)) {
             throw new IllegalArgumentException("[ERROR] 이미 해당 시간이 존재합니다.");
         }
     }

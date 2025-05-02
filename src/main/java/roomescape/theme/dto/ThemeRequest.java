@@ -6,7 +6,7 @@ public record ThemeRequest(String name, String description, String thumbnail) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 이름을 입력해주세요.");
         }
-        if (description == null  || description.isBlank()) {
+        if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 설명을 입력해주세요.");
         }
         if (thumbnail == null || thumbnail.isBlank()) {

@@ -54,13 +54,13 @@ public class ReservationService {
     }
 
     private void validateReservationTimeNotInPast(LocalDate date, Time time) {
-        if(date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
+        if (date.isEqual(LocalDate.now()) && time.isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("[ERROR] 지난 시간으로는 예약할 수 없습니다.");
         }
     }
 
     private void validateNoDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
-        if(reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
             throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
         }
     }

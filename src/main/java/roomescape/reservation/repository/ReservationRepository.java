@@ -66,8 +66,7 @@ public class ReservationRepository {
             return Optional.of(namedParameterJdbcTemplate.queryForObject(
                     sql, parameter,
                     (resultSet, rowNum) -> createReservation(resultSet)));
-        }
-        catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }

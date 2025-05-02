@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import static org.mockito.Mockito.*;
 
 import java.time.LocalTime;
@@ -96,7 +97,8 @@ class TimeServiceTest {
         List<Long> occupiedTimeIds = List.of(1L);
 
         when(timeRepository.findAll()).thenReturn(List.of(reservedTime, notReservedTime));
-        when(reservationRepository.findTimeIdByDateAndThemeId(any(LocalDate.class), eq(1L))).thenReturn(occupiedTimeIds);
+        when(reservationRepository.findTimeIdByDateAndThemeId(any(LocalDate.class), eq(1L))).thenReturn(
+                occupiedTimeIds);
         when(themeRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(Theme.class)));
 
         // when
