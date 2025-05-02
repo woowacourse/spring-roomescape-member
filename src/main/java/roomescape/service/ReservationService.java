@@ -22,9 +22,6 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
-    private static final int THEME_RANKING_END_RANGE = 7;
-    private static final int THEME_RANKING_START_RANGE = 1;
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -85,9 +82,9 @@ public class ReservationService {
                 .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약입니다."));
     }
 
-    public List<Theme> getRankingThemes(LocalDate originDate) {
-        LocalDate end = originDate.minusDays(THEME_RANKING_START_RANGE);
-        LocalDate start = end.minusDays(THEME_RANKING_END_RANGE);
+    public List<Theme> getRankingThemes(LocalDate originDate, int themeRankingStartRange, int themeRankingEndRange) {
+        LocalDate end = originDate.minusDays(themeRankingStartRange);
+        LocalDate start = end.minusDays(themeRankingEndRange);
         List<Reservation> inRangeReservations = reservationRepository.findAllByDateInRange(start, end);
 
         ThemeRanking themeRanking = new ThemeRanking(inRangeReservations);

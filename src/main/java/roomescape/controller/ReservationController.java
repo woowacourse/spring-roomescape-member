@@ -29,6 +29,8 @@ import roomescape.service.ReservationService;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private static final int THEME_RANKING_END_RANGE = 7;
+    private static final int THEME_RANKING_START_RANGE = 1;
 
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
@@ -76,7 +78,8 @@ public class ReservationController {
 
     @GetMapping("/popular-themes")
     public ResponseEntity<List<ThemeResponseDto>> popularThemes() {
-        List<Theme> rankingThemes = reservationService.getRankingThemes(LocalDate.now());
+        List<Theme> rankingThemes = reservationService.getRankingThemes(LocalDate.now(), THEME_RANKING_START_RANGE,
+                THEME_RANKING_END_RANGE);
 
         List<ThemeResponseDto> themeResponseDtos = rankingThemes.stream()
                 .map((theme) -> new ThemeResponseDto(theme.getId(), theme.getDescription(),

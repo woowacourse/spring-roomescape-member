@@ -172,7 +172,7 @@ class ReservationServiceTest {
 
         reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1), 1L, 3L));
 
-        List<Theme> top10Theme = reservationService.getRankingThemes(LocalDate.now().plusDays(6));
+        List<Theme> top10Theme = reservationService.getRankingThemes(LocalDate.now().plusDays(6), 1, 7);
         assertAll(() -> {
             assertThat(top10Theme.getFirst().getId()).isEqualTo(1L);
             assertThat(top10Theme.get(1).getId()).isEqualTo(2L);
