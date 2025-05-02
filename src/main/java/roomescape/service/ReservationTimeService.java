@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.AvailableTimeResponse;
@@ -55,11 +54,6 @@ public class ReservationTimeService {
     }
 
     private boolean isAlreadyBooked(final ReservationTime reservationTime, final List<Reservation> reservations) {
-        for (final Reservation reservation : reservations) {
-            if (reservation.isSameTime(reservationTime)) {
-                return true;
-            }
-        }
-        return false;
+        return reservations.stream().anyMatch(reservation -> reservation.isSameTime(reservationTime));
     }
 }
