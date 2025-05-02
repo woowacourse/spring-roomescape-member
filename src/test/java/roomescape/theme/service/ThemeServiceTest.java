@@ -1,15 +1,15 @@
-package roomescape.reservation.service;
+package roomescape.theme.service;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.repository.FakeThemeRepository;
-import roomescape.reservation.repository.ThemeRepository;
-import roomescape.reservation.dto.request.ThemeRequest;
-import roomescape.reservation.entity.Theme;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import roomescape.theme.dto.request.ThemeRequest;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.FakeThemeRepository;
+import roomescape.theme.repository.ThemeRepository;
 
 class ThemeServiceTest {
 

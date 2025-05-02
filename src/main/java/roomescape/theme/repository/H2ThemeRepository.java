@@ -1,4 +1,4 @@
-package roomescape.reservation.repository;
+package roomescape.theme.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.entity.Theme;
+import roomescape.theme.entity.Theme;
 
 @Repository
 public class H2ThemeRepository implements ThemeRepository {

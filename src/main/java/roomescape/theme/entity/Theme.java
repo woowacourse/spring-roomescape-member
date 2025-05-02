@@ -1,4 +1,4 @@
-package roomescape.reservation.entity;
+package roomescape.theme.entity;
 
 public class Theme {
 

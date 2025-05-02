@@ -11,14 +11,14 @@ import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.Theme;
 import roomescape.reservation.entity.Time;
 import roomescape.reservation.repository.FakeReservationRepository;
-import roomescape.reservation.repository.FakeThemeRepository;
 import roomescape.reservation.repository.FakeTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.ThemeRepository;
 import roomescape.reservation.repository.TimeRepository;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.FakeThemeRepository;
+import roomescape.theme.repository.ThemeRepository;
 
 class ReservationServiceTest {
 

@@ -1,6 +1,6 @@
-package roomescape.reservation.dto.request;
+package roomescape.theme.dto.request;
 
-import roomescape.reservation.entity.Theme;
+import roomescape.theme.entity.Theme;
 
 public record ThemeRequest(
         String name,

@@ -9,11 +9,11 @@ import roomescape.global.error.exception.NotFoundException;
 import roomescape.reservation.dto.request.ReservationRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.entity.Reservation;
-import roomescape.reservation.entity.Theme;
 import roomescape.reservation.entity.Time;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.ThemeRepository;
 import roomescape.reservation.repository.TimeRepository;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ReservationService {

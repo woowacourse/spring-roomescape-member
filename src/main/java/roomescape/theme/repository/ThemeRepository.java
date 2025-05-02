@@ -1,10 +1,9 @@
-package roomescape.reservation.repository;
-
-import roomescape.reservation.entity.Theme;
+package roomescape.theme.repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import roomescape.theme.entity.Theme;
 
 public interface ThemeRepository {
 

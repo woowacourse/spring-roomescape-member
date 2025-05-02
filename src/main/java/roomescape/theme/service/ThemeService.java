@@ -1,14 +1,14 @@
-package roomescape.reservation.service;
+package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
-import roomescape.reservation.dto.request.ThemeRequest;
-import roomescape.reservation.dto.response.ThemeResponse;
-import roomescape.reservation.entity.Theme;
-import roomescape.reservation.repository.ThemeRepository;
+import roomescape.theme.dto.request.ThemeRequest;
+import roomescape.theme.dto.response.ThemeResponse;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
