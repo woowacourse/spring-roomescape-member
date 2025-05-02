@@ -15,7 +15,7 @@ import roomescape.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
-@RequestMapping("themes")
+@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -30,7 +30,7 @@ public class ThemeController {
         return themeService.findAllThemes();
     }
 
-    @GetMapping("rank")
+    @GetMapping("/rank")
     @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponse> readThemeRank() {
         return themeService.findThemeRank();
@@ -44,7 +44,7 @@ public class ThemeController {
         return themeService.createTheme(request);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(
             @PathVariable Long id

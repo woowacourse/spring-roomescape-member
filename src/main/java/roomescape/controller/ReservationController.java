@@ -15,7 +15,7 @@ import roomescape.dto.ReservationResponse;
 import roomescape.service.ReservationService;
 
 @RestController
-@RequestMapping("reservations")
+@RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -38,7 +38,7 @@ public class ReservationController {
         return reservationService.createReservation(request);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(
             @PathVariable long id

@@ -18,7 +18,7 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
-@RequestMapping("times")
+@RequestMapping("/times")
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
@@ -34,7 +34,7 @@ public class ReservationTimeController {
         return reservationTimeService.findAllTimes();
     }
 
-    @GetMapping("available")
+    @GetMapping("/available")
     @ResponseStatus(HttpStatus.OK)
     public List<ReservationTimeAvailableResponse> readAvailableTimes(
             @RequestParam LocalDate date,
@@ -51,7 +51,7 @@ public class ReservationTimeController {
         return reservationTimeService.createTime(request);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTime(
             @PathVariable Long id
