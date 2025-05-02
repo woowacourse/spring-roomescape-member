@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.DuplicateThemeException;
 import roomescape.service.ThemeService;
 
@@ -28,13 +28,15 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Theme createTheme(@RequestBody ThemeRequest request) {
-        return themeService.addTheme(request);
+    public ThemeResponse createTheme(@RequestBody ThemeRequest request) {
+        return ThemeResponse.from(themeService.addTheme(request));
     }
 
     @GetMapping
-    public List<Theme> readThemes() {
-        return themeService.findAllThemes();
+    public List<ThemeResponse> readThemes() {
+        return themeService.findAllThemes().stream()
+            .map(ThemeResponse::from)
+            .toList();
     }
 
     @DeleteMapping("/{id}")
@@ -44,8 +46,10 @@ public class ThemeController {
     }
 
     @GetMapping("/top-rank")
-    public List<Theme> readTopRankTheme() {
-        return themeService.findTopReservedThemes();
+    public List<ThemeResponse> readTopRankTheme() {
+        return themeService.findTopReservedThemes().stream()
+            .map(ThemeResponse::from)
+            .toList();
     }
 
     @ExceptionHandler(value = DuplicateThemeException.class)

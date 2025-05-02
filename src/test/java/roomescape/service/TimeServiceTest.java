@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.TimeRequest;
+import roomescape.dto.request.TimeRequest;
 import roomescape.fake.FakeReservationTimeDao;
 
 public class TimeServiceTest {

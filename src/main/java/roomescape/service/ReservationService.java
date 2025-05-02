@@ -10,7 +10,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.ReservationRequest;
+import roomescape.dto.request.ReservationRequest;
 import roomescape.exception.DuplicateReservationException;
 import roomescape.exception.NotCorrectDateTimeException;
 

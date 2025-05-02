@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.TimeRequest;
+import roomescape.dto.request.TimeRequest;
 import roomescape.exception.DuplicateTimeException;
 
 @Service

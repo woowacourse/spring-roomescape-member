@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.TimeRequest;
-import roomescape.dto.TimeResponse;
+import roomescape.dto.request.TimeRequest;
+import roomescape.dto.response.TimeResponse;
 import roomescape.exception.DuplicateTimeException;
 import roomescape.service.TimeService;
 
