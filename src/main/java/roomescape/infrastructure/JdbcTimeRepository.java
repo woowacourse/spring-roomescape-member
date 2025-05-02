@@ -66,8 +66,7 @@ public class JdbcTimeRepository implements TimeRepository {
     public boolean deleteById(Long id) {
         String deleteSql = "DELETE FROM reservation_time WHERE id=?";
 
-        boolean updated = jdbcTemplate.update(deleteSql, id) > 0;
-        return updated;
+        return jdbcTemplate.update(deleteSql, id) > 0;
     }
 
     @Override
@@ -76,7 +75,7 @@ public class JdbcTimeRepository implements TimeRepository {
                 SELECT
                     t.id,
                     t.start_at,
-                    CASE WHEN r.id IS NULL THEN FALSE ELSE TRUE END AS already_booked
+                    CASE WHEN COUNT(r.id) > 0 THEN TRUE ELSE FALSE END AS already_booked
                 FROM
                     reservation_time t
                 LEFT JOIN
@@ -84,6 +83,8 @@ public class JdbcTimeRepository implements TimeRepository {
                     ON t.id = r.time_id
                     AND r.date = ?
                     AND r.theme_id = ?
+                GROUP BY
+                    t.id, t.start_at
                 ORDER BY
                     t.start_at;
                 """;
