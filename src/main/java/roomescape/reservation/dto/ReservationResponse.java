@@ -14,7 +14,7 @@ public record ReservationResponse(
         ThemeResponse theme
 ) {
     public ReservationResponse {
-        if(id == null || name == null || date == null || time == null || theme == null){
+        if (id == null || name == null || date == null || time == null || theme == null) {
             throw new ResponseInvalidException();
         }
     }

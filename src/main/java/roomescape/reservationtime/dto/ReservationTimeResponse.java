@@ -9,7 +9,7 @@ public record ReservationTimeResponse(
         LocalTime startAt
 ) {
     public ReservationTimeResponse {
-        if(id == null || startAt == null){
+        if (id == null || startAt == null) {
             throw new ResponseInvalidException();
         }
     }

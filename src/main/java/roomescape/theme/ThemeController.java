@@ -22,7 +22,7 @@ public class ThemeController {
     private final ThemeService themeService;
 
     public ThemeController(
-        @Autowired final ThemeService themeService
+            @Autowired final ThemeService themeService
     ) {
         this.themeService = themeService;
     }
@@ -30,7 +30,7 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(
-        @RequestBody final ThemeRequest request
+            @RequestBody final ThemeRequest request
     ) {
         final ThemeResponse response = themeService.create(request);
         return ResponseEntity
@@ -53,7 +53,7 @@ public class ThemeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-        @PathVariable("id") final Long id
+            @PathVariable("id") final Long id
     ) {
         themeService.deleteById(id);
         return ResponseEntity.noContent().build();

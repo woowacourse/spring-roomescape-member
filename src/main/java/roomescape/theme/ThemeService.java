@@ -54,7 +54,7 @@ public class ThemeService {
     public void deleteById(
             final Long id
     ) {
-        if(!themeRepository.existsById(id)){
+        if (!themeRepository.existsById(id)) {
             throw new NotFoundException("테마가 존재하지 않습니다.");
         }
         themeRepository.deleteById(id);

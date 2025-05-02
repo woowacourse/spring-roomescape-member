@@ -37,7 +37,7 @@ public class ReservationService {
             final long id = reservationRepository.save(reservation, request.timeId(), request.themeId());
             final Reservation savedReservation = reservationRepository.findById(id);
             return ReservationResponse.from(savedReservation);
-        } catch (final DataIntegrityViolationException e){
+        } catch (final DataIntegrityViolationException e) {
             throw new BadRequestException("시간 또는 테마가 존재하지 않습니다.");
         }
     }
@@ -49,7 +49,7 @@ public class ReservationService {
     }
 
     public void deleteById(final Long id) {
-        if(!reservationRepository.existsById(id)){
+        if (!reservationRepository.existsById(id)) {
             throw new NotFoundException("존재하지 않는 예약입니다.");
         }
         reservationRepository.delete(id);

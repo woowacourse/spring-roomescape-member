@@ -15,7 +15,7 @@ public class AdminViewTest {
 
     public AdminViewTest(
             @LocalServerPort final int port
-    ){
+    ) {
         this.port = port;
     }
 
@@ -36,7 +36,7 @@ public class AdminViewTest {
                 .then().log().all()
                 .statusCode(200);
     }
-  
+
     @DisplayName("/admin/time으로 요청이 들어오면 시간 설정 페이지를 응답한다.")
     @Test
     void adminTime() {

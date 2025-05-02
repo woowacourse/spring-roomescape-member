@@ -15,7 +15,7 @@ public class WelcomeTest {
 
     public WelcomeTest(
             @LocalServerPort final int port
-    ){
+    ) {
         this.port = port;
     }
 

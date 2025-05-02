@@ -9,8 +9,8 @@ public record ReservationRequest(
         Long timeId,
         Long themeId
 ) {
-    public ReservationRequest{
-        if(name == null || date == null || timeId == null || themeId == null){
+    public ReservationRequest {
+        if (name == null || date == null || timeId == null || themeId == null) {
             throw new RequestInvalidException();
         }
     }

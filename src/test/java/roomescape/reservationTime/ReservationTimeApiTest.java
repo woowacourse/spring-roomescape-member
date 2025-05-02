@@ -26,7 +26,7 @@ public class ReservationTimeApiTest {
     public ReservationTimeApiTest(
             @LocalServerPort final int port,
             @Autowired final JdbcTemplate jdbcTemplate
-    ){
+    ) {
         this.port = port;
         this.jdbcTemplate = jdbcTemplate;
     }

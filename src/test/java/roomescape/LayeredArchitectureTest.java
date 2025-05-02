@@ -18,7 +18,7 @@ public class LayeredArchitectureTest {
 
     public LayeredArchitectureTest(
             @Autowired final ReservationController reservationController
-    ){
+    ) {
         this.reservationController = reservationController;
     }
 

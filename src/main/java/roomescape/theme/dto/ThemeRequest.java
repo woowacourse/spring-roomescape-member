@@ -8,7 +8,7 @@ public record ThemeRequest(
         String thumbnail
 ) {
     public ThemeRequest {
-        if(name == null || description == null || thumbnail == null){
+        if (name == null || description == null || thumbnail == null) {
             throw new RequestInvalidException();
         }
     }

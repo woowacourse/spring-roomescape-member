@@ -12,7 +12,7 @@ public record AvailableReservationTimeResponse(
 ) {
 
     public AvailableReservationTimeResponse {
-        if(id == null || startAt == null || alreadyBooked == null){
+        if (id == null || startAt == null || alreadyBooked == null) {
             throw new ResponseInvalidException();
         }
     }
