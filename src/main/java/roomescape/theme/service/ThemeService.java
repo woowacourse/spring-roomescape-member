@@ -24,7 +24,7 @@ public class ThemeService {
         ThemeEntity newTheme = request.toEntity();
         themeRepository.findByName(newTheme.getName())
                 .ifPresent((theme) -> {
-                    throw new ConflictException("중복되는 테마가 존재합니다.");
+                    throw new ConflictException("중복되는 이름의 테마가 존재합니다.");
                 });
         ThemeEntity saved = themeRepository.save(newTheme);
         return ThemeResponse.from(saved);
@@ -40,7 +40,7 @@ public class ThemeService {
     public void deleteTheme(final Long id) {
         final boolean deleted = themeRepository.deleteById(id);
         if (!deleted) {
-            throw new NotFoundException("존재하지 않는 id 입니다.");
+            throw new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", id));
         }
     }
 

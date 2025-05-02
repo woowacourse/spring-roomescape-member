@@ -62,7 +62,7 @@ public class ReservationTimeService {
         }
         final boolean deleted = timeRepository.deleteById(id);
         if (!deleted) {
-            throw new NotFoundException("존재하지 않는 id 입니다.");
+            throw new NotFoundException(String.format("%d 식별자의 예약 시간은 존재하지 않습니다.", id));
         }
     }
 

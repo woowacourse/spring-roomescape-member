@@ -42,15 +42,15 @@ public class ReservationService {
     private ReservationResponse convertToResponse(ReservationEntity reservation) {
         final Long themeId = reservation.getThemeId();
         ThemeEntity themeEntity = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
+                .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", themeId)));
         return ReservationResponse.from(reservation, themeEntity);
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTimeEntity timeEntity = timeRepository.findById(request.timeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 시간 입니다."));
+                .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 예약 시간은 존재하지 않습니다.", request.timeId())));
         ThemeEntity themeEntity = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
+                .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", request.themeId())));
 
         ReservationEntity newReservation = request.toEntity(timeEntity);
         validateDateTime(newReservation);
@@ -81,7 +81,7 @@ public class ReservationService {
     public void deleteReservation(final Long id) {
         final boolean deleted = reservationRepository.deleteById(id);
         if (!deleted) {
-            throw new NotFoundException("존재하지 않는 id 입니다.");
+            throw new NotFoundException(String.format("%d는 존재하지 않는 예약 식별자입니다.", id));
         }
     }
 }
