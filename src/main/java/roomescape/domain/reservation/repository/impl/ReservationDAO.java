@@ -111,33 +111,27 @@ public class ReservationDAO implements ReservationRepository {
 
     @Override
     public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
-        String sql = "select count(*) from reservation where date = :date and time_id = :time_id";
+        String sql = "select exists(select count(*) from reservation where date = :date and time_id = :time_id)";
         Map<String, Object> params = Map.of("date", date, "time_id", timeId);
 
-        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
-
-        return count > 0;
+        return jdbcTemplate.queryForObject(sql, params, Boolean.class);
     }
 
     @Override
     public boolean existsByTimeId(Long timeId) {
-        String selectSql = "select count(*) from reservation where time_id = :time_id";
+        String selectSql = "select exists(select 1 from reservation where time_id = :time_id)";
         Map<String, Long> params = Map.of("time_id", timeId);
 
-        int rowCountByTimeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
-
-        return rowCountByTimeId > 0;
+        return jdbcTemplate.queryForObject(selectSql, params, Boolean.class);
     }
 
     @Override
     public boolean existsByThemeId(Long themeId) {
-        String selectSql = "select count(*) from reservation where theme_id = :theme_id";
+        String selectSql = "select exists(select 1 from reservation where theme_id = :theme_id)";
 
         Map<String, Long> params = Map.of("theme_id", themeId);
 
-        int rowCountByThemeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
-
-        return rowCountByThemeId > 0;
+        return jdbcTemplate.queryForObject(selectSql, params, Boolean.class);
     }
 
     private Optional<Reservation> reservationOf(String sql, Map<String, Long> params) {
