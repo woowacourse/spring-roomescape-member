@@ -13,8 +13,8 @@ import java.util.List;
 @Service
 public class ThemeService {
 
-    private static final int BETWEEN_DAY_START = 7;
-    private static final int BETWEEN_DAY_END = 1;
+    private static final int RANKING_PERIOD_START_DAYS_AGO = 7;
+    private static final int RANKING_PERIOD_END_DAYS_AGO = 1;
     private final ThemeRepository repository;
 
     public ThemeService(ThemeRepository repository) {
@@ -29,8 +29,8 @@ public class ThemeService {
 
     public List<ThemeResDto> findTopRankThemes(int size) {
         LocalDate now = LocalDate.now();
-        LocalDate from = now.minusDays(BETWEEN_DAY_START);
-        LocalDate to = now.minusDays(BETWEEN_DAY_END);
+        LocalDate from = now.minusDays(RANKING_PERIOD_START_DAYS_AGO);
+        LocalDate to = now.minusDays(RANKING_PERIOD_END_DAYS_AGO);
         return repository.findAllOrderByRank(from, to, size).stream()
             .map(ThemeMapper::toResDto)
             .toList();
