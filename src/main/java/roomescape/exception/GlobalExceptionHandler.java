@@ -12,7 +12,7 @@ import roomescape.exception.custom.PharmaceuticalViolationException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    public static final String ERROR_PREFIX = "[ERROR] ";
+    private static final String ERROR_PREFIX = "[ERROR] ";
 
     @ExceptionHandler
     public ResponseEntity<String> handleExistedDuplicateValueException(ExistedDuplicateValueException e) {
