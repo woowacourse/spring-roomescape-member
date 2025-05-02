@@ -6,21 +6,22 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.TimeCreateRequest;
+import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 import roomescape.exception.DuplicateTimeException;
 import roomescape.exception.InvalidInputException;
 
 @Service
-public class TimeService {
+public class ReservationTimeService {
 
     private final ReservationTimeDao reservationTimeDao;
 
-    public TimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTime createReservationTime(TimeCreateRequest timeCreateRequest) {
-        LocalTime startAt = timeCreateRequest.startAt();
+    public ReservationTime createReservationTime(ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        LocalTime startAt = reservationTimeCreateRequest.startAt();
         validateDuplicateStartAt(startAt);
         return reservationTimeDao.add(new ReservationTime(null, startAt));
     }
@@ -35,8 +36,8 @@ public class TimeService {
         return reservationTimeDao.findAll();
     }
 
-    public List<ReservationTime> findReservationTimeByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId) {
-        return reservationTimeDao.findByDateAndThemeIdWithIsBooked(date, themeId);
+    public List<ReservationTimeWithIsBookedGetResponse> findReservationTimeByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId) {
+        return reservationTimeDao.findByDateAndThemeIdWithIsBookedOrderByStartAt(date, themeId);
     }
 
     public void deleteReservationTimeById(Long id) {

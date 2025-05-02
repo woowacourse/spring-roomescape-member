@@ -25,7 +25,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public List<ReservationTime> findByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId) {
+    public List<ReservationTime> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId) {
         return List.of();
     }
 

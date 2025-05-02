@@ -6,16 +6,10 @@ public class ReservationTime {
 
     private final Long id;
     private final LocalTime startAt;
-    private final Boolean alreadyBooked;
 
     public ReservationTime(Long id, LocalTime startAt) {
-        this(id, startAt, null);
-    }
-
-    public ReservationTime(Long id, LocalTime startAt, Boolean alreadyBooked) {
         this.id = id;
         this.startAt = startAt;
-        this.alreadyBooked = alreadyBooked;
     }
 
     public boolean isBefore(LocalTime time) {
@@ -28,9 +22,5 @@ public class ReservationTime {
 
     public LocalTime getStartAt() {
         return startAt;
-    }
-
-    public Boolean getAlreadyBooked() {
-        return alreadyBooked;
     }
 }

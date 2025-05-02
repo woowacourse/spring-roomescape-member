@@ -1,13 +1,13 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 import roomescape.exception.InvalidInputException;
 
-public record TimeCreateRequest(
+public record ReservationTimeCreateRequest(
     @JsonFormat(pattern = "HH:mm") LocalTime startAt) {
 
-    public TimeCreateRequest {
+    public ReservationTimeCreateRequest {
         validateTime(startAt);
     }
 

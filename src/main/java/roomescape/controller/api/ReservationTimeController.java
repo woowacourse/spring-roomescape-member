@@ -12,45 +12,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.TimeCreateRequest;
-import roomescape.dto.TimeGetResponse;
+import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.response.ReservationTimeGetResponse;
+import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 import roomescape.exception.DuplicateTimeException;
-import roomescape.service.TimeService;
+import roomescape.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
-public class TimeController {
+public class ReservationTimeController {
 
-    private final TimeService timeService;
+    private final ReservationTimeService reservationTimeService;
 
-    private TimeController(TimeService timeService) {
-        this.timeService = timeService;
+    private ReservationTimeController(ReservationTimeService reservationTimeService) {
+        this.reservationTimeService = reservationTimeService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TimeGetResponse createReservationTime(@RequestBody TimeCreateRequest timeCreateRequest) {
-        return TimeGetResponse.from(timeService.createReservationTime(timeCreateRequest));
+    public ReservationTimeGetResponse createReservationTime(@RequestBody ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        return ReservationTimeGetResponse.from(reservationTimeService.createReservationTime(reservationTimeCreateRequest));
     }
 
     @GetMapping
-    public List<TimeGetResponse> readAllReservationTimes() {
-        return timeService.findAllReservationTimes().stream()
-            .map(TimeGetResponse::from)
+    public List<ReservationTimeGetResponse> readAllReservationTimes() {
+        return reservationTimeService.findAllReservationTimes().stream()
+            .map(ReservationTimeGetResponse::from)
             .toList();
     }
 
     @GetMapping("/{date}/{themeId}")
-    public List<TimeGetResponse> readReservationTimesByDateAndThemeIdWithIsBooked(@PathVariable("date") LocalDate date, @PathVariable("themeId") Long themeId) {
-        return timeService.findReservationTimeByDateAndThemeIdWithIsBooked(date, themeId).stream()
-            .map(TimeGetResponse::from)
-            .toList();
+    public List<ReservationTimeWithIsBookedGetResponse> readReservationTimesByDateAndThemeIdWithIsBooked(@PathVariable("date") LocalDate date, @PathVariable("themeId") Long themeId) {
+        return reservationTimeService.findReservationTimeByDateAndThemeIdWithIsBooked(date, themeId);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationTimeById(@PathVariable("id") Long id) {
-        timeService.deleteReservationTimeById(id);
+        reservationTimeService.deleteReservationTimeById(id);
     }
 
     @ExceptionHandler(value = DuplicateTimeException.class)

@@ -13,7 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class TimeControllerTest {
+public class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("/times 요청 시 시간 정보 조회")

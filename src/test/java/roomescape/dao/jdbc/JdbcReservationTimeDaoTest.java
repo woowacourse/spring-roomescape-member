@@ -38,7 +38,7 @@ public class JdbcReservationTimeDaoTest {
     void findAllTimesWithBooked() {
         LocalDate date = LocalDate.of(2025, 4, 28);
         Long themeId = 2L;
-        List<ReservationTime> times = jdbcReservationTimeDao.findByDateAndThemeIdWithIsBooked(date, themeId);
+        List<ReservationTime> times = jdbcReservationTimeDao.findByDateAndThemeIdWithIsBookedOrderByStartAt(date, themeId);
 
         assertAll(() -> {
             assertThat(times.get(0).getAlreadyBooked()).isTrue();

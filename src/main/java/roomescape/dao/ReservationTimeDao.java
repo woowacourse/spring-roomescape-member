@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 
 public interface ReservationTimeDao {
 
@@ -11,7 +12,7 @@ public interface ReservationTimeDao {
 
     ReservationTime findById(Long id);
 
-    List<ReservationTime> findByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId);
+    List<ReservationTimeWithIsBookedGetResponse> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId);
 
     ReservationTime add(ReservationTime reservationTime);
 

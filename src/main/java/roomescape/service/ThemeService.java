@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreateRequest;
+import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.exception.DuplicateThemeException;
 import roomescape.exception.InvalidInputException;
 

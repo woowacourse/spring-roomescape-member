@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 import roomescape.exception.TimeDoesNotExistException;
 
 @Repository
@@ -28,11 +29,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        String sql = "SELECT id, start_at FROM reservation_time ORDER BY start_at";
+        String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, mapResultsToReservationTime());
     }
 
-    public List<ReservationTime> findByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId) {
+    public List<ReservationTimeWithIsBookedGetResponse> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId) {
         String sql = """
             SELECT
               rt.id,
@@ -47,7 +48,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             FROM reservation_time as rt
             ORDER BY rt.start_at;
             """;
-        return jdbcTemplate.query(sql, createReservationWithBookedMapper(), themeId, date);
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new ReservationTimeWithIsBookedGetResponse(
+                resultSet.getLong("id"),
+                resultSet.getObject("start_at", LocalTime.class),
+                resultSet.getBoolean("isBooked")
+        ), themeId, date);
     }
 
     public ReservationTime findById(Long id) {
@@ -81,12 +86,5 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
             rs.getTime("start_at").toLocalTime());
-    }
-
-    private RowMapper<ReservationTime> createReservationWithBookedMapper() {
-        return (rs, rowNum) -> new ReservationTime(
-            rs.getLong("id"),
-            rs.getTime("start_at").toLocalTime(),
-            rs.getBoolean("isBooked"));
     }
 }

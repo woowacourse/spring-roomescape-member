@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeCreateRequest;
+import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.exception.DuplicateThemeException;
 import roomescape.service.ThemeService;
 
