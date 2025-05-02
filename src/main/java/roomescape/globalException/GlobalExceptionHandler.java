@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handlerIllegalArgument(CustomException e) {
+    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         return ResponseEntity.status(e.getStatusValue()).body(new ErrorResponse(e.getMessage()));
     }
 
