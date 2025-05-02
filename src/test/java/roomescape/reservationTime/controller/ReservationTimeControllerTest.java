@@ -1,4 +1,4 @@
-package roomescape.reservation_time.controller;
+package roomescape.reservationTime.controller;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -18,9 +18,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import roomescape.reservation_time.ReservationTimeTestDataConfig;
-import roomescape.reservation_time.domain.dto.ReservationTimeReqDto;
-import roomescape.reservation_time.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.ReservationTimeTestDataConfig;
+import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
     ReservationTimeTestDataConfig.class})

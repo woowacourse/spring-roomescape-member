@@ -1,7 +1,7 @@
-package roomescape.reservation_time.service;
+package roomescape.reservationTime.service;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static roomescape.reservation_time.ReservationTimeTestDataConfig.DEFAULT_DUMMY_TIME;
+import static roomescape.reservationTime.ReservationTimeTestDataConfig.DEFAULT_DUMMY_TIME;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,11 +19,11 @@ import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.repository.ReservationRepositoryImpl;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservation_time.ReservationTimeTestDataConfig;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.domain.dto.ReservationTimeResDto;
-import roomescape.reservation_time.fixture.ReservationTimeFixture;
-import roomescape.reservation_time.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationTime.ReservationTimeTestDataConfig;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.fixture.ReservationTimeFixture;
+import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.repository.ThemeRepositoryImpl;

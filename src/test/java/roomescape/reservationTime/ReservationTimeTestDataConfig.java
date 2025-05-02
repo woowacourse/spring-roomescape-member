@@ -1,4 +1,4 @@
-package roomescape.reservation_time;
+package roomescape.reservationTime;
 
 import jakarta.annotation.PostConstruct;
 import java.time.LocalTime;

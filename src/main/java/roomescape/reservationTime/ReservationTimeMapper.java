@@ -1,8 +1,8 @@
-package roomescape.reservation_time;
+package roomescape.reservationTime;
 
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.domain.dto.ReservationTimeReqDto;
-import roomescape.reservation_time.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
 
 public class ReservationTimeMapper {
 

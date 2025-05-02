@@ -14,9 +14,9 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservation.repository.ReservationRepositoryImpl;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.fixture.ReservationTimeFixture;
-import roomescape.reservation_time.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.fixture.ReservationTimeFixture;
+import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 

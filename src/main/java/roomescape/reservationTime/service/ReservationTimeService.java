@@ -1,4 +1,4 @@
-package roomescape.reservation_time.service;
+package roomescape.reservationTime.service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,12 +9,12 @@ import roomescape.globalException.BadRequestException;
 import roomescape.globalException.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation_time.ReservationTimeMapper;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.domain.dto.AvailableReservationTimeResDto;
-import roomescape.reservation_time.domain.dto.ReservationTimeReqDto;
-import roomescape.reservation_time.domain.dto.ReservationTimeResDto;
-import roomescape.reservation_time.repository.ReservationTimeRepository;
+import roomescape.reservationTime.ReservationTimeMapper;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.domain.dto.AvailableReservationTimeResDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 

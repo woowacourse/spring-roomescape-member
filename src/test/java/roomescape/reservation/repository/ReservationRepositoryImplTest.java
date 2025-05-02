@@ -15,9 +15,9 @@ import org.springframework.context.annotation.Import;
 import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationFixture;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.fixture.ReservationTimeFixture;
-import roomescape.reservation_time.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.fixture.ReservationTimeFixture;
+import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepositoryImpl;
 

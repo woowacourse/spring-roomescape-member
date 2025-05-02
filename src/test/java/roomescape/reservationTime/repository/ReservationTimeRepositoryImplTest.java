@@ -1,4 +1,4 @@
-package roomescape.reservation_time.repository;
+package roomescape.reservationTime.repository;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.globalException.NotFoundException;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.fixture.ReservationTimeFixture;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.fixture.ReservationTimeFixture;
 
 @JdbcTest
 @Import({ReservationTimeRepositoryImpl.class})
