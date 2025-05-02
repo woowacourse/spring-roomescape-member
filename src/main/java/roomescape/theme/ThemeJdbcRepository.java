@@ -39,7 +39,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
     @Override
     public Theme findById(final Long id) {
-        final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id=?";
+        final String sql = "SELECT * FROM theme WHERE id=?";
         return jdbcTemplate.queryForObject(sql, getRowMapper(), id);
     }
 
@@ -49,16 +49,18 @@ public class ThemeJdbcRepository implements ThemeRepository {
             final LocalDate to,
             final int size
     ) {
-        final String sql = "SELECT t.id AS id," +
-                "       t.name AS name," +
-                "       t.description AS description," +
-                "       t.thumbnail AS thumbnail " +
-                "FROM theme AS t INNER JOIN reservation AS r " +
-                "ON r.theme_id = t.id " +
-                "WHERE r.date BETWEEN ? AND ? " +
-                "GROUP BY t.id " +
-                "ORDER BY count(*) DESC " +
-                "LIMIT ? ";
+        final String sql = """
+                SELECT t.id AS id, 
+                       t.name AS name, 
+                       t.description AS description, 
+                       t.thumbnail AS thumbnail  
+                FROM theme AS t INNER JOIN reservation AS r  
+                ON r.theme_id = t.id  
+                WHERE r.date BETWEEN ? AND ?  
+                GROUP BY t.id  
+                ORDER BY count(*) DESC  
+                LIMIT ? 
+                """;
 
         return jdbcTemplate.query(sql, getRowMapper(), from, to, size);
     }
