@@ -3,22 +3,19 @@ package roomescape.domain;
 import static roomescape.exception.ReservationErrorCode.ALREADY_RESERVED;
 import static roomescape.exception.ReservationErrorCode.PAST_RESERVATION;
 
-import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.domain.exception.ImpossibleReservationException;
 
 @Component
 public class ReservationRegistrationPolicy {
 
-    public void validate(Reservation candidate, List<Reservation> existingReservations) {
+    public void validate(Reservation candidate, boolean existsDuplicatedReservation) {
         validateNotPast(candidate);
-        validateNotDuplicated(candidate, existingReservations);
+        validateNotDuplicated(existsDuplicatedReservation);
     }
 
-    private void validateNotDuplicated(Reservation candidate, List<Reservation> existingReservations) {
-        boolean isDuplicated = existingReservations.stream()
-                .anyMatch(r -> r.isDuplicatedWith(candidate));
-        if (isDuplicated) {
+    private void validateNotDuplicated(boolean existingReservations) {
+        if (existingReservations) {
             throw new ImpossibleReservationException(ALREADY_RESERVED.getMessage());
         }
     }

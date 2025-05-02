@@ -19,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.testFixture.Fixture;
+import roomescape.testFixture.JdbcHelper;
 
 @JdbcTest
 @Import(JdbcReservationRepository.class)
@@ -117,5 +119,96 @@ class JdbcReservationRepositoryTest {
         // then
         List<Reservation> reservations = reservationRepository.findAll();
         assertThat(reservations).hasSize(0);
+    }
+
+    @DisplayName("timeId, themeId, 날짜가 같은 예약이 존재함을 확인한다.")
+    @Test
+    void existsDuplicatedReservation() {
+        // given
+        LocalDate date = LocalDate.of(2025, 1, 1);
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationTime reservationTime = Fixture.createTimeById(timeId);
+        Theme theme = Fixture.createThemeById(themeId);
+        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+
+        JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
+        JdbcHelper.insertTheme(jdbcTemplate, theme);
+        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+
+        // when
+        boolean existsDuplicatedReservation = reservationRepository.existsDuplicatedReservation(date, timeId, themeId);
+
+        // then
+        assertThat(existsDuplicatedReservation).isTrue();
+    }
+
+    @DisplayName("timeId가 다르면 중복된 예약이 존재하지 않음을 확인한다.")
+    @Test
+    void not_existsDuplicatedReservation_when_differentTimeId() {
+        // given
+        LocalDate date = LocalDate.of(2025, 1, 1);
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationTime reservationTime = Fixture.createTimeById(timeId);
+        Theme theme = Fixture.createThemeById(themeId);
+        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+
+        JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
+        JdbcHelper.insertTheme(jdbcTemplate, theme);
+        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+
+        // when
+        long differentTimeId = 2L;
+        boolean existsDuplicatedReservation = reservationRepository.existsDuplicatedReservation(date, differentTimeId, themeId);
+
+        // then
+        assertThat(existsDuplicatedReservation).isFalse();
+    }
+
+    @DisplayName("themeId가 다르면 중복된 예약이 존재하지 않음을 확인한다.")
+    @Test
+    void not_existsDuplicatedReservation_when_differentThemeId() {
+        // given
+        LocalDate date = LocalDate.of(2025, 1, 1);
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationTime reservationTime = Fixture.createTimeById(timeId);
+        Theme theme = Fixture.createThemeById(themeId);
+        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+
+        JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
+        JdbcHelper.insertTheme(jdbcTemplate, theme);
+        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+
+        // when
+        long differentThemeId = 2L;
+        boolean existsDuplicatedReservation = reservationRepository.existsDuplicatedReservation(date, timeId, differentThemeId);
+
+        // then
+        assertThat(existsDuplicatedReservation).isFalse();
+    }
+
+    @DisplayName("날짜가 다르면 중복된 예약이 존재하지 않음을 확인한다.")
+    @Test
+    void not_existsDuplicatedReservation_when_differentDate() {
+        // given
+        LocalDate date = LocalDate.of(2025, 1, 1);
+        long timeId = 1L;
+        long themeId = 1L;
+        ReservationTime reservationTime = Fixture.createTimeById(timeId);
+        Theme theme = Fixture.createThemeById(themeId);
+        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+
+        JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
+        JdbcHelper.insertTheme(jdbcTemplate, theme);
+        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+
+        // when
+        LocalDate differentDate = LocalDate.of(2025, 12, 1);
+        boolean existsDuplicatedReservation = reservationRepository.existsDuplicatedReservation(differentDate, timeId, themeId);
+
+        // then
+        assertThat(existsDuplicatedReservation).isFalse();
     }
 }

@@ -86,4 +86,16 @@ public class JdbcReservationRepository implements ReservationRepository {
         String deleteSql = "DELETE FROM reservation WHERE id=?";
         jdbcTemplate.update(deleteSql, id);
     }
+
+    @Override
+    public boolean existsDuplicatedReservation(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM reservation
+                WHERE theme_id = ? AND time_id = ? AND date = ?
+            )
+        """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, themeId, timeId, date);
+    }
 }

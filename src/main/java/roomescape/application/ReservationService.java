@@ -30,10 +30,16 @@ public class ReservationService {
         Theme theme = themeService.getThemeById(request.themeId());
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
         Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
-        reservationRegistrationPolicy.validate(reservation, reservationRepository.findAll());
+        validateCanRegister(request, reservation);
         Long id = reservationRepository.save(reservation);
 
         return ReservationDto.from(Reservation.assignId(id, reservation));
+    }
+
+    private void validateCanRegister(ReservationRequest request, Reservation reservation) {
+        boolean existsDuplicatedReservation = reservationRepository.existsDuplicatedReservation(
+                request.date(), request.timeId(), request.themeId());
+        reservationRegistrationPolicy.validate(reservation, existsDuplicatedReservation);
     }
 
     public List<ReservationDto> getAllReservations() {

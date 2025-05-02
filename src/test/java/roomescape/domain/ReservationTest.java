@@ -22,7 +22,7 @@ class ReservationTest {
 
         // when
         Reservation reservation2 = Reservation.of(2L, "아이나", THEME_1, date, reservationTime);
-        boolean duplicated = reservation2.isDuplicated(reservation1);
+        boolean duplicated = reservation2.isDuplicatedWith(reservation1);
 
         // then
         assertThat(duplicated).isTrue();
@@ -44,7 +44,7 @@ class ReservationTest {
         LocalDate date2 = LocalDate.parse(date);
         ReservationTime time2 = ReservationTime.of(timeId, LocalTime.parse(time));
         Reservation reservation2 = Reservation.of(2L, "아이나", THEME_1, date2, time2);
-        boolean duplicated = reservation2.isDuplicated(reservation1);
+        boolean duplicated = reservation2.isDuplicatedWith(reservation1);
 
         // then
         assertThat(duplicated).isFalse();
