@@ -45,12 +45,11 @@ public class ThemeService {
         repository.deleteById(id);
     }
 
-    @Transactional
     public List<PopularThemeResponse> readRecentPopularThemes(int count) {
         LocalDate today = LocalDate.now();
         return repository.findPopularThemesThisWeek(
-                today.minusDays(START_DATE_INTERVAL), today.minusDays(END_DATE_INTERVAL)
-                , count)
+                        today.minusDays(START_DATE_INTERVAL), today.minusDays(END_DATE_INTERVAL)
+                        , count)
                 .stream()
                 .map(PopularThemeResponse::from)
                 .toList();
