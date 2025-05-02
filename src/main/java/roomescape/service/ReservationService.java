@@ -1,8 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -12,7 +9,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidInputException;
 import roomescape.exception.NotCorrectDateTimeException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ReservationService {
@@ -22,49 +24,51 @@ public class ReservationService {
     private final ThemeDao themeDao;
 
     public ReservationService(ReservationDao reservationDao,
-        ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+                              ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
     }
 
-    public Reservation addReservationAfterNow(ReservationRequest request) {
+    public Reservation createReservationAfterNow(ReservationRequest request) {
         LocalDate date = request.date();
         ReservationTime time = reservationTimeDao.findById(request.timeId());
-        validateDateTimeAfterNow(date, time);
+        validateDateAndTime(date, time);
 
-        return addReservation(request);
+        return createReservation(request);
     }
 
-    private void validateDateTimeAfterNow(LocalDate date, ReservationTime time) {
+    private void validateDateAndTime(LocalDate date, ReservationTime time) {
         LocalDateTime now = LocalDateTime.now();
         if (date.isBefore(now.toLocalDate()) ||
-            (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
+                (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
             throw new NotCorrectDateTimeException("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.");
         }
     }
 
-    public Reservation addReservation(ReservationRequest reservationRequest) {
-        validateDuplicateReservation(reservationRequest);
-        ReservationTime time = reservationTimeDao.findById(reservationRequest.timeId());
-        Theme theme = themeDao.findById(reservationRequest.themeId());
-        return reservationDao.addReservation(
-            new Reservation(null, reservationRequest.name(), reservationRequest.date(), time,
-                theme));
+    public Reservation createReservation(ReservationRequest reservationRequest) {
+        LocalDate date = reservationRequest.date();
+        Long timeId = reservationRequest.timeId();
+        Long themeId = reservationRequest.themeId();
+        validateDuplicateReservation(date, timeId, themeId);
+        ReservationTime time = reservationTimeDao.findById(timeId);
+        Theme theme = themeDao.findById(themeId);
+        return reservationDao.add(new Reservation(null, reservationRequest.name(), date, time, theme));
     }
 
-    private void validateDuplicateReservation(ReservationRequest reservationRequest) {
-        if (reservationDao.existReservationByDateTimeAndTheme(reservationRequest.date(),
-            reservationRequest.timeId(), reservationRequest.themeId())) {
+    private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
+        if (reservationDao.existByDateTimeAndTheme(date, timeId, themeId)) {
             throw new DuplicateReservationException();
         }
     }
 
     public List<Reservation> findAllReservations() {
-        return reservationDao.findAllReservations();
+        return reservationDao.findAll();
     }
 
-    public void removeReservation(Long id) {
-        reservationDao.removeReservationById(id);
+    public void deleteeReservationById(Long id) {
+        if (reservationDao.deleteById(id) == 0) {
+            throw new InvalidInputException("존재하지 않는 예약 id이다.");
+        }
     }
 }

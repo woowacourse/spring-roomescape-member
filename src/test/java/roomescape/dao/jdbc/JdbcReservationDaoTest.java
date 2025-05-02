@@ -42,7 +42,7 @@ public class JdbcReservationDaoTest {
     @Test
     @DisplayName("전체 예약 기록을 조회할 수 있다.")
     void findAllReservation() {
-        List<Reservation> reservations = jdbcReservationDao.findAllReservations();
+        List<Reservation> reservations = jdbcReservationDao.findAll();
 
         assertThat(reservations).hasSize(3);
     }
@@ -55,7 +55,7 @@ public class JdbcReservationDaoTest {
         Reservation reservation = new Reservation(null, "사나", LocalDate.of(2024, 4, 22), time,
             theme);
 
-        Reservation newReservation = jdbcReservationDao.addReservation(reservation);
+        Reservation newReservation = jdbcReservationDao.add(reservation);
 
         assertThat(newReservation).isNotNull();
     }
@@ -68,8 +68,8 @@ public class JdbcReservationDaoTest {
         Reservation reservation = new Reservation(null, "사나", LocalDate.of(2024, 4, 22), time,
             theme);
 
-        Reservation newReservation = jdbcReservationDao.addReservation(reservation);
-        assertThatCode(() -> jdbcReservationDao.removeReservationById(newReservation.getId()))
+        Reservation newReservation = jdbcReservationDao.add(reservation);
+        assertThatCode(() -> jdbcReservationDao.deleteById(newReservation.getId()))
             .doesNotThrowAnyException();
     }
 
@@ -81,8 +81,8 @@ public class JdbcReservationDaoTest {
         Theme theme = new Theme(1L, "레벨4", "탈출하기", "http/~");
 
         Reservation reservation = new Reservation(null, "사나", date, time, theme);
-        jdbcReservationDao.addReservation(reservation);
+        jdbcReservationDao.add(reservation);
 
-        assertThat(jdbcReservationDao.existReservationByDateTimeAndTheme(date, 1L, 1L)).isTrue();
+        assertThat(jdbcReservationDao.existByDateTimeAndTheme(date, 1L, 1L)).isTrue();
     }
 }

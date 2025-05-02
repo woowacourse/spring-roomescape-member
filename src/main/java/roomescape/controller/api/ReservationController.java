@@ -1,6 +1,5 @@
 package roomescape.controller.api;
 
-import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +19,8 @@ import roomescape.exception.ThemeDoesNotExistException;
 import roomescape.exception.TimeDoesNotExistException;
 import roomescape.service.ReservationService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -33,30 +34,30 @@ public class ReservationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
-        return ReservationResponse.from(reservationService.addReservationAfterNow(request));
+        return ReservationResponse.from(reservationService.createReservationAfterNow(request));
     }
 
     @PostMapping("/admin")
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createAdminReservation(@RequestBody ReservationRequest request) {
-        return ReservationResponse.from(reservationService.addReservation(request));
+        return ReservationResponse.from(reservationService.createReservation(request));
     }
 
     @GetMapping
     public List<ReservationResponse> readReservations() {
         return reservationService.findAllReservations().stream()
-            .map(ReservationResponse::from)
-            .toList();
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable("id") Long id) {
-        reservationService.removeReservation(id);
+        reservationService.deleteeReservationById(id);
     }
 
     @ExceptionHandler(value = {TimeDoesNotExistException.class, ThemeDoesNotExistException.class,
-        NotCorrectDateTimeException.class})
+            NotCorrectDateTimeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleCreatedException(CannotCreatedException ex) {
         return ex.getMessage();

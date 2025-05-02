@@ -39,7 +39,7 @@ public class ReservationServiceTest {
     void addReservation() {
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L,
             1L);
-        Reservation actual = reservationService.addReservation(request);
+        Reservation actual = reservationService.createReservation(request);
 
         assertAll(() -> {
             assertThat(actual.getId()).isEqualTo(1L);
@@ -58,8 +58,8 @@ public class ReservationServiceTest {
         ReservationRequest request2 = new ReservationRequest(LocalDate.of(2024, 4, 28), "프리", 1L,
             1L);
 
-        reservationService.addReservation(request1);
-        reservationService.addReservation(request2);
+        reservationService.createReservation(request1);
+        reservationService.createReservation(request2);
 
         assertThat(reservationService.findAllReservations()).hasSize(2);
     }
@@ -69,9 +69,9 @@ public class ReservationServiceTest {
     void removeReservation() {
         ReservationRequest request = new ReservationRequest(LocalDate.of(2024, 4, 26), "사나", 1L,
             1L);
-        reservationService.addReservation(request);
+        reservationService.createReservation(request);
 
-        reservationService.removeReservation(1L);
+        reservationService.deleteeReservationById(1L);
 
         assertThat(reservationService.findAllReservations()).hasSize(0);
     }
