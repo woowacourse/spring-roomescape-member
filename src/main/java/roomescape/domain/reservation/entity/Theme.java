@@ -1,5 +1,7 @@
 package roomescape.domain.reservation.entity;
 
+import roomescape.common.exception.InvalidArgumentException;
+
 public class Theme {
 
     private final Long id;
@@ -21,7 +23,7 @@ public class Theme {
 
     public void validateTheme() {
         if (name == null || description == null || thumbnail == null) {
-            throw new IllegalArgumentException("Theme field cannot be null");
+            throw new InvalidArgumentException("Theme field cannot be null");
         }
     }
 

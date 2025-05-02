@@ -53,7 +53,6 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
                     params,
                     (resultSet, rowNum) -> reservationTimeOf(resultSet)
             );
-
             return Optional.ofNullable(reservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -69,10 +68,6 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        if (reservationTime.getStartAt() == null) {
-            throw new IllegalArgumentException("start_at cannot be null");
-        }
-
         if (reservationTime.existId()) {
             return update(reservationTime);
         }

@@ -45,7 +45,7 @@ public class ThemeDAO implements ThemeRepository {
                 select T.*, count(R.id) as reservation_count
                 from theme T
                 inner join reservation R
-                ON T.id = R.theme_id AND R.date between :start_date and :end_date
+                ON T.id = R.theme_id    AND R.date between :start_date and :end_date
                 group by T.id
                 order by reservation_count desc
                 limit 10

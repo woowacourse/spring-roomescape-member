@@ -69,3 +69,6 @@
 - [x] "/themes/{id}" delete 요청 시 해당 id로 설정된 테마를 삭제하고 204 NO_CONTENT 상태 코드가 반환된다.
     - [x] 만약 해당 테마가 없다면 404 NOT FOUND 상태 코드가 반환된다.
 
+## 예외
+
+- 인자값이 올바르지 않을 경우 `InvalidArgumentException` 을 반환한다. 

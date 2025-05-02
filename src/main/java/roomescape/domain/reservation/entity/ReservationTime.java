@@ -2,6 +2,7 @@ package roomescape.domain.reservation.entity;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.common.exception.InvalidArgumentException;
 
 public class ReservationTime {
 
@@ -20,7 +21,7 @@ public class ReservationTime {
 
     public void validateReservationTime() {
         if (startAt == null) {
-            throw new IllegalArgumentException("startAt cannot be null");
+            throw new InvalidArgumentException("startAt cannot be null");
         }
     }
 

@@ -3,6 +3,7 @@ package roomescape.domain.reservation.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.common.exception.InvalidArgumentException;
 
 public class Reservation {
 
@@ -29,14 +30,14 @@ public class Reservation {
 
     private void validateReservation() {
         if (name == null || reservationDate == null || reservationTime == null || theme == null) {
-            throw new IllegalArgumentException("Reservation field cannot be null");
+            throw new InvalidArgumentException("Reservation field cannot be null");
         }
         validateName();
     }
 
     private void validateName() {
         if (name.isBlank() || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("invalid reservation name");
+            throw new InvalidArgumentException("invalid reservation name");
         }
     }
 
@@ -77,16 +78,16 @@ public class Reservation {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         Reservation that = (Reservation) o;
         return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }

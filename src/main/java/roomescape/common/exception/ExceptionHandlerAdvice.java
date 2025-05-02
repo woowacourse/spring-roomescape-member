@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionHandlerAdvice {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
+    @ExceptionHandler(InvalidArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgumentException(InvalidArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 
