@@ -39,7 +39,7 @@ public class ReservationTimeService {
 
     public void delete(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
-            throw new AlreadyInUseException("Reservation is already in use");
+            throw new AlreadyInUseException("해당 시간대에 예약이 존재하여 삭제할 수 없습니다 id = " + id);
         }
 
         reservationTimeRepository.deleteById(id);

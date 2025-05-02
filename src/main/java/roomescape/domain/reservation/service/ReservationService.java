@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.common.exception.InvalidArgumentException;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -50,7 +51,7 @@ public class ReservationService {
 
     public ReservationResponse create(ReservationRequest request) {
         if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
-            throw new AlreadyInUseException("reservation is already in use");
+            throw new AlreadyInUseException("해당 예약은 이미 존재합니다!");
         }
 
         Reservation reservation = getReservation(request);
@@ -77,7 +78,7 @@ public class ReservationService {
         LocalDateTime dateTime = LocalDateTime.of(date, time);
 
         if (now.isAfter(dateTime)) {
-            throw new IllegalArgumentException("이미 지난 예약 시간입니다.");
+            throw new InvalidArgumentException("이미 지난 예약 시간입니다.");
         }
     }
 

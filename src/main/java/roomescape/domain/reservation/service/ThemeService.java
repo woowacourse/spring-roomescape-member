@@ -41,7 +41,7 @@ public class ThemeService {
 
     public void delete(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
-            throw new AlreadyInUseException("Theme with id " + id + " is currently in use by reservations");
+            throw new AlreadyInUseException("해당 테마에 대한 예약이 존재합니다! id = " + id);
         }
 
         themeRepository.deleteById(id);
