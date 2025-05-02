@@ -41,8 +41,8 @@ public class TimeController {
     }
 
     @GetMapping("/{date}/{themeId}")
-    public List<TimeResponse> readReservationTimesWithBooked(@PathVariable LocalDate date,
-        @PathVariable Long themeId) {
+    public List<TimeResponse> readReservationTimesWithBooked(@PathVariable("date") LocalDate date,
+        @PathVariable("themeId") Long themeId) {
         return timeService.findAllTimesWithBooked(date, themeId).stream()
             .map(TimeResponse::from)
             .toList();
@@ -50,7 +50,7 @@ public class TimeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReservationTime(@PathVariable Long id) {
+    public void deleteReservationTime(@PathVariable("id") Long id) {
         timeService.removeReservationTime(id);
     }
 
