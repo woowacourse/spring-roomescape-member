@@ -5,6 +5,8 @@ import roomescape.exception.custom.InvalidInputException;
 
 public class RoomTheme {
 
+    private static final int NON_SAVED_STATUS = 0;
+
     private final long id;
     private final String name;
     private final String description;
@@ -20,7 +22,7 @@ public class RoomTheme {
     }
 
     public RoomTheme(final String name, final String description, final String thumbnail) {
-        this(0, name, description, thumbnail);
+        this(NON_SAVED_STATUS, name, description, thumbnail);
     }
 
     private void validate(final String name, final String description, final String thumbnail) {

@@ -6,6 +6,8 @@ import roomescape.exception.custom.InvalidInputException;
 
 public class ReservationTime {
 
+    private static final int NON_SAVED_STATUS = 0;
+
     private final long id;
     private final LocalTime startAt;
 
@@ -16,7 +18,7 @@ public class ReservationTime {
     }
 
     public ReservationTime(final LocalTime startAt) {
-        this(0, startAt);
+        this(NON_SAVED_STATUS, startAt);
     }
 
     private void validate(final LocalTime startAt) {
