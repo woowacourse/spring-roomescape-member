@@ -7,6 +7,7 @@ import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.RoomThemeDAO;
+import roomescape.domain.PopularThemeSelectionCriteria;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
@@ -16,8 +17,7 @@ import roomescape.service.dto.RoomThemeCreation;
 @Service
 public class RoomThemeService {
 
-    private static final int POPULAR_THEME_SELECTION_CRITERIA_START = 8;
-    private static final int POPULAR_THEME_SELECTION_CRITERIA_END = 1;
+    private static final int POPULAR_THEME_SELECTION_DURATION = 7;
 
     private final ReservationDAO reservationDAO;
     private final RoomThemeDAO themeDAO;
@@ -53,12 +53,11 @@ public class RoomThemeService {
     }
 
     public List<PopularThemeResponse> findPopularThemes() {
-        final LocalDate currentDate = LocalDate.now();
+        LocalDate now = LocalDate.now();
+        PopularThemeSelectionCriteria criteria =
+                new PopularThemeSelectionCriteria(now, POPULAR_THEME_SELECTION_DURATION);
 
-        final LocalDate start = currentDate.minusDays(POPULAR_THEME_SELECTION_CRITERIA_START);
-        final LocalDate end = currentDate.minusDays(POPULAR_THEME_SELECTION_CRITERIA_END);
-
-        return themeDAO.findPopularThemes(start, end).stream()
+        return themeDAO.findPopularThemes(criteria.getStartDay(), criteria.getEndDay()).stream()
                 .map(PopularThemeResponse::from)
                 .toList();
     }
