@@ -1,7 +1,6 @@
 package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +34,8 @@ public class ReservationController {
     }
 
     @GetMapping("/times")
-    public List<AvailableReservationTimeResponse> findAllAvailableTimes(@RequestParam @NotNull final LocalDate date,
-                                                                        @RequestParam("theme-id") @NotNull final Long themeId) {
+    public List<AvailableReservationTimeResponse> findAllAvailableTimes(@RequestParam final LocalDate date,
+                                                                        @RequestParam final Long themeId) {
         return reservationService.findAllReservationTime(date, themeId);
     }
 
