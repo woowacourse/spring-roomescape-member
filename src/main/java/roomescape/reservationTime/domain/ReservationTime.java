@@ -10,7 +10,7 @@ public class ReservationTime {
 
     private ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
-        this.startAt = startAt;
+        this.startAt = Objects.requireNonNull(startAt, "시간은 null 일 수 없습니다.");
     }
 
     public static ReservationTime createWithoutId(final LocalTime startAt) {

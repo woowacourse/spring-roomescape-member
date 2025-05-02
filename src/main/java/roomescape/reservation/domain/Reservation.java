@@ -20,10 +20,17 @@ public class Reservation {
                         final Theme theme
     ) {
         this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        this.name = Objects.requireNonNull(name, "이름은 null 일 수 없습니다.");
+        validateNameIsBlank(name);
+        this.date = Objects.requireNonNull(date, "날짜는 null 일 수 없습니다.");
+        this.time = Objects.requireNonNull(time, "예약 시간은 null 일 수 없습니다.");
+        this.theme = Objects.requireNonNull(theme, "테마는 null 일 수 없습니다.");
+    }
+
+    private static void validateNameIsBlank(final String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+        }
     }
 
     public static Reservation createWithoutId(final String name,

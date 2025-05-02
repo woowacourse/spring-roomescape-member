@@ -11,9 +11,16 @@ public class Theme {
 
     private Theme(final Long id, final String name, final String description, final String thumbnail) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this.name = Objects.requireNonNull(name, "이름은 null 일 수 없습니다.");
+        validateNameIsBlank(name);
+        this.description = Objects.requireNonNull(description, "테마 설명은 null 일 수 없습니다.");
+        this.thumbnail = Objects.requireNonNull(thumbnail, "썸네일은 null 일 수 없습니다.");
+    }
+
+    private static void validateNameIsBlank(final String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+        }
     }
 
     public static Theme createWithoutId(final String name, final String description, final String thumbnail) {
