@@ -68,12 +68,12 @@ public class ThemeDaoImpl implements ThemeDao {
                 JOIN
                     theme t ON r.theme_id = t.id
                 WHERE
-                    PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN CURRENT_DATE - 7 AND CURRENT_DATE - 1
+                    r.date BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND DATEADD('DAY', -1, CURRENT_DATE)
                 GROUP BY
                     t.id, t.name, t.description, t.thumbnail
                 ORDER BY
                     COUNT(r.id) DESC
-                LIMIT 10;
+                LIMIT 10
                 """;
 
         return jdbcTemplate.query(sql, ROW_MAPPER);

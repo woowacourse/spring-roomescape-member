@@ -86,11 +86,14 @@ class ReservationDaoImplTest {
 
     @Test
     void date와_theme_id가_일치하는_예약을_조회한다() {
-        List<Reservation> findReservation = reservationDao.findByDateAndThemeId(LocalDate.of(2025, 4, 25), 2L);
+        List<Reservation> findReservation = reservationDao.findByDateAndThemeId(LocalDate.now().minusDays(4), 2L);
 
-        List<Reservation> expected = List.of(new Reservation(2L, "", LocalDate.of(2025, 4, 25),
-                new ReservationTime(2L, LocalTime.of(12, 0)),
-                new Theme(2L, "", "", "")));
+        List<Reservation> expected = List.of(
+                new Reservation(2L, "", LocalDate.now().minusDays(4),
+                        new ReservationTime(2L, LocalTime.of(12, 0)),
+                        new Theme(2L, "", "", "")
+                )
+        );
         assertThat(findReservation).isEqualTo(expected);
     }
 }

@@ -24,16 +24,16 @@ VALUES ('컨저링', '실화 기반의 공포가 현실이 된다, 악령이 도
 -- 2 -> 1 -> 3
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약1', '2025-04-24', 1, 2);
+VALUES ('예약1', DATEADD('DAY', -3, CURRENT_DATE), 1, 2);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약2', '2025-04-25', 2, 2);
+VALUES ('예약2', DATEADD('DAY', -4, CURRENT_DATE), 2, 2);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약3', '2025-04-26', 2, 2);
+VALUES ('예약3', DATEADD('DAY', -3, CURRENT_DATE), 2, 2);
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약4', '2025-04-24', 3, 1);
+VALUES ('예약4', DATEADD('DAY', -3, CURRENT_DATE), 3, 1);
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약5', '2025-04-25', 4, 1);
+VALUES ('예약5', DATEADD('DAY', -3, CURRENT_DATE), 4, 1);
 
 INSERT INTO reservation (name, date, time_id, theme_id)
-VALUES ('예약6', '2025-04-25', 4, 3);
+VALUES ('예약6', DATEADD('DAY', -3, CURRENT_DATE), 4, 3);
