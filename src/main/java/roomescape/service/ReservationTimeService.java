@@ -10,8 +10,8 @@ import roomescape.dto.other.TimeWithBookState;
 import roomescape.dto.request.ReservationTimeCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {

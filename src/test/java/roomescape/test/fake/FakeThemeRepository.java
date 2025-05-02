@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 

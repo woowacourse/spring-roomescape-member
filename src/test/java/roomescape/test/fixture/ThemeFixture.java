@@ -1,7 +1,7 @@
 package roomescape.test.fixture;
 
 import roomescape.domain.Theme;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 public class ThemeFixture {
 

@@ -2,7 +2,7 @@ package roomescape.test.fixture;
 
 import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 public class ReservationTimeFixture {
 

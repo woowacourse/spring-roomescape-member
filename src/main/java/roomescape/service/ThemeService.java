@@ -8,8 +8,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 @Service
 public class ThemeService {

@@ -9,9 +9,9 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.repository.reservation.ReservationRepository;
+import roomescape.repository.reservationtime.ReservationTimeRepository;
+import roomescape.repository.theme.ThemeRepository;
 
 @Service
 public class ReservationService {
