@@ -1,7 +1,6 @@
 package roomescape.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.DisplayName;
