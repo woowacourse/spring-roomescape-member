@@ -2,12 +2,11 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.exception.EntityNotFoundException;
-import roomescape.exception.ReservationExistException;
 import roomescape.exception.ReservationTimeExistException;
 import roomescape.service.ReservationTimeService;
 
@@ -39,11 +38,11 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({
-        ReservationExistException.class,
-        ReservationTimeExistException.class,
-        EntityNotFoundException.class})
-    public ResponseEntity<String> handleReservationExistException(final RuntimeException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(ReservationTimeExistException.class)
+    public ResponseEntity<ProblemDetail> handleReservationTimeExistException(ReservationTimeExistException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 }

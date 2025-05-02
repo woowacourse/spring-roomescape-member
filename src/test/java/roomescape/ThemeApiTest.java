@@ -64,7 +64,7 @@ public class ThemeApiTest {
         RestAssured.given().log().all()
             .when().delete("/themes/1")
             .then().log().all()
-            .statusCode(400)
-            .body(equalTo("이 시간의 예약이 존재합니다."));
+            .statusCode(409)
+            .body("detail", equalTo("이 시간의 예약이 존재합니다."));
     }
 }

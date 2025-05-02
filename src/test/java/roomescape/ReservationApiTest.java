@@ -60,7 +60,7 @@ class ReservationApiTest {
         RestAssured.given().log().all()
             .when().delete("/reservations/7")
             .then().log().all()
-            .statusCode(400);
+            .statusCode(404);
     }
 
     @Test
@@ -148,7 +148,7 @@ class ReservationApiTest {
             .when().post("/reservations")
             .then().log().all()
             .statusCode(400)
-            .body(equalTo("현재보다 과거의 날짜로 예약 할 수 없습니다."));
+            .body("detail", equalTo("현재보다 과거의 날짜로 예약 할 수 없습니다."));
     }
 
     @Test

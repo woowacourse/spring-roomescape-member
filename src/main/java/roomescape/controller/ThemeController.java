@@ -2,12 +2,11 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
-import roomescape.exception.EntityNotFoundException;
-import roomescape.exception.ReservationExistException;
 import roomescape.exception.ThemeExistException;
 import roomescape.service.ThemeService;
 
@@ -44,11 +43,11 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({
-        ReservationExistException.class,
-        ThemeExistException.class,
-        EntityNotFoundException.class})
-    public ResponseEntity<String> handleReservationExistException(final RuntimeException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(ThemeExistException.class)
+    public ResponseEntity<ProblemDetail> handleReservationExistException(ThemeExistException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setDetail(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
 }
