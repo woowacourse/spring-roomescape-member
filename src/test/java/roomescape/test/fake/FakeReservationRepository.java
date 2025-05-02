@@ -9,14 +9,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 import roomescape.repository.reservation.ReservationRepository;
 
-public class FakeReservationRepository extends ReservationRepository {
+public class FakeReservationRepository implements ReservationRepository {
 
     private final Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1);
-
-    public FakeReservationRepository() {
-        super(null);
-    }
 
     @Override
     public List<Reservation> findAll() {

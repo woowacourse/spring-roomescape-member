@@ -1,5 +1,6 @@
 package roomescape.test.fake;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -7,16 +8,13 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.other.TimeWithBookState;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
-public class FakeReservationTimeRepository extends ReservationTimeRepository {
+public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
     private final Map<Long, ReservationTime> reservationTimes = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1);
-
-    public FakeReservationTimeRepository() {
-        super(null);
-    }
 
     @Override
     public List<ReservationTime> findAll() {
@@ -47,5 +45,10 @@ public class FakeReservationTimeRepository extends ReservationTimeRepository {
     @Override
     public void deleteById(long id) {
         reservationTimes.remove(id);
+    }
+
+    @Override
+    public List<TimeWithBookState> findAllWithBookState(LocalDate date, long themeId) {
+        return List.of();
     }
 }

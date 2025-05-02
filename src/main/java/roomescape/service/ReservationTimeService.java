@@ -21,7 +21,8 @@ public class ReservationTimeService {
 
     public ReservationTimeService(
             ReservationRepository reservationRepository,
-            ReservationTimeRepository reservationTimeRepository) {
+            ReservationTimeRepository reservationTimeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
     }
