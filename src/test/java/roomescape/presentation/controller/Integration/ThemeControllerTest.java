@@ -3,6 +3,8 @@ package roomescape.presentation.controller.Integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.THEME_1;
+import static roomescape.testFixture.Fixture.THEME_2;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ThemeControllerTest {
@@ -45,16 +48,13 @@ public class ThemeControllerTest {
     @DisplayName("테마 조회 요청 시 모든 테마를 응답한다")
     @Test
     void getAllThemes() {
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마2', '테마 2입니다.', '썸네일입니다.')");
-
-        int themesCount = getThemesCount();
+        JdbcHelper.insertThemes(jdbcTemplate, THEME_1, THEME_2);
 
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(themesCount));
+                .body("size()", is(2));
     }
 
     @DisplayName("테마 생성 요청 시 생성된 테마 정보를 응답한다")
@@ -86,7 +86,7 @@ public class ThemeControllerTest {
     @Test
     void delete() {
         //given
-        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
+        JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
 
         int addedCount = getThemesCount();
 
@@ -103,7 +103,6 @@ public class ThemeControllerTest {
     }
 
     private int getThemesCount() {
-        int themesCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
-        return themesCount;
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
     }
 }

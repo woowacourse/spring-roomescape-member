@@ -37,7 +37,7 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> addTime(@Valid @RequestBody TimeRequest request) {
+    public ResponseEntity<TimeResponse> createTime(@Valid @RequestBody TimeRequest request) {
         TimeDto timeDto = service.registerNewTime(request);
         TimeResponse timeResponse = TimeResponse.from(timeDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(timeResponse);

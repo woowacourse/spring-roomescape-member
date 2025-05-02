@@ -34,7 +34,7 @@ class ReservationTest {
             "2025-02-01,10:00,2",
             "2025-01-01,11:00,3",
     })
-    void isNotduplicated(String date, String time, Long timeId) {
+    void isNotDuplicated(String date, String time, Long timeId) {
         // given
         LocalDate date1 = LocalDate.of(2025, 1, 1);
         ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));

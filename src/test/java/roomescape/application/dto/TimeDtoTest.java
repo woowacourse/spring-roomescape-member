@@ -1,34 +1,15 @@
-package roomescape.application.mapper;
+package roomescape.application.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
-import roomescape.presentation.dto.request.TimeRequest;
 
-class ReservationTimeMapperTest {
-
-    @DisplayName("request를 ReservationTime으로 변경한다.")
-    @Test
-    void request_toReservation() {
-        // given
-        LocalTime time = LocalTime.of(10, 0);
-        TimeRequest request = new TimeRequest(time);
-
-        // when
-        ReservationTime reservationTime = ReservationTime.createNew(request.startAt());
-
-        // then
-        assertAll(
-                () -> assertThat(reservationTime.getId()).isNull(),
-                () -> assertThat(reservationTime.getStartAt()).isEqualTo(time)
-        );
-    }
+class TimeDtoTest {
 
     @DisplayName("ReservationTime을 Response로 변환한다.")
     @Test
@@ -71,5 +52,4 @@ class ReservationTimeMapperTest {
                         .containsExactly(time1, time2, time3)
         );
     }
-
 }

@@ -32,6 +32,11 @@ public class Fixture {
         return Reservation.of(1L, name, theme, date, reservationTime);
     }
 
+    public static Reservation createReservationById(Long id) {
+        return Reservation.of(
+                id, "멍구", THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
+    }
+
     public static ReservationTime createTimeById(Long timeId) {
         return ReservationTime.of(timeId, LocalTime.of(10, 0));
     }
@@ -40,7 +45,7 @@ public class Fixture {
         return Theme.of(themeId, "테마", "테마 설명입니다.", "썸네일");
     }
 
-    private static Map<String, Object> createReservationBody() {
+    public static Map<String, Object> createReservationBody() {
         Map<String, Object> params = new HashMap<>();
 
         params.put("name", "브라운");

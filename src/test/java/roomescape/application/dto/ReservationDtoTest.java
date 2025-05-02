@@ -1,7 +1,7 @@
-package roomescape.application.mapper;
+package roomescape.application.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
@@ -9,33 +9,10 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.presentation.dto.request.ReservationRequest;
 
-class ReservationMapperTest {
-
-    @DisplayName("예약 요청을 Reservation 객체로 변환한다.")
-    @Test
-    void request_toReservation() {
-        // given
-        LocalDate reservationDate = LocalDate.of(2024, 4, 1);
-        ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationRequest request = new ReservationRequest(1L, reservationDate, "멍구", 1L);
-
-        // when
-        Reservation reservation = Reservation.createNew(request.name(), THEME_1, request.date(), reservationTime);
-
-        // then
-        assertAll(
-                () -> assertThat(reservation.getId()).isNull(),
-                () -> assertThat(reservation.getName()).isEqualTo("멍구"),
-                () -> assertThat(reservation.getReservationDate()).isEqualTo(reservationDate),
-                () -> assertThat(reservation.getReservationTime()).isEqualTo(reservationTime)
-        );
-    }
-
+class ReservationDtoTest {
     @DisplayName("Reservation 객체를 응답객체로 변환한다.")
     @Test
     void reservation_toResponse() {
@@ -83,4 +60,5 @@ class ReservationMapperTest {
                         .containsExactly("브라운", "솔라", "브리")
         );
     }
+
 }

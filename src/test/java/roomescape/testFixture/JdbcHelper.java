@@ -32,4 +32,9 @@ public class JdbcHelper {
                 reservation.getName(), reservation.getReservationDate(), reservation.getReservationTime().getId(),
                 reservation.getTheme().getId());
     }
+
+    public static void insertReservations(JdbcTemplate template, Reservation... reservations) {
+        Arrays.stream(reservations)
+                .forEach(reservation -> insertReservation(template, reservation));
+    }
 }
