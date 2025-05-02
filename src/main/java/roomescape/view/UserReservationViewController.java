@@ -5,13 +5,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class UserReservationViewController {
-    @GetMapping("/reservation")
-    public String showUserReservation() {
-        return "reservation";
-    }
 
     @GetMapping
     public String showMain() {
         return "index";
+    }
+
+    @GetMapping("/reservation")
+    public String showReservations() {
+        return "reservation";
     }
 }

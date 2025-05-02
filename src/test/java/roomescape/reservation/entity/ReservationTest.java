@@ -1,35 +1,34 @@
 package roomescape.reservation.entity;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.time.entity.ReservationTimeEntity;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ReservationTest {
+
     @DisplayName("날짜와 시간이 동일한 경우 중복 예약으로 판단한다.")
     @Test
     void duplicateWhenDateAndTimeIsSame() {
         // given
         LocalDate date = LocalDate.of(2025, 1, 2);
         LocalTime time = LocalTime.of(10, 0);
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
-        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity, null);
-        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, timeEntity, null);
+        Time timeEntity = new Time(1L, time);
+        Reservation reservation = new Reservation(null, "test", date, timeEntity, null);
+        Reservation otherReservation = new Reservation(null, "test2", date, timeEntity, null);
 
         // when
         final boolean isSame = reservation.isDuplicatedWith(otherReservation);
 
         // then
         assertThat(isSame).isTrue();
-     }
+    }
 
     @DisplayName("기존 예약의 (시작 시간)과 (시작 시간 + 2시간) 사이에 예약된 것은 중복 예약으로 판단한다.")
     @ParameterizedTest(name = "{0}")
@@ -38,10 +37,10 @@ class ReservationTest {
         // given
         LocalDate date = LocalDate.of(2025, 1, 2);
         LocalTime time = LocalTime.of(10, 0);
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
-        ReservationEntity reservation = new ReservationEntity(null, "test", date, timeEntity, null);
-        ReservationTimeEntity otherTimeEntity = new ReservationTimeEntity(2L, otherTime);
-        ReservationEntity otherReservation = new ReservationEntity(null, "test2", date, otherTimeEntity, null);
+        Time timeEntity = new Time(1L, time);
+        Reservation reservation = new Reservation(null, "test", date, timeEntity, null);
+        Time otherTimeEntity = new Time(2L, otherTime);
+        Reservation otherReservation = new Reservation(null, "test2", date, otherTimeEntity, null);
 
         // when
         final boolean isDuplicated = reservation.isDuplicatedWith(otherReservation);

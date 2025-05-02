@@ -1,0 +1,20 @@
+package roomescape.reservation.dto.response;
+
+import roomescape.reservation.entity.Theme;
+
+public record ThemeResponse(
+        Long id,
+        String name,
+        String description,
+        String thumbnail
+) {
+
+    public static ThemeResponse from(Theme entity) {
+        return new ThemeResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getDescription(),
+                entity.getThumbnail()
+        );
+    }
+}

@@ -1,28 +1,28 @@
 package roomescape.reservation.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import roomescape.reservation.repository.FakeReservationRepository;
-import roomescape.theme.entity.ReservationThemeEntity;
-import roomescape.theme.repository.FakeReservationThemeRepository;
-import roomescape.theme.repository.ReservationThemeRepository;
-import roomescape.time.repository.FakeTimeRepository;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.entity.Theme;
+import roomescape.reservation.entity.Time;
+import roomescape.reservation.repository.FakeReservationRepository;
+import roomescape.reservation.repository.FakeThemeRepository;
+import roomescape.reservation.repository.FakeTimeRepository;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ThemeRepository;
+import roomescape.reservation.repository.TimeRepository;
 
 class ReservationServiceTest {
+
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
-    private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
-    private final ReservationThemeRepository themeRepository = new FakeReservationThemeRepository();
+    private final TimeRepository timeRepository = new FakeTimeRepository();
+    private final ThemeRepository themeRepository = new FakeThemeRepository();
     private final ReservationService service = new ReservationService(
             reservationRepository,
             timeRepository,
@@ -31,7 +31,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setupTheme() {
-        themeRepository.save(new ReservationThemeEntity(1L, "theme", "hello", "hi"));
+        themeRepository.save(new Theme(1L, "theme", "hello", "hi"));
     }
 
     @DisplayName("존재하지 않는 timeId로 생성할 수 없다.")
@@ -45,7 +45,7 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> {
             service.createReservation(requestDto);
         }).isInstanceOf(IllegalArgumentException.class);
-     }
+    }
 
     @DisplayName("과거 날짜/시간 예약은 생성할 수 없다.")
     @Test
@@ -67,10 +67,10 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         LocalDate date = now.plusDays(1);
 
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, LocalTime.of(12, 0));
-        ReservationEntity reservationEntity = new ReservationEntity(1L, "test", date, timeEntity, 1L);
+        Time timeEntity = new Time(1L, LocalTime.of(12, 0));
+        Reservation reservation = new Reservation(1L, "test", date, timeEntity, 1L);
         timeRepository.save(timeEntity);
-        reservationRepository.save(reservationEntity);
+        reservationRepository.save(reservation);
 
         ReservationRequest requestDto = new ReservationRequest(date, "test", timeEntity.getId(), 1L);
 

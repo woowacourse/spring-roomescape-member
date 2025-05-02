@@ -1,31 +1,31 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.entity.ReservationThemeEntity;
-import roomescape.theme.repository.ReservationThemeRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.reservation.dto.ReservationRequest;
-import roomescape.reservation.dto.ReservationResponse;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
 import roomescape.global.error.exception.BadRequestException;
 import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import roomescape.reservation.dto.request.ReservationRequest;
+import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.entity.Theme;
+import roomescape.reservation.entity.Time;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.repository.ThemeRepository;
+import roomescape.reservation.repository.TimeRepository;
 
 @Service
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository timeRepository;
-    private final ReservationThemeRepository themeRepository;
+    private final TimeRepository timeRepository;
+    private final ThemeRepository themeRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            ReservationTimeRepository timeRepository,
-            ReservationThemeRepository themeRepository
+            TimeRepository timeRepository,
+            ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
@@ -39,28 +39,28 @@ public class ReservationService {
                 .toList();
     }
 
-    private ReservationResponse convertToResponse(ReservationEntity reservation) {
+    private ReservationResponse convertToResponse(Reservation reservation) {
         final Long themeId = reservation.getThemeId();
-        ReservationThemeEntity themeEntity = themeRepository.findById(themeId)
+        Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
-        return ReservationResponse.from(reservation, themeEntity);
+        return ReservationResponse.from(reservation, theme);
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
-        ReservationTimeEntity timeEntity = timeRepository.findById(request.timeId())
+        Time time = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 시간 입니다."));
-        ReservationThemeEntity themeEntity = themeRepository.findById(request.themeId())
+        Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
 
-        ReservationEntity newReservation = request.toEntity(timeEntity);
+        Reservation newReservation = request.toEntity(time);
         validateDateTime(newReservation);
         validateDuplicated(newReservation);
 
-        ReservationEntity saved = reservationRepository.save(newReservation);
-        return ReservationResponse.from(saved, themeEntity);
+        Reservation saved = reservationRepository.save(newReservation);
+        return ReservationResponse.from(saved, theme);
     }
 
-    private void validateDateTime(ReservationEntity reservation) {
+    private void validateDateTime(Reservation reservation) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = reservation.getDateTime();
         if (reservationDateTime.isBefore(now)) {
@@ -68,14 +68,14 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicated(ReservationEntity newReservation) {
+    private void validateDuplicated(Reservation newReservation) {
         if (isExistDuplicatedWith(newReservation)) {
             throw new ConflictException("해당 날짜에는 이미 예약이 존재합니다.");
         }
     }
 
-    private boolean isExistDuplicatedWith(ReservationEntity target) {
-        List<ReservationEntity> reservations = reservationRepository.findAll();
+    private boolean isExistDuplicatedWith(Reservation target) {
+        List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream().anyMatch(reservation -> reservation.isDuplicatedWith(target));
     }
 

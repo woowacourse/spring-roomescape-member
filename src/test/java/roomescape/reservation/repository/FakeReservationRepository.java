@@ -1,33 +1,33 @@
 package roomescape.reservation.repository;
 
-import roomescape.reservation.entity.ReservationEntity;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import roomescape.reservation.entity.Reservation;
 
 public class FakeReservationRepository implements ReservationRepository {
-    private final List<ReservationEntity> entities = new ArrayList<>();
+
+    private final List<Reservation> reservations = new ArrayList<>();
 
     @Override
-    public ReservationEntity save(ReservationEntity entity) {
-        entities.add(entity);
-        return entity;
+    public Reservation save(Reservation reservation) {
+        reservations.add(reservation);
+        return reservation;
     }
 
     @Override
     public boolean deleteById(Long id) {
-        return entities.removeIf(entity -> entity.getId().equals(id));
+        return reservations.removeIf(entity -> entity.getId().equals(id));
     }
 
     @Override
-    public List<ReservationEntity> findAll() {
-        return Collections.unmodifiableList(entities);
+    public List<Reservation> findAll() {
+        return Collections.unmodifiableList(reservations);
     }
 
     @Override
-    public List<ReservationEntity> findAllByTimeId(Long id) {
-        return entities.stream()
+    public List<Reservation> findAllByTimeId(Long id) {
+        return reservations.stream()
                 .filter(reservation -> reservation.getTimeId().equals(id))
                 .toList();
     }
