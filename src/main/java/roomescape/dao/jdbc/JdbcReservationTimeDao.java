@@ -60,17 +60,17 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         }
     }
 
+    public boolean existTimeByStartAt(LocalTime startAt) {
+        String sql = "SELECT EXISTS(SELECT id FROM reservation_time WHERE start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+    }
+
     public ReservationTime addTime(ReservationTime reservationTime) {
         Map<String, Object> param = new HashMap<>();
         param.put("start_at", Time.valueOf(reservationTime.getStartAt()));
 
         Number key = jdbcInsert.executeAndReturnKey(param);
         return new ReservationTime(key.longValue(), reservationTime.getStartAt());
-    }
-
-    public boolean existTimeByStartAt(LocalTime startAt) {
-        String sql = "SELECT EXISTS(SELECT id FROM reservation_time WHERE start_at = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
     public void removeTimeById(Long id) {

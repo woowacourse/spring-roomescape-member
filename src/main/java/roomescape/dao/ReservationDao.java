@@ -8,9 +8,9 @@ public interface ReservationDao {
 
     List<Reservation> findAllReservations();
 
+    boolean existReservationByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId);
+
     Reservation addReservation(Reservation reservation);
 
     void removeReservationById(Long id);
-
-    boolean existReservationByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId);
 }

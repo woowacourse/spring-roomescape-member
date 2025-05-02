@@ -45,8 +45,20 @@ public class JdbcReservationDao implements ReservationDao {
             ON r.time_id = rt.id
             ON r.theme_id = t.id
             """;
-
         return jdbcTemplate.query(sql, createReservationMapper());
+    }
+
+    public boolean existReservationByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+            SELECT EXISTS (
+                SELECT id
+                FROM reservation
+                WHERE date = ?
+                    AND time_id = ?
+                    AND theme_id = ? 
+                )
+            """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     public Reservation addReservation(Reservation reservation) {
@@ -57,14 +69,8 @@ public class JdbcReservationDao implements ReservationDao {
         param.put("theme_id", reservation.getTheme().getId());
 
         Number key = jdbcInsert.executeAndReturnKey(param);
-
         return new Reservation(key.longValue(), reservation.getName(), reservation.getDate(),
             reservation.getTime(), reservation.getTheme());
-    }
-
-    public boolean existReservationByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
-        String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     public void removeReservationById(Long id) {

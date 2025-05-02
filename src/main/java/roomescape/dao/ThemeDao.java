@@ -8,13 +8,13 @@ public interface ThemeDao {
 
     List<Theme> findAllThemes();
 
-    Theme addTheme(Theme theme);
-
-    void removeThemeById(Long id);
-
     Theme findThemeById(Long id);
 
     List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate, LocalDate endDate, int limitCount);
 
     boolean existThemeByName(String name);
+
+    Theme addTheme(Theme theme);
+
+    void removeThemeById(Long id);
 }

@@ -31,22 +31,6 @@ public class JdbcThemeDao implements ThemeDao {
         return jdbcTemplate.query(sql, createThemeMapper());
     }
 
-    public Theme addTheme(Theme theme) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("name", theme.getName());
-        param.put("description", theme.getDescription());
-        param.put("thumbnail", theme.getThumbnail());
-
-        Number key = jdbcInsert.executeAndReturnKey(param);
-        return new Theme(key.longValue(), theme.getName(), theme.getDescription(),
-            theme.getThumbnail());
-    }
-
-    public void removeThemeById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
     public Theme findThemeById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
@@ -56,8 +40,8 @@ public class JdbcThemeDao implements ThemeDao {
         }
     }
 
-    @Override
-    public List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate, LocalDate endDate, int limitCount) {
+    public List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate,
+        LocalDate endDate, int limitCount) {
         String sql = """
                 SELECT
                   t.id,
@@ -83,6 +67,21 @@ public class JdbcThemeDao implements ThemeDao {
     public boolean existThemeByName(String name) {
         String sql = "SELECT EXISTS(SELECT id FROM theme WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+    }
+
+    public Theme addTheme(Theme theme) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("name", theme.getName());
+        param.put("description", theme.getDescription());
+        param.put("thumbnail", theme.getThumbnail());
+
+        Number key = jdbcInsert.executeAndReturnKey(param);
+        return new Theme(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+    }
+
+    public void removeThemeById(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     private RowMapper<Theme> createThemeMapper() {

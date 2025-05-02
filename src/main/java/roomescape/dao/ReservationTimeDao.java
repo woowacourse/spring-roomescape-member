@@ -9,13 +9,13 @@ public interface ReservationTimeDao {
 
     List<ReservationTime> findAllTimes();
 
-    ReservationTime findTimeById(Long id);
-
     List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId);
 
-    ReservationTime addTime(ReservationTime reservationTime);
+    ReservationTime findTimeById(Long id);
 
     boolean existTimeByStartAt(LocalTime startAt);
+
+    ReservationTime addTime(ReservationTime reservationTime);
 
     void removeTimeById(Long id);
 }
