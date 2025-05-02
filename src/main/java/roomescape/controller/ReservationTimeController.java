@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -48,7 +49,7 @@ public class ReservationTimeController {
 
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
-            @RequestBody ReservationTimeCreationRequest request
+            @Valid @RequestBody ReservationTimeCreationRequest request
     ) {
         long savedId = reservationTimeService.saveReservationTime(request);
         ReservationTime savedTime = reservationTimeService.getReservationTimeById(savedId);
@@ -58,7 +59,9 @@ public class ReservationTimeController {
     }
 
     @DeleteMapping("/times/{reservationTimeId}")
-    public ResponseEntity<Void> deleteReservationTime(@PathVariable("reservationTimeId") Long id) {
+    public ResponseEntity<Void> deleteReservationTime(
+            @PathVariable("reservationTimeId") Long id
+    ) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }

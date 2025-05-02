@@ -1,23 +1,11 @@
 package roomescape.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
-public class ReservationTimeCreationRequest {
+public record ReservationTimeCreationRequest(
+        @NotNull(message = "[ERROR] 시간은 빈 값을 허용하지 않습니다.")
+        LocalTime startAt
+) {
 
-    private final LocalTime startAt;
-
-    public ReservationTimeCreationRequest(LocalTime startAt) {
-        validateTime(startAt);
-        this.startAt = startAt;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
-    }
-
-    private void validateTime(LocalTime time) {
-        if (time == null) {
-            throw new IllegalArgumentException("[ERROR] 시간은 빈 값을 허용하지 않습니다.");
-        }
-    }
 }

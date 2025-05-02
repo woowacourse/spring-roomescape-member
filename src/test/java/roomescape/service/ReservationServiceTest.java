@@ -60,7 +60,7 @@ class ReservationServiceTest {
         long savedId = reservationService.saveReservation(request);
 
         Reservation savedReservation = reservationRepository.findAll().getFirst();
-        Reservation expectedReservation = new Reservation(1L, request.getName(), request.getDate(), time, theme);
+        Reservation expectedReservation = new Reservation(1L, request.name(), request.date(), time, theme);
         assertAll(
                 () -> assertThat(savedId).isEqualTo(1L),
                 () -> assertThat(savedReservation).isEqualTo(expectedReservation)

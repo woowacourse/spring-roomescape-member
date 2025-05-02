@@ -39,8 +39,8 @@ public class ReservationTimeService {
     }
 
     public long saveReservationTime(ReservationTimeCreationRequest request) {
-        validateAlreadySaved(request.getStartAt());
-        ReservationTime newReservation = ReservationTime.createWithoutId(request.getStartAt());
+        validateAlreadySaved(request.startAt());
+        ReservationTime newReservation = ReservationTime.createWithoutId(request.startAt());
         return reservationTimeRepository.add(newReservation);
     }
 
