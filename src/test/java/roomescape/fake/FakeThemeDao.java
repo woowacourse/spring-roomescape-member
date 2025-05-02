@@ -13,12 +13,12 @@ public class FakeThemeDao implements ThemeDao {
     private final AtomicLong index = new AtomicLong(1);
 
     @Override
-    public List<Theme> findAllThemes() {
+    public List<Theme> findAll() {
         return new ArrayList<>(themes);
     }
 
     @Override
-    public Theme addTheme(Theme theme) {
+    public Theme add(Theme theme) {
         Theme saved = new Theme(
             index.getAndIncrement(),
             theme.getName(),
@@ -30,12 +30,13 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public void removeThemeById(Long id) {
+    public int deleteById(Long id) {
         themes.removeIf(theme -> theme.getId().equals(id));
+        return 0;
     }
 
     @Override
-    public Theme findThemeById(Long id) {
+    public Theme findById(Long id) {
         return themes.stream()
             .filter(theme -> theme.getId().equals(id))
             .findFirst()
@@ -43,13 +44,13 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate,
-        LocalDate endDate, int limitCount) {
+    public List<Theme> findMostReservedThemesInPeriodWithLimit(LocalDate startDate,
+                                                               LocalDate endDate, int limitCount) {
         return List.of();
     }
 
     @Override
-    public boolean existThemeByName(String name) {
+    public boolean existByName(String name) {
         return false;
     }
 }

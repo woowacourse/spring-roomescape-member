@@ -5,8 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeCreateRequest;
 import roomescape.exception.DuplicateThemeException;
+import roomescape.exception.InvalidInputException;
 
 @Service
 public class ThemeService {
@@ -21,28 +22,30 @@ public class ThemeService {
     }
 
     public List<Theme> findAllThemes() {
-        return themeDao.findAllThemes();
+        return themeDao.findAll();
     }
 
-    public List<Theme> findTopReservedThemes() {
+    public List<Theme> findMostReservedThemes() {
         LocalDate today = LocalDate.now();
-        return themeDao.findTopReservedThemesInPeriodWithLimit(today.minusDays(TOP_RANK_PERIOD_DAYS), today,
+        return themeDao.findMostReservedThemesInPeriodWithLimit(today.minusDays(TOP_RANK_PERIOD_DAYS), today,
             TOP_RANK_THRESHOLD);
     }
 
-    public Theme addTheme(ThemeRequest request) {
-        validateDuplicateTheme(request);
+    public Theme createTheme(ThemeCreateRequest request) {
+        validateDuplicateName(request);
         Theme theme = new Theme(null, request.name(), request.description(), request.thumbnail());
-        return themeDao.addTheme(theme);
+        return themeDao.add(theme);
     }
 
-    private void validateDuplicateTheme(ThemeRequest themeRequest) {
-        if (themeDao.existThemeByName(themeRequest.name())) {
+    private void validateDuplicateName(ThemeCreateRequest themeCreateRequest) {
+        if (themeDao.existByName(themeCreateRequest.name())) {
             throw new DuplicateThemeException();
         }
     }
 
-    public void removeTheme(Long id) {
-        themeDao.removeThemeById(id);
+    public void deleteThemeById(Long id) {
+        if (themeDao.deleteById(id) == 0) {
+            throw new InvalidInputException("존재하지 않는 테마 id이다.");
+        }
     }
 }

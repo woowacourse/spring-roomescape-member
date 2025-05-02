@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
-import roomescape.dto.ThemeRequest;
+import roomescape.dto.ThemeCreateRequest;
 import roomescape.exception.DuplicateThemeException;
 import roomescape.service.ThemeService;
 
@@ -28,29 +28,29 @@ public class ThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Theme createTheme(@RequestBody ThemeRequest request) {
-        return themeService.addTheme(request);
+    public Theme createTheme(@RequestBody ThemeCreateRequest themeCreateRequest) {
+        return themeService.createTheme(themeCreateRequest);
     }
 
     @GetMapping
-    public List<Theme> readThemes() {
+    public List<Theme> readAllThemes() {
         return themeService.findAllThemes();
+    }
+
+    @GetMapping("/most-reserved")
+    public List<Theme> readMostReservedThemes() {
+        return themeService.findMostReservedThemes();
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTheme(@PathVariable("id") Long id) {
-        themeService.removeTheme(id);
-    }
-
-    @GetMapping("/top-rank")
-    public List<Theme> readTopRankTheme() {
-        return themeService.findTopReservedThemes();
+    public void deleteThemeById(@PathVariable("id") Long id) {
+        themeService.deleteThemeById(id);
     }
 
     @ExceptionHandler(value = DuplicateThemeException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleDuplicateException(DuplicateThemeException ex) {
-        return ex.getMessage();
+    public String handleDuplicateException(DuplicateThemeException exception) {
+        return exception.getMessage();
     }
 }

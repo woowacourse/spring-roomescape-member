@@ -26,38 +26,37 @@ public class JdbcThemeDao implements ThemeDao {
             .usingGeneratedKeyColumns("id");
     }
 
-    public List<Theme> findAllThemes() {
+    public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
-        return jdbcTemplate.query(sql, createThemeMapper());
+        return jdbcTemplate.query(sql, mapResultsToTheme());
     }
 
-    public Theme addTheme(Theme theme) {
+    public Theme add(Theme theme) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", theme.getName());
         param.put("description", theme.getDescription());
         param.put("thumbnail", theme.getThumbnail());
 
         Number key = jdbcInsert.executeAndReturnKey(param);
-        return new Theme(key.longValue(), theme.getName(), theme.getDescription(),
-            theme.getThumbnail());
+        return new Theme(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public void removeThemeById(Long id) {
+    public int deleteById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
-    public Theme findThemeById(Long id) {
+    public Theme findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, createThemeMapper(), id);
+            return jdbcTemplate.queryForObject(sql, mapResultsToTheme(), id);
         } catch (DataAccessException exception) {
             throw new ThemeDoesNotExistException();
         }
     }
 
     @Override
-    public List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate, LocalDate endDate, int limitCount) {
+    public List<Theme> findMostReservedThemesInPeriodWithLimit(LocalDate startDate, LocalDate endDate, int limitCount) {
         String sql = """
                 SELECT
                   t.id,
@@ -77,15 +76,15 @@ public class JdbcThemeDao implements ThemeDao {
                   COUNT(theme_id) DESC
                 LIMIT ?;
             """;
-        return jdbcTemplate.query(sql, createThemeMapper(), startDate, endDate, limitCount);
+        return jdbcTemplate.query(sql, mapResultsToTheme(), startDate, endDate, limitCount);
     }
 
-    public boolean existThemeByName(String name) {
+    public boolean existByName(String name) {
         String sql = "SELECT EXISTS(SELECT id FROM theme WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
-    private RowMapper<Theme> createThemeMapper() {
+    private RowMapper<Theme> mapResultsToTheme() {
         return (rs, rowNum) -> new Theme(
             rs.getLong("id"),
             rs.getString("name"),

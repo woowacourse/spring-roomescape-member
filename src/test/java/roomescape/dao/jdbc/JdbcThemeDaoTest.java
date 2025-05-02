@@ -27,7 +27,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("전체 테마를 조회할 수 있다.")
     void findAllThemes() {
-        List<Theme> times = jdbcThemeDao.findAllThemes();
+        List<Theme> times = jdbcThemeDao.findAll();
 
         assertThat(times).hasSize(3);
     }
@@ -36,9 +36,9 @@ class JdbcThemeDaoTest {
     @DisplayName("ID로 테마가 존재한다면 조회할 수 있다.")
     void findThemeById() {
         Theme theme = new Theme(null, "이름", "설명", "썸네일");
-        Theme actual = jdbcThemeDao.addTheme(theme);
+        Theme actual = jdbcThemeDao.add(theme);
 
-        Theme expected = jdbcThemeDao.findThemeById(actual.getId());
+        Theme expected = jdbcThemeDao.findById(actual.getId());
 
         assertAll(() -> {
             assertThat(actual.getId()).isEqualTo(expected.getId());
@@ -51,7 +51,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("ID로 테마가 존재하지 않는다면 예외가 발생한다.")
     void findThemeByNotId() {
-        assertThatThrownBy(() -> jdbcThemeDao.findThemeById(100L))
+        assertThatThrownBy(() -> jdbcThemeDao.findById(100L))
             .isInstanceOf(ThemeDoesNotExistException.class)
             .hasMessage("테마를 찾을 수 없다.");
     }
@@ -60,7 +60,7 @@ class JdbcThemeDaoTest {
     @DisplayName("테마를 추가할 수 있다.")
     void addTheme() {
         Theme theme = new Theme(null, "이름", "설명", "썸네일");
-        Theme newTheme = jdbcThemeDao.addTheme(theme);
+        Theme newTheme = jdbcThemeDao.add(theme);
 
         assertThat(newTheme).isNotNull();
     }
@@ -69,12 +69,12 @@ class JdbcThemeDaoTest {
     @DisplayName("ID로 테마를 삭제할 수 있다.")
     void removeThemeById() {
         Theme theme = new Theme(null, "이름", "설명", "썸네일");
-        Theme newTheme = jdbcThemeDao.addTheme(theme);
+        Theme newTheme = jdbcThemeDao.add(theme);
         Long id = newTheme.getId();
 
-        jdbcThemeDao.removeThemeById(id);
+        jdbcThemeDao.deleteById(id);
 
-        assertThatThrownBy(() -> jdbcThemeDao.findThemeById(id))
+        assertThatThrownBy(() -> jdbcThemeDao.findById(id))
             .isInstanceOf(ThemeDoesNotExistException.class);
     }
 
@@ -83,15 +83,15 @@ class JdbcThemeDaoTest {
     void existThemeByName() {
         String name = "이름";
         Theme theme = new Theme(null, name, "설명", "썸네일");
-        jdbcThemeDao.addTheme(theme);
-        assertThat(jdbcThemeDao.existThemeByName(name)).isTrue();
+        jdbcThemeDao.add(theme);
+        assertThat(jdbcThemeDao.existByName(name)).isTrue();
     }
 
     @Test
     @DisplayName("일주일 동안의 인기 테마를 검색할 수 있다.")
     void findTopReservedThemesInPeriodWithLimit() {
         LocalDate date = LocalDate.of(2025, 4, 30);
-        List<Theme> themes = jdbcThemeDao.findTopReservedThemesInPeriodWithLimit(date.minusDays(7),
+        List<Theme> themes = jdbcThemeDao.findMostReservedThemesInPeriodWithLimit(date.minusDays(7),
             date, 2);
         assertAll(() -> {
             assertThat(themes.getFirst().getId()).isEqualTo(2);

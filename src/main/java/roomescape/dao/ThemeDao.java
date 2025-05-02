@@ -6,15 +6,15 @@ import roomescape.domain.Theme;
 
 public interface ThemeDao {
 
-    List<Theme> findAllThemes();
+    List<Theme> findAll();
 
-    Theme addTheme(Theme theme);
+    Theme add(Theme theme);
 
-    void removeThemeById(Long id);
+    int deleteById(Long id);
 
-    Theme findThemeById(Long id);
+    Theme findById(Long id);
 
-    List<Theme> findTopReservedThemesInPeriodWithLimit(LocalDate startDate, LocalDate endDate, int limitCount);
+    List<Theme> findMostReservedThemesInPeriodWithLimit(LocalDate startDate, LocalDate endDate, int limitCount);
 
-    boolean existThemeByName(String name);
+    boolean existByName(String name);
 }
