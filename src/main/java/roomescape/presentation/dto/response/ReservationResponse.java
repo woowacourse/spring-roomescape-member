@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import roomescape.application.dto.ReservationDto;
 
-public record AdminReservationResponse(
+public record ReservationResponse(
 
         long id,
 
@@ -18,16 +18,16 @@ public record AdminReservationResponse(
 
         TimeResponse time
 ) {
-    public static AdminReservationResponse from(ReservationDto reservationDto) {
+    public static ReservationResponse from(ReservationDto reservationDto) {
         ThemeResponse themeResponse = ThemeResponse.from(reservationDto.theme());
         TimeResponse timeResponse = TimeResponse.from(reservationDto.time());
-        return new AdminReservationResponse(reservationDto.id(), reservationDto.name(), themeResponse,
+        return new ReservationResponse(reservationDto.id(), reservationDto.name(), themeResponse,
                 reservationDto.date(), timeResponse);
     }
 
-    public static List<AdminReservationResponse> from(List<ReservationDto> reservationDtos) {
+    public static List<ReservationResponse> from(List<ReservationDto> reservationDtos) {
         return reservationDtos.stream()
-                .map(AdminReservationResponse::from)
+                .map(ReservationResponse::from)
                 .toList();
     }
 }
