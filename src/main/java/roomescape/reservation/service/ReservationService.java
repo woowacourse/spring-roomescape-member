@@ -62,8 +62,7 @@ public class ReservationService {
 
     private void validateDateTime(ReservationEntity reservation) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reservationDateTime = reservation.getDateTime();
-        if (reservationDateTime.isBefore(now)) {
+        if (reservation.isBefore(now)) {
             throw new BadRequestException("과거 날짜/시간의 예약은 생성할 수 없습니다.");
         }
     }

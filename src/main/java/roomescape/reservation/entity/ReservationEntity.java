@@ -28,12 +28,13 @@ public class ReservationEntity {
         return date.isEqual(other.date) && time.isDuplicatedWith(other.time);
     }
 
-    public String getFormattedDate() {
-        return date.toString();
+    public boolean isBefore(LocalDateTime other) {
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
+        return dateTime.isBefore(other);
     }
 
-    public LocalDateTime getDateTime() {
-        return LocalDateTime.of(date, time.getStartAt());
+    public String getFormattedDate() {
+        return date.toString();
     }
 
     public Long getTimeId() {
