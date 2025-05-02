@@ -68,7 +68,7 @@ public class ReservationService {
 
     private void validatePastTime(final ReservationRequest request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
-        if (reservationTime.getStartAt().isBefore(LocalTime.now())) {
+        if (reservationTime.isBefore(LocalTime.now())) {
             throw new BadRequestException("지난 시간으로 예약할 수 없습니다.");
         }
     }
