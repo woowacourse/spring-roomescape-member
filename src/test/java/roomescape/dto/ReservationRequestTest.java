@@ -44,7 +44,7 @@ public class ReservationRequestTest {
 
     @Test
     @DisplayName("이름은 한 글자 이상이어야 한다")
-    void validateNameLength() {
+    void validateLengthOfNameLength() {
         assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), "", 1L, 1L))
             .isInstanceOf(InvalidInputException.class)
             .hasMessage("이름은 한 글자 이상이어야 한다.");

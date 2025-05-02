@@ -8,12 +8,12 @@ public record TimeRequest(
     @JsonFormat(pattern = "HH:mm") LocalTime startAt) {
 
     public TimeRequest {
-        validateTime(startAt);
+        validateNull(startAt);
     }
 
-    private void validateTime(LocalTime startAt) {
+    private void validateNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidInputException("시간을 선택해라.");
+            throw new InvalidInputException("선택되지 않은 값이 있거나 입력되지 않은 값이 있습니다.");
         }
     }
 }
