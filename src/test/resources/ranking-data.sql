@@ -1,29 +1,42 @@
-SET REFERENTIAL_INTEGRITY FALSE;
+SET
+REFERENTIAL_INTEGRITY FALSE;
 TRUNCATE TABLE reservation;
-ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation
+    ALTER COLUMN id RESTART WITH 1;
 TRUNCATE TABLE reservation_time;
-ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE reservation_time
+    ALTER COLUMN id RESTART WITH 1;
 TRUNCATE TABLE theme;
-ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
+ALTER TABLE theme
+    ALTER COLUMN id RESTART WITH 1;
 SET REFERENTIAL_INTEGRITY TRUE;
 
-INSERT INTO reservation_time (id, start_at)
-VALUES
-    (1, '10:00'),
-    (2, '11:00'),
-    (3, '12:00');
+INSERT INTO reservation_time (start_at)
+VALUES ('10:00'),
+       ('11:00');
 
-INSERT INTO theme (id, name, description, thumbnail)
-VALUES
-    (1, '테마1', '테마 1입니다', '썸네일1'),
-    (2, '테마2', '테마 2입니다', '썸네일2'),
-    (3, '테마3', '테마 3입니다', '썸네일3');
+-- 인기 순서: 1등테마, 2등테마, 3등테마 ...
+INSERT INTO theme (name, description, thumbnail)
+VALUES ('1등테마', '테마 1입니다', '썸네일1'),
+       ('2등테마', '테마 2입니다', '썸네일2'),
+       ('3등테마', '테마 3입니다', '썸네일3'),
+       ('테마4', '테마 4입니다', '썸네일4'),
+       ('테마5', '테마 5입니다', '썸네일5'),
+       ('테마6', '테마 6입니다', '썸네일6'),
+       ('테마7', '테마 7입니다', '썸네일7'),
+       ('테마8', '테마 8입니다', '썸네일8'),
+       ('테마9', '테마 9입니다', '썸네일9'),
+       ('테마10', '테마 10입니다', '썸네일10'),
+       ('테마11', '테마 11입니다', '썸네일11');
 
 INSERT INTO reservation (name, theme_id, date, time_id)
-VALUES
-    ('브라운', 1, '2024-04-01', 1),
-    ('솔라',   2, '2024-04-02', 2),
-    ('브리',   2, '2024-04-03', 1),
-    ('브리',   3, '2024-04-04', 1),
-    ('브리',   3, '2024-04-05', 1),
-    ('브리',   3, '2024-04-06', 1);
+VALUES ('브라운', 1, '2025-01-01', 1),
+       ('솔라', 1, '2025-01-01', 2),
+       ('브리', 1, '2025-01-01', 1),
+       ('브리1', 1, '2025-01-01', 1),
+       ('브리2', 1, '2025-01-01', 1),  --테마 1 5개
+       ('브리3', 2, '2025-01-05', 1),
+       ('브리4', 2, '2025-01-05', 1),
+       ('브리5', 2, '2025-01-05', 1),
+       ('브리6', 2, '2025-01-07', 1),  -- 테마 2 4개
+       ('브리7', 3, '2025-01-07', 1);  -- 테마 3 1개

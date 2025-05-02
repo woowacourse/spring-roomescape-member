@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ThemeService;
 import roomescape.application.dto.ThemeDto;
+import roomescape.presentation.dto.request.ThemeRankingRequest;
 import roomescape.presentation.dto.request.ThemeRequest;
 import roomescape.presentation.dto.response.ThemeResponse;
 
@@ -46,8 +47,11 @@ public class ThemeController {
     }
 
     @GetMapping("/ranking")
-    public List<ThemeResponse> getThemeRanking() {
-        List<ThemeDto> themes = themeService.getThemeRanking();
+    public List<ThemeResponse> getThemeRanking(ThemeRankingRequest request) {
+        ThemeRankingCondition condition = ThemeRankingCondition.ofRequestParams(
+                request.startDate(), request.endDate(), request.limit());
+
+        List<ThemeDto> themes = themeService.getThemeRanking(condition);
         return ThemeResponse.from(themes);
     }
 }

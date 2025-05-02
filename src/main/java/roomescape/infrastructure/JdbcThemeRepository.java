@@ -68,7 +68,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findThemeRanking(int count, LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findThemeRanking(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT th.id, th.name, th.description, th.thumbnail, count(r.id)
                 FROM theme as th
@@ -77,6 +77,6 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ORDER BY COUNT(r.id) desc
                 LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, count);
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
     }
 }

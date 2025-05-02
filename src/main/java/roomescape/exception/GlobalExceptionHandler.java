@@ -16,13 +16,14 @@ import roomescape.domain.exception.ImpossibleReservationException;
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ImpossibleReservationException.class)
-    public ResponseEntity<ProblemDetail> handleImpossibleReservation(ImpossibleReservationException e) {
-        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        detail.setTitle("예약 불가");
-        detail.setDetail(e.getMessage());
-        detail.setProperty("code", "IMPOSSIBLE_RESERVATION");
-        return ResponseEntity.badRequest().body(detail);
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<ProblemDetail> handleInvalidInput(InvalidInputException e) {
+        ErrorCode code = e.getErrorCode();
+        ProblemDetail detail = ProblemDetail.forStatus(code.getStatus());
+        detail.setTitle("입력값 오류");
+        detail.setDetail(code.getMessage());
+        detail.setProperty("code", code.name());
+        return ResponseEntity.status(code.getStatus()).body(detail);
     }
 
     @ExceptionHandler(BusinessException.class)
@@ -43,6 +44,15 @@ public class GlobalExceptionHandler {
         detail.setDetail(e.getMessage());
         detail.setProperty("code", code.name());
         return ResponseEntity.status(code.getStatus()).body(detail);
+    }
+
+    @ExceptionHandler(ImpossibleReservationException.class)
+    public ResponseEntity<ProblemDetail> handleImpossibleReservation(ImpossibleReservationException e) {
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        detail.setTitle("예약 불가");
+        detail.setDetail(e.getMessage());
+        detail.setProperty("code", "IMPOSSIBLE_RESERVATION");
+        return ResponseEntity.badRequest().body(detail);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

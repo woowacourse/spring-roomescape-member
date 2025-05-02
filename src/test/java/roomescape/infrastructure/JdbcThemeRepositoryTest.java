@@ -80,7 +80,6 @@ class JdbcThemeRepositoryTest {
     }
 
     private int getThemesCount() {
-        int themesCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
-        return themesCount;
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
     }
 }

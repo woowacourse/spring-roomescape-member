@@ -2,7 +2,6 @@ package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
@@ -12,6 +11,7 @@ import static roomescape.exception.ThemeErrorCode.THEME_DELETE_CONFLICT;
 import static roomescape.testFixture.Fixture.THEME_1;
 import static roomescape.testFixture.Fixture.THEME_2;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +26,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.BusinessException;
 import roomescape.exception.NotFoundException;
+import roomescape.presentation.controller.ThemeRankingCondition;
 import roomescape.presentation.dto.request.ThemeRequest;
 
 @ExtendWith(MockitoExtension.class)
@@ -112,21 +113,27 @@ class ThemeServiceTest {
                 .hasMessageContaining(THEME_DELETE_CONFLICT.getMessage());
     }
 
-    @DisplayName("최근 일주일간 인기 테마 랭킹을 조회할 수 있다.")
+    @DisplayName("인기 테마 조회 시 결과를 dto로 감싸서 반환한다.")
     @Test
     void getThemeRanking() {
         // given
         List<Theme> ranking = List.of(
                 Theme.of(1L, "1등", "인기1", "a.jpg"),
-                Theme.of(2L, "2등", "인기2", "b.jpg")
+                Theme.of(2L, "2등", "인기2", "a.jpg"),
+                Theme.of(3L, "3등", "인기3", "a.jpg")
         );
-        given(themeRepository.findThemeRanking(anyInt(), any(), any()))
+        given(themeRepository.findThemeRanking(any(), any(), anyInt()))
                 .willReturn(ranking);
 
         // when
-        List<ThemeDto> result = themeService.getThemeRanking();
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 1, 7);
+        int limit = 5;
+
+        ThemeRankingCondition condition = ThemeRankingCondition.ofRequestParams(start, end, limit);
+        List<ThemeDto> result = themeService.getThemeRanking(condition);
 
         // then
-        assertThat(result).hasSize(2);
+        assertThat(result).hasSize(3);
     }
 }
