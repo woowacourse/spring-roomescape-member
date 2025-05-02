@@ -25,14 +25,19 @@ public class Reservation {
     ) {
         validateMaxNameLength(name);
         validateNameDoesNotContainsNumber(name);
-        if (time == null) {
-            throw new ReservationTimeNotFoundException();
-        }
+        validateTimeIsNull(time);
+        validateThemeIsNull(theme);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    private void validateMaxNameLength(final String name) {
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new OverMaxNameLengthException();
+        }
     }
 
     private void validateNameDoesNotContainsNumber(final String name) {
@@ -43,9 +48,15 @@ public class Reservation {
         }
     }
 
-    private void validateMaxNameLength(final String name) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new OverMaxNameLengthException();
+    private void validateTimeIsNull(final ReservationTime time) {
+        if (time == null) {
+            throw new ReservationTimeNotFoundException();
+        }
+    }
+
+    private void validateThemeIsNull(final Theme theme) {
+        if (theme == null) {
+            throw new ReservationThemeNotFoundException();
         }
     }
 
