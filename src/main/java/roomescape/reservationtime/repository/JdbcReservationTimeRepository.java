@@ -30,12 +30,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     resultSet.getBoolean("alreadyBooked")
             );
 
-    private final JdbcTemplate template;
-    private final SimpleJdbcInsert inserter;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationTimeRepository(final DataSource dataSource) {
-        this.template = new JdbcTemplate(dataSource);
-        this.inserter = new SimpleJdbcInsert(dataSource).withTableName("reservation_time")
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id")
                 .usingColumns("start_at");
     }
@@ -44,14 +44,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime save(final ReservationTime reservationTime) {
         final MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
-        final Long newId = inserter.executeAndReturnKey(params).longValue();
+        final Long newId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new ReservationTime(newId, reservationTime.getStartAt());
     }
 
     @Override
     public List<ReservationTime> findAll() {
         final String sql = "select id, start_at from reservation_time";
-        return template.query(sql, timeRowMapper);
+        return jdbcTemplate.query(sql, timeRowMapper);
     }
 
     @Override
@@ -69,13 +69,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 order by rt.start_at
                 """;
 
-        return template.query(sql, availableTimeRowMapper, date, themeId);
+        return jdbcTemplate.query(sql, availableTimeRowMapper, date, themeId);
     }
 
     @Override
     public void deleteById(final Long id) {
         final String sql = "delete from reservation_time where id = ?";
-        final int rowsAffected = template.update(sql, id);
+        final int rowsAffected = jdbcTemplate.update(sql, id);
 
         if (rowsAffected != 1) {
             throw new IllegalArgumentException("삭제할 예약 시간이 없습니다. id=" + id);
@@ -85,7 +85,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Optional<ReservationTime> findById(final Long id) {
         final String sql = "select id, start_at from reservation_time where id = ?";
-        return template.query(sql, timeRowMapper, id)
+        return jdbcTemplate.query(sql, timeRowMapper, id)
                 .stream()
                 .findFirst();
     }

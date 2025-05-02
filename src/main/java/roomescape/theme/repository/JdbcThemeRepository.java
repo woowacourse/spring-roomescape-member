@@ -30,12 +30,12 @@ public class JdbcThemeRepository implements ThemeRepository {
                     resultSet.getString("thumbnail")
             );
 
-    private final JdbcTemplate template;
-    private final SimpleJdbcInsert inserter;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcThemeRepository(final DataSource dataSource) {
-        this.template = new JdbcTemplate(dataSource);
-        this.inserter = new SimpleJdbcInsert(dataSource).withTableName("theme")
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("theme")
                 .usingGeneratedKeyColumns("id")
                 .usingColumns("name", "description", "thumbnail");
     }
@@ -46,14 +46,14 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())
                 .addValue("thumbnail", theme.getThumbnail());
-        final Long newId = inserter.executeAndReturnKey(params).longValue();
+        final Long newId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Theme(newId, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
     public List<Theme> findAll() {
         final String sql = "select id, name, description, thumbnail from theme";
-        return template.query(sql, themeRowMapper);
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
@@ -70,13 +70,13 @@ public class JdbcThemeRepository implements ThemeRepository {
                     order by c desc
                     limit 10;
                 """;
-        return template.query(sql, popularThemeRowMapper);
+        return jdbcTemplate.query(sql, popularThemeRowMapper);
     }
 
     @Override
     public void deleteById(final Long id) {
         final String sql = "delete from theme where id = ?";
-        final int rowsAffected = template.update(sql, id);
+        final int rowsAffected = jdbcTemplate.update(sql, id);
 
         if (rowsAffected != 1) {
             throw new NotFoundException("삭제할 테마가 없습니다. id=" + id);
@@ -86,7 +86,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(final Long id) {
         final String sql = "select id, name, description, thumbnail from theme where id = ?";
-        return template.query(sql, themeRowMapper, id)
+        return jdbcTemplate.query(sql, themeRowMapper, id)
                 .stream()
                 .findFirst();
     }

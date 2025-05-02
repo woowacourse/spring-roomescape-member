@@ -32,12 +32,12 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     };
 
-    private final JdbcTemplate template;
-    private final SimpleJdbcInsert inserter;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationRepository(final DataSource dataSource) {
-        this.template = new JdbcTemplate(dataSource);
-        this.inserter = new SimpleJdbcInsert(dataSource).withTableName("reservation")
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("reservation")
                 .usingGeneratedKeyColumns("id")
                 .usingColumns("name", "date", "time_id", "theme_id");
     }
@@ -60,7 +60,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 inner join theme as th
                 on r.theme_id = th.id
                 """;
-        return template.query(sql, reservationRowMapper);
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                   and rt.start_at = ?
                   and r.theme_id = ?
                 """;
-        final Integer count = template.queryForObject(sql, Integer.class, date, time, themeId);
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time, themeId);
         return count != null && count > 0;
     }
 
@@ -85,7 +85,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         from reservation as r
                         where r.time_id = ?
                 """;
-        final Integer count = template.queryForObject(sql, Integer.class, reservationTimeId);
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, reservationTimeId);
         return count != null && count > 0;
     }
 
@@ -96,7 +96,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                         from reservation as r
                         where r.theme_id = ?
                 """;
-        final Integer count = template.queryForObject(sql, Integer.class, themeId);
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return count != null && count > 0;
     }
 
@@ -108,7 +108,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
 
-        final long newId = inserter.executeAndReturnKey(params).longValue();
+        final long newId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(newId, reservation.getName(),
                 reservation.getDate(), reservation.getTime(), reservation.getTheme());
     }
@@ -132,7 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 on r.theme_id = th.id
                 where r.id = ?
                 """;
-        return template.query(sql, reservationRowMapper, id)
+        return jdbcTemplate.query(sql, reservationRowMapper, id)
                 .stream()
                 .findFirst();
     }
@@ -140,7 +140,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void deleteById(final Long id) {
         final String sql = "delete from reservation where id = ?";
-        final int rows = template.update(sql, id);
+        final int rows = jdbcTemplate.update(sql, id);
         if (rows == 0) {
             throw new NoSuchElementException("삭제하려고 하는 예약이 존재하지 않습니다. " + id);
         }
