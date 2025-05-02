@@ -19,5 +19,5 @@ public interface ReservationDao {
 
     boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId);
 
-    List<Long> findRank(LocalDate startDate, LocalDate endDate);
+    List<Long> findMostReservedThemeIdsBetween(LocalDate startDate, LocalDate endDate);
 }

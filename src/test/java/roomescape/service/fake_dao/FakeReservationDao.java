@@ -46,7 +46,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Long> findRank(LocalDate startDate, LocalDate endDate) {
+    public List<Long> findMostReservedThemeIdsBetween(LocalDate startDate, LocalDate endDate) {
         return List.of();
     }
 }

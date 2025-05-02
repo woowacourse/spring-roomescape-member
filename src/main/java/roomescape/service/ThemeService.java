@@ -30,9 +30,9 @@ public class ThemeService {
         LocalDate now = LocalDate.now();
         LocalDate startDate = now.minusDays(8);
         LocalDate endDate = now.minusDays(1);
-        List<Long> rank = reservationDao.findRank(startDate, endDate);
+        List<Long> themeIds = reservationDao.findMostReservedThemeIdsBetween(startDate, endDate);
 
-        return rank.stream().map(themeId -> {
+        return themeIds.stream().map(themeId -> {
             Theme theme = themeDao.findById(themeId);
             return new ThemeResponse(theme);
         }).toList();

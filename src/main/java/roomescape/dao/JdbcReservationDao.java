@@ -101,7 +101,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Long> findRank(LocalDate startDate, LocalDate endDate) {
+    public List<Long> findMostReservedThemeIdsBetween(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT
                     t.id AS theme_id

@@ -35,9 +35,9 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(long id) {
-        Boolean hasTime = reservationDao.existByTimeId(id);
+        boolean hasReservation = reservationDao.existByTimeId(id);
 
-        if (hasTime) {
+        if (hasReservation) {
             throw new IllegalArgumentException("예약 시간에 존재하는 예약 정보가 있습니다.");
         }
 
