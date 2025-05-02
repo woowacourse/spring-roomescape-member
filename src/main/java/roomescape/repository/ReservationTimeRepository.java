@@ -13,13 +13,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.other.ReservationTimeWithBookState;
+import roomescape.dto.other.TimeWithBookState;
 
 @Repository
 public class ReservationTimeRepository {
 
     private static final RowMapper<ReservationTime> reservationTimeMapper;
-    private static final RowMapper<ReservationTimeWithBookState> reservationTimeWithBookStateMapper;
+    private static final RowMapper<TimeWithBookState> reservationTimeWithBookStateMapper;
     private final JdbcTemplate template;
 
     static {
@@ -27,7 +27,7 @@ public class ReservationTimeRepository {
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime()
         );
-        reservationTimeWithBookStateMapper = (resultSet, resultNumber) -> new ReservationTimeWithBookState(
+        reservationTimeWithBookStateMapper = (resultSet, resultNumber) -> new TimeWithBookState(
                 resultSet.getLong("id"),
                 resultSet.getTime("start_at").toLocalTime(),
                 resultSet.getBoolean("book_state")
@@ -61,7 +61,7 @@ public class ReservationTimeRepository {
         return template.queryForObject(sql, Boolean.class, startAt);
     }
 
-    public List<ReservationTimeWithBookState> findAllWithBookState(LocalDate date, long themeId) {
+    public List<TimeWithBookState> findAllWithBookState(LocalDate date, long themeId) {
         String sql = "SELECT "
                 + "rt.id, "
                 + "rt.start_at, "

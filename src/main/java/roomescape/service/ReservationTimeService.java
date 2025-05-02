@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.other.TimeWithBookState;
 import roomescape.dto.request.ReservationTimeCreationRequest;
-import roomescape.dto.other.ReservationTimeWithBookState;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -30,7 +30,7 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTimeWithBookState> getAllReservationTimeWithBookState(LocalDate date, long themeId) {
+    public List<TimeWithBookState> getAllReservationTimeWithBookState(LocalDate date, long themeId) {
         return reservationTimeRepository.findAllWithBookState(date, themeId);
     }
 

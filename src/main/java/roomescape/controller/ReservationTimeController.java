@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.other.TimeWithBookState;
 import roomescape.dto.request.ReservationTimeCreationRequest;
-import roomescape.dto.other.ReservationTimeWithBookState;
+import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.TimeWithBookStateResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -25,23 +27,34 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/times")
-    public List<ReservationTime> getReservationTimes() {
-        return reservationTimeService.getAllReservationTime();
+    public List<ReservationTimeResponse> getReservationTimes() {
+        List<ReservationTime> times = reservationTimeService.getAllReservationTime();
+        return times.stream()
+                .map(ReservationTimeResponse::new)
+                .toList();
     }
 
     @GetMapping("/{date}/{themeId}/times")
-    public List<ReservationTimeWithBookState> getReservationTimesInThemeAndDate(
-            @PathVariable("date") LocalDate date, @PathVariable("themeId") Long themId) {
-        return reservationTimeService.getAllReservationTimeWithBookState(date, themId);
+    public List<TimeWithBookStateResponse> getReservationTimesInThemeAndDate(
+            @PathVariable("date") LocalDate date,
+            @PathVariable("themeId") Long themId
+    ) {
+        List<TimeWithBookState> times = reservationTimeService
+                .getAllReservationTimeWithBookState(date, themId);
+        return times.stream()
+                .map(TimeWithBookStateResponse::new)
+                .toList();
     }
 
     @PostMapping("/times")
-    public ResponseEntity<ReservationTime> createReservationTime(
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @RequestBody ReservationTimeCreationRequest request
     ) {
         long savedId = reservationTimeService.saveReservationTime(request);
         ReservationTime savedTime = reservationTimeService.getReservationTimeById(savedId);
-        return ResponseEntity.created(URI.create("times/" + savedId)).body(savedTime);
+        return ResponseEntity
+                .created(URI.create("times/" + savedId))
+                .body(new ReservationTimeResponse(savedTime));
     }
 
     @DeleteMapping("/times/{reservationTimeId}")
