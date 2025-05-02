@@ -34,6 +34,9 @@ public class ReservationTime {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
         if (!(o instanceof ReservationTime that)) {
             return false;
         }
@@ -42,6 +45,6 @@ public class ReservationTime {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 }
