@@ -10,7 +10,8 @@ import roomescape.global.error.exception.ConflictException;
 import roomescape.global.error.exception.NotFoundException;
 
 @RestControllerAdvice(annotations = RestController.class)
-public class RestExceptionHandler {
+public class GlobalExceptionHandler {
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> notFound(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
