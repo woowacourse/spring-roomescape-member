@@ -53,8 +53,12 @@ public class StubReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
-        data.removeIf(r -> r.getId().equals(id));
+    public int deleteById(Long id) {
+        final boolean isDeleted = data.removeIf(r -> r.getId().equals(id));
+        if (isDeleted) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override

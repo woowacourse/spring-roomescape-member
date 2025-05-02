@@ -3,6 +3,7 @@ package roomescape.reservationtime.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -34,7 +35,10 @@ public class ReservationTimeService {
             throw new ReservationException("해당 시간으로 예약된 건이 존재합니다.");
         }
 
-        reservationTimeRepository.deleteById(id);
+        final int deletedCount = reservationTimeRepository.deleteById(id);
+        if (deletedCount == 0) {
+            throw new NotFoundException("존재하지 않는 예약 시간입니다. id=" + id);
+        }
     }
 }
 

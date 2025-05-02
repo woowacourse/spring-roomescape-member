@@ -137,6 +137,6 @@ class ReservationServiceTest {
         // then
         assertThatThrownBy(() -> service.deleteReservation(999L))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("존재하지 않는 예약입니다.");
+                .hasMessage("존재하지 않는 예약입니다. id=999");
     }
 }

@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     List<PopularThemeResponse> findAllPopular();
 
-    void deleteById(final Long id);
+    int deleteById(final Long id);
 
     Optional<Theme> findById(final Long id);
 }

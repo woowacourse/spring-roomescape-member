@@ -41,8 +41,12 @@ public class StubThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
-        data.removeIf(theme -> theme.getId().equals(id));
+    public int deleteById(final Long id) {
+        final boolean isDeleted = data.removeIf(theme -> theme.getId().equals(id));
+        if (isDeleted) {
+            return 1;
+        }
+        return 0;
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
-    void deleteById(final Long id);
+    int deleteById(final Long id);
 
     List<AvailableReservationTimeResponse> findAllAvailable(final LocalDate date, final Long themeId);
 

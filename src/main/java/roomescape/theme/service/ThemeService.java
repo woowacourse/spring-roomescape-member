@@ -3,6 +3,7 @@ package roomescape.theme.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import roomescape.error.NotFoundException;
 import roomescape.error.ReservationException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.domain.Theme;
@@ -39,7 +40,10 @@ public class ThemeService {
             throw new ReservationException("해당 테마로 예약된 건이 존재합니다.");
         }
 
-        themeRepository.deleteById(id);
+        final int deletedCount = themeRepository.deleteById(id);
+        if (deletedCount == 0) {
+            throw new NotFoundException("존재하지 않는 테마입니다. id=" + id);
+        }
     }
 }
 

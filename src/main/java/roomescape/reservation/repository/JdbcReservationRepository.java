@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -138,11 +137,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public int deleteById(final Long id) {
         final String sql = "delete from reservation where id = ?";
-        final int rows = jdbcTemplate.update(sql, id);
-        if (rows == 0) {
-            throw new NoSuchElementException("삭제하려고 하는 예약이 존재하지 않습니다. " + id);
-        }
+        return jdbcTemplate.update(sql, id);
     }
 }
