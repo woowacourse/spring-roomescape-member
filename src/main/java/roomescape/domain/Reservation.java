@@ -47,11 +47,7 @@ public class Reservation {
             throw new IllegalArgumentException("예약은 미래만 가능합니다.");
         }
     }
-
-    public boolean isEqualId(final Long id) {
-        return this.id.equals(id);
-    }
-
+    
     public Long getId() {
         return id;
     }

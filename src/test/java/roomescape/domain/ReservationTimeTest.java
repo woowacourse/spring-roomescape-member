@@ -15,9 +15,10 @@ public class ReservationTimeTest {
     void equalIdTest(final long firstId, final long secondId, boolean result) {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(firstId, LocalTime.of(10, 0));
+        ReservationTime reservationTime1 = new ReservationTime(firstId, LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = new ReservationTime(secondId, LocalTime.of(10, 0));
 
         // when & then
-        assertThat(reservationTime.isEqualId(secondId)).isEqualTo(result);
+        assertThat(reservationTime1.equals(reservationTime2)).isEqualTo(result);
     }
 }

@@ -20,12 +20,15 @@ class ReservationTest {
     void equalIdTest(final long firstId, final long secondId, boolean result) {
 
         // given
-        Reservation reservation = Reservation.load(firstId, "체체", LocalDate.now(),
+        Reservation reservation1 = Reservation.load(firstId, "체체", LocalDate.now(),
+                new ReservationTime(1L, LocalTime.now().plusHours(1)),
+                new Theme(1L, "test", "test", "test"));
+        Reservation reservation2 = Reservation.load(secondId, "체체", LocalDate.now(),
                 new ReservationTime(1L, LocalTime.now().plusHours(1)),
                 new Theme(1L, "test", "test", "test"));
 
         // when & then
-        assertThat(reservation.isEqualId(secondId)).isEqualTo(result);
+        assertThat(reservation1.equals(reservation2)).isEqualTo(result);
     }
 
     @DisplayName("이름은 10자 초과면 예외를 발생한다.")
