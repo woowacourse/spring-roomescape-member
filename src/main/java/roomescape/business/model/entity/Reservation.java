@@ -24,12 +24,12 @@ public class Reservation {
         this(null, name, date, time, theme);
     }
 
-    public boolean isBooked(ReservationTime reservationTime, Theme theme) {
+    public boolean hasConflictWith(ReservationTime reservationTime, Theme theme) {
         LocalTime startAt = time.getStartAt();
         return reservationTime.hasConflict(theme, startAt);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

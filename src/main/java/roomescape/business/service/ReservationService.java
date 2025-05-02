@@ -81,7 +81,7 @@ public class ReservationService {
     private void validateIsBooked(List<Reservation> sameTimeReservations, ReservationTime reservationTime,
                                   Theme theme) {
         boolean isBooked = sameTimeReservations.stream()
-                .anyMatch(reservation -> reservation.isBooked(reservationTime, theme));
+                .anyMatch(reservation -> reservation.hasConflictWith(reservationTime, theme));
         if (isBooked) {
             throw new ConflictException("해당 테마 이용시간이 겹칩니다.");
         }
@@ -100,7 +100,7 @@ public class ReservationService {
         List<AvailableReservationTimeResponse> responses = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             boolean isBooked = bookedReservations.stream()
-                    .anyMatch(reservation -> reservation.isBooked(reservationTime, selectedTheme));
+                    .anyMatch(reservation -> reservation.hasConflictWith(reservationTime, selectedTheme));
             AvailableReservationTimeResponse response = AvailableReservationTimeResponse.from(reservationTime,
                     isBooked);
             responses.add(response);
