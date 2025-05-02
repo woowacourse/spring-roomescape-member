@@ -1,13 +1,8 @@
 package roomescape.business.model.vo;
 
-public class Id {
-
-    private final Long id;
-
-    private Id(final Long id) {
-        this.id = id;
-    }
-
+public record Id(
+        Long id
+) {
     public static Id create(final long id) {
         return new Id(id);
     }
