@@ -27,9 +27,7 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
-        final Theme theme = findTheme(reservationRequest.themeId());
-        final Reservation reservation = reservationRequest.convertToReservation(reservationTime, theme);
+        final Reservation reservation = makeReservation(reservationRequest);
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }
@@ -38,6 +36,12 @@ public class ReservationService {
         }
         final Reservation savedReservation = reservationDao.save(reservation);
         return new ReservationResponse(savedReservation);
+    }
+
+    private Reservation makeReservation(final ReservationRequest reservationRequest) {
+        final ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
+        final Theme theme = findTheme(reservationRequest.themeId());
+        return reservationRequest.convertToReservation(reservationTime, theme);
     }
 
     public List<ReservationResponse> getReservations() {
