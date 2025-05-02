@@ -21,10 +21,10 @@ public class ThemeService {
 
     public ThemeResponse createTheme(ThemeRequest request) {
         Theme newTheme = request.toEntity();
-        // TODO: Optional 개선하기
-        if (themeRepository.findByName(newTheme.getName()).isPresent()) {
-            throw new ConflictException("중복되는 테마가 존재합니다.");
-        }
+        themeRepository.findByName(newTheme.getName())
+                .ifPresent(theme -> {
+                    throw new ConflictException("중복되는 테마가 존재합니다.");
+                });
         Theme saved = themeRepository.save(newTheme);
         return ThemeResponse.from(saved);
     }
