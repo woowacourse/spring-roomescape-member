@@ -55,7 +55,6 @@ public class H2ThemeRepository implements ThemeRepository {
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
         parameters.put("thumbnail", theme.getThumbnail());
-
         return insertTheme.executeAndReturnKey(parameters).longValue();
     }
 
@@ -65,18 +64,17 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     public List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate) {
-        String sql =
-                """
-                        SELECT t.id, t.name, t.description, t.thumbnail
-                        FROM theme AS t
-                        ORDER BY (
-                            SELECT COUNT(*)
-                            FROM reservation AS r
-                            WHERE r.theme_id = t.id 
-                            AND r.date >= ? AND r.date <= ?
-                        ) DESC 
-                        LIMIT 10;
-                        """;
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail
+                FROM theme AS t
+                ORDER BY (
+                    SELECT COUNT(*)
+                    FROM reservation AS r
+                    WHERE r.theme_id = t.id 
+                    AND r.date >= ? AND r.date <= ?
+                ) DESC 
+                LIMIT 10;
+                """;
 
         return jdbcTemplate.query(sql, mapper, startDate, endDate);
     }
