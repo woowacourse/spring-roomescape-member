@@ -1,16 +1,19 @@
 package roomescape.reservation.repository;
 
-import roomescape.reservation.entity.Theme;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import roomescape.reservation.entity.Reservation;
+import roomescape.reservation.entity.Theme;
 
 public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> themes = new ArrayList<>();
+    private final List<Reservation> reservations = new ArrayList<>();
 
     @Override
     public Theme save(Theme theme) {
@@ -44,7 +47,23 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularDescendingUpTo(LocalDate startDate, LocalDate endDate, final int limit) {
-        // TODO: 테스트 로직 작성하기
-        return null;
+        Map<Long, Long> reservationCountByTheme = reservations.stream()
+                .filter(r -> !r.getDate().isBefore(startDate) && !r.getDate().isAfter(endDate))
+                .collect(Collectors.groupingBy(
+                        Reservation::getThemeId,
+                        Collectors.counting()
+                ));
+
+        return themes.stream()
+                .sorted((a, b) -> {
+                    long countA = reservationCountByTheme.getOrDefault(a.getId(), 0L);
+                    long countB = reservationCountByTheme.getOrDefault(b.getId(), 0L);
+                    if (countA != countB) {
+                        return Long.compare(countB, countA);
+                    }
+                    return Long.compare(b.getId(), a.getId());
+                })
+                .limit(limit)
+                .toList();
     }
 }

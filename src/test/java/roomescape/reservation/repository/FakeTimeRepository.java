@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import roomescape.reservation.dto.response.AvailableTimeResponse;
+import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.entity.Time;
 
 public class FakeTimeRepository implements TimeRepository {
 
     private final List<Time> times = new ArrayList<>();
+    private final List<Reservation> reservations = new ArrayList<>();
 
     @Override
     public Time save(Time time) {
@@ -37,7 +41,18 @@ public class FakeTimeRepository implements TimeRepository {
 
     @Override
     public List<AvailableTimeResponse> findAvailableTimes(LocalDate date, Long themeId) {
-        // TODO: 테스트용 메서드 로직 작성
-        return null;
+        Set<Long> reservedTimeIds = reservations.stream()
+                .filter(r -> r.getDate().isEqual(date) && r.getThemeId().equals(themeId))
+                .map(Reservation::getTimeId)
+                .collect(Collectors.toSet());
+
+        return times.stream()
+                .filter(Time::isAvailable)
+                .map(time -> new AvailableTimeResponse(
+                        time.getId(),
+                        time.getFormattedTime(),
+                        reservedTimeIds.contains(time.getId())
+                ))
+                .toList();
     }
 }
