@@ -14,7 +14,7 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time);
+        validate(name, date, time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -22,12 +22,15 @@ public class Reservation {
         this.theme = theme;
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time) {
+    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new InvalidReservationException("이름은 공백일 수 없습니다");
+            throw new InvalidReservationException("이름은 비어있을 수 없습니다");
         }
         if (date == null || time == null) {
-            throw new InvalidReservationException("시간은 공백일 수 없습니다.");
+            throw new InvalidReservationException("시간은 비어있을 수 없습니다.");
+        }
+        if (theme == null) {
+            throw new InvalidReservationException("테마는 비어있을 수 없습니다.");
         }
     }
 

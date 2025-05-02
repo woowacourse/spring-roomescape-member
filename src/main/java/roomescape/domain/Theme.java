@@ -1,19 +1,33 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.exception.InvalidThemeException;
 
 public class Theme {
-    private final Long id;
 
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        validate(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validate(String name, String description, String thumbnail) {
+        if (name == null || name.isBlank()) {
+            throw new InvalidThemeException("테마 이름은 비어있을 수 없습니다.");
+        }
+        if (description == null) {
+            throw new InvalidThemeException("설명은 비어있을 수 없습니다.");
+        }
+        if (thumbnail == null) {
+            throw new InvalidThemeException("썸네일은 비어있을 수 없습니다.");
+        }
     }
 
     public Long getId() {

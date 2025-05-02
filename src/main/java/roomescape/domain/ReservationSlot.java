@@ -2,16 +2,28 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.InvalidReservationException;
 
 public class ReservationSlot {
+
     private final Long id;
     private final LocalTime time;
     private final boolean reserved;
 
     public ReservationSlot(Long id, LocalTime time, boolean reserved) {
+        validate(id, time);
         this.id = id;
         this.time = time;
         this.reserved = reserved;
+    }
+
+    private void validate(Long id, LocalTime time) {
+        if (id == null) {
+            throw new InvalidReservationException("아이디는 비어있을 수 없습니다.");
+        }
+        if (time == null) {
+            throw new InvalidReservationException("시간은 비어있을 수 없습니다.");
+        }
     }
 
     public Long getId() {
