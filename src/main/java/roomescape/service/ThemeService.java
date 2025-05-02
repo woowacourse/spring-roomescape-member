@@ -45,7 +45,7 @@ public class ThemeService {
         }
 
         themeDao.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("삭제할 예약시간이 없습니다."));
+            .orElseThrow(() -> new EntityNotFoundException("삭제할 테마가 없습니다."));
 
         themeDao.deleteById(id);
     }

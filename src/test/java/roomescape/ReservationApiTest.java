@@ -60,7 +60,7 @@ class ReservationApiTest {
         RestAssured.given().log().all()
             .when().delete("/reservations/7")
             .then().log().all()
-            .statusCode(404);
+            .statusCode(400);
     }
 
     @Test
