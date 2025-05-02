@@ -59,22 +59,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
                         )));
     }
 
-    public Reservation save(Reservation reservation) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
-        SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getReserverName())
-                .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTimeId());
-        Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
-
-        return new Reservation(id, reservation.getReserverName(), reservation.getDate(),
-                new ReservationTime(reservation.getTimeId(), reservation.getStartAt()),
-                reservation.getTheme());
-    }
-
     @Override
     public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)

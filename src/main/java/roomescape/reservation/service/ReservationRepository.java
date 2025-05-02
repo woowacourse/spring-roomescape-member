@@ -12,8 +12,6 @@ public interface ReservationRepository {
 
     List<Reservation> findAll();
 
-    Reservation save(Reservation reservation);
-
     Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme);
 
     Optional<Reservation> findById(Long id);
