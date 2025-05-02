@@ -40,8 +40,8 @@ public class ReservationService {
     }
 
     public ReservationResponse add(ReservationRequest requestDto) {
-        ReservationTime reservationTime = getReservationTime(requestDto);
-        Theme theme = getTheme(requestDto);
+        ReservationTime reservationTime = getReservationTime(requestDto.timeId());
+        Theme theme = getTheme(requestDto.themeId());
         List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(),
                 requestDto.themeId());
 
@@ -68,13 +68,13 @@ public class ReservationService {
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
     }
 
-    private ReservationTime getReservationTime(ReservationRequest requestDto) {
-        return reservationTimeDao.findById(requestDto.timeId())
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeDao.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
     }
 
-    private Theme getTheme(ReservationRequest requestDto) {
-        return themeDao.findById(requestDto.themeId())
+    private Theme getTheme(Long themeId) {
+        return themeDao.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
     }
 
