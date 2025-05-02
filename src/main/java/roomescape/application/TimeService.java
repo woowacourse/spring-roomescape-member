@@ -1,5 +1,7 @@
 package roomescape.application;
 
+import static roomescape.exception.TimeErrorCode.TIME_DELETE_CONFLICT;
+
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -8,6 +10,7 @@ import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
+import roomescape.exception.BusinessException;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.TimeRequest;
 
@@ -39,16 +42,16 @@ public class TimeService {
         try {
             deleted = repository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
+            throw new BusinessException(TIME_DELETE_CONFLICT);
         }
         if (!deleted) {
-            throw new NotFoundException("삭제하려는 id가 존재하지 않습니다. id: " + id);
+            throw new NotFoundException("삭제하려는 시간 id", id);
         }
     }
 
     public ReservationTime getTimeById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("찾으려는 id가 존재하지 않습니다. id: " + id));
+                .orElseThrow(() -> new NotFoundException("찾으려는 시간 id", id));
     }
 
     public List<TimeDataWithBookingInfo> getTimesWithBookingInfo(LocalDate date, Long themeId) {

@@ -34,6 +34,6 @@ public class FakeReservationRepository implements ReservationRepository {
         return reservations.stream()
                 .filter(reservation -> reservation.getId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("id에 해당하는 Reservation이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("id", id));
     }
 }

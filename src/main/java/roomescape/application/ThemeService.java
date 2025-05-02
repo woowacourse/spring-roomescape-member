@@ -1,5 +1,7 @@
 package roomescape.application;
 
+import static roomescape.exception.ThemeErrorCode.THEME_DELETE_CONFLICT;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import roomescape.application.dto.ThemeDto;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.exception.BusinessException;
 import roomescape.exception.NotFoundException;
 import roomescape.presentation.dto.request.ThemeRequest;
 
@@ -40,16 +43,16 @@ public class ThemeService {
         try {
             deleted = themeRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("예약이 존재하는 테마는 삭제할 수 없습니다.");
+            throw new BusinessException(THEME_DELETE_CONFLICT);
         }
         if (!deleted) {
-            throw new NotFoundException("삭제하려는 id가 존재하지 않습니다. id: " + id);
+            throw new NotFoundException("삭제하려는 테마 id", id);
         }
     }
 
     public Theme getThemeById(@NotNull Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("id에 해당하는 테마가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("찾으려는 테마 id", id));
     }
 
     public List<ThemeDto> getThemeRanking() {

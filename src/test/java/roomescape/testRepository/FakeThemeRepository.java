@@ -36,7 +36,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public boolean deleteById(Long id) {
         Theme theme = findById(id)
-                .orElseThrow(() -> new NotFoundException("FakeTimeRepository: 삭제하려는 id 없음"));
+                .orElseThrow(() -> new NotFoundException("id", id));
         themes.remove(theme);
         return true;
     }
