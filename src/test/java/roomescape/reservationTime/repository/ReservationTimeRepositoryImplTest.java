@@ -1,5 +1,7 @@
 package roomescape.reservationTime.repository;
 
+import java.time.LocalTime;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +11,6 @@ import org.springframework.context.annotation.Import;
 import roomescape.globalException.NotFoundException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
-
-import java.time.LocalTime;
-import java.util.List;
 
 @JdbcTest
 @Import({ReservationTimeRepositoryImpl.class})
@@ -38,8 +37,7 @@ class ReservationTimeRepositoryImplTest {
 
         // when & then
         Assertions.assertThatCode(
-            () -> repository.findByIdOrThrow(Long.MAX_VALUE)
+                () -> repository.findByIdOrThrow(Long.MAX_VALUE)
         ).isInstanceOf(NotFoundException.class);
     }
 }
-
