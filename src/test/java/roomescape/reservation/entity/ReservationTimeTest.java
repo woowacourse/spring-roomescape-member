@@ -55,7 +55,7 @@ class ReservationTimeTest {
         final boolean actual = time.isAvailable();
 
         // then
-        assertThat(actual).isSameAs(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     private static Stream<Arguments> checkIsAvailable() {
