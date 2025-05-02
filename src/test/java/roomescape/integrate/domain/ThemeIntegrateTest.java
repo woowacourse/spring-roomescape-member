@@ -36,9 +36,9 @@ class ThemeIntegrateTest {
 
     @AfterEach
     void cleanup() {
-        jdbcTemplate.execute("drop from reservation");  // 자식 테이블 먼저
-        jdbcTemplate.execute("drop from reservation_time");
-        jdbcTemplate.execute("drop from theme");
+        jdbcTemplate.execute("drop table reservation");  // 자식 테이블 먼저
+        jdbcTemplate.execute("drop table reservation_time");
+        jdbcTemplate.execute("drop table theme");
     }
 
     @Test
