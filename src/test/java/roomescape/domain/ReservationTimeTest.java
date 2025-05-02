@@ -11,7 +11,7 @@ public class ReservationTimeTest {
 
     @DisplayName("아이디가 같으면 true를, 다르면 false를 반환한다.")
     @ParameterizedTest
-    @CsvSource(value = "1, 1, true, 1, 2, false")
+    @CsvSource(value = {"1, 1, true", "1, 2, false"})
     void equalIdTest(final long firstId, final long secondId, boolean result) {
 
         // given
