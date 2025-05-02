@@ -13,8 +13,8 @@ import roomescape.reservation.service.FakeReservationRepository;
 import roomescape.reservation.service.FakeReservationTimeRepository;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
-import roomescape.reservationTime.dto.TimeConditionRequest;
-import roomescape.reservationTime.dto.TimeConditionResponse;
+import roomescape.reservationTime.presentation.dto.TimeConditionRequest;
+import roomescape.reservationTime.presentation.dto.TimeConditionResponse;
 import roomescape.theme.domain.Theme;
 
 class ReservationTimeServiceTest {
