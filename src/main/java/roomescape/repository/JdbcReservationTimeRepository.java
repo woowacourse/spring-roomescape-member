@@ -32,7 +32,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public long add(ReservationTime reservationTime) {
         String sql = "insert into reservation_time (start_at) values(?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int update = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setTime(1, Time.valueOf(reservationTime.getTime()));
             return ps;

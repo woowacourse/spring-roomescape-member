@@ -33,7 +33,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     public long add(Theme theme) {
         String sql = "insert into theme (name,description,thumbnail) values(?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int update = jdbcTemplate.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, theme.getName());
             ps.setString(2, theme.getDescription());
