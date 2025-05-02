@@ -17,11 +17,8 @@ public class GlobalExceptionHandler {
             final HttpMessageNotReadableException e,
             final HttpServletRequest request
     ) {
-        String path = request.getServletPath();
-        if (request.getQueryString() != null) {
-            path += "?" + request.getQueryString();
-        }
-        ErrorResponse errorResponse = new ErrorResponse(
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
@@ -36,11 +33,8 @@ public class GlobalExceptionHandler {
             final MethodArgumentNotValidException e,
             final HttpServletRequest request
     ) {
-        String path = request.getServletPath();
-        if (request.getQueryString() != null) {
-            path += "?" + request.getQueryString();
-        }
-        ErrorResponse errorResponse = new ErrorResponse(
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
@@ -55,17 +49,34 @@ public class GlobalExceptionHandler {
             final IllegalArgumentException e,
             final HttpServletRequest request
     ) {
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = makeGeneralErrorResponse(e, HttpStatus.BAD_REQUEST, path);
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    private ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+            final Exception e,
+            final HttpServletRequest request
+    ) {
+        final String path = extractPath(request);
+        final ErrorResponse errorResponse = makeGeneralErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, path);
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    private ErrorResponse makeGeneralErrorResponse(
+            final Exception e,
+            final HttpStatus status,
+            final String path
+    ) {
+        return new ErrorResponse(LocalDateTime.now(), status.value(), status.getReasonPhrase(), e.getMessage(), path);
+    }
+
+    private String extractPath(HttpServletRequest request) {
         String path = request.getServletPath();
         if (request.getQueryString() != null) {
             path += "?" + request.getQueryString();
         }
-        ErrorResponse errorResponse = new ErrorResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                e.getMessage(),
-                path
-        );
-        return ResponseEntity.badRequest().body(errorResponse);
+        return path;
     }
 }
