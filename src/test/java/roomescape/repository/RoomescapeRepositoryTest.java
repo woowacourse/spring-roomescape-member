@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,15 @@ import roomescape.domain.ReservationTime;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class RoomescapeRepositoryTest {
 
-    RoomescapeRepository repository;
     @Autowired
+    DataSource dataSource;
     JdbcTemplate template;
+    RoomescapeRepository repository;
 
     @BeforeEach
     void setUp() {
-        repository = new RoomescapeRepositoryImpl(template);
+        repository = new RoomescapeRepositoryImpl(dataSource);
+        template = new JdbcTemplate(dataSource);
         template.execute("DELETE FROM reservation");
         template.execute("DELETE FROM reservation_time");
         template.execute("DELETE FROM reservation_theme");
@@ -41,7 +44,7 @@ class RoomescapeRepositoryTest {
     @Test
     void findById() {
         //when
-        Reservation reservation = repository.findById(1L);
+        Reservation reservation = repository.findById(1L).get();
 
         //then
         assertEqualReservationElements(reservation, 1L, "브라운", "2023-08-05", 1L, "15:40");
@@ -73,12 +76,12 @@ class RoomescapeRepositoryTest {
     void save() {
         //given
         Reservation reservation = new Reservation("네오", LocalDate.parse("2023-08-05"),
-                ReservationTime.parse("15:40").toEntity(1L), new ReservationTheme(1L,"테마", "테마", "테마"));
+                ReservationTime.parse("15:40").toEntity(1L), new ReservationTheme(1L, "테마", "테마", "테마"));
 
         //when
         Reservation saved = repository.save(reservation);
-        Reservation firstReservation = repository.findById(1L);
-        Reservation secondReservation = repository.findById(2L);
+        Reservation firstReservation = repository.findById(1L).get();
+        Reservation secondReservation = repository.findById(2L).get();
 
         //then
         assertEqualReservationElements(saved, 2L, "네오", "2023-08-05", 1L, "15:40");
@@ -90,10 +93,10 @@ class RoomescapeRepositoryTest {
     @Test
     void deleteById() {
         //when
-        int deleteCounts = repository.deleteById(1L);
+        boolean result = repository.deleteById(1L);
 
         //then
-        assertThat(deleteCounts).isEqualTo(1);
+        assertThat(result).isTrue();
         assertThat(repository.findAll()).isEmpty();
     }
 

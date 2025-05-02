@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,15 @@ import roomescape.domain.ReservationTime;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class RoomescapeTimeRepositoryTest {
 
-    RoomescapeTimeRepository timeRepository;
-
     @Autowired
+    DataSource dataSource;
+    RoomescapeTimeRepository timeRepository;
     JdbcTemplate template;
 
     @BeforeEach
     void setUp() {
-
-        timeRepository = new RoomescapeTimeRepositoryImpl(template);
+        template = new JdbcTemplate(dataSource);
+        timeRepository = new RoomescapeTimeRepositoryImpl(dataSource);
         template.execute("DELETE FROM reservation");
         template.execute("DELETE FROM reservation_time");
         template.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
@@ -37,7 +38,7 @@ class RoomescapeTimeRepositoryTest {
     @Test
     void findById() {
         //when
-        ReservationTime time = timeRepository.findById(1L);
+        ReservationTime time = timeRepository.findById(1L).get();
 
         //then
         assertThat(time.getStartAt()).isEqualTo(LocalTime.parse("15:40"));
@@ -62,8 +63,8 @@ class RoomescapeTimeRepositoryTest {
 
         //when
         ReservationTime saved = timeRepository.save(reservationTime);
-        ReservationTime firstTime = timeRepository.findById(1L);
-        ReservationTime secondTime = timeRepository.findById(2L);
+        ReservationTime firstTime = timeRepository.findById(1L).get();
+        ReservationTime secondTime = timeRepository.findById(2L).get();
 
         //then
         assertThat(saved.getId()).isEqualTo(2L);
@@ -77,10 +78,10 @@ class RoomescapeTimeRepositoryTest {
     @Test
     void deleteById() {
         //when
-        int deleteCounts = timeRepository.deleteById(1L);
+        boolean result = timeRepository.deleteById(1L);
 
         //then
-        assertThat(deleteCounts).isEqualTo(1);
+        assertThat(result).isTrue();
         assertThat(timeRepository.findAll()).isEmpty();
     }
 

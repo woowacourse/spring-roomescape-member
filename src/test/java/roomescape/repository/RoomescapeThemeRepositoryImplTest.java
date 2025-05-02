@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,15 +17,16 @@ import roomescape.domain.ReservationTheme;
 class RoomescapeThemeRepositoryImplTest {
 
     @Autowired
-    private JdbcTemplate template;
+    DataSource dataSource;
 
-    private RoomescapeThemeRepository repository;
+    JdbcTemplate template;
+    RoomescapeThemeRepository repository;
 
     @BeforeEach
     void setUp() {
-        repository = new RoomescapeThemeRepositoryImpl(template);
+        template = new JdbcTemplate(dataSource);
+        repository = new RoomescapeThemeRepositoryImpl(dataSource);
     }
-
 
     @DisplayName("id로 테마 데이터를 성공적으로 가져온다.")
     @Test
@@ -33,7 +35,7 @@ class RoomescapeThemeRepositoryImplTest {
         final long id = 1L;
 
         //when
-        final ReservationTheme theme = repository.findById(id);
+        final ReservationTheme theme = repository.findById(id).get();
 
         //then
         assertThat(theme.getId()).isEqualTo(id);
@@ -84,9 +86,9 @@ class RoomescapeThemeRepositoryImplTest {
 
         //when
         final ReservationTheme expected = repository.save(reservationTheme);
-        final int result = repository.deleteById(expected.getId());
+        boolean result = repository.deleteById(expected.getId());
 
         //
-        assertThat(result).isEqualTo(1);
+        assertThat(result).isTrue();
     }
 }
