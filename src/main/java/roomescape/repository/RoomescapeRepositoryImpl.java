@@ -1,12 +1,15 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
@@ -15,22 +18,35 @@ import roomescape.domain.ReservationTime;
 @Repository
 public class RoomescapeRepositoryImpl implements RoomescapeRepository {
 
-    private final JdbcTemplate template;
+    private static final int SUCCESS_COUNT = 1;
 
-    public RoomescapeRepositoryImpl(final JdbcTemplate template) {
-        this.template = template;
+    private final NamedParameterJdbcTemplate template;
+    private final SimpleJdbcInsert insert;
+
+    public RoomescapeRepositoryImpl(final DataSource dataSource) {
+        this.template = new NamedParameterJdbcTemplate(dataSource);
+        this.insert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public Reservation findById(final long id) {
-        String sql = joinReservationAndTime("WHERE r.id = ?");
-        return template.queryForObject(sql, reservationRowMapper(), id);
+    public Optional<Reservation> findById(final Long id) {
+        String sql = joinReservationAndTime("WHERE r.id = :id");
+        try {
+            SqlParameterSource param = new MapSqlParameterSource("id", id);
+            Reservation reservation = template.queryForObject(sql, param, reservationRowMapper());
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<Reservation> findByDate(final LocalDate date) {
-        String sql = joinReservationAndTime("WHERE r.date = ?");
-        return template.query(sql, reservationRowMapper(), date.toString());
+        String sql = joinReservationAndTime("WHERE r.date = :date");
+        SqlParameterSource param = new MapSqlParameterSource("date", date);
+        return template.query(sql, param, reservationRowMapper());
     }
 
     @Override
@@ -41,31 +57,29 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
-
-        long id = keyHolder.getKey().longValue();
-        return reservation.toEntity(id);
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate().toString())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
+        Number key = insert.executeAndReturnKey(param);
+        return reservation.toEntity(key.longValue());
     }
 
     @Override
-    public int deleteById(final long id) {
-        String sql = "delete from reservation where id = ?";
-        return template.update(sql, id);
+    public boolean deleteById(final Long id) {
+        String sql = "delete from reservation where id = :id";
+        SqlParameterSource param = new MapSqlParameterSource("id", id);
+        return template.update(sql, param) == SUCCESS_COUNT;
     }
 
     @Override
     public boolean existsByDateAndTime(final LocalDate date, final ReservationTime time) {
-        String sql = wrapExistsQuery(joinReservationAndTime("WHERE r.date = ? and t.start_at = ?"));
-        return template.queryForObject(sql, Boolean.class, date.toString(), time.getStartAt().toString());
+        String sql = wrapExistsQuery(joinReservationAndTime("WHERE r.date = :date and t.start_at = :startAt"));
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("startAt", time.getStartAt());
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
     }
 
     private RowMapper<Reservation> reservationRowMapper() {

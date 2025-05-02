@@ -1,27 +1,44 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
 import java.util.List;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.Optional;
+import javax.sql.DataSource;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTheme;
+import roomescape.exception.DeletionNotAllowedException;
 
 @Repository
 public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository {
 
-    private final JdbcTemplate template;
+    private static final int SUCCESS_COUNT = 1;
 
-    public RoomescapeThemeRepositoryImpl(final JdbcTemplate template) {
-        this.template = template;
+    private final NamedParameterJdbcTemplate template;
+    private final SimpleJdbcInsert insert;
+
+    public RoomescapeThemeRepositoryImpl(final DataSource dataSource) {
+        this.template = new NamedParameterJdbcTemplate(dataSource);
+        this.insert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation_theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public ReservationTheme findById(final Long id) {
-        String sql = "select * from reservation_theme where id=?";
-        return template.queryForObject(sql, reservationThemeRowMapper(), id);
+    public Optional<ReservationTheme> findById(final Long id) {
+        String sql = "select * from reservation_theme where id=:id";
+        try {
+            SqlParameterSource param = new MapSqlParameterSource("id", id);
+            ReservationTheme reservationTheme = template.queryForObject(sql, param, reservationThemeRowMapper());
+            return Optional.of(reservationTheme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -46,27 +63,22 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
 
     @Override
     public ReservationTheme save(final ReservationTheme reservationTheme) {
-        String sql = "insert into reservation_theme (name, description, thumbnail) values (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservationTheme.getName());
-            ps.setString(2, reservationTheme.getDescription());
-            ps.setString(3, reservationTheme.getThumbnail());
-            return ps;
-        }, keyHolder);
-
-        long id = keyHolder.getKey().longValue();
-        return reservationTheme.toEntity(id);
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("name", reservationTheme.getName())
+                .addValue("description", reservationTheme.getDescription())
+                .addValue("thumbnail", reservationTheme.getThumbnail());
+        Number key = insert.executeAndReturnKey(param);
+        return reservationTheme.toEntity(key.longValue());
     }
 
     @Override
-    public int deleteById(final long id) {
+    public boolean deleteById(final Long id) {
         try {
-            String sql = "delete from reservation_theme where id = ?";
-            return template.update(sql, id);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("예약 테마를 지울 수 없습니다.");
+            String sql = "delete from reservation_theme where id=:id";
+            SqlParameterSource param = new MapSqlParameterSource("id", id);
+            return template.update(sql, param) == SUCCESS_COUNT;
+        } catch (DataIntegrityViolationException e) {
+            throw new DeletionNotAllowedException("예약 테마를 지울 수 없습니다.");
         }
     }
 

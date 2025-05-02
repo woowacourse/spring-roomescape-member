@@ -1,11 +1,12 @@
 package roomescape.repository;
 
 import java.util.List;
+import java.util.Optional;
 import roomescape.domain.ReservationTheme;
 
 public interface RoomescapeThemeRepository {
 
-    ReservationTheme findById(final Long id);
+    Optional<ReservationTheme> findById(final Long id);
 
     List<ReservationTheme> findWeeklyThemeOrderByCountDesc();
 
@@ -13,5 +14,5 @@ public interface RoomescapeThemeRepository {
 
     ReservationTheme save(final ReservationTheme reservationTheme);
 
-    int deleteById(final long id);
+    boolean deleteById(final Long id);
 }

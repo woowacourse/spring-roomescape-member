@@ -19,8 +19,6 @@ import roomescape.repository.RoomescapeTimeRepository;
 @Service
 public class RoomescapeService {
 
-    public static final int DELETE_FAILED_COUNT = 0;
-
     private final RoomescapeRepository roomescapeRepository;
     private final RoomescapeTimeRepository roomescapeTimeRepository;
     private final RoomescapeThemeRepository roomescapeThemeRepository;
@@ -58,8 +56,8 @@ public class RoomescapeService {
         long timeId = request.timeId();
         final long themeId = request.themeId();
 
-        ReservationTime time = roomescapeTimeRepository.findById(timeId);
-        ReservationTheme theme = roomescapeThemeRepository.findById(themeId);
+        ReservationTime time = roomescapeTimeRepository.findById(timeId).get();
+        ReservationTheme theme = roomescapeThemeRepository.findById(themeId).get();
         Reservation reservation = new Reservation(request.name(), request.date(), time, theme);
         LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 
@@ -84,22 +82,22 @@ public class RoomescapeService {
     }
 
     public void removeReservation(final long id) {
-        int deleteCounts = roomescapeRepository.deleteById(id);
-        if (deleteCounts == DELETE_FAILED_COUNT) {
+        boolean result = roomescapeRepository.deleteById(id);
+        if (!result) {
             throw new IllegalArgumentException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTime(final long id) {
-        int deleteCounts = roomescapeTimeRepository.deleteById(id);
-        if (deleteCounts == DELETE_FAILED_COUNT) {
+        boolean result = roomescapeTimeRepository.deleteById(id);
+        if (!result) {
             throw new IllegalArgumentException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTheme(final long id) {
-        int deleteCounts = roomescapeThemeRepository.deleteById(id);
-        if (deleteCounts == DELETE_FAILED_COUNT) {
+        boolean result = roomescapeThemeRepository.deleteById(id);
+        if (!result) {
             throw new IllegalArgumentException(String.format("[ERROR] 예약테마 %d번은 존재하지 않습니다.", id));
         }
     }
@@ -118,7 +116,6 @@ public class RoomescapeService {
 
     private boolean existsSameReservation(final Reservation reservation) {
         List<Reservation> reservations = roomescapeRepository.findByDate(reservation.getDate());
-        return reservations.stream()
-                .anyMatch(candidate -> candidate.isDuplicateReservation(reservation));
+        return reservations.stream().anyMatch(candidate -> candidate.isDuplicateReservation(reservation));
     }
 }
