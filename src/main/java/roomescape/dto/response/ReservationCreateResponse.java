@@ -16,20 +16,4 @@ public record ReservationCreateResponse(
                 ReservationTimeCreateResponse.from(reservation.getTime()),
                 ThemeCreateResponse.from(reservation.getTheme()));
     }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public ReservationTimeCreateResponse getTime() {
-        return time;
-    }
 }

@@ -14,12 +14,4 @@ public record ReservationTimeUserResponse(
     public static ReservationTimeUserResponse from(ReservationTime time, boolean alreadyBooked) {
         return new ReservationTimeUserResponse(time.getId(), time.getStartAt(), alreadyBooked);
     }
-
-    public long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
-    }
 }

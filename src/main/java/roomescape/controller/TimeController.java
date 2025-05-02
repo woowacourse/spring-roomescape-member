@@ -48,7 +48,7 @@ public class TimeController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(reservationTimeCreateResponse.getId())
+                .buildAndExpand(reservationTimeCreateResponse.id())
                 .toUri();
         return ResponseEntity.created(location).body(reservationTimeCreateResponse);
     }

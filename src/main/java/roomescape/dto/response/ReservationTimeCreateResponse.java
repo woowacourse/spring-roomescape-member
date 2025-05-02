@@ -13,12 +13,4 @@ public record ReservationTimeCreateResponse(
     public static ReservationTimeCreateResponse from(ReservationTime reservationTime) {
         return new ReservationTimeCreateResponse(reservationTime.getId(), reservationTime.getStartAt());
     }
-
-    public long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
-    }
 }
