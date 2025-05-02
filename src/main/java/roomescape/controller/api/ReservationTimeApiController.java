@@ -1,6 +1,7 @@
 package roomescape.controller.api;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.controller.dto.ReservationTimeRequest;
@@ -8,7 +9,6 @@ import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
 import roomescape.service.ReservationTimeService;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class ReservationTimeApiController {
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody @Valid ReservationTimeRequest request) {
         ReservationTime reservationTime = reservationTimeService.createReservationTime(request.startAtToLocalTime());
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
-        return ResponseEntity.created(URI.create("/times")).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/times")
