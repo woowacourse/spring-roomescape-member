@@ -63,11 +63,9 @@ public class JdbcTimeRepository implements TimeRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         String deleteSql = "DELETE FROM reservation_time WHERE id=?";
-
-        boolean updated = jdbcTemplate.update(deleteSql, id) > 0;
-        return updated;
+        jdbcTemplate.update(deleteSql, id);
     }
 
     @Override

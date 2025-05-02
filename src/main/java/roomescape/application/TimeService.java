@@ -38,14 +38,10 @@ public class TimeService {
     }
 
     public void deleteTime(Long id) {
-        boolean deleted;
         try {
-            deleted = repository.deleteById(id);
+            repository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(TIME_DELETE_CONFLICT);
-        }
-        if (!deleted) {
-            throw new NotFoundException("삭제하려는 시간 id", id);
         }
     }
 

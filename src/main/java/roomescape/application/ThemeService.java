@@ -39,14 +39,10 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        boolean deleted;
         try {
-            deleted = themeRepository.deleteById(id);
+            themeRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException(THEME_DELETE_CONFLICT);
-        }
-        if (!deleted) {
-            throw new NotFoundException("삭제하려는 테마 id", id);
         }
     }
 

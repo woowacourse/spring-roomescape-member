@@ -12,7 +12,7 @@ public interface ThemeRepository {
 
     List<Theme> findAll();
 
-    boolean deleteById(Long id);
+    void deleteById(Long id);
 
     List<Theme> findThemeRanking(int count, LocalDate startDate, LocalDate endDate);
 }

@@ -35,11 +35,10 @@ public class FakeTimeRepository implements TimeRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         ReservationTime reservationTime = findById(id)
                 .orElseThrow(() -> new NotFoundException("id", id));
         reservationTimes.remove(reservationTime);
-        return true;
     }
 
     @Override

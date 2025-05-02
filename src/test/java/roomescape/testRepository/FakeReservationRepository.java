@@ -24,10 +24,9 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         Reservation reservation = findById(id);
         reservations.remove(reservation);
-        return true;
     }
 
     private Reservation findById(Long id) {
