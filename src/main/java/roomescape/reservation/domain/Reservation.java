@@ -80,7 +80,6 @@ public class Reservation {
         if (getId() == null && that.getId() == null) {
             return false;
         }
-
         return Objects.equals(getId(), that.getId());
     }
 

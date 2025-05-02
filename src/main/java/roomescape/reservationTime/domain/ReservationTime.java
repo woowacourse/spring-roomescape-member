@@ -36,4 +36,21 @@ public class ReservationTime {
     public LocalTime getStartAt() {
         return startAt;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof ReservationTime that)) {
+            return false;
+        }
+
+        if (getId() == null && that.getId() == null) {
+            return false;
+        }
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
+    }
 }
