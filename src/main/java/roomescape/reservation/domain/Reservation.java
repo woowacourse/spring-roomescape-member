@@ -2,7 +2,7 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import roomescape.global_exception.BadRequestException;
+import roomescape.globalException.BadRequestException;
 import roomescape.reservation_time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 

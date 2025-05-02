@@ -1,8 +1,8 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.global_exception.BadRequestException;
-import roomescape.global_exception.ConflictException;
+import roomescape.globalException.BadRequestException;
+import roomescape.globalException.ConflictException;
 import roomescape.reservation.ReservationMapper;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
