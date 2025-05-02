@@ -53,6 +53,23 @@ public class H2ReservationRepository implements ReservationRepository {
         return updated > 0;
     }
 
+    @Override
+    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+        String query = """
+                SELECT COUNT(*)
+                FROM reservation
+                WHERE date = :date
+                AND time_id = :timeId
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId);
+
+        Integer count = jdbcTemplate.queryForObject(query, params, Integer.class);
+        return count != null && count > 0;
+    }
+
     public List<Reservation> findAll() {
         String query = """
                 SELECT 

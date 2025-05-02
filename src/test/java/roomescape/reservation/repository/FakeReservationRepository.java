@@ -1,5 +1,6 @@
 package roomescape.reservation.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,15 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean deleteById(Long id) {
         return reservations.removeIf(entity -> entity.getId().equals(id));
+    }
+
+    @Override
+    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+        return findAll().stream()
+                .anyMatch(reservation ->
+                        reservation.getDate().equals(date) &&
+                                reservation.getTimeId().equals(timeId)
+                );
     }
 
     @Override

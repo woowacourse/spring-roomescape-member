@@ -33,17 +33,13 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getAllReservation() {
-        return reservationRepository.findAll()
-                .stream()
-                .map(this::convertToResponse)
+        return reservationRepository.findAll().stream()
+                .map(reservation -> {
+                    Theme theme = themeRepository.findById(reservation.getThemeId())
+                            .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
+                    return ReservationResponse.from(reservation, theme);
+                })
                 .toList();
-    }
-
-    private ReservationResponse convertToResponse(Reservation reservation) {
-        final Long themeId = reservation.getThemeId();
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 테마 입니다."));
-        return ReservationResponse.from(reservation, theme);
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
@@ -60,6 +56,13 @@ public class ReservationService {
         return ReservationResponse.from(saved, theme);
     }
 
+    public void deleteReservation(final Long id) {
+        final boolean deleted = reservationRepository.deleteById(id);
+        if (!deleted) {
+            throw new NotFoundException("존재하지 않는 id 입니다.");
+        }
+    }
+
     private void validateDateTime(Reservation reservation) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = reservation.getDateTime();
@@ -68,21 +71,9 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicated(Reservation newReservation) {
-        if (isExistDuplicatedWith(newReservation)) {
+    private void validateDuplicated(Reservation reservation) {
+        if (reservationRepository.existsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
             throw new ConflictException("해당 날짜에는 이미 예약이 존재합니다.");
-        }
-    }
-
-    private boolean isExistDuplicatedWith(Reservation target) {
-        List<Reservation> reservations = reservationRepository.findAll();
-        return reservations.stream().anyMatch(reservation -> reservation.isDuplicatedWith(target));
-    }
-
-    public void deleteReservation(final Long id) {
-        final boolean deleted = reservationRepository.deleteById(id);
-        if (!deleted) {
-            throw new NotFoundException("존재하지 않는 id 입니다.");
         }
     }
 }
