@@ -40,10 +40,10 @@ public class ThemeService {
 
     public void deleteById(Long id) {
         if (reservationDao.existByTimeId(id)) {
-            throw new ReservationExistException("이 시간의 예약이 존재합니다.");
+            throw new ReservationExistException("이 테마의 예약이 존재합니다.");
         }
         themeDao.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("삭제할 예약시간이 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("삭제할 테마가 없습니다."));
         themeDao.deleteById(id);
     }
 
