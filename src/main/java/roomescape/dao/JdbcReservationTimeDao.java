@@ -58,9 +58,12 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     public void deleteById(Long id) {
         String sql = "delete from reservation_time where id = ?";
-        jdbcTemplate.update(
+        int deletedCount = jdbcTemplate.update(
                 sql,
                 id
         );
+        if (deletedCount == 0) {
+            throw new IllegalArgumentException("존재하지 않는 시간 id입니다.");
+        }
     }
 }

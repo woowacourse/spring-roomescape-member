@@ -58,10 +58,13 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public void deleteById(Long id) {
         String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(
+        int deletedCount = jdbcTemplate.update(
                 sql,
                 id
         );
+        if (deletedCount == 0) {
+            throw new IllegalArgumentException("존재하지 않는 예약 id입니다.");
+        }
     }
 
     @Override
