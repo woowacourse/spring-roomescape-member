@@ -55,11 +55,11 @@ class ReservationApiTest {
     }
 
     @Test
-    void 존재하지_않는_예약을_삭제할_경우_BAD_REQUEST_반환() {
+    void 존재하지_않는_예약을_삭제할_경우_NOT_FOUND_반환() {
         RestAssured.given().log().all()
                 .when().delete("/reservations/7")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(404);
     }
 
     @Test
@@ -176,6 +176,6 @@ class ReservationApiTest {
                 .body(reservationParams2)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(409);
     }
 }

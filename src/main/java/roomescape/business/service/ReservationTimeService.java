@@ -5,9 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationDao;
 import roomescape.business.model.repository.ReservationTimeDao;
-import roomescape.exception.impl.EntityNotFoundException;
-import roomescape.exception.impl.ReservationExistException;
-import roomescape.exception.impl.ReservationTimeExistException;
+import roomescape.exception.impl.BadRequestException;
+import roomescape.exception.impl.NotFoundException;
 import roomescape.presentation.dto.request.ReservationTimeRequest;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
 
@@ -31,7 +30,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse add(ReservationTimeRequest requestDto) {
         if (reservationTimeDao.existByTime(requestDto.startAt())) {
-            throw new ReservationTimeExistException("동일한 시간이 이미 존재합니다.");
+            throw new BadRequestException("동일한 시간이 이미 존재합니다.");
         }
         ReservationTime reservationTime = new ReservationTime(requestDto.startAt());
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
@@ -40,11 +39,11 @@ public class ReservationTimeService {
 
     public void deleteById(Long id) {
         if (reservationDao.existByTimeId(id)) {
-            throw new ReservationExistException("이 시간의 예약이 존재합니다.");
+            throw new BadRequestException("이 시간의 예약이 존재합니다.");
         }
         int affectedRows = reservationTimeDao.deleteById(id);
         if (affectedRows == 0) {
-            throw new EntityNotFoundException("삭제할 예약시간이 없습니다.");
+            throw new NotFoundException("삭제할 예약시간이 없습니다.");
         }
     }
 }

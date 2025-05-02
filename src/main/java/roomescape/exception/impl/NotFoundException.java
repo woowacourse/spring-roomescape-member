@@ -2,8 +2,8 @@ package roomescape.exception.impl;
 
 import roomescape.exception.RoomescapeException;
 
-public class ThemeExistException extends RoomescapeException {
-    public ThemeExistException(String message) {
+public class NotFoundException extends RoomescapeException {
+    public NotFoundException(String message) {
         super(message);
     }
 }

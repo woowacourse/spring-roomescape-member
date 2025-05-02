@@ -5,9 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationDao;
 import roomescape.business.model.repository.ThemeDao;
-import roomescape.exception.impl.EntityNotFoundException;
-import roomescape.exception.impl.ReservationExistException;
-import roomescape.exception.impl.ThemeExistException;
+import roomescape.exception.impl.BadRequestException;
+import roomescape.exception.impl.NotFoundException;
 import roomescape.presentation.dto.request.ThemeRequest;
 import roomescape.presentation.dto.response.ThemeResponse;
 
@@ -31,7 +30,7 @@ public class ThemeService {
 
     public ThemeResponse add(ThemeRequest requestDto) {
         if (themeDao.existByName(requestDto.name())) {
-            throw new ThemeExistException("동일한 이름의 테마가 이미 존재합니다.");
+            throw new BadRequestException("동일한 이름의 테마가 이미 존재합니다.");
         }
         Theme theme = new Theme(requestDto.name(), requestDto.description(), requestDto.thumbnail());
         Theme savedTheme = themeDao.save(theme);
@@ -40,11 +39,11 @@ public class ThemeService {
 
     public void deleteById(Long id) {
         if (reservationDao.existByTimeId(id)) {
-            throw new ReservationExistException("이 테마의 예약이 존재합니다.");
+            throw new BadRequestException("이 테마의 예약이 존재합니다.");
         }
         int affectedRows = themeDao.deleteById(id);
         if (affectedRows == 0) {
-            throw new EntityNotFoundException("삭제할 테마가 없습니다.");
+            throw new NotFoundException("삭제할 테마가 없습니다.");
         }
     }
 

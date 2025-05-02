@@ -12,9 +12,9 @@ import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationDao;
 import roomescape.business.model.repository.ReservationTimeDao;
 import roomescape.business.model.repository.ThemeDao;
-import roomescape.exception.impl.EntityNotFoundException;
-import roomescape.exception.impl.PastReservationException;
-import roomescape.exception.impl.ReservationTimeConflictException;
+import roomescape.exception.impl.BadRequestException;
+import roomescape.exception.impl.ConflictException;
+import roomescape.exception.impl.NotFoundException;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.AvailableReservationTimeResponse;
 import roomescape.presentation.dto.response.ReservationResponse;
@@ -56,26 +56,26 @@ public class ReservationService {
     public void deleteById(Long id) {
         int affectedRows = reservationDao.deleteById(id);
         if (affectedRows == 0) {
-            throw new EntityNotFoundException("삭제할 예약정보가 없습니다.");
+            throw new NotFoundException("삭제할 예약정보가 없습니다.");
         }
     }
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, String date) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         Theme selectedTheme = themeDao.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다."));
         List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(LocalDate.parse(date), themeId);
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
     }
 
     private ReservationTime getReservationTime(Long timeId) {
         return reservationTimeDao.findById(timeId)
-                .orElseThrow(() -> new EntityNotFoundException("선택한 예약 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("선택한 예약 시간이 존재하지 않습니다."));
     }
 
     private Theme getTheme(Long themeId) {
         return themeDao.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다."));
     }
 
     private void validateIsBooked(List<Reservation> sameTimeReservations, ReservationTime reservationTime,
@@ -83,7 +83,7 @@ public class ReservationService {
         boolean isBooked = sameTimeReservations.stream()
                 .anyMatch(reservation -> reservation.isBooked(reservationTime, theme));
         if (isBooked) {
-            throw new ReservationTimeConflictException("해당 테마 이용시간이 겹칩니다.");
+            throw new ConflictException("해당 테마 이용시간이 겹칩니다.");
         }
     }
 
@@ -91,7 +91,7 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
         if (reservationDateTime.isBefore(now)) {
-            throw new PastReservationException("현재보다 과거의 날짜로 예약 할 수 없습니다.");
+            throw new BadRequestException("현재보다 과거의 날짜로 예약 할 수 없습니다.");
         }
     }
 
