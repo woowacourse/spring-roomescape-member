@@ -68,7 +68,7 @@ content-type: application/json
 ### 응답
 
 ```json
-HTTP/1.1 200
+HTTP/1.1 201
 Content-Type: application/json
 
 {
@@ -119,7 +119,7 @@ content-type: application/json
 ### 응답
 
 ```json
-HTTP/1.1 200
+HTTP/1.1 201
 Content-Type: application/json
 
 {
