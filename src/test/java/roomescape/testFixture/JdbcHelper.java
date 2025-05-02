@@ -12,11 +12,6 @@ public class JdbcHelper {
                 theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public static void insertThemes(JdbcTemplate template, Theme... themes) {
-        Arrays.stream(themes)
-                .forEach(theme -> insertTheme(template, theme));
-    }
-
     public static void insertReservationTime(JdbcTemplate template, ReservationTime reservationTime) {
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)",
                 reservationTime.getStartAt());
@@ -29,7 +24,10 @@ public class JdbcHelper {
 
     public static void insertReservation(JdbcTemplate template, Reservation reservation) {
         template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                reservation.getName(), reservation.getReservationDate(), reservation.getReservationTime().getId(),
-                reservation.getTheme().getId());
+                reservation.getName(),
+                reservation.getReservationDate(),
+                reservation.getReservationTime().getId(),
+                reservation.getTheme().getId()
+        );
     }
 }

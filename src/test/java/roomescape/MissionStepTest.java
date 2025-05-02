@@ -24,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.repository.ReservationRepository;
-import roomescape.domain.repository.ThemeRepository;
 import roomescape.domain.repository.TimeRepository;
 import roomescape.presentation.controller.ReservationController;
 import roomescape.presentation.dto.response.AdminReservationResponse;
@@ -44,8 +43,6 @@ public class MissionStepTest {
     @Autowired
     private TimeRepository timeRepository;
 
-    @Autowired
-    private ThemeRepository themeRepository;
     @Autowired
     private ReservationController reservationController;
 

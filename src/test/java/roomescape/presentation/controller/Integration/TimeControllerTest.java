@@ -1,4 +1,4 @@
-package roomescape.presentation.controller;
+package roomescape.presentation.controller.Integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -67,5 +67,4 @@ class TimeControllerTest {
                 () -> assertThat(bookedCount).isEqualTo(1)
         );
     }
-
 }
