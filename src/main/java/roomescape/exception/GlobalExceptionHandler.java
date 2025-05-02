@@ -1,6 +1,8 @@
 package roomescape.exception;
 
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import roomescape.domain.exception.ImpossibleReservationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ImpossibleReservationException.class)
     public ResponseEntity<ProblemDetail> handleImpossibleReservation(ImpossibleReservationException e) {
@@ -64,5 +67,17 @@ public class GlobalExceptionHandler {
         detail.setProperty("code", "JSON_NOT_READABLE");
 
         return ResponseEntity.badRequest().body(detail);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ProblemDetail> handleUnexpected(Exception e) {
+        log.error("Unhandled exception", e);
+
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        problem.setTitle("서버 내부 오류");
+        problem.setDetail("서버에 문제가 발생했습니다.");
+        problem.setProperty("code", "INTERNAL_ERROR");
+
+        return ResponseEntity.internalServerError().body(problem);
     }
 }
