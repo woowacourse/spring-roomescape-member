@@ -13,6 +13,7 @@ import roomescape.domain.ReservationTime;
 @Component
 public class ReservationTimeService {
 
+    private static final String ERROR_RESERVATION_TIME_WITH_HAS_RESERVATION = "예약 시간에 존재하는 예약 정보가 있습니다.";
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
 
@@ -21,35 +22,42 @@ public class ReservationTimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTimeResponse createTime(ReservationTimeRequest timeRequest) {
-        ReservationTime reservationTimeWithoutId = timeRequest.toTime();
-        long id = reservationTimeDao.create(reservationTimeWithoutId);
-        ReservationTime reservationTime = reservationTimeWithoutId.copyWithId(id);
-        return new ReservationTimeResponse(reservationTime);
-    }
-
-    public List<ReservationTimeResponse> findAllTimes() {
+    public List<ReservationTimeResponse> findAllReservationTimes() {
         return reservationTimeDao.findAll().stream()
                 .map(ReservationTimeResponse::new)
                 .toList();
     }
 
-    public void deleteTime(long id) {
-        Boolean hasTime = reservationDao.existByTimeId(id);
-
-        if (hasTime) {
-            throw new IllegalArgumentException("예약 시간에 존재하는 예약 정보가 있습니다.");
-        }
-
-        reservationTimeDao.deleteById(id);
-    }
-
     public List<ReservationTimeAvailableResponse> findAvailableTimes(LocalDate date, Long themeId) {
-        List<ReservationTime> times = reservationTimeDao.findAll();
-        return times.stream()
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        return reservationTimes.stream()
                 .map(time -> {
                     boolean alreadyBooked = reservationDao.existByDateTimeAndTheme(date, time, themeId);
                     return new ReservationTimeAvailableResponse(time, alreadyBooked);
                 }).toList();
+    }
+
+    public ReservationTimeResponse createReservationTime(ReservationTimeRequest request) {
+        ReservationTime reservationTimeWithoutId = request.toTime();
+
+        ReservationTime savedReservationTime = saveReservationTime(reservationTimeWithoutId);
+        return new ReservationTimeResponse(savedReservationTime);
+    }
+
+    public void deleteReservationTime(long id) {
+        validateNoReservationsForTime(id);
+        reservationTimeDao.deleteById(id);
+    }
+
+    private ReservationTime saveReservationTime(ReservationTime reservationTimeWithoutId) {
+        Long id = reservationTimeDao.create(reservationTimeWithoutId);
+        return reservationTimeWithoutId.copyWithId(id);
+    }
+
+    private void validateNoReservationsForTime(long id) {
+        boolean hasTime = reservationDao.existByTimeId(id);
+        if (hasTime) {
+            throw new IllegalArgumentException(ERROR_RESERVATION_TIME_WITH_HAS_RESERVATION);
+        }
     }
 }

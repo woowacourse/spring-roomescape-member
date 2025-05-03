@@ -30,7 +30,7 @@ public class ReservationTimeController {
     @GetMapping
     public List<ReservationTimeResponse> readTimes(
     ) {
-        return reservationTimeService.findAllTimes();
+        return reservationTimeService.findAllReservationTimes();
     }
 
     @GetMapping("available")
@@ -46,7 +46,7 @@ public class ReservationTimeController {
     public ReservationTimeResponse createTime(
             @RequestBody ReservationTimeRequest request
     ) {
-        return reservationTimeService.createTime(request);
+        return reservationTimeService.createReservationTime(request);
     }
 
     @DeleteMapping("{id}")
@@ -54,6 +54,6 @@ public class ReservationTimeController {
     public void deleteTime(
             @PathVariable Long id
     ) {
-        reservationTimeService.deleteTime(id);
+        reservationTimeService.deleteReservationTime(id);
     }
 }

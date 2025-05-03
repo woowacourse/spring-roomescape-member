@@ -1,7 +1,7 @@
 package roomescape.application.service;
 
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.dao.ReservationDao;
@@ -11,8 +11,10 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-@Component
+@Service
 public class ReservationService {
+
+    private static final String ERROR_DUPLICATE_RESERVATION = "중복된 예약은 생성이 불가능합니다.";
 
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
@@ -30,23 +32,33 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
-        ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
-        Theme theme = themeDao.findById(reservationRequest.themeId());
-        Reservation reservationWithoutId = reservationRequest.toReservationWith(reservationTime, theme);
-        reservationWithoutId.validatePastDateTime();
+    public ReservationResponse createReservation(ReservationRequest request) {
+        Reservation reservationWithoutId = toReservation(request);
+        validateForCreation(reservationWithoutId);
 
-        if (reservationDao.existBySameDateTime(reservationWithoutId)) {
-            throw new IllegalArgumentException("중복된 예약은 생성이 불가능합니다.");
-        }
-
-        long reservationId = reservationDao.create(reservationWithoutId);
-
-        Reservation reservation = reservationWithoutId.copyWithId(reservationId);
-        return new ReservationResponse(reservation);
+        Reservation savedReservation = saveReservation(reservationWithoutId);
+        return new ReservationResponse(savedReservation);
     }
 
     public void deleteReservation(Long id) {
         reservationDao.deleteById(id);
+    }
+
+    private Reservation toReservation(ReservationRequest request) {
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId());
+        Theme theme = themeDao.findById(request.themeId());
+        return request.toReservationWith(reservationTime, theme);
+    }
+
+    private void validateForCreation(Reservation reservationWithoutId) {
+        reservationWithoutId.validatePastDateTime();
+        if (reservationDao.existBySameDateTime(reservationWithoutId)) {
+            throw new IllegalArgumentException(ERROR_DUPLICATE_RESERVATION);
+        }
+    }
+
+    private Reservation saveReservation(Reservation reservationWithoutId) {
+        Long reservationId = reservationDao.create(reservationWithoutId);
+        return reservationWithoutId.copyWithId(reservationId);
     }
 }

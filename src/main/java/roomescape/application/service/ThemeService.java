@@ -2,14 +2,14 @@ package roomescape.application.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import roomescape.application.dto.ThemeRequest;
 import roomescape.application.dto.ThemeResponse;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 
-@Component
+@Service
 public class ThemeService {
 
     private final ThemeDao themeDao;
@@ -32,20 +32,29 @@ public class ThemeService {
         LocalDate endDate = now.minusDays(1);
         List<Long> rank = reservationDao.findRank(startDate, endDate);
 
+        return convertThemeIdsToThemeResponses(rank);
+    }
+
+    public ThemeResponse createTheme(ThemeRequest themeRequest) {
+        Theme themeWithoutId = themeRequest.toTheme();
+
+        Theme savedTheme = saveTheme(themeWithoutId);
+        return new ThemeResponse(savedTheme);
+    }
+
+    public void deleteTheme(long id) {
+        themeDao.deleteById(id);
+    }
+
+    private List<ThemeResponse> convertThemeIdsToThemeResponses(List<Long> rank) {
         return rank.stream().map(themeId -> {
             Theme theme = themeDao.findById(themeId);
             return new ThemeResponse(theme);
         }).toList();
     }
 
-    public ThemeResponse createTheme(ThemeRequest themeRequest) {
-        Theme themeWithoutId = themeRequest.toTheme();
+    private Theme saveTheme(Theme themeWithoutId) {
         Long id = themeDao.create(themeWithoutId);
-        Theme created = themeWithoutId.copyWithId(id);
-        return new ThemeResponse(created);
-    }
-
-    public void deleteTheme(Long idRequest) {
-        themeDao.deleteById(idRequest);
+        return themeWithoutId.copyWithId(id);
     }
 }

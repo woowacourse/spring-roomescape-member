@@ -52,7 +52,7 @@ public class ReservationIntegratedTest {
     @DisplayName("예약을 생성한다.")
     void createReservation() {
         //given
-        reservationTimeService.createTime(new ReservationTimeRequest(LocalTime.of(10, 0, 0)));
+        reservationTimeService.createReservationTime(new ReservationTimeRequest(LocalTime.of(10, 0, 0)));
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
