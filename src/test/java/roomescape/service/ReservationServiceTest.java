@@ -18,6 +18,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.DuplicateContentException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -76,7 +78,7 @@ class ReservationServiceTest {
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now(), 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
         }
 
         @DisplayName("이름이 공백이거나 존재하지 않으면 Reservation을 생성할 수 없다")
@@ -104,28 +106,37 @@ class ReservationServiceTest {
         @DisplayName("이미 동일한 날짜와 시간에 예약이 있으면 생성할 수 없다")
         @Test
         void createDuplicateReservationTest() {
-            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+            LocalTime startTime = LocalTime.now();
+            ArrayList<Reservation> reservations = new ArrayList<>();
+            reservations.add(new Reservation(1L, "가이온", LocalDate.now().plusDays(7),
+                            new ReservationTime(1L, startTime),
+                            new Theme(1L, "우테코", "방탈출", ".png")));
+
+            ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
+            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, startTime)));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", ".png")));
-            reservationTimeRepository.addReservation(new Reservation(1L, "가이온", LocalDate.now().plusDays(7), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "우테코", "방탈출", ".png")));
+            reservationTimeRepository.addReservation(
+                    new Reservation(1L, "가이온", LocalDate.now().plusDays(7),
+                            new ReservationTime(1L, startTime),
+                            new Theme(1L, "우테코", "방탈출", ".png")));
             reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(DuplicateContentException.class);
         }
 
         @DisplayName("이미 지난 날짜의 경우 예약 생성이 불가능 하다")
         @Test
         void createInvalidDateTest() {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, LocalTime.now())));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", ".png")));
             reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.of(2025, 1, 1), 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(IllegalStateException.class);
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(InvalidRequestException.class);
         }
     }
 
