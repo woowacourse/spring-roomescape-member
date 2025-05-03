@@ -131,11 +131,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 inner join theme as th on r.theme_id = th.id
                 where r.date = ? and t.start_at = ?
                 """;
-        try {
-            return jdbcTemplate.query(sql, rowMapper, date, time);
-        } catch (EmptyResultDataAccessException e) {
-            return List.of();
-        }
+        return jdbcTemplate.query(sql, rowMapper, date, time);
     }
 
     @Override
@@ -156,11 +152,7 @@ public class JdbcReservationDao implements ReservationRepository {
                 INNER JOIN theme as th on r.theme_id = th.id
                 WHERE r.date = ? AND th.id = ?
                 """;
-        try {
-            return jdbcTemplate.query(sql, rowMapper, date, themeId);
-        } catch (EmptyResultDataAccessException e) {
-            return List.of();
-        }
+        return jdbcTemplate.query(sql, rowMapper, date, themeId);
     }
 
     @Override
