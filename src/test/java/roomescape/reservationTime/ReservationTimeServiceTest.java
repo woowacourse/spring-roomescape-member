@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.custom.reason.reservationtime.ReservationTimeConflictException;
 import roomescape.exception.custom.reason.reservationtime.ReservationTimeNotFoundException;
+import roomescape.exception.custom.reason.reservationtime.ReservationTimeUsedException;
 import roomescape.reservation.FakeReservationRepository;
+import roomescape.reservation.Reservation;
+import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 
@@ -36,7 +40,7 @@ public class ReservationTimeServiceTest {
 
 
     @Nested
-    @DisplayName("예약 시간 조회")
+    @DisplayName("예약 시간 생성")
     class Create {
 
         @DisplayName("TimeRequest를 저장하고, 저장된 TimeResponse를 반환한다.")
@@ -99,6 +103,60 @@ public class ReservationTimeServiceTest {
             // then
             assertThat(actual).hasSize(0);
         }
+    }
+
+    @Nested
+    @DisplayName("alreadyBooked와 함께 모든 time 반환")
+    class FindAllAvailableTimes {
+
+        @DisplayName("존재하는 모든 시간을 반환한다.")
+        @Test
+        void findAllAvailableTimes() {
+            // given
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 5)));
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 10)));
+            final Long dummyThemeId = 1L;
+            final LocalDate targetDate = LocalDate.of(2026, 12, 1);
+
+            // when
+            final List<AvailableReservationTimeResponse> allAvailableTimes = reservationTimeService.findAllAvailableTimes(
+                    dummyThemeId, targetDate);
+
+            // then
+            assertThat(allAvailableTimes).hasSize(3);
+        }
+
+        @DisplayName("이미 예약된 시간은 alreadyBooked가 true로 반환된다.")
+        @Test
+        void findAllAvailableTimes1() {
+            // given
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+            final Long dummyThemeId = 1L;
+            final LocalDate targetDate = LocalDate.of(2026, 12, 1);
+            fakeReservationRepository.save(new Reservation("부기", targetDate), 1L, dummyThemeId);
+
+            // when
+            final List<AvailableReservationTimeResponse> allAvailableTimes = reservationTimeService.findAllAvailableTimes(dummyThemeId, targetDate);
+
+            // then
+            assertThat(allAvailableTimes.getFirst().alreadyBooked()).isTrue();
+        }
+
+        @DisplayName("예약되지 않은 시간은 alreadyBooked가 false로 반환된다.")
+        @Test
+        void findAllAvailableTimes2() {
+            // given
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 0)));
+            final Long dummyThemeId = 1L;
+            final LocalDate targetDate = LocalDate.of(2026, 12, 1);
+
+            // when
+            final List<AvailableReservationTimeResponse> allAvailableTimes = reservationTimeService.findAllAvailableTimes(dummyThemeId, targetDate);
+
+            // then
+            assertThat(allAvailableTimes.getFirst().alreadyBooked()).isFalse();
+        }
 
     }
 
@@ -127,6 +185,21 @@ public class ReservationTimeServiceTest {
             assertThatThrownBy(() -> {
                 reservationTimeService.deleteById(1L);
             }).isInstanceOf(ReservationTimeNotFoundException.class);
+        }
+
+        @DisplayName("예약에서 시간을 사용중이라면 예외가 발생한다.")
+        @Test
+        void deleteTimeById3() {
+            // given
+            fakeReservationRepository.save(new Reservation(
+                    "", LocalDate.of(2026, 12, 01)), 1L, 1L
+            );
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+
+            // when & then
+            assertThatThrownBy(() -> {
+                reservationTimeService.deleteById(1L);
+            }).isInstanceOf(ReservationTimeUsedException.class);
         }
 
     }

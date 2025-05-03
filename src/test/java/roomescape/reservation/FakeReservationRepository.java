@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
@@ -31,6 +32,13 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         return new ArrayList<>(reservations);
+    }
+
+    @Override
+    public List<Reservation> findAllByThemeIdAndDate(final Long themeId, final LocalDate date) {
+        return reservations.stream()
+                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId) && Objects.equals(reservation.getDate(), date))
+                .collect(Collectors.toList());
     }
 
     @Override
