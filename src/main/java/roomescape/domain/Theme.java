@@ -42,6 +42,9 @@ public class Theme {
             return false;
         }
         Theme theme = (Theme) o;
+        if (this.id == null || that.id == null) {
+            return false;
+        }
         return Objects.equals(id, theme.id);
     }
 

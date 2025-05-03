@@ -31,6 +31,9 @@ public class ReservationTime {
             return false;
         }
         ReservationTime that = (ReservationTime) o;
+        if (this.id == null || that.id == null) {
+            return false;
+        }
         return Objects.equals(id, that.id);
     }
 

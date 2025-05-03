@@ -49,6 +49,9 @@ public class Reservation {
             return false;
         }
         Reservation that = (Reservation) o;
+        if (this.id == null || that.id == null) {
+            return false;
+        }
         return Objects.equals(id, that.id);
     }
 
