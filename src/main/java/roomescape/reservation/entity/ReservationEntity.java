@@ -5,6 +5,7 @@ import roomescape.time.entity.ReservationTimeEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class ReservationEntity {
     private final Long id;
@@ -24,13 +25,13 @@ public class ReservationEntity {
         this.themeId = themeId;
     }
 
-    public boolean isDuplicatedWith(ReservationEntity other) {
-        return date.isEqual(other.date) && time.isDuplicatedWith(other.time);
-    }
-
     public boolean isBefore(LocalDateTime other) {
         LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
         return dateTime.isBefore(other);
+    }
+
+    public LocalTime getStartAt() {
+        return time.getStartAt();
     }
 
     public String getFormattedDate() {

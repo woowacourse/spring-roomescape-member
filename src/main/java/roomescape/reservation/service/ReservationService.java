@@ -74,8 +74,7 @@ public class ReservationService {
     }
 
     private boolean isExistDuplicatedWith(ReservationEntity target) {
-        List<ReservationEntity> reservations = reservationRepository.findAll();
-        return reservations.stream().anyMatch(reservation -> reservation.isDuplicatedWith(target));
+        return reservationRepository.findDuplicatedWith(target).isPresent();
     }
 
     public void deleteReservation(final Long id) {

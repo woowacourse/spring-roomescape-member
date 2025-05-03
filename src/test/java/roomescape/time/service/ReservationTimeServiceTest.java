@@ -6,14 +6,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.exception.BadRequestException;
-import roomescape.exception.ConflictException;
 import roomescape.reservation.entity.ReservationEntity;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.service.dto.request.ReservationTimeRequest;
 import roomescape.time.entity.ReservationTimeEntity;
 import roomescape.time.repository.FakeTimeRepository;
 import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.time.service.dto.request.ReservationTimeRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -64,22 +63,6 @@ class ReservationTimeServiceTest {
                 Arguments.of(LocalTime.of(9, 59)),
                 Arguments.of(LocalTime.of(22, 1))
         );
-    }
-
-    @DisplayName("기존에 존재하는 시간과 러닝 타임(2시간)이 겹치는 경우 생성할 수 없다.")
-    @Test
-    void duplicateByRunningTime() {
-        // given
-        LocalTime time = LocalTime.of(10, 0);
-        LocalTime duplicatedTime = time.plusHours(1);
-        timeRepository.save(new ReservationTimeEntity(1L, time));
-
-        ReservationTimeRequest requestDto = new ReservationTimeRequest(duplicatedTime);
-
-        // when & then
-        assertThatThrownBy(() -> {
-            service.create(requestDto);
-        }).isInstanceOf(ConflictException.class);
     }
 
     @DisplayName("예약 내역이 존재하는 시간은 삭제할 수 없다.")

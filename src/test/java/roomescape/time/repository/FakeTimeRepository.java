@@ -4,6 +4,7 @@ import roomescape.time.entity.ReservationTimeEntity;
 import roomescape.time.repository.dto.ReservationTimeWithBookedDataResponse;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,5 +40,12 @@ public class FakeTimeRepository implements ReservationTimeRepository {
     public List<ReservationTimeWithBookedDataResponse> findAllWithBooked(LocalDate date, Long themeId) {
         // TODO: fake 코드 작성하기
         return null;
+    }
+
+    @Override
+    public Optional<ReservationTimeEntity> findByStartAt(LocalTime startAt) {
+        return entities.stream()
+                .filter(entity -> entity.getStartAt().equals(startAt))
+                .findFirst();
     }
 }

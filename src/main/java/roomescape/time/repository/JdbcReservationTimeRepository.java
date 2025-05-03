@@ -92,4 +92,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             return new ReservationTimeWithBookedDataResponse(id, startAt, alreadyBooked);
         });
     }
+
+    @Override
+    public Optional<ReservationTimeEntity> findByStartAt(LocalTime startAt) {
+        String query = """
+                SELECT
+                    id,
+                    start_at
+                FROM reservation_time
+                WHERE start_at = :startAt
+                """;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startAt", startAt);
+        try {
+            ReservationTimeEntity timeEntity = jdbcTemplate.queryForObject(query, params, ROW_MAPPER);
+            return Optional.of(timeEntity);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

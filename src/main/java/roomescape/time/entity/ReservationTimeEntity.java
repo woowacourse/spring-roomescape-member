@@ -5,7 +5,6 @@ import roomescape.exception.BadRequestException;
 import java.time.LocalTime;
 
 public class ReservationTimeEntity {
-    private static final LocalTime RUNNING_TIME = LocalTime.of(2, 0);
     private static final LocalTime OPERATING_START = LocalTime.of(10, 0);
     private static final LocalTime OPERATING_END = LocalTime.of(22, 0);
 
@@ -18,12 +17,6 @@ public class ReservationTimeEntity {
         }
         this.id = id;
         this.startAt = startAt;
-    }
-
-    public boolean isDuplicatedWith(ReservationTimeEntity other) {
-        LocalTime otherStartAt = other.startAt;
-        final int interval = Math.abs(otherStartAt.toSecondOfDay() - startAt.toSecondOfDay());
-        return interval < RUNNING_TIME.toSecondOfDay();
     }
 
     public boolean isAvailable() {

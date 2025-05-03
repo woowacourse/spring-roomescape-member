@@ -43,10 +43,13 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicated(ReservationTimeEntity entity) {
-        List<ReservationTimeEntity> times = timeRepository.findAll();
-        if (times.stream().anyMatch(time -> time.isDuplicatedWith(entity))) {
-            throw new ConflictException("러닝 타임이 겹치는 시간이 존재합니다.");
+        if (isExistDuplicatedWith(entity)) {
+            throw new ConflictException("겹치는 시간이 존재합니다.");
         }
+    }
+
+    private boolean isExistDuplicatedWith(ReservationTimeEntity entity) {
+        return timeRepository.findByStartAt(entity.getStartAt()).isPresent();
     }
 
     public List<ReservationTimeResponse> getAllTimes() {

@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import roomescape.reservation.entity.ReservationEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository {
     ReservationEntity save(ReservationEntity entity);
@@ -12,4 +13,6 @@ public interface ReservationRepository {
     List<ReservationEntity> findAll();
 
     List<ReservationEntity> findAllByTimeId(Long id);
+
+    Optional<ReservationEntity> findDuplicatedWith(ReservationEntity entity);
 }
