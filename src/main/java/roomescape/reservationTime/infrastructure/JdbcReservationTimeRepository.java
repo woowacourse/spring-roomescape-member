@@ -6,6 +6,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -19,11 +22,11 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
             resultSet.getTime("start_at").toLocalTime()
     );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcReservationTimeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcReservationTimeRepository(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final DataSource dataSource) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
@@ -39,21 +42,29 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public boolean deleteById(final Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
-        int count = jdbcTemplate.update(sql, id);
+        String sql = "DELETE FROM reservation_time WHERE id = :id";
 
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        int count = namedParameterJdbcTemplate.update(sql, param);
         return count != 0;
     }
 
     @Override
     public ReservationTime findById(final Long id) {
-        String sql = "SELECT * FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        String sql = "SELECT * FROM reservation_time WHERE id = :id";
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, param, ROW_MAPPER);
     }
 
     @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT * FROM reservation_time";
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+
+        return namedParameterJdbcTemplate.query(sql, ROW_MAPPER);
     }
 }

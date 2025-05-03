@@ -11,6 +11,9 @@ import javax.sql.DataSource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
@@ -38,11 +41,11 @@ public class JdbcReservationRepository implements ReservationRepository {
             )
     );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcReservationRepository(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final DataSource dataSource) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -75,17 +78,24 @@ public class JdbcReservationRepository implements ReservationRepository {
                 FROM reservation as r
                 INNER JOIN reservation_time as t ON r.time_id = t.id 
                 INNER JOIN theme as th ON th.id = r.theme_id
-                WHERE th.id = ? AND r.date = ?
+                WHERE th.id = :themeId AND r.date = :date
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, themeId, Date.valueOf(date));
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("date", Date.valueOf(date));
+
+        return namedParameterJdbcTemplate.query(sql, param, ROW_MAPPER);
     }
 
     @Override
     public boolean deleteById(final Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        int count = jdbcTemplate.update(sql, id);
+        String sql = "DELETE FROM reservation WHERE id = :id";
 
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        int count = namedParameterJdbcTemplate.update(sql, param);
         return count != 0;
     }
 
@@ -107,13 +117,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 INNER JOIN theme as th ON th.id = r.theme_id
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        return namedParameterJdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
     public boolean existByReservationTimeId(final Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = :timeId";
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("timeId", timeId);
+
+        int count = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class).intValue();
         return count != 0;
     }
 
@@ -122,19 +136,28 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """               
                 SELECT COUNT(*)
                 FROM reservation as r
-                INNER JOIN reservation_time as t
-                INNER JOIN theme as th
-                ON r.time_id = t.id
-                WHERE r.date = ? and t.start_at = ? and th.id = ?
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
+                WHERE r.date = :date and t.start_at = :startAt and th.id = :themeId
                 """;
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, Date.valueOf(date), Time.valueOf(time), themeId);
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("date", Date.valueOf(date))
+                .addValue("startAt", time)
+                .addValue("themeId", themeId);
+
+        int count = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class).intValue();
         return count != 0;
     }
 
     @Override
     public boolean existBy(final Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = :themeId";
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("themeId", themeId);
+
+        int count = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class).intValue();
         return count != 0;
     }
 }
