@@ -47,7 +47,7 @@ public class ReservationService {
     }
 
     private void validateDuplicateReservation(final Reservation reservation) {
-        var reservations = allReservations();
+        var reservations = findAllReservations();
         var hasDuplicate = reservations.stream()
             .anyMatch(r -> r.isSameDateTime(reservation));
         if (hasDuplicate) {
@@ -66,7 +66,7 @@ public class ReservationService {
 
     }
 
-    public List<Reservation> allReservations() {
+    public List<Reservation> findAllReservations() {
         return reservationRepository.findAll();
     }
 

@@ -29,7 +29,7 @@ public class TimeSlotService {
         return new TimeSlot(id, startAt);
     }
 
-    public List<TimeSlot> allTimeSlots() {
+    public List<TimeSlot> findAllTimeSlots() {
         return timeSlotRepository.findAll();
     }
 

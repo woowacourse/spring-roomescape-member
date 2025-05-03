@@ -36,7 +36,7 @@ public class TimeSlotController {
 
     @GetMapping("/times")
     public ResponseEntity<List<TimeSlotResponse>> allTimeSlots() {
-        var timeSlots = service.allTimeSlots();
+        var timeSlots = service.findAllTimeSlots();
         var response = TimeSlotResponse.from(timeSlots);
         return ResponseEntity.ok(response);
     }

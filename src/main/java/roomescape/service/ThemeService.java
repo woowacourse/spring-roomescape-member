@@ -27,7 +27,7 @@ public class ThemeService {
         return new Theme(id, name, description, thumbnail);
     }
 
-    public List<Theme> allThemes() {
+    public List<Theme> findAllThemes() {
         return themeRepository.findAll();
     }
 

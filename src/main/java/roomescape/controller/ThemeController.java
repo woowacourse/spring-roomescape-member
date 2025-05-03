@@ -28,7 +28,7 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> allThemes() {
-        var themes = service.allThemes();
+        var themes = service.findAllThemes();
         var response = ThemeResponse.from(themes);
         return ResponseEntity.ok(response);
     }

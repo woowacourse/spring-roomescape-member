@@ -35,7 +35,7 @@ class TimeSlotServiceTest {
         TimeSlot created = service.add(startAt);
 
         // then
-        var timeSlots = service.allTimeSlots();
+        var timeSlots = service.findAllTimeSlots();
         assertThat(timeSlots).contains(created);
     }
 
@@ -50,7 +50,7 @@ class TimeSlotServiceTest {
         boolean isRemoved = service.removeById(target.id());
 
         // then
-        var timeSlots = service.allTimeSlots();
+        var timeSlots = service.findAllTimeSlots();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
             () -> assertThat(timeSlots).doesNotContain(target)

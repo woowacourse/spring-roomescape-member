@@ -31,7 +31,7 @@ class ThemeServiceTest {
         Theme created = service.add(name, description, thumbnail);
 
         // then
-        var themes = service.allThemes();
+        var themes = service.findAllThemes();
         assertThat(themes).contains(created);
     }
 
@@ -48,7 +48,7 @@ class ThemeServiceTest {
         boolean isRemoved = service.removeById(created.id());
 
         // then
-        var themes = service.allThemes();
+        var themes = service.findAllThemes();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
             () -> assertThat(themes).doesNotContain(created)

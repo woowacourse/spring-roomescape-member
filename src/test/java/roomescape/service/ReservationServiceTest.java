@@ -44,7 +44,7 @@ public class ReservationServiceTest {
         Reservation reserved = service.reserve(name, date, timeSlotId, themeId);
 
         // then
-        var reservations = service.allReservations();
+        var reservations = service.findAllReservations();
         assertThat(reservations).contains(reserved);
     }
 
@@ -62,7 +62,7 @@ public class ReservationServiceTest {
         boolean isRemoved = service.removeById(reserved.id());
 
         // then
-        var reservations = service.allReservations();
+        var reservations = service.findAllReservations();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
             () -> assertThat(reservations).doesNotContain(reserved)
