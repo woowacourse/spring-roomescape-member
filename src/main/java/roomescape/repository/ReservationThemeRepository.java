@@ -17,5 +17,5 @@ public interface ReservationThemeRepository {
 
     ReservationTheme getById(Long id);
 
-    List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit);
+    List<ReservationTheme> getPopularThemesWithLimit(int limit);
 }

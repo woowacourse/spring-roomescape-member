@@ -23,7 +23,7 @@ public class UserReservationThemeService {
     }
 
     public List<ReservationThemeServiceResponse> getPopularThemes(int limit) {
-        List<ReservationTheme> reservationThemes = reservationThemeRepository.orderByThemeBookedCountWithLimit(limit);
+        List<ReservationTheme> reservationThemes = reservationThemeRepository.getPopularThemesWithLimit(limit);
         return reservationThemes.stream()
                 .map(ReservationThemeServiceResponse::from)
                 .toList();

@@ -15,5 +15,5 @@ public interface ReservationThemeDao {
 
     void deleteById(Long id);
 
-    List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit);
+    List<ReservationTheme> getOrderByThemeBookedCountWithLimit(int limit);
 }

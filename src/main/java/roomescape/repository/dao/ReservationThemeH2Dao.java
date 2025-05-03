@@ -3,16 +3,13 @@ package roomescape.repository.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTheme;
 
@@ -85,7 +82,7 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
     }
 
     @Override
-    public List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit) {
+    public List<ReservationTheme> getOrderByThemeBookedCountWithLimit(int limit) {
         String query = """
                 SELECT th.id, th.name, th.description, th.thumbnail
                 FROM reservation r

@@ -42,7 +42,7 @@ public class ReservationThemeDbRepository implements ReservationThemeRepository 
     }
 
     @Override
-    public List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit) {
-        return reservationThemeDao.orderByThemeBookedCountWithLimit(limit);
+    public List<ReservationTheme> getPopularThemesWithLimit(int limit) {
+        return reservationThemeDao.getOrderByThemeBookedCountWithLimit(limit);
     }
 }
