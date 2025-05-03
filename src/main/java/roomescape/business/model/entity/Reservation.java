@@ -1,7 +1,7 @@
 package roomescape.business.model.entity;
 
-import roomescape.exception.impl.*;
 import roomescape.business.model.vo.Id;
+import roomescape.exception.impl.*;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -9,7 +9,7 @@ import java.time.Period;
 public class Reservation {
 
     private static final int MAX_NAME_LENGTH = 10;
-    private static final int RESERVATION_START_INTERVAL = 7;
+    private static final int DAY_INTERVAL_FROM_NOW = 7;
 
     private final Id id;
     private final String name;
@@ -63,7 +63,7 @@ public class Reservation {
 
     private static void validateDateInterval(final LocalDate date) {
         long minusDays = Period.between(date, LocalDate.now()).getDays();
-        if (minusDays > RESERVATION_START_INTERVAL) {
+        if (minusDays > DAY_INTERVAL_FROM_NOW) {
             throw new ReservationBeforeStartException();
         }
     }
