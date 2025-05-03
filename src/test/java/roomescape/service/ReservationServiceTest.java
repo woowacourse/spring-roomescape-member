@@ -42,7 +42,7 @@ public class ReservationServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        reservationTimeRepository.saveReservationTime(
+        reservationTimeRepository.save(
                 new ReservationTime(1L, LocalTime.of(10, 0))
         );
         themeRepository.save(

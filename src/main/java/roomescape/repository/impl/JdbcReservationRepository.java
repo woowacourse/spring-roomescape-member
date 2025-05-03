@@ -25,7 +25,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> readReservations() {
+    public List<Reservation> readAll() {
         final String query = """
                 SELECT
                     r.id as reservation_id,
@@ -76,7 +76,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(query, Boolean.class, timeId);
     }
 
-    public Reservation saveReservation(Reservation reservation) {
+    public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = Map.ofEntries(
                 Map.entry("name", reservation.getName()),
                 Map.entry("date", reservation.getDate()),
@@ -89,7 +89,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return Reservation.generateWithPrimaryKey(reservation, generatedKey);
     }
 
-    public void deleteReservation(Long id) {
+    public void delete(Long id) {
         final String query = "DELETE FROM reservation WHERE id = ?";
         int affectedRows = jdbcTemplate.update(query, id);
         if (affectedRows == 0) {

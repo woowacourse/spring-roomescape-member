@@ -35,7 +35,7 @@ public class ReservationService {
     }
 
     public ReservationResponse saveReservation(ReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.readReservationTime(request.timeId())
+        ReservationTime reservationTime = reservationTimeRepository.read(request.timeId())
                 .orElseThrow(() -> new NotFoundReservationTimeException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundThemeException("올바른 방탈출 테마가 없습니다."));
@@ -44,25 +44,26 @@ public class ReservationService {
             throw new NotAbleReservationException("과거 시점의 예약을 할 수 없습니다.");
         }
 
-        List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(request.date(),
+        List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(
+                request.date(),
                 request.themeId());
 
         if (!availableTimes.contains(reservationTime)) {
             throw new NotAbleReservationException("이미 해당 시간과 테마에 예약이 존재하여 예약할 수 없습니다.");
         }
 
-        Reservation createdReservation = reservationRepository.saveReservation(
+        Reservation createdReservation = reservationRepository.save(
                 request.toReservation(reservationTime, theme));
         return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime),
                 ThemeResponse.from(theme));
     }
 
     public List<ReservationResponse> readReservation() {
-        List<Reservation> reservations = reservationRepository.readReservations();
+        List<Reservation> reservations = reservationRepository.readAll();
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 
     public void delete(Long id) {
-        reservationRepository.deleteReservation(id);
+        reservationRepository.delete(id);
     }
 }

@@ -24,11 +24,11 @@ public class ReservationTimeService {
     }
 
     public ReservationTime saveReservationTime(ReservationTimeRequest request) {
-        return reservationTimeRepository.saveReservationTime(request.toReservationTime());
+        return reservationTimeRepository.save(request.toReservationTime());
     }
 
     public List<ReservationTime> readReservationTime() {
-        return reservationTimeRepository.readReservationTimes();
+        return reservationTimeRepository.readAll();
     }
 
     public void deleteReservationTime(Long id) {
@@ -37,11 +37,11 @@ public class ReservationTimeService {
             throw new DeleteReservationException("해당 시간을 사용하는 예약이 존재하기 때문에 삭제할 수 없습니다.");
         }
 
-        reservationTimeRepository.deleteReservationTime(id);
+        reservationTimeRepository.delete(id);
     }
 
     public List<ReservationTimeResponseWithBookedStatus> readAvailableTimesBy(LocalDate date, Long themeId) {
-        List<ReservationTime> allTimes = reservationTimeRepository.readReservationTimes();
+        List<ReservationTime> allTimes = reservationTimeRepository.readAll();
         List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(date, themeId);
 
         return allTimes.stream()
