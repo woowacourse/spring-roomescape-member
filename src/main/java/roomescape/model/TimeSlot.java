@@ -20,7 +20,6 @@ public class TimeSlot {
     }
 
     public TimeSlot(final Long id, final LocalTime startAt) {
-        validateNotNull(startAt);
         this.id = id;
         this.startAt = startAt;
     }
@@ -31,11 +30,5 @@ public class TimeSlot {
 
     public boolean isSameTimeSlot(final TimeSlot timeSlot) {
         return this.id.equals(timeSlot.id());
-    }
-
-    private void validateNotNull(final LocalTime time) {
-        if (time == null) {
-            throw new IllegalArgumentException("모든 값들이 존재해야 합니다.");
-        }
     }
 }

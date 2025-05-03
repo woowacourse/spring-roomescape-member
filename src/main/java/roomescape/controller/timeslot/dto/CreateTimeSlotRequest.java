@@ -1,14 +1,11 @@
 package roomescape.controller.timeslot.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 public record CreateTimeSlotRequest(
-    LocalTime startAt
-) {
 
-    public CreateTimeSlotRequest {
-        if (startAt == null) {
-            throw new IllegalArgumentException("모든 값이 존재해야 합니다.");
-        }
-    }
+        @NotNull(message = "시간은 필수입니다.")
+        LocalTime startAt
+) {
 }
