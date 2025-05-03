@@ -49,13 +49,13 @@ public class ThemeController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = "/popular", params = {"startDate", "endDate", "limit"})
+    @GetMapping(value = "/popular", params = {"startDate", "endDate", "count"})
     public ResponseEntity<List<ThemeResponse>> availableTimes(
         @RequestParam("startDate") LocalDate startDate,
         @RequestParam("endDate") LocalDate endDate,
-        @RequestParam("limit") Integer limit
+        @RequestParam("count") Integer count
     ) {
-        var themes = service.findPopularThemes(startDate, endDate, limit);
+        var themes = service.findPopularThemes(startDate, endDate, count);
         var response = ThemeResponse.from(themes);
         return ResponseEntity.ok(response);
     }

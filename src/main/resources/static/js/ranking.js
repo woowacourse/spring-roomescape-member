@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const today = new Date();
     const startDate = new Date();
     const endDate = new Date();
-    const limit = 10;
+    const count = 10;
 
     startDate.setDate(today.getDate() - 7);
     endDate.setDate(today.getDate() - 1);
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     let url = '/themes/popular?startDate='
-        + formatDate(startDate) + '&endDate=' + formatDate(endDate) + '&limit=' + limit;
+        + formatDate(startDate) + '&endDate=' + formatDate(endDate) + '&count=' + count;
     requestRead(url) // 인기 테마 목록 조회 API endpoint
         .then(render)
         .catch(error => console.error('Error fetching times:', error));

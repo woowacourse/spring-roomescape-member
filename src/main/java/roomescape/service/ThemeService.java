@@ -42,7 +42,8 @@ public class ThemeService {
         return themeRepository.removeById(id);
     }
 
-    public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
-        return reservationRepository.findThemeRankingByPeriod(startDate, endDate, limit);
+    public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, int count) {
+        count = Math.min(count, 10);
+        return reservationRepository.findThemeRankingByPeriod(startDate, endDate, count);
     }
 }
