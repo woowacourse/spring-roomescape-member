@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
@@ -28,13 +29,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservations());
     }
 
-    // TODO : URI 헤더에 등장하지 않는 문제 해결
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationCreateRequest request
     ) {
-        URI location = URI.create("http://localhost:8080");
-        return ResponseEntity.created(location).body(reservationService.create(request));
+        ReservationResponse dto = reservationService.create(request);
+        return ResponseEntity.created(makeReservationUri(dto)).body(dto);
     }
 
     @DeleteMapping("/{id}")
@@ -43,5 +43,13 @@ public class ReservationController {
     ) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private URI makeReservationUri(final ReservationResponse dto) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(dto.id())
+                .toUri();
     }
 }
