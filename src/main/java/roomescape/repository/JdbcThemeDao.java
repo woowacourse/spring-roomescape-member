@@ -90,10 +90,6 @@ public class JdbcThemeDao implements ThemeRepository {
     @Override
     public int deleteById(long id) {
         String sql = "delete from theme where id = ?";
-        try {
-            return jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("[ERROR] 이 테마는 이미 예약이 존재합니다. id : " + id);
-        }
+        return jdbcTemplate.update(sql, id);
     }
 }

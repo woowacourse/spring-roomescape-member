@@ -8,15 +8,18 @@ import roomescape.dto.ThemeCreateRequestDto;
 import roomescape.dto.ThemeResponseDto;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ReservationRepository reservationRepository,ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponseDto createTheme(final ThemeCreateRequestDto requestDto) {
@@ -38,6 +41,10 @@ public class ThemeService {
     }
 
     public void deleteThemeById(final Long id) {
+        if(reservationRepository.existsByThemeId(id)){
+            throw new IllegalStateException("[ERROR] 이 테마는 이미 예약이 존재합니다. id : " + id);
+        }
+
         int deletedThemeCount = themeRepository.deleteById(id);
 
         if (deletedThemeCount == 0) {
