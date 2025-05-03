@@ -38,7 +38,7 @@ public class ReservationTime {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         if (!(object instanceof ReservationTime that)) {
             return false;
         }

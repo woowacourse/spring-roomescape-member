@@ -44,7 +44,7 @@ public class ThemeService {
         validateIsExistsReservationTimeId(isDeleted);
     }
 
-    private void validateExistIdToDelete(Long id) {
+    private void validateExistIdToDelete(final Long id) {
         if (reservationRepository.existBy(id)) {
             throw new IllegalArgumentException("삭제할 수 없는 테마입니다.");
         }
