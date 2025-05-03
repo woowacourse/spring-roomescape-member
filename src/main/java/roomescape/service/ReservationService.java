@@ -62,10 +62,8 @@ public class ReservationService {
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        Theme selectedTheme = themeDao.findById(themeId)
-            .orElseThrow(() -> new EntityNotFoundException("선택한 테마가 존재하지 않습니다."));
-        List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(date, themeId);
-        return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
+        List<ReservationTime> bookedReservationTimes = reservationTimeDao.findBookedTimes(date, themeId);
+        return getAvailableReservationTimeResponses(reservationTimes, bookedReservationTimes);
     }
 
     private ReservationTime getReservationTime(ReservationRequest requestDto) {
@@ -94,11 +92,11 @@ public class ReservationService {
         }
     }
 
-    private List<AvailableReservationTimeResponse> getAvailableReservationTimeResponses(List<ReservationTime> reservationTimes, List<Reservation> bookedReservations, Theme selectedTheme) {
+    private List<AvailableReservationTimeResponse> getAvailableReservationTimeResponses(List<ReservationTime> reservationTimes, List<ReservationTime> bookedReservationTimes) {
         List<AvailableReservationTimeResponse> responses = new ArrayList<>();
+
         for (ReservationTime reservationTime : reservationTimes) {
-            boolean isBooked = bookedReservations.stream()
-                .anyMatch(reservation -> reservation.isBooked(reservationTime, selectedTheme));
+            boolean isBooked = bookedReservationTimes.contains(reservationTime);
             AvailableReservationTimeResponse response = AvailableReservationTimeResponse.from(reservationTime, isBooked);
             responses.add(response);
         }

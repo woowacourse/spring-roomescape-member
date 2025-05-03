@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.ReservationTime;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,21 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
 
         return Boolean.TRUE == jdbcTemplate.queryForObject(
             sql, new MapSqlParameterSource("start_at", time), Boolean.class);
+    }
+
+    @Override
+    public List<ReservationTime> findBookedTimes(LocalDate date, Long themeId) {
+        String sql = """
+            SELECT rt.id, rt.start_at
+            FROM RESERVATION_TIME rt
+            JOIN RESERVATION r ON rt.id = r.time_id
+            WHERE r.date = :date AND r.theme_id = :theme_id
+            """;
+
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+            .addValue("date", date)
+            .addValue("theme_id", themeId);
+        return jdbcTemplate.query(sql, parameterSource, getReservationTimeRowMapper());
     }
 
     private RowMapper<ReservationTime> getReservationTimeRowMapper() {
