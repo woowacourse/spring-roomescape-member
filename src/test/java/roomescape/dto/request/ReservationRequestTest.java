@@ -1,21 +1,20 @@
-package roomescape.dto;
+package roomescape.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.dto.request.ReservationRequest;
 import roomescape.exception.custom.InvalidInputException;
 
-public class ReservationRequestTest {
+class ReservationRequestTest {
 
     @Test
     @DisplayName("날짜는 빈 값이 들어올 수 없다.")
     void validateNullOfDate() {
         assertThatThrownBy(() -> new ReservationRequest(null, "프리", 1L, 1L))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("값을 모두 선택해라.");
+            .hasMessageContaining("선택되지 않은 값 존재");
     }
 
     @Test
@@ -23,7 +22,7 @@ public class ReservationRequestTest {
     void validateNullOfName() {
         assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), null, 1L, 1L))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("값을 모두 선택해라.");
+            .hasMessageContaining("선택되지 않은 값 존재");
     }
 
     @Test
@@ -31,7 +30,7 @@ public class ReservationRequestTest {
     void validateNullOfTime() {
         assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), "프리", null, 1L))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("값을 모두 선택해라.");
+            .hasMessageContaining("선택되지 않은 값 존재");
     }
 
     @Test
@@ -39,14 +38,14 @@ public class ReservationRequestTest {
     void validateNullOfTheme() {
         assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), "사나", 1L, null))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("값을 모두 선택해라.");
+            .hasMessageContaining("선택되지 않은 값 존재");
     }
 
     @Test
     @DisplayName("이름은 한 글자 이상이어야 한다")
-    void validateLengthOfNameLength() {
+    void validateLengthOfName() {
         assertThatThrownBy(() -> new ReservationRequest(LocalDate.of(2025, 4, 29), "", 1L, 1L))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("이름은 한 글자 이상이어야 한다.");
+            .hasMessageContaining("입력되지 않은 값 존재");
     }
 }

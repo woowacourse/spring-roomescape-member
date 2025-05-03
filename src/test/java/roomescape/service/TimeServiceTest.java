@@ -1,17 +1,19 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.dao.fake.FakeReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.TimeRequest;
-import roomescape.fake.FakeReservationTimeDao;
+import roomescape.exception.custom.DuplicatedException;
 
-public class TimeServiceTest {
+class TimeServiceTest {
 
     private TimeService timeService;
 
@@ -21,8 +23,20 @@ public class TimeServiceTest {
     }
 
     @Test
+    @DisplayName("모든 예약 시간 정보를 가져올 수 있다.")
+    void findAllReservationTimes() {
+        TimeRequest request1 = new TimeRequest(LocalTime.of(10, 0));
+        TimeRequest request2 = new TimeRequest(LocalTime.of(12, 0));
+
+        timeService.addReservationTime(request1);
+        timeService.addReservationTime(request2);
+
+        assertThat(timeService.findAllReservationTimes()).hasSize(2);
+    }
+
+    @Test
     @DisplayName("예약 시간을 추가를 할 수 있다.")
-    void addReservation() {
+    void addReservationTime() {
         TimeRequest request = new TimeRequest(LocalTime.of(10, 0));
 
         ReservationTime actual = timeService.addReservationTime(request);
@@ -34,15 +48,15 @@ public class TimeServiceTest {
     }
 
     @Test
-    @DisplayName("모든 예약 시간 정보를 가져올 수 있다.")
-    void findAllReservations() {
-        TimeRequest request1 = new TimeRequest(LocalTime.of(10, 0));
-        TimeRequest request2 = new TimeRequest(LocalTime.of(12, 0));
+    @DisplayName("예약 시간이 이미 존재한다면 추가할 수 없다.")
+    void addDuplicatedReservationTime() {
+        TimeRequest request = new TimeRequest(LocalTime.of(10, 0));
 
-        timeService.addReservationTime(request1);
-        timeService.addReservationTime(request2);
+        timeService.addReservationTime(request);
 
-        assertThat(timeService.findAllReservationTimes()).hasSize(2);
+        assertThatThrownBy(() -> timeService.addReservationTime(request))
+            .isInstanceOf(DuplicatedException.class)
+            .hasMessageContaining("reservationTime");
     }
 
     @Test

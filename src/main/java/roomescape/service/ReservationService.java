@@ -32,23 +32,6 @@ public class ReservationService {
         return reservationDao.findAllReservations();
     }
 
-    public Reservation addReservationAfterNow(ReservationRequest request) {
-        LocalDate date = request.date();
-        ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
-        validateDateTimeAfterNow(date, time);
-
-        return addReservation(request);
-    }
-
-    private void validateDateTimeAfterNow(LocalDate date, ReservationTime time) {
-        LocalDateTime now = LocalDateTime.now();
-
-        if (date.isBefore(now.toLocalDate()) ||
-            (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
-            throw new InvalidInputException("과거 예약은 불가능");
-        }
-    }
-
     public Reservation addReservation(ReservationRequest request) {
         validateDuplicateReservation(request);
 
@@ -63,6 +46,23 @@ public class ReservationService {
         if (reservationDao.existReservationByDateTimeAndTheme(
             request.date(), request.timeId(), request.themeId())) {
             throw new DuplicatedException("reservation");
+        }
+    }
+
+    public Reservation addReservationAfterNow(ReservationRequest request) {
+        LocalDate date = request.date();
+        ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
+        validateDateTimeAfterNow(date, time);
+
+        return addReservation(request);
+    }
+
+    private void validateDateTimeAfterNow(LocalDate date, ReservationTime time) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (date.isBefore(now.toLocalDate()) ||
+            (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
+            throw new InvalidInputException("과거 예약은 불가능");
         }
     }
 

@@ -26,11 +26,11 @@ public class TimeService {
     }
 
     public ReservationTime addReservationTime(TimeRequest request) {
-        validateExistedTime(request);
+        validateDuplicateTime(request);
         return reservationTimeDao.addTime(new ReservationTime(null, request.startAt()));
     }
 
-    private void validateExistedTime(TimeRequest request) {
+    private void validateDuplicateTime(TimeRequest request) {
         if (reservationTimeDao.existTimeByStartAt(request.startAt())) {
             throw new DuplicatedException("reservationTime");
         }

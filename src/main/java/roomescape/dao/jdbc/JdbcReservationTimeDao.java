@@ -77,7 +77,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
         int activeRow = jdbcTemplate.update(sql, id);
 
-        if(activeRow == 0) {
+        if (activeRow == 0) {
             throw new NotFoundException("reservationTime");
         }
     }

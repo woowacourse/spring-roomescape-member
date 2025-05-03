@@ -8,10 +8,10 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class AdminControllerTest {
+class AdminControllerTest {
 
     @Test
-    @DisplayName("/admin 요청시 메인 페이지 응답")
+    @DisplayName("/admin 요청시 어드민 페이지 응답")
     void mainPage() {
         RestAssured.given().log().all()
             .when().get("/admin")
@@ -33,6 +33,15 @@ public class AdminControllerTest {
     void timePage() {
         RestAssured.given().log().all()
             .when().get("/admin/time")
+            .then().log().all()
+            .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("/admin/theme 요청시 테마 관리 페이지 응답")
+    void themePage() {
+        RestAssured.given().log().all()
+            .when().get("/admin/theme")
             .then().log().all()
             .statusCode(200);
     }

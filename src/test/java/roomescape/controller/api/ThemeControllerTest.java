@@ -7,67 +7,60 @@ import io.restassured.http.ContentType;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ReservationControllerTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+class ThemeControllerTest {
 
     @Test
-    @DisplayName("/reservations 요청 시 예약 정보 조회")
+    @DisplayName("/themes 요청 시 테마 조회")
     void readReservations() {
         RestAssured.given().log().all()
-            .when().get("/reservations")
+            .when().get("/themes")
             .then().log().all()
             .statusCode(200)
             .body("size()", is(3));
     }
 
     @Test
-    @DisplayName("예약 관리 페이지 내에서 예약 추가")
+    @DisplayName("테마 관리 페이지 내에서 테마 추가")
     void createReservation() {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .body(getTestParamsWithReservation())
-            .when().post("/reservations/admin")
+            .body(getTestParamsWithReservationTime())
+            .when().post("/themes")
             .then().log().all()
-            .statusCode(201)
-            .body("name", is("사나"));
+            .statusCode(201);
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
+            .when().get("/themes")
             .then().log().all()
             .statusCode(200)
             .body("size()", is(4));
     }
 
     @Test
-    @DisplayName("예약 관리 페이지 내에서 예약 삭제")
+    @DisplayName("테마 관리 페이지 내에서 테마 삭제")
     void deleteReservation() {
         RestAssured.given().log().all()
-            .when().delete("/reservations/1")
+            .when().delete("/themes/1")
             .then().log().all()
             .statusCode(204);
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
+            .when().get("/themes")
             .then().log().all()
             .statusCode(200)
             .body("size()", is(2));
     }
 
-    private Map<String, Object> getTestParamsWithReservation() {
+    private Map<String, String> getTestParamsWithReservationTime() {
         return Map.of(
-            "name", "사나",
-            "date", "2024-04-26",
-            "timeId", 1,
-            "themeId", 1
+            "name", "이름",
+            "description", "설명",
+            "thumbnail", "썸네일"
         );
     }
 }
