@@ -11,9 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.globalexception.BadRequestException;
-import roomescape.globalexception.ConflictException;
-import roomescape.globalexception.NotFoundException;
+import roomescape.exception.custom.reason.reservation.ReservationConflictException;
+import roomescape.exception.custom.reason.reservation.ReservationNotExistsThemeException;
+import roomescape.exception.custom.reason.reservation.ReservationNotExistsTimeException;
+import roomescape.exception.custom.reason.reservation.ReservationNotFoundException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationtime.FakeReservationTimeRepository;
@@ -85,7 +86,7 @@ public class ReservationServiceTest {
             // when & then
             assertThatThrownBy(() -> {
                 reservationService.create(request);
-            }).isInstanceOf(BadRequestException.class);
+            }).isInstanceOf(ReservationNotExistsThemeException.class);
         }
 
         @DisplayName("시간이 존재하지 않으면 예외가 발생한다.")
@@ -101,7 +102,7 @@ public class ReservationServiceTest {
             // when & then
             assertThatThrownBy(() -> {
                 reservationService.create(request);
-            }).isInstanceOf(BadRequestException.class);
+            }).isInstanceOf(ReservationNotExistsTimeException.class);
         }
 
         @DisplayName("이미 해당 시간, 날짜에 예약이 존재한다면 예외가 발생한다.")
@@ -123,7 +124,7 @@ public class ReservationServiceTest {
             // when & then
             assertThatThrownBy(() -> {
                 reservationService.create(request);
-            }).isInstanceOf(ConflictException.class);
+            }).isInstanceOf(ReservationConflictException.class);
         }
     }
 
@@ -187,7 +188,7 @@ public class ReservationServiceTest {
             // given & when & then
             assertThatThrownBy(() -> {
                 reservationService.deleteById(1L);
-            }).isInstanceOf(NotFoundException.class);
+            }).isInstanceOf(ReservationNotFoundException.class);
         }
 
     }

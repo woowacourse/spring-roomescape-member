@@ -10,8 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.globalexception.ConflictException;
-import roomescape.globalexception.NotFoundException;
+import roomescape.exception.custom.reason.reservationtime.ReservationTimeConflictException;
+import roomescape.exception.custom.reason.reservationtime.ReservationTimeNotFoundException;
 import roomescape.reservation.FakeReservationRepository;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
@@ -64,7 +64,7 @@ public class ReservationTimeServiceTest {
             // when
             assertThatThrownBy(() -> {
                 reservationTimeService.create(request);
-            }).isInstanceOf(ConflictException.class);
+            }).isInstanceOf(ReservationTimeConflictException.class);
         }
 
     }
@@ -125,7 +125,7 @@ public class ReservationTimeServiceTest {
             // given & when & then
             assertThatThrownBy(() -> {
                 reservationTimeService.deleteById(1L);
-            }).isInstanceOf(NotFoundException.class);
+            }).isInstanceOf(ReservationTimeNotFoundException.class);
         }
 
     }
