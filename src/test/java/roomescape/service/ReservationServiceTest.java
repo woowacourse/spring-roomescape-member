@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.Fixtures.JUNK_THEME;
-import static roomescape.Fixtures.JUNK_TIME_SLOT;
+import static roomescape.DomainFixtures.JUNK_THEME;
+import static roomescape.DomainFixtures.JUNK_TIME_SLOT;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.Fixtures;
+import roomescape.DateUtils;
 import roomescape.model.Reservation;
 import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.ThemeFakeRepository;
@@ -36,7 +36,7 @@ public class ReservationServiceTest {
     void reserve() {
         // given
         var name = "포포";
-        var date = Fixtures.ofTomorrow();
+        var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
@@ -53,7 +53,7 @@ public class ReservationServiceTest {
     void deleteReservation() {
         // given
         var name = "포포";
-        var date = Fixtures.ofTomorrow();
+        var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
         var reserved = service.reserve(name, date, timeSlotId, themeId);
@@ -74,7 +74,7 @@ public class ReservationServiceTest {
     void cannotReservePastDateTime() {
         // given
         var name = "포포";
-        var date = Fixtures.ofYesterday();
+        var date = DateUtils.yesterday();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
@@ -88,7 +88,7 @@ public class ReservationServiceTest {
     void canReserveFutureDateTime() {
         // given
         var name = "포포";
-        var date = Fixtures.ofTomorrow();
+        var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 
@@ -103,7 +103,7 @@ public class ReservationServiceTest {
     void cannotReserveIdenticalDateTimeMultipleTimes() {
         // given
         var name = "포포";
-        var date = Fixtures.ofTomorrow();
+        var date = DateUtils.tomorrow();
         var timeSlotId = JUNK_TIME_SLOT.id();
         var themeId = JUNK_THEME.id();
 

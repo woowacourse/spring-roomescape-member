@@ -4,9 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,12 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.Fixtures;
+import roomescape.DomainFixtures;
 import roomescape.model.Reservation;
-import roomescape.model.Theme;
-import roomescape.model.TimeSlot;
 
 @Sql(scripts = {"/test-schema.sql"})
 @JdbcTest
@@ -150,8 +144,8 @@ public class ReservationJdbcRepositoryTest {
             1L,
             "브라운",
             LocalDate.of(2023, 12, 1),
-            Fixtures.JUNK_TIME_SLOT,
-            Fixtures.JUNK_THEME
+            DomainFixtures.JUNK_TIME_SLOT,
+            DomainFixtures.JUNK_THEME
         );
     }
 }

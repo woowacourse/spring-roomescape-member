@@ -3,13 +3,13 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.Fixtures.JUNK_THEME;
+import static roomescape.DomainFixtures.JUNK_THEME;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.Fixtures;
+import roomescape.DateUtils;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.fake.ReservationFakeRepository;
@@ -66,7 +66,7 @@ class TimeSlotServiceTest {
         var timeSlotService = new TimeSlotService(reservationRepository, timeSlotRepository);
 
         var timeSlotToBeRemoved = timeSlotService.register(LocalTime.of(10, 0));
-        var reservationWithTheTimeSlot = new Reservation("포포", Fixtures.ofTomorrow(), timeSlotToBeRemoved, JUNK_THEME);
+        var reservationWithTheTimeSlot = new Reservation("포포", DateUtils.tomorrow(), timeSlotToBeRemoved, JUNK_THEME);
         reservationRepository.save(reservationWithTheTimeSlot);
 
         // when & then

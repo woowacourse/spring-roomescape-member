@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.Fixtures;
+import roomescape.DomainFixtures;
 
 public class ReservationTest {
 
@@ -33,7 +33,7 @@ public class ReservationTest {
             "여섯글자이름",
             LocalDate.of(2023, 12, 1),
             new TimeSlot(1L, LocalTime.of(10, 0)),
-            Fixtures.JUNK_THEME)
+            DomainFixtures.JUNK_THEME)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,7 +45,7 @@ public class ReservationTest {
         var reserveTime = LocalTime.of(10, 0);
         var compareDateTime = LocalDateTime.of(reserveDate, reserveTime).plusDays(1);
         var reservation = new Reservation(1L, "리버", reserveDate,
-            new TimeSlot(1L, reserveTime), Fixtures.JUNK_THEME);
+            new TimeSlot(1L, reserveTime), DomainFixtures.JUNK_THEME);
 
         // when
         boolean isBefore = reservation.isBefore(compareDateTime);
@@ -61,9 +61,9 @@ public class ReservationTest {
         var reserveDate = LocalDate.of(2023, 12, 1);
         var reserveTime = LocalTime.of(10, 0);
         var reservation = new Reservation(1L, "리버", reserveDate,
-            new TimeSlot(1L, reserveTime), Fixtures.JUNK_THEME);
+            new TimeSlot(1L, reserveTime), DomainFixtures.JUNK_THEME);
         var otherReservation = new Reservation(2L, "포포", reserveDate,
-            new TimeSlot(1L, reserveTime), Fixtures.JUNK_THEME);
+            new TimeSlot(1L, reserveTime), DomainFixtures.JUNK_THEME);
 
         // when
         boolean isSameDateTime = reservation.isSameDateTime(otherReservation);
@@ -78,19 +78,19 @@ public class ReservationTest {
                 null,
                 LocalDate.of(2023, 12, 1),
                 new TimeSlot(1L, LocalTime.of(10, 0)),
-                Fixtures.JUNK_THEME
+                DomainFixtures.JUNK_THEME
             ),
             Arguments.of(
                 "brown",
                 null,
                 new TimeSlot(1L, LocalTime.of(10, 0)),
-                Fixtures.JUNK_THEME
+                DomainFixtures.JUNK_THEME
             ),
             Arguments.of(
                 "brown",
                 LocalDate.of(2023, 12, 1),
                 null,
-                Fixtures.JUNK_THEME
+                DomainFixtures.JUNK_THEME
             ),
             Arguments.of(
                 "brown",

@@ -60,7 +60,7 @@ public class MissionStepTest {
     void 삼단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", Fixtures.ofTomorrow().toString());
+        params.put("date", DateUtils.tomorrow().toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -112,7 +112,7 @@ public class MissionStepTest {
         insertOneReservationTimeSlot();
         insertOneReservationTheme();
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
-            Fixtures.ofTomorrow().toString(), 1, 1);
+            DateUtils.tomorrow().toString(), 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
             .when().get("/reservations")
@@ -130,7 +130,7 @@ public class MissionStepTest {
     void 육단계() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", Fixtures.ofTomorrow().toString());
+        params.put("date", DateUtils.tomorrow().toString());
         params.put("timeId", "1");
         params.put("themeId", "1");
 
@@ -188,7 +188,7 @@ public class MissionStepTest {
         insertOneReservationTheme();
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", Fixtures.ofTomorrow().toString());
+        params.put("date", DateUtils.tomorrow().toString());
         params.put("timeId", 1);
         params.put("themeId", "1");
 
