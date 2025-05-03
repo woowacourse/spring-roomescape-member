@@ -2,40 +2,46 @@ package roomescape.common.exception;
 
 import java.util.zip.DataFormatException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class RoomescapeExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleException(IllegalStateException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleException(IllegalStateException ex) {
+        return ex.getMessage();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleException(IllegalArgumentException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleException(IllegalArgumentException ex) {
+        return ex.getMessage();
     }
 
     @ExceptionHandler(DataFormatException.class)
-    public ResponseEntity<String> handleException(DataFormatException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleException(DataFormatException ex) {
+        return ex.getMessage();
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleException(NotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleException(NotFoundException ex) {
+        return ex.getMessage();
     }
 
     @ExceptionHandler(DuplicatedException.class)
-    public ResponseEntity<String> handleException(DuplicatedException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleException(DuplicatedException ex) {
+        return ex.getMessage();
     }
 
     @ExceptionHandler(ResourceInUseException.class)
-    public ResponseEntity<String> handleException(ResourceInUseException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public String handleException(ResourceInUseException ex) {
+        return ex.getMessage();
     }
 }

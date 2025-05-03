@@ -1,10 +1,10 @@
 package roomescape.model;
 
 public class Theme {
-    private Long id;
-    private String name;
-    private String description;
-    private String thumbnail;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
         validateRequiredFields(id, name, description, thumbnail);
@@ -18,6 +18,7 @@ public class Theme {
     public Theme(String name, String description, String thumbnail) {
         validateRequiredFields(name, description, thumbnail);
 
+        this.id = null;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
