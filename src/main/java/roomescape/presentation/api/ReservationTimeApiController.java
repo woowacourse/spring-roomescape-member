@@ -29,25 +29,25 @@ public class ReservationTimeApiController {
         this.reservationTimeService = reservationTimeService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
+        List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
+
+        return ResponseEntity.ok(responses);
+    }
+
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createTime(@RequestBody @Valid ReservationTimeCreateRequest request) {
-        ReservationTimeResponse response = reservationTimeService.create(request);
+        ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
-        List<ReservationTimeResponse> responses = reservationTimeService.getAll();
-
-        return ResponseEntity.ok(responses);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTime(@PathVariable Long id) {
-        reservationTimeService.deleteById(id);
+        reservationTimeService.deleteReservationTimeById(id);
 
         return ResponseEntity.noContent().build();
     }

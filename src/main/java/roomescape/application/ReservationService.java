@@ -32,13 +32,13 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public List<ReservationResponse> getAll() {
+    public List<ReservationResponse> getReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
 
         return ReservationResponse.from(reservations);
     }
 
-    public ReservationResponse create(ReservationCreateRequest request) {
+    public ReservationResponse createReservation(ReservationCreateRequest request) {
         Long timeId = request.timeId();
         ReservationDate reservationDate = new ReservationDate(request.date());
 
@@ -47,20 +47,20 @@ public class ReservationService {
         }
 
         ReserverName reserverName = new ReserverName(request.name());
-        ReservationTime reservationTime = reservationTimeService.getReservationTime(request.timeId());
+        ReservationTime reservationTime = reservationTimeService.findReservationTimeById(request.timeId());
         ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime, clock);
-        Theme theme = themeService.getTheme(request.themeId());
+        Theme theme = themeService.findThemeById(request.themeId());
         Reservation created = reservationRepository.save(reserverName, reservationDateTime, theme);
 
         return ReservationResponse.from(created);
     }
 
-    public void deleteById(Long id) {
-        Reservation reservation = getReservation(id);
+    public void deleteReservationById(Long id) {
+        Reservation reservation = findReservationById(id);
         reservationRepository.deleteById(reservation.getId());
     }
 
-    private Reservation getReservation(Long id) {
+    private Reservation findReservationById(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 예약을 찾을 수 없습니다."));
     }

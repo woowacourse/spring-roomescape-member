@@ -28,14 +28,14 @@ public class ReservationApiController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getReservations();
 
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationCreateRequest request) {
-        ReservationResponse response = reservationService.create(request);
+        ReservationResponse response = reservationService.createReservation(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -44,7 +44,7 @@ public class ReservationApiController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
-        reservationService.deleteById(id);
+        reservationService.deleteReservationById(id);
 
         return ResponseEntity.noContent().build();
     }

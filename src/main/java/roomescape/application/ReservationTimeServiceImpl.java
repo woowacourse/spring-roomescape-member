@@ -24,7 +24,13 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTimeResponse create(ReservationTimeCreateRequest request) {
+    public List<ReservationTimeResponse> getReservationTimes() {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+
+        return ReservationTimeResponse.from(reservationTimes);
+    }
+
+    public ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request) {
 
         LocalTime startAt = request.startAt();
         if (reservationTimeRepository.existByStartAt(startAt)) {
@@ -37,22 +43,16 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         return ReservationTimeResponse.from(created);
     }
 
-    public List<ReservationTimeResponse> getAll() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-
-        return ReservationTimeResponse.from(reservationTimes);
-    }
-
-    public void deleteById(Long id) {
+    public void deleteReservationTimeById(Long id) {
         if (reservationRepository.existReservationByTimeId(id)) {
             throw new IllegalArgumentException("[ERROR] 해당 시간에 이미 예약이 존재하여 삭제할 수 없습니다.");
         }
 
-        ReservationTime reservationTime = getReservationTime(id);
+        ReservationTime reservationTime = findReservationTimeById(id);
         reservationTimeRepository.deleteById(reservationTime.getId());
     }
 
-    public ReservationTime getReservationTime(Long id) {
+    public ReservationTime findReservationTimeById(Long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 예약 시간을 찾을 수 없습니다."));
     }

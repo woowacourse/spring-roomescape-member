@@ -28,12 +28,12 @@ public class ThemeApiController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getThemes() {
-        return ResponseEntity.ok(themeService.getAll());
+        return ResponseEntity.ok(themeService.getThemes());
     }
 
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid ThemeCreateRequest request) {
-        ThemeResponse response = themeService.create(request);
+        ThemeResponse response = themeService.createTheme(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -42,7 +42,7 @@ public class ThemeApiController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
-        themeService.deleteById(id);
+        themeService.deleteThemeById(id);
         return ResponseEntity.noContent().build();
     }
 

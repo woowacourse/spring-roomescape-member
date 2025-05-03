@@ -23,6 +23,15 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public List<ReservationTime> findAll() {
+        String sql = "select * from reservation_time";
+        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
+                new ReservationTime(
+                        resultSet.getLong("id"),
+                        LocalTime.parse(resultSet.getString("start_at"))
+                ));
+    }
+
     public ReservationTime save(ReservationTime reservationTime) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
@@ -33,15 +42,6 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
-    }
-
-    public List<ReservationTime> findAll() {
-        String sql = "select * from reservation_time";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new ReservationTime(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at"))
-                ));
     }
 
     public void deleteById(Long id) {

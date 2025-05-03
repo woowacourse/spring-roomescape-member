@@ -77,6 +77,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 theme);
     }
 
+    public void deleteById(Long id) {
+        String sql = "delete from reservation where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 select r.id as reservation_id, 
@@ -111,11 +116,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
                                 )), id)
                 .stream()
                 .findFirst();
-    }
-
-    public void deleteById(Long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
     }
 
     @Override

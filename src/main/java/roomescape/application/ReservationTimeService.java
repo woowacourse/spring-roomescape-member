@@ -10,13 +10,13 @@ import roomescape.domain.ReservationTime;
 
 public interface ReservationTimeService {
 
-    ReservationTimeResponse create(ReservationTimeCreateRequest request);
+    ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request);
 
-    List<ReservationTimeResponse> getAll();
+    List<ReservationTimeResponse> getReservationTimes();
 
-    ReservationTime getReservationTime(Long id);
+    ReservationTime findReservationTimeById(Long id);
 
-    void deleteById(Long id);
+    void deleteReservationTimeById(Long id);
 
     List<AvailableReservationTimeResponse> getAvailableReservationTimes(AvailableReservationTimeRequest request);
 }

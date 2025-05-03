@@ -14,9 +14,9 @@ public interface ReservationRepository {
 
     Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme);
 
-    Optional<Reservation> findById(Long id);
-
     void deleteById(Long id);
+
+    Optional<Reservation> findById(Long id);
 
     boolean existSameDateTime(ReservationDate reservationDate, Long timeId);
 

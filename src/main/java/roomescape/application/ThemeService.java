@@ -24,25 +24,25 @@ public class ThemeService {
         this.clock = clock;
     }
 
-    public void deleteById(Long id) {
-        if (reservationRepository.existReservationByThemeId(id)) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
-        }
-        Theme theme = getTheme(id);
-        themeRepository.deleteById(theme.getId());
-    }
-
-    public ThemeResponse create(ThemeCreateRequest request) {
-        Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
-        return ThemeResponse.from(theme);
-    }
-
-    public List<ThemeResponse> getAll() {
+    public List<ThemeResponse> getThemes() {
         List<Theme> themes = themeRepository.findAll();
         return ThemeResponse.from(themes);
     }
 
-    public Theme getTheme(Long id) {
+    public ThemeResponse createTheme(ThemeCreateRequest request) {
+        Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
+        return ThemeResponse.from(theme);
+    }
+
+    public void deleteThemeById(Long id) {
+        if (reservationRepository.existReservationByThemeId(id)) {
+            throw new IllegalArgumentException("[ERROR] 해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
+        }
+        Theme theme = findThemeById(id);
+        themeRepository.deleteById(theme.getId());
+    }
+
+    public Theme findThemeById(Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 테마가 존재하지 않습니다."));
     }

@@ -20,6 +20,17 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
+    public List<Theme> findAll() {
+        String sql = "select * from theme";
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        ));
+    }
+
+    @Override
     public Theme save(String name, String description, String thumbnail) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
@@ -39,17 +50,6 @@ public class ThemeJdbcRepository implements ThemeRepository {
     public void deleteById(Long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    @Override
-    public List<Theme> findAll() {
-        String sql = "select * from theme";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        ));
     }
 
     @Override
