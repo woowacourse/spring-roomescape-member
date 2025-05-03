@@ -60,14 +60,21 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean existById(long id) {
+    public List<Theme> findPopularThemes(LocalDate startInclusive, LocalDate endInclusive, int count) {
         final String sql = """
-                SELECT COUNT(*) FROM theme
-                WHERE id = ?
+                SELECT t.*
+                FROM (
+                    SELECT r.theme_id, COUNT(*) AS reservation_count
+                    FROM reservation r
+                    WHERE r.date BETWEEN ? AND ?
+                    GROUP BY r.theme_id
+                    ORDER BY reservation_count DESC
+                    LIMIT ?
+                ) AS ranked
+                JOIN theme t ON ranked.theme_id = t.id;
                 """;
 
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        return count != null && count > 0;
+        return jdbcTemplate.query(sql, ROW_MAPPER, startInclusive, endInclusive, count);
     }
 
     @Override
@@ -84,21 +91,14 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate startInclusive, LocalDate endInclusive, int count) {
+    public boolean existById(long id) {
         final String sql = """
-                SELECT t.*
-                FROM (
-                    SELECT r.theme_id, COUNT(*) AS reservation_count
-                    FROM reservation r
-                    WHERE r.date BETWEEN ? AND ?
-                    GROUP BY r.theme_id
-                    ORDER BY reservation_count DESC
-                    LIMIT ?
-                ) AS ranked
-                JOIN theme t ON ranked.theme_id = t.id;
+                SELECT COUNT(*) FROM theme
+                WHERE id = ?
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, startInclusive, endInclusive, count);
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
     }
 
     @Override

@@ -12,9 +12,9 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    Optional<Reservation> findById(long id);
-
     List<Reservation> findAll();
+
+    Optional<Reservation> findById(long id);
 
     boolean existById(long id);
 

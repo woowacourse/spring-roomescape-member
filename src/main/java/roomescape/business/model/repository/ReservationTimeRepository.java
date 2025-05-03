@@ -11,13 +11,13 @@ public interface ReservationTimeRepository {
 
     ReservationTime save(ReservationTime time);
 
-    Optional<ReservationTime> findById(long timeId);
-
     List<ReservationTime> findAll();
 
-    boolean existBetween(LocalTime startInclusive, LocalTime endExclusive);
-
     List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId);
+
+    Optional<ReservationTime> findById(long timeId);
+
+    boolean existBetween(LocalTime startInclusive, LocalTime endExclusive);
 
     boolean existById(long timeId);
 

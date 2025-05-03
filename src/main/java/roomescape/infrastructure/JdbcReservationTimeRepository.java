@@ -45,16 +45,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> findById(long timeId) {
-        try {
-            final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public List<ReservationTime> findAll() {
         final String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(
@@ -63,6 +53,33 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                         resultSet.getLong("id"),
                         resultSet.getTime("start_at").toLocalTime()
                 ));
+    }
+
+    @Override
+    public List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId) {
+        final String sql = """
+                SELECT *
+                FROM reservation_time
+                WHERE id NOT IN (
+                    SELECT rt.id
+                    FROM reservation_time AS rt
+                    INNER JOIN reservation AS r
+                    ON r.time_id = rt.id
+                    WHERE r.date = ?
+                    AND r.theme_id = ?
+                )
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
+    }
+
+    @Override
+    public Optional<ReservationTime> findById(long timeId) {
+        try {
+            final String sql = "SELECT * FROM reservation_time WHERE id = ?";
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -87,23 +104,6 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 """;
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startInclusive, endExclusive);
         return count != null && count > 0;
-    }
-
-    @Override
-    public List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId) {
-        final String sql = """
-                SELECT *
-                FROM reservation_time
-                WHERE id NOT IN (
-                    SELECT rt.id
-                    FROM reservation_time AS rt
-                    INNER JOIN reservation AS r
-                    ON r.time_id = rt.id
-                    WHERE r.date = ?
-                    AND r.theme_id = ?
-                )
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER, date, themeId);
     }
 
     @Override

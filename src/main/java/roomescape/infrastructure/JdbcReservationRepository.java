@@ -64,6 +64,26 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findAll() {
+        final String sql = """
+                SELECT
+                 r.id as reservation_id,
+                 r.name,
+                 r.date,
+                 rt.id as time_id,
+                 rt.start_at as time_value,
+                 t.id as theme_id,
+                 t.name as theme_name,
+                 t.description as theme_description,
+                 t.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as rt ON r.time_id = rt.id
+                INNER JOIN theme as t ON r.theme_id = t.id
+                """;
+        return jdbcTemplate.query(sql, ROW_MAPPER);
+    }
+
+    @Override
     public Optional<Reservation> findById(final long id) {
         try {
             final String sql = """
@@ -86,26 +106,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public List<Reservation> findAll() {
-        final String sql = """
-                SELECT
-                 r.id as reservation_id,
-                 r.name,
-                 r.date,
-                 rt.id as time_id,
-                 rt.start_at as time_value,
-                 t.id as theme_id,
-                 t.name as theme_name,
-                 t.description as theme_description,
-                 t.thumbnail as theme_thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as rt ON r.time_id = rt.id
-                INNER JOIN theme as t ON r.theme_id = t.id
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
