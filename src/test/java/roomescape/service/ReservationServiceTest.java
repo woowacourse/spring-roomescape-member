@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.exception.DuplicatedException;
+import roomescape.common.exception.ReservationDateException;
 import roomescape.dao.FakeReservationDao;
 import roomescape.dao.FakeReservationTimeDao;
 import roomescape.dao.FakeThemeDao;
@@ -118,7 +119,7 @@ class ReservationServiceTest {
         // when && then
         assertThatThrownBy(
                 () -> reservationService.saveReservation(request))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReservationDateException.class);
     }
 
 }

@@ -27,6 +27,6 @@ class ReservationControllerTest {
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(404);
+                .statusCode(400);
     }
 }

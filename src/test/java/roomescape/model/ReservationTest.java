@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import roomescape.common.exception.InvalidInputException;
+import roomescape.common.exception.ReservationDateException;
 
 class ReservationTest {
 
@@ -22,7 +26,7 @@ class ReservationTest {
                         new ReservationTime(dateTime.toLocalTime()),
                         new Theme(1L, "공포", "무서워요", "image"))
         )
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @DisplayName("이름에 공백값 들어오면 예외처리되도록 한다.")
@@ -40,7 +44,7 @@ class ReservationTest {
                         new ReservationTime(dateTime.toLocalTime()),
                         new Theme(1L, "공포", "무서워요", "image"))
         )
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidInputException.class);
     }
 
     @DisplayName("당일 예약은 예외처리되도록 한다.")
@@ -58,7 +62,7 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(reservation::validateReservationDateInFuture
         )
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReservationDateException.class);
     }
 
     @DisplayName("오늘보다 과거로 예약하려고 할 경우 예외처리되도록 한다.")
@@ -76,6 +80,6 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(reservation::validateReservationDateInFuture
         )
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReservationDateException.class);
     }
 }
