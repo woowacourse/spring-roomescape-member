@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<Void> handleDataAccessException(DataAccessException e) {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> handleDataAccessException(DataAccessException e) {
+        return ResponseEntity.internalServerError().body(e.getMessage());
     }
 }
