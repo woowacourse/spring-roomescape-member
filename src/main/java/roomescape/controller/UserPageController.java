@@ -8,10 +8,10 @@ public class UserPageController {
 
     @GetMapping
     public String displayThemeRank() {
-        return "/index";
+        return "index";
     }
 
-    @GetMapping("/reservation")
+    @GetMapping("reservation")
     public String displayReservation() {
         return "reservation";
     }

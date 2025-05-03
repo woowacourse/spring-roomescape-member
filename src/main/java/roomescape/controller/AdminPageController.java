@@ -10,21 +10,21 @@ public class AdminPageController {
 
     @GetMapping
     public String displayMain() {
-        return "/admin/index";
+        return "admin/index";
     }
 
     @GetMapping("reservation")
     public String displayAdminReservation() {
-        return "/admin/reservation-new";
+        return "admin/reservation-new";
     }
 
     @GetMapping("time")
     public String displayAdminTime() {
-        return "/admin/time";
+        return "admin/time";
     }
 
     @GetMapping("theme")
     public String displayAdminTheme() {
-        return "/admin/theme";
+        return "admin/theme";
     }
 }
