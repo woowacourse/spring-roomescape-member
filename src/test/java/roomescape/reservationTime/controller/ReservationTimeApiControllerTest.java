@@ -1,5 +1,7 @@
 package roomescape.reservationTime.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,27 +23,47 @@ class ReservationTimeApiControllerTest {
     @MockitoBean
     private ReservationTimeService reservationTimeService;
 
-    @DisplayName("시간이 빈 값일 경우 예외가 발생한다")
+    private static final String URI = "/times";
+
+    @DisplayName("시간 내역을 모두 조회한다")
     @Test
-    void test1() throws Exception {
+    void findAll() throws Exception {
+        mockMvc.perform(get(URI)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("날짜와 테마에 따라 시간 내역을 모두 조회한다")
+    @Test
+    void findByDateAndTheme() throws Exception {
+        mockMvc.perform(get(URI + "/available")
+                        .param("date", "2025-05-05")
+                        .param("themeId", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("추가하려는 시간이 빈 값일 경우 예외가 발생한다")
+    @Test
+    void exception_add_time_empty() throws Exception {
         String requestBody = """
                 {
                     "startAt": ""
                 }
                 """;
 
-        mockMvc.perform(post("/times")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+        mockMvc.perform(post(URI)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("시간이 형식에 맞지 않을 경우 예외가 발생한다")
+    @DisplayName("추가하려는 시간이 형식에 맞지 않을 경우 예외가 발생한다")
     @Test
-    void test2() throws Exception {
+    void exception_add_time_format() throws Exception {
         String requestBody = """
                 {
-                    "startAt": "2025/04/30"
+                    "startAt": "10"
                 }
                 """;
 
@@ -51,4 +73,11 @@ class ReservationTimeApiControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @DisplayName("존재하지 않는 시간 내역 아이디를 삭제하는 경우 예외가 발생한다")
+    @Test
+    void deleteById() throws Exception {
+        mockMvc.perform(delete(URI + "/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
 }

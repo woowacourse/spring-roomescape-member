@@ -27,20 +27,21 @@ public class ReservationTimeApiController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @PostMapping
-    public ResponseEntity<ReservationTimeResponse> add(@RequestBody ReservationTimeRequest reservationTimeRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeService.add(reservationTimeRequest));
-    }
-
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         return ResponseEntity.ok(reservationTimeService.findAll());
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> findByDateAndTheme(@ModelAttribute
-                                                                                     AvailableReservationTimeRequest availableReservationTimeRequest) {
+    public ResponseEntity<List<AvailableReservationTimeResponse>> findByDateAndTheme(
+            @ModelAttribute AvailableReservationTimeRequest availableReservationTimeRequest
+    ) {
         return ResponseEntity.ok(reservationTimeService.findByDateAndTheme(availableReservationTimeRequest));
+    }
+
+    @PostMapping
+    public ResponseEntity<ReservationTimeResponse> add(@RequestBody ReservationTimeRequest reservationTimeRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeService.add(reservationTimeRequest));
     }
 
     @DeleteMapping("/{id}")

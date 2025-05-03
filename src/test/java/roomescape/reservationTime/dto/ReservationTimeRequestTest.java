@@ -1,18 +1,15 @@
 package roomescape.reservationTime.dto;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.dto.ReservationRequest;
 
 class ReservationTimeRequestTest {
 
-    @DisplayName("시간이 null일 경우 예외가 발생한다.")
+    @DisplayName("시작 시간이 널 값인 경우 예외가 발생한다.")
     @Test
-    void test1() {
+    void exception_time_null() {
         assertThatThrownBy(() -> new ReservationTimeRequest(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
