@@ -1,14 +1,13 @@
-package roomescape.domain.service;
+package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.dao.FakeReservationDaoImpl;
-import roomescape.domain.dao.FakeReservationTimeDaoImpl;
+import roomescape.dao.FakeReservationDaoImpl;
+import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.service.ReservationTimeService;
 
 public class ReservationTimeServiceTest {
 

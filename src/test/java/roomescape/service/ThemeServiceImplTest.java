@@ -1,4 +1,4 @@
-package roomescape.domain.service;
+package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
-import roomescape.service.ThemeService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ThemeServiceImplTest {

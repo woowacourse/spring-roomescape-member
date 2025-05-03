@@ -1,4 +1,4 @@
-package roomescape.domain.dao;
+package roomescape.dao;
 
 public class JdbcReservationDaoTest {
     /*

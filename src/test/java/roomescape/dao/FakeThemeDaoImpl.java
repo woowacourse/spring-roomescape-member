@@ -1,4 +1,4 @@
-package roomescape.domain.dao;
+package roomescape.dao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 
 @Repository

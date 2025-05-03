@@ -1,4 +1,4 @@
-package roomescape.domain.service;
+package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,7 +8,6 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
-import roomescape.service.ThemeService;
 
 @Service
 @Qualifier("testThemeService")

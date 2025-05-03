@@ -1,4 +1,4 @@
-package roomescape.domain.service;
+package roomescape.service;
 
 
 public class ReservationServiceTest {
