@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.entity.Theme;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,13 +61,15 @@ class H2ThemeDaoTest {
 
     @Test
     void 최근_일주일간_인기있는_테마를_10개까지_조회한다() {
-        List<Theme> themes = themeDao.sortByRank();
+        LocalDate now = LocalDate.of(2025, 5, 1);
+        List<Theme> themes = themeDao.sortByRank(now.minusDays(7), now.minusDays(1));
 
         List<Object> expected = List.of(
             new Theme(2L, "", "", ""),
             new Theme(1L, "", "", ""),
             new Theme(3L, "", "", "")
         );
+
         assertThat(themes).isEqualTo(expected);
     }
 

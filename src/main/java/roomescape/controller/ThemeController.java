@@ -34,7 +34,7 @@ public class ThemeController {
 
     @GetMapping("/rank")
     public ResponseEntity<List<ThemeResponse>> sortByRank() {
-        return ResponseEntity.ok(themeService.sortByRank());
+        return ResponseEntity.ok(themeService.sortByRankForLastWeek());
     }
 
     @DeleteMapping("/{id}")

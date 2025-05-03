@@ -76,7 +76,7 @@ class ThemeServiceTest {
 
     @Test
     void 많이_예약된_순서로_테마를_조회한다() {
-        Mockito.when(themeDao.sortByRank())
+        Mockito.when(themeDao.sortByRank(Mockito.any(), Mockito.any()))
             .thenReturn(
                 List.of(
                     new Theme(1L, "아이언맨", "", ""),
@@ -84,7 +84,7 @@ class ThemeServiceTest {
                 )
             );
 
-        assertThat(themeService.sortByRank()).isEqualTo(
+        assertThat(themeService.sortByRankForLastWeek()).isEqualTo(
             List.of(
                 new ThemeResponse(1L, "아이언맨", "", ""),
                 new ThemeResponse(2L, "캡틴아메리카", "", "")

@@ -10,10 +10,14 @@ import roomescape.exception.ThemeExistException;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ThemeDao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class ThemeService {
+
+    private static final int END_OFFSET_DAYS = 1;
+    private static final int LOOK_BACK_DAYS = 6;
 
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
@@ -50,8 +54,11 @@ public class ThemeService {
         themeDao.deleteById(id);
     }
 
-    public List<ThemeResponse> sortByRank() {
-        List<Theme> themes = themeDao.sortByRank();
+    public List<ThemeResponse> sortByRankForLastWeek() {
+        LocalDate endDate = LocalDate.now().minusDays(END_OFFSET_DAYS);
+        LocalDate startDate = endDate.minusDays(LOOK_BACK_DAYS);
+
+        List<Theme> themes = themeDao.sortByRank(startDate, endDate);
         return themes.stream()
             .map(ThemeResponse::of)
             .toList();

@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.entity.Theme;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public class H2ThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> sortByRank() {
+    public List<Theme> sortByRank(LocalDate startDate, LocalDate endDate) {
         String sql = """
             SELECT
                 t.id AS theme_id,
@@ -58,13 +59,18 @@ public class H2ThemeDao implements ThemeDao {
                 t.thumbnail
             FROM reservation r
             JOIN theme t ON r.theme_id = t.id
-            WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN CURRENT_DATE - 7 AND CURRENT_DATE - 1
+            WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') 
+                BETWEEN PARSEDATETIME(:start_date, 'yyyy-MM-dd')
+                    AND PARSEDATETIME(:end_date, 'yyyy-MM-dd')
             GROUP BY t.id, t.name, t.description, t.thumbnail
             ORDER BY COUNT(r.id) DESC
             LIMIT 10;
             """;
 
-        return jdbcTemplate.query(sql, getThemeRowMapper());
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("start_date", startDate)
+            .addValue("end_date", endDate);
+        return jdbcTemplate.query(sql, mapSqlParameterSource, getThemeRowMapper());
     }
 
     @Override

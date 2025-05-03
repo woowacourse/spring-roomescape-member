@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import roomescape.entity.Theme;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public interface ThemeDao {
 
     void deleteById(Long id);
 
-    List<Theme> sortByRank();
+    List<Theme> sortByRank(LocalDate startDate, LocalDate endDate);
 
     boolean isExistByName(String name);
 }
