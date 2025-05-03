@@ -14,6 +14,8 @@ import roomescape.domain.Theme;
 @Service
 public class ThemeService {
 
+    private static final int POPULAR_THEME_COUNTS = 10;
+
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
     private final Clock clock;
@@ -48,7 +50,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(10, LocalDate.now(clock));
+        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(POPULAR_THEME_COUNTS, LocalDate.now(clock));
         return ThemeResponse.from(themes);
     }
 }
