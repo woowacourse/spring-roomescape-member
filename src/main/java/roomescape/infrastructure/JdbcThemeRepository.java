@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
@@ -70,15 +71,15 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(long id) {
+    public Optional<Theme> findById(long id) {
         final String sql = """
                 SELECT * FROM theme
                 WHERE id = ?
                 """;
         try {
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 

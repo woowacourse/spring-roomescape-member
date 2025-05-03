@@ -4,12 +4,13 @@ import roomescape.business.model.entity.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ThemeRepository {
 
     Theme save(Theme theme);
 
-    Theme findById(long id);
+    Optional<Theme> findById(long id);
 
     List<Theme> findAll();
 

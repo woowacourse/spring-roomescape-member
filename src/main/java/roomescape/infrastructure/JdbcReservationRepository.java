@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -69,7 +70,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(final long id) {
+    public Optional<Reservation> findById(final long id) {
         try {
             final String sql = """
                     SELECT
@@ -87,10 +88,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                     INNER JOIN theme as t ON r.theme_id = t.id
                     WHERE r.id = ?
                     """;
-
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -115,9 +115,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByTimeId(final long id) {
-        final String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+    public boolean existById(final long id) {
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existByTimeId(final long timeId) {
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count != null && count > 0;
     }
 

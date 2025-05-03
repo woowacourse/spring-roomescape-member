@@ -15,6 +15,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
@@ -49,12 +50,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime findById(long timeId) {
+    public Optional<ReservationTime> findById(long timeId) {
         try {
             final String sql = "SELECT * FROM reservation_time WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, timeId));
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return Optional.empty();
         }
     }
 

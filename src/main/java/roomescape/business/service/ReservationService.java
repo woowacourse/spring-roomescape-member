@@ -4,11 +4,12 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.Reservation;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.entity.Theme;
-import roomescape.exception.impl.AlreadyReservedException;
-import roomescape.exception.impl.ReservationNotFoundException;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.business.model.repository.ThemeRepository;
+import roomescape.exception.impl.AlreadyReservedException;
+import roomescape.exception.impl.ReservationNotFoundException;
+import roomescape.exception.impl.ThemeNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,8 +37,10 @@ public class ReservationService {
             final long timeId,
             final long themeId
     ) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId);
-        Theme theme = themeRepository.findById(themeId);
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+                .orElseThrow(ReservationNotFoundException::new);
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(ThemeNotFoundException::new);
 
         if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.getStartAt(), theme)) {
             throw new AlreadyReservedException();
@@ -52,7 +55,7 @@ public class ReservationService {
     }
 
     public void delete(final long id) {
-        if (reservationRepository.findById(id) == null) {
+        if (reservationRepository.existById(id)) {
             throw new ReservationNotFoundException();
         }
         reservationRepository.deleteById(id);
