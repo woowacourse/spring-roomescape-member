@@ -9,7 +9,7 @@ public record ReservationTimeAvailableResponse(
         LocalTime startAt,
         boolean alreadyBooked
 ) {
-    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public ReservationTimeAvailableResponse(ReservationTime reservationTime, boolean alreadyBooked) {
         this(
@@ -20,6 +20,6 @@ public record ReservationTimeAvailableResponse(
     }
 
     public String getStartAt() {
-        return startAt.format(timeFormatter);
+        return startAt.format(TIME_FORMATTER);
     }
 }
