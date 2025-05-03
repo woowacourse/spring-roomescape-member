@@ -28,6 +28,10 @@ public class ReservationService {
         this.themeDao = themeDao;
     }
 
+    public List<Reservation> findAllReservations() {
+        return reservationDao.findAllReservations();
+    }
+
     public Reservation addReservationAfterNow(ReservationRequest request) {
         LocalDate date = request.date();
         ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
@@ -38,30 +42,28 @@ public class ReservationService {
 
     private void validateDateTimeAfterNow(LocalDate date, ReservationTime time) {
         LocalDateTime now = LocalDateTime.now();
+
         if (date.isBefore(now.toLocalDate()) ||
             (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
             throw new NotCorrectDateTimeException("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.");
         }
     }
 
-    public Reservation addReservation(ReservationRequest reservationRequest) {
-        validateDuplicateReservation(reservationRequest);
-        ReservationTime time = reservationTimeDao.findTimeById(reservationRequest.timeId());
-        Theme theme = themeDao.findThemeById(reservationRequest.themeId());
+    public Reservation addReservation(ReservationRequest request) {
+        validateDuplicateReservation(request);
+
+        ReservationTime time = reservationTimeDao.findTimeById(request.timeId());
+        Theme theme = themeDao.findThemeById(request.themeId());
+
         return reservationDao.addReservation(
-            new Reservation(null, reservationRequest.name(), reservationRequest.date(), time,
-                theme));
+            new Reservation(null, request.name(), request.date(), time, theme));
     }
 
-    private void validateDuplicateReservation(ReservationRequest reservationRequest) {
-        if (reservationDao.existReservationByDateTimeAndTheme(reservationRequest.date(),
-            reservationRequest.timeId(), reservationRequest.themeId())) {
+    private void validateDuplicateReservation(ReservationRequest request) {
+        if (reservationDao.existReservationByDateTimeAndTheme(
+            request.date(), request.timeId(), request.themeId())) {
             throw new DuplicateReservationException();
         }
-    }
-
-    public List<Reservation> findAllReservations() {
-        return reservationDao.findAllReservations();
     }
 
     public void removeReservation(Long id) {

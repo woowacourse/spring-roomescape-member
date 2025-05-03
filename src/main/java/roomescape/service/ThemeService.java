@@ -26,18 +26,20 @@ public class ThemeService {
 
     public List<Theme> findTopReservedThemes() {
         LocalDate today = LocalDate.now();
-        return themeDao.findTopReservedThemesInPeriodWithLimit(today.minusDays(TOP_RANK_PERIOD_DAYS), today,
-            TOP_RANK_THRESHOLD);
+
+        return themeDao.findTopReservedThemesInPeriodWithLimit(
+            today.minusDays(TOP_RANK_PERIOD_DAYS), today, TOP_RANK_THRESHOLD);
     }
 
     public Theme addTheme(ThemeRequest request) {
         validateDuplicateTheme(request);
-        Theme theme = new Theme(null, request.name(), request.description(), request.thumbnail());
-        return themeDao.addTheme(theme);
+
+        return themeDao.addTheme(
+            new Theme(null, request.name(), request.description(), request.thumbnail()));
     }
 
-    private void validateDuplicateTheme(ThemeRequest themeRequest) {
-        if (themeDao.existThemeByName(themeRequest.name())) {
+    private void validateDuplicateTheme(ThemeRequest request) {
+        if (themeDao.existThemeByName(request.name())) {
             throw new DuplicateThemeException();
         }
     }

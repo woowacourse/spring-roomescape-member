@@ -55,7 +55,7 @@ public class JdbcReservationDao implements ReservationDao {
                 FROM reservation
                 WHERE date = ?
                     AND time_id = ?
-                    AND theme_id = ? 
+                    AND theme_id = ?
                 )
             """;
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);

@@ -17,23 +17,23 @@ public class TimeService {
         this.reservationTimeDao = reservationTimeDao;
     }
 
-    public ReservationTime addReservationTime(TimeRequest timeRequest) {
-        validateExistedTime(timeRequest);
-        return reservationTimeDao.addTime(new ReservationTime(null, timeRequest.startAt()));
-    }
-
-    private void validateExistedTime(TimeRequest timeRequest) {
-        if (reservationTimeDao.existTimeByStartAt(timeRequest.startAt())) {
-            throw new DuplicateTimeException();
-        }
-    }
-
     public List<ReservationTime> findAllReservationTimes() {
         return reservationTimeDao.findAllTimes();
     }
 
     public List<ReservationTime> findAllTimesWithBooked(LocalDate date, Long themeId) {
         return reservationTimeDao.findAllTimesWithBooked(date, themeId);
+    }
+
+    public ReservationTime addReservationTime(TimeRequest request) {
+        validateExistedTime(request);
+        return reservationTimeDao.addTime(new ReservationTime(null, request.startAt()));
+    }
+
+    private void validateExistedTime(TimeRequest timeRequest) {
+        if (reservationTimeDao.existTimeByStartAt(timeRequest.startAt())) {
+            throw new DuplicateTimeException();
+        }
     }
 
     public void removeReservationTime(Long id) {
