@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -29,6 +30,22 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    private final static RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
+            new Reservation(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("name"),
+                    LocalDate.parse(resultSet.getString("date")),
+                    new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            LocalTime.parse(resultSet.getString("time_value"))
+                    ),
+                    new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail")
+                    ));
+
     public List<Reservation> findAll() {
         String sql = """
                 select r.id as reservation_id, 
@@ -45,21 +62,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 inner join theme as th on r.theme_id = th.id
                 """;
 
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new Reservation(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        LocalDate.parse(resultSet.getString("date")),
-                        new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                LocalTime.parse(resultSet.getString("time_value"))
-                        ),
-                        new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("theme_description"),
-                                resultSet.getString("theme_thumbnail")
-                        )));
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
@@ -99,21 +102,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 where r.id = ?
                 """;
 
-        return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                        new Reservation(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                LocalDate.parse(resultSet.getString("date")),
-                                new ReservationTime(
-                                        resultSet.getLong("time_id"),
-                                        LocalTime.parse(resultSet.getString("time_value"))
-                                ),
-                                new Theme(
-                                        resultSet.getLong("theme_id"),
-                                        resultSet.getString("theme_name"),
-                                        resultSet.getString("theme_description"),
-                                        resultSet.getString("theme_thumbnail")
-                                )), id)
+        return jdbcTemplate.query(sql, reservationRowMapper, id)
                 .stream()
                 .findFirst();
     }

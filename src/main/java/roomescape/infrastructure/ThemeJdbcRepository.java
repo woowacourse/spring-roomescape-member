@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -23,15 +24,17 @@ public class ThemeJdbcRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    private static final RowMapper<Theme> themeRowMapper = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
+
     @Override
     public List<Theme> findAll() {
         String sql = "select * from theme";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        ));
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
@@ -55,12 +58,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = "select * from theme where id = ?";
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), id)
+        return jdbcTemplate.query(sql, themeRowMapper, id)
                 .stream()
                 .findFirst();
     }
@@ -88,11 +86,6 @@ public class ThemeJdbcRepository implements ThemeRepository {
                     reservation_count DESC
                 LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        ), now, now, limit);
+        return jdbcTemplate.query(sql, themeRowMapper, now, now, limit);
     }
 }
