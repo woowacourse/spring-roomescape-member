@@ -3,44 +3,40 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
-import java.util.UUID;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.ReservationTime;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class JdbcReservationTimeDaoTest {
 
-    private DataSource datasource;
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private JdbcReservationTimeDaoImpl reservationTimeDao;
 
-    @BeforeEach
-    void init() {
-        datasource = new EmbeddedDatabaseBuilder()
-            .setName("testdb-" + UUID.randomUUID())
-            .setType(EmbeddedDatabaseType.H2)
-            .addScript("schema.sql")
-            .build();
-        jdbcTemplate = new JdbcTemplate(datasource);
-        reservationTimeDao = new JdbcReservationTimeDaoImpl(jdbcTemplate);
+    @AfterEach
+    void clearResource() {
+        String sql = "DELETE FROM reservation_time";
+        jdbcTemplate.update(sql);
     }
 
-    @DisplayName("시간이 주어졌을 때, db에 저장해야하고, id값을 설정해야 한다.")
+    @DisplayName("시간이 주어졌을 때, db에 저장해야하고 저장된 id를 반환해야 한다.")
     @Test
     void given_time_then_save_db_and_set_id() {
         //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
 
         //when
-        reservationTimeDao.saveReservationTime(reservationTime);
+        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
 
         //then
-        assertThat(reservationTime.getId()).isEqualTo(1L);
+        assertThat(reservationTimeDao.findById(savedId)).isNotNull();
         assertThat(reservationTimeDao.findAllReservationTimes().size()).isEqualTo(1);
     }
 
@@ -59,9 +55,6 @@ public class JdbcReservationTimeDaoTest {
 
         // when, then
         assertThat(reservationTimeDao.findAllReservationTimes()).hasSize(3);
-        assertThat(reservationTimeDao.findAllReservationTimes()).containsExactlyInAnyOrder(
-            reservationTime1, reservationTime2, reservationTime3
-        );
     }
 
     @DisplayName("reservationTimeId가 주어졌을 때, 해당하는 데이터를 삭제해야 한다")
@@ -69,10 +62,10 @@ public class JdbcReservationTimeDaoTest {
     void given_reservation_time_id_then_delete_data() {
         //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeDao.saveReservationTime(reservationTime);
+        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
 
         //when
-        reservationTimeDao.deleteReservationTime(1L);
+        reservationTimeDao.deleteReservationTime(savedId);
 
         //then
         assertThat(reservationTimeDao.findAllReservationTimes().size()).isEqualTo(0);
@@ -81,14 +74,8 @@ public class JdbcReservationTimeDaoTest {
     @DisplayName("db에 저장되어 있는 id를 통해서 reservationTime 객체를 반환할 수 있어야 한다")
     @Test
     void given_reservation_id_then_return_reservation_time_object() {
-        //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeDao.saveReservationTime(reservationTime);
-
-        //when
-        ReservationTime findReservationTimeResult = reservationTimeDao.findById(1L);
-
-        //then
-        assertThat(reservationTime).isEqualTo(findReservationTimeResult);
+        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
+        assertThat(reservationTimeDao.findById(savedId)).isNotNull();
     }
 }

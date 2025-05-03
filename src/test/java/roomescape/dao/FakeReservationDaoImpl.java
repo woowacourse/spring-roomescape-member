@@ -18,9 +18,10 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public void saveReservation(Reservation reservation) {
+    public long saveReservation(Reservation reservation) {
         reservation.setId(index.getAndIncrement());
         reservations.add(reservation);
+        return index.longValue();
     }
 
     @Override

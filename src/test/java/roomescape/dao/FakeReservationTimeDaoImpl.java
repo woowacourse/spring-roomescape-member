@@ -17,9 +17,10 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public void saveReservationTime(ReservationTime reservationTime) {
+    public long saveReservationTime(ReservationTime reservationTime) {
         reservationTime.setId(index.getAndIncrement());
         reservationTimes.add(reservationTime);
+        return index.longValue();
     }
 
     @Override

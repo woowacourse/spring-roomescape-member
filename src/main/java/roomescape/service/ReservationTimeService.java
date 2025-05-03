@@ -30,7 +30,8 @@ public class ReservationTimeService {
     public ReservationTimeResponseDto saveReservationTime(
         ReservationTimeRequestDto reservationTimeRequestDto) {
         ReservationTime reservationTime = reservationTimeRequestDto.toReservationTime();
-        reservationTimeDao.saveReservationTime(reservationTime);
+        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
+        reservationTime.setId(savedId);
         return ReservationTimeResponseDto.from(reservationTime);
     }
 

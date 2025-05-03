@@ -35,11 +35,11 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public void saveReservationTime(ReservationTime reservationTime) {
+    public long saveReservationTime(ReservationTime reservationTime) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("start_at", reservationTime.getStartAt());
         Number newId = insertActor.executeAndReturnKey(parameters);
-        reservationTime.setId(newId.longValue());
+        return newId.longValue();
     }
 
     @Override

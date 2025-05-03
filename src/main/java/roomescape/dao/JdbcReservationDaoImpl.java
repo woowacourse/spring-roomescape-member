@@ -82,7 +82,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public void saveReservation(Reservation reservation) {
+    public long saveReservation(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", reservation.getPersonName());
         parameters.put("date", reservation.getDate());
@@ -90,7 +90,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         parameters.put("theme_id", reservation.getThemeId());
 
         Number newId = insertActor.executeAndReturnKey(parameters);
-        reservation.setId(newId.longValue());
+        return newId.longValue();
     }
 
     @Override

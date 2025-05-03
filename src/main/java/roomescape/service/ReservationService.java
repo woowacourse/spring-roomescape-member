@@ -53,7 +53,8 @@ public class ReservationService {
         reservation.validateDateTime(date, reservationTime, currentDateTime);
 
         validateAlreadyExistDateTime(reservationRequestDto, date);
-        reservationDao.saveReservation(reservation);
+        long newId = reservationDao.saveReservation(reservation);
+        reservation.setId(newId);
 
         return ReservationResponseDto.from(reservation);
     }
