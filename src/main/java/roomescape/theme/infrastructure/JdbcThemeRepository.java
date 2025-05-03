@@ -8,6 +8,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
@@ -23,11 +26,11 @@ public class JdbcThemeRepository implements ThemeRepository {
             resultSet.getString("thumbnail")
     );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcThemeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcThemeRepository(final NamedParameterJdbcTemplate namedParameterJdbcTemplate, final DataSource dataSource) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
@@ -53,33 +56,45 @@ public class JdbcThemeRepository implements ThemeRepository {
                     t.thumbnail as thumbnail
                 FROM theme as t
                 LEFT JOIN reservation as r ON t.id = r.theme_id
-                WHERE r.date >= ? AND r.date <= ?
+                WHERE r.date >= :start_date AND r.date <= :end_date
                 GROUP BY id, name, description, thumbnail
                 ORDER BY count DESC
-                LIMIT ?
+                LIMIT :limit
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(start), Date.valueOf(end), popularCount);
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("start_date", start)
+                .addValue("end_date", end)
+                .addValue("limit", popularCount);
+
+        return namedParameterJdbcTemplate.query(sql, param, ROW_MAPPER);
     }
 
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme";
 
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        return namedParameterJdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
     public boolean deleteById(final Long id) {
-        String sql = "DELETE FROM theme where id =?";
-        int count = jdbcTemplate.update(sql, id);
+        String sql = "DELETE FROM theme where id = :id";
 
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        int count = namedParameterJdbcTemplate.update(sql, param);
         return count != 0;
     }
 
     @Override
     public Theme findById(final Long id) {
-        String sql = "SELECT * FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+        String sql = "SELECT * FROM theme WHERE id = :id";
+
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, param, ROW_MAPPER);
     }
 }
