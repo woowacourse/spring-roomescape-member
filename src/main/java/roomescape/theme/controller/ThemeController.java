@@ -1,11 +1,13 @@
 package roomescape.theme.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.theme.service.ThemeService;
 import roomescape.theme.service.dto.request.ThemeRequest;
 import roomescape.theme.service.dto.response.ThemeResponse;
-import roomescape.theme.service.ThemeService;
 
 import java.util.List;
 
@@ -25,19 +27,19 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid ThemeRequest request) {
         ThemeResponse response = themeService.createTheme(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheme(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteTheme(@PathVariable("id") @NotNull final Long id) {
         themeService.deleteTheme(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("limit") int limit) {
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("limit") final int limit) {
         List<ThemeResponse> response = themeService.getPopularThemes(limit);
         return ResponseEntity.ok().body(response);
     }

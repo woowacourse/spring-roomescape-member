@@ -1,14 +1,16 @@
 package roomescape.theme.service.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.theme.entity.ThemeEntity;
 
-public record ThemeRequest(String name, String description, String thumbnail) {
-    public ThemeRequest {
-        if (name == null || description == null || thumbnail == null) {
-            throw new IllegalArgumentException("값이 입력되지 않았습니다.");
-        }
-    }
-
+public record ThemeRequest(
+        @NotBlank(message = "테마 제목이 입력되지 않았습니다.")
+        String name,
+        @NotBlank(message = "설명이 입력되지 않았습니다.")
+        String description,
+        @NotBlank(message = "썸네일이 입력되지 않았습니다.")
+        String thumbnail
+) {
     public ThemeEntity toEntity() {
         return new ThemeEntity(0L, name, description, thumbnail);
     }

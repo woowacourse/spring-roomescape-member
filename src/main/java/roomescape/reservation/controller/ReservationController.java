@@ -1,10 +1,12 @@
 package roomescape.reservation.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.service.dto.request.ReservationRequest;
 import roomescape.reservation.service.dto.response.ReservationResponse;
-import roomescape.reservation.service.ReservationService;
 
 import java.util.List;
 
@@ -23,13 +25,13 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest requestDto) {
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest requestDto) {
         ReservationResponse responseDto = service.createReservation(requestDto);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") @NotNull Long id) {
         service.deleteReservation(id);
         return ResponseEntity.ok().build();
     }
