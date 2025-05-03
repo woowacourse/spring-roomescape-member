@@ -3,10 +3,12 @@ package roomescape.reservation.domain;
 import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import roomescape.theme.domain.Theme;
 
 @Getter
 @EqualsAndHashCode(of = {"id"})
+@ToString
 public class Reservation {
 
     private final Long id;
@@ -54,16 +56,5 @@ public class Reservation {
         if (theme == null) {
             throw new IllegalArgumentException("Theme cannot be null");
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Reservation{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", date=" + date +
-                ", time=" + time +
-                ", theme=" + theme +
-                '}';
     }
 }
