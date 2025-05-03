@@ -53,8 +53,8 @@ public class JdbcThemeDao implements ThemeDao {
                   INNER JOIN theme as t
                   ON r.theme_id = t.id
                 WHERE
-                  PARSEDATETIME(r.date, 'yyyy-MM-dd') >= ?
-                    AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < ?
+                  r.date >= ?
+                  AND r.date < ?
                 GROUP BY
                   theme_id
                 ORDER BY
@@ -76,14 +76,15 @@ public class JdbcThemeDao implements ThemeDao {
         param.put("thumbnail", theme.getThumbnail());
 
         Number key = jdbcInsert.executeAndReturnKey(param);
-        return new Theme(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new Theme(key.longValue(), theme.getName(), theme.getDescription(),
+            theme.getThumbnail());
     }
 
     public void removeThemeById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
         int activeRow = jdbcTemplate.update(sql, id);
 
-        if(activeRow == 0) {
+        if (activeRow == 0) {
             throw new NotFoundException("theme");
         }
     }

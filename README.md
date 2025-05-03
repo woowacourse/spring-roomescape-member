@@ -1,5 +1,7 @@
 # 🚪방탈출 사용자 예약 애플리케이션
 
+`RoomescapeApplication`에서 실행 가능합니다.
+
 ### 관리자 페이지
 * http://localhost:8080/admin/time: 사용자가 예약할 수 있는 시간 관리 페이지
 * http://localhost:8080/admin/theme: 사용자가 이용할 수 있는 방탈출 테마 관리 페이지
