@@ -5,6 +5,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
+import roomescape.global.ReservationException;
 import roomescape.service.param.CreateReservationTimeParam;
 import roomescape.service.result.AvailableReservationTimeResult;
 import roomescape.service.result.ReservationTimeResult;
@@ -31,7 +32,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResult findById(Long reservationTimeId) {
         ReservationTime reservationTime = reservationTImeRepository.findById(reservationTimeId).orElseThrow(
-                () -> new IllegalArgumentException(reservationTimeId + "에 해당하는 reservation_time 튜플이 없습니다."));
+                () -> new ReservationException(reservationTimeId + "에 해당하는 reservation_time 튜플이 없습니다."));
         return toReservationResult(reservationTime);
     }
 
@@ -63,7 +64,7 @@ public class ReservationTimeService {
 
     public void deleteById(Long reservationTimeId) {
         if (reservationRepository.existByTimeId(reservationTimeId)) {
-            throw new IllegalArgumentException("해당 예약 시간에 예약이 존재합니다.");
+            throw new ReservationException("해당 예약 시간에 예약이 존재합니다.");
         }
         reservationTImeRepository.deleteById(reservationTimeId);
     }

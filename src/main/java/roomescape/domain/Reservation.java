@@ -1,5 +1,7 @@
 package roomescape.domain;
 
+import roomescape.global.ReservationException;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -13,17 +15,13 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name.length() < 2 || name.length() > 5) {
-            throw new IllegalArgumentException("예약자명은 2글자에서 5글자까지만 가능합니다.");
+            throw new ReservationException("예약자명은 2글자에서 5글자까지만 가능합니다.");
         }
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-    }
-
-    public boolean isStartAt(ReservationTime reservationTime) {
-        return time.equals(reservationTime);
     }
 
     public Long getId() {
