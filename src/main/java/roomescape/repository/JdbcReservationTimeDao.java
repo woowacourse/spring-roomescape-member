@@ -70,10 +70,6 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     @Override
     public int deleteById(long id) {
         String sql = "delete from reservation_time where id = ?";
-        try {
-            return jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("[ERROR] 이 시간의 예약이 이미 존재합니다. id : " + id);
-        }
+        return jdbcTemplate.update(sql, id);
     }
 }

@@ -61,8 +61,11 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTimeById(final Long id) {
-        int deletedReservationCount = reservationTimeRepository.deleteById(id);
+        if(reservationRepository.existsByTimeId(id)){
+            throw new IllegalStateException("[ERROR] 이 시간의 예약이 이미 존재합니다. id : " + id);
+        }
 
+        int deletedReservationCount = reservationTimeRepository.deleteById(id);
         if (deletedReservationCount == 0) {
             throw new NotFoundException("[ERROR] 등록된 예약 시간 번호만 삭제할 수 있습니다. 입력된 번호는 " + id + "입니다.");
         }
