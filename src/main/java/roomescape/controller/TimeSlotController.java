@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +29,7 @@ public class TimeSlotController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeSlotResponse> add(@RequestBody CreateTimeSlotRequest request) {
+    public ResponseEntity<TimeSlotResponse> add(@RequestBody @Valid CreateTimeSlotRequest request) {
         var timeSlot = service.register(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);

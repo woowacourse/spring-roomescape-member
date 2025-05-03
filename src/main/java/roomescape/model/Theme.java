@@ -24,23 +24,12 @@ public class Theme {
     }
 
     public Theme(final Long id, final String name, final String description, final String thumbnail) {
-        validateNotNull(name, description, thumbnail);
         validateNameLength(name);
         validateDescriptionLength(description);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
-    }
-
-    private void validateNotNull(
-        final String name,
-        final String description,
-        final String thumbnail
-    ) {
-        if (name == null || description == null || thumbnail == null) {
-            throw new IllegalArgumentException("모든 값들이 존재해야 합니다.");
-        }
     }
 
     private void validateNameLength(final String name) {

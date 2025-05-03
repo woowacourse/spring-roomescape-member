@@ -1,16 +1,20 @@
 package roomescape.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotEmpty;
 
 public record CreateThemeRequest(
-    @JsonProperty("name") String name,
-    @JsonProperty("description") String description,
-    @JsonProperty("thumbnail") String thumbnail
+    @JsonProperty("name")
+    @NotEmpty
+    String name,
+
+    @JsonProperty("description")
+    @NotEmpty
+    String description,
+
+    @JsonProperty("thumbnail")
+    @NotEmpty
+    String thumbnail
 ) {
 
-    public CreateThemeRequest {
-        if (name == null || description == null || thumbnail == null) {
-            throw new IllegalArgumentException("모든 값들이 존재해야 합니다.");
-        }
-    }
 }

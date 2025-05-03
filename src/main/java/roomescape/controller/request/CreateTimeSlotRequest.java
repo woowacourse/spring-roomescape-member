@@ -1,15 +1,15 @@
 package roomescape.controller.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 public record CreateTimeSlotRequest(
-    @JsonProperty("startAt") LocalTime startAt
+    @JsonProperty("startAt")
+    @JsonFormat(pattern = "HH:mm")
+    @NotNull
+    LocalTime startAt
 ) {
 
-    public CreateTimeSlotRequest {
-        if (startAt == null) {
-            throw new IllegalArgumentException("모든 값이 존재해야 합니다.");
-        }
-    }
 }

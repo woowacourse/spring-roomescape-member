@@ -1,18 +1,29 @@
 package roomescape.controller.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record CreateReservationRequest(
-    @JsonProperty("name") String name,
-    @JsonProperty("date") LocalDate date,
-    @JsonProperty("timeId") Long timeSlotId,
-    @JsonProperty("themeId") Long themeId
+    @JsonProperty("name")
+    @NotEmpty
+    String name,
+
+    @JsonProperty("date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull
+    LocalDate date,
+
+    @JsonProperty("timeId")
+    @NotNull
+    Long timeId,
+
+    @NotNull
+    @JsonProperty("themeId")
+    Long themeId
 ) {
 
-    public CreateReservationRequest {
-        if (name == null || date == null || timeSlotId == null || themeId == null) {
-            throw new IllegalArgumentException("모든 값이 존재해야 합니다.");
-        }
-    }
 }
+

@@ -1,25 +1,57 @@
 package roomescape.controller;
 
-import org.springframework.http.ResponseEntity;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toMap;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import java.util.Map;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
+@ResponseBody
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(code = BAD_REQUEST)
+    public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        return ex.getFieldErrors()
+            .stream()
+            .collect(toMap(FieldError::getField, FieldError::getDefaultMessage));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    @ResponseStatus(code = BAD_REQUEST)
+    public String handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        if (ex.getCause() instanceof InvalidFormatException ife) {
+            return handleInvalidFormat(ife);
+        }
+        return "유효하지 않은 형식의 요청입니다.";
+    }
+
+    private String handleInvalidFormat(final InvalidFormatException ife) {
+        String invalidFieldNames = ife.getPath().stream().map(Reference::getFieldName)
+            .collect(joining(", "));
+        return String.format("유효하지 않은 형식의 요청입니다.\n필드 : %s\n요청 내용 : %s", invalidFieldNames,
+            ife.getValue());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    @ResponseStatus(code = BAD_REQUEST)
+    public String handleIllegalArgument(IllegalArgumentException ex) {
+        return ex.getMessage();
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    @ResponseStatus(code = BAD_REQUEST)
+    public String handleIllegalState(IllegalStateException ex) {
+        return ex.getMessage();
     }
 }

@@ -26,7 +26,6 @@ public class Reservation {
     }
 
     public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        validateNotNull(name, date, timeSlot, theme);
         validateNameLength(name);
         this.id = id;
         this.name = name;
@@ -44,17 +43,6 @@ public class Reservation {
 
     public boolean isSameDateTime(final Reservation reservation) {
         return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
-    }
-
-    private void validateNotNull(
-        final String name,
-        final LocalDate date,
-        final TimeSlot timeSlot,
-        final Theme theme
-    ) {
-        if (name == null || date == null || timeSlot == null || theme == null) {
-            throw new IllegalArgumentException("모든 값들이 존재해야 합니다.");
-        }
     }
 
     private void validateNameLength(final String name) {

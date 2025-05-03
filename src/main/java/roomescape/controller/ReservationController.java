@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> reserve(@RequestBody CreateReservationRequest request) {
-        var reservation = service.reserve(request.name(), request.date(), request.timeSlotId(), request.themeId());
+    public ResponseEntity<ReservationResponse> reserve(@RequestBody @Valid CreateReservationRequest request) {
+        var reservation = service.reserve(request.name(), request.date(), request.timeId(), request.themeId());
         var response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(response);
     }
