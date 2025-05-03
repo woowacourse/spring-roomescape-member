@@ -10,12 +10,12 @@ public class TimeSlotTest {
 
     @Test
     @DisplayName("타임 슬롯이 주어진 시간보다 이전인지 확인한다")
-    void isBefore() {
+    void isTimeBefore() {
         // given
         TimeSlot timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
 
         // when
-        boolean isBefore = timeSlot.isBefore(LocalTime.of(11, 0));
+        boolean isBefore = timeSlot.isTimeBefore(LocalTime.of(11, 0));
 
         // then
         assertThat(isBefore).isTrue();
@@ -29,7 +29,7 @@ public class TimeSlotTest {
         TimeSlot otherTimeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
 
         // when
-        boolean isSameDateTime = timeSlot.isSameTimeSlot(otherTimeSlot);
+        boolean isSameDateTime = timeSlot.isSameAs(otherTimeSlot);
 
         // then
         assertThat(isSameDateTime).isTrue();

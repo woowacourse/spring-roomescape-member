@@ -66,7 +66,7 @@ class TimeSlotServiceTest {
         var timeSlotService = new TimeSlotService(reservationRepository, timeSlotRepository);
 
         var timeSlotToBeRemoved = timeSlotService.register(LocalTime.of(10, 0));
-        var reservationWithTheTimeSlot = new Reservation("포포", DateUtils.tomorrow(), timeSlotToBeRemoved, JUNK_THEME);
+        var reservationWithTheTimeSlot = Reservation.of(1L, "포포", DateUtils.tomorrow(), timeSlotToBeRemoved, JUNK_THEME);
         reservationRepository.save(reservationWithTheTimeSlot);
 
         // when & then

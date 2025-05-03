@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,24 +32,18 @@ public class ReservationService {
     public Reservation reserve(final String name, final LocalDate date, final long timeId, final long themeId) {
         var timeSlot = findTimeSlot(timeId);
         var theme = findTheme(themeId);
-        var reservation = new Reservation(name, date, timeSlot, theme);
-        validatePastDateTime(reservation);
-        validateDuplicateReservation(reservation);
+        validateDuplicateReservation(date, timeSlot);
+
+        var reservation = Reservation.reserveNewly(name, date, timeSlot, theme);
         var id = reservationRepository.save(reservation);
-        return new Reservation(id, name, date, timeSlot, theme);
+        return Reservation.of(id, name, date, timeSlot, theme);
     }
 
-    private void validatePastDateTime(final Reservation reservation) {
-        if (reservation.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
-        }
-    }
-
-    private void validateDuplicateReservation(final Reservation reservation) {
+    private void validateDuplicateReservation(final LocalDate date, final TimeSlot timeSlot) {
         var reservations = findAllReservations();
-        var hasDuplicate = reservations.stream()
-            .anyMatch(r -> r.isSameDateTime(reservation));
-        if (hasDuplicate) {
+        var isDuplicated = reservations.stream()
+            .anyMatch(r -> r.isDateEquals(date) && r.isTimeSlotEquals(timeSlot));
+        if (isDuplicated) {
             throw new IllegalArgumentException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다.");
         }
     }

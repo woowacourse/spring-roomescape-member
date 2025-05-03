@@ -140,7 +140,7 @@ public class ReservationJdbcRepositoryTest {
     }
 
     private Reservation readyReservation() {
-        return new Reservation(
+        return Reservation.of(
             1L,
             "브라운",
             LocalDate.of(2023, 12, 1),

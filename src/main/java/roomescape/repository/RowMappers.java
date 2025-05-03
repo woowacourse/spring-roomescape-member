@@ -22,7 +22,7 @@ public final class RowMappers {
 
             var timeSlot = new TimeSlot(timeSlotId, time);
             var theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
-            return new Reservation(id, name, date, timeSlot, theme);
+            return Reservation.of(id, name, date, timeSlot, theme);
         };
 
     public static final RowMapper<Theme> THEME =

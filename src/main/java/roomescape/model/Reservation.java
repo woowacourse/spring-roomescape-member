@@ -21,11 +21,7 @@ public class Reservation {
     private final TimeSlot timeSlot;
     private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        this(null, name, date, timeSlot, theme);
-    }
-
-    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+    protected Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
         validateNameLength(name);
         this.id = id;
         this.name = name;
@@ -34,20 +30,48 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public boolean isBefore(final LocalDateTime dateTime) {
-        var date = dateTime.toLocalDate();
-        var time = dateTime.toLocalTime();
-        return this.date.isBefore(date)
-            || (this.date.isEqual(date) && this.timeSlot.isBefore(time));
+    public boolean isDateEquals(final LocalDate date) {
+        return this.date.isEqual(date);
     }
 
-    public boolean isSameDateTime(final Reservation reservation) {
-        return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
+    public boolean isTimeSlotEquals(final TimeSlot timeSlot) {
+        return this.timeSlot.isSameAs(timeSlot);
+    }
+
+    public static Reservation of(final long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        return new Reservation(id, name, date, timeSlot, theme);
+    }
+
+    public static Reservation reserveNewly(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        return new NewReservation(name, date, timeSlot, theme);
     }
 
     private void validateNameLength(final String name) {
         if (name.isBlank() || name.length() > NAME_MAX_LENGTH) {
             throw new IllegalArgumentException(String.format("이름은 공백이거나 %d자를 넘길 수 없습니다.", NAME_MAX_LENGTH));
+        }
+    }
+
+    private static final class NewReservation extends Reservation {
+
+        private NewReservation(
+            final String name,
+            final LocalDate date,
+            final TimeSlot timeSlot,
+            final Theme theme
+        ) {
+            super(null, name, date, timeSlot, theme);
+            if (isBeforeNow(date, timeSlot)) {
+                throw new IllegalArgumentException("이전 날짜로 예약할 수 없습니다.");
+            }
+        }
+
+        private boolean isBeforeNow(final LocalDate date, final TimeSlot timeSlot) {
+            var now = LocalDateTime.now();
+            var today = now.toLocalDate();
+            var timeNow = now.toLocalTime();
+            return date.isBefore(today)
+                   || (date.isEqual(today) && timeSlot.isTimeBefore(timeNow));
         }
     }
 }
