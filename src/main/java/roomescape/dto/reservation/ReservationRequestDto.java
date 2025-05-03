@@ -12,7 +12,7 @@ public record ReservationRequestDto(
         @NotBlank(message = "예약자명은 null이거나 공백일 수 없습니다")
         String name,
 
-        @NotBlank(message = "예약 날짜는 null이거나 공백일 수 없습니다")
+        @NotNull(message = "예약 날짜는 null이거나 공백일 수 없습니다")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date,
 
