@@ -9,7 +9,7 @@ public interface ThemeDao {
 
     List<Theme> findAllTheme();
 
-    void saveTheme(Theme theme);
+    long saveTheme(Theme theme);
 
     void deleteTheme(Long id);
 

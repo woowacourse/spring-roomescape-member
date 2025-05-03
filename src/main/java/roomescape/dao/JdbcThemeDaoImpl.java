@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 @Repository
+@Primary
 public class JdbcThemeDaoImpl implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -37,13 +39,13 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public void saveTheme(Theme theme) {
+    public long saveTheme(Theme theme) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
         parameters.put("thumbnail", theme.getThumbnail());
         Number newId = insertActor.executeAndReturnKey(parameters);
-        theme.setId(newId.longValue());
+        return newId.longValue();
     }
 
     @Override
@@ -69,8 +71,6 @@ public class JdbcThemeDaoImpl implements ThemeDao {
 
     @Override
     public List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate) {
-        System.out.println(startDate);
-        System.out.println(currentDate);
         String query = """
             SELECT id, name, description, thumbnail
             FROM

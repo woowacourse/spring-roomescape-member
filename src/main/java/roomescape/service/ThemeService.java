@@ -23,7 +23,8 @@ public class ThemeService {
 
     public ThemeResponseDto saveTheme(ThemeRequestDto request) {
         Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
-        themeDao.saveTheme(theme);
+        long savedId = themeDao.saveTheme(theme);
+        theme.setId(savedId);
         return ThemeResponseDto.from(theme);
     }
 
