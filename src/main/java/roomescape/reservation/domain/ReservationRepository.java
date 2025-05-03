@@ -8,7 +8,7 @@ public interface ReservationRepository {
 
     Long save(Reservation reservation);
 
-    boolean deleteById(Long id);
+    boolean deleteBy(Long id);
 
     List<Reservation> findBy(LocalDate date, Long themeId);
 
@@ -18,6 +18,6 @@ public interface ReservationRepository {
 
     boolean existBy(Long themeId, LocalDate date, LocalTime time);
 
-    boolean existBy(Long themeId);
+    boolean existByThemeId(Long themeId);
 
 }

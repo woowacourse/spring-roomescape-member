@@ -41,7 +41,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existBy(Long themeId) {
+    public boolean existByThemeId(Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), themeId));
     }
@@ -55,7 +55,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteBy(Long id) {
         Optional<Reservation> findReservation = reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getId(), id))
                 .findAny();

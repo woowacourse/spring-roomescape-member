@@ -70,7 +70,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean deleteById(final Long id) {
+    public boolean deleteBy(final Long id) {
         String sql = "DELETE FROM theme where id =?";
         int count = jdbcTemplate.update(sql, id);
 
@@ -78,7 +78,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme findById(final Long id) {
+    public Theme findBy(final Long id) {
         String sql = "SELECT * FROM theme WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }

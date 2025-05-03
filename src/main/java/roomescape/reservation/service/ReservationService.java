@@ -35,7 +35,7 @@ public class ReservationService {
 
     public ReservationResponse createReservation(final ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
-        Theme theme = themeRepository.findById(request.themeId());
+        Theme theme = themeRepository.findBy(request.themeId());
 
         LocalDateTime now = dateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), time.getStartAt());
@@ -61,7 +61,7 @@ public class ReservationService {
     }
 
     public void deleteReservationById(final Long id) {
-        boolean isDeleted = reservationRepository.deleteById(id);
+        boolean isDeleted = reservationRepository.deleteBy(id);
         validateExistIdToDelete(isDeleted);
     }
 

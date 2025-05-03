@@ -35,7 +35,7 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("삭제할 수 없는 예약 시간입니다.");
         }
 
-        boolean isDeleted = reservationTimeRepository.deleteById(id);
+        boolean isDeleted = reservationTimeRepository.deleteBy(id);
         validateIsExistsReservationTimeId(isDeleted);
     }
 

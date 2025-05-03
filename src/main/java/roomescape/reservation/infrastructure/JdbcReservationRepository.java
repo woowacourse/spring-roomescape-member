@@ -82,7 +82,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean deleteById(final Long id) {
+    public boolean deleteBy(final Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         int count = jdbcTemplate.update(sql, id);
 
@@ -132,7 +132,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existBy(final Long themeId) {
+    public boolean existByThemeId(final Long themeId) {
         String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
         return count != 0;
