@@ -3,8 +3,8 @@ package roomescape.fake;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import roomescape.repository.ReservationDao;
-import roomescape.service.reservation.Reservation;
+import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservation.domain.Reservation;
 
 public class FakeReservationDao implements ReservationDao {
 

@@ -3,9 +3,9 @@ package roomescape.fake;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import roomescape.repository.ThemeDao;
-import roomescape.service.reservation.Theme;
-import roomescape.service.reservation.ThemeName;
+import roomescape.reservation.repository.ThemeDao;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.domain.ThemeName;
 
 public class FakeThemeDao implements ThemeDao {
 
