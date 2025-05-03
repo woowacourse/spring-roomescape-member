@@ -13,17 +13,15 @@ import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 class FakeReservationRepositoryTest {
-
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
     private ReservationRepository reservationRepository;
-    private ThemeRepository themeRepository;
     private Reservation reservation;
     private Theme theme;
 
     @BeforeEach
     void setUp() {
         reservationRepository = new FakeReservationRepository();
-        themeRepository = new FakeThemeRepository();
+        ThemeRepository themeRepository = new FakeThemeRepository();
 
         theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
         reservation = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"),

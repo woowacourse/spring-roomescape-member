@@ -21,7 +21,6 @@ import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 class ReservationServiceTest {
-
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
 
     private ReservationService reservationService;
@@ -95,6 +94,4 @@ class ReservationServiceTest {
         reservationService.create(request);
         assertThatThrownBy(() -> reservationService.create(request));
     }
-
-
 }

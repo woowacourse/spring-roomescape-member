@@ -148,5 +148,4 @@ public class JDBCReservationRepository implements ReservationRepository {
                     return entity.toReservation();
                 }, date, themeId);
     }
-
 }

@@ -11,7 +11,6 @@ import roomescape.theme.domain.Theme;
 class ReservationTest {
     private final Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
 
-
     @Test
     void createReservation_shouldThrowException_whenTimeIsBeforeNow() {
         assertThatThrownBy(() -> Reservation.of(1L,

@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 class ReservationCreateRequestTest {
-
     @Test
     void create_shouldThrowException_whenDateformatIllegal() {
         assertThatThrownBy(
