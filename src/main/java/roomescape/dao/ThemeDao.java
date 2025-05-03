@@ -1,15 +1,16 @@
 package roomescape.dao;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class ThemeDao {
@@ -20,8 +21,8 @@ public class ThemeDao {
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("theme")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     public List<Theme> findAll() {
@@ -60,21 +61,22 @@ public class ThemeDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, name);
     }
 
-    public List<Theme> findTop10() {
+    public List<Theme> findPopular(int count) {
         String sql = """
-            select count(*), t.id, t.name, t.description, t.thumbnail from theme as t
-            left join (
-                select * 
-                from reservation as r 
-                where PARSEDATETIME(r.date, 'yyyy-MM-dd') 
-                    between TIMESTAMPADD(DAY, -8, CURRENT_DATE) 
-                        and TIMESTAMPADD(DAY, -1, CURRENT_DATE)
-                )
-            as r on t.id = r.theme_id
-            group by t.id
-            order by count(*) desc
-            """;
-        return jdbcTemplate.query(sql, mapToTheme());
+                select count(*), t.id, t.name, t.description, t.thumbnail from theme as t
+                left join (
+                    select * 
+                    from reservation as r 
+                    where PARSEDATETIME(r.date, 'yyyy-MM-dd') 
+                        between TIMESTAMPADD(DAY, -8, CURRENT_DATE) 
+                            and TIMESTAMPADD(DAY, -1, CURRENT_DATE)
+                    )
+                as r on t.id = r.theme_id
+                group by t.id
+                order by count(*) desc
+                limit ?
+                """;
+        return jdbcTemplate.query(sql, mapToTheme(), count);
     }
 
     private RowMapper<Theme> mapToTheme() {

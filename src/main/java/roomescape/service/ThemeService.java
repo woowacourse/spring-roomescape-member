@@ -49,8 +49,8 @@ public class ThemeService {
         }
     }
 
-    public List<ThemeResponse> getTop10() {
-        List<Theme> themes = themeDao.findTop10();
+    public List<ThemeResponse> getPopularThemes(int count) {
+        List<Theme> themes = themeDao.findPopular(count);
         return themes.stream()
                 .map(ThemeResponse::from)
                 .toList();

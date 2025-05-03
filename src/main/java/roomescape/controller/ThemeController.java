@@ -37,9 +37,9 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/top10")
-    public ResponseEntity<List<ThemeResponse>> getTop10() {
-        List<ThemeResponse> themes = themeService.getTop10();
+    @GetMapping("/popular")
+    public ResponseEntity<List<ThemeResponse>> getTop10(@RequestParam(value = "top", defaultValue = "10") int count) {
+        List<ThemeResponse> themes = themeService.getPopularThemes(count);
         return ResponseEntity.ok().body(themes);
     }
 }
