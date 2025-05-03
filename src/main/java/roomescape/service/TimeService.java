@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.TimeRequest;
-import roomescape.exception.DuplicateTimeException;
+import roomescape.exception.custom.DuplicatedException;
 
 @Service
 public class TimeService {
@@ -30,9 +30,9 @@ public class TimeService {
         return reservationTimeDao.addTime(new ReservationTime(null, request.startAt()));
     }
 
-    private void validateExistedTime(TimeRequest timeRequest) {
-        if (reservationTimeDao.existTimeByStartAt(timeRequest.startAt())) {
-            throw new DuplicateTimeException();
+    private void validateExistedTime(TimeRequest request) {
+        if (reservationTimeDao.existTimeByStartAt(request.startAt())) {
+            throw new DuplicatedException("reservationTime");
         }
     }
 

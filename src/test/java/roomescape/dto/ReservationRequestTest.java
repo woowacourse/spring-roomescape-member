@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.request.ReservationRequest;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.custom.InvalidInputException;
 
 public class ReservationRequestTest {
 

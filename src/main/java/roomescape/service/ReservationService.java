@@ -11,8 +11,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
-import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.NotCorrectDateTimeException;
+import roomescape.exception.custom.DuplicatedException;
+import roomescape.exception.custom.InvalidInputException;
 
 @Service
 public class ReservationService {
@@ -45,7 +45,7 @@ public class ReservationService {
 
         if (date.isBefore(now.toLocalDate()) ||
             (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
-            throw new NotCorrectDateTimeException("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.");
+            throw new InvalidInputException("과거 예약은 불가능");
         }
     }
 
@@ -62,7 +62,7 @@ public class ReservationService {
     private void validateDuplicateReservation(ReservationRequest request) {
         if (reservationDao.existReservationByDateTimeAndTheme(
             request.date(), request.timeId(), request.themeId())) {
-            throw new DuplicateReservationException();
+            throw new DuplicatedException("reservation");
         }
     }
 

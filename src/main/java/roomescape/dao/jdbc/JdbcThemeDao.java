@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.exception.ThemeDoesNotExistException;
+import roomescape.exception.custom.NotFoundException;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
@@ -36,7 +36,7 @@ public class JdbcThemeDao implements ThemeDao {
         try {
             return jdbcTemplate.queryForObject(sql, createThemeMapper(), id);
         } catch (DataAccessException exception) {
-            throw new ThemeDoesNotExistException();
+            throw new NotFoundException("theme");
         }
     }
 

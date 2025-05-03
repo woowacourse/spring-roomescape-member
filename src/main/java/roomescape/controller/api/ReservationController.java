@@ -13,11 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.exception.CannotCreatedException;
-import roomescape.exception.DuplicateReservationException;
-import roomescape.exception.NotCorrectDateTimeException;
-import roomescape.exception.ThemeDoesNotExistException;
-import roomescape.exception.TimeDoesNotExistException;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -53,18 +48,5 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable Long id) {
         reservationService.removeReservation(id);
-    }
-
-    @ExceptionHandler(value = {TimeDoesNotExistException.class, ThemeDoesNotExistException.class,
-        NotCorrectDateTimeException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleCreatedException(CannotCreatedException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(value = DuplicateReservationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleDuplicateException(DuplicateReservationException ex) {
-        return ex.getMessage();
     }
 }

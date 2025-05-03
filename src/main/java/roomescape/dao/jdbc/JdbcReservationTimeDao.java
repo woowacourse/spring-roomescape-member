@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.TimeDoesNotExistException;
+import roomescape.exception.custom.NotFoundException;
 
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
@@ -56,7 +56,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, createReservationMapper(), id);
         } catch (DataAccessException e) {
-            throw new TimeDoesNotExistException();
+            throw new NotFoundException("reservationTime");
         }
     }
 

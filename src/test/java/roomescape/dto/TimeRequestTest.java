@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.request.TimeRequest;
-import roomescape.exception.InvalidInputException;
+import roomescape.exception.custom.InvalidInputException;
 
 public class TimeRequestTest {
 

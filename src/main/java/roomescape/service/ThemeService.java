@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
-import roomescape.exception.DuplicateThemeException;
+import roomescape.exception.custom.DuplicatedException;
 
 @Service
 public class ThemeService {
@@ -40,7 +40,7 @@ public class ThemeService {
 
     private void validateDuplicateTheme(ThemeRequest request) {
         if (themeDao.existThemeByName(request.name())) {
-            throw new DuplicateThemeException();
+            throw new DuplicatedException("theme");
         }
     }
 
