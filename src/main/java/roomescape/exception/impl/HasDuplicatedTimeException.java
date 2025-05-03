@@ -10,4 +10,3 @@ public class HasDuplicatedTimeException extends RootException {
         super(MESSAGE);
     }
 }
-
