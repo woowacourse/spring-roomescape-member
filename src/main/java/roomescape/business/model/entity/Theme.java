@@ -1,7 +1,7 @@
 package roomescape.business.model.entity;
 
-import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
 import roomescape.business.model.vo.Id;
+import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
 
 public class Theme {
 
@@ -39,6 +39,10 @@ public class Theme {
         return new Theme(Id.nullId(), name, description, thumbnail);
     }
 
+    public static Theme afterSave(final long id, final Theme theme) {
+        return afterSave(id, theme.name, theme.description, theme.thumbnail);
+    }
+
     public static Theme afterSave(
             final long id,
             final String name,
@@ -46,10 +50,6 @@ public class Theme {
             final String thumbnail
     ) {
         return new Theme(Id.create(id), name, description, thumbnail);
-    }
-
-    public static Theme afterSave(final long id, final Theme theme) {
-        return afterSave(id, theme.name, theme.description, theme.thumbnail);
     }
 
     public Long getId() {
