@@ -46,7 +46,7 @@ public class JdbcReservationDao implements ReservationDao {
                     );
                     ps.setString(1, newReservation.getName());
                     ps.setObject(2, newReservation.getDate());
-                    ps.setLong(3, newReservation.getTime().getId());
+                    ps.setLong(3, newReservation.getReservationTime().getId());
                     ps.setLong(4, newReservation.getTheme().getId());
                     return ps;
                 },
@@ -81,7 +81,7 @@ public class JdbcReservationDao implements ReservationDao {
                 sql,
                 Boolean.class,
                 reservation.getDate(),
-                reservation.getTime().getId()
+                reservation.getReservationTime().getId()
         );
     }
 
