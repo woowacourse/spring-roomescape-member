@@ -1,6 +1,7 @@
 package roomescape.model;
 
 import java.time.LocalTime;
+import roomescape.common.exception.InvalidInputException;
 
 public class ReservationTime {
     private final Long id;
@@ -21,7 +22,7 @@ public class ReservationTime {
 
     private void validateRequiredFields(Long id, LocalTime startAt) {
         if (id == null) {
-            throw new IllegalArgumentException("id는  null 일 수 없습니다.");
+            throw new InvalidInputException("id는  null 일 수 없습니다.");
         }
 
         validateRequiredFields(startAt);
@@ -29,7 +30,7 @@ public class ReservationTime {
 
     private void validateRequiredFields(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("시작 시각은 null 일 수 없습니다.");
+            throw new InvalidInputException("시작 시각은 null 일 수 없습니다.");
         }
     }
 

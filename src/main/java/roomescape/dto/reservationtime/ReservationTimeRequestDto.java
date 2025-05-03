@@ -2,6 +2,7 @@ package roomescape.dto.reservationtime;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import roomescape.common.exception.InvalidInputException;
 import roomescape.model.ReservationTime;
 
 public record ReservationTimeRequestDto(
@@ -16,13 +17,13 @@ public record ReservationTimeRequestDto(
             LocalTime startTime = LocalTime.parse(startAt);
             return new ReservationTime(startTime);
         } catch (DateTimeParseException e) {
-            throw new IllegalStateException("시간형식이 잘못되었습니다");
+            throw new InvalidInputException("시간형식이 잘못되었습니다");
         }
     }
 
     private void validateRequiredFields(String startAt) {
         if (startAt == null || startAt.isBlank()) {
-            throw new IllegalArgumentException("시작 시각은 null이거나 공백일 수 없습니다");
+            throw new InvalidInputException("시작 시각은 null이거나 공백일 수 없습니다");
         }
     }
 }

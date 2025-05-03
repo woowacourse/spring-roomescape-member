@@ -65,7 +65,6 @@ public class ThemeDao {
 
     public List<Theme> findPopularThemes(LocalDate today, int dayRange) {
         LocalDate sevenDaysAgo = today.minusDays(dayRange);
-
         String sql = """
                     SELECT theme.id AS id,
                            theme.name AS name,

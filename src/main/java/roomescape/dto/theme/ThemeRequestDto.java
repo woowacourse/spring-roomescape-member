@@ -1,5 +1,6 @@
 package roomescape.dto.theme;
 
+import roomescape.common.exception.InvalidInputException;
 import roomescape.model.Theme;
 
 public record ThemeRequestDto(
@@ -17,15 +18,15 @@ public record ThemeRequestDto(
 
     private void validateRequiredFields(String name, String description, String thumbnail) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("테마명은 null이거나 공백일 수 없습니다");
+            throw new InvalidInputException("테마명은 null이거나 공백일 수 없습니다");
         }
 
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 null이거나 공백일 수 없습니다");
+            throw new InvalidInputException("테마 설명은 null이거나 공백일 수 없습니다");
         }
 
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("썸내일 이미지는 null이거나 공백일 수 없습니다");
+            throw new InvalidInputException("썸내일 이미지는 null이거나 공백일 수 없습니다");
         }
     }
 }

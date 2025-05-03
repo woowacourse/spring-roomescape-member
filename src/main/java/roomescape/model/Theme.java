@@ -1,5 +1,7 @@
 package roomescape.model;
 
+import roomescape.common.exception.InvalidInputException;
+
 public class Theme {
     private Long id;
     private String name;
@@ -25,7 +27,7 @@ public class Theme {
 
     private void validateRequiredFields(Long id, String name, String description, String thumbnail) {
         if (id == null) {
-            throw new IllegalArgumentException("id는 null 일 수 없습니다.");
+            throw new InvalidInputException("id는 null 일 수 없습니다.");
         }
 
         validateRequiredFields(name, description, thumbnail);
@@ -33,15 +35,15 @@ public class Theme {
 
     private void validateRequiredFields(String name, String description, String thumbnail) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("테마명은 null 이거나 빈 값일 수 없습니다.");
+            throw new InvalidInputException("테마명은 null 이거나 빈 값일 수 없습니다.");
         }
 
         if (description == null || description.isEmpty()) {
-            throw new IllegalArgumentException("설명은 null 이거나 빈 값일 수 없습니다.");
+            throw new InvalidInputException("설명은 null 이거나 빈 값일 수 없습니다.");
         }
 
         if (thumbnail == null || thumbnail.isEmpty()) {
-            throw new IllegalArgumentException("설명은 null 이거나 빈 값일 수 없습니다.");
+            throw new InvalidInputException("설명은 null 이거나 빈 값일 수 없습니다.");
         }
     }
 

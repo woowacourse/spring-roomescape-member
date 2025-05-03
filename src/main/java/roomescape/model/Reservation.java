@@ -1,6 +1,8 @@
 package roomescape.model;
 
 import java.time.LocalDate;
+import roomescape.common.exception.InvalidInputException;
+import roomescape.common.exception.ReservationDateException;
 
 public class Reservation {
 
@@ -32,14 +34,14 @@ public class Reservation {
 
     public void validateReservationDateInFuture() {
         if (!this.date.isAfter(LocalDate.now())) {
-            throw new IllegalStateException("과거 및 당일 예약은 불가능합니다."); //TODO : exception 뭐로 하지?
+            throw new ReservationDateException("과거 및 당일 예약은 불가능합니다.");
         }
     }
 
     private void validateRequiredFields(Long id, String name, LocalDate date, ReservationTime reservationTime,
                                         Theme theme) {
         if (id == null) {
-            throw new IllegalArgumentException("id 값은 null 일 수 없습니다.");
+            throw new InvalidInputException("id 값은 null 일 수 없습니다.");
         }
 
         validateRequiredFields(name, date, reservationTime, theme);
@@ -48,19 +50,19 @@ public class Reservation {
     private void validateRequiredFields(String name, LocalDate date, ReservationTime reservationTime,
                                         Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("예약자명은 null이거나 공백일 수 없습니다");
+            throw new InvalidInputException("예약자명은 null이거나 공백일 수 없습니다");
         }
 
         if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 null이거나 공백일 수 없습니다");
+            throw new InvalidInputException("예약 날짜는 null이거나 공백일 수 없습니다");
         }
 
         if (reservationTime == null) {
-            throw new IllegalArgumentException("예약 시각은 null 일 수 없습니다.");
+            throw new InvalidInputException("예약 시각은 null 일 수 없습니다.");
         }
 
         if (theme == null) {
-            throw new IllegalArgumentException("테마는 null 일 수 없습니다.");
+            throw new InvalidInputException("테마는 null 일 수 없습니다.");
         }
     }
 
