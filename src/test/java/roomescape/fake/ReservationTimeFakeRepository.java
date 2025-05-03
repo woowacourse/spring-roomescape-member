@@ -1,14 +1,15 @@
 package roomescape.fake;
 
+import roomescape.entity.ReservationTime;
+import roomescape.exceptions.EntityNotFoundException;
+import roomescape.repository.ReservationTimeRepository;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.entity.ReservationTime;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ReservationTimeRepository;
 
 public class ReservationTimeFakeRepository implements ReservationTimeRepository {
 
@@ -26,7 +27,11 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime findById(Long id) {
-        return reservationTimes.get(id);
+        ReservationTime reservationTime = reservationTimes.get(id);
+        if (reservationTime == null) {
+            throw new EntityNotFoundException("예약 시간을 찾을 수 없습니다: " + id);
+        }
+        return reservationTime;
     }
 
     @Override
