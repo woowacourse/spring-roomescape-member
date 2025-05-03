@@ -6,8 +6,7 @@ CREATE TABLE reservation_time
     PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS theme;
-CREATE TABLE IF NOT EXISTS theme
+CREATE TABLE theme
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
@@ -16,8 +15,7 @@ CREATE TABLE IF NOT EXISTS theme
     PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS reservation;
-CREATE TABLE IF NOT EXISTS reservation
+CREATE TABLE reservation
 (
     id   BIGINT       NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
