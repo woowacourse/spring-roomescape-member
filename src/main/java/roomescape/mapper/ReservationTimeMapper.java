@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import org.springframework.jdbc.core.RowMapper;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.domain.ReservationTime;
 
 public class ReservationTimeMapper implements RowMapper<ReservationTime> {
 

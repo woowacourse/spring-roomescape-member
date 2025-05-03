@@ -19,9 +19,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain_entity.Reservation;
-import roomescape.domain_entity.ReservationTime;
-import roomescape.domain_entity.Theme;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.service.ReservationTimeService;
 

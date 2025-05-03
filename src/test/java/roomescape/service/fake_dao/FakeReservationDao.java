@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import roomescape.dao.ReservationDao;
-import roomescape.domain_entity.Reservation;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 public class FakeReservationDao implements ReservationDao {
 

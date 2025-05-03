@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import roomescape.domain_entity.Theme;
+import roomescape.domain.Theme;
 import roomescape.mapper.ThemeMapper;
 
 @Component

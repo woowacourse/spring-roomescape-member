@@ -2,8 +2,8 @@ package roomescape.dao;
 
 import java.time.LocalDate;
 import java.util.List;
-import roomescape.domain_entity.Reservation;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
 
 public interface ReservationDao {
 

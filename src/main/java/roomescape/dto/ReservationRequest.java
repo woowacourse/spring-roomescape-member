@@ -1,9 +1,9 @@
 package roomescape.dto;
 
 import java.time.LocalDate;
-import roomescape.domain_entity.Reservation;
-import roomescape.domain_entity.ReservationTime;
-import roomescape.domain_entity.Theme;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public record ReservationRequest(
         String name, LocalDate date, long timeId, Long themeId

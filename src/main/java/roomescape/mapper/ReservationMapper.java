@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.springframework.jdbc.core.RowMapper;
-import roomescape.domain_entity.Reservation;
-import roomescape.domain_entity.ReservationTime;
-import roomescape.domain_entity.Theme;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public class ReservationMapper implements RowMapper<Reservation> {
 
