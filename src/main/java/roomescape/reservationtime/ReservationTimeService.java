@@ -1,7 +1,6 @@
 package roomescape.reservationtime;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +30,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(final ReservationTimeRequest request) {
-        validateDuplicateTime(request.startAt());
+        validateDuplicateTime(request);
 
         final ReservationTime reservationTime = new ReservationTime(request.startAt());
         final Long id = reservationTimeRepository.save(reservationTime);
@@ -62,7 +61,7 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final Long id) {
-        validateExistsResrvationTime(id);
+        validateExistsReservationTime(id);
         validateUnusedReservationTime(id);
 
         reservationTimeRepository.deleteById(id);
@@ -74,14 +73,14 @@ public class ReservationTimeService {
         }
     }
 
-    private void validateExistsResrvationTime(final Long id) {
+    private void validateExistsReservationTime(final Long id) {
         if (!reservationTimeRepository.existsById(id)) {
             throw new ReservationTimeNotFoundException();
         }
     }
 
-    private void validateDuplicateTime(final LocalTime startAt) {
-        if (reservationTimeRepository.existsByStartAt(startAt)) {
+    private void validateDuplicateTime(final ReservationTimeRequest request) {
+        if (reservationTimeRepository.existsByStartAt(request.startAt())) {
             throw new ReservationTimeConflictException();
         }
     }
