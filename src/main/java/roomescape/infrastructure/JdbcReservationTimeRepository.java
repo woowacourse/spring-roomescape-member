@@ -85,6 +85,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public boolean existBetween(final LocalTime startInclusive, final LocalTime endExclusive) {
+        final String sql = """
+                SELECT COUNT(*) FROM reservation_time
+                WHERE start_at >= ? AND start_at < ?
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, startInclusive, endExclusive);
+        return count != null && count > 0;
+    }
+
+    @Override
     public List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId) {
         final String sql = """
                 SELECT *

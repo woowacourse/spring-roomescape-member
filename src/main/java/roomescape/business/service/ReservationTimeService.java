@@ -28,24 +28,23 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addAndGet(final LocalTime time) {
-        validateNoDuplication(time);
-        validateTimeInterval(time);
-
         ReservationTime reservationTime = ReservationTime.beforeSave(time);
+        validateNoDuplication(reservationTime);
+        validateTimeInterval(reservationTime);
+
         return reservationTimeRepository.save(reservationTime);
     }
 
-    private void validateNoDuplication(final LocalTime createTime) {
-        boolean isExist = reservationTimeRepository.existByTime(createTime);
+    private void validateNoDuplication(final ReservationTime reservationTime) {
+        boolean isExist = reservationTimeRepository.existByTime(reservationTime.getStartAt());
         if (isExist) {
             throw new HasDuplicatedTimeException();
         }
     }
 
-    private void validateTimeInterval(final LocalTime createTime) {
-        boolean hasLess30MinDifference = reservationTimeRepository.findAll().stream()
-                .anyMatch(reservationTime -> reservationTime.isInTimeInterval(createTime));
-        if (hasLess30MinDifference) {
+    private void validateTimeInterval(final ReservationTime reservationTime) {
+        boolean existInInterval = reservationTimeRepository.existBetween(reservationTime.startInterval(), reservationTime.endInterval());
+        if (existInInterval) {
             throw new ReservationTimeIntervalException();
         }
     }

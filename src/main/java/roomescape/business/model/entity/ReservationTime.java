@@ -3,7 +3,6 @@ package roomescape.business.model.entity;
 import roomescape.business.model.vo.Id;
 import roomescape.exception.impl.InvalidReservationTimeException;
 
-import java.time.Duration;
 import java.time.LocalTime;
 
 public class ReservationTime {
@@ -35,9 +34,12 @@ public class ReservationTime {
         return new ReservationTime(Id.create(id), startAt);
     }
 
-    public boolean isInTimeInterval(LocalTime otherTime) {
-        long minuteDifference = Duration.between(startAt, otherTime).abs().toMinutes();
-        return minuteDifference < MINUTE_INTERVAL;
+    public LocalTime startInterval() {
+        return startAt.minusMinutes(MINUTE_INTERVAL);
+    }
+
+    public LocalTime endInterval() {
+        return startAt.plusMinutes(MINUTE_INTERVAL);
     }
 
     public Long getId() {

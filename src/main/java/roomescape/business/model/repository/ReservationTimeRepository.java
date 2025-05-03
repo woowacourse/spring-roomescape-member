@@ -15,6 +15,8 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
+    boolean existBetween(LocalTime startInclusive, LocalTime endExclusive);
+
     List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId);
 
     boolean existById(long timeId);
