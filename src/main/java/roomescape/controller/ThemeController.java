@@ -2,6 +2,7 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +18,7 @@ import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
-@RequestMapping("/themes")
+@RequestMapping
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -26,7 +27,7 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping
+    @GetMapping("/themes")
     public List<ThemeResponse> getThemes() {
         List<Theme> themes = themeService.findAllTheme();
         return themes.stream()
@@ -34,15 +35,17 @@ public class ThemeController {
                 .toList();
     }
 
-    @GetMapping("/top")
+    @GetMapping("/themes/top")
     public List<ThemeResponse> getTopThemes() {
-        List<Theme> themes = themeService.findTopThemes();
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(7);
+        List<Theme> themes = themeService.findTopThemes(startDate, endDate);
         return themes.stream()
                 .map(ThemeResponse::new)
                 .toList();
     }
 
-    @PostMapping
+    @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> createTheme(
             @Valid @RequestBody ThemeCreationRequest request) {
         long savedId = themeService.addTheme(request);
@@ -52,7 +55,7 @@ public class ThemeController {
                 .body(new ThemeResponse(theme));
     }
 
-    @DeleteMapping("/{themeId}")
+    @DeleteMapping("/themes/{themeId}")
     public ResponseEntity<Void> deleteById(
             @PathVariable("themeId") long id
     ) {

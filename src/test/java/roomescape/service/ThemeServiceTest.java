@@ -8,12 +8,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static roomescape.test.fixture.DateFixture.TODAY;
 
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreationRequest;
 import roomescape.exception.BadRequestException;
@@ -79,9 +79,9 @@ class ThemeServiceTest {
                 new Theme(8L, "테마8", "설명", "섬네일"),
                 new Theme(9L, "테마9", "설명", "섬네일"),
                 new Theme(10L, "테마10", "설명", "섬네일"));
-        when(themeRepository.getTopThemesByCount(Mockito.any(), Mockito.any())).thenReturn(expectedThemes);
+        when(themeRepository.getTopThemesByCount(TODAY.minusDays(7), TODAY)).thenReturn(expectedThemes);
 
-        List<Theme> actualThemes = themeService.findTopThemes();
+        List<Theme> actualThemes = themeService.findTopThemes(TODAY.minusDays(7), TODAY);
 
         assertThat(actualThemes).containsExactlyElementsOf(expectedThemes);
     }

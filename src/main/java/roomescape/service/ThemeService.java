@@ -30,9 +30,8 @@ public class ThemeService {
         return loadThemeById(themeId);
     }
 
-    public List<Theme> findTopThemes() {
-        LocalDate endDate = LocalDate.now();
-        return themeRepository.getTopThemesByCount(endDate.minusDays(7L), endDate);
+    public List<Theme> findTopThemes(LocalDate startDate, LocalDate endDate) {
+        return themeRepository.getTopThemesByCount(startDate, endDate);
     }
 
     public long addTheme(ThemeCreationRequest request) {
