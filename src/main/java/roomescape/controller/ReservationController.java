@@ -39,7 +39,7 @@ public class ReservationController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(reservationCreateResponse.getId())
+                .buildAndExpand(reservationCreateResponse.id())
                 .toUri();
         return ResponseEntity.created(location).body(reservationCreateResponse);
     }

@@ -21,8 +21,8 @@ class ReservationTest {
 
         // given
         Reservation reservation = Reservation.load(firstId, "체체", LocalDate.now(),
-                new ReservationTime(1L, LocalTime.now().plusHours(1)),
-                new Theme(1L, "test", "test", "test"));
+                ReservationTime.load(1L, LocalTime.now().plusHours(1)),
+                Theme.load(1L, "test", "test", "test"));
 
         // when & then
         assertThat(reservation.isEqualId(secondId)).isEqualTo(result);
@@ -34,8 +34,8 @@ class ReservationTest {
         // given
         String nameOver10 = "a".repeat(11);
         LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
-        Theme theme = new Theme(1L, "test", "test", "test");
+        ReservationTime time = ReservationTime.create(LocalTime.now().plusHours(1));
+        Theme theme = Theme.load(1L, "test", "test", "test");
 
         // when & then
         assertThatThrownBy(() -> Reservation.create(nameOver10, date, time, theme))
@@ -49,8 +49,8 @@ class ReservationTest {
 
         // given
         LocalDate date = LocalDate.of(2024, 12, 12);
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
-        Theme theme = new Theme(1L, "test", "test", "test");
+        ReservationTime time = ReservationTime.create(LocalTime.now().plusHours(1));
+        Theme theme = Theme.load(1L, "test", "test", "test");
 
         // when & then
         assertThatThrownBy(() -> Reservation.create("test", date, time, theme))
@@ -64,8 +64,8 @@ class ReservationTest {
 
         // given
         LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().minusHours(1));
-        Theme theme = new Theme(1L, "test", "test", "test");
+        ReservationTime time = ReservationTime.create(LocalTime.now().minusHours(1));
+        Theme theme = Theme.load(1L, "test", "test", "test");
 
         // when & then
         assertThatThrownBy(() -> Reservation.create("test", date, time, theme))

@@ -11,6 +11,7 @@ import roomescape.dto.response.ReservationCreateResponse;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.ExceptionCause;
 import roomescape.exception.ReservationDuplicateException;
 
 @Service
@@ -32,12 +33,12 @@ public class ReservationService {
         Theme theme = themeService.findById(reservationCreateRequest.themeId());
         Reservation reservation = Reservation.create(
                 reservationCreateRequest.name(),
-                reservationCreateRequest.getLocalDate(),
+                reservationCreateRequest.date(),
                 time,
                 theme);
 
         if (reservationDao.findByThemeAndDateAndTime(reservation).isPresent()) {
-            throw new ReservationDuplicateException("이미 존재하는 예약입니다.");
+            throw new ReservationDuplicateException(ExceptionCause.RESERVATION_DUPLICATE);
         }
         return ReservationCreateResponse.from(reservationDao.create(reservation));
     }

@@ -49,7 +49,7 @@ class ReservationTimeServiceTest {
 
         // given
         LocalDate date = LocalDate.now();
-        Optional<ReservationTime> reservationTime = Optional.of(new ReservationTime(1L, LocalTime.of(10, 10)));
+        Optional<ReservationTime> reservationTime = Optional.of(ReservationTime.load(1L, LocalTime.of(10, 10)));
         when(reservationTimeDao.findByIdAndDateAndTheme(1L, 1L, date)).thenReturn(reservationTime);
         when(reservationTimeDao.findAll()).thenReturn(List.of(reservationTime.get()));
 
@@ -67,7 +67,7 @@ class ReservationTimeServiceTest {
     void deleteIfNoReservationTest() {
 
         // given
-        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(10, 10))));
+        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(ReservationTime.load(1L, LocalTime.of(10, 10))));
         when(reservationTimeDao.deleteIfNoReservation(1L)).thenReturn(true);
 
         // when & then
@@ -80,7 +80,7 @@ class ReservationTimeServiceTest {
     void deleteIfNoReservationThrowExceptionTest() {
 
         // given
-        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(10, 10))));
+        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(ReservationTime.load(1L, LocalTime.of(10, 10))));
         when(reservationTimeDao.deleteIfNoReservation(1L)).thenReturn(false);
 
         // when & then

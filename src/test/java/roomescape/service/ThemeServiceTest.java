@@ -43,7 +43,7 @@ class ThemeServiceTest {
     void deleteIfNoReservationTest() {
 
         // given
-        when(themeDao.findById(1L)).thenReturn(Optional.of(new Theme(1L, "test", "test", "test")));
+        when(themeDao.findById(1L)).thenReturn(Optional.of(Theme.load(1L, "test", "test", "test")));
         when(themeDao.deleteIfNoReservation(1L)).thenReturn(true);
 
         // when & then
@@ -56,7 +56,7 @@ class ThemeServiceTest {
     void deleteIfNoReservationThrowExceptionTest() {
 
         // given
-        when(themeDao.findById(1L)).thenReturn(Optional.of(new Theme(1L, "test", "test", "test")));
+        when(themeDao.findById(1L)).thenReturn(Optional.of(Theme.load(1L, "test", "test", "test")));
         when(themeDao.deleteIfNoReservation(1L)).thenReturn(false);
 
         // when & then

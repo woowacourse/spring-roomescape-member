@@ -22,7 +22,6 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeIntegrationTest {
 
-    //예약 가능한 애, 전체 조회, 추가랑, 삭제
     @DisplayName("예약 시간을 추가한다.")
     @Test
     void addReservationTimeTest() {

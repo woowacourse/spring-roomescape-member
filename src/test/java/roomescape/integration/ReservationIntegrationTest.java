@@ -48,7 +48,6 @@ public class ReservationIntegrationTest {
                 .statusCode(201);
     }
 
-    // findAll, delete
     @DisplayName("예약을 추가한다.")
     @Test
     void addReservationTest() {

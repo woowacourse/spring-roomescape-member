@@ -11,6 +11,7 @@ import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.ReservationTimeCreateResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeUserResponse;
+import roomescape.exception.ExceptionCause;
 import roomescape.exception.ReservationExistException;
 
 @Service
@@ -24,7 +25,7 @@ public class ReservationTimeService {
 
     public ReservationTimeCreateResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         ReservationTime reservationTime = reservationTimeDao.create(
-                new ReservationTime(reservationTimeCreateRequest.getLocalTime()));
+                ReservationTime.create(reservationTimeCreateRequest.startAt()));
         return ReservationTimeCreateResponse.from(reservationTime);
     }
 
@@ -43,7 +44,7 @@ public class ReservationTimeService {
         if (reservationTimeDao.deleteIfNoReservation(reservationTime.getId())) {
             return;
         }
-        throw new ReservationExistException("이 시간에 대한 예약이 존재합니다.");
+        throw new ReservationExistException(ExceptionCause.RESERVATION_EXIST_TIME);
     }
 
     public ReservationTime findById(final Long id) {

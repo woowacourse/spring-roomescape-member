@@ -11,9 +11,9 @@ public interface ReservationTimeDao {
 
     ReservationTime create(ReservationTime reservationTime);
 
-    boolean deleteIfNoReservation(final long id);
+    boolean deleteIfNoReservation(Long id);
 
-    Optional<ReservationTime> findById(long id);
+    Optional<ReservationTime> findById(Long id);
 
-    Optional<ReservationTime> findByIdAndDateAndTheme(long id, long themeId, LocalDate date);
+    Optional<ReservationTime> findByIdAndDateAndTheme(Long id, Long themeId, LocalDate date);
 }

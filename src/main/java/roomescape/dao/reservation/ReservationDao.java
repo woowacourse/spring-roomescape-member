@@ -10,7 +10,7 @@ public interface ReservationDao {
 
     Reservation create(Reservation reservation);
 
-    void delete(long id);
+    void delete(Long id);
 
     Optional<Reservation> findByThemeAndDateAndTime(Reservation reservation);
 }

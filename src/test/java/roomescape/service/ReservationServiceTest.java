@@ -40,9 +40,9 @@ class ReservationServiceTest {
     void createThrowExceptionIfAlreadyExistDateAndTimeTest() {
 
         // given
-        ReservationTime time = new ReservationTime(1L, LocalTime.now().plusHours(1));
-        Theme theme = new Theme(1L, "test", "테마1", "설명1");
-        ReservationCreateRequest request = new ReservationCreateRequest("체체", LocalDate.now().toString(), 1L, 1L);
+        ReservationTime time = ReservationTime.load(1L, LocalTime.now().plusHours(1));
+        Theme theme = Theme.load(1L, "test", "테마1", "설명1");
+        ReservationCreateRequest request = new ReservationCreateRequest("체체", LocalDate.now(), 1L, 1L);
 
         when(reservationTimeService.findById(1L)).thenReturn(time);
         when(themeService.findById(1L)).thenReturn(theme);
