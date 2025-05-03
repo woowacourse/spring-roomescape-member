@@ -44,7 +44,7 @@ class ReservationTimeServiceTest {
         assertThat(actualTimes).containsExactlyElementsOf(expectedTimes);
     }
 
-    @DisplayName("예약 여부와 함께 예약 가능 시간들을 조회할 수 있다.")
+    @DisplayName("예약 여부와 함께 예약 가능 시간들을 조회할 수 있다")
     @Test
     void canGetAllReservationTimeWithBookState() {
         List<TimeWithBookState> expectedTimes = List.of(

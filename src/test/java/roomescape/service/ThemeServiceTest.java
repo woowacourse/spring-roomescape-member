@@ -19,13 +19,11 @@ import roomescape.dto.request.ThemeCreationRequest;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
-import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 class ThemeServiceTest {
 
     private final ReservationRepository reservationRepository = mock(ReservationRepository.class);
-    private final ReservationTimeRepository reservationTimeRepository = mock(ReservationTimeRepository.class);
     private final ThemeRepository themeRepository = mock(ThemeRepository.class);
     private final ThemeService themeService = new ThemeService(reservationRepository, themeRepository);
 
@@ -86,7 +84,7 @@ class ThemeServiceTest {
         assertThat(actualThemes).containsExactlyElementsOf(expectedThemes);
     }
 
-    @DisplayName("테마를 추가할 수 있다.")
+    @DisplayName("테마를 추가할 수 있다")
     @Test
     void canAddTheme() {
         ThemeCreationRequest request = new ThemeCreationRequest("테마", "설명", "섬네일");
@@ -98,7 +96,7 @@ class ThemeServiceTest {
         assertThat(savedId).isEqualTo(1L);
     }
 
-    @DisplayName("ID를 통해 테마를 삭제할 수 있다.")
+    @DisplayName("ID를 통해 테마를 삭제할 수 있다")
     @Test
     void canDeleteThemeById() {
         Theme theme = new Theme(1L, "테마", "설명", "섬네일");
@@ -112,7 +110,7 @@ class ThemeServiceTest {
         );
     }
 
-    @DisplayName("삭제할 테마가 존재하지 않는 경우 예외를 발생시킨다.")
+    @DisplayName("삭제할 테마가 존재하지 않는 경우 예외를 발생시킨다")
     @Test
     void cannotDeleteThemeWhenEmptyTheme() {
         long noneExistentId = 1L;
@@ -124,7 +122,7 @@ class ThemeServiceTest {
                 .hasMessage("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
     }
 
-    @DisplayName("예약이 존재하는 경우 테마를 삭제할 수 있다.")
+    @DisplayName("예약이 존재하는 경우 테마를 삭제할 수 있다")
     @Test
     void cannotDeleteThemeWhenReservationExist() {
         Theme theme = new Theme(1L, "테마", "설명", "섬네일");
