@@ -17,7 +17,7 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long id);
 
-    boolean existByStartAt(LocalTime startAt);
+    boolean existsByStartAt(LocalTime startAt);
 
     List<AvailableReservationTimeResponse> findAllAvailableReservationTimes(LocalDate date, Long themeId);
 }

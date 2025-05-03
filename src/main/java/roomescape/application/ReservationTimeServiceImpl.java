@@ -33,7 +33,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     public ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request) {
 
         LocalTime startAt = request.startAt();
-        if (reservationTimeRepository.existByStartAt(startAt)) {
+        if (reservationTimeRepository.existsByStartAt(startAt)) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 시간입니다.");
         }
 
@@ -44,7 +44,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     }
 
     public void deleteReservationTimeById(Long id) {
-        if (reservationRepository.existReservationByTimeId(id)) {
+        if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("[ERROR] 해당 시간에 이미 예약이 존재하여 삭제할 수 없습니다.");
         }
 

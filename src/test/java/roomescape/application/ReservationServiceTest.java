@@ -1,8 +1,5 @@
 package roomescape.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
@@ -17,6 +14,8 @@ import roomescape.fixture.ThemeDbFixture;
 import roomescape.domain.Theme;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
 import roomescape.domain.ReservationTime;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class ReservationServiceTest extends BaseTest {
 
@@ -51,7 +50,7 @@ public class ReservationServiceTest extends BaseTest {
     }
 
     @Test
-    void 예약이_존재하면_예약을_생성할_수_없다() {
+    void 같은일시_같은테마_예약이_존재하면_예약을_생성할_수_없다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
@@ -71,6 +70,30 @@ public class ReservationServiceTest extends BaseTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 같은일시_다른테마_예약은_생성할_수_있다() {
+        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
+        Theme horror = themeDbFixture.공포();
+        Theme mystery = themeDbFixture.커스텀_테마("미스테리");
+
+        reservationService.createReservation(new ReservationCreateRequest(
+                ReserverNameFixture.한스.getName(),
+                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                reservationTime.getId(),
+                horror.getId()
+        ));
+
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                ReserverNameFixture.한스.getName(),
+                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                reservationTime.getId(),
+                mystery.getId()
+        );
+
+        assertThatCode(() -> reservationService.createReservation(request))
+                .doesNotThrowAnyException();
     }
 
     @Test

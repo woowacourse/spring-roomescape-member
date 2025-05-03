@@ -39,17 +39,18 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationCreateRequest request) {
-        Long timeId = request.timeId();
         ReservationDate reservationDate = new ReservationDate(request.date());
+        Long timeId = request.timeId();
+        Long themeId = request.themeId();
 
-        if (reservationRepository.existSameDateTime(reservationDate, timeId)) {
+        if (reservationRepository.existsByDateTimeAndTheme(reservationDate, timeId, themeId)) {
             throw new IllegalArgumentException("[ERROR] 이미 예약이 찼습니다.");
         }
 
         ReserverName reserverName = new ReserverName(request.name());
-        ReservationTime reservationTime = reservationTimeService.findReservationTimeById(request.timeId());
+        ReservationTime reservationTime = reservationTimeService.findReservationTimeById(timeId);
         ReservationDateTime reservationDateTime = ReservationDateTime.create(reservationDate, reservationTime, clock);
-        Theme theme = themeService.findThemeById(request.themeId());
+        Theme theme = themeService.findThemeById(themeId);
         Reservation created = reservationRepository.save(reserverName, reservationDateTime, theme);
 
         return ReservationResponse.from(created);
