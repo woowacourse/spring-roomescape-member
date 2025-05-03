@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest
 public class ThemeServiceImplTest {
 
     @Autowired
