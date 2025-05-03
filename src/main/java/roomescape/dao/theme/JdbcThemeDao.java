@@ -15,7 +15,7 @@ import roomescape.domain.Theme;
 public class JdbcThemeDao implements ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Theme> themeMapper = (resultSet, rowNum) -> new Theme(
+    private final RowMapper<Theme> themeMapper = (resultSet, rowNum) -> Theme.load(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("description"),
@@ -50,11 +50,11 @@ public class JdbcThemeDao implements ThemeDao {
                 "thumbnail", theme.getThumbnail()));
 
         Number key = jdbcInsert.executeAndReturnKey(parameters);
-        return new Theme(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return Theme.load(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
-    public boolean deleteIfNoReservation(long id) {
+    public boolean deleteIfNoReservation(Long id) {
         final String sql = """
                 DELETE FROM theme t 
                 WHERE t.id = ? 

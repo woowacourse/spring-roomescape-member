@@ -3,19 +3,22 @@ package roomescape.domain;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.EmptyValueException;
+import roomescape.exception.ExceptionCause;
 
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final ReserverName name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
     private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
                         final Theme theme) {
+        validateFields(name, date);
         this.id = id;
-        this.name = name;
+        this.name = new ReserverName(name);
         this.date = date;
         this.time = time;
         this.theme = theme;
@@ -28,15 +31,8 @@ public class Reservation {
 
     public static Reservation create(final String name, final LocalDate date, final ReservationTime time,
                                      final Theme theme) {
-        validateNameLength(name);
         validateDateTime(date, time);
         return new Reservation(null, name, date, time, theme);
-    }
-
-    private static void validateNameLength(final String name) {
-        if (name.length() > 10) {
-            throw new IllegalArgumentException("예약자명은 10자 이하여야합니다.");
-        }
     }
 
     private static void validateDateTime(final LocalDate localDate, final ReservationTime reservationTime) {
@@ -45,6 +41,15 @@ public class Reservation {
         }
         if (localDate.isEqual(LocalDate.now()) && reservationTime.isBefore(LocalTime.now())) {
             throw new IllegalArgumentException("예약은 미래만 가능합니다.");
+        }
+    }
+
+    public void validateFields(String name, LocalDate date) {
+        if (name.isBlank()) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_RESERVATION_NAME);
+        }
+        if (date == null) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_RESERVATION_DATE);
         }
     }
 
@@ -57,7 +62,7 @@ public class Reservation {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public LocalDate getDate() {

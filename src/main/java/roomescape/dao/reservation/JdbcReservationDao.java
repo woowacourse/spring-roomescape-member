@@ -19,12 +19,12 @@ public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Reservation> reservationMapper = (resultSet, rowNum) -> {
-        ReservationTime time = new ReservationTime(
+        ReservationTime time = ReservationTime.load(
                 resultSet.getLong("time_id"),
                 resultSet.getObject("time_value", LocalTime.class)
         );
 
-        Theme theme = new Theme(
+        Theme theme = Theme.load(
                 resultSet.getLong("theme_id"),
                 resultSet.getString("theme_name"),
                 resultSet.getString("theme_description"),
@@ -65,7 +65,7 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
         return jdbcTemplate.query(sql, reservationMapper);
     }
-    
+
     @Override
     public Reservation create(final Reservation reservation) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -83,7 +83,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(final long id) {
+    public void delete(final Long id) {
         final String sql = "DELETE reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

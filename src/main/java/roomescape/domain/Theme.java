@@ -1,25 +1,42 @@
 package roomescape.domain;
 
 import java.util.Objects;
+import roomescape.exception.EmptyValueException;
+import roomescape.exception.ExceptionCause;
 
 public class Theme {
 
-    private Long id;
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
-    public Theme(final Long id, final String name, final String description, final String thumbnail) {
+    private Theme(Long id, String name, String description, String thumbnail) {
+        validateFields(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    public Theme(final String name, final String description, final String thumbnail) {
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+    public static Theme create(final String name, final String description, final String thumbnail) {
+        return new Theme(null, name, description, thumbnail);
+    }
+
+    public static Theme load(final Long id, final String name, final String description, final String thumbnail) {
+        return new Theme(id, name, description, thumbnail);
+    }
+
+    private void validateFields(String name, String description, String thumbnail) {
+        if (name.isBlank()) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_THEME_NAME);
+        }
+        if (description.isBlank()) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_THEME_DESCRIPTION);
+        }
+        if (thumbnail.isBlank()) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_THEME_THUMBNAIL);
+        }
     }
 
     public Long getId() {

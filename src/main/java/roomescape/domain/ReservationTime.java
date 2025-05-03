@@ -2,31 +2,32 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.EmptyValueException;
+import roomescape.exception.ExceptionCause;
 
 public class ReservationTime {
 
+    private final Long id;
     private final LocalTime startAt;
-    private Long id;
 
-    public ReservationTime(final Long id, final LocalTime startAt) {
+    private ReservationTime(Long id, LocalTime startAt) {
+        validateTime(startAt);
         this.id = id;
         this.startAt = startAt;
     }
 
-    public ReservationTime(final LocalTime startAt) {
-        this.startAt = startAt;
+    public static ReservationTime load(final Long id, final LocalTime startAt) {
+        return new ReservationTime(id, startAt);
     }
 
-    public boolean isEqualId(final Long id) {
-        return this.id.equals(id);
+    public static ReservationTime create(final LocalTime startAt) {
+        return new ReservationTime(null, startAt);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
+    private static void validateTime(final LocalTime startAt) {
+        if (startAt == null) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_RESERVATION_TIME);
+        }
     }
 
     public boolean isBefore(final LocalTime now) {
@@ -45,5 +46,13 @@ public class ReservationTime {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalTime getStartAt() {
+        return startAt;
     }
 }

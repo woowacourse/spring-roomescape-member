@@ -34,7 +34,7 @@ class JdbcReservationTimeDaoTest {
     void addTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.of(10, 10));
 
         // when
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
@@ -48,9 +48,9 @@ class JdbcReservationTimeDaoTest {
     void findAllTest() {
 
         // given
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime1 = ReservationTime.create(LocalTime.of(10, 10));
         jdbcReservationTimeDao.create(reservationTime1);
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.of(11, 10));
+        ReservationTime reservationTime2 = ReservationTime.create(LocalTime.of(11, 10));
         jdbcReservationTimeDao.create(reservationTime2);
 
         // when
@@ -65,7 +65,7 @@ class JdbcReservationTimeDaoTest {
     void deleteIfNoExistReservationReturnTrueTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.of(10, 10));
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
 
         // when
@@ -80,9 +80,9 @@ class JdbcReservationTimeDaoTest {
     void deleteIfExistReservationReturnFalseTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.now().plusHours(1));
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Theme theme = new Theme("test", "test", "test");
+        Theme theme = Theme.create("test", "test", "test");
         Theme savedTheme = jdbcThemeDao.create(theme);
         jdbcReservationDao.create(
                 Reservation.create("test", LocalDate.now(), savedReservationTime, savedTheme));
@@ -101,8 +101,8 @@ class JdbcReservationTimeDaoTest {
         // given
         LocalTime time = LocalTime.of(10, 10);
         LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = new Theme("test", "test", "test");
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+        Theme theme = Theme.create("test", "test", "test");
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(time));
         Theme savedTheme = jdbcThemeDao.create(theme);
         Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
         Reservation savedReservation = jdbcReservationDao.create(reservation);

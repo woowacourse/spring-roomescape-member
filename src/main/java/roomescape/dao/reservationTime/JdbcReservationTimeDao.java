@@ -16,7 +16,7 @@ import roomescape.domain.ReservationTime;
 public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<ReservationTime> reservationTimeMapper = (resultSet, rowNum) -> new ReservationTime(
+    private final RowMapper<ReservationTime> reservationTimeMapper = (resultSet, rowNum) -> ReservationTime.load(
             resultSet.getLong("id"),
             resultSet.getObject("start_at", LocalTime.class)
     );
@@ -41,11 +41,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                 "start_at", reservationTime.getStartAt()));
 
         Number key = jdbcInsert.executeAndReturnKey(parameters);
-        return new ReservationTime(key.longValue(), reservationTime.getStartAt());
+        return ReservationTime.load(key.longValue(), reservationTime.getStartAt());
     }
 
     @Override
-    public boolean deleteIfNoReservation(long id) {
+    public boolean deleteIfNoReservation(Long id) {
         String sql = """
                 DELETE FROM reservation_time rt 
                 WHERE rt.id = ? 
@@ -59,14 +59,14 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Optional<ReservationTime> findById(final long id) {
+    public Optional<ReservationTime> findById(Long id) {
         final String sql = "SELECT * FROM reservation_time WHERE id = ?";
         return jdbcTemplate.query(sql, reservationTimeMapper, id).stream()
                 .findFirst();
     }
 
     @Override
-    public Optional<ReservationTime> findByIdAndDateAndTheme(final long id, final long themeId, final LocalDate date) {
+    public Optional<ReservationTime> findByIdAndDateAndTheme(final Long id, final Long themeId, final LocalDate date) {
         final String sql = """
                 SELECT id, start_at
                 FROM reservation_time rt
