@@ -26,12 +26,6 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ThemeResponse createTheme(@RequestBody ThemeRequest request) {
-        return ThemeResponse.from(themeService.addTheme(request));
-    }
-
     @GetMapping
     public List<ThemeResponse> readThemes() {
         return themeService.findAllThemes().stream()
@@ -39,17 +33,23 @@ public class ThemeController {
             .toList();
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTheme(@PathVariable Long id) {
-        themeService.removeTheme(id);
-    }
-
     @GetMapping("/top-rank")
     public List<ThemeResponse> readTopRankTheme() {
         return themeService.findTopReservedThemes().stream()
             .map(ThemeResponse::from)
             .toList();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ThemeResponse createTheme(@RequestBody ThemeRequest request) {
+        return ThemeResponse.from(themeService.addTheme(request));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTheme(@PathVariable Long id) {
+        themeService.removeTheme(id);
     }
 
     @ExceptionHandler(value = DuplicateThemeException.class)

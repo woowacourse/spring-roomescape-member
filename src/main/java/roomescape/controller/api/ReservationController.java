@@ -30,6 +30,13 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    @GetMapping
+    public List<ReservationResponse> readReservations() {
+        return reservationService.findAllReservations().stream()
+            .map(ReservationResponse::from)
+            .toList();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
@@ -40,13 +47,6 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse createAdminReservation(@RequestBody ReservationRequest request) {
         return ReservationResponse.from(reservationService.addReservation(request));
-    }
-
-    @GetMapping
-    public List<ReservationResponse> readReservations() {
-        return reservationService.findAllReservations().stream()
-            .map(ReservationResponse::from)
-            .toList();
     }
 
     @DeleteMapping("/{id}")

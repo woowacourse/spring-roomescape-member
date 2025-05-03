@@ -56,12 +56,38 @@
 
 ---
 
-## CRUD API 명세
+## API 목록
 
-### 예약 생성
-* 사용자: `/reservations` 
-* 관리자: `/reservations/admin`
+### 홈(Home)
+| URL         | 메서드    | 기능           |
+|-------------|--------|--------------|
+| `/`         | GET    | 인기 테마 페이지 보기 |
+| `/top-rank` | GET    | 인기 테마 조회     |
 
-### 시간 조회
-* 사용자: `/times/{date}/{themeId}`
-* 관리자: `/times`
+### 관리자(Admin)
+| URL              | 메서드    | 기능              |
+|------------------|--------|-----------------|
+| `/admin`         | GET    | 어드민 페이지 보기      |
+| `/admin/reservation` | GET    | 예약 관리 페이지 보기    |
+| `/admin/time`    | GET    | 예약 시간 관리 페이지 보기 |
+| `/admin/theme`   | GET    | 테마 관리 페이지 보기    |
+| `/reservations/admin` | POST   | 예약 추가           |
+| `/reservations/{id}` | DELETE | 예약 삭제           |
+| `/times`         | GET    | 예약 가능 시간 모두 조회  |
+| `/times`         | POST   | 예약 시간 추가        |
+| `/times/{id}`    | DELETE | 예약 시간 삭제        |
+| `/themes`        | POST   | 테마 추가           |
+| `/themes/{id}`    | DELETE | 테마 삭제           |
+
+### 사용자(User)
+| URL                       | 메서드  | 기능               |
+|---------------------------|------|------------------|
+| `/reservation`            | GET  | 사용자 예약 페이지 보기    |
+| `/reservations`           | POST | 사용자 페이지에서 예약 추가  |
+| `/times/{date}/{themeId}` | GET  | 예약 가능한 상태의 시간 조회 |
+
+### Common
+| URL             | 메서드    | 기능       |
+|-----------------|--------|----------|
+| `/reservations` | GET    | 예약 목록 조회 |
+| `/themes`       | GET    | 테마 조회    |

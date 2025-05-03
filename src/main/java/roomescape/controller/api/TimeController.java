@@ -27,12 +27,6 @@ public class TimeController {
         this.timeService = timeService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TimeResponse createReservationTime(@RequestBody TimeRequest request) {
-        return TimeResponse.from(timeService.addReservationTime(request));
-    }
-
     @GetMapping
     public List<TimeResponse> readReservationTimes() {
         return timeService.findAllReservationTimes().stream()
@@ -46,6 +40,12 @@ public class TimeController {
         return timeService.findAllTimesWithBooked(date, themeId).stream()
             .map(TimeResponse::from)
             .toList();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public TimeResponse createReservationTime(@RequestBody TimeRequest request) {
+        return TimeResponse.from(timeService.addReservationTime(request));
     }
 
     @DeleteMapping("/{id}")
