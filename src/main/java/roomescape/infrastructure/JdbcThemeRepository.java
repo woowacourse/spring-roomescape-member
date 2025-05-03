@@ -3,16 +3,14 @@ package roomescape.infrastructure;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ThemeRepository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -27,27 +25,29 @@ public class JdbcThemeRepository implements ThemeRepository {
     };
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insert;
 
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.insert = new SimpleJdbcInsert(jdbcTemplate).
+                withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Theme save(Theme theme) {
-        final String sql = """
-                INSERT INTO theme (name, description, thumbnail)
-                VALUES (?, ?, ?)
-                """;
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, theme.getName());
-            ps.setString(2, theme.getDescription());
-            ps.setString(3, theme.getThumbnail());
-            return ps;
-        }, keyHolder);
+        final Number id = insert.executeAndReturnKey(Map.of(
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail", theme.getThumbnail()
+        ));
 
-        return Theme.afterSave(keyHolder.getKey().longValue(), theme);
+        return Theme.afterSave(
+                id.longValue(),
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
+        );
     }
 
     @Override

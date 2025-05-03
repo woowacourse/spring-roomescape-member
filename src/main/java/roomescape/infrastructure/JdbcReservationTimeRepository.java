@@ -3,18 +3,15 @@ package roomescape.infrastructure;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationTimeRepository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -26,25 +23,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     );
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insert;
 
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.insert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public ReservationTime save(ReservationTime reservationTime) {
-        final String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-            return ps;
-        }, keyHolder);
-        long generatedId = keyHolder.getKey().longValue();
+        final Number id = insert.executeAndReturnKey(Map.of(
+                "start_at", reservationTime.getStartAt()
+        ));
 
         return ReservationTime.afterSave(
-                generatedId,
+                id.longValue(),
                 reservationTime.getStartAt()
         );
     }
