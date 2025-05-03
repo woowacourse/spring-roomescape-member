@@ -45,7 +45,7 @@ class ReservationServiceTest {
     void test() {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                "다로", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when
         ReservationResponseDto response = reservationService.saveReservation(request);
@@ -62,9 +62,9 @@ class ReservationServiceTest {
     void test1() {
         // given
         ReservationRequestDto request1 = new ReservationRequestDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                "다로", LocalDate.now().plusDays(1), 1L, 1L);
         ReservationRequestDto request2 = new ReservationRequestDto(
-                "에러", LocalDate.now().plusDays(2).toString(), 1L, 1L);
+                "에러", LocalDate.now().plusDays(2), 1L, 1L);
         reservationService.saveReservation(request1);
         reservationService.saveReservation(request2);
 
@@ -82,7 +82,7 @@ class ReservationServiceTest {
     void test2() {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                "다로", LocalDate.now().plusDays(1), 1L, 1L);
         ReservationResponseDto saved = reservationService.saveReservation(request);
 
         // when
@@ -98,10 +98,10 @@ class ReservationServiceTest {
     void test3() {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
-                "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                "다로", LocalDate.now().plusDays(1), 1L, 1L);
         reservationService.saveReservation(request);
         ReservationRequestDto savedRequest = new ReservationRequestDto(
-                "히로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
+                "히로", LocalDate.now().plusDays(1), 1L, 1L);
 
         // when && then
         assertThatThrownBy(
@@ -114,7 +114,7 @@ class ReservationServiceTest {
     void test4() {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
-                "다로", LocalDate.now().toString(), 1L, 1L);
+                "다로", LocalDate.now(), 1L, 1L);
         // when && then
         assertThatThrownBy(
                 () -> reservationService.saveReservation(request))
