@@ -33,7 +33,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("엔티티를 저장한 후, DTO로 반환한다.")
-    void test_postReservationTime() {
+    void test_postTheme() {
         //given
         String given = "테스트";
         ThemeRequest request = new ThemeRequest(given, "설명", "썸네일");
@@ -45,7 +45,7 @@ class ThemeServiceTest {
 
     @Test
     @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
-    void test_deleteReservationTime() {
+    void test_deleteTheme() {
         assertThatThrownBy(() -> themeService.deleteTheme(999L))
                 .isInstanceOf(EntityNotFoundException.class);
     }

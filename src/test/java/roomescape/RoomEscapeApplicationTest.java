@@ -1,13 +1,13 @@
 package roomescape;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -24,8 +24,8 @@ public class RoomEscapeApplicationTest {
     }
 
     @Test
-    @DisplayName("테마 목록을 조회한다.")
-    void readAllThemes() {
+    @DisplayName("인기 테마 목록을 조회한다.")
+    void readPopularThemes() {
         RestAssured.given().log().all()
                 .when().get("/themes/popular")
                 .then().log().all()
