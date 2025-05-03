@@ -60,7 +60,7 @@ public class ReservationService {
     }
 
     private void validateIsDuplicate(ReservationRequest request) {
-        int count = repository.getCountByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
+        int count = repository.getReservationCountByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
         if (count != 0) {
             throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
         }

@@ -77,7 +77,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int getCountByTimeIdAndThemeIdAndDate(final Long timeId, final Long themeId, final LocalDate date) {
+    public int getReservationCountByTimeIdAndThemeIdAndDate(final Long timeId, final Long themeId, final LocalDate date) {
         return reservationDao.getCountByTimeIdAndThemeIdAndDate(timeId, themeId, date);
     }
 
@@ -137,6 +137,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 테마 생성에 실패했습니다.");
         }
+    }
+
+    @Override
+    public List<Long> findBookedTimes(final Long themeId, final LocalDate date) {
+        return reservationDao.findBookedTimes(themeId, date);
     }
 
     private void validateThemeIsInUse(Long id) {

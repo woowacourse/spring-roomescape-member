@@ -16,7 +16,7 @@ public interface ReservationRepository {
 
     Reservation saveReservation(Reservation reservation);
 
-    int getCountByTimeIdAndThemeIdAndDate(Long timeId, Long themeId, LocalDate date);
+    int getReservationCountByTimeIdAndThemeIdAndDate(Long timeId, Long themeId, LocalDate date);
 
     ReservationTime saveReservationTime(ReservationTime reservationTime);
 
@@ -33,4 +33,6 @@ public interface ReservationRepository {
     int getThemeCountByName(String name);
 
     Theme saveTheme(Theme theme);
+
+    List<Long> findBookedTimes(Long themeId, LocalDate date);
 }

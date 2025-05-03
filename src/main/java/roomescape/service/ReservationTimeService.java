@@ -38,11 +38,11 @@ public class ReservationTimeService {
 
     public List<ReservationAvailableTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> times = repository.findAllReservationTimes();
+        List<Long> bookedTimeIds = repository.findBookedTimes(themeId, date);
 
         return times.stream()
                 .map(time -> {
-                    Long timeId = time.getId();
-                    boolean isBooked = (repository.getCountByTimeIdAndThemeIdAndDate(timeId, themeId, date) != 0);
+                    boolean isBooked = bookedTimeIds.contains(time.getId());
                     return ReservationAvailableTimeResponse.from(time, isBooked);
                 }).toList();
     }
