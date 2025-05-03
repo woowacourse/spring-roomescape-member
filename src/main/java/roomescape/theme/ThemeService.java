@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.globalexception.BadRequestException;
 import roomescape.globalexception.NotFoundException;
+import roomescape.reservation.ReservationRepository;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 
@@ -15,11 +17,15 @@ public class ThemeService {
     private static final int BETWEEN_DAY_END = 1;
 
     private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
 
+    @Autowired
     public ThemeService(
-            @Autowired final ThemeRepository themeRepository
+            final ThemeRepository themeRepository,
+            final ReservationRepository reservationRepository
     ) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ThemeResponse create(
@@ -54,9 +60,21 @@ public class ThemeService {
     public void deleteById(
             final Long id
     ) {
+        validateExistsTheme(id);
+        validateUnusedTheme(id);
+
+        themeRepository.deleteById(id);
+    }
+
+    private void validateExistsTheme(final Long id) {
         if (!themeRepository.existsById(id)) {
             throw new NotFoundException("테마가 존재하지 않습니다.");
         }
-        themeRepository.deleteById(id);
+    }
+
+    private void validateUnusedTheme(final Long id) {
+        if (reservationRepository.existsByTheme(id)) {
+            throw new BadRequestException("테마가 사용중 입니다.");
+        }
     }
 }

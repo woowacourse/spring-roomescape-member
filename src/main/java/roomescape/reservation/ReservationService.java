@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.globalexception.BadRequestException;
 import roomescape.globalexception.ConflictException;
@@ -13,33 +12,36 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.reservationtime.ReservationTimeRepository;
+import roomescape.theme.ThemeRepository;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
+    @Autowired
     public ReservationService(
-            @Autowired final ReservationRepository reservationRepository,
-            @Autowired final ReservationTimeRepository reservationTimeRepository
+            final ReservationRepository reservationRepository,
+            final ReservationTimeRepository reservationTimeRepository,
+            final ThemeRepository themeRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public ReservationResponse create(final ReservationRequest request) {
         validateDuplicateDateTime(request.timeId(), request.date());
         validatePastDateTime(request);
+        validateExistsReservationTime(request);
+        validateExistsTheme(request);
 
         final Reservation reservation = new Reservation(request.name(), request.date());
-        try {
-            final long id = reservationRepository.save(reservation, request.timeId(), request.themeId());
-            final Reservation savedReservation = reservationRepository.findById(id);
-            return ReservationResponse.from(savedReservation);
-        } catch (final DataIntegrityViolationException e) {
-            throw new BadRequestException("시간 또는 테마가 존재하지 않습니다.");
-        }
+        final long id = reservationRepository.save(reservation, request.timeId(), request.themeId());
+        final Reservation savedReservation = reservationRepository.findById(id);
+        return ReservationResponse.from(savedReservation);
     }
 
     public List<ReservationResponse> readAll() {
@@ -76,6 +78,18 @@ public class ReservationService {
     private void validateDuplicateDateTime(final Long reservationTimeId, final LocalDate date) {
         if (reservationRepository.existsByReservationTimeIdAndDate(reservationTimeId, date)) {
             throw new ConflictException("이미 예약이 존재합니다.");
+        }
+    }
+
+    private void validateExistsReservationTime(final ReservationRequest request) {
+        if (!reservationTimeRepository.existsById(request.themeId())) {
+            throw new BadRequestException("예약시간이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateExistsTheme(final ReservationRequest request) {
+        if (!themeRepository.existsById(request.themeId())) {
+            throw new BadRequestException("테마가 존재하지 않습니다.");
         }
     }
 }

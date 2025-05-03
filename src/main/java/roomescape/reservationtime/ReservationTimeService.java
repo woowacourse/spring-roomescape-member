@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.globalexception.BadRequestException;
 import roomescape.globalexception.ConflictException;
 import roomescape.globalexception.NotFoundException;
+import roomescape.reservation.ReservationRepository;
 import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
@@ -19,11 +19,15 @@ import roomescape.reservationtime.dto.ReservationTimeResponse;
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
+    @Autowired
     public ReservationTimeService(
-            @Autowired final ReservationTimeRepository reservationTimeRepository
+            final ReservationTimeRepository reservationTimeRepository,
+            final ReservationRepository reservationRepository
     ) {
         this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse create(final ReservationTimeRequest request) {
@@ -58,14 +62,21 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final Long id) {
+        validateExistsResrvationTime(id);
+        validateUnusedReservationTime(id);
+
+        reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateUnusedReservationTime(final Long id) {
+        if (reservationRepository.existsByReservationTime(id)) {
+            throw new BadRequestException("예약시간이 사용중입니다.");
+        }
+    }
+
+    private void validateExistsResrvationTime(final Long id) {
         if (!reservationTimeRepository.existsById(id)) {
             throw new NotFoundException("시간이 존재하지 않습니다.");
-        }
-
-        try {
-            reservationTimeRepository.deleteById(id);
-        } catch (final DataIntegrityViolationException e) {
-            throw new BadRequestException("예약 시간이 사용중입니다.");
         }
     }
 
