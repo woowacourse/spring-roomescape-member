@@ -1,23 +1,21 @@
 package roomescape.model;
 
-import java.time.LocalTime;
 import roomescape.common.exception.InvalidInputException;
 
 public record AvailableReservationTime(
-        Long id,
-        LocalTime startAt,
+        ReservationTime reservationTime,
         Boolean alreadyBooked
 ) {
     public AvailableReservationTime {
-        validateRequiredFields(id, startAt, alreadyBooked);
+        validateRequiredFields(reservationTime, alreadyBooked);
     }
 
-    private void validateRequiredFields(Long id, LocalTime statAt, Boolean alreadyBooked) {
-        if (id == null) {
+    private void validateRequiredFields(ReservationTime reservationTime, Boolean alreadyBooked) {
+        if (reservationTime.getId() == null) {
             throw new InvalidInputException("id는  null 일 수 없습니다.");
         }
 
-        if (statAt == null) {
+        if (reservationTime.getStartAt() == null) {
             throw new InvalidInputException("시작 시간은 null 일 수 없습니다.");
         }
 

@@ -27,8 +27,10 @@ public class ReservationTimeDao {
 
     private final RowMapper<AvailableReservationTime> availableTimeRowMapper = (resultSet, rowNum) -> {
         AvailableReservationTime availableReservationTime = new AvailableReservationTime(
-                resultSet.getLong("id"),
-                resultSet.getTime("start_at").toLocalTime(),
+                new ReservationTime(
+                        resultSet.getLong("id"),
+                        resultSet.getTime("start_at").toLocalTime()
+                ),
                 resultSet.getBoolean("already_booked")
         );
         return availableReservationTime;
