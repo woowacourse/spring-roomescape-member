@@ -24,15 +24,6 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeIntegrateTest {
 
-    static Map<String, String> params;
-
-    static {
-        params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", LocalDate.now().plusDays(1).toString());
-        params.put("time", "15:40");
-    }
-
     @BeforeEach
     void setup(@Autowired JdbcTemplate jdbcTemplate) {
         jdbcTemplate.execute("delete from reservation");
@@ -42,9 +33,10 @@ class ReservationTimeIntegrateTest {
 
     @Test
     void 시간_추가_테스트() {
-        Map<String, String> params = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        params.put("startAt", afterTime.toString());
+        Map<String, String> timeParam = Map.of(
+                "startAt", afterTime.toString()
+        );
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -54,7 +46,7 @@ class ReservationTimeIntegrateTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);
@@ -68,13 +60,14 @@ class ReservationTimeIntegrateTest {
 
     @Test
     void 시간_삭제_테스트() {
-        Map<String, String> params = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        params.put("startAt", afterTime.toString());
+        Map<String, String> timeParam = Map.of(
+                "startAt", afterTime.toString()
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201);

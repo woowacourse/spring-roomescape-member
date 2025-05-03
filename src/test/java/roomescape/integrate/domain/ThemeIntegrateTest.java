@@ -25,10 +25,11 @@ class ThemeIntegrateTest {
     static Map<String, String> params;
 
     static {
-        params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("description", "브라운 방탈출");
-        params.put("thumbnail", "hello");
+        params = Map.of(
+                "name", "테마 명",
+                "description", "description",
+                "thumbnail", "thumbnail"
+        );
     }
 
     @Autowired

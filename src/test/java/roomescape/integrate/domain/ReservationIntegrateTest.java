@@ -32,15 +32,6 @@ import roomescape.repository.ReservationRepository;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationIntegrateTest {
 
-    static Map<String, String> params;
-
-    static {
-        params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", LocalDate.now().plusDays(1).toString());
-        params.put("time", "15:40");
-    }
-
     @BeforeEach
     void setup(@Autowired JdbcTemplate jdbcTemplate) {
         jdbcTemplate.execute("delete from reservation");
@@ -50,20 +41,23 @@ class ReservationIntegrateTest {
 
     @Test
     void 예약_추가_테스트() {
-        Map<String, String> timeParam = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
+        Map<String, String> timeParam = Map.of(
+                "startAt", afterTime.toString()
+        );
 
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
+        Map<String, String> themeParam = Map.of(
+                "name", "테마 명",
+                "description", "description",
+                "thumbnail", "thumbnail"
+        );
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1).toString());
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        Map<String, Object> reservation = Map.of(
+                "name", "브라운",
+                "date", LocalDate.now().plusDays(1).toString(),
+                "timeId", 1,
+                "themeId", 1
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -97,20 +91,23 @@ class ReservationIntegrateTest {
     void 예약_삭제_테스트() {
         long deleteReservationId = 1L;
 
-        Map<String, String> timeParam = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
+        Map<String, String> timeParam = Map.of(
+                "startAt", afterTime.toString()
+        );
 
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
+        Map<String, String> themeParam = Map.of(
+                "name", "테마 명",
+                "description", "description",
+                "thumbnail", "thumbnail"
+        );
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1).toString());
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        Map<String, Object> reservation = Map.of(
+                "name", "브라운",
+                "date", LocalDate.now().plusDays(1).toString(),
+                "timeId", 1,
+                "themeId", 1
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -149,24 +146,28 @@ class ReservationIntegrateTest {
 
     @Test
     void 테마_랭킹_테스트(@Autowired ReservationRepository reservationRepository) {
-        Map<String, String> timeParam = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
+        Map<String, String> timeParam = Map.of(
+                "startAt", afterTime.toString()
+        );
 
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명1");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
+        Map<String, String> themeParam = Map.of(
+                "name", "테마 명1",
+                "description", "description",
+                "thumbnail", "thumbnail"
+        );
 
-        Map<String, String> themeParam2 = new HashMap<>();
-        themeParam2.put("name", "테마 명2");
-        themeParam2.put("description", "description");
-        themeParam2.put("thumbnail", "thumbnail");
+        Map<String, String> themeParam2 = Map.of(
+                "name", "테마 명2",
+                "description", "description",
+                "thumbnail", "thumbnail"
+        );
 
-        Map<String, String> themeParam3 = new HashMap<>();
-        themeParam3.put("name", "테마 명3");
-        themeParam3.put("description", "description");
-        themeParam3.put("thumbnail", "thumbnail");
+        Map<String, String> themeParam3 = Map.of(
+                "name", "테마 명3",
+                "description", "description",
+                "thumbnail", "thumbnail"
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

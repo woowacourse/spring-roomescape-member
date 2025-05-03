@@ -32,28 +32,34 @@ class AvailableReservationTimeTest {
     @BeforeEach
     void setup() {
         todayDateString = LocalDate.now().plusDays(1).toString();
-        Map<String, String> timeParam = new HashMap<>();
+
         LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
+        Map<String, String> timeParam = Map.of(
+                "startAt", afterTime.toString()
+        );
 
-        Map<String, String> timeParam2 = new HashMap<>();
         LocalTime afterTime2 = LocalTime.now().plusHours(2L);
-        timeParam2.put("startAt", afterTime2.toString());
+        Map<String, String> timeParam2 = Map.of(
+                "startAt", afterTime2.toString()
+        );
 
-        Map<String, String> timeParam3 = new HashMap<>();
         LocalTime afterTime3 = LocalTime.now().plusHours(3L);
-        timeParam3.put("startAt", afterTime3.toString());
+        Map<String, String> timeParam3 = Map.of(
+                "startAt", afterTime3.toString()
+        );
 
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
+        Map<String, String> themeParam = Map.of(
+                "name", "테마 명",
+                "description", "description",
+                "thumbnail", "thumbnail"
+        );
 
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", todayDateString);
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        Map<String, Object> reservation = Map.of(
+                "name", "브라운",
+                "date", todayDateString,
+                "timeId", 1,
+                "themeId", 1
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
