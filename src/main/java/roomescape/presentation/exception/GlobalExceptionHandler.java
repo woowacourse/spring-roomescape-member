@@ -22,8 +22,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         String message = e.getMessage();
-        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST, message);
-        return ResponseEntity.badRequest().body(errorResponse);
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.CONFLICT, message);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
