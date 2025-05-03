@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/times")
 public class TimeController {
 
     private final ReservationTimeService reservationTimeService;
@@ -22,26 +21,26 @@ public class TimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @PostMapping
+    @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> create(
             @Validated @RequestBody ReservationTimeRequest request) {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeResponse);
     }
 
-    @GetMapping
+    @GetMapping("/times")
     public ResponseEntity<List<ReservationTimeResponse>> getAll() {
         List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.findAll();
         return ResponseEntity.ok().body(reservationTimeResponses);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/times/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/theme")
+    @GetMapping("/available-times")
     public ResponseEntity<List<ReservationAvailableTimeResponse>> getTimesOfTheme(
             @RequestParam("themeId") Long themeId,
             @RequestParam("date") LocalDate date
