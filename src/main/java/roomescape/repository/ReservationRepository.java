@@ -1,16 +1,14 @@
 package roomescape.repository;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -20,7 +18,6 @@ import roomescape.domain.Theme;
 public class ReservationRepository {
 
     private static final RowMapper<Reservation> mapper;
-    private final JdbcTemplate template;
 
     static {
         mapper = (resultSet, resultNumber) -> new Reservation(
@@ -39,6 +36,9 @@ public class ReservationRepository {
                 )
         );
     }
+
+    private final JdbcTemplate template;
+    private SimpleJdbcInsert insertReservation;
 
     public ReservationRepository(JdbcTemplate template) {
         this.template = template;
@@ -99,25 +99,45 @@ public class ReservationRepository {
         return template.queryForObject(sql, Boolean.class, themeId);
     }
 
+//    public long add(Reservation reservation) {
+//        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//        template.update(
+//                (connection) -> {
+//                    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+//                    statement.setString(1, reservation.getName());
+//                    statement.setDate(2, Date.valueOf(reservation.getDate()));
+//                    statement.setLong(3, reservation.getTime().getId());
+//                    statement.setLong(4, reservation.getTheme().getId());
+//                    return statement;
+//                },
+//                keyHolder
+//        );
+//        return keyHolder.getKey().longValue();
+//    }
+
     public long add(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(
-                (connection) -> {
-                    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                    statement.setString(1, reservation.getName());
-                    statement.setDate(2, Date.valueOf(reservation.getDate()));
-                    statement.setLong(3, reservation.getTime().getId());
-                    statement.setLong(4, reservation.getTheme().getId());
-                    return statement;
-                },
-                keyHolder
-        );
-        return keyHolder.getKey().longValue();
+        insertReservation = initializeSimpleJdbcInsert();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", reservation.getName());
+        parameters.put("date", reservation.getDate());
+        parameters.put("time_id", reservation.getTime().getId());
+        parameters.put("theme_id", reservation.getTheme().getId());
+
+        return insertReservation.executeAndReturnKey(parameters).longValue();
     }
 
     public void deleteById(long id) {
         String sql = "DELETE FROM reservation WHERE reservation.id = ?";
         template.update(sql, id);
+    }
+
+    private SimpleJdbcInsert initializeSimpleJdbcInsert() {
+        if (insertReservation == null) {
+            this.insertReservation = new SimpleJdbcInsert(template)
+                    .withTableName("reservation")
+                    .usingGeneratedKeyColumns("id");
+        }
+        return insertReservation;
     }
 }

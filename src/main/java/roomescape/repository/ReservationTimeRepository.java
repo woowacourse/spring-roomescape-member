@@ -1,16 +1,15 @@
 package roomescape.repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeWithBookState;
@@ -20,7 +19,6 @@ public class ReservationTimeRepository {
 
     private static final RowMapper<ReservationTime> reservationTimeMapper;
     private static final RowMapper<ReservationTimeWithBookState> reservationTimeWithBookStateMapper;
-    private final JdbcTemplate template;
 
     static {
         reservationTimeMapper = (resultSet, resultNumber) -> new ReservationTime(
@@ -33,6 +31,9 @@ public class ReservationTimeRepository {
                 resultSet.getBoolean("book_state")
         );
     }
+
+    private final JdbcTemplate template;
+    private SimpleJdbcInsert insertReservationTime;
 
     public ReservationTimeRepository(JdbcTemplate template) {
         this.template = template;
@@ -76,22 +77,40 @@ public class ReservationTimeRepository {
         return template.query(sql, reservationTimeWithBookStateMapper, date, themeId);
     }
 
+//    public long add(ReservationTime reservationTime) {
+//        String sql = "INSERT INTO reservation_time (start_at) values (?)";
+//        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+//        template.update(
+//                (connection) -> {
+//                    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+//                    statement.setTime(1, Time.valueOf(reservationTime.getStartAt()));
+//                    return statement;
+//                },
+//                keyHolder
+//        );
+//        return keyHolder.getKey().longValue();
+//    }
+
     public long add(ReservationTime reservationTime) {
-        String sql = "INSERT INTO reservation_time (start_at) values (?)";
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        template.update(
-                (connection) -> {
-                    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                    statement.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-                    return statement;
-                },
-                keyHolder
-        );
-        return keyHolder.getKey().longValue();
+        insertReservationTime = initializeSimpleJdbcInsert();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("start_at", reservationTime.getStartAt());
+
+        return insertReservationTime.executeAndReturnKey(parameters).longValue();
     }
+
 
     public void deleteById(long id) {
         String sql = "DELETE FROM reservation_time WHERE reservation_time.id = ?";
         template.update(sql, id);
+    }
+
+    private SimpleJdbcInsert initializeSimpleJdbcInsert() {
+        if (insertReservationTime == null) {
+            insertReservationTime = new SimpleJdbcInsert(template)
+                    .withTableName("reservation_time")
+                    .usingGeneratedKeyColumns("id");
+        }
+        return insertReservationTime;
     }
 }

@@ -16,8 +16,6 @@ import roomescape.domain.Theme;
 public class H2ThemeRepository implements ThemeRepository {
 
     private static final RowMapper<Theme> mapper;
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert insertTheme;
 
     static {
         mapper = (resultSet, resultNumber) -> new Theme(
@@ -28,11 +26,11 @@ public class H2ThemeRepository implements ThemeRepository {
         );
     }
 
+    private final JdbcTemplate jdbcTemplate;
+    private SimpleJdbcInsert insertTheme;
+
     public H2ThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        insertTheme = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
     }
 
     public List<Theme> findAll() {
@@ -51,6 +49,7 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     public long addTheme(Theme theme) {
+        insertTheme = initializeSimpleJdbcInsert();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
@@ -79,5 +78,14 @@ public class H2ThemeRepository implements ThemeRepository {
                         """;
 
         return jdbcTemplate.query(sql, mapper, startDate, endDate);
+    }
+
+    private SimpleJdbcInsert initializeSimpleJdbcInsert() {
+        if (insertTheme == null) {
+            insertTheme = new SimpleJdbcInsert(jdbcTemplate)
+                    .withTableName("theme")
+                    .usingGeneratedKeyColumns("id");
+        }
+        return insertTheme;
     }
 }
