@@ -13,13 +13,14 @@ import roomescape.controller.dto.ReservationResponse;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
+import roomescape.repository.ReservationTimeDao;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
 import roomescape.service.reservation.Theme;
 
 class ReservationServiceTest {
 
-    FakeReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
+    ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
     FakeReservationDao reservationDao = new FakeReservationDao();
     FakeThemeDao themeDao = new FakeThemeDao();
     ReservationService reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);

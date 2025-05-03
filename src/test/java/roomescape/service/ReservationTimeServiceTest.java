@@ -13,14 +13,16 @@ import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
+import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationTimeDao;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
 import roomescape.service.reservation.Theme;
 
 class ReservationTimeServiceTest {
 
-    FakeReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
-    FakeReservationDao reservationDao = new FakeReservationDao();
+    ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
+    ReservationDao reservationDao = new FakeReservationDao();
     ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
 
     @DisplayName("이미 존재하는 시간을 저장할 경우 예외가 발생한다.")

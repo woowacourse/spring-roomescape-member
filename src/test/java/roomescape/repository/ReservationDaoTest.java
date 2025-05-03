@@ -18,9 +18,9 @@ import roomescape.service.reservation.Theme;
 @JdbcTest
 class ReservationDaoTest {
 
-    private H2ReservationDao reservationDao;
-    private H2ReservationTimeDao reservationTimeDao;
-    private H2ThemeDao themeDao;
+    private ReservationDao reservationDao;
+    private ReservationTimeDao reservationTimeDao;
+    private ThemeDao themeDao;
     private final LocalTime time = LocalTime.of(10, 0);
     private ReservationTime reservationTime;
     private Theme theme;

@@ -14,15 +14,18 @@ import roomescape.controller.dto.ThemeResponse;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
+import roomescape.repository.ReservationDao;
+import roomescape.repository.ReservationTimeDao;
+import roomescape.repository.ThemeDao;
 import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
 import roomescape.service.reservation.Theme;
 
 class ThemeServiceTest {
 
-    FakeThemeDao fakeThemeDao = new FakeThemeDao();
-    FakeReservationDao fakeReservationDao = new FakeReservationDao();
-    FakeReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
+    ThemeDao fakeThemeDao = new FakeThemeDao();
+    ReservationDao fakeReservationDao = new FakeReservationDao();
+    ReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
     ThemeService themeService = new ThemeService(fakeThemeDao, fakeReservationDao);
 
     @DisplayName("저장할 테마 이름이 중복될 경우 예외가 발생한다.")
