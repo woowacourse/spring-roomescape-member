@@ -15,6 +15,8 @@ import roomescape.exception.custom.reason.reservation.ReservationConflictExcepti
 import roomescape.exception.custom.reason.reservation.ReservationNotExistsThemeException;
 import roomescape.exception.custom.reason.reservation.ReservationNotExistsTimeException;
 import roomescape.exception.custom.reason.reservation.ReservationNotFoundException;
+import roomescape.exception.custom.reason.reservation.ReservationPastDateException;
+import roomescape.exception.custom.reason.reservation.ReservationPastTimeException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationtime.FakeReservationTimeRepository;
@@ -128,6 +130,48 @@ public class ReservationServiceTest {
                 reservationService.create(request);
             }).isInstanceOf(ReservationConflictException.class);
         }
+
+        @DisplayName("과거 날짜로 예약하려면 예외가 발생한다.")
+        @Test
+        void create4() {
+            // given
+            final ReservationRequest request = new ReservationRequest(
+                    "로키",
+                    LocalDate.now().minusDays(1),
+                    1L, 1L);
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
+            fakeReservationRepository.save(
+                    new Reservation("", LocalDate.now().plusDays(1)),
+                    1L, 1L
+            );
+
+            // when & then
+            assertThatThrownBy(() -> {
+                reservationService.create(request);
+            }).isInstanceOf(ReservationPastDateException.class);
+        }
+
+        @DisplayName("오늘의 지나간 시간으로 예약하려고하면 예외가 발생한다.")
+        @Test
+        void create5() {
+            // given
+            final ReservationRequest request = new ReservationRequest(
+                    "로키",
+                    LocalDate.now(),
+                    1L, 1L);
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.now().minusHours(1)));
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
+            fakeReservationRepository.save(
+                    new Reservation("", LocalDate.now().plusDays(1)),
+                    1L, 1L
+            );
+
+            // when & then
+            assertThatThrownBy(() -> {
+                reservationService.create(request);
+            }).isInstanceOf(ReservationPastTimeException.class);
+        }
     }
 
     @Nested
@@ -184,7 +228,7 @@ public class ReservationServiceTest {
             assertThat(fakeReservationRepository.isInvokeDeleteById(id)).isTrue();
         }
 
-        @DisplayName("주어진 id에 해당하는 reservation이 없다면 예외가 밠애한다.")
+        @DisplayName("주어진 id에 해당하는 reservation이 없다면 예외가 발생한다.")
         @Test
         void delete2() {
             // given & when & then
