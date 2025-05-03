@@ -30,8 +30,8 @@ public class ReservationService {
                         createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
         Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(() -> new IllegalArgumentException(
                 createReservationParam.themeId() + "에 해당하는 theme 튜플이 없습니다."));
-        if (reservationRepository.existByDateAndTimeId(createReservationParam.date(), reservationTime.id())) {
-            throw new IllegalArgumentException("날짜와 시간이 중복된 예약이 존재합니다.");
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(createReservationParam.date(), reservationTime.id(), theme.getId())) {
+            throw new IllegalArgumentException("테마에 대해 날짜와 시간이 중복된 예약이 존재합니다.");
         }
         return reservationRepository.create(
                 new Reservation(
