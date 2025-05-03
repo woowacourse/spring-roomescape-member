@@ -11,36 +11,36 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
-import roomescape.service.ThemeService;
+import roomescape.service.ThemeServiceImpl;
 
 @RestController
 public class ThemeController {
 
-    private final ThemeService themeService;
+    private final ThemeServiceImpl themeServiceImpl;
 
-    public ThemeController(ThemeService themeService) {
-        this.themeService = themeService;
+    public ThemeController(ThemeServiceImpl themeServiceImpl) {
+        this.themeServiceImpl = themeServiceImpl;
     }
 
     @GetMapping("/themes/ranks")
     public List<ThemeResponseDto> readThemeRanks() {
-        return themeService.getAllThemeOfRanks();
+        return themeServiceImpl.getAllThemeOfRanks();
     }
 
     @GetMapping("/themes")
     public List<ThemeResponseDto> readThemes() {
-        return themeService.getAllThemes();
+        return themeServiceImpl.getAllThemes();
     }
 
     @PostMapping("/themes")
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponseDto saveTheme(@RequestBody ThemeRequestDto request) {
-        return themeService.saveTheme(request);
+        return themeServiceImpl.saveTheme(request);
     }
 
     @DeleteMapping("/themes/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(@PathVariable Long id) {
-        themeService.deleteTheme(id);
+        themeServiceImpl.deleteTheme(id);
     }
 }
