@@ -11,6 +11,7 @@ import roomescape.repository.ReservationTimeRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -18,29 +19,29 @@ class UserReservationTimeServiceTest {
 
     private final ReservationRepository reservationRepository = new ReservationFakeRepository();
     private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
-    private final UserReservationTimeService service = new UserReservationTimeService(
-            reservationRepository,
-            reservationTimeRepository);
+    private final UserReservationTimeService service = new UserReservationTimeService(reservationRepository, reservationTimeRepository);
 
     @Test
     @DisplayName("사용자가 날짜와 테마를 선택하면 예약 가능한 시간들을 DTO로 반환한다.")
     void test_readAvailableReservationTimes() {
-        //given
+        // given
         LocalDate givenDate = LocalDate.MAX;
         Long givenTheme = 1L;
-        //when
-        List<ReservationAvailableTimeResponse> actual = service.readAvailableReservationTimes(givenDate, givenTheme);
-        //then
-        ReservationAvailableTimeResponse bookedResponse = actual.stream()
-                .filter(current -> current.startAt().equals(LocalTime.MAX))
-                .findFirst()
-                .get();
-        assertThat(bookedResponse.isBooked()).isTrue();
 
-        ReservationAvailableTimeResponse availableResponse = actual.stream()
+        // when
+        List<ReservationAvailableTimeResponse> actual = service.readAvailableReservationTimes(givenDate, givenTheme);
+
+        // then
+        Optional<ReservationAvailableTimeResponse> bookedResponseOpt = actual.stream()
+                .filter(current -> current.startAt().equals(LocalTime.MAX))
+                .findFirst();
+        assertThat(bookedResponseOpt).isPresent();
+        assertThat(bookedResponseOpt.get().isBooked()).isTrue();
+
+        Optional<ReservationAvailableTimeResponse> availableResponseOpt = actual.stream()
                 .filter(current -> current.startAt().equals(LocalTime.of(11, 0)))
-                .findFirst()
-                .get();
-        assertThat(availableResponse.isBooked()).isFalse();
+                .findFirst();
+        assertThat(availableResponseOpt).isPresent();
+        assertThat(availableResponseOpt.get().isBooked()).isFalse();
     }
 }
