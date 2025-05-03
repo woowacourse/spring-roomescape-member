@@ -25,14 +25,8 @@ public class ThemeService {
         this.repository = repository;
     }
 
-    public List<ThemeResponse> readAllTheme() {
-        return repository.findAll().stream()
-                .map(ThemeResponse::from)
-                .toList();
-    }
-
     @Transactional
-    public ThemeResponse postTheme(ThemeRequest request) {
+    public ThemeResponse createTheme(ThemeRequest request) {
         if (isAnyMatchName(request.name())) {
             throw new ThemeDuplicateException("중복된 테마명이 존재합니다.", request.name());
         }
@@ -40,8 +34,14 @@ public class ThemeService {
         return ThemeResponse.from(newTheme);
     }
 
+    public List<ThemeResponse> readThemes() {
+        return repository.findAll().stream()
+                .map(ThemeResponse::from)
+                .toList();
+    }
+
     @Transactional
-    public void deleteTheme(long id) {
+    public void deleteThemeById(Long id) {
         repository.deleteById(id);
     }
 

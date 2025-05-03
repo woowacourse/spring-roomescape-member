@@ -30,14 +30,8 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResponse> readReservation() {
-        return reservationRepository.findAll().stream()
-                .map(ReservationResponse::from)
-                .toList();
-    }
-
     @Transactional
-    public ReservationResponse postReservation(ReservationRequest request) {
+    public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
         Reservation reservation = Reservation.createIfDateTimeValid(request.name(), request.date(), time, theme);
@@ -50,8 +44,14 @@ public class ReservationService {
         return ReservationResponse.from(newReservation);
     }
 
+    public List<ReservationResponse> readReservations() {
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     @Transactional
-    public void deleteReservation(long id) {
+    public void deleteReservationById(Long id) {
         reservationRepository.deleteById(id);
     }
 

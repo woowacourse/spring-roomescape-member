@@ -23,16 +23,16 @@ public class ReservationTimeController {
         this.service = service;
     }
 
-    @GetMapping("/times")
-    public List<ReservationTimeResponse> readAllReservationTime() {
-        return service.readAllReservationTime();
-    }
-
     @PostMapping("/times")
     public ResponseEntity<ReservationTimeResponse> postReservationTime(@RequestBody ReservationTimeRequest request) {
-        ReservationTimeResponse reservationTimeResponse = service.postReservationTime(request);
+        ReservationTimeResponse reservationTimeResponse = service.createReservationTime(request);
         URI location = URI.create("/times/" + reservationTimeResponse.id());
         return ResponseEntity.created(location).body(reservationTimeResponse);
+    }
+
+    @GetMapping("/times")
+    public List<ReservationTimeResponse> getReservationTimes() {
+        return service.readReservationTimes();
     }
 
     @DeleteMapping("/times/{id}")

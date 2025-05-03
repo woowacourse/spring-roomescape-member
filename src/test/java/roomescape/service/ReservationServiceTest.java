@@ -29,9 +29,9 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
-    void test_readReservation() {
+    void test_readReservations() {
         //given & when
-        List<ReservationResponse> actual = reservationService.readReservation();
+        List<ReservationResponse> actual = reservationService.readReservations();
         //then
         assertThat(actual.size()).isEqualTo(1);
         assertThat(actual.getFirst().id()).isEqualTo(1);
@@ -39,9 +39,9 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 생성 시, 저장한 엔티티를 DTO로 반환한다.")
-    void test_postReservation() {
+    void test_createReservation() {
         //given
-        List<ReservationResponse> given = reservationService.readReservation();
+        List<ReservationResponse> given = reservationService.readReservations();
         assertThat(given.size()).isEqualTo(1);
         LocalDate givenDate = LocalDate.of(2028, 1, 10);
 
@@ -49,14 +49,14 @@ public class ReservationServiceTest {
         long timeId = 1L;
         long themeId = 1L;
         ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
-        ReservationResponse actual = reservationService.postReservation(request);
+        ReservationResponse actual = reservationService.createReservation(request);
         //then
         assertThat(actual.id()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("예약 생성 시, 저장할 날짜가 과거일 경우 예외를 발생한다.")
-    void error_postReservationIfBeforeDate() {
+    void error_createReservationIfBeforeDate() {
         //given
         LocalDate givenDate = LocalDate.MIN;
         long timeId = 1L;
@@ -64,14 +64,14 @@ public class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
 
         //when&then
-        assertThatThrownBy(() -> reservationService.postReservation(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("예약이 불가능한 시간");
     }
 
     @Test
     @DisplayName("예약 생성 시, 날짜, 시간, 테마가 중복될 경우 예외가 발생한다.")
-    void error_postReservationIfDuplication() {
+    void error_createReservationIfDuplication() {
         //given
         LocalDate givenDate = LocalDate.MAX;
         long timeId = 1L;
@@ -79,15 +79,15 @@ public class ReservationServiceTest {
         ReservationRequest request = new ReservationRequest("브라운", givenDate, timeId, themeId);
 
         //when&then
-        assertThatThrownBy(() -> reservationService.postReservation(request))
+        assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(ReservationDuplicateException.class)
                 .hasMessageContaining("해당 시각의 중복된 예약이 존재합니다");
     }
 
     @Test
     @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
-    void error_deleteReservation() {
-        assertThatThrownBy(() -> reservationService.deleteReservation(Long.MAX_VALUE))
+    void error_deleteReservationById() {
+        assertThatThrownBy(() -> reservationService.deleteReservationById(Long.MAX_VALUE))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 }

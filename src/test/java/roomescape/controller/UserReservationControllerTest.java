@@ -1,13 +1,7 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +16,13 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.UserReservationTimeService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(UserReservationController.class)
 class UserReservationControllerTest {
@@ -52,7 +53,7 @@ class UserReservationControllerTest {
 
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
         ReservationResponse response = new ReservationResponse(expectedId, "브라운", fixedDate, givenTime, givenTheme);
-        given(reservationService.postReservation(request)).willReturn(response);
+        given(reservationService.createReservation(request)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)
@@ -70,7 +71,7 @@ class UserReservationControllerTest {
 
     @Test
     @DisplayName("사용자가 예약 가능한 시간을 조회한다.")
-    void readAvailableReservationTimes() {
+    void getAvailableReservationTimes() {
         ReservationAvailableTimeResponse response1 = new ReservationAvailableTimeResponse(1L, LocalTime.of(10, 0),
                 false);
         ReservationAvailableTimeResponse response2 = new ReservationAvailableTimeResponse(2L, LocalTime.of(11, 0),

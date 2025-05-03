@@ -47,7 +47,7 @@ public class ThemeControllerTest {
                 response1, response2
         );
 
-        given(themeService.readAllTheme()).willReturn(themeResponses);
+        given(themeService.readThemes()).willReturn(themeResponses);
 
         RestAssuredMockMvc.given().log().all()
                 .when().get("/themes")
@@ -71,7 +71,7 @@ public class ThemeControllerTest {
         ThemeRequest dto = new ThemeRequest(name, description, thumbnail);
 
         ThemeResponse response = new ThemeResponse(expectedId, name, description, thumbnail);
-        given(themeService.postTheme(dto)).willReturn(response);
+        given(themeService.createTheme(dto)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)
@@ -89,14 +89,14 @@ public class ThemeControllerTest {
     void deleteExistingTheme() {
         long themeId = 1L;
 
-        willDoNothing().given(themeService).deleteTheme(themeId);
+        willDoNothing().given(themeService).deleteThemeById(themeId);
 
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/themes/" + themeId)
                 .then().log().all()
                 .statusCode(204);
 
-        verify(themeService, times(1)).deleteTheme(themeId);
+        verify(themeService, times(1)).deleteThemeById(themeId);
     }
 
     @Test
@@ -106,13 +106,13 @@ public class ThemeControllerTest {
 
         willThrow(new EntityNotFoundException("데이터를 찾을 수 없습니다."))
                 .given(themeService)
-                .deleteTheme(nonExistingId);
+                .deleteThemeById(nonExistingId);
 
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/themes/" + nonExistingId)
                 .then().log().all()
                 .statusCode(404);
 
-        verify(themeService, times(1)).deleteTheme(nonExistingId);
+        verify(themeService, times(1)).deleteThemeById(nonExistingId);
     }
 }

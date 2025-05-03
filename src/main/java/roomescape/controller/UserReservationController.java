@@ -32,13 +32,13 @@ public class UserReservationController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> postReservation(@RequestBody ReservationRequest request) {
-        ReservationResponse reservationResponse = reservationService.postReservation(request);
+        ReservationResponse reservationResponse = reservationService.createReservation(request);
         URI location = URI.create("/user/reservations/" + reservationResponse.id());
         return ResponseEntity.created(location).body(reservationResponse);
     }
 
     @GetMapping("/times")
-    public List<ReservationAvailableTimeResponse> readAvailableReservationTimes(
+    public List<ReservationAvailableTimeResponse> getAvailableReservationTimes(
             @RequestParam LocalDate date, @RequestParam long themeId
     ) {
         return userReservationTimeService.readAvailableReservationTimes(date, themeId);

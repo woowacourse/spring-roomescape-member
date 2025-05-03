@@ -25,26 +25,26 @@ public class ThemeController {
         this.service = service;
     }
 
-    @GetMapping("/themes")
-    public ResponseEntity<List<ThemeResponse>> readAllTheme() {
-        return ResponseEntity.ok(service.readAllTheme());
-    }
-
     @PostMapping("/themes")
     public ResponseEntity<ThemeResponse> postTheme(@RequestBody ThemeRequest request) {
-        ThemeResponse themeResponse = service.postTheme(request);
+        ThemeResponse themeResponse = service.createTheme(request);
         URI location = URI.create("/themes/" + themeResponse.id());
         return ResponseEntity.created(location).body(themeResponse);
     }
 
+    @GetMapping("/themes")
+    public ResponseEntity<List<ThemeResponse>> getThemes() {
+        return ResponseEntity.ok(service.readThemes());
+    }
+
     @DeleteMapping("/themes/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable long id) {
-        service.deleteTheme(id);
+        service.deleteThemeById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/themes/popular")
-    public ResponseEntity<List<PopularThemeResponse>> readRecentPopularThemes(@RequestParam(value = "size", defaultValue = "10") int count) {
+    public ResponseEntity<List<PopularThemeResponse>> getRecentPopularThemes(@RequestParam(value = "size", defaultValue = "10") int count) {
         return ResponseEntity.ok(service.readRecentPopularThemes(count));
     }
 }

@@ -1,17 +1,7 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +15,17 @@ import roomescape.dto.ReservationTimeResponse;
 import roomescape.dto.ThemeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.service.ReservationService;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @WebMvcTest(ReservationController.class)
 public class ReservationControllerTest {
@@ -42,7 +43,7 @@ public class ReservationControllerTest {
 
     @Test
     @DisplayName("예약 목록을 조회한다.")
-    void readReservation() {
+    void getReservations() {
         ReservationTimeResponse givenTime = new ReservationTimeResponse(1L, LocalTime.MAX);
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
         ReservationResponse response1 = new ReservationResponse(1L, "브라운", LocalDate.now().plusDays(1), givenTime,
@@ -54,7 +55,7 @@ public class ReservationControllerTest {
                 response1, response2
         );
 
-        given(reservationService.readReservation()).willReturn(reservations);
+        given(reservationService.readReservations()).willReturn(reservations);
 
         RestAssuredMockMvc.given().log().all()
                 .when().get("/reservations")
@@ -80,7 +81,7 @@ public class ReservationControllerTest {
 
         ThemeResponse givenTheme = new ThemeResponse(1L, "테스트", "테스트", "테스트");
         ReservationResponse response = new ReservationResponse(expectedId, "브라운", fixedDate, givenTime, givenTheme);
-        given(reservationService.postReservation(dto)).willReturn(response);
+        given(reservationService.createReservation(dto)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)
@@ -101,14 +102,14 @@ public class ReservationControllerTest {
     void deleteExistingReservation() {
         long reservationId = 1L;
 
-        willDoNothing().given(reservationService).deleteReservation(reservationId);
+        willDoNothing().given(reservationService).deleteReservationById(reservationId);
 
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/reservations/" + reservationId)
                 .then().log().all()
                 .statusCode(204);
 
-        verify(reservationService, times(1)).deleteReservation(reservationId);
+        verify(reservationService, times(1)).deleteReservationById(reservationId);
     }
 
     @Test
@@ -118,13 +119,13 @@ public class ReservationControllerTest {
 
         willThrow(new EntityNotFoundException("데이터를 찾을 수 없습니다."))
                 .given(reservationService)
-                .deleteReservation(nonExistingId);
+                .deleteReservationById(nonExistingId);
 
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/reservations/" + nonExistingId)
                 .then().log().all()
                 .statusCode(404);
 
-        verify(reservationService, times(1)).deleteReservation(nonExistingId);
+        verify(reservationService, times(1)).deleteReservationById(nonExistingId);
     }
 }

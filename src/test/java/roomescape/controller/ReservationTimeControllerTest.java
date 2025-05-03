@@ -1,16 +1,7 @@
 package roomescape.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +13,16 @@ import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.service.ReservationTimeService;
+
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @WebMvcTest(ReservationTimeController.class)
 public class ReservationTimeControllerTest {
@@ -39,7 +40,7 @@ public class ReservationTimeControllerTest {
 
     @Test
     @DisplayName("예약 시간 목록을 조회한다.")
-    void readAllReservationTime() {
+    void getReservationTimes() {
         ReservationTimeResponse response1 = new ReservationTimeResponse(1L, LocalTime.of(11, 0));
         ReservationTimeResponse response2 = new ReservationTimeResponse(2L, LocalTime.of(12, 0));
 
@@ -47,7 +48,7 @@ public class ReservationTimeControllerTest {
                 response1, response2
         );
 
-        given(timeService.readAllReservationTime()).willReturn(reservationTimeResponses);
+        given(timeService.readReservationTimes()).willReturn(reservationTimeResponses);
 
         RestAssuredMockMvc.given().log().all()
                 .when().get("/times")
@@ -69,7 +70,7 @@ public class ReservationTimeControllerTest {
         ReservationTimeRequest request = new ReservationTimeRequest(time);
 
         ReservationTimeResponse response = new ReservationTimeResponse(expectedId, time);
-        given(timeService.postReservationTime(request)).willReturn(response);
+        given(timeService.createReservationTime(request)).willReturn(response);
 
         RestAssuredMockMvc.given().log().all()
                 .contentType(ContentType.JSON)
