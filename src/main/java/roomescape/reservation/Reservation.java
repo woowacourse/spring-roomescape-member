@@ -9,7 +9,7 @@ import roomescape.theme.Theme;
 
 public class Reservation {
 
-    private Long id;
+    private final Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime reservationTime;
@@ -22,6 +22,19 @@ public class Reservation {
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
+    }
+
+    public static Reservation of(final Long id, final String name, final LocalDate date,
+                                 final ReservationTime reservationTime, final Theme theme) {
+        validateNull(name, date, reservationTime, theme);
+        return new Reservation(id, name, date, reservationTime, theme);
+    }
+
+    public static Reservation createWithoutId(final String name, final LocalDate date,
+                                              final ReservationTime reservationTime, final Theme theme) {
+        validateNull(name, date, reservationTime, theme);
+        validateDateTime(date, reservationTime);
+        return new Reservation(null, name, date, reservationTime, theme);
     }
 
     private static void validateNull(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
@@ -37,19 +50,6 @@ public class Reservation {
         if (theme == null) {
             throw new ArgumentNullException();
         }
-    }
-
-    public static Reservation of(final Long id, final String name, final LocalDate date,
-                                 final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
-        return new Reservation(id, name, date, reservationTime, theme);
-    }
-
-    public static Reservation createWithoutId(final String name, final LocalDate date,
-                                              final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
-        validateDateTime(date, reservationTime);
-        return Reservation.of(null, name, date, reservationTime, theme);
     }
 
     private static void validateDateTime(LocalDate date, ReservationTime reservationTime) {
