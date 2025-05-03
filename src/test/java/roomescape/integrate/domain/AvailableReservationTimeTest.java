@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -23,11 +22,9 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AvailableReservationTimeTest {
 
-    private static String todayDateString;
-
-    @BeforeEach
-    void setup() {
-        todayDateString = LocalDate.now().plusDays(1).toString();
+    @Test
+    void 예약_가능한_시간을_확인할_수_있다() {
+        String todayDateString = LocalDate.now().plusDays(1).toString();
 
         LocalTime afterTime = LocalTime.now().plusHours(1L);
         Map<String, String> timeParam = Map.of(
@@ -78,12 +75,13 @@ class AvailableReservationTimeTest {
                 .then().log().all()
                 .statusCode(201);
 
-        RestAssured.given().log().all()
+        long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -91,13 +89,10 @@ class AvailableReservationTimeTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
-    }
 
-    @Test
-    void 예약_가능한_시간을_확인할_수_있다() {
         Response response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .when().get("/times/available?date=" + todayDateString + "&themeId=1")
+                .when().get("/times/available?date=" + todayDateString + "&themeId=" + themeId)
                 .then().log().all()
                 .statusCode(200)
                 .extract().response();

@@ -211,7 +211,7 @@ class ReservationServiceTest {
         final int TIME_SLOTS = 6;
 
         for (int i = 0; i < THEME_COUNT; i++) {
-            Theme theme = new Theme(null, "테마" + i, "테마", "thumbnail");
+            Theme theme = new Theme(null, "테마" + (i + 1), "테마", "thumbnail");
             themeRepository.add(theme);
         }
 
