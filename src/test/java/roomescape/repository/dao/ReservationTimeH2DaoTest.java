@@ -3,7 +3,6 @@ package roomescape.repository.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.*;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
@@ -65,7 +64,7 @@ class ReservationTimeH2DaoTest {
     void insert() {
         // given
         LocalTime startAt = LocalTime.of(10, 20);
-        ReservationTime reservationTime = new ReservationTime(1L, startAt);
+        ReservationTime reservationTime = new ReservationTime(startAt);
 
         // when
         reservationTimeH2Dao.insertAndGet(reservationTime);
@@ -117,11 +116,11 @@ class ReservationTimeH2DaoTest {
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", secondTime);
 
         // when
-        Optional<ReservationTime> selectedReservation = reservationTimeH2Dao.selectById(2L);
+        Optional<ReservationTime> selectedReservationTime = reservationTimeH2Dao.selectById(2L);
 
         // then
-        assertThatCode(selectedReservation::get).doesNotThrowAnyException();
-        ReservationTime reservationTime = selectedReservation.get();
+        assertThatCode(selectedReservationTime::get).doesNotThrowAnyException();
+        ReservationTime reservationTime = selectedReservationTime.get();
 
         assertThat(reservationTime.startAt()).isEqualTo(secondTime);
     }
