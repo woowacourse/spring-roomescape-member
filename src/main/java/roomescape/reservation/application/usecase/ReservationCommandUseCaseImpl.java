@@ -2,7 +2,6 @@ package roomescape.reservation.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.application.converter.ReservationConverter;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
@@ -27,23 +26,23 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
     private final ThemeQueryUseCase themeQueryUseCase;
 
     @Override
-    public Reservation create(final CreateReservationServiceRequest createReservationServiceRequest) {
+    public Reservation create(final CreateReservationServiceRequest request) {
         if (reservationQueryUseCase.existsByParams(
-                ReservationDate.from(createReservationServiceRequest.date()),
-                ReservationTimeId.from(createReservationServiceRequest.timeId()),
-                ThemeId.from(createReservationServiceRequest.themeId()))) {
+                ReservationDate.from(request.date()),
+                ReservationTimeId.from(request.timeId()),
+                ThemeId.from(request.themeId()))) {
 
             throw new IllegalStateException("추가하려는 예약이 이미 존재합니다.");
         }
 
         final ReservationTime reservationTime = reservationTimeQueryUseCase.get(
-                ReservationTimeId.from(createReservationServiceRequest.timeId()));
+                ReservationTimeId.from(request.timeId()));
 
         final Theme theme = themeQueryUseCase.get(
-                ThemeId.from(createReservationServiceRequest.themeId()));
+                ThemeId.from(request.themeId()));
 
         return reservationRepository.save(
-                ReservationConverter.toDomain(createReservationServiceRequest, reservationTime, theme));
+                request.toDomain(reservationTime, theme));
     }
 
     @Override

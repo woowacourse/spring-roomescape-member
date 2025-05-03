@@ -3,8 +3,10 @@ package roomescape.time.ui.dto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
+import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record ReservationTimeResponse(Long id,
@@ -12,6 +14,18 @@ public record ReservationTimeResponse(Long id,
 
     public ReservationTimeResponse {
         validate(id, startAt);
+    }
+
+    public static ReservationTimeResponse from(final ReservationTime domain) {
+        return new ReservationTimeResponse(
+                domain.getId().getValue(),
+                domain.getValue());
+    }
+
+    public static List<ReservationTimeResponse> from(final List<ReservationTime> domains) {
+        return domains.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 
     private void validate(final Long id, final LocalTime startAt) {

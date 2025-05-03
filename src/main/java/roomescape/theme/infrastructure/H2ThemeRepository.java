@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.jdbc.JdbcUtils;
-import roomescape.theme.application.converter.ThemeConverter;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeRepository;
@@ -39,7 +38,7 @@ public class H2ThemeRepository implements ThemeRepository {
                 """;
 
         return jdbcTemplate.query(sql, themeMapper).stream()
-                .map(ThemeConverter::toDomain)
+                .map(ThemeDBEntity::toDomain)
                 .toList();
     }
 
@@ -50,7 +49,7 @@ public class H2ThemeRepository implements ThemeRepository {
                 """;
 
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, themeMapper, id.getValue())
-                .map(ThemeConverter::toDomain);
+                .map(ThemeDBEntity::toDomain);
     }
 
     @Override

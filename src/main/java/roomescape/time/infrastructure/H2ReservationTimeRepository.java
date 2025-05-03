@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.jdbc.JdbcUtils;
-import roomescape.time.application.converter.ReservationTimeConverter;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.domain.ReservationTimeRepository;
@@ -57,7 +56,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     public Optional<ReservationTime> findById(final ReservationTimeId id) {
         final String sql = "select id, start_at from reservation_time where id = ?";
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationTimeMapper, id.getValue())
-                .map(ReservationTimeConverter::toDomain);
+                .map(ReservationTimeDBEntity::toDomain);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
         final String sql = "select id, start_at from reservation_time";
 
         return jdbcTemplate.query(sql, reservationTimeMapper).stream()
-                .map(ReservationTimeConverter::toDomain)
+                .map(ReservationTimeDBEntity::toDomain)
                 .toList();
     }
 

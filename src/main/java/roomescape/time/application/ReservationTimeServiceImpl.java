@@ -2,7 +2,6 @@ package roomescape.time.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.time.application.converter.ReservationTimeConverter;
 import roomescape.time.application.dto.CreateReservationTimeServiceRequest;
 import roomescape.time.application.usecase.ReservationTimeCommandUseCase;
 import roomescape.time.application.usecase.ReservationTimeQueryUseCase;
@@ -21,16 +20,16 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
 
     @Override
     public List<ReservationTimeResponse> getAll() {
-        return ReservationTimeConverter.toDto(
+        return ReservationTimeResponse.from(
                 reservationTimeQueryUseCase.getAll());
     }
 
     @Override
-    public ReservationTimeResponse create(final CreateReservationTimeWebRequest createReservationTimeWebRequest) {
-        return ReservationTimeConverter.toDto(
+    public ReservationTimeResponse create(final CreateReservationTimeWebRequest request) {
+        return ReservationTimeResponse.from(
                 reservationTimeCommandUseCase.create(
                         new CreateReservationTimeServiceRequest(
-                                createReservationTimeWebRequest.startAt())));
+                                request.startAt())));
     }
 
     @Override

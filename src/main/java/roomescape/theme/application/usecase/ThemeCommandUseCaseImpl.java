@@ -2,7 +2,6 @@ package roomescape.theme.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.theme.application.converter.ThemeConverter;
 import roomescape.theme.application.dto.CreateThemeServiceRequest;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
@@ -15,8 +14,9 @@ public class ThemeCommandUseCaseImpl implements ThemeCommandUseCase {
     private final ThemeRepository themeRepository;
 
     @Override
-    public Theme create(final CreateThemeServiceRequest createThemeServiceRequest) {
-        return themeRepository.save(ThemeConverter.toDomain(createThemeServiceRequest));
+    public Theme create(final CreateThemeServiceRequest request) {
+        return themeRepository.save(
+                request.toDomain());
     }
 
     @Override

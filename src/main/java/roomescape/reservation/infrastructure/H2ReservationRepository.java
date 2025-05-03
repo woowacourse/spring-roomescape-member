@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.jdbc.JdbcUtils;
-import roomescape.reservation.application.converter.ReservationConverter;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
@@ -121,7 +120,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 """;
 
         return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationMapper, id.getValue())
-                .map(ReservationConverter::toDomain);
+                .map(ReservationDBEntity::toDomain);
     }
 
     @Override
@@ -168,7 +167,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, reservationMapper).stream()
-                .map(ReservationConverter::toDomain)
+                .map(ReservationDBEntity::toDomain)
                 .toList();
     }
 

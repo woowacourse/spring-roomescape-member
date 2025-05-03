@@ -2,7 +2,6 @@ package roomescape.reservation.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.application.converter.ReservationConverter;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.application.usecase.ReservationCommandUseCase;
@@ -25,30 +24,26 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponse> getAll() {
-        return ReservationConverter.toDto(
+        return ReservationResponse.from(
                 reservationQueryUseCase.getAll());
     }
 
     @Override
     public List<AvailableReservationTimeWebResponse> getAvailable(final LocalDate date, final Long id) {
-        final AvailableReservationTimeServiceRequest serviceRequest = new AvailableReservationTimeServiceRequest(
+        final AvailableReservationTimeServiceRequest request = new AvailableReservationTimeServiceRequest(
                 date,
                 ThemeId.from(id));
 
-        return reservationQueryUseCase.getTimesWithAvailability(serviceRequest).stream()
-                .map(ReservationConverter::toWebDto)
+        return reservationQueryUseCase.getTimesWithAvailability(request).stream()
+                .map(AvailableReservationTimeWebResponse::from)
                 .toList();
     }
 
     @Override
-    public ReservationResponse create(final CreateReservationWebRequest createReservationWebRequest) {
-        return ReservationConverter.toDto(
+    public ReservationResponse create(final CreateReservationWebRequest request) {
+        return ReservationResponse.from(
                 reservationCommandUseCase.create(
-                        new CreateReservationServiceRequest(
-                                createReservationWebRequest.name(),
-                                createReservationWebRequest.date(),
-                                createReservationWebRequest.timeId(),
-                                createReservationWebRequest.themeId())));
+                        CreateReservationServiceRequest.from(request)));
     }
 
     @Override

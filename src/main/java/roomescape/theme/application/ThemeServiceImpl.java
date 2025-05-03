@@ -3,7 +3,6 @@ package roomescape.theme.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.theme.application.converter.ThemeConverter;
 import roomescape.theme.application.usecase.ThemeCommandUseCase;
 import roomescape.theme.application.usecase.ThemeQueryUseCase;
 import roomescape.theme.domain.ThemeId;
@@ -22,7 +21,8 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public List<ThemeResponse> getAll() {
-        return ThemeConverter.toDto(themeQueryUseCase.getAll());
+        return ThemeResponse.from(
+                themeQueryUseCase.getAll());
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ThemeServiceImpl implements ThemeService {
         final LocalDate endDate = LocalDate.now();
         final LocalDate startDate = endDate.minusDays(dateRange);
 
-        return ThemeConverter.toDto(
+        return ThemeResponse.from(
                 themeQueryUseCase.getRanking(
                         ReservationDate.from(startDate),
                         ReservationDate.from(endDate),
@@ -40,8 +40,9 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
-    public ThemeResponse create(final CreateThemeWebRequest createThemeWebRequest) {
-        return ThemeConverter.toDto(themeCommandUseCase.create(ThemeConverter.toServiceDto(createThemeWebRequest)));
+    public ThemeResponse create(final CreateThemeWebRequest request) {
+        return ThemeResponse.from(
+                themeCommandUseCase.create(request.toServiceRequest()));
     }
 
     @Override

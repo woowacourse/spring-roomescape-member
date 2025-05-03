@@ -3,7 +3,6 @@ package roomescape.time.application.usecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.application.usecase.ReservationQueryUseCase;
-import roomescape.time.application.converter.ReservationTimeConverter;
 import roomescape.time.application.dto.CreateReservationTimeServiceRequest;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
@@ -20,12 +19,12 @@ public class ReservationTimeCommandUseCaseImpl implements ReservationTimeCommand
     private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
 
     @Override
-    public ReservationTime create(final CreateReservationTimeServiceRequest createReservationTimeServiceRequest) {
-        if (reservationTimeQueryUseCase.existsByStartAt(createReservationTimeServiceRequest.startAt())) {
+    public ReservationTime create(final CreateReservationTimeServiceRequest request) {
+        if (reservationTimeQueryUseCase.existsByStartAt(request.startAt())) {
             throw new IllegalStateException("추가하려는 시간이 이미 존재합니다.");
         }
         return reservationTimeRepository.save(
-                ReservationTimeConverter.toDomain(createReservationTimeServiceRequest));
+                request.toDomain());
     }
 
     @Override

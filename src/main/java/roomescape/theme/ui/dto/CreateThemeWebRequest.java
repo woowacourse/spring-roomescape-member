@@ -3,6 +3,7 @@ package roomescape.theme.ui.dto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
+import roomescape.theme.application.dto.CreateThemeServiceRequest;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record CreateThemeWebRequest(
@@ -13,6 +14,13 @@ public record CreateThemeWebRequest(
 
     public CreateThemeWebRequest {
         validate(name, description, thumbnail);
+    }
+
+    public CreateThemeServiceRequest toServiceRequest() {
+        return new CreateThemeServiceRequest(
+                name,
+                description,
+                thumbnail);
     }
 
     private void validate(final String name, final String description, final String thumbnail) {

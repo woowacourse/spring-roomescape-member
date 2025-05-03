@@ -3,6 +3,7 @@ package roomescape.reservation.ui.dto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
+import roomescape.reservation.application.dto.AvailableReservationTimeServiceResponse;
 
 import java.time.LocalTime;
 
@@ -13,11 +14,16 @@ public record AvailableReservationTimeWebResponse(
         Boolean isBooked
 ) {
 
-    public AvailableReservationTimeWebResponse(final LocalTime startAt, final Long timeId, final Boolean isBooked) {
+    public AvailableReservationTimeWebResponse {
         validate(startAt, timeId, isBooked);
-        this.startAt = startAt;
-        this.timeId = timeId;
-        this.isBooked = isBooked;
+    }
+
+    public static AvailableReservationTimeWebResponse from(
+            final AvailableReservationTimeServiceResponse serviceResponse) {
+        return new AvailableReservationTimeWebResponse(
+                serviceResponse.startAt(),
+                serviceResponse.timeId(),
+                serviceResponse.isBooked());
     }
 
     private void validate(final LocalTime startAt, final Long timeId, final Boolean isBooked) {
