@@ -45,7 +45,7 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAllByThemeIdAndDate(final Long themeId, final LocalDate date) {
         final String sql = """ 
                 SELECT  
-                       t.id AS time_id,  
+                       t.id AS id,  
                        t.start_at AS start_at  
                 FROM reservation AS r  
                     INNER JOIN reservation_time AS t    

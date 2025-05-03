@@ -46,9 +46,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                SELECT r.id AS reservation_id, 
-                       r.name, 
-                       r.date, 
+                SELECT r.id AS id, 
+                       r.name AS name, 
+                       r.date AS date, 
                        t.id AS time_id, 
                        t.start_at AS time_value, 
                        th.id AS theme_id, 
@@ -64,9 +64,9 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public Reservation findById(Long id) {
         final String sql = """ 
-                SELECT r.id AS reservation_id, 
-                       r.name, 
-                       r.date, 
+                SELECT r.id AS id, 
+                       r.name AS name, 
+                       r.date AS date, 
                        t.id AS time_id, 
                        t.start_at AS time_value, 
                        th.id AS theme_id, 
