@@ -14,6 +14,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.AddReservationTimeRequest;
+import roomescape.exception.InvalidReservationTimeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.ReservationTimeService;
@@ -24,34 +25,36 @@ import roomescape.unit.repository.FakeReservationTimeRepository;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ReservationTimeServiceTest {
 
-    static ReservationTimeService reservationTimeService;
+    private ReservationTimeService reservationTimeService;
 
-    static ReservationRepository reservationRepository;
-    static ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void setup() {
         reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationTimeService = new ReservationTimeService(reservationRepository,
-                reservationTimeRepository);
+        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+
+        reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 
     @Test
     void 예약시간을_추가하고_조회할_수_있다() {
         reservationTimeService.addReservationTime(new AddReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
-        assertThat(reservationTimeService.allReservationTimes().size()).isEqualTo(1);
+        assertThat(reservationTimeService.allReservationTimes()).hasSize(1);
     }
 
     @Test
     void 예약시간을_삭제하고_조회할_수_있다() {
+        // given
         ReservationTime reservationTime = reservationTimeService.addReservationTime(
                 new AddReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
 
+        // when
         int before = reservationTimeService.allReservationTimes().size();
         reservationTimeService.deleteReservationTime(reservationTime.getId());
         int after = reservationTimeService.allReservationTimes().size();
 
+        //then
         assertAll(() -> {
             assertThat(before).isEqualTo(1);
             assertThat(after).isEqualTo(0);
@@ -60,33 +63,40 @@ class ReservationTimeServiceTest {
 
     @Test
     void 특정_시간에_대한_예약이_존재할때_시간을_삭제하려고하면_예외가_발생한다() {
+        // given
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
-        ReservationTime reservationTime = reservationTimeService.addReservationTime(
-                new AddReservationTimeRequest(startAt));
-        Theme theme = new Theme(0L, "공포", "공포테마입니다.", "ㅁㄴㅇㄹ");
-        Reservation reservation = new Reservation(null, "praisebak", LocalDate.now().plusDays(1), reservationTime,
-                theme);
+        AddReservationTimeRequest requset = new AddReservationTimeRequest(startAt);
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(requset);
+
+        Theme theme = new Theme(0L, "공포", "공포테마입니다.", "thumbnail");
+
+        Reservation reservation = new Reservation(null, "praisebak",
+                LocalDate.now().plusDays(1), reservationTime, theme);
         reservationRepository.add(reservation);
 
+        // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(reservationTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationTimeException.class);
     }
 
     @Test
     void 중복_시간을_설정할_수_없다() {
+        // given
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
         AddReservationTimeRequest initialReservationTime = new AddReservationTimeRequest(startAt);
         reservationTimeService.addReservationTime(initialReservationTime);
 
+        // when
         AddReservationTimeRequest duplicateAddReservationTime = new AddReservationTimeRequest(startAt);
 
+        //then
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(duplicateAddReservationTime))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationTimeException.class);
     }
 
     @Test
     void 존재하지_않는_시간을_조회시_예외가_발생한다() {
         assertThatThrownBy(() -> reservationTimeService.getReservationTimeById(-1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidReservationTimeException.class);
     }
 }

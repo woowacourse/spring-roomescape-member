@@ -12,6 +12,9 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.AddReservationRequest;
 import roomescape.dto.request.AddReservationTimeRequest;
 import roomescape.dto.request.AddThemeRequest;
+import roomescape.exception.InvalidThemeException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationTimeService;
@@ -23,62 +26,75 @@ import roomescape.unit.repository.FakeThemeRepository;
 class ThemeServiceTest {
 
     private ThemeService themeService;
-    private ThemeRepository themeRepository;
     private ReservationService reservationService;
     private ReservationTimeService reservationTimeService;
 
+    private ThemeRepository themeRepository;
+
     @BeforeEach
     void setUp() {
+        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository();
         themeRepository = new FakeThemeRepository();
-        FakeReservationTimeRepository fakeReservationTimeRepository = new FakeReservationTimeRepository();
-        FakeReservationRepository fakeReservationRepository = new FakeReservationRepository();
 
-        reservationTimeService = new ReservationTimeService(fakeReservationRepository, fakeReservationTimeRepository);
-        reservationService = new ReservationService(fakeReservationRepository,
-                fakeReservationTimeRepository,
-                themeRepository);
-        themeService = new ThemeService(themeRepository, fakeReservationRepository);
+        reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
     @Test
     void 테마를_추가할_수_있다() {
-        AddThemeRequest addThemeRequest = new AddThemeRequest("방탈출", "게임입니다.", "thumbnail");
-        Theme addedTheme = themeService.addTheme(addThemeRequest);
+        // given
+        AddThemeRequest request = new AddThemeRequest("방탈출", "게임입니다.", "thumbnail");
 
+        // when
+        Theme addedTheme = themeService.addTheme(request);
+
+        //then
         assertThat(addedTheme.getId()).isEqualTo(1L);
     }
 
     @Test
     void 테마를_조회할_수_있다() {
+        // given
         Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
         themeRepository.add(theme);
 
+        // when & then
         assertThat(themeService.findAll()).hasSize(1);
     }
 
     @Test
     void 테마를_삭제할_수_있다() {
+        // given
         Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
         themeRepository.add(theme);
+
+        // when
         themeService.deleteThemeById(1L);
+
+        //then
         assertThat(themeRepository.findAll()).hasSize(0);
     }
 
     @Test
     void 예약이_존재하는_테마는_삭제할_수_없다() {
+        // given
         Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
-        themeRepository.add(theme);
+        Long themeId = themeRepository.add(theme).getId();
 
         ReservationTime reservationTime = reservationTimeService.addReservationTime(
                 new AddReservationTimeRequest(LocalTime.now()));
         reservationService.addReservation(
-                new AddReservationRequest("praisebak", LocalDate.now().plusDays(1L), reservationTime.getId(), 1L));
-        assertThatThrownBy(() -> themeService.deleteThemeById(1L)).isInstanceOf(IllegalArgumentException.class);
+                new AddReservationRequest("praisebak", LocalDate.now().plusDays(1L), reservationTime.getId(), themeId));
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteThemeById(themeId)).isInstanceOf(InvalidThemeException.class);
     }
 
     @Test
     void 존재하지_않는_테마를_조회시_예외가_발생한다() {
         assertThatThrownBy(() -> themeService.getThemeById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidThemeException.class);
     }
 }

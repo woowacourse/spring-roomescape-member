@@ -59,7 +59,7 @@ public class ReservationTimeController {
     @GetMapping("/available")
     public ResponseEntity<List<ReservationTimeSlotResponse>> getAvailableReservationTimes(
             @ModelAttribute @Valid AvailableTimeRequest availableTimeRequest) {
-        ReservationSlots reservationSlotTimes = reservationService.availableReservationTimes(
+        ReservationSlots reservationSlotTimes = reservationService.getReservationSlots(
                 availableTimeRequest);
         List<ReservationSlot> reservationSlots = reservationSlotTimes.getReservationSlots();
 

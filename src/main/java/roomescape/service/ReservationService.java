@@ -63,26 +63,26 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
-        reservationRepository.deleteById(id);
-    }
-
     public List<Reservation> allReservations() {
         return reservationRepository.findAll();
     }
 
-    public ReservationSlots availableReservationTimes(AvailableTimeRequest availableTimeRequest) {
+    public Reservation getReservationById(long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약입니다."));
+    }
+
+    public void deleteReservation(Long id) {
+        reservationRepository.deleteById(id);
+    }
+
+    public ReservationSlots getReservationSlots(AvailableTimeRequest availableTimeRequest) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
                 availableTimeRequest.date(), availableTimeRequest.themeId());
 
         return new ReservationSlots(times, alreadyReservedReservations);
-    }
-
-    public Reservation getReservationById(long addedReservationId) {
-        return reservationRepository.findById(addedReservationId)
-                .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약입니다."));
     }
 
     public List<Theme> getRankingThemes(LocalDate originDate) {

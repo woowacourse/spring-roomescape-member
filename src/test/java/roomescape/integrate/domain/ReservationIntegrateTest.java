@@ -1,24 +1,20 @@
 package roomescape.integrate.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.domain.Reservation;
@@ -28,16 +24,9 @@ import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ReservationIntegrateTest {
-
-    @BeforeEach
-    void setup(@Autowired JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("delete from reservation");
-        jdbcTemplate.execute("delete from reservation_time");
-        jdbcTemplate.execute("delete from theme");
-    }
 
     @Test
     void 예약_추가_테스트() {

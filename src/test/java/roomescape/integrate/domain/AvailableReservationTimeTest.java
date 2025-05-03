@@ -7,35 +7,26 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AvailableReservationTimeTest {
 
     private static String todayDateString;
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
     @BeforeEach
     void setup() {
-        jdbcTemplate.execute("delete from reservation");
-
         todayDateString = LocalDate.now().plusDays(1).toString();
 
         LocalTime afterTime = LocalTime.now().plusHours(1L);
@@ -102,13 +93,6 @@ class AvailableReservationTimeTest {
                 .statusCode(201);
     }
 
-    @AfterEach
-    void tearDown() {
-        jdbcTemplate.execute("delete from reservation");
-        jdbcTemplate.execute("delete from reservation_time");
-        jdbcTemplate.execute("delete from theme");
-    }
-
     @Test
     void 예약_가능한_시간을_확인할_수_있다() {
         Response response = RestAssured.given().log().all()
@@ -123,3 +107,5 @@ class AvailableReservationTimeTest {
         assertThat(alreadyBooked).containsAnyElementsOf(booleans);
     }
 }
+
+
