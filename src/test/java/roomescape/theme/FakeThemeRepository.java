@@ -54,4 +54,10 @@ public class FakeThemeRepository implements ThemeRepository {
         return themes.stream()
                 .anyMatch(theme -> Objects.equals(theme.getId(), id));
     }
+
+    public void clear() {
+        invokeDeleteId.clear();
+        themes.clear();
+        NEXT_ID = 1L;
+    }
 }

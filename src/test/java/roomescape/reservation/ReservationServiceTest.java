@@ -43,6 +43,8 @@ public class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         fakeReservationRepository.clear();
+        fakeReservationTimeRepository.clear();
+        fakeThemeRepository.clear();
     }
 
     @Nested

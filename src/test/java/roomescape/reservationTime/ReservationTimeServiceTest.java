@@ -31,6 +31,7 @@ public class ReservationTimeServiceTest {
     @BeforeEach
     void setUp() {
         fakeReservationTimeRepository.clear();
+        fakeReservationRepository.clear();
     }
 
 
