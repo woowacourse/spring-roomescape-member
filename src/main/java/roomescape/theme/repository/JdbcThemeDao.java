@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,21 +72,26 @@ public class JdbcThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findByPeriodAndLimit(LocalDate start, LocalDate end, int limit) {
+    public List<Long> findTopThemeIdByDateRange(LocalDate start, LocalDate end, int limit) {
         String sql = """
-                SELECT th.id, th.name, th.description, th.thumbnail, r.theme_count 
-                FROM theme AS th
-                JOIN
-                (
-                    SELECT COUNT(theme_id) AS theme_count, theme_id FROM reservation
-                    WHERE date BETWEEN ? AND ?
-                    GROUP BY theme_id
-                ) AS r
-                ON th.id = r.theme_id
-                ORDER BY theme_count DESC
+                SELECT theme_id
+                FROM reservation
+                WHERE date BETWEEN ? AND ?
+                GROUP BY theme_id
+                ORDER BY COUNT(theme_id) DESC
                 LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, rowMapper, start, end, limit);
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("theme_id"), start, end, limit);
     }
 
+    @Override
+    public List<Theme> findByIdIn(List<Long> ids) {
+        if (ids.isEmpty()) {
+            throw new IllegalStateException("테마 ID가 존재하지 않습니다.");
+        }
+        String holders = String.join(", ", Collections.nCopies(ids.size(), "?"));
+        String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id IN (" + holders + ")";
+        return jdbcTemplate.query(sql, ids.toArray(), rowMapper);
+    }
 }

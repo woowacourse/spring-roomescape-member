@@ -56,16 +56,23 @@ public class ThemeFakeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findByPeriodAndLimit(LocalDate start, LocalDate end, int limit) {
+    public List<Long> findTopThemeIdByDateRange(LocalDate start, LocalDate end, int limit) {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .filter(reservation -> isWithinPeriod(reservation.getDate(), start, end))
-                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()))
+                .collect(Collectors.groupingBy(reservation -> reservation.getTheme().getId(), Collectors.counting()))
                 .entrySet()
                 .stream()
-                .sorted(Entry.<Theme, Long>comparingByValue().reversed())
+                .sorted(Entry.<Long, Long>comparingByValue().reversed())
                 .limit(limit)
                 .map(Entry::getKey)
+                .toList();
+    }
+
+    @Override
+    public List<Theme> findByIdIn(List<Long> ids) {
+        return ids.stream()
+                .map(themes::get)
                 .toList();
     }
 

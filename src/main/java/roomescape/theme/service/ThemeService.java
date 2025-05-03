@@ -3,6 +3,9 @@ package roomescape.theme.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRankingResponse;
@@ -51,9 +54,21 @@ public class ThemeService {
     public List<ThemeRankingResponse> getThemeRankings() {
         LocalDate startDate = LocalDate.now(clock).minusDays(DAYS_BEFORE_START);
         LocalDate endDate = LocalDate.now(clock).minusDays(DAYS_BEFORE_END);
-        List<Theme> themeRankings = themeRepository.findByPeriodAndLimit(startDate, endDate, RANKING_LIMIT);
-        return themeRankings.stream()
+        List<Long> themeRankIds = themeRepository.findTopThemeIdByDateRange(startDate, endDate, RANKING_LIMIT);
+        List<Theme> unorderedThemes = themeRepository.findByIdIn(themeRankIds);
+
+        return sortByInOrder(unorderedThemes, themeRankIds)
+                .stream()
                 .map(ThemeRankingResponse::from)
+                .toList();
+    }
+
+    private List<Theme> sortByInOrder(List<Theme> themes, List<Long> idOrder){
+        Map<Long, Theme> idThemes = themes.stream()
+                .collect(Collectors.toMap(Theme::getId, Function.identity()));
+
+        return idOrder.stream()
+                .map(idThemes::get)
                 .toList();
     }
 

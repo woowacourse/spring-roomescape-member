@@ -112,26 +112,33 @@ class JdbcThemeDaoTest {
 
     }
 
-    @DisplayName("인기 테마 목록을 조회한다")
+    @DisplayName("인기 테마 목록의 ID를 조회한다")
     @Test
-    void find_by_period_and_limit() {
+    void find_top_theme_id_by_date_range_test(){
         // given
-        LocalDate start = LocalDate.of(2025, 4, 24);
-        LocalDate end = LocalDate.of(2025, 4, 30);
+        LocalDate start = LocalDate.of(2025, 4, 27);
+        LocalDate end = LocalDate.of(2025, 5, 3);
         int limit = 10;
 
         // when
-        List<Theme> themeRankings = jdbcThemeDao.findByPeriodAndLimit(start, end, limit);
+        List<Long> actual = jdbcThemeDao.findTopThemeIdByDateRange(start, end, limit);
 
         // then
-        assertAll(
-                () -> assertThat(themeRankings.get(0).getId()).isEqualTo(3L),
-                () -> assertThat(themeRankings.get(0).getName()).isEqualTo("레벨3 탈출"),
-                () -> assertThat(themeRankings.get(0).getDescription()).isEqualTo("우테코 레벨3를 탈출하는 내용입니다."),
-                () -> assertThat(themeRankings.get(0).getThumbnail()).isEqualTo(
-                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
-        );
+        assertThat(actual).containsExactly(3L, 4L, 2L, 5L);
+    }
 
+    @DisplayName("테마 ID 목록을 이용하여 테마들을 조회한다")
+    @Test
+    void find_by_id_in_test() {
+        // given
+        List<Long> ids = List.of(2L, 5L);
+
+        // when
+        List<Theme> themes = jdbcThemeDao.findByIdIn(ids);
+
+        // then
+        assertThat(themes).extracting(Theme::getDescription)
+                .containsExactlyInAnyOrder("우테코 레벨2를 탈출하는 내용입니다.", "우테코 레벨5를 탈출하는 내용입니다.");
     }
 
 }
