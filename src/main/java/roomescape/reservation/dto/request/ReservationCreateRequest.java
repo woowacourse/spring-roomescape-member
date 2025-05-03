@@ -11,7 +11,7 @@ public record ReservationCreateRequest(
         long themeId
 ) {
     public ReservationCreateRequest {
-        if (name == null) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 반드시 입력해야합니다.");
         }
     }
