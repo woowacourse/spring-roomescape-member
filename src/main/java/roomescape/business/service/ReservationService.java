@@ -31,7 +31,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation createReservation(
+    public Reservation addAndGet(
             final String name,
             final LocalDate date,
             final long timeId,
@@ -50,7 +50,7 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public List<Reservation> getReservations() {
+    public List<Reservation> getAll() {
         return reservationRepository.findAll();
     }
 

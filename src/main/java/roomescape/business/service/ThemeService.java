@@ -25,16 +25,16 @@ public class ThemeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Theme add(final String name, final String description, final String thumbnail) {
+    public Theme addAndGet(final String name, final String description, final String thumbnail) {
         Theme theme = Theme.beforeSave(name, description, thumbnail);
         return themeRepository.save(theme);
     }
 
-    public List<Theme> getAllThemes() {
+    public List<Theme> getAll() {
         return themeRepository.findAll();
     }
 
-    public List<Theme> getPopularThemes(int size) {
+    public List<Theme> getPopular(int size) {
         LocalDate now = LocalDate.now();
         return themeRepository.findPopularThemes(
                 now.minusDays(AGGREGATE_START_DATE_INTERVAL),
@@ -43,7 +43,7 @@ public class ThemeService {
         );
     }
 
-    public void deleteById(final long id) {
+    public void delete(final long id) {
         if (reservationRepository.existByThemeId(id)) {
             throw new ConnectedReservationExistException();
         }

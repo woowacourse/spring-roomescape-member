@@ -27,7 +27,7 @@ public class ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
-    public ReservationTime createReservationTime(final LocalTime time) {
+    public ReservationTime addAndGet(final LocalTime time) {
         validateNoDuplication(time);
         validateTimeInterval(time);
 
@@ -50,7 +50,7 @@ public class ReservationTimeService {
         }
     }
 
-    public List<ReservationTime> getAllReservationTime() {
+    public List<ReservationTime> getAll() {
         return reservationTimeRepository.findAll();
     }
 
