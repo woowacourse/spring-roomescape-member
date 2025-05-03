@@ -52,7 +52,7 @@ public class ReservationTimeController {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTime(
-            @PathVariable Long id
+            @PathVariable long id
     ) {
         reservationTimeService.deleteReservationTime(id);
     }

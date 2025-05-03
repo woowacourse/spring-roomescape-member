@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminPageController {
 
     @GetMapping
-    public String displayMain() {
+    public String displayAdminMain() {
         return "admin/index";
     }
 
@@ -19,7 +19,7 @@ public class AdminPageController {
     }
 
     @GetMapping("time")
-    public String displayAdminTime() {
+    public String displayAdminReservationTime() {
         return "admin/time";
     }
 
