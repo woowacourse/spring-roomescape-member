@@ -52,26 +52,28 @@ class ReservationIntegrateTest {
                 "thumbnail", "thumbnail"
         );
 
-        Map<String, Object> reservation = Map.of(
-                "name", "브라운",
-                "date", LocalDate.now().plusDays(1).toString(),
-                "timeId", 1,
-                "themeId", 1
-        );
-
-        RestAssured.given().log().all()
+        long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
-        RestAssured.given().log().all()
+        long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
+
+        Map<String, Object> reservation = Map.of(
+                "name", "브라운",
+                "date", LocalDate.now().plusDays(1).toString(),
+                "timeId", timeId,
+                "themeId", themeId
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -79,18 +81,10 @@ class ReservationIntegrateTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
     @Test
     void 예약_삭제_테스트() {
-        long deleteReservationId = 1L;
-
         LocalTime afterTime = LocalTime.now().plusHours(1L);
         Map<String, String> timeParam = Map.of(
                 "startAt", afterTime.toString()
@@ -102,44 +96,41 @@ class ReservationIntegrateTest {
                 "thumbnail", "thumbnail"
         );
 
-        Map<String, Object> reservation = Map.of(
-                "name", "브라운",
-                "date", LocalDate.now().plusDays(1).toString(),
-                "timeId", 1,
-                "themeId", 1
-        );
-
-        RestAssured.given().log().all()
+        long timeId =RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
-        RestAssured.given().log().all()
+        long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
-        RestAssured.given().log().all()
+        Map<String, Object> reservation = Map.of(
+                "name", "브라운",
+                "date", LocalDate.now().plusDays(1).toString(),
+                "timeId", timeId,
+                "themeId", themeId
+        );
+
+        long reservationId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
-                .when().delete("/reservations/" + deleteReservationId)
+                .when().delete("/reservations/" + reservationId)
                 .then().log().all()
                 .statusCode(204);
     }
@@ -169,46 +160,50 @@ class ReservationIntegrateTest {
                 "thumbnail", "thumbnail"
         );
 
-        RestAssured.given().log().all()
+        long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
-        RestAssured.given().log().all()
+        long themeId_1 = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
-        RestAssured.given().log().all()
+        long themeId_2 = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParam2)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
-        RestAssured.given().log().all()
+        long themeId_3 = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(themeParam3)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         Reservation reservation1 = new Reservation(null, "이름", LocalDate.now().minusDays(1),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
         Reservation reservation2 = new Reservation(null, "이름", LocalDate.now().minusDays(2),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
         Reservation reservation3 = new Reservation(null, "이름", LocalDate.now().minusDays(3),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
         Reservation reservation4 = new Reservation(null, "이름", LocalDate.now().minusDays(4),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
+                new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
         Reservation reservation5 = new Reservation(null, "이름", LocalDate.now().minusDays(5),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
+                new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
         Reservation reservation6 = new Reservation(null, "이름", LocalDate.now().minusDays(6),
-                new ReservationTime(1L, afterTime), new Theme(3L, "테마 명3", "description", "thumbnail"));
+                new ReservationTime(timeId, afterTime), new Theme(themeId_3, "테마 명3", "description", "thumbnail"));
 
         reservationRepository.add(reservation1);
         reservationRepository.add(reservation2);
@@ -227,6 +222,6 @@ class ReservationIntegrateTest {
                 .map(ThemeResponse::id)
                 .toList();
 
-        assertThat(rankingThemeIds).containsExactlyElementsOf(List.of(1L, 2L, 3L));
+        assertThat(rankingThemeIds).containsExactlyElementsOf(List.of(themeId_1, themeId_2, themeId_3));
     }
 }

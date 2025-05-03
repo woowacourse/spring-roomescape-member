@@ -29,8 +29,13 @@ class AvailableReservationTimeTest {
 
     private static String todayDateString;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void setup() {
+        jdbcTemplate.execute("delete from reservation");
+
         todayDateString = LocalDate.now().plusDays(1).toString();
 
         LocalTime afterTime = LocalTime.now().plusHours(1L);
@@ -98,7 +103,7 @@ class AvailableReservationTimeTest {
     }
 
     @AfterEach
-    void tearDown(@Autowired JdbcTemplate jdbcTemplate) {
+    void tearDown() {
         jdbcTemplate.execute("delete from reservation");
         jdbcTemplate.execute("delete from reservation_time");
         jdbcTemplate.execute("delete from theme");

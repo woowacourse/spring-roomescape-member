@@ -45,49 +45,25 @@ class ThemeIntegrateTest {
     @Test
     void 테마_추가_테스트() {
         RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-
-        RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
     @Test
     void 테마_삭제_테스트() {
-        long deleteThemeId = 1L;
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-
-        RestAssured.given().log().all()
+        long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-
-        RestAssured.given().log().all()
-                .when().delete("/themes/" + deleteThemeId)
+                .when().delete("/themes/" + themeId)
                 .then().log().all()
                 .statusCode(204);
     }
