@@ -29,7 +29,7 @@ public class TimeSlotController {
 
     @PostMapping("/times")
     public ResponseEntity<TimeSlotResponse> add(@RequestBody CreateTimeSlotRequest request) {
-        var timeSlot = service.add(request.startAt());
+        var timeSlot = service.register(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);
     }

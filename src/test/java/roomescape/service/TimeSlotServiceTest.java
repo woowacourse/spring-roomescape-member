@@ -27,12 +27,12 @@ class TimeSlotServiceTest {
 
     @Test
     @DisplayName("예약 시간을 추가할 수 있다.")
-    void addTimeSlot() {
+    void registerTimeSlot() {
         // given
         var startAt = LocalTime.of(10, 0);
 
         // when
-        TimeSlot created = service.add(startAt);
+        TimeSlot created = service.register(startAt);
 
         // then
         var timeSlots = service.findAllTimeSlots();
@@ -44,7 +44,7 @@ class TimeSlotServiceTest {
     void deleteTimeSlot() {
         // given
         var startAt = LocalTime.of(10, 0);
-        var target = service.add(startAt);
+        var target = service.register(startAt);
 
         // when
         boolean isRemoved = service.removeById(target.id());
@@ -65,7 +65,7 @@ class TimeSlotServiceTest {
         var timeSlotRepository = new TimeSlotFakeRepository();
         var timeSlotService = new TimeSlotService(reservationRepository, timeSlotRepository);
 
-        var timeSlotToBeRemoved = timeSlotService.add(LocalTime.of(10, 0));
+        var timeSlotToBeRemoved = timeSlotService.register(LocalTime.of(10, 0));
         var reservationWithTheTimeSlot = new Reservation("포포", Fixtures.ofTomorrow(), timeSlotToBeRemoved, JUNK_THEME);
         reservationRepository.save(reservationWithTheTimeSlot);
 

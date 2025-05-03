@@ -23,7 +23,7 @@ public class TimeSlotService {
         this.timeSlotRepository = timeSlotRepository;
     }
 
-    public TimeSlot add(LocalTime startAt) {
+    public TimeSlot register(LocalTime startAt) {
         var timeSlot = new TimeSlot(startAt);
         var id = timeSlotRepository.save(timeSlot);
         return new TimeSlot(id, startAt);

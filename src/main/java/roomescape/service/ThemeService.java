@@ -21,7 +21,7 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme add(String name, String description, String thumbnail) {
+    public Theme register(String name, String description, String thumbnail) {
         var theme = new Theme(name, description, thumbnail);
         var id = themeRepository.save(theme);
         return new Theme(id, name, description, thumbnail);
