@@ -1,0 +1,19 @@
+### 모든 예약 시간 조회
+GET http://localhost:8080/times
+
+### id를 통해 예약 시간 조회
+GET http://localhost:8080/times/1
+
+### 예약 가능한 시간 조회
+GET http://localhost:8080/times/available
+
+### 예약 시간 추가
+POST http://localhost:8080/times
+Content-Type: application/json
+
+{
+    "startAt": "10:30"
+}
+
+### id를 통해 예약 시간 삭제
+DELETE http://localhost:8080/times/1
