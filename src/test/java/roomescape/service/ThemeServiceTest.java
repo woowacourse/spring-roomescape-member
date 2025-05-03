@@ -1,17 +1,19 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.test.fixture.ReservationTimeFixture.addReservationTimeInRepository;
-import static roomescape.test.fixture.ThemeFixture.addThemeInRepository;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import org.mockito.Mockito;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreationRequest;
 import roomescape.exception.BadRequestException;
@@ -19,65 +21,105 @@ import roomescape.exception.NotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
-import roomescape.test.fake.FakeReservationRepository;
-import roomescape.test.fake.FakeReservationTimeRepository;
-import roomescape.test.fake.FakeThemeRepository;
 
 class ThemeServiceTest {
 
-    private final ReservationRepository reservationRepository = new FakeReservationRepository();
-    private final ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    private final ThemeRepository themeRepository = new FakeThemeRepository();
+    private final ReservationRepository reservationRepository = mock(ReservationRepository.class);
+    private final ReservationTimeRepository reservationTimeRepository = mock(ReservationTimeRepository.class);
+    private final ThemeRepository themeRepository = mock(ThemeRepository.class);
     private final ThemeService themeService = new ThemeService(reservationRepository, themeRepository);
+
+    @DisplayName("모든 테마를 조회할 수 있다")
+    @Test
+    void canFindAllTheme() {
+        List<Theme> expectedThemes = List.of(
+                new Theme(1L, "테마1", "설명", "섬네일"),
+                new Theme(2L, "테마2", "설명", "섬네일"),
+                new Theme(3L, "테마3", "설명", "섬네일"));
+        when(themeRepository.findAll()).thenReturn(expectedThemes);
+
+        List<Theme> actualThemes = themeService.findAllTheme();
+
+        assertThat(actualThemes).containsExactlyElementsOf(expectedThemes);
+    }
+
+    @DisplayName("ID를 통해 테마를 조회할 수 있다")
+    @Test
+    void canFindThemeById() {
+        Theme expectedTheme = new Theme(1L, "테마1", "설명", "섬네일");
+        when(themeRepository.findById(expectedTheme.getId())).thenReturn(Optional.of(expectedTheme));
+
+        Theme actualTheme = themeService.findThemeById(expectedTheme.getId());
+
+        assertThat(actualTheme).isEqualTo(expectedTheme);
+    }
+
+    @DisplayName("ID를 통해 테마를 조회할때, 테마가 존재하지 않는다면 예외를 발생시킨다")
+    @Test
+    void cannotFindThemeById() {
+        long noneExistentId = 1L;
+        when(themeRepository.findById(noneExistentId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> themeService.findThemeById(noneExistentId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
+    }
+
+    @DisplayName("기간동안 인기있는 테마를 조회할 수 있다")
+    @Test
+    void canFindTopThemes() {
+        List<Theme> expectedThemes = List.of(
+                new Theme(1L, "테마1", "설명", "섬네일"),
+                new Theme(2L, "테마2", "설명", "섬네일"),
+                new Theme(3L, "테마3", "설명", "섬네일"),
+                new Theme(4L, "테마4", "설명", "섬네일"),
+                new Theme(5L, "테마5", "설명", "섬네일"),
+                new Theme(6L, "테마6", "설명", "섬네일"),
+                new Theme(7L, "테마7", "설명", "섬네일"),
+                new Theme(8L, "테마8", "설명", "섬네일"),
+                new Theme(9L, "테마9", "설명", "섬네일"),
+                new Theme(10L, "테마10", "설명", "섬네일"));
+        when(themeRepository.getTopThemesByCount(Mockito.any(), Mockito.any())).thenReturn(expectedThemes);
+
+        List<Theme> actualThemes = themeService.findTopThemes();
+
+        assertThat(actualThemes).containsExactlyElementsOf(expectedThemes);
+    }
 
     @DisplayName("테마를 추가할 수 있다.")
     @Test
     void canAddTheme() {
-        ThemeCreationRequest request = new ThemeCreationRequest("theme", "description", "url");
+        ThemeCreationRequest request = new ThemeCreationRequest("테마", "설명", "섬네일");
+        when(themeRepository.add(Theme.createWithoutId(request.name(), request.thumbnail(), request.thumbnail())))
+                .thenReturn(1L);
 
         long savedId = themeService.addTheme(request);
 
-        Theme savedTheme = themeRepository.findById(savedId).get();
-        Theme expectedTheme = new Theme(1L, request.name(), request.description(), request.thumbnail());
-        assertThat(savedTheme).isEqualTo(expectedTheme);
-    }
-
-    @DisplayName("모든 테마를 조회할 수 있다.")
-    @Test
-    void canFindAllTheme() {
-        themeRepository.add(Theme.createWithoutId("theme1", "설명", "섬네일"));
-        themeRepository.add(Theme.createWithoutId("theme2", "설명", "섬네일"));
-        themeRepository.add(Theme.createWithoutId("theme3", "설명", "섬네일"));
-
-        List<Theme> themes = themeService.findAllTheme();
-        assertThat(themes).hasSize(3);
-    }
-
-    @DisplayName("ID를 통해 테마를 조회할 수 있다.")
-    @Test
-    void canFindThemeById() {
-        long id = themeRepository.add(Theme.createWithoutId("theme", "description", "url"));
-
-        Theme actualTheme = themeService.findThemeById(id);
-
-        Theme expectedTheme = new Theme(id, "theme", "description", "url");
-        assertThat(actualTheme).isEqualTo(expectedTheme);
+        assertThat(savedId).isEqualTo(1L);
     }
 
     @DisplayName("ID를 통해 테마를 삭제할 수 있다.")
     @Test
     void canDeleteThemeById() {
-        long id = themeRepository.add(Theme.createWithoutId("이름", "설명", "썸네일"));
+        Theme theme = new Theme(1L, "테마", "설명", "섬네일");
+        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
+        when(reservationRepository.checkExistenceInTheme(theme.getId())).thenReturn(false);
 
-        themeService.deleteThemeById(id);
-        List<Theme> themes = themeService.findAllTheme();
-        assertThat(themes).hasSize(0);
+        assertAll(
+                () -> assertThatCode(() -> themeService.deleteThemeById(theme.getId()))
+                        .doesNotThrowAnyException(),
+                () -> verify(themeRepository, times(1)).deleteById(theme.getId())
+        );
     }
 
     @DisplayName("삭제할 테마가 존재하지 않는 경우 예외를 발생시킨다.")
     @Test
     void cannotDeleteThemeWhenEmptyTheme() {
-        assertThatThrownBy(() -> themeService.deleteThemeById(1L))
+        long noneExistentId = 1L;
+        when(themeRepository.findById(noneExistentId)).thenReturn(Optional.empty());
+        when(reservationRepository.checkExistenceInTheme(noneExistentId)).thenReturn(false);
+
+        assertThatThrownBy(() -> themeService.deleteThemeById(noneExistentId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
     }
@@ -85,10 +127,9 @@ class ThemeServiceTest {
     @DisplayName("예약이 존재하는 경우 테마를 삭제할 수 있다.")
     @Test
     void cannotDeleteThemeWhenReservationExist() {
-        ReservationTime reservationTime = addReservationTimeInRepository(reservationTimeRepository, LocalTime.now());
-        Theme theme = addThemeInRepository(themeRepository, "이름", "설명", "썸네일");
-        reservationRepository.add(
-                Reservation.createWithoutId("이름", LocalDate.now().plusDays(1), reservationTime, theme));
+        Theme theme = new Theme(1L, "테마", "설명", "섬네일");
+        when(themeRepository.findById(theme.getId())).thenReturn(Optional.of(theme));
+        when(reservationRepository.checkExistenceInTheme(theme.getId())).thenReturn(true);
 
         assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
                 .isInstanceOf(BadRequestException.class)

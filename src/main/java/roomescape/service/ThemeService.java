@@ -22,11 +22,6 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public long addTheme(ThemeCreationRequest request) {
-        Theme theme = Theme.createWithoutId(request.name(), request.description(), request.thumbnail());
-        return themeRepository.add(theme);
-    }
-
     public List<Theme> findAllTheme() {
         return themeRepository.findAll();
     }
@@ -38,6 +33,11 @@ public class ThemeService {
     public List<Theme> findTopThemes() {
         LocalDate endDate = LocalDate.now();
         return themeRepository.getTopThemesByCount(endDate.minusDays(7L), endDate);
+    }
+
+    public long addTheme(ThemeCreationRequest request) {
+        Theme theme = Theme.createWithoutId(request.name(), request.description(), request.thumbnail());
+        return themeRepository.add(theme);
     }
 
     public void deleteThemeById(long themeId) {
