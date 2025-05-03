@@ -9,7 +9,6 @@ import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
-import roomescape.service.dto.AvailableTimeSlotDto;
 
 @Service
 public class TimeSlotService {

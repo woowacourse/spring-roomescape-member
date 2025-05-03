@@ -1,4 +1,4 @@
-package roomescape.controller.theme.dto;
+package roomescape.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

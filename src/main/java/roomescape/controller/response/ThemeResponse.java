@@ -1,4 +1,4 @@
-package roomescape.controller.theme.dto;
+package roomescape.controller.response;
 
 import java.util.List;
 import roomescape.model.Theme;

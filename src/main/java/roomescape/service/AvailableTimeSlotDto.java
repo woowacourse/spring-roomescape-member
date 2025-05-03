@@ -1,4 +1,4 @@
-package roomescape.service.dto;
+package roomescape.service;
 
 import java.time.LocalTime;
 import roomescape.model.TimeSlot;

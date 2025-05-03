@@ -1,4 +1,4 @@
-package roomescape.controller.timeslot.dto;
+package roomescape.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalTime;
