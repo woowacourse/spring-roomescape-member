@@ -122,23 +122,28 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existByReservationTimeId(final Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = :timeId";
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM reservation
+                    WHERE time_id = :timeId
+                )
+                """;
 
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("timeId", timeId);
 
-        int count = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class).intValue();
-        return count != 0;
+        return namedParameterJdbcTemplate.queryForObject(sql, param, Boolean.class).booleanValue();
     }
 
     @Override
     public boolean existBy(final Long themeId, final LocalDate date, final LocalTime time) {
         String sql = """               
-                SELECT COUNT(*)
-                FROM reservation as r
-                INNER JOIN reservation_time as t ON r.time_id = t.id
-                INNER JOIN theme as th ON r.theme_id = th.id
-                WHERE r.date = :date and t.start_at = :startAt and th.id = :themeId
+                SELECT EXISTS(
+                    SELECT 1 FROM reservation as r
+                    INNER JOIN reservation_time as t ON r.time_id = t.id
+                    INNER JOIN theme as th ON r.theme_id = th.id
+                    WHERE r.date = :date and t.start_at = :startAt and th.id = :themeId
+                )
                 """;
 
         SqlParameterSource param = new MapSqlParameterSource()
@@ -146,18 +151,21 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("startAt", time)
                 .addValue("themeId", themeId);
 
-        int count = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class).intValue();
-        return count != 0;
+        return namedParameterJdbcTemplate.queryForObject(sql, param, Boolean.class).booleanValue();
     }
 
     @Override
     public boolean existBy(final Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = :themeId";
+        String sql = """
+                SELECT EXISTS(
+                    SELECT 1 FROM reservation
+                    WHERE theme_id = :themeId
+                )
+                """;
 
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("themeId", themeId);
 
-        int count = namedParameterJdbcTemplate.queryForObject(sql, param, Integer.class).intValue();
-        return count != 0;
+        return namedParameterJdbcTemplate.queryForObject(sql, param, Boolean.class).booleanValue();
     }
 }
