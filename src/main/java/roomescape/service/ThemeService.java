@@ -24,7 +24,6 @@ public class ThemeService {
         try {
             Theme savedTheme = themeRepository.save(requestTheme)
                     .orElseThrow(() -> new IllegalStateException("[ERROR] 테마를 생성 실패하였습니다."));
-
             return ThemeResponseDto.from(savedTheme);
         } catch (IllegalStateException e) {
             throw new DuplicateContentException(e.getMessage());

@@ -37,7 +37,7 @@ public class JdbcThemeDao implements ThemeRepository {
 
     @Override
     public Optional<Theme> save(Theme theme) {
-        try {
+        try{
             String name = theme.name();
             String description = theme.description();
             String thumbnail = theme.thumbnail();
@@ -48,7 +48,7 @@ public class JdbcThemeDao implements ThemeRepository {
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
             return findById(id);
         } catch (DuplicateKeyException e) {
-            throw new IllegalStateException("[ERROR] 이미 등록된 테마 입니다.");
+            throw new IllegalStateException("[ERROR] 이미 동일한 테마 이름이 존재하여 생성에 실패햐였습니다." + theme.name());
         }
     }
 
@@ -93,7 +93,7 @@ public class JdbcThemeDao implements ThemeRepository {
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("[ERROR] 이 테마는 이미 존재합니다. id : " + id);
+            throw new IllegalStateException("[ERROR] 이 테마는 이미 예약이 존재합니다. id : " + id);
         }
     }
 }

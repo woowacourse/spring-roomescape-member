@@ -35,7 +35,6 @@ class ThemeServiceTest {
         @DisplayName("요청에 따라 Theme을 생성 할 수 있다")
         @Test
         void createThemeTest() {
-
             themeService = new ThemeService(themeRepository);
 
             ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
@@ -54,10 +53,9 @@ class ThemeServiceTest {
             );
         }
 
-        @DisplayName("이미 테마가 존재하면 Theme을 생성할 수 없다")
+        @DisplayName("이미 같은 이름의 테마가 존재하면 Theme을 생성할 수 없다")
         @Test
-        void createInvalidThemeTest() {
-
+        void createDuplicatedNameThemeTest() {
             themeService = new ThemeService(themeRepository);
 
             ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
@@ -65,6 +63,18 @@ class ThemeServiceTest {
             themeService.createTheme(requestDto);
 
             assertThatThrownBy(() -> themeService.createTheme(invalidRequestDto)).isInstanceOf(DuplicateContentException.class);
+        }
+
+        @DisplayName("같은 이름의 테마가 존재하지 않으면 Theme을 생성할 수 있다.")
+        @Test
+        void createValidNameThemeTest() {
+            themeService = new ThemeService(themeRepository);
+
+            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온1", "가이온이 코딩을 합니다", "가이온_코딩중.png");
+            ThemeCreateRequestDto invalidRequestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
+            themeService.createTheme(requestDto);
+
+            Assertions.assertDoesNotThrow(()-> themeService.createTheme(invalidRequestDto));
         }
     }
 
@@ -81,7 +91,6 @@ class ThemeServiceTest {
         @DisplayName("모든 Theme을 조회할 수 있다")
         @Test
         void findAllThemesTest() {
-
             themeService = new ThemeService(themeRepository);
 
             List<ThemeResponseDto> responses = themeService.findAllThemes();
@@ -92,7 +101,6 @@ class ThemeServiceTest {
         @DisplayName("지난 7일 간 예약된 테마들 중 인기 테마를 최대 10건 조회할 수 있다")
         @Test
         void findPopularThemesTest() {
-
             themeService = new ThemeService(themeRepository);
 
             ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
