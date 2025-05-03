@@ -54,7 +54,7 @@ public class ReservationTimeController {
             @PathVariable("id") long id
     ) {
         reservationTimeService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private URI makeReservationTimeDto(final ReservationTimeResponse dto) {
