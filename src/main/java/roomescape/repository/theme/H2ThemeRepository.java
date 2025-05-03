@@ -36,7 +36,7 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     public List<Theme> findAll() {
-        String sql = "SELECT * FROM theme";
+        String sql = "SELECT * FROM theme AS t ORDER BY t.id";
         return jdbcTemplate.query(sql, mapper);
     }
 

@@ -56,6 +56,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 FROM reservation AS r
                 INNER JOIN reservation_time AS rt ON r.time_id = rt.id
                 INNER JOIN theme AS t ON r.theme_id = t.id 
+                ORDER BY r.id DESC
                 """;
         return template.query(sql, mapper);
     }

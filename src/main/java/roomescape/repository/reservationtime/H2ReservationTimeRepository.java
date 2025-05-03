@@ -44,7 +44,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "SELECT * FROM reservation_time";
+        String sql = "SELECT * FROM reservation_time AS rt ORDER BY rt.id DESC";
         return template.query(sql, reservationTimeMapper);
     }
 
@@ -71,6 +71,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                                 AND r.theme_id = ? 
                            ) AS book_state 
                     FROM reservation_time AS rt 
+                    ORDER BY rt.id DESC
                 """;
         return template.query(sql, reservationTimeWithBookStateMapper, date, themeId);
     }
