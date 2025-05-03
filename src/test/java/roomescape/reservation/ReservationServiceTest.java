@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,17 +17,26 @@ import roomescape.globalexception.NotFoundException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationtime.FakeReservationTimeRepository;
+import roomescape.reservationtime.ReservationTime;
+import roomescape.theme.FakeThemeRepository;
+import roomescape.theme.Theme;
 
 public class ReservationServiceTest {
 
     private final ReservationService reservationService;
     private final FakeReservationRepository fakeReservationRepository;
     private final FakeReservationTimeRepository fakeReservationTimeRepository;
+    private final FakeThemeRepository fakeThemeRepository;
 
     public ReservationServiceTest() {
         fakeReservationRepository = new FakeReservationRepository();
         fakeReservationTimeRepository = new FakeReservationTimeRepository();
-        reservationService = new ReservationService(fakeReservationRepository, fakeReservationTimeRepository);
+        fakeThemeRepository = new FakeThemeRepository();
+        reservationService = new ReservationService(
+                fakeReservationRepository,
+                fakeReservationTimeRepository,
+                fakeThemeRepository
+        );
     }
 
     @BeforeEach
@@ -46,8 +56,8 @@ public class ReservationServiceTest {
                     "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            fakeReservationRepository.addTheme(1L);
-            fakeReservationRepository.addTimes(1L);
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
 
             // when
             final ReservationResponse response = reservationService.create(request);
@@ -70,7 +80,7 @@ public class ReservationServiceTest {
                     "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            fakeReservationRepository.addTimes(1L);
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -86,7 +96,7 @@ public class ReservationServiceTest {
                     "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            fakeReservationRepository.addTheme(1L);
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -103,8 +113,8 @@ public class ReservationServiceTest {
                     "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
-            fakeReservationRepository.addTheme(1L);
-            fakeReservationRepository.addTimes(1L);
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeReservationRepository.save(
                     new Reservation("", LocalDate.now().plusDays(1)),
                     1L, 1L
@@ -135,8 +145,8 @@ public class ReservationServiceTest {
         @Test
         void readAll2() {
             // given
-            fakeReservationRepository.addTheme(1L);
-            fakeReservationRepository.addTimes(1L);
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeReservationRepository.save(
                     new Reservation("", LocalDate.of(2026, 12, 1)),
                     1L, 1L
@@ -160,8 +170,8 @@ public class ReservationServiceTest {
         void delete1() {
             // given
             final Long id = 1L;
-            fakeReservationRepository.addTimes(1L);
-            fakeReservationRepository.addTheme(1L);
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeReservationRepository.save(new Reservation("", LocalDate.of(2026, 12, 1)), 1L, 1L);
 
             // when

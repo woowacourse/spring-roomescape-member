@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.globalexception.ConflictException;
 import roomescape.globalexception.NotFoundException;
+import roomescape.reservation.FakeReservationRepository;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 
@@ -19,10 +20,12 @@ public class ReservationTimeServiceTest {
 
     private final ReservationTimeService reservationTimeService;
     private final FakeReservationTimeRepository fakeReservationTimeRepository;
+    private final FakeReservationRepository fakeReservationRepository;
 
     public ReservationTimeServiceTest() {
         fakeReservationTimeRepository = new FakeReservationTimeRepository();
-        reservationTimeService = new ReservationTimeService(fakeReservationTimeRepository);
+        fakeReservationRepository = new FakeReservationRepository();
+        reservationTimeService = new ReservationTimeService(fakeReservationTimeRepository, fakeReservationRepository);
     }
 
     @BeforeEach

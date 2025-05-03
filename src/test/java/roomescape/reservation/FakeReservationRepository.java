@@ -3,11 +3,8 @@ package roomescape.reservation;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
@@ -16,16 +13,10 @@ public class FakeReservationRepository implements ReservationRepository {
 
     private Long NEXT_ID = 1L;
     private final List<Reservation> reservations = new ArrayList<>();
-    private final Set<Long> themes = new HashSet<>();
-    private final Set<Long> times = new HashSet<>();
     private final List<Long> invokeDeleteId = new ArrayList<>();
 
     @Override
     public Long save(final Reservation reservation, final Long timeId, final Long themeId) {
-        if (!themes.contains(themeId) || !times.contains(timeId)) {
-            throw new DataIntegrityViolationException("");
-        }
-
         final Reservation writedReservation = new Reservation(
                 NEXT_ID++,
                 reservation.getName(),
@@ -66,6 +57,20 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public Boolean existsByReservationTime(final Long reservationTimeId) {
+        return reservations.stream()
+                .map(reservation -> reservation.getReservationTime())
+                .anyMatch(reservationTime -> Objects.equals(reservationTime.getId(), reservationTimeId));
+    }
+
+    @Override
+    public Boolean existsByTheme(final Long themeId) {
+        return reservations.stream()
+                .map(reservation -> reservation.getTheme())
+                .anyMatch(theme -> Objects.equals(theme.getId(), themeId));
+    }
+
+    @Override
     public Boolean existsByReservationTimeIdAndDate(final Long reservationTimeId, final LocalDate date) {
         return reservations.stream()
                 .filter(reservation -> Objects.equals(reservation.getDate(), date))
@@ -82,14 +87,6 @@ public class FakeReservationRepository implements ReservationRepository {
         NEXT_ID = 1L;
         reservations.clear();
         invokeDeleteId.clear();
-    }
-
-    public void addTheme(final Long id) {
-        this.themes.add(id);
-    }
-
-    public void addTimes(final Long id) {
-        this.times.add(id);
     }
 
     private ReservationTime generateReservationTimeDummy(final Long id) {
