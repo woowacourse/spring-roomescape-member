@@ -10,6 +10,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.persistence.query.CreateReservationQuery;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -55,16 +56,16 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long create(Reservation reservation) {
+    public Long create(CreateReservationQuery createReservationQuery) {
         String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getTime().id());
-            ps.setLong(4, reservation.getTheme().getId());
+            ps.setString(1, createReservationQuery.name());
+            ps.setString(2, createReservationQuery.date().toString());
+            ps.setLong(3, createReservationQuery.time().id());
+            ps.setLong(4, createReservationQuery.theme().getId());
             return ps;
         }, keyHolder);
 

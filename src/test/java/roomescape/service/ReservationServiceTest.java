@@ -1,18 +1,22 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
+import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -38,7 +42,7 @@ class ReservationServiceTest {
         CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE, 1L, 1L);
 
         //when
-        Long createdId = reservationService.create(createReservationParam);
+        Long createdId = reservationService.create(createReservationParam, LocalDateTime.now());
 
         //then
         assertThat(reservationRepository.findById(createdId))
@@ -52,7 +56,7 @@ class ReservationServiceTest {
         CreateReservationParam createReservationParam = new CreateReservationParam("test", RESERVATION_DATE, 1L, 1L);
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(createReservationParam))
+        assertThatThrownBy(() -> reservationService.create(createReservationParam, LocalDateTime.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("1에 해당하는 reservation_time 튜플이 없습니다.");
     }
@@ -64,7 +68,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery("test", RESERVATION_DATE, reservationTime, theme));
 
         //when
         reservationService.deleteById(1L);
@@ -82,8 +86,8 @@ class ReservationServiceTest {
         themeRepository.create(theme);
         reservationTimeRepository.create(reservationTime1);
         reservationTimeRepository.create(reservationTime2);
-        reservationRepository.create(new Reservation(1L, "test1", RESERVATION_DATE, reservationTime1, theme));
-        reservationRepository.create(new Reservation(2L, "test2", RESERVATION_DATE, reservationTime2, theme));
+        reservationRepository.create(new CreateReservationQuery("test1", RESERVATION_DATE, reservationTime1, theme));
+        reservationRepository.create(new CreateReservationQuery("test2", RESERVATION_DATE, reservationTime2, theme));
 
         //when
         List<ReservationResult> reservationResults = reservationService.findAll();
@@ -106,7 +110,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery("test", RESERVATION_DATE, reservationTime, theme));
 
         //when
         ReservationResult reservationResult = reservationService.findById(1L);
@@ -126,7 +130,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery("test", RESERVATION_DATE, reservationTime, theme));
 
         //when & then
         assertThatThrownBy(() -> reservationService.findById(2L))
@@ -141,11 +145,40 @@ class ReservationServiceTest {
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         reservationTimeRepository.create(reservationTime);
         themeRepository.create(theme);
-        reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
+        reservationRepository.create(new CreateReservationQuery("test", RESERVATION_DATE, reservationTime, theme));
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test2", RESERVATION_DATE, 1L, 1L)))
+        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test2", RESERVATION_DATE, 1L, 1L), LocalDateTime.now()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("날짜와 시간이 중복된 예약이 존재합니다.");
+                .hasMessage("테마에 대해 날짜와 시간이 중복된 예약이 존재합니다.");
     }
+
+    @ParameterizedTest
+    @CsvSource({"2025-04-23T12:30, 2025-04-22T12:30", "2025-04-23T12:30, 2025-04-23T12:00"})
+    void 지난_날짜에_대한_예약이라면_예외가_발생한다(LocalDateTime currentDateTime, LocalDateTime reservationDateTime) {
+        //given
+        Theme theme = new Theme(1L, "test", "description", "thumbnail");
+        reservationTimeRepository.create(new ReservationTime(1L, reservationDateTime.toLocalTime()));
+        themeRepository.create(theme);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test", reservationDateTime.toLocalDate(), 1L, 1L), currentDateTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지난 날짜와 시간에 대한 예약은 불가능합니다.");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"2025-04-23T12:30, 2025-04-23T12:30", "2025-04-23T12:30, 2025-04-23T12:39"})
+    void 예약일이_오늘인_경우_예약_시간까지_10분도_남지_않았다면_예외가_발생한다(LocalDateTime currentDateTime, LocalDateTime reservationDateTime) {
+        //given
+        Theme theme = new Theme(1L, "test", "description", "thumbnail");
+        reservationTimeRepository.create(new ReservationTime(1L, reservationDateTime.toLocalTime()));
+        themeRepository.create(theme);
+
+        //when & then
+        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test", reservationDateTime.toLocalDate(), 1L, 1L), currentDateTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("예약 시간까지 10분도 남지 않아 예약이 불가합니다.");
+    }
+
 }

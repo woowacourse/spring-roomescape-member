@@ -2,11 +2,13 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.*;
+import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,22 +26,23 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Long create(CreateReservationParam createReservationParam) {
+    public Long create(CreateReservationParam createReservationParam, LocalDateTime currentDateTime) {
         ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
                 () -> new IllegalArgumentException(
                         createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
         Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(() -> new IllegalArgumentException(
                 createReservationParam.themeId() + "에 해당하는 theme 튜플이 없습니다."));
-        if (reservationRepository.existByDateAndTimeIdAndThemeId(createReservationParam.date(), reservationTime.id(), theme.getId())) {
-            throw new IllegalArgumentException("테마에 대해 날짜와 시간이 중복된 예약이 존재합니다.");
-        }
+
+        validateUniqueReservation(createReservationParam, reservationTime, theme);
+        validateReservationDateTime(createReservationParam, currentDateTime, reservationTime);
+
         return reservationRepository.create(
-                new Reservation(
+                new CreateReservationQuery(
                         createReservationParam.name(),
-                        LocalDateTime.now(),
                         createReservationParam.date(),
                         reservationTime,
-                        theme));
+                        theme
+                ));
     }
 
     public void deleteById(Long reservationId) {
@@ -66,5 +69,22 @@ public class ReservationService {
                 reservation.getDate(),
                 ReservationTimeResult.from(reservation.getTime()),
                 ThemeResult.from(reservation.getTheme()));
+    }
+
+    private void validateUniqueReservation(final CreateReservationParam createReservationParam, final ReservationTime reservationTime, final Theme theme) {
+        if (reservationRepository.existByDateAndTimeIdAndThemeId(createReservationParam.date(), reservationTime.id(), theme.getId())) {
+            throw new IllegalArgumentException("테마에 대해 날짜와 시간이 중복된 예약이 존재합니다.");
+        }
+    }
+
+    private void validateReservationDateTime(final CreateReservationParam createReservationParam, final LocalDateTime currentDateTime, final ReservationTime reservationTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(createReservationParam.date(), reservationTime.startAt());
+        if (reservationDateTime.isBefore(currentDateTime)) {
+            throw new IllegalArgumentException("지난 날짜와 시간에 대한 예약은 불가능합니다.");
+        }
+        Duration duration = Duration.between(currentDateTime, reservationDateTime);
+        if (duration.toMinutes() < 10) {
+            throw new IllegalArgumentException("예약 시간까지 10분도 남지 않아 예약이 불가합니다.");
+        }
     }
 }

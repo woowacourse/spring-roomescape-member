@@ -8,6 +8,7 @@ import roomescape.controller.response.ReservationResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.result.ReservationResult;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody CreateReservationRequest createReservationRequest) {
-        Long reservationId = reservationService.create(createReservationRequest.toServiceParam());
+        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(), LocalDateTime.now());
         ReservationResult reservationResult = reservationService.findById(reservationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservationResult));
     }

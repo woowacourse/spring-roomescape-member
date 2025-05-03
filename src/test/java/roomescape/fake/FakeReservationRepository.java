@@ -2,6 +2,7 @@ package roomescape.fake;
 
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
+import roomescape.persistence.query.CreateReservationQuery;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Long create(Reservation reservation) {
-        Reservation newReservation = new Reservation(++id, reservation.getName(), reservation.getDate(),
-                reservation.getTime(), reservation.getTheme());
+    public Long create(CreateReservationQuery createReservationQuery) {
+        Reservation newReservation = new Reservation(++id, createReservationQuery.name(), createReservationQuery.date(),
+                createReservationQuery.time(), createReservationQuery.theme());
         reservations.add(newReservation);
         return id;
     }
@@ -51,8 +52,8 @@ public class FakeReservationRepository implements ReservationRepository {
     public boolean existByDateAndTimeIdAndThemeId(final LocalDate reservationDate, final Long timeId, final Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation ->
-                        reservation.getDate().equals(reservationDate) ||
-                        reservation.getTime().id() == timeId ||
+                        reservation.getDate().equals(reservationDate) &&
+                        reservation.getTime().id() == timeId &&
                         reservation.getTime().id() == themeId);
     }
 

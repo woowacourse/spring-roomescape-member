@@ -9,10 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.persistence.query.CreateReservationQuery;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -87,11 +87,11 @@ class JdbcReservationRepositoryTest {
         //given
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
-        Reservation reservation = new Reservation("test", LocalDateTime.of(2025, 3, 3, 1, 1), LocalDate.of(2025, 4, 21),
+        CreateReservationQuery createReservationQuery = new CreateReservationQuery("test", LocalDate.of(2025, 4, 21),
                 new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail"));
 
         //when
-        Long createdId = reservationDao.create(reservation);
+        Long createdId = reservationDao.create(createReservationQuery);
 
         //then
         assertThat(reservationDao.findById(createdId))
