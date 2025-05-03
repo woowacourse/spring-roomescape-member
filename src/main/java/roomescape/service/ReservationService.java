@@ -30,7 +30,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation reserve(final String name, final LocalDate date, final Long timeId, final Long themeId) {
+    public Reservation reserve(final String name, final LocalDate date, final long timeId, final long themeId) {
         var timeSlot = findTimeSlot(timeId);
         var theme = findTheme(themeId);
         var reservation = new Reservation(name, date, timeSlot, theme);
@@ -55,12 +55,12 @@ public class ReservationService {
         }
     }
 
-    private TimeSlot findTimeSlot(final Long timeId) {
+    private TimeSlot findTimeSlot(final long timeId) {
         return timeSlotRepository.findById(timeId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타임 슬롯입니다."));
     }
 
-    private Theme findTheme(final Long themeId) {
+    private Theme findTheme(final long themeId) {
         return themeRepository.findById(themeId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
 
