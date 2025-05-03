@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.other.TimeWithBookState;
@@ -35,10 +36,10 @@ public class ReservationTimeController {
                 .toList();
     }
 
-    @GetMapping("/{date}/{themeId}/times")
+    @GetMapping("/theme/date/times")
     public List<TimeWithBookStateResponse> getReservationTimesInThemeAndDate(
-            @PathVariable("date") LocalDate date,
-            @PathVariable("themeId") Long themId
+            @RequestParam("date") LocalDate date,
+            @RequestParam("themeId") Long themId
     ) {
         List<TimeWithBookState> times = reservationTimeService
                 .getAllReservationTimeWithBookState(date, themId);

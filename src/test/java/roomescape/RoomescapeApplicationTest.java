@@ -218,16 +218,22 @@ class RoomescapeApplicationTest {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "예약", NEXT_DAY.toString(), 1, 1);
 
-        RestAssured.given().log().all()
-                .when().get("/" + NEXT_DAY + "/1" + "/times")
+        RestAssured.given()
+                .param("date", NEXT_DAY.toString())
+                .param("themeId", 1)
+                .log().all()
+                .when().get("theme/date/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("get(0).bookState", is(true));
 
-        jdbcTemplate.update("delete from reservation");
+        jdbcTemplate.update("DELETE FROM reservation");
 
-        RestAssured.given().log().all()
-                .when().get("/" + NEXT_DAY + "/1" + "/times")
+        RestAssured.given()
+                .param("date", NEXT_DAY.toString())
+                .param("themeId", 1)
+                .log().all()
+                .when().get("theme/date/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("get(0).bookState", is(false));
