@@ -5,9 +5,12 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import roomescape.globalexception.BadRequestException;
-import roomescape.globalexception.ConflictException;
-import roomescape.globalexception.NotFoundException;
+import roomescape.exception.custom.reason.reservation.ReservationConflictException;
+import roomescape.exception.custom.reason.reservation.ReservationNotExistsThemeException;
+import roomescape.exception.custom.reason.reservation.ReservationNotExistsTimeException;
+import roomescape.exception.custom.reason.reservation.ReservationNotFoundException;
+import roomescape.exception.custom.reason.reservation.ReservationPastDateException;
+import roomescape.exception.custom.reason.reservation.ReservationPastTimeException;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationtime.ReservationTime;
@@ -52,7 +55,7 @@ public class ReservationService {
 
     public void deleteById(final Long id) {
         if (!reservationRepository.existsById(id)) {
-            throw new NotFoundException("존재하지 않는 예약입니다.");
+            throw new ReservationNotFoundException();
         }
         reservationRepository.delete(id);
     }
@@ -61,7 +64,7 @@ public class ReservationService {
         final LocalDate today = LocalDate.now();
         final LocalDate reservationDate = request.date();
         if (reservationDate.isBefore(today)) {
-            throw new BadRequestException("지난 날짜로 예약할 수 없습니다.");
+            throw new ReservationPastDateException();
         }
         if (reservationDate.isEqual(today)) {
             validatePastTime(request);
@@ -71,25 +74,25 @@ public class ReservationService {
     private void validatePastTime(final ReservationRequest request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId());
         if (reservationTime.isBefore(LocalTime.now())) {
-            throw new BadRequestException("지난 시간으로 예약할 수 없습니다.");
+            throw new ReservationPastTimeException();
         }
     }
 
     private void validateDuplicateDateTime(final Long reservationTimeId, final LocalDate date) {
         if (reservationRepository.existsByReservationTimeIdAndDate(reservationTimeId, date)) {
-            throw new ConflictException("이미 예약이 존재합니다.");
+            throw new ReservationConflictException();
         }
     }
 
     private void validateExistsReservationTime(final ReservationRequest request) {
         if (!reservationTimeRepository.existsById(request.themeId())) {
-            throw new BadRequestException("예약시간이 존재하지 않습니다.");
+            throw new ReservationNotExistsTimeException();
         }
     }
 
     private void validateExistsTheme(final ReservationRequest request) {
         if (!themeRepository.existsById(request.themeId())) {
-            throw new BadRequestException("테마가 존재하지 않습니다.");
+            throw new ReservationNotExistsThemeException();
         }
     }
 }

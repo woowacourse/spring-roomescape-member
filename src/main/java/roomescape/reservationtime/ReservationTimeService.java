@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import roomescape.globalexception.BadRequestException;
-import roomescape.globalexception.ConflictException;
-import roomescape.globalexception.NotFoundException;
+import roomescape.exception.custom.reason.reservationtime.ReservationTimeConflictException;
+import roomescape.exception.custom.reason.reservationtime.ReservationTimeNotFoundException;
+import roomescape.exception.custom.reason.reservationtime.ReservationTimeUsedException;
 import roomescape.reservation.ReservationRepository;
 import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
@@ -70,19 +70,19 @@ public class ReservationTimeService {
 
     private void validateUnusedReservationTime(final Long id) {
         if (reservationRepository.existsByReservationTime(id)) {
-            throw new BadRequestException("예약시간이 사용중입니다.");
+            throw new ReservationTimeUsedException();
         }
     }
 
     private void validateExistsResrvationTime(final Long id) {
         if (!reservationTimeRepository.existsById(id)) {
-            throw new NotFoundException("시간이 존재하지 않습니다.");
+            throw new ReservationTimeNotFoundException();
         }
     }
 
     private void validateDuplicateTime(final LocalTime startAt) {
         if (reservationTimeRepository.existsByStartAt(startAt)) {
-            throw new ConflictException("이미 등록된 시간입니다.");
+            throw new ReservationTimeConflictException();
         }
     }
 }

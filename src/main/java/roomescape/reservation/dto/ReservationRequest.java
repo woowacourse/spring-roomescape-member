@@ -1,7 +1,7 @@
 package roomescape.reservation.dto;
 
 import java.time.LocalDate;
-import roomescape.globalexception.RequestInvalidException;
+import roomescape.exception.custom.reason.RequestInvalidException;
 
 public record ReservationRequest(
         String name,

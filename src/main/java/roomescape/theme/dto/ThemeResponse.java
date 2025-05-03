@@ -1,6 +1,6 @@
 package roomescape.theme.dto;
 
-import roomescape.globalexception.RequestInvalidException;
+import roomescape.exception.custom.reason.RequestInvalidException;
 import roomescape.theme.Theme;
 
 public record ThemeResponse(

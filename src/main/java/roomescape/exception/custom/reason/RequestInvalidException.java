@@ -1,6 +1,7 @@
-package roomescape.globalexception;
+package roomescape.exception.custom.reason;
 
 import org.springframework.http.HttpStatus;
+import roomescape.exception.custom.status.CustomException;
 
 public class RequestInvalidException extends CustomException {
 
