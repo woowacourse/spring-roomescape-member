@@ -1,5 +1,6 @@
 package roomescape.repository;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,7 +27,12 @@ public class ReservationTimeJDBCDao implements ReservationTimeRepository {
     public ReservationTime findById(Long id) {
         String sql = "select * from reservation_time where id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-        return namedJdbcTemplate.queryForObject(sql, params, getReservationRowMapper());
+
+        try {
+            return namedJdbcTemplate.queryForObject(sql, params, getReservationRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("해당하는 예약 시간을 찾을 수 없습니다", e);
+        }
     }
 
     @Override
