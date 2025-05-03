@@ -9,6 +9,8 @@ import java.util.Objects;
 
 public class Reservation {
 
+    private static final int MAX_NAME_LENGTH = 255;
+
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -43,6 +45,10 @@ public class Reservation {
     private void validateName(final String name) {
         if (name == null || name.isBlank() || name.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 예약자의 이름은 1글자 이상으로 이루어져야 합니다. ");
+        }
+
+        if(name.length() > MAX_NAME_LENGTH){
+            throw new IllegalArgumentException("[ERROR] 예약자의 이름은 255자를 초과할 수 없습니다. 이름 길이 : " + name.length());
         }
     }
 
