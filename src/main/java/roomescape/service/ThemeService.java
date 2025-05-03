@@ -10,6 +10,7 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.ThemeCreateResponse;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.ExceptionCause;
 import roomescape.exception.ReservationExistException;
 
 @Service
@@ -36,7 +37,7 @@ public class ThemeService {
     }
 
     public ThemeCreateResponse create(ThemeCreateRequest themeCreateRequest) {
-        Theme theme = new Theme(
+        Theme theme = Theme.create(
                 themeCreateRequest.name(),
                 themeCreateRequest.description(),
                 themeCreateRequest.thumbnail());
@@ -48,7 +49,7 @@ public class ThemeService {
         if (themeDao.deleteIfNoReservation(theme.getId())) {
             return;
         }
-        throw new ReservationExistException("이 테마에 대한 예약이 존재합니다.");
+        throw new ReservationExistException(ExceptionCause.RESERVATION_EXIST_THEME);
     }
 
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
