@@ -40,8 +40,8 @@ public class ReservationService {
         LocalDateTime now = dateTime.now();
         LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 
-        validateCanReserveDateTime(reservationDateTime, now);
         validateExistDuplicateReservation(request, time);
+        validateCanReserveDateTime(reservationDateTime, now);
 
         Reservation reservation = Reservation.createWithoutId(request.name(), request.date(), time, theme);
         Long id = reservationRepository.save(reservation);
