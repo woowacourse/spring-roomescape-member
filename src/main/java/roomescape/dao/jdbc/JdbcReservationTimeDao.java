@@ -62,7 +62,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     public boolean existTimeByStartAt(LocalTime startAt) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation_time WHERE start_at = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
     public ReservationTime addTime(ReservationTime reservationTime) {
@@ -75,7 +75,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     public void removeTimeById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        int activeRow = jdbcTemplate.update(sql, id);
+
+        if(activeRow == 0) {
+            throw new NotFoundException("reservationTime");
+        }
     }
 
     private RowMapper<ReservationTime> createReservationMapper() {

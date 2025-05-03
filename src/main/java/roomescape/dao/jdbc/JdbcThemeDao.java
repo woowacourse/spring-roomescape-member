@@ -66,7 +66,7 @@ public class JdbcThemeDao implements ThemeDao {
 
     public boolean existThemeByName(String name) {
         String sql = "SELECT EXISTS(SELECT id FROM theme WHERE name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public Theme addTheme(Theme theme) {
@@ -81,7 +81,11 @@ public class JdbcThemeDao implements ThemeDao {
 
     public void removeThemeById(Long id) {
         String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        int activeRow = jdbcTemplate.update(sql, id);
+
+        if(activeRow == 0) {
+            throw new NotFoundException("theme");
+        }
     }
 
     private RowMapper<Theme> createThemeMapper() {

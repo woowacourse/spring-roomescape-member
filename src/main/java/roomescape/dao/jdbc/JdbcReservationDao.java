@@ -13,6 +13,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.custom.NotFoundException;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -58,7 +59,8 @@ public class JdbcReservationDao implements ReservationDao {
                     AND theme_id = ?
                 )
             """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
+        return Boolean.TRUE.equals(
+            jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId));
     }
 
     public Reservation addReservation(Reservation reservation) {
@@ -75,7 +77,11 @@ public class JdbcReservationDao implements ReservationDao {
 
     public void removeReservationById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        int activeRow = jdbcTemplate.update(sql, id);
+
+        if(activeRow == 0) {
+            throw new NotFoundException("reservation");
+        }
     }
 
     private RowMapper<Reservation> createReservationMapper() {
