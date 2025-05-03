@@ -4,7 +4,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.exception.ConstraintException;
+import roomescape.exception.ForeignKeyConstraintViolationException;
 import roomescape.exception.ResourceNotExistException;
 
 @ControllerAdvice
@@ -15,8 +15,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(e.getMessage());
     }
 
-    @ExceptionHandler(ConstraintException.class)
-    public ResponseEntity<String> handleConstraintException(ConstraintException e) {
+    @ExceptionHandler(ForeignKeyConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintException(ForeignKeyConstraintViolationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

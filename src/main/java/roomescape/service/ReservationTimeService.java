@@ -1,9 +1,6 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -11,8 +8,11 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationAvailableTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.ForeignKeyConstraintViolationException;
 import roomescape.exception.ResourceNotExistException;
-import roomescape.exception.TimeConstraintException;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ReservationTimeService {
@@ -21,8 +21,8 @@ public class ReservationTimeService {
     private final ReservationDao reservationDao;
 
     public ReservationTimeService(
-        ReservationTimeDao reservationTimeDao,
-        ReservationDao reservationDao
+            ReservationTimeDao reservationTimeDao,
+            ReservationDao reservationDao
     ) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;
@@ -40,20 +40,22 @@ public class ReservationTimeService {
 
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeDao.findAll()
-            .stream()
-            .map(ReservationTimeResponse::from)
-            .toList();
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 
     public void deleteReservationTime(Long id) {
-        int deleteCount;
-        try {
-            deleteCount = reservationTimeDao.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new TimeConstraintException();
-        }
+        validateIsInUse(id);
+        int deleteCount = reservationTimeDao.deleteById(id);
         if (deleteCount == 0) {
             throw new ResourceNotExistException();
+        }
+    }
+
+    private void validateIsInUse(final Long id) {
+        if (reservationDao.getCountByTimeId(id) != 0) {
+            throw new ForeignKeyConstraintViolationException();
         }
     }
 
@@ -61,10 +63,10 @@ public class ReservationTimeService {
         List<ReservationTime> times = reservationTimeDao.findAll();
 
         return times.stream()
-            .map(time -> {
-                Long timeId = time.getId();
-                boolean isBooked = (reservationDao.getCountByTimeIdAndThemeIdAndDate(timeId, themeId, date) != 0);
-                return ReservationAvailableTimeResponse.from(time, isBooked);
-            }).toList();
+                .map(time -> {
+                    Long timeId = time.getId();
+                    boolean isBooked = (reservationDao.getCountByTimeIdAndThemeIdAndDate(timeId, themeId, date) != 0);
+                    return ReservationAvailableTimeResponse.from(time, isBooked);
+                }).toList();
     }
 }
