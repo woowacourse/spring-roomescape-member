@@ -2,6 +2,7 @@ package roomescape.reservationTime.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,12 +27,15 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(11, 0));
         Theme theme = Theme.createWithId(1L, "테마", "테마", "테마");
 
-        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        List<ReservationTime> reservationTimes = new ArrayList<>();
+        List<Reservation> reservations = new ArrayList<>();
+
+        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(reservationTimes);
         Long id = reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
         reservationTime1 = reservationTimeRepository.findBy(id);
-        ReservationRepository reservationRepository = new FakeReservationRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
         reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
 
         reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);

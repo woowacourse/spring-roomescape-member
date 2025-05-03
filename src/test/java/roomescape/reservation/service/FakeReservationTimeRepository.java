@@ -14,8 +14,8 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     private final List<ReservationTime> reservationTimes;
     private AtomicLong index = new AtomicLong(0);
 
-    public FakeReservationTimeRepository() {
-        this.reservationTimes = new ArrayList<>();
+    public FakeReservationTimeRepository(List<ReservationTime> reservationTimes) {
+        this.reservationTimes = reservationTimes;
     }
 
     @Override

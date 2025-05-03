@@ -12,12 +12,13 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
+
     private final List<Reservation> reservations;
 
     private AtomicLong index = new AtomicLong(0);
 
-    public FakeReservationRepository() {
-        reservations = new ArrayList<>();
+    public FakeReservationRepository(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     @Override

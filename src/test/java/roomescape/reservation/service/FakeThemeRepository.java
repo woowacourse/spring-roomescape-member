@@ -17,12 +17,13 @@ import roomescape.theme.domain.ThemeRepository;
 public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> themes;
-    private final ReservationRepository reservationRepository;
+    private final List<Reservation> reservations;
+
     private AtomicLong index = new AtomicLong(0);
 
-    public FakeThemeRepository(ReservationRepository reservationRepository) {
-        this.reservationRepository = reservationRepository;
-        this.themes = new ArrayList<>();
+    public FakeThemeRepository(List<Theme> themes, List<Reservation> reservations) {
+        this.reservations = reservations;
+        this.themes = themes;
     }
 
     @Override
@@ -34,7 +35,6 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findPopularThemes(LocalDate start, LocalDate end, int popularCount) {
-        List<Reservation> reservations = reservationRepository.findAll();
         List<Reservation> filterReservations = reservations.stream()
                 .filter(reservation -> !(reservation.getDate().isBefore(start) || reservation.getDate().isAfter(end)))
                 .toList();

@@ -3,6 +3,8 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,18 +34,22 @@ class ReservationServiceTest {
                 return LocalDateTime.of(2025, 10, 5, 10, 0);
             }
         };
-        ThemeRepository themeRepository = new FakeThemeRepository(null);
+
+        List<Reservation> reservations = new ArrayList<>();
+        List<Theme> themes = new ArrayList<>();
+        List<ReservationTime> reservationTimes = new ArrayList<>();
+        ThemeRepository themeRepository = new FakeThemeRepository(themes,reservations);
         Theme theme = Theme.createWithId(1L, "테스트1", "설명", "localhost:8080");
         themeRepository.save(theme);
 
         ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(9, 0));
 
-        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(reservationTimes);
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
-        ReservationRepository reservationRepository = new FakeReservationRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
         reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
 
         reservationService = new ReservationService(

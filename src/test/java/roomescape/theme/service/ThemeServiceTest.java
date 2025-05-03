@@ -2,6 +2,7 @@ package roomescape.theme.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,12 +27,15 @@ class ThemeServiceTest {
         Theme theme2 = Theme.createWithId(2L, "테스트2", "설명", "썸네일");
         Theme theme3 = Theme.createWithId(3L, "테스트3", "설명", "썸네일");
 
-        ReservationRepository reservationRepository = new FakeReservationRepository();
+        List<Reservation> reservations = new ArrayList<>();
+        List<Theme> themes = new ArrayList<>();
+
+        ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
         reservationRepository.save(Reservation.createWithoutId("홍길동1", LocalDate.of(2025, 12, 5), null, theme1));
         reservationRepository.save(Reservation.createWithoutId("홍길동2", LocalDate.of(2025, 12, 6), null, theme1));
         reservationRepository.save(Reservation.createWithoutId("홍길동3", LocalDate.of(2025, 12, 4), null, theme3));
 
-        ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
+        ThemeRepository themeRepository = new FakeThemeRepository(themes,reservations);
         themeRepository.save(theme1);
         themeRepository.save(theme2);
         themeRepository.save(theme3);
