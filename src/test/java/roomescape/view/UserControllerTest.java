@@ -13,7 +13,7 @@ class UserControllerTest {
 
     @DisplayName("사용자 예약 페이지를 정상적으로 반환한다")
     @Test
-    void admin_test() {
+    void user_reservation_test() {
         RestAssured.given().log().all()
                 .when().get("/reservation")
                 .then().log().all()

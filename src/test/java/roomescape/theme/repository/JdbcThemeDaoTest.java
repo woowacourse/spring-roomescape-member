@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,7 +46,12 @@ class JdbcThemeDaoTest {
         Long id = jdbcThemeDao.saveAndReturnId(theme);
 
         // then
-        assertThat(id).isEqualTo(7L);
+        String savedName = jdbcTemplate.queryForObject("SELECT name FROM theme WHERE id = ?", String.class, id);
+        assertAll(
+                () -> assertThat(id).isEqualTo(7L),
+                () -> assertThat(savedName).isEqualTo("레벨1 탈출")
+        );
+
     }
 
     @DisplayName("테마를 조회한다")
@@ -55,7 +61,14 @@ class JdbcThemeDaoTest {
         List<Theme> themes = jdbcThemeDao.findAll();
 
         // then
-        assertThat(themes).hasSize(6);
+        String sql = "SELECT description FROM theme";
+        List<String> descriptions = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("description"));
+        assertAll(
+                () -> assertThat(themes).hasSize(6),
+                () -> assertThat(themes).extracting(Theme::getDescription)
+                        .containsExactlyElementsOf(descriptions)
+        );
+
     }
 
     @DisplayName("테마를 삭제한다")
@@ -68,9 +81,17 @@ class JdbcThemeDaoTest {
         jdbcThemeDao.deleteById(deleteId);
 
         // then
-        String sql = "SELECT COUNT(1) FROM theme";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        assertThat(count).isEqualTo(5);
+        String countSql = "SELECT COUNT(1) FROM theme";
+        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class);
+
+        String existSql = "SELECT EXISTS(SELECT 1 FROM theme WHERE id = ?)";
+        Boolean isExist = jdbcTemplate.queryForObject(existSql, Boolean.class, deleteId);
+
+        assertAll(
+                () -> assertThat(count).isEqualTo(5),
+                () -> assertThat(isExist).isFalse()
+        );
+
     }
 
     @DisplayName("특정 ID의 테마를 조회한다")
@@ -81,11 +102,14 @@ class JdbcThemeDaoTest {
 
         // when & then
         Theme theme = jdbcThemeDao.findById(id).get();
-        assertThat(theme.getId()).isEqualTo(3L);
-        assertThat(theme.getName()).isEqualTo("레벨3 탈출");
-        assertThat(theme.getDescription()).isEqualTo("우테코 레벨3를 탈출하는 내용입니다.");
-        assertThat(theme.getThumbnail()).isEqualTo(
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        assertAll(
+                () -> assertThat(theme.getId()).isEqualTo(3L),
+                () -> assertThat(theme.getName()).isEqualTo("레벨3 탈출"),
+                () -> assertThat(theme.getDescription()).isEqualTo("우테코 레벨3를 탈출하는 내용입니다."),
+                () -> assertThat(theme.getThumbnail()).isEqualTo(
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
+
     }
 
     @DisplayName("인기 테마 목록을 조회한다")
@@ -100,11 +124,14 @@ class JdbcThemeDaoTest {
         List<Theme> themeRankings = jdbcThemeDao.findByPeriodAndLimit(start, end, limit);
 
         // then
-        assertThat(themeRankings.get(0).getId()).isEqualTo(3L);
-        assertThat(themeRankings.get(0).getName()).isEqualTo("레벨3 탈출");
-        assertThat(themeRankings.get(0).getDescription()).isEqualTo("우테코 레벨3를 탈출하는 내용입니다.");
-        assertThat(themeRankings.get(0).getThumbnail()).isEqualTo(
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        assertAll(
+                () -> assertThat(themeRankings.get(0).getId()).isEqualTo(3L),
+                () -> assertThat(themeRankings.get(0).getName()).isEqualTo("레벨3 탈출"),
+                () -> assertThat(themeRankings.get(0).getDescription()).isEqualTo("우테코 레벨3를 탈출하는 내용입니다."),
+                () -> assertThat(themeRankings.get(0).getThumbnail()).isEqualTo(
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
+
     }
 
 }

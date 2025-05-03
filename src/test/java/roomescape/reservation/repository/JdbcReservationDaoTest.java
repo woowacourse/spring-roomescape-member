@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,8 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 import roomescape.util.TestDataSourceFactory;
 
 class JdbcReservationDaoTest {
@@ -29,14 +30,14 @@ class JdbcReservationDaoTest {
     }
 
     @AfterEach
-    void dropTable(){
+    void dropTable() {
         String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
         jdbcTemplate.execute(dropSql);
     }
 
     @DisplayName("Reservation 객체를 저장한다")
     @Test
-    void create_reservation_test() {
+    void save_and_return_id_test() {
         // given
         String name = "루키";
         LocalDate date = LocalDate.of(2024, 12, 31);
@@ -49,38 +50,55 @@ class JdbcReservationDaoTest {
         Long id = jdbcReservationDao.saveAndReturnId(reservation);
 
         // then
-        assertThat(id).isEqualTo(17L);
+        String existsSql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE id = ?";
+        Boolean isExist = jdbcTemplate.queryForObject(existsSql, Boolean.class, id);
+        assertAll(
+                () -> assertThat(id).isEqualTo(17L),
+                () -> assertThat(isExist).isTrue()
+        );
     }
 
     @DisplayName("Reservation 데이터를 정상적으로 삭제한다")
     @Test
-    void delete_reservation_test() {
+    void delete_by_id_test() {
         // given
         Long id = 3L;
 
         // when
         jdbcReservationDao.deleteById(id);
 
-        String sql = "SELECT COUNT(1) FROM reservation";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-
         // then
-        assertThat(count).isEqualTo(15);
+        String countSql = "SELECT COUNT(1) FROM reservation";
+        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class);
+
+        String existsSql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE id= ?)";
+        Boolean isExist = jdbcTemplate.queryForObject(existsSql, Boolean.class, id);
+
+        assertAll(
+                () -> assertThat(count).isEqualTo(15),
+                () -> assertThat(isExist).isFalse()
+        );
     }
 
     @DisplayName("저장된 Reservation 목록들을 조회한다")
     @Test
-    void get_reservations_test() {
+    void find_all_test() {
         // when
         List<Reservation> reservations = jdbcReservationDao.findAll();
 
         // then
-        assertThat(reservations).hasSize(16);
+        Reservation reservation = reservations.get(0);
+        assertAll(
+                () -> assertThat(reservations).hasSize(16),
+                () -> assertThat(reservation.getId()).isEqualTo(1L),
+                () -> assertThat(reservation.getTheme().getId()).isEqualTo(1L)
+        );
+
     }
 
     @DisplayName("시간 id 일치 여부를 반환한다")
     @Test
-    void same_time_id_test() {
+    void exist_by_time_id_test() {
         // when
         Boolean actual = jdbcReservationDao.existReservationByTimeId(1L);
 
@@ -90,9 +108,10 @@ class JdbcReservationDaoTest {
 
     @DisplayName("시간과 날짜 일치 여부를 반환한다")
     @Test
-    void same_time_id_and_date_test() {
+    void exist_by_time_id_and_date_test() {
         // when
-        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L, 1L);
+        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L,
+                1L);
 
         // then
         assertThat(actual).isTrue();
@@ -119,7 +138,11 @@ class JdbcReservationDaoTest {
         List<Reservation> actual = jdbcReservationDao.findAllByDateAndThemeId(date, themeId);
 
         // then
-        assertThat(actual).hasSize(2);
+        assertAll(
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual).extracting(Reservation::getName).contains("하루", "제이미"),
+                () -> assertThat(actual).extracting(Reservation::getTimeId).contains(2L, 3L)
+        );
     }
 
 }

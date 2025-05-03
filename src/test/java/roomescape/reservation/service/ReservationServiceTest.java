@@ -11,24 +11,23 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.controller.dto.AvailableTimeResponse;
+import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.util.repository.ReservationFakeRepository;
 import roomescape.util.repository.ReservationTimeFakeRepository;
 import roomescape.util.repository.ThemeFakeRepository;
-import roomescape.time.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationRequest;
-import roomescape.reservation.controller.dto.ReservationResponse;
-import roomescape.time.controller.dto.ReservationTimeResponse;
-import roomescape.theme.controller.dto.ThemeResponse;
-import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.theme.repository.ThemeRepository;
 
 class ReservationServiceTest {
 
@@ -89,7 +88,13 @@ class ReservationServiceTest {
         List<ReservationResponse> reservationResponses = reservationService.getAll();
 
         // then
-        assertThat(reservationResponses).hasSize(3);
+        assertThat(reservationResponses)
+                .extracting(ReservationResponse::date)
+                .containsExactlyInAnyOrder(
+                        LocalDate.of(2025, 3, 28),
+                        LocalDate.of(2025, 4, 5),
+                        LocalDate.of(2025, 5, 15)
+                );
     }
 
     @DisplayName("예약 정보를 추가한다")
@@ -106,7 +111,8 @@ class ReservationServiceTest {
         ThemeResponse expectedThemeResponse = new ThemeResponse(3L, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
-        ReservationResponse expected = new ReservationResponse(4L, "루키", LocalDate.of(2025, 5, 3),expectedTimeResponse, expectedThemeResponse);
+        ReservationResponse expected = new ReservationResponse(4L, "루키", LocalDate.of(2025, 5, 3), expectedTimeResponse,
+                expectedThemeResponse);
         assertThat(response).isEqualTo(expected);
     }
 
@@ -125,7 +131,7 @@ class ReservationServiceTest {
     @Test
     void past_day_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now().minusDays(1), 4L, 3L);
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock).minusDays(1), 4L, 3L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -133,11 +139,11 @@ class ReservationServiceTest {
                 .hasMessage("지난 날짜는 예약할 수 없습니다.");
     }
 
-    @DisplayName("지난 시각인 경우 예외가 발생한다")
+    @DisplayName("같은 날짜에 지난 시각인 경우 예외가 발생한다")
     @Test
     void past_time_exception_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(), 1L, 3L);
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock), 1L, 3L);
 
         // when & then
         assertThatThrownBy(() -> reservationService.add(request))
@@ -149,7 +155,7 @@ class ReservationServiceTest {
     @Test
     void future_test() {
         // given
-        ReservationRequest request = new ReservationRequest("루키", LocalDate.now().plusDays(3), 1L, 1L);
+        ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock).plusDays(3), 1L, 1L);
 
         // when & then
         assertThatCode(() -> reservationService.add(request))
@@ -179,8 +185,10 @@ class ReservationServiceTest {
         List<AvailableTimeResponse> availableTimes = reservationService.getAvailableTimes(date, themeId);
 
         // then
-        Assertions.assertThat(availableTimes.get(0).alreadyBooked()).isTrue();
-        Assertions.assertThat(availableTimes.get(1).alreadyBooked()).isFalse();
+        assertAll(
+                () -> assertThat(availableTimes.get(0).alreadyBooked()).isTrue(),
+                () -> assertThat(availableTimes.get(1).alreadyBooked()).isFalse()
+        );
     }
 
 }

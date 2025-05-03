@@ -97,6 +97,7 @@ class ThemeIntegrationTest {
         Boolean actual = jdbcTemplate.queryForObject("SELECT EXISTS(SELECT 1 FROM theme WHERE id = ?)",
                 Boolean.class, 6);
 
+        // then
         assertThat(actual).isFalse();
     }
 

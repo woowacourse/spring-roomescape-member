@@ -2,6 +2,7 @@ package roomescape.time.repository;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.JdbcReservationTimeDao;
 import roomescape.util.TestDataSourceFactory;
 
 class JdbcReservationTimeDaoTest {
@@ -29,7 +29,7 @@ class JdbcReservationTimeDaoTest {
     }
 
     @AfterEach
-    void dropTable(){
+    void dropTable() {
         String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
         jdbcTemplate.execute(dropSql);
     }
@@ -45,17 +45,30 @@ class JdbcReservationTimeDaoTest {
         Long id = jdbcReservationTimeDao.saveAndReturnId(time);
 
         // then
-        assertThat(id).isEqualTo(7L);
+        String savedStartAt = jdbcTemplate.queryForObject("SELECT start_at FROM reservation_time WHERE id = ?",
+                String.class, 7L);
+        assertAll(
+                () -> assertThat(id).isEqualTo(7L),
+                () -> assertThat(savedStartAt).isEqualTo("15:21")
+        );
+
     }
 
     @DisplayName("저장된 시간 데이터를 모두 조회한다")
     @Test
     void get_all_test() {
         // when
-        List<ReservationTime> all = jdbcReservationTimeDao.findAll();
+        List<ReservationTime> times = jdbcReservationTimeDao.findAll();
 
         // then
-        assertThat(all).hasSize(6);
+        List<String> startAts = jdbcTemplate.query("SELECT start_at FROM reservation_time",
+                (rs, rowNum) -> rs.getString("start_at"));
+        assertAll(
+                () -> assertThat(times).hasSize(6),
+                () -> assertThat(times).extracting(time -> time.getStartAt().toString())
+                        .containsExactlyInAnyOrderElementsOf(startAts)
+        );
+
     }
 
     @DisplayName("저장된 시간 데이터를 삭제한다")
@@ -68,9 +81,15 @@ class JdbcReservationTimeDaoTest {
         jdbcReservationTimeDao.deleteById(id);
 
         // then
-        String sql = "SELECT COUNT(1) FROM reservation_time";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-        assertThat(count).isEqualTo(5);
+        String countSql = "SELECT COUNT(1) FROM reservation_time";
+        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class);
+
+        String existSql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = ?)";
+        Boolean isExist = jdbcTemplate.queryForObject(existSql, Boolean.class, id);
+        assertAll(
+                () -> assertThat(count).isEqualTo(5),
+                () -> assertThat(isExist).isFalse()
+        );
     }
 
     @DisplayName("id 값에 해당하는 Time 객체를 조회한다")

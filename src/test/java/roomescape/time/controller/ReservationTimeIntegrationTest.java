@@ -1,6 +1,7 @@
 package roomescape.time.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.hamcrest.core.Is.is;
 
 import io.restassured.RestAssured;
@@ -61,7 +62,7 @@ class ReservationTimeIntegrationTest {
         assertThat(startAt).isEqualTo("10:20");
     }
 
-    @DisplayName("테마를 삭제하면 DB의 테마 데이터가 삭제된다")
+    @DisplayName("예약 시간을 삭제하면 DB의 예약 시간 데이터가 삭제된다")
     @Test
     void delete_time_test() {
         // when
@@ -70,9 +71,15 @@ class ReservationTimeIntegrationTest {
                 .then().log().all()
                 .statusCode(204);
 
-        Boolean actual = jdbcTemplate.queryForObject("SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = ?)",
+        // then
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation_time", Integer.class);
+
+        Boolean isExist = jdbcTemplate.queryForObject("SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = ?)",
                 Boolean.class, 6);
 
-        assertThat(actual).isFalse();
+        assertAll(
+                () -> assertThat(count).isEqualTo(5),
+                () -> assertThat(isExist).isFalse()
+        );
     }
 }

@@ -14,19 +14,18 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.util.repository.ReservationFakeRepository;
-import roomescape.util.repository.ReservationTimeFakeRepository;
-import roomescape.util.repository.ThemeFakeRepository;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRankingResponse;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
-import roomescape.reservation.domain.Reservation;
-import roomescape.theme.service.ThemeService;
-import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.util.repository.ReservationFakeRepository;
+import roomescape.util.repository.ReservationTimeFakeRepository;
+import roomescape.util.repository.ThemeFakeRepository;
 
 class ThemeServiceTest {
 
@@ -45,10 +44,6 @@ class ThemeServiceTest {
                 new ReservationTime(null, LocalTime.of(16, 54)),
                 new ReservationTime(null, LocalTime.of(23, 53))
         );
-
-        for (ReservationTime time : times) {
-            reservationTimeRepository.saveAndReturnId(time);
-        }
 
         List<Theme> themes = List.of(
                 new Theme(null, "레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
@@ -114,7 +109,7 @@ class ThemeServiceTest {
     @Test
     void delete_theme() {
         // given
-        Long deleteId = 3L;
+        Long deleteId = 4L;
 
         // when & then
         assertThatCode(() -> themeService.remove(deleteId))
@@ -137,10 +132,16 @@ class ThemeServiceTest {
     @Test
     void get_theme_rankings_test() {
         // when
-        List<ThemeRankingResponse> themeRankings = themeService.getThemeRankings();
+        List<ThemeRankingResponse> actual = themeService.getThemeRankings();
 
         // then
-        assertThat(themeRankings).isNotEmpty();
+        List<ThemeRankingResponse> expected = List.of(
+                new ThemeRankingResponse("레벨1 탈출", "우테코 레벨1를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+                new ThemeRankingResponse("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
+        assertThat(actual).containsExactlyElementsOf(expected);
     }
 
 }

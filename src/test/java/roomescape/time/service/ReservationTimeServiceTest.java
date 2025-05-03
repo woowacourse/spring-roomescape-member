@@ -3,6 +3,7 @@ package roomescape.time.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -62,7 +63,7 @@ class ReservationTimeServiceTest {
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
-    @DisplayName("에약 시간 정보를 추가한다")
+    @DisplayName("예약 시간 정보를 추가한다")
     @Test
     void add_test() {
         // given
@@ -94,7 +95,17 @@ class ReservationTimeServiceTest {
         List<ReservationTimeResponse> reservationTimeResponse = reservationTimeService.getTimes();
 
         // then
-        assertThat(reservationTimeResponse).hasSize(4);
+        assertAll(
+                ()->assertThat(reservationTimeResponse).hasSize(4),
+                () -> assertThat(reservationTimeResponse).extracting(ReservationTimeResponse::startAt)
+                        .containsExactlyInAnyOrder(
+                                LocalTime.of(3, 12),
+                                LocalTime.of(11, 33),
+                                LocalTime.of(16, 54),
+                                LocalTime.of(23, 53)
+                        )
+        );
+
     }
 
     @DisplayName("특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하면 예외가 발생한다")
