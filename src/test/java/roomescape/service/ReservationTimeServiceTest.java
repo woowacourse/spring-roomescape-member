@@ -43,10 +43,28 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
-    void test_deleteReservationTime() {
+    @DisplayName("존재하지 않는 id로 삭제하려고 할 경우, 예외가 발생한다.")
+    void error_deleteReservationTimeById() {
         assertThatThrownBy(() -> reservationService.deleteReservationTime(999L))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("존재하는 id로 삭제 시, 성공적으로 삭제한다.")
+    void test_deleteReservationTimeById() {
+        // given
+        List<ReservationTimeResponse> beforeDelete = reservationService.readReservationTimes();
+        long idToDelete = beforeDelete.get(0).id();
+
+        // when
+        reservationService.deleteReservationTime(idToDelete);
+
+        // then
+        List<ReservationTimeResponse> afterDelete = reservationService.readReservationTimes();
+        boolean isDeleted = afterDelete.stream()
+                .noneMatch(time -> time.id() == idToDelete);
+        assertThat(afterDelete.size()).isEqualTo(beforeDelete.size() - 1);
+        assertThat(isDeleted).isTrue();
     }
 
     @Test
