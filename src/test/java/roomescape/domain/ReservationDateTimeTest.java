@@ -20,7 +20,7 @@ public class ReservationDateTimeTest {
         LocalTime time = now.toLocalTime().minusMinutes(1);
         ReservationTime reservationTime = ReservationTime.create(time);
 
-        assertThatThrownBy(() -> new ReservationDateTime(reservationDate, reservationTime, Constant.FIXED_CLOCK))
+        assertThatThrownBy(() -> ReservationDateTime.create(reservationDate, reservationTime, Constant.FIXED_CLOCK))
                 .isInstanceOf(PastReservationException.class);
     }
 
@@ -31,7 +31,7 @@ public class ReservationDateTimeTest {
         ReservationDate reservationDate = new ReservationDate(today);
         ReservationTime futureTime = ReservationTime.create(now.toLocalTime().plusMinutes(10));
 
-        assertThatCode(() -> new ReservationDateTime(reservationDate, futureTime, Constant.FIXED_CLOCK))
+        assertThatCode(() -> ReservationDateTime.create(reservationDate, futureTime, Constant.FIXED_CLOCK))
                 .doesNotThrowAnyException();
     }
 }

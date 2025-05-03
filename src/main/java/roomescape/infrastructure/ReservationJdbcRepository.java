@@ -66,14 +66,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reserverName.getName())
-                .addValue("date", reservationDateTime.getReservationDate().getDate())
-                .addValue("time_id", reservationDateTime.getReservationTime().getId())
+                .addValue("date", reservationDateTime.reservationDate().getDate())
+                .addValue("time_id", reservationDateTime.reservationTime().getId())
                 .addValue("theme_id", theme.getId());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, reserverName.getName(), reservationDateTime.getReservationDate().getDate(),
-                new ReservationTime(reservationDateTime.getReservationTime().getId(),
-                        reservationDateTime.getReservationTime().getStartAt()),
+        return new Reservation(id, reserverName.getName(), reservationDateTime.reservationDate().getDate(),
+                new ReservationTime(reservationDateTime.reservationTime().getId(),
+                        reservationDateTime.reservationTime().getStartAt()),
                 theme);
     }
 

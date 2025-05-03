@@ -48,7 +48,7 @@ public class ReservationService {
 
         ReserverName reserverName = new ReserverName(request.name());
         ReservationTime reservationTime = reservationTimeService.findReservationTimeById(request.timeId());
-        ReservationDateTime reservationDateTime = new ReservationDateTime(reservationDate, reservationTime, clock);
+        ReservationDateTime reservationDateTime = ReservationDateTime.create(reservationDate, reservationTime, clock);
         Theme theme = themeService.findThemeById(request.themeId());
         Reservation created = reservationRepository.save(reserverName, reservationDateTime, theme);
 
