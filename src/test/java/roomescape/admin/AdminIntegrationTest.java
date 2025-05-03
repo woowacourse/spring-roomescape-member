@@ -3,14 +3,24 @@ package roomescape.admin;
 import static org.hamcrest.CoreMatchers.is;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AdminIntegrationTest {
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void beforeEach(){
+        RestAssured.port = this.port;
+    }
 
     @DisplayName("/admin 요청 시 admin/index.html과 200 응답을 준다.")
     @Test

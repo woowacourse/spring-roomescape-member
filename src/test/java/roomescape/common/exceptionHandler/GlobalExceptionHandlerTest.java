@@ -3,17 +3,24 @@ package roomescape.common.exceptionHandler;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.exceptionHandler.dto.ExceptionResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class GlobalExceptionHandlerTest {
+
+    @LocalServerPort
+    int port;
 
     @TestConfiguration
     static class TestControllerConfig {
@@ -43,6 +50,11 @@ class GlobalExceptionHandlerTest {
                 }
             }
         }
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        RestAssured.port = this.port;
     }
 
     @Test
