@@ -1,19 +1,19 @@
 package roomescape.reservation.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.time.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.controller.dto.AvailableTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationService {
@@ -21,12 +21,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository,
+                              Clock clock) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public List<ReservationResponse> getAll() {
@@ -54,9 +57,10 @@ public class ReservationService {
     }
 
     private List<AvailableTimeResponse> convertTimeToResponses(List<Reservation> reservations,
-                                                                  List<ReservationTime> times) {
+                                                               List<ReservationTime> times) {
         return times.stream()
-                .map(time -> AvailableTimeResponse.from(time.getStartAt(), time.getId(), isAlreadyBooked(time, reservations)))
+                .map(time -> AvailableTimeResponse.from(time.getStartAt(), time.getId(),
+                        isAlreadyBooked(time, reservations)))
                 .toList();
     }
 
@@ -78,12 +82,12 @@ public class ReservationService {
                 .anyMatch(reservation -> reservation.getTimeId().equals(time.getId()));
     }
 
-    private void validateDateAndTime(LocalDate date, LocalTime time){
-        LocalDate now = LocalDate.now();
+    private void validateDateAndTime(LocalDate date, LocalTime time) {
+        LocalDate now = LocalDate.now(clock);
         if (date.isBefore(now)) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
         }
-        if (date.equals(now) && time.isBefore(LocalTime.now())) {
+        if (date.equals(now) && time.isBefore(LocalTime.now(clock))) {
             throw new IllegalArgumentException("지난 시각은 예약할 수 없습니다.");
         }
     }

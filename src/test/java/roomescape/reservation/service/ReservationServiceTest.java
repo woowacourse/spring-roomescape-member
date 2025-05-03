@@ -3,9 +3,13 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,12 +33,14 @@ import roomescape.theme.repository.ThemeRepository;
 class ReservationServiceTest {
 
     private ReservationService reservationService;
+    private Clock clock;
 
     @BeforeEach
     void setup() {
         ReservationRepository reservationRepository = new ReservationFakeRepository();
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
+        clock = Clock.fixed(Instant.parse("2025-03-28T23:59:59Z"), ZoneOffset.UTC);
 
         List<ReservationTime> times = List.of(
                 new ReservationTime(null, LocalTime.of(3, 12)),
@@ -60,16 +66,20 @@ class ReservationServiceTest {
         }
 
         List<Reservation> reservations = List.of(
-                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get()),
-                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(), themeRepository.findById(2L).get()),
-                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(), themeRepository.findById(3L).get())
+                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
+                        themeRepository.findById(1L).get()),
+                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(),
+                        themeRepository.findById(2L).get()),
+                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
+                        themeRepository.findById(3L).get())
         );
 
         for (Reservation reservation : reservations) {
             reservationRepository.saveAndReturnId(reservation);
         }
 
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                clock);
     }
 
     @DisplayName("전체 예약 정보를 조회한다")

@@ -5,8 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +37,7 @@ class ThemeServiceTest {
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ReservationRepository reservationRepository = new ReservationFakeRepository();
         ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
+        Clock clock = Clock.fixed(Instant.parse("2025-04-03T23:59:59Z"), ZoneOffset.UTC);
 
         List<ReservationTime> times = List.of(
                 new ReservationTime(null, LocalTime.of(3, 12)),
@@ -52,17 +56,32 @@ class ThemeServiceTest {
                 new Theme(null, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
                 new Theme(null, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"),
+                new Theme(null, "레벨4 탈출", "우테코 레벨4를 탈출하는 내용입니다.",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"));
+
+        for (ReservationTime time : times) {
+            reservationTimeRepository.saveAndReturnId(time);
+        }
 
         for (Theme theme : themes) {
             themeRepository.saveAndReturnId(theme);
         }
 
-        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29),
-                reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get());
+        List<Reservation> reservations = List.of(
+                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
+                        themeRepository.findById(1L).get()),
+                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 2), reservationTimeRepository.findById(2L).get(),
+                        themeRepository.findById(2L).get()),
+                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
+                        themeRepository.findById(3L).get())
+        );
 
-        reservationRepository.saveAndReturnId(reservation);
-        themeService = new ThemeService(themeRepository, reservationRepository);
+        for (Reservation reservation : reservations) {
+            reservationRepository.saveAndReturnId(reservation);
+        }
+
+        themeService = new ThemeService(themeRepository, reservationRepository, clock);
     }
 
     @DisplayName("테마 정보를 추가한다")
