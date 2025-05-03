@@ -19,4 +19,14 @@ public class GlobalAdvice {
     public ResponseEntity<String> badRequestExceptionHandler(BadRequestException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> badRequestExceptionHandler(IllegalArgumentException exception) {
+        return ResponseEntity.internalServerError().body("서버 내부에서 로직 예외 발생");
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> runtimeExceptionHandler(RuntimeException exception) {
+        return ResponseEntity.internalServerError().body("예상치 못한 예외 발생");
+    }
 }
