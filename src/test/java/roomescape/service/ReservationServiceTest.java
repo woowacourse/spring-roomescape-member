@@ -41,7 +41,7 @@ class ReservationServiceTest {
                 () -> assertThat(reservation.id()).isEqualTo(1),
                 () -> assertThat(reservation.name()).isEqualTo("moda"),
                 () -> assertThat(reservation.date()).isEqualTo(LocalDate.of(2025, 4, 27)),
-                () -> assertThat(reservation.time()).isEqualTo(ReservationTimeResponse.from(time))
+                () -> assertThat(reservation.reservationTime()).isEqualTo(new ReservationTimeResponse(time))
         );
     }
 

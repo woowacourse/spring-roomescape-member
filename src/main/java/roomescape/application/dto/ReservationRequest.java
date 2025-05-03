@@ -6,8 +6,12 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 public record ReservationRequest(
-        String name, LocalDate date, long timeId, Long themeId
+        String name,
+        LocalDate date,
+        long timeId,
+        Long themeId
 ) {
+
     public ReservationRequest {
         validateNotNull(name, date, timeId, themeId);
     }
@@ -29,7 +33,10 @@ public record ReservationRequest(
 
     public Reservation toReservationWith(ReservationTime reservationTime, Theme theme) {
         return new Reservation(
-                name, date, reservationTime, theme
+                name,
+                date,
+                reservationTime,
+                theme
         );
     }
 }

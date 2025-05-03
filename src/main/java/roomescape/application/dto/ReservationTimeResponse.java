@@ -5,12 +5,17 @@ import java.time.format.DateTimeFormatter;
 import roomescape.domain.ReservationTime;
 
 public record ReservationTimeResponse(
-        Long id, LocalTime startAt
+        Long id,
+        LocalTime startAt
 ) {
+
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static ReservationTimeResponse from(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
+    public ReservationTimeResponse(ReservationTime reservationTime) {
+        this(
+                reservationTime.getId(),
+                reservationTime.getStartAt()
+        );
     }
 
     public String getStartAt() {
