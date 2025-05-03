@@ -21,18 +21,18 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime put(final ReservationTime reservationTime) {
-        long id = index.getAndIncrement();
+        Long id = index.getAndIncrement();
         reservationTimes.put(id, reservationTime);
         return ReservationTime.of(id, reservationTime.getStartAt());
     }
 
     @Override
-    public boolean deleteById(final long id) {
+    public boolean deleteById(final Long id) {
         return reservationTimes.remove(id) != null;
     }
 
     @Override
-    public Optional<ReservationTime> findById(final long id) {
+    public Optional<ReservationTime> findById(final Long id) {
         return Optional.ofNullable(reservationTimes.get(id))
                 .map(reservationTime -> ReservationTime.of(id, reservationTime.getStartAt()));
     }

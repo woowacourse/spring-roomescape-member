@@ -40,7 +40,7 @@ public class JDBCThemeRepository implements ThemeRepository {
 
     @Override
     public Theme put(final Theme theme) {
-        long generatedId = simpleJdbcInsert.executeAndReturnKey(
+        Long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("name", theme.getName(),
                         "description", theme.getDescription(),
                         "thumbnail", theme.getThumbnail())).longValue();
@@ -49,12 +49,12 @@ public class JDBCThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean deleteById(final long id) {
+    public boolean deleteById(final Long id) {
         return jdbcTemplate.update("DELETE FROM theme WHERE id = ?", id) != 0;
     }
 
     @Override
-    public Optional<Theme> findById(final long id) {
+    public Optional<Theme> findById(final Long id) {
         ThemeEntity themeEntity = jdbcTemplate.queryForObject(
                 "SELECT id, name, description, thumbnail FROM theme WHERE id = ?",
                 (resultSet, rowNum) -> new ThemeEntity(

@@ -10,9 +10,9 @@ public interface ThemeRepository {
 
     Theme put(Theme theme);
 
-    boolean deleteById(long id);
+    boolean deleteById(Long id);
 
-    Optional<Theme> findById(long id);
+    Optional<Theme> findById(Long id);
 
     List<Theme> findTop10PopularThemesWithinLastWeek(LocalDate nowDate);
 }

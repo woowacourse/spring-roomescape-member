@@ -38,19 +38,19 @@ public class JDBCReservationTimeRepository implements ReservationTimeRepository 
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
 
-        long generatedId = simpleJdbcInsert.executeAndReturnKey(
+        Long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("start_at", reservationTime.getStartAt())).longValue();
 
         return ReservationTime.of(generatedId, reservationTime.getStartAt());
     }
 
     @Override
-    public boolean deleteById(final long id) {
+    public boolean deleteById(final Long id) {
         return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id) != 0;
     }
 
     @Override
-    public Optional<ReservationTime> findById(final long id) {
+    public Optional<ReservationTime> findById(final Long id) {
         ReservationTimeEntity reservationTimeEntity = jdbcTemplate.queryForObject(
                 "SELECT id, start_at FROM reservation_time WHERE id = ?",
                 (resultSet, rowNum) -> new ReservationTimeEntity(

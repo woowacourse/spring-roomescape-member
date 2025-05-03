@@ -37,7 +37,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public void delete(long id) {
+    public void delete(Long id) {
         if (!reservationRepository.deleteById(id)) {
             throw new ReservationNotFoundException("요청한 id와 일치하는 예약 정보가 없습니다.");
         }

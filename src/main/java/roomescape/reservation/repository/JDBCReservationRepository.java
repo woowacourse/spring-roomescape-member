@@ -66,7 +66,7 @@ public class JDBCReservationRepository implements ReservationRepository {
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
-        long generatedId = simpleJdbcInsert.executeAndReturnKey(
+        Long generatedId = simpleJdbcInsert.executeAndReturnKey(
                 Map.of("name", reservation.getName(), "date", reservation.getDate(), "time_id",
                         reservation.getTime().getId(), "theme_id", reservation.getTheme().getId())
         ).longValue();
@@ -99,7 +99,7 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
+    public boolean existsByDateAndTimeId(final LocalDate date, final Long timeId) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS (SELECT 1 FROM reservation WHERE (date, time_id) = (?,?))",
                 Boolean.class,

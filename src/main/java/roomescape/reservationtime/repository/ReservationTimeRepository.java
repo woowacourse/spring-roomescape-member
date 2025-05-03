@@ -10,9 +10,9 @@ public interface ReservationTimeRepository {
 
     ReservationTime put(ReservationTime reservationTime);
 
-    boolean deleteById(long id);
+    boolean deleteById(Long id);
 
-    Optional<ReservationTime> findById(long id);
+    Optional<ReservationTime> findById(Long id);
 
     boolean checkExistsByStartAt(LocalTime time);
 }

@@ -24,18 +24,18 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public Theme put(final Theme theme) {
-        long id = index.getAndIncrement();
+        Long id = index.getAndIncrement();
         themes.put(id, theme);
         return Theme.of(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
-    public boolean deleteById(final long id) {
+    public boolean deleteById(final Long id) {
         return themes.remove(id) != null;
     }
 
     @Override
-    public Optional<Theme> findById(final long id) {
+    public Optional<Theme> findById(final Long id) {
         return Optional.ofNullable(themes.get(id));
     }
 

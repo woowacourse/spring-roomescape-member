@@ -8,7 +8,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.response.ThemeResponse;
 
 public record ReservationResponse(
-        long id,
+        Long id,
         String name,
         LocalDate date,
         ReservationTimeResponse time,

@@ -34,7 +34,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void delete(long id) {
+    public void delete(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new ReservationTimeInUseException("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
         }

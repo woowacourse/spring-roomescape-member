@@ -27,7 +27,7 @@ public class ThemeService {
                 .toList();
     }
 
-    public void delete(long id) {
+    public void delete(Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new ReservationTimeInUseException("해당 테마에 대한 예약이 존재하여 삭제할 수 없습니다.");
         }

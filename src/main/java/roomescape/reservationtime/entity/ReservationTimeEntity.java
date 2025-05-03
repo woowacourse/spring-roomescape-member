@@ -7,7 +7,7 @@ public record ReservationTimeEntity(
         Long id,
         LocalTime startAt
 ) {
-    public ReservationTimeEntity(final long id, final String startAt) {
+    public ReservationTimeEntity(final Long id, final String startAt) {
         this(id, LocalTime.parse(startAt));
     }
 
