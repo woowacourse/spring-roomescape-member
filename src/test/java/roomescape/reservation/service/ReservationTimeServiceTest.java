@@ -13,8 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.DataExistException;
 import roomescape.exception.DataNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.repository.H2ReservationRepository;
-import roomescape.reservation.repository.H2ReservationTimeRepository;
+import roomescape.reservation.repository.JdbcReservationRepository;
+import roomescape.reservation.repository.JdbcReservationTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 
@@ -90,14 +90,14 @@ class ReservationTimeServiceTest {
         public ReservationTimeRepository reservationTimeRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
-            return new H2ReservationTimeRepository(jdbcTemplate);
+            return new JdbcReservationTimeRepository(jdbcTemplate);
         }
 
         @Bean
         public ReservationRepository reservationRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
-            return new H2ReservationRepository(jdbcTemplate);
+            return new JdbcReservationRepository(jdbcTemplate);
         }
 
         @Bean

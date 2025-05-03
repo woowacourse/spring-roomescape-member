@@ -18,7 +18,7 @@ import roomescape.theme.domain.Theme;
 
 @Repository
 @RequiredArgsConstructor
-public class H2ReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (rs, rowNum) ->
             new Reservation(
