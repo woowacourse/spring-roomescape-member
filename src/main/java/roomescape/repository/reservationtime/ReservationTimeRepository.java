@@ -13,9 +13,9 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(long id);
 
-    boolean findByStartAt(LocalTime startAt);
-
     List<TimeWithBookState> findAllWithBookState(LocalDate date, long themeId);
+
+    boolean checkExistenceByStartAt(LocalTime startAt);
 
     long add(ReservationTime reservationTime);
 

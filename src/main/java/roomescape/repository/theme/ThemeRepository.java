@@ -11,9 +11,9 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    long addTheme(Theme theme);
+    List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate);
+
+    long add(Theme theme);
 
     void deleteById(long id);
-
-    List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate);
 }

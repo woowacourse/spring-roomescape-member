@@ -24,7 +24,7 @@ public class ThemeService {
 
     public long addTheme(ThemeCreationRequest request) {
         Theme theme = Theme.createWithoutId(request.name(), request.description(), request.thumbnail());
-        return themeRepository.addTheme(theme);
+        return themeRepository.add(theme);
     }
 
     public List<Theme> findAllTheme() {

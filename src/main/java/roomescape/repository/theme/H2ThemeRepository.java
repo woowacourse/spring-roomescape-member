@@ -50,19 +50,6 @@ public class H2ThemeRepository implements ThemeRepository {
         }
     }
 
-    public long addTheme(Theme theme) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", theme.getName());
-        parameters.put("description", theme.getDescription());
-        parameters.put("thumbnail", theme.getThumbnail());
-        return insertTheme.executeAndReturnKey(parameters).longValue();
-    }
-
-    public void deleteById(long id) {
-        String sql = "DELETE FROM theme where theme.id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
     public List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
@@ -77,5 +64,18 @@ public class H2ThemeRepository implements ThemeRepository {
                 """;
 
         return jdbcTemplate.query(sql, mapper, startDate, endDate);
+    }
+
+    public long add(Theme theme) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", theme.getName());
+        parameters.put("description", theme.getDescription());
+        parameters.put("thumbnail", theme.getThumbnail());
+        return insertTheme.executeAndReturnKey(parameters).longValue();
+    }
+
+    public void deleteById(long id) {
+        String sql = "DELETE FROM theme where theme.id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

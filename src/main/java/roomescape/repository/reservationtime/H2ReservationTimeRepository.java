@@ -60,18 +60,6 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public boolean findByStartAt(LocalTime startAt) {
-        String sql = """
-                SELECT EXISTS ( 
-                    SELECT *
-                    FROM reservation_time AS rt
-                    WHERE rt.start_at = ?
-                )
-                """;
-        return template.queryForObject(sql, Boolean.class, startAt);
-    }
-
-    @Override
     public List<TimeWithBookState> findAllWithBookState(LocalDate date, long themeId) {
         String sql = """
                     SELECT rt.id, rt.start_at, 
@@ -85,6 +73,18 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                     FROM reservation_time AS rt 
                 """;
         return template.query(sql, reservationTimeWithBookStateMapper, date, themeId);
+    }
+
+    @Override
+    public boolean checkExistenceByStartAt(LocalTime startAt) {
+        String sql = """
+                SELECT EXISTS ( 
+                    SELECT *
+                    FROM reservation_time AS rt
+                    WHERE rt.start_at = ?
+                )
+                """;
+        return template.queryForObject(sql, Boolean.class, startAt);
     }
 
     @Override

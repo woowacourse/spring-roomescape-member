@@ -23,7 +23,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public long addTheme(final Theme theme) {
+    public long add(final Theme theme) {
         Theme newTheme = new Theme(
                 index.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
         themes.put(newTheme.getId(), newTheme);

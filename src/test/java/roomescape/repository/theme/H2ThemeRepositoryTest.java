@@ -62,10 +62,10 @@ class H2ThemeRepositoryTest {
 
     @DisplayName("테마를 추가할 수 있다")
     @Test
-    void canAddTheme() {
+    void canAdd() {
         Theme theme = Theme.createWithoutId("테마1", "설명1", "섬네일1");
 
-        themeRepository.addTheme(theme);
+        themeRepository.add(theme);
 
         assertThat(themeRepository.findAll()).hasSize(1);
     }

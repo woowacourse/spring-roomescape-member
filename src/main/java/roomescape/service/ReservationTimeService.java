@@ -65,7 +65,7 @@ public class ReservationTimeService {
     }
 
     private void validateAlreadySaved(LocalTime time) {
-        boolean isAlreadySaved = reservationTimeRepository.findByStartAt(time);
+        boolean isAlreadySaved = reservationTimeRepository.checkExistenceByStartAt(time);
         if (isAlreadySaved) {
             throw new BadRequestException("[Error] 이미 추가가 완료된 예약 가능 시간입니다.");
         }

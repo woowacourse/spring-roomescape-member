@@ -60,12 +60,12 @@ class H2ReservationTimeRepositoryTest {
 
     @DisplayName("예약 시간을 통해 예약을 조회할 수 있다")
     @Test
-    void canFindByStartAt() {
+    void canCheckExistenceByStartAt() {
         LocalTime startAt = LocalTime.of(10, 0);
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", startAt);
 
-        boolean isInOfStartAt = timeRepository.findByStartAt(startAt);
-        boolean isOutOfStartAT = timeRepository.findByStartAt(startAt.plusSeconds(1));
+        boolean isInOfStartAt = timeRepository.checkExistenceByStartAt(startAt);
+        boolean isOutOfStartAT = timeRepository.checkExistenceByStartAt(startAt.plusSeconds(1));
 
         assertAll(
                 () -> assertThat(isInOfStartAt).isTrue(),
