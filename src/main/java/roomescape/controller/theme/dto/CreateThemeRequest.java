@@ -3,9 +3,9 @@ package roomescape.controller.theme.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record CreateThemeRequest(
-    @JsonProperty("name") String name,
-    @JsonProperty("description") String description,
-    @JsonProperty("thumbnail") String thumbnail
+    String name,
+    String description,
+    String thumbnail
 ) {
 
     public CreateThemeRequest {

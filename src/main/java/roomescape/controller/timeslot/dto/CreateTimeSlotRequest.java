@@ -1,10 +1,9 @@
 package roomescape.controller.timeslot.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalTime;
 
 public record CreateTimeSlotRequest(
-    @JsonProperty("startAt") LocalTime startAt
+    LocalTime startAt
 ) {
 
     public CreateTimeSlotRequest {

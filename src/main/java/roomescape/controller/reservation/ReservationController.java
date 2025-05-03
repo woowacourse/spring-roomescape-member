@@ -28,7 +28,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> reserve(@RequestBody CreateReservationRequest request) {
-        var reservation = service.reserve(request.name(), request.date(), request.timeSlotId(), request.themeId());
+        var reservation = service.reserve(request.name(), request.date(), request.timeId(), request.themeId());
         var response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(response);
     }
