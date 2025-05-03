@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.BaseTest;
-import roomescape.reservation.controller.response.ReservationResponse;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.service.ThemeRepository;
+import roomescape.presentation.dto.response.ReservationResponse;
+import roomescape.domain.Theme;
+import roomescape.infrastructure.ThemeRepository;
 
 public class ReservationTest extends BaseTest {
 
