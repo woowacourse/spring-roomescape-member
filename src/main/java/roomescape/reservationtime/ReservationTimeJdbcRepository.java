@@ -1,6 +1,5 @@
 package roomescape.reservationtime;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -39,22 +38,6 @@ public class ReservationTimeJdbcRepository implements ReservationTimeRepository 
     public List<ReservationTime> findAll() {
         final String sql = "SELECT * FROM reservation_time";
         return jdbcTemplate.query(sql, getRowMapper());
-    }
-
-    @Override
-    public List<ReservationTime> findAllByThemeIdAndDate(final Long themeId, final LocalDate date) {
-        final String sql = """ 
-                SELECT  
-                       t.id AS id,  
-                       t.start_at AS start_at  
-                FROM reservation AS r  
-                    INNER JOIN reservation_time AS t    
-                    ON r.time_id = t.id  
-                WHERE  
-                    r.theme_id=? AND r.date=? 
-                """;
-
-        return jdbcTemplate.query(sql, getRowMapper(), themeId, date);
     }
 
     @Override

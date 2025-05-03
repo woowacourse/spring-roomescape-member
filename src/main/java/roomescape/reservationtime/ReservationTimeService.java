@@ -1,14 +1,15 @@
 package roomescape.reservationtime;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.exception.custom.reason.reservationtime.ReservationTimeConflictException;
 import roomescape.exception.custom.reason.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.custom.reason.reservationtime.ReservationTimeUsedException;
+import roomescape.reservation.Reservation;
 import roomescape.reservation.ReservationRepository;
 import roomescape.reservationtime.dto.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
@@ -45,12 +46,12 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponse> findAllAvailableTimes(final Long themeId, final LocalDate date) {
-        final List<ReservationTime> allTime = reservationTimeRepository.findAll();
-        final List<ReservationTime> allByThemeIdAndDate = reservationTimeRepository.findAllByThemeIdAndDate(themeId,
-                date);
+        final List<ReservationTime> times = reservationTimeRepository.findAll();
+        final Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findAllByThemeIdAndDate(themeId, date).stream()
+                .map(Reservation::getReservationTime)
+                .collect(Collectors.toSet());
 
-        final Set<ReservationTime> reservationTimesByThemeAndDate = new HashSet<>(allByThemeIdAndDate);
-        return allTime.stream()
+        return times.stream()
                 .map(reservationTime ->
                         AvailableReservationTimeResponse.from(
                                 reservationTime,

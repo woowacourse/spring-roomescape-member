@@ -7,8 +7,9 @@ public interface ReservationRepository {
 
     Long save(Reservation reservation, Long reservationTimeId, Long themeId);
 
-    List<Reservation> findAll();
     Reservation findById(Long id);
+    List<Reservation> findAll();
+    List<Reservation> findAllByThemeIdAndDate(Long themeId, LocalDate date);
 
     void delete(Long id);
 
