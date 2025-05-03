@@ -85,7 +85,7 @@ public class ReservationService {
     }
 
     private void validateExistsReservationTime(final ReservationRequest request) {
-        if (!reservationTimeRepository.existsById(request.themeId())) {
+        if (!reservationTimeRepository.existsById(request.timeId())) {
             throw new ReservationNotExistsTimeException();
         }
     }
