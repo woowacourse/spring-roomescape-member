@@ -32,14 +32,13 @@ public class JdbcReservationDao implements ReservationRepository {
                 rs.getString("thumbnail")
         );
 
-        Reservation reservation = new Reservation(
+        return new Reservation(
                 rs.getLong("id"),
                 rs.getString("name"),
                 LocalDate.parse(date),
                 reservationTime,
                 theme
         );
-        return reservation;
     };
 
     private final JdbcTemplate jdbcTemplate;

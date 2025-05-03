@@ -10,9 +10,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-
 import javax.sql.DataSource;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +21,7 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     private static final RowMapper<ReservationTime> rowMapper = ((rs, rowNum) -> {
         String startAt = rs.getString("start_at");
         LocalTime reservationStartAt = LocalTime.parse(startAt);
-        ReservationTime reservationTime = new ReservationTime(rs.getLong("id"), reservationStartAt);
-        return reservationTime;
+        return new ReservationTime(rs.getLong("id"), reservationStartAt);
     });
 
     private final JdbcTemplate jdbcTemplate;
