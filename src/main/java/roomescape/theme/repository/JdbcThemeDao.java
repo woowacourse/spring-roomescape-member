@@ -16,12 +16,12 @@ import roomescape.theme.domain.Theme;
 public class JdbcThemeDao implements ThemeRepository {
 
     private final RowMapper<Theme> rowMapper = (rs, rowNum) ->
-        new Theme(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("thumbnail")
-        );
+            new Theme(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -60,7 +60,14 @@ public class JdbcThemeDao implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+        List<Theme> findThemes = jdbcTemplate.query(sql, rowMapper, id);
+        if (findThemes.isEmpty()) {
+            return Optional.empty();
+        }
+        if (findThemes.size() > 1) {
+            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
+        }
+        return Optional.of(findThemes.getFirst());
     }
 
     @Override

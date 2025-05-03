@@ -16,10 +16,10 @@ import roomescape.time.domain.ReservationTime;
 public class JdbcReservationTimeDao implements ReservationTimeRepository {
 
     private final RowMapper<ReservationTime> rowMapper = (rs, rowNum) ->
-        new ReservationTime(
-                rs.getLong("id"),
-                LocalTime.parse(rs.getString("start_at"))
-        );
+            new ReservationTime(
+                    rs.getLong("id"),
+                    LocalTime.parse(rs.getString("start_at"))
+            );
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -57,7 +57,16 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     @Override
     public Optional<ReservationTime> findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, rowMapper, id));
+
+        List<ReservationTime> findTimes = jdbcTemplate.query(sql, rowMapper, id);
+
+        if (findTimes.isEmpty()) {
+            return Optional.empty();
+        }
+        if (findTimes.size() > 1) {
+            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
+        }
+        return Optional.of(findTimes.getFirst());
     }
 
     @Override
