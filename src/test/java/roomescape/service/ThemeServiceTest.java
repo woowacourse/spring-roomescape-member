@@ -16,7 +16,9 @@ import roomescape.dto.ThemeCreateRequestDto;
 import roomescape.dto.ThemeResponseDto;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
+import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeThemeRepository;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,12 +32,13 @@ class ThemeServiceTest {
     @DisplayName("테마 생성")
     class CreateTheme {
 
+        private final ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
         private final ThemeRepository themeRepository = new FakeThemeRepository(new ArrayList<>());
 
         @DisplayName("요청에 따라 Theme을 생성 할 수 있다")
         @Test
         void createThemeTest() {
-            themeService = new ThemeService(themeRepository);
+            themeService = new ThemeService(reservationRepository, themeRepository);
 
             ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
             ThemeResponseDto responseDto = themeService.createTheme(requestDto);
@@ -56,7 +59,7 @@ class ThemeServiceTest {
         @DisplayName("이미 같은 이름의 테마가 존재하면 Theme을 생성할 수 없다")
         @Test
         void createDuplicatedNameThemeTest() {
-            themeService = new ThemeService(themeRepository);
+            themeService = new ThemeService(reservationRepository, themeRepository);
 
             ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
             ThemeCreateRequestDto invalidRequestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
@@ -68,7 +71,7 @@ class ThemeServiceTest {
         @DisplayName("같은 이름의 테마가 존재하지 않으면 Theme을 생성할 수 있다.")
         @Test
         void createValidNameThemeTest() {
-            themeService = new ThemeService(themeRepository);
+            themeService = new ThemeService(reservationRepository, themeRepository);
 
             ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온1", "가이온이 코딩을 합니다", "가이온_코딩중.png");
             ThemeCreateRequestDto invalidRequestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
@@ -87,11 +90,12 @@ class ThemeServiceTest {
                 new Theme(2L, "b", "b", "b"),
                 new Theme(3L, "c", "c", "c")
         )));
+        private final ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
 
         @DisplayName("모든 Theme을 조회할 수 있다")
         @Test
         void findAllThemesTest() {
-            themeService = new ThemeService(themeRepository);
+            themeService = new ThemeService(reservationRepository, themeRepository);
 
             List<ThemeResponseDto> responses = themeService.findAllThemes();
 
@@ -101,7 +105,7 @@ class ThemeServiceTest {
         @DisplayName("지난 7일 간 예약된 테마들 중 인기 테마를 최대 10건 조회할 수 있다")
         @Test
         void findPopularThemesTest() {
-            themeService = new ThemeService(themeRepository);
+            themeService = new ThemeService(reservationRepository, themeRepository);
 
             ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
             Theme theme1 = themeRepository.findById(1L).get();
@@ -121,12 +125,13 @@ class ThemeServiceTest {
     @DisplayName("테마 삭제")
     class DeleteTheme {
 
+        private final ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
         private final ThemeRepository themeRepository = new FakeThemeRepository(new ArrayList<>());
 
         @DisplayName("Theme을 삭제할 수 있다")
         @Test
         void deleteThemeByIdTest() {
-            themeService = new ThemeService(themeRepository);
+            themeService = new ThemeService(reservationRepository, themeRepository);
 
             ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("a", "a", "a");
             ThemeResponseDto responseDto = themeService.createTheme(requestDto);
@@ -140,7 +145,7 @@ class ThemeServiceTest {
         @DisplayName("존재하지 않는 Theme을 삭제하려고 하면 예외가 발생한다")
         @Test
         void deleteNonExistentThemeTest() {
-            themeService = new ThemeService(themeRepository);
+            themeService = new ThemeService(reservationRepository, themeRepository);
 
             Long nonExistentId = 2L;
 

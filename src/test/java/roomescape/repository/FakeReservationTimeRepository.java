@@ -54,7 +54,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
         if (deleteReservation.id() != null) {
             if (reservations.stream()
-                    .filter(reservation -> reservation.time().equals(deleteReservation))
+                    .filter(reservation -> reservation.getTime().equals(deleteReservation))
                     .count() != 0) {
                 throw new IllegalStateException();
             }

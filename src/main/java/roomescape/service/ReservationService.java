@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -10,7 +9,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.DuplicateContentException;
-import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -36,7 +34,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
         validateDuplicate(dto.date(), reservationTime.startAt());
-        validateReservationDateTime(dto.date(), reservationTime.startAt());
+        Reservation.validateReservableTime(dto.date(), reservationTime.startAt());
 
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.themeId()));
@@ -45,7 +43,7 @@ public class ReservationService {
         Reservation newReservation = reservationRepository.save(requestReservation)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 예약 생성을 실패하였습니다."));
 
-        return ReservationResponseDto.from(newReservation, newReservation.time(), theme);
+        return ReservationResponseDto.of(newReservation, newReservation.getTime(), theme);
     }
 
     private void validateDuplicate(LocalDate date, LocalTime time) {
@@ -55,19 +53,11 @@ public class ReservationService {
         }
     }
 
-    private void validateReservationDateTime(LocalDate date, LocalTime time) {
-        LocalDateTime dateTime = LocalDateTime.of(date, time);
-        LocalDateTime currentTime = LocalDateTime.now();
-        if (dateTime.isBefore(currentTime) || dateTime.equals(currentTime)) {
-            throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
-        }
-    }
-
     public List<ReservationResponseDto> findAllReservationResponses() {
         List<Reservation> allReservations = reservationRepository.findAll();
 
         return allReservations.stream()
-                .map(reservation -> ReservationResponseDto.from(reservation, reservation.time(), reservation.theme()))
+                .map(reservation -> ReservationResponseDto.of(reservation, reservation.getTime(), reservation.getTheme()))
                 .toList();
     }
 

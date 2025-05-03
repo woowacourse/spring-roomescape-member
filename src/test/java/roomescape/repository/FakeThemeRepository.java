@@ -52,8 +52,8 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public List<Theme> findPopular(LocalDate start, LocalDate end) {
         Map<Theme, Long> themeCounts = reservations.stream()
-                .filter(r -> !r.date().isBefore(start) && r.date().isBefore(end))
-                .collect(Collectors.groupingBy(Reservation::theme, Collectors.counting()));
+                .filter(r -> !r.getDate().isBefore(start) && r.getDate().isBefore(end))
+                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
 
         return themeCounts.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -71,7 +71,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
         if (deleteTheme.id() != null) {
             if (reservations.stream()
-                    .filter(reservation -> reservation.theme().equals(deleteTheme))
+                    .filter(reservation -> reservation.getTheme().equals(deleteTheme))
                     .count() != 0) {
                 throw new IllegalStateException();
             }
