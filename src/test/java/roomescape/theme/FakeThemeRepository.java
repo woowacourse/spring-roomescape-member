@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> themes = new ArrayList<>();
     private final List<Long> invokeDeleteId = new ArrayList<>();
+    private final List<Theme> returnFindAllOrderByRank = new ArrayList<>();
     private Long NEXT_ID = 1L;
 
     @Override
@@ -34,9 +36,13 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findAllOrderByRank(final LocalDate from, final LocalDate to, final int size) {
-        return themes.stream()
+        return new ArrayList<>(returnFindAllOrderByRank).stream()
                 .limit(size)
-                .toList();
+                .collect(Collectors.toList());
+    }
+
+    public void stubFindAllOrderByRank(final List<Theme> themes) {
+        this.returnFindAllOrderByRank.addAll(themes);
     }
 
     @Override
@@ -58,6 +64,12 @@ public class FakeThemeRepository implements ThemeRepository {
     public void clear() {
         invokeDeleteId.clear();
         themes.clear();
+        returnFindAllOrderByRank.clear();
         NEXT_ID = 1L;
+    }
+
+    public boolean isInvokeDeleteId(final Long id) {
+        return invokeDeleteId.stream()
+                .anyMatch(themeId -> Objects.equals(themeId, id));
     }
 }
