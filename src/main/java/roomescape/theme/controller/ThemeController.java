@@ -46,6 +46,6 @@ public class ThemeController {
             @PathVariable("id") long id
     ) {
         themeService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -22,10 +22,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    // TODO : 적합한 상태코드 알아보기
     @ExceptionHandler(ReservationTimeInUseException.class)
     public ResponseEntity<String> handleReservationTimeInUseException(ReservationTimeInUseException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
