@@ -49,9 +49,9 @@ public class ThemeDao {
         return jdbcTemplate.queryForObject(sql, mapToTheme(), id);
     }
 
-    public int getCountByName(String name) {
-        String sql = "SELECT count(*) from theme where name = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, name);
+    public boolean existByName(String name) {
+        String sql = "SELECT EXISTS (SELECT 1 from theme where name = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     public List<Theme> findPopular(int count) {

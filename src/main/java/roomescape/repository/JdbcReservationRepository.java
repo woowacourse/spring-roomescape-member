@@ -77,8 +77,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int getReservationCountByTimeIdAndThemeIdAndDate(final Long timeId, final Long themeId, final LocalDate date) {
-        return reservationDao.getCountByTimeIdAndThemeIdAndDate(timeId, themeId, date);
+    public boolean existByTimeIdAndThemeIdAndDate(final Long timeId, final Long themeId, final LocalDate date) {
+        return reservationDao.existByTimeIdAndThemeIdAndDate(timeId, themeId, date);
     }
 
     @Override
@@ -124,8 +124,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int getThemeCountByName(final String name) {
-        return themeDao.getCountByName(name);
+    public boolean existByName(final String name) {
+        return themeDao.existByName(name);
     }
 
     @Override
@@ -145,13 +145,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     private void validateThemeIsInUse(Long id) {
-        if (reservationDao.getCountByThemeId(id) != 0) {
+        if (reservationDao.existByThemeId(id)) {
             throw new ForeignKeyConstraintViolationException();
         }
     }
 
     private void validateTimeIsInUse(final Long id) {
-        if (reservationDao.getCountByTimeId(id) != 0) {
+        if (reservationDao.existByTimeId(id)) {
             throw new ForeignKeyConstraintViolationException();
         }
     }

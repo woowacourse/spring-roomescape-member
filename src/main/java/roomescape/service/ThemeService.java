@@ -46,7 +46,7 @@ public class ThemeService {
     }
 
     private void validateThemeName(ThemeRequest request) {
-        if (repository.getThemeCountByName(request.name()) != 0) {
+        if (repository.existByName(request.name())) {
             throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
         }
     }
