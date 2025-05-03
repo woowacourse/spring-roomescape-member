@@ -50,7 +50,7 @@ class JdbcReservationTimeDaoTest {
     @Test
     @DisplayName("ID로 시간이 존재한다면 조회할 수 있다.")
     void findTimeByExistedTime() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(12, 0));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(12, 0));
         ReservationTime actual = jdbcReservationTimeDao.addTime(reservationTime);
 
         ReservationTime expected = jdbcReservationTimeDao.findTimeById(actual.getId());
@@ -88,7 +88,7 @@ class JdbcReservationTimeDaoTest {
     @Test
     @DisplayName("시간을 추가할 수 있다.")
     void addReservationTime() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(11, 0));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
         ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
 
         assertThat(newReservationTime).isNotNull();
@@ -97,7 +97,7 @@ class JdbcReservationTimeDaoTest {
     @Test
     @DisplayName("ID로 시간을 삭제할 수 있다.")
     void removeReservationTime() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(11, 0));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
         ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
 
         Long id = newReservationTime.getId();
@@ -109,7 +109,7 @@ class JdbcReservationTimeDaoTest {
     @Test
     @DisplayName("해당 ID가 없다면 시간을 삭제할 수 없다.")
     void notRemoveReservationTime() {
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(11, 0));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
         ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
 
         Long id = newReservationTime.getId();

@@ -33,7 +33,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("ID로 테마가 존재한다면 조회할 수 있다.")
     void findThemeById() {
-        Theme theme = new Theme(null, "이름", "설명", "썸네일");
+        Theme theme = new Theme("이름", "설명", "썸네일");
         Theme actual = jdbcThemeDao.addTheme(theme);
 
         Theme expected = jdbcThemeDao.findThemeById(actual.getId());
@@ -70,7 +70,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("해당 시간이 없다면 true를 반환한다.")
     void existThemeByName() {
-        Theme theme = new Theme(null, "이름", "설명", "썸네일");
+        Theme theme = new Theme("이름", "설명", "썸네일");
         jdbcThemeDao.addTheme(theme);
 
         assertThat(jdbcThemeDao.existThemeByName(theme.getName())).isTrue();
@@ -79,7 +79,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("해당 시간이 없다면 false를 반환한다.")
     void notExistThemeByName() {
-        Theme theme = new Theme(null, "이름", "설명", "썸네일");
+        Theme theme = new Theme("이름", "설명", "썸네일");
 
         assertThat(jdbcThemeDao.existThemeByName(theme.getName())).isFalse();
     }
@@ -87,7 +87,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("테마를 추가할 수 있다.")
     void addTheme() {
-        Theme theme = new Theme(null, "이름", "설명", "썸네일");
+        Theme theme = new Theme("이름", "설명", "썸네일");
         Theme newTheme = jdbcThemeDao.addTheme(theme);
 
         assertThat(newTheme).isNotNull();
@@ -96,7 +96,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("ID로 테마를 삭제할 수 있다.")
     void removeTheme() {
-        Theme theme = new Theme(null, "이름", "설명", "썸네일");
+        Theme theme = new Theme("이름", "설명", "썸네일");
         Theme newTheme = jdbcThemeDao.addTheme(theme);
 
         Long id = newTheme.getId();
@@ -108,7 +108,7 @@ class JdbcThemeDaoTest {
     @Test
     @DisplayName("해당 ID가 없다면 테마를 삭제할 수 없다.")
     void notRemoveTheme() {
-        Theme theme = new Theme(null, "이름", "설명", "썸네일");
+        Theme theme = new Theme("이름", "설명", "썸네일");
         Theme newTheme = jdbcThemeDao.addTheme(theme);
 
         Long id = newTheme.getId();

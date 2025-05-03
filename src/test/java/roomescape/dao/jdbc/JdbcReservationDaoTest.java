@@ -59,8 +59,7 @@ class JdbcReservationDaoTest {
     void addReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "이름", "설명", "썸네일");
-        Reservation reservation = new Reservation(null, "사나",
-            LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation("사나", LocalDate.of(2024, 4, 22), time, theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
 
@@ -72,8 +71,7 @@ class JdbcReservationDaoTest {
     void removeReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "이름", "설명", "썸네일");
-        Reservation reservation = new Reservation(null, "사나",
-            LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation("사나", LocalDate.of(2024, 4, 22), time, theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
 
@@ -86,8 +84,7 @@ class JdbcReservationDaoTest {
     void notRemoveReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "이름", "설명", "썸네일");
-        Reservation reservation = new Reservation(null, "사나",
-            LocalDate.of(2024, 4, 22), time, theme);
+        Reservation reservation = new Reservation("사나", LocalDate.of(2024, 4, 22), time, theme);
 
         Reservation newReservation = jdbcReservationDao.addReservation(reservation);
         jdbcReservationDao.removeReservationById(newReservation.getId());

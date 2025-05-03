@@ -27,7 +27,7 @@ public class TimeService {
 
     public ReservationTime addReservationTime(TimeRequest request) {
         validateDuplicateTime(request);
-        return reservationTimeDao.addTime(new ReservationTime(null, request.startAt()));
+        return reservationTimeDao.addTime(new ReservationTime(request.startAt()));
     }
 
     private void validateDuplicateTime(TimeRequest request) {

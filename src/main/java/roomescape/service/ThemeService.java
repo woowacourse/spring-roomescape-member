@@ -35,7 +35,7 @@ public class ThemeService {
         validateDuplicateTheme(request);
 
         return themeDao.addTheme(
-            new Theme(null, request.name(), request.description(), request.thumbnail()));
+            new Theme(request.name(), request.description(), request.thumbnail()));
     }
 
     private void validateDuplicateTheme(ThemeRequest request) {

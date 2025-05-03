@@ -39,7 +39,7 @@ public class ReservationService {
         Theme theme = themeDao.findThemeById(request.themeId());
 
         return reservationDao.addReservation(
-            new Reservation(null, request.name(), request.date(), time, theme));
+            new Reservation(request.name(), request.date(), time, theme));
     }
 
     private void validateDuplicateReservation(ReservationRequest request) {
