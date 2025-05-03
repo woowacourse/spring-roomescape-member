@@ -20,6 +20,8 @@ public interface ReservationRepository {
 
     boolean existByTimeId(long timeId);
 
+    boolean existByThemeId(long themeId);
+
     boolean isDuplicateDateAndTimeAndTheme(LocalDate date, LocalTime time, Theme theme);
 
     int deleteById(long id);

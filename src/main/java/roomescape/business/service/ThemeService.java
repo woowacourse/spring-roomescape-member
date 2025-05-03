@@ -2,8 +2,10 @@ package roomescape.business.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.Theme;
-import roomescape.exception.impl.ThemeNotFoundException;
+import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ThemeRepository;
+import roomescape.exception.impl.ConnectedReservationExistException;
+import roomescape.exception.impl.ThemeNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,11 +15,14 @@ public class ThemeService {
 
     private static final int AGGREGATE_START_DATE_INTERVAL = 7;
     private static final int AGGREGATE_END_DATE_INTERVAL = 1;
-    
-    private final ThemeRepository themeRepository;
 
-    public ThemeService(ThemeRepository themeRepository) {
+    private final ThemeRepository themeRepository;
+    private final ReservationRepository reservationRepository;
+
+
+    public ThemeService(ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public Theme add(final String name, final String description, final String thumbnail) {
@@ -39,8 +44,10 @@ public class ThemeService {
     }
 
     public void deleteById(final long id) {
-        boolean exist = themeRepository.existById(id);
-        if (!exist) {
+        if (reservationRepository.existByThemeId(id)) {
+            throw new ConnectedReservationExistException();
+        }
+        if (!themeRepository.existById(id)) {
             throw new ThemeNotFoundException();
         }
         themeRepository.deleteById(id);

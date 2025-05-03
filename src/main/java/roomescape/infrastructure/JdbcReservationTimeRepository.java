@@ -71,6 +71,13 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
+    public boolean existById(final long timeId) {
+        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ? ";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return count != null && count > 0;
+    }
+
+    @Override
     public boolean existByTime(LocalTime createTime) {
         final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ? ";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, createTime);
@@ -95,9 +102,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(long timeId) {
         final String sql = "DELETE FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.update(sql, id) > 0;
+        return jdbcTemplate.update(sql, timeId) > 0;
     }
 
 }

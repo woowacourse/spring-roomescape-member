@@ -2,11 +2,12 @@ package roomescape.business.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.repository.ReservationRepository;
+import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.exception.impl.ConnectedReservationExistException;
 import roomescape.exception.impl.HasDuplicatedTimeException;
 import roomescape.exception.impl.ReservationTimeIntervalException;
-import roomescape.business.model.repository.ReservationRepository;
-import roomescape.business.model.repository.ReservationTimeRepository;
+import roomescape.exception.impl.ReservationTimeNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -57,11 +58,13 @@ public class ReservationTimeService {
         return reservationTimeRepository.getAvailableReservationTimeOf(date, themeId);
     }
 
-    public boolean delete(final long id) {
-        boolean isReservationExistInTime = reservationRepository.existByTimeId(id);
-        if (isReservationExistInTime) {
+    public void delete(final long id) {
+        if (reservationRepository.existByTimeId(id)) {
             throw new ConnectedReservationExistException();
         }
-        return reservationTimeRepository.deleteById(id);
+        if (!reservationTimeRepository.existById(id)) {
+            throw new ReservationTimeNotFoundException();
+        }
+        reservationTimeRepository.deleteById(id);
     }
 }

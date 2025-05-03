@@ -55,7 +55,7 @@ public class ReservationService {
     }
 
     public void delete(final long id) {
-        if (reservationRepository.existById(id)) {
+        if (!reservationRepository.existById(id)) {
             throw new ReservationNotFoundException();
         }
         reservationRepository.deleteById(id);

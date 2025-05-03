@@ -129,6 +129,13 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public boolean existByThemeId(final long themeId) {
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return count != null && count > 0;
+    }
+
+    @Override
     public boolean isDuplicateDateAndTimeAndTheme(LocalDate date, LocalTime time, Theme theme) {
         final String sql = """
                 SELECT COUNT(*)
