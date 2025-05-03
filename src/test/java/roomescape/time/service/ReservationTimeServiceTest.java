@@ -11,17 +11,17 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.controller.dto.ReservationTimeRequest;
+import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.util.repository.ReservationFakeRepository;
 import roomescape.util.repository.ReservationTimeFakeRepository;
 import roomescape.util.repository.ThemeFakeRepository;
-import roomescape.time.controller.dto.ReservationTimeRequest;
-import roomescape.time.controller.dto.ReservationTimeResponse;
-import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.theme.repository.ThemeRepository;
 
 class ReservationTimeServiceTest {
 
@@ -56,7 +56,8 @@ class ReservationTimeServiceTest {
             themeRepository.saveAndReturnId(theme);
         }
 
-        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29), reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get());
+        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29),
+                reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get());
 
         reservationRepository.saveAndReturnId(reservation);
 
@@ -96,7 +97,7 @@ class ReservationTimeServiceTest {
 
         // then
         assertAll(
-                ()->assertThat(reservationTimeResponse).hasSize(4),
+                () -> assertThat(reservationTimeResponse).hasSize(4),
                 () -> assertThat(reservationTimeResponse).extracting(ReservationTimeResponse::startAt)
                         .containsExactlyInAnyOrder(
                                 LocalTime.of(3, 12),
@@ -117,7 +118,7 @@ class ReservationTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationTimeService.remove(deleteId))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("해당 시간에 대한 예약이 존재합니다.");
+                .hasMessage("해당 시간과 연관된 예약이 있어 삭제할 수 없습니다.");
     }
 
     @DisplayName("동일한 시간을 생성하는 경우 예외가 발생한다")

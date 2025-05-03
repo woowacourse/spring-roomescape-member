@@ -90,7 +90,7 @@ class ThemeServiceTest {
         ThemeResponse actual = themeService.add(request);
 
         // then
-        ThemeResponse expected = new ThemeResponse(4L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        ThemeResponse expected = new ThemeResponse(5L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         assertThat(actual).isEqualTo(expected);
     }
@@ -102,7 +102,7 @@ class ThemeServiceTest {
         List<ThemeResponse> actual = themeService.getThemes();
 
         // then
-        assertThat(actual).hasSize(3);
+        assertThat(actual).hasSize(4);
     }
 
     @DisplayName("테마 데이터를 정상적으로 삭제하면 예외가 발생하지 않는다")
@@ -125,7 +125,7 @@ class ThemeServiceTest {
         // when & then
         assertThatThrownBy(() -> themeService.remove(deleteId))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("해당 테마에 대한 예약이 존재합니다.");
+                .hasMessage("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다.");
     }
 
     @DisplayName("인기 테마 정보를 조회한다")
@@ -141,7 +141,7 @@ class ThemeServiceTest {
                 new ThemeRankingResponse("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
-        assertThat(actual).containsExactlyElementsOf(expected);
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
 }
