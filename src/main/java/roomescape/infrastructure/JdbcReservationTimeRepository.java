@@ -85,7 +85,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> getAvailableReservationTimeOf(LocalDate date, long themeId) {
+    public List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId) {
         final String sql = """
                 SELECT *
                 FROM reservation_time

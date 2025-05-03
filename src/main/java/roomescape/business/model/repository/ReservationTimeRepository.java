@@ -15,11 +15,11 @@ public interface ReservationTimeRepository {
 
     List<ReservationTime> findAll();
 
+    List<ReservationTime> findAvailableReservationTimesByDateAndThemeId(LocalDate date, long themeId);
+
     boolean existById(long timeId);
 
     boolean existByTime(LocalTime createTime);
-
-    List<ReservationTime> getAvailableReservationTimeOf(LocalDate date, long themeId);
 
     boolean deleteById(long timeId);
 }

@@ -54,8 +54,8 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTime> getAvailableReservationTimesOf(final LocalDate date, final long themeId) {
-        return reservationTimeRepository.getAvailableReservationTimeOf(date, themeId);
+    public List<ReservationTime> getAvailableReservationTimesByDateAndThemeId(final LocalDate date, final long themeId) {
+        return reservationTimeRepository.findAvailableReservationTimesByDateAndThemeId(date, themeId);
     }
 
     public void delete(final long id) {

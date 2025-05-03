@@ -40,7 +40,7 @@ public class ReservationTimeApiController {
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") long themeId
     ) {
-        List<ReservationTime> reservationTimes = reservationTimeService.getAvailableReservationTimesOf(date, themeId);
+        List<ReservationTime> reservationTimes = reservationTimeService.getAvailableReservationTimesByDateAndThemeId(date, themeId);
         List<ReservationTimeResponse> responses = ReservationTimeResponse.from(reservationTimes);
         return ResponseEntity.ok(responses);
     }
