@@ -1,6 +1,7 @@
 package roomescape.dto.request;
 
-import java.util.Arrays;
+import roomescape.exception.EmptyValueException;
+import roomescape.exception.ExceptionCause;
 
 public record ThemeCreateRequest(
         String name,
@@ -9,17 +10,18 @@ public record ThemeCreateRequest(
 ) {
 
     public ThemeCreateRequest {
-        validateBlank(name, description, thumbnail);
+        validateFields(name, description, thumbnail);
     }
 
-    private void validateBlank(final String name, final String description, final String thumbnail) {
-        if (isNotValidInput(name, description, thumbnail)) {
-            throw new IllegalArgumentException("빈 값으로 예약할 수 없습니다.");
+    private void validateFields(String name, String description, String thumbnail) {
+        if (name.isBlank()) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_THEME_NAME);
         }
-    }
-
-    private boolean isNotValidInput(final String... inputs) {
-        return Arrays.stream(inputs)
-                .anyMatch(input -> input == null || input.isBlank());
+        if (description.isBlank()) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_THEME_DESCRIPTION);
+        }
+        if (thumbnail.isBlank()) {
+            throw new EmptyValueException(ExceptionCause.EMPTY_VALUE_THEME_THUMBNAIL);
+        }
     }
 }
