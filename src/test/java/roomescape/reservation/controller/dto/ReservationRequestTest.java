@@ -44,4 +44,20 @@ class ReservationRequestTest {
                 .hasMessage("예약 시간 ID는 필수입니다.");
     }
 
+    @DisplayName("테마 ID 값이 존재하지 않으면 예외가 발생한다")
+    @Test
+    void theme_id_validate_test() {
+        // given
+        String name = "루키";
+        LocalDate date = LocalDate.of(2025, 4, 25);
+        Long timeId = 1L;
+        Long themeId = null;
+
+        // when & then
+        assertThatThrownBy(() -> new ReservationRequest(name, date, timeId, themeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("테마 ID는 필수입니다.");
+    }
+
+
 }
