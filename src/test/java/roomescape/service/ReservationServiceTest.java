@@ -86,7 +86,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
-    void test_deleteReservation() {
+    void error_deleteReservation() {
         assertThatThrownBy(() -> reservationService.deleteReservation(Long.MAX_VALUE))
                 .isInstanceOf(EntityNotFoundException.class);
     }
