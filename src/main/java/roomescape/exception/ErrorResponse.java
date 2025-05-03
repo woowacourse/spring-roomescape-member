@@ -1,4 +1,6 @@
 package roomescape.exception;
 
-public record ErrorResponse(String code, String message) {
+import java.time.LocalDateTime;
+
+public record ErrorResponse(LocalDateTime timestamp, String code, String message) {
 }
