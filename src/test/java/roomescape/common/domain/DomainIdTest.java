@@ -1,8 +1,11 @@
-package roomescape.reservation.domain;
+package roomescape.common.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.common.domain.DomainId;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationId;
+import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -27,7 +30,7 @@ class DomainIdTest {
         // then
         assertThatThrownBy(id::getValue)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("저장되지 않아서 식별할 수 없습니다.");
+                .hasMessage("식별자가 할당되지 않아 사용할 수 없습니다.");
     }
 
     @Test
@@ -41,7 +44,7 @@ class DomainIdTest {
         // then
         assertThatThrownBy(() -> id1.equals(id2))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("저장되지 않아서 식별할 수 없습니다.");
+                .hasMessage("식별자가 할당되지 않아 사용할 수 없습니다.");
     }
 
     @Test

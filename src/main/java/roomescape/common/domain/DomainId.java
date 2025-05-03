@@ -27,6 +27,6 @@ public abstract class DomainId {
         if (assigned) {
             return value;
         }
-        throw new IllegalStateException("저장되지 않아서 식별할 수 없습니다.");
+        throw new IllegalStateException("식별자가 할당되지 않아 사용할 수 없습니다.");
     }
 }
