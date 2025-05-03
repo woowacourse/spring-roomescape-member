@@ -33,7 +33,7 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
-        validateDuplicate(dto.date(), reservationTime.startAt());
+        validateDuplicate(dto.date(), reservationTime.startAt(), dto.themeId());
         Reservation.validateReservableTime(dto.date(), reservationTime.startAt());
 
         Theme theme = themeRepository.findById(dto.themeId())
@@ -46,8 +46,8 @@ public class ReservationService {
         return ReservationResponseDto.of(newReservation, newReservation.getTime(), theme);
     }
 
-    private void validateDuplicate(LocalDate date, LocalTime time) {
-        List<Reservation> reservations = reservationRepository.findByDateTime(date, time);
+    private void validateDuplicate(LocalDate date, LocalTime time, long themeId) {
+        List<Reservation> reservations = reservationRepository.findByDateTimeAndThemeId(date, time, themeId);
         if (!reservations.isEmpty()) {
             throw new DuplicateContentException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
         }

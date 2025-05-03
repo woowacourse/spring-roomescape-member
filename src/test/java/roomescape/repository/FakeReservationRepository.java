@@ -45,9 +45,9 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateTime(LocalDate date, LocalTime time) {
+    public List<Reservation> findByDateTimeAndThemeId(LocalDate date, LocalTime time, long themeId) {
         return reservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTime().startAt().equals(time))
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTime().startAt().equals(time) && Objects.equals(reservation.getTheme().id(), themeId))
                 .collect(Collectors.toList());
     }
 

@@ -30,6 +30,7 @@ import roomescape.repository.ThemeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class ReservationServiceTest {
 
@@ -137,6 +138,34 @@ class ReservationServiceTest {
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.of(2025, 1, 1), 1L, 1L);
 
             assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(InvalidRequestException.class);
+        }
+
+        @DisplayName("예약 시간에 같은 테마가 이미 예약 중이지 않다면 예약이 가능하다")
+        @Test
+        void createSameTimeButOtherTheme(){
+            LocalTime startTime = LocalTime.now();
+            ArrayList<Reservation> reservations = new ArrayList<>();
+            reservations.add(new Reservation(1L, "가이온", LocalDate.now().plusDays(7),
+                    new ReservationTime(1L, startTime),
+                    new Theme(1L, "우테코1", "방탈출", ".png")));
+
+            ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
+            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, startTime)));
+            ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", ".png"), new Theme(2L, "우테코", "방탈출", ".png")));
+            reservationTimeRepository.addReservation(
+                    new Reservation(1L, "가이온", LocalDate.now().plusDays(7),
+                            new ReservationTime(1L, startTime),
+                            new Theme(1L, "우테코", "방탈출", ".png")));
+
+            reservationTimeRepository.addReservation(
+                    new Reservation(1L, "가이온", LocalDate.now().plusDays(7),
+                            new ReservationTime(1L, startTime),
+                            new Theme(1L, "우테코", "방탈출", ".png")));
+            reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 2L);
+
+            assertDoesNotThrow(() -> reservationService.createReservation(requestDto));
         }
     }
 
