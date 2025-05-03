@@ -1,24 +1,16 @@
 package roomescape.repository;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.TimeSlot;
 
 @Repository
 public class TimeSlotJdbcRepository implements TimeSlotRepository {
-
-    static final RowMapper<TimeSlot> TIME_SLOT_ROW_MAPPER = (rs, rowNum) -> {
-        var id = rs.getLong("id");
-        var startAt = rs.getString("start_at");
-        return new TimeSlot(id, LocalTime.parse(startAt));
-    };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -30,7 +22,7 @@ public class TimeSlotJdbcRepository implements TimeSlotRepository {
     @Override
     public Optional<TimeSlot> findById(final long id) {
         var sql = "SELECT * FROM RESERVATION_TIME WHERE id = ?";
-        var timeSlotList = jdbcTemplate.query(sql, TIME_SLOT_ROW_MAPPER, id);
+        var timeSlotList = jdbcTemplate.query(sql, RowMappers.TIME_SLOT, id);
 
         return timeSlotList.stream().findAny();
     }
@@ -56,6 +48,6 @@ public class TimeSlotJdbcRepository implements TimeSlotRepository {
     @Override
     public List<TimeSlot> findAll() {
         var sql = "SELECT * FROM RESERVATION_TIME";
-        return jdbcTemplate.query(sql, TIME_SLOT_ROW_MAPPER);
+        return jdbcTemplate.query(sql, RowMappers.TIME_SLOT);
     }
 }

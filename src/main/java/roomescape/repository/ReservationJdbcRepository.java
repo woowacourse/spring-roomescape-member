@@ -6,41 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
-import roomescape.model.TimeSlot;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
-
-    static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
-        (rs, rowNum) -> {
-            var id = rs.getLong("id");
-            var name = rs.getString("name");
-            var date = rs.getDate("date").toLocalDate();
-            var timeSlotId = rs.getLong("time_id");
-            var time = rs.getTime("start_at").toLocalTime();
-            var themeId = rs.getLong("theme_id");
-            var themeName = rs.getString("theme_name");
-            var themeDescription = rs.getString("theme_description");
-            var themeThumbnail = rs.getString("theme_thumbnail");
-
-            var timeSlot = new TimeSlot(timeSlotId, time);
-            var theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
-            return new Reservation(id, name, date, timeSlot, theme);
-        };
-
-    private static final RowMapper<Theme> THEME_ROW_MAPPER =
-        (rs, rowNum) -> {
-            var id = rs.getLong("id");
-            var name = rs.getString("name");
-            var description = rs.getString("description");
-            var thumbnail = rs.getString("thumbnail");
-            return new Theme(id, name, description, thumbnail);
-        };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -58,7 +30,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             where R.id = ?
             """;
 
-        var reservationList = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+        var reservationList = jdbcTemplate.query(sql, RowMappers.RESERVATION, id);
         return reservationList.stream().findAny();
     }
 
@@ -92,7 +64,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             left join THEME T on T.id = R.theme_id
             """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
+        return jdbcTemplate.query(sql, RowMappers.RESERVATION);
     }
 
     @Override
@@ -104,7 +76,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE R.time_id = ?
             """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+        return jdbcTemplate.query(sql, RowMappers.RESERVATION, id);
     }
 
     @Override
@@ -116,7 +88,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE R.theme_id = ?
             """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+        return jdbcTemplate.query(sql, RowMappers.RESERVATION, id);
     }
 
     @Override
@@ -128,7 +100,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
             WHERE R.date = ? AND R.theme_id = ?
             """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, date, themeId);
+        return jdbcTemplate.query(sql, RowMappers.RESERVATION, date, themeId);
     }
 
     @Override
@@ -141,6 +113,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
             order by count(R.id) desc
             limit ?
             """;
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
+        return jdbcTemplate.query(sql, RowMappers.THEME, startDate, endDate, limit);
     }
 }
