@@ -39,19 +39,17 @@ public class Theme {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name)
-                && Objects.equals(description, theme.description) && Objects.equals(thumbnail,
-                theme.thumbnail);
+        Theme theme = (Theme) o;
+        return Objects.equals(id, theme.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, thumbnail);
+        return Objects.hashCode(id);
     }
 
     private void validate(Long id, String name, String description, String thumbnail) {

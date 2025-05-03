@@ -34,13 +34,13 @@ public class ReservationTime {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
+        ReservationTime time = (ReservationTime) o;
+        return Objects.equals(id, time.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startAt);
+        return Objects.hashCode(id);
     }
 
     private void validateNullId(Long id) {
