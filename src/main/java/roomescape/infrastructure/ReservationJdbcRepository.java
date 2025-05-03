@@ -120,23 +120,23 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, reservationDate.getDate(), timeId);
-        return count > 0;
+        String sql = "SELECT 1 FROM reservation WHERE date = ? AND time_id = ? LIMIT 1";
+        List<Integer> results = jdbcTemplate.queryForList(sql, Integer.class, reservationDate.getDate(), timeId);
+        return !results.isEmpty();
     }
 
     @Override
     public boolean existReservationByTimeId(Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-        return count > 0;
+        String sql = "SELECT 1 FROM reservation WHERE time_id = ? LIMIT 1";
+        List<Integer> results = jdbcTemplate.queryForList(sql, Integer.class, timeId);
+        return !results.isEmpty();
     }
 
     @Override
     public boolean existReservationByThemeId(Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
-        return count > 0;
+        String sql = "SELECT 1 FROM reservation WHERE theme_id = ? LIMIT 1";
+        List<Integer> results = jdbcTemplate.queryForList(sql, Integer.class, themeId);
+        return !results.isEmpty();
     }
 
 }
