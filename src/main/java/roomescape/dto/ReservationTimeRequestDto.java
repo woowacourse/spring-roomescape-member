@@ -1,34 +1,20 @@
 package roomescape.dto;
 
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import roomescape.domain.ReservationTime;
 
-public record ReservationTimeRequestDto(String startAt) {
+public record ReservationTimeRequestDto(
 
-    public ReservationTimeRequestDto {
-        validateStartAt(startAt);
-    }
+        @NotBlank
+        @Pattern(
+                regexp = "^([01]\\d|2[0-3]):[0-5]\\d$",
+                message = "시간 형식이 틀렸습니다. HH:mm (예: 14:30) 이어야 합니다.")
+        String startAt) {
 
     public ReservationTime toReservationTime() {
         return new ReservationTime(LocalTime.parse(startAt));
     }
 
-    private void validateStartAt(String startAt) {
-        if (startAt == null || startAt.isEmpty()) {
-            throw new IllegalArgumentException("잘못된 시간입니다.");
-        }
-        validateParse(startAt);
-    }
-
-    private void validateParse(String startAt) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        try {
-            LocalTime.parse(startAt, dateTimeFormatter);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("잘못된 시간 형식입니다.");
-        }
-    }
 }

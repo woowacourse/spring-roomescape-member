@@ -1,43 +1,26 @@
 package roomescape.dto;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-public record ReservationRequestDto(String name, String date, Long timeId, Long themeId) {
+public record ReservationRequestDto(
 
-    public ReservationRequestDto {
-        validateName(name);
-        validateDate(date);
-        validateTimeId(timeId);
-    }
+        @NotBlank(message = "이름은 필수로 입력해야 합니다.")
+        @Size(min = 1, max = 5, message = "이름은 1자 이상 5자 이하여야 합니다.")
+        String name,
 
-    private void validateName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("잘못된 이름입니다.");
-        }
-    }
+        @NotBlank(message = "날짜는 필수입니다.")
+        @Pattern(
+                regexp = "^\\d{4}-\\d{2}-\\d{2}$",
+                message = "날짜 형식이 틀렸습니다. yyyy-MM-dd (예: 2025-05-03) 형식으로 입력해야 합니다.")
+        String date,
 
-    private void validateDate(String date) {
-        if (date == null || date.isEmpty()) {
-            throw new IllegalArgumentException("잘못된 날짜입니다.");
-        }
+        @NotNull(message = "timeId는 필수 입니다.")
+        Long timeId,
 
-        validateParse(date);
-    }
+        @NotNull(message = "themeId는 필수 입니다.")
+        Long themeId) {
 
-    private void validateParse(String date) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        try {
-            LocalDate.parse(date, dateTimeFormatter);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("잘못된 날짜 형식입니다.");
-        }
-    }
-
-    private void validateTimeId(Long timeId) {
-        if (timeId == null) {
-            throw new IllegalArgumentException("잘못된 시간ID입니다.");
-        }
-    }
 }
