@@ -8,12 +8,10 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.ReservationService;
-import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
@@ -40,6 +38,7 @@ class ReservationTimeServiceTest {
         reservationTimeRepository = new FakeReservationTimeRepository();
         reservationRepository = new FakeReservationRepository();
         themeRepository = new FakeThemeRepository();
+        themeRepository.put(theme);
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
     }
@@ -95,11 +94,10 @@ class ReservationTimeServiceTest {
 
     @Test
     void deleteReservationTime_shouldThrowException_WhenReservationExists() {
-        ReservationTime reservationTime = reservationTimeRepository.put(
-                ReservationTime.withUnassignedId(LocalTime.now()));
-        reservationRepository.put(Reservation.withUnassignedId("danny", futureDate, reservationTime, theme));
-
-        assertThatThrownBy(() -> reservationTimeService.delete(reservationTime.getId()))
+        ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
+                new ReservationTimeCreateRequest(LocalTime.now()));
+        reservationService.create(new ReservationCreateRequest("danny", futureDate, reservationTimeResponse.id(), theme.getId()));
+        assertThatThrownBy(() -> reservationTimeService.delete(reservationTimeResponse.id()))
                 .hasMessage("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 

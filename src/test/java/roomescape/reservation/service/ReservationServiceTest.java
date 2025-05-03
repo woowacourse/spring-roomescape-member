@@ -24,15 +24,13 @@ class ReservationServiceTest {
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
 
     private ReservationService reservationService;
-    private ReservationRepository reservationRepository;
     private ReservationTimeRepository reservationTimeRepository;
-    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
-        reservationRepository = new FakeReservationRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
-        themeRepository = new FakeThemeRepository();
+        ThemeRepository themeRepository = new FakeThemeRepository();
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
 
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
