@@ -1,32 +1,20 @@
 package roomescape.dto.theme;
 
-import roomescape.common.exception.InvalidInputException;
+import jakarta.validation.constraints.NotBlank;
 import roomescape.model.Theme;
 
 public record ThemeRequestDto(
+        @NotBlank(message = "테마명은 null이거나 공백일 수 없습니다")
         String name,
+
+        @NotBlank(message = "테마 설명은 null이거나 공백일 수 없습니다")
         String description,
+
+        @NotBlank(message = "썸네일 이미지는 null이거나 공백일 수 없습니다")
         String thumbnail
 ) {
-    public ThemeRequestDto {
-        validateRequiredFields(name, description, thumbnail);
-    }
-
     public Theme convertToTheme() {
         return new Theme(name, description, thumbnail);
     }
 
-    private void validateRequiredFields(String name, String description, String thumbnail) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidInputException("테마명은 null이거나 공백일 수 없습니다");
-        }
-
-        if (description == null || description.isBlank()) {
-            throw new InvalidInputException("테마 설명은 null이거나 공백일 수 없습니다");
-        }
-
-        if (thumbnail == null || thumbnail.isBlank()) {
-            throw new InvalidInputException("썸내일 이미지는 null이거나 공백일 수 없습니다");
-        }
-    }
 }

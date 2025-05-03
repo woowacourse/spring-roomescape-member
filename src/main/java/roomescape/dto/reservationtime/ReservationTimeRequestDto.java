@@ -1,29 +1,17 @@
 package roomescape.dto.reservationtime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
-import roomescape.common.exception.InvalidInputException;
 import roomescape.model.ReservationTime;
 
 public record ReservationTimeRequestDto(
-        String startAt
+        @NotNull(message = "시작 시각은 null일 수 없습니다.")
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime startAt
 ) {
-    public ReservationTimeRequestDto {
-        validateRequiredFields(startAt);
-    }
 
     public ReservationTime convertToTime() {
-        try {
-            LocalTime startTime = LocalTime.parse(startAt);
-            return new ReservationTime(startTime);
-        } catch (DateTimeParseException e) {
-            throw new InvalidInputException("시간형식이 잘못되었습니다");
-        }
-    }
-
-    private void validateRequiredFields(String startAt) {
-        if (startAt == null || startAt.isBlank()) {
-            throw new InvalidInputException("시작 시각은 null이거나 공백일 수 없습니다");
-        }
+            return new ReservationTime(startAt);
     }
 }
