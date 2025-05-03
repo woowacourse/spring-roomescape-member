@@ -37,7 +37,7 @@ public class ThemeService {
 
     public void deleteThemeById(final Long id) {
         if (reservationRepository.existByThemeId(id)) {
-            throw new IllegalArgumentException("삭제할 수 없는 테마입니다.");
+            throw new IllegalArgumentException("예약한 기록이 존재하여 삭제할 수 없습니다.");
         }
         boolean isDeleted = themeRepository.deleteBy(id);
         validateIsExistsReservationTimeId(isDeleted);
