@@ -61,7 +61,7 @@ class TimeServiceTest {
 
     @Test
     @DisplayName("예약 시간을 id를 통해 제거할 수 있다.")
-    void removeReservation() {
+    void removeReservationTime() {
         TimeRequest request = new TimeRequest(LocalTime.of(10, 0));
         timeService.addReservationTime(request);
 

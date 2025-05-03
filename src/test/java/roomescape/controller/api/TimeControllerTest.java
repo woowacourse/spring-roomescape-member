@@ -16,7 +16,7 @@ class TimeControllerTest {
 
     @Test
     @DisplayName("/times 요청 시 시간 정보 조회")
-    void readReservations() {
+    void readReservationTimes() {
         RestAssured.given().log().all()
             .when().get("/times")
             .then().log().all()
@@ -26,7 +26,7 @@ class TimeControllerTest {
 
     @Test
     @DisplayName("시간 관리 페이지 내에서 시간 추가")
-    void createReservation() {
+    void createReservationTime() {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
             .body(getTestParamsWithReservationTime())
@@ -43,7 +43,7 @@ class TimeControllerTest {
 
     @Test
     @DisplayName("시간 관리 페이지 내에서 예약 삭제")
-    void deleteReservation() {
+    void deleteReservationTime() {
         RestAssured.given().log().all()
             .when().delete("/times/1")
             .then().log().all()

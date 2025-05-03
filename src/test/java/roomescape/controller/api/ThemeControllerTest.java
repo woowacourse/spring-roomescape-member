@@ -16,7 +16,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("/themes 요청 시 테마 조회")
-    void readReservations() {
+    void readThemes() {
         RestAssured.given().log().all()
             .when().get("/themes")
             .then().log().all()
@@ -26,10 +26,10 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("테마 관리 페이지 내에서 테마 추가")
-    void createReservation() {
+    void createTheme() {
         RestAssured.given().log().all()
             .contentType(ContentType.JSON)
-            .body(getTestParamsWithReservationTime())
+            .body(getTestParamsWithTheme())
             .when().post("/themes")
             .then().log().all()
             .statusCode(201);
@@ -43,7 +43,7 @@ class ThemeControllerTest {
 
     @Test
     @DisplayName("테마 관리 페이지 내에서 테마 삭제")
-    void deleteReservation() {
+    void deleteTheme() {
         RestAssured.given().log().all()
             .when().delete("/themes/1")
             .then().log().all()
@@ -56,7 +56,7 @@ class ThemeControllerTest {
             .body("size()", is(2));
     }
 
-    private Map<String, String> getTestParamsWithReservationTime() {
+    private Map<String, String> getTestParamsWithTheme() {
         return Map.of(
             "name", "이름",
             "description", "설명",

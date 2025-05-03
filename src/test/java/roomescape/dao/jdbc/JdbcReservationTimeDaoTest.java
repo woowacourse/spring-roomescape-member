@@ -96,7 +96,7 @@ class JdbcReservationTimeDaoTest {
 
     @Test
     @DisplayName("ID로 시간을 삭제할 수 있다.")
-    void removeReservation() {
+    void removeReservationTime() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(11, 0));
         ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
 
@@ -108,7 +108,7 @@ class JdbcReservationTimeDaoTest {
 
     @Test
     @DisplayName("해당 ID가 없다면 시간을 삭제할 수 없다.")
-    void notRemoveReservation() {
+    void notRemoveReservationTime() {
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.of(11, 0));
         ReservationTime newReservationTime = jdbcReservationTimeDao.addTime(reservationTime);
 

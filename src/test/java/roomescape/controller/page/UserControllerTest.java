@@ -12,7 +12,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("/reservation 요청시 사용자 예약 페이지 응답")
-    void mainPage() {
+    void reservationPage() {
         RestAssured.given().log().all()
             .when().get("/reservation")
             .then().log().all()

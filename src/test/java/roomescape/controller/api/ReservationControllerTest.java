@@ -16,9 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationControllerTest {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @Test
     @DisplayName("/reservations 요청 시 예약 정보 조회")
     void readReservations() {
