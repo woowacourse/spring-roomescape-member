@@ -1,4 +1,4 @@
-package roomescape.reservation.exception;
+package roomescape.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;

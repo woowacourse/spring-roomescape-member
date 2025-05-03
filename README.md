@@ -295,7 +295,7 @@ HTTP/1.1 204
 **Request**
 
 ```
-GET /popular-themes HTTP/1.1
+GET /themes/popular-themes HTTP/1.1
 ```
 
 **Response**
