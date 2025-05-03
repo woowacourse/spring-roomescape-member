@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
 import roomescape.service.ThemeService;
 
+@RequestMapping("/themes")
 @RestController
 public class ThemeController {
 
@@ -22,23 +24,23 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @GetMapping("/themes/ranks")
+    @GetMapping("/ranks")
     public List<ThemeResponseDto> readThemeRanks() {
         return themeService.getAllThemeOfRanks();
     }
 
-    @GetMapping("/themes")
+    @GetMapping
     public List<ThemeResponseDto> readThemes() {
         return themeService.getAllThemes();
     }
 
-    @PostMapping("/themes")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponseDto saveTheme(@RequestBody ThemeRequestDto request) {
         return themeService.saveTheme(request);
     }
 
-    @DeleteMapping("/themes/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);

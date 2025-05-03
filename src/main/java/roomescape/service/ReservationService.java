@@ -25,7 +25,7 @@ public class ReservationService {
     private final ThemeDao themeDao;
 
     public ReservationService(ReservationDao reservationDao,
-        ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+                              ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
@@ -33,8 +33,8 @@ public class ReservationService {
 
     public List<ReservationResponseDto> getAllReservations() {
         return reservationDao.findAllReservation().stream()
-            .map(ReservationResponseDto::from)
-            .toList();
+                .map(ReservationResponseDto::from)
+                .toList();
     }
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
@@ -44,10 +44,10 @@ public class ReservationService {
         ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
         date.validateDate(currentDateTime.toLocalDate());
         ReservationTime reservationTime = reservationTimeDao.findById(
-            reservationRequestDto.timeId());
+                reservationRequestDto.timeId());
 
         Theme theme = themeDao.findById(reservationRequestDto.themeId())
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다"));
 
         Reservation reservation = new Reservation(person, date, reservationTime, theme);
         reservation.validateDateTime(date, reservationTime, currentDateTime);
@@ -63,17 +63,17 @@ public class ReservationService {
     }
 
     public List<BookedReservationTimeResponseDto> getAllBookedReservationTimes(String date,
-        Long themeId) {
+                                                                               Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
 
         return reservationTimes.stream()
-            .map(reservationTime -> createBookedReservationTimeResponseDto(date, themeId,
-                reservationTime))
-            .toList();
+                .map(reservationTime -> createBookedReservationTimeResponseDto(date, themeId,
+                        reservationTime))
+                .toList();
     }
 
     private BookedReservationTimeResponseDto createBookedReservationTimeResponseDto(
-        String date, Long themeId, ReservationTime reservationTime) {
+            String date, Long themeId, ReservationTime reservationTime) {
         if (isAlreadyBookedTime(date, themeId, reservationTime)) {
             return BookedReservationTimeResponseDto.from(reservationTime, true);
         }
@@ -81,14 +81,14 @@ public class ReservationService {
     }
 
     private boolean isAlreadyBookedTime(String date, Long themeId,
-        ReservationTime reservationTime) {
+                                        ReservationTime reservationTime) {
         int alreadyExistReservationCount = reservationDao.findAlreadyExistReservationBy(
-            date, themeId, reservationTime.getId());
-        return alreadyExistReservationCount != 0;
+                date, themeId, reservationTime.getId());
+        return alreadyExistReservationCount != 0; //ture == 1이상 부터
     }
 
     private void validateAlreadyExistDateTime(ReservationRequestDto reservationRequestDto,
-        ReservationDate date) {
+                                              ReservationDate date) {
         if (reservationDao.findByDateAndTime(date, reservationRequestDto.timeId()) != 0) {
             throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
         }

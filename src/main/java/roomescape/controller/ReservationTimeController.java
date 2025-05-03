@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.service.ReservationTimeService;
 
+@RequestMapping("/times")
 @RestController
 public class ReservationTimeController {
 
@@ -22,19 +24,19 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @GetMapping("/times")
+    @GetMapping
     public List<ReservationTimeResponseDto> readReservationTimes() {
         return reservationTimeService.getAllReservationTimes();
     }
 
-    @PostMapping("/times")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationTimeResponseDto saveReservationTime(
-        @RequestBody ReservationTimeRequestDto reservationTimeRequestDto) {
+            @RequestBody ReservationTimeRequestDto reservationTimeRequestDto) {
         return reservationTimeService.saveReservationTime(reservationTimeRequestDto);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationTime(@PathVariable(name = "id") Long id) {
         reservationTimeService.deleteReservationTime(id);

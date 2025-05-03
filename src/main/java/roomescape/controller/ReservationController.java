@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.BookedReservationTimeResponseDto;
@@ -14,6 +15,7 @@ import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
+@RequestMapping("/reservations")
 @RestController
 public class ReservationController {
 
@@ -23,25 +25,25 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
+    @GetMapping
     public List<ReservationResponseDto> readAllReservations() {
         return reservationService.getAllReservations();
     }
 
-    @GetMapping("/reservations/dates/{date}/themes/{themeId}/times")
+    @GetMapping("/dates/{date}/themes/{themeId}/times")
     public List<BookedReservationTimeResponseDto> readBookedReservationTimes(
-        @PathVariable String date, @PathVariable Long themeId) {
+            @PathVariable String date, @PathVariable Long themeId) {
         return reservationService.getAllBookedReservationTimes(date, themeId);
     }
 
-    @PostMapping("/reservations")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponseDto createReservation(
-        @RequestBody ReservationRequestDto reservationRequestDto) {
+            @RequestBody ReservationRequestDto reservationRequestDto) {
         return reservationService.saveReservation(reservationRequestDto);
     }
 
-    @DeleteMapping("/reservations/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable(name = "id") Long id) {
         reservationService.deleteReservation(id);
