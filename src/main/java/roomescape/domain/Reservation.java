@@ -14,17 +14,8 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(String name, LocalDateTime currentDateTime, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
         this(null, name, date, time, theme);
-
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.startAt()); //TODO: id를 처음부터 가질 경우 고려하기
-        if (reservationDateTime.isBefore(currentDateTime)) {
-            throw new BusinessRuleViolationException("지난 날짜와 시간에 대한 예약은 불가능합니다.");
-        }
-        Duration duration = Duration.between(currentDateTime, reservationDateTime);
-        if (duration.toMinutes() < 10) {
-            throw new BusinessRuleViolationException("예약 시간까지 10분도 남지 않아 예약이 불가합니다.");
-        }
     }
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
@@ -36,6 +27,17 @@ public class Reservation {
         this.date = date;
         this.time = time;
         this.theme = theme;
+    }
+
+    public void validateReservable(LocalDateTime currentDateTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(date, time.startAt());
+        if (reservationDateTime.isBefore(currentDateTime)) {
+            throw new BusinessRuleViolationException("지난 날짜와 시간에 대한 예약은 불가능합니다.");
+        }
+        Duration duration = Duration.between(currentDateTime, reservationDateTime);
+        if (duration.toMinutes() < 10) {
+            throw new BusinessRuleViolationException("예약 시간까지 10분도 남지 않아 예약이 불가합니다.");
+        }
     }
 
     public Long getId() {

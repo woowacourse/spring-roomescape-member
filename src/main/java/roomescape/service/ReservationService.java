@@ -35,13 +35,11 @@ public class ReservationService {
         if (reservationRepository.existByDateAndTimeId(createReservationParam.date(), reservationTime.id())) {
             throw new BusinessRuleViolationException("날짜와 시간이 중복된 예약이 존재합니다.");
         }
-        return reservationRepository.create(
-                new Reservation(
-                        createReservationParam.name(),
-                        LocalDateTime.now(),
-                        createReservationParam.date(),
-                        reservationTime,
-                        theme));
+
+        Reservation reservation = new Reservation(createReservationParam.name(), createReservationParam.date(), reservationTime, theme);
+        reservation.validateReservable(LocalDateTime.now());
+
+        return reservationRepository.create(reservation);
     }
 
     public void deleteById(Long reservationId) {
