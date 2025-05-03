@@ -1,8 +1,5 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 public class ThemeDaoTest {
@@ -32,8 +31,8 @@ public class ThemeDaoTest {
     @Test
     @DisplayName("id로 Theme 을 조회 할 수 있다")
     void select_with_id() {
-        Optional<Theme> theme = themeDao.findById(savedTheme.getId());
-        assertThat(theme.get()).isEqualTo(savedTheme);
+        Theme theme = themeDao.findById(savedTheme.getId());
+        assertThat(theme).isEqualTo(savedTheme);
     }
 
     @Test
@@ -41,9 +40,9 @@ public class ThemeDaoTest {
     void save() {
         String themeName = "우아한테크코스";
         Theme theme = new Theme(
-            themeName,
-            "재밌다",
-            "abc.jpg"
+                themeName,
+                "재밌다",
+                "abc.jpg"
         );
         Theme savedTheme = themeDao.save(theme);
         assertThat(savedTheme.getName()).isEqualTo(themeName);

@@ -1,9 +1,5 @@
 package roomescape;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalTime;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +9,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+
+import java.time.LocalTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 class ReservationTimeDaoTest {
@@ -28,7 +28,7 @@ class ReservationTimeDaoTest {
     void beforeEach() {
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         ReservationTime reservationTime = new ReservationTime(
-            LocalTime.of(10, 5)
+                LocalTime.of(10, 5)
         );
         savedReservationTime = reservationTimeDao.save(reservationTime);
     }
@@ -36,8 +36,8 @@ class ReservationTimeDaoTest {
     @Test
     @DisplayName("id로 ReservationTime 을 조회 할 수 있다")
     void select_with_id() {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(savedReservationTime.getId());
-        assertThat(reservationTime.get()).isEqualTo(savedReservationTime);
+        ReservationTime reservationTime = reservationTimeDao.findById(savedReservationTime.getId());
+        assertThat(reservationTime).isEqualTo(savedReservationTime);
     }
 
     @Test
@@ -45,7 +45,7 @@ class ReservationTimeDaoTest {
     void save() {
         LocalTime startAt = LocalTime.of(10, 5);
         ReservationTime reservationTime = new ReservationTime(
-            startAt
+                startAt
         );
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
         assertThat(savedReservationTime.getStartAt()).isEqualTo(startAt);

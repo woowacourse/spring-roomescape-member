@@ -1,17 +1,16 @@
 package roomescape.dao;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ReservationTimeDao {
@@ -20,32 +19,27 @@ public class ReservationTimeDao {
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     private static final RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) ->
-        new ReservationTime(
-            resultSet.getLong("id"),
-            LocalTime.parse(
-                resultSet.getString("start_at"),
-                DateTimeFormatter.ofPattern("HH:mm")
-            )
-        );
+            new ReservationTime(
+                    resultSet.getLong("id"),
+                    LocalTime.parse(
+                            resultSet.getString("start_at"),
+                            DateTimeFormatter.ofPattern("HH:mm")
+                    )
+            );
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-            .withTableName("reservation_time")
-            .usingGeneratedKeyColumns("id");
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
-    public Optional<ReservationTime> findById(Long id) {
-        try {
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(
+    public ReservationTime findById(Long id) {
+        return jdbcTemplate.queryForObject(
                 "select * from reservation_time where id = ?",
                 rowMapper,
                 id
-            );
-            return Optional.of(reservationTime);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        );
     }
 
     public ReservationTime save(ReservationTime reservationTime) {

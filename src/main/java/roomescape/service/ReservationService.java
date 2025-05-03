@@ -1,11 +1,8 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -17,6 +14,10 @@ import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class ReservationService {
 
@@ -25,9 +26,9 @@ public class ReservationService {
     private final ThemeDao themeDao;
 
     public ReservationService(
-        ReservationDao reservationDao,
-        ReservationTimeDao reservationTimeDao,
-        ThemeDao themeDao) {
+            ReservationDao reservationDao,
+            ReservationTimeDao reservationTimeDao,
+            ThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
@@ -35,40 +36,54 @@ public class ReservationService {
 
     public List<ReservationResponse> findAll() {
         return reservationDao.findAll()
-            .stream()
-            .map(ReservationResponse::from)
-            .toList();
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public void deleteReservation(Long id) {
         int deleteCount = reservationDao.deleteById(id);
-        if(deleteCount == 0) {
+        if (deleteCount == 0) {
             throw new ResourceNotExistException();
         }
     }
 
     public ReservationResponse save(ReservationRequest request) {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(request.timeId());
-        Optional<Theme> theme = themeDao.findById(request.themeId());
-        validateSaveReservation(request, reservationTime, theme);
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+
+        validateSaveReservation(request, reservationTime);
         Reservation reservation = new Reservation(
-            request.name(),
-            request.date(),
-            reservationTime.get(),
-            theme.get()
+                request.name(),
+                request.date(),
+                reservationTime,
+                theme
         );
         return getReservationResponse(reservation);
     }
 
+    private ReservationTime getReservationTime(final Long timeId) {
+        try {
+            return reservationTimeDao.findById(timeId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 예약 시간이 존재하지 않습니다.");
+        }
+    }
+
+    private Theme getTheme(final Long themeId) {
+        try {
+            return themeDao.findById(themeId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("[ERROR] 예약 테마가 존재하지 않습니다.");
+        }
+    }
+
     private void validateSaveReservation(
-        ReservationRequest request,
-        Optional<ReservationTime> reservationTime,
-        Optional<Theme> theme
+            ReservationRequest request,
+            ReservationTime reservationTime
     ) {
         validateIsDuplicate(request);
-        validateHasTime(reservationTime);
-        validateHasTheme(theme);
-        validateNotPast(request.date(), reservationTime.get());
+        validateNotPast(request.date(), reservationTime);
     }
 
     private void validateIsDuplicate(ReservationRequest request) {
@@ -78,21 +93,9 @@ public class ReservationService {
         }
     }
 
-    private void validateHasTime(Optional<ReservationTime> reservationTime) {
-        if (reservationTime.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다");
-        }
-    }
-
-    private void validateHasTheme(Optional<Theme> theme) {
-        if (theme.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다");
-        }
-    }
-
     private void validateNotPast(LocalDate date, ReservationTime time) {
         LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
-        if(dateTime.isBefore(LocalDateTime.now())) {
+        if (dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("[ERROR] 현재보다 과거 시간에는 예약이 불가능합니다.");
         }
     }

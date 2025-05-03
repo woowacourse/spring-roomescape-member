@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -10,7 +9,6 @@ import roomescape.domain.Theme;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class ThemeDao {
@@ -46,14 +44,9 @@ public class ThemeDao {
         return jdbcTemplate.update(query, id);
     }
 
-    public Optional<Theme> findById(Long id) {
+    public Theme findById(Long id) {
         String sql = "SELECT * from theme where id = ?";
-        try {
-            Theme theme = jdbcTemplate.queryForObject(sql, mapToTheme(), id);
-            return Optional.of(theme);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.queryForObject(sql, mapToTheme(), id);
     }
 
     public int getCountByName(String name) {
