@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationTimeCreateRequest;
@@ -41,8 +42,8 @@ public class ReservationTimeController {
             .toList();
     }
 
-    @GetMapping("/{date}/{themeId}")
-    public List<ReservationTimeWithIsBookedGetResponse> readReservationTimesByDateAndThemeIdWithIsBooked(@PathVariable("date") LocalDate date, @PathVariable("themeId") Long themeId) {
+    @GetMapping("/themes/{themeId}")
+    public List<ReservationTimeWithIsBookedGetResponse> readReservationTimesByDateAndThemeIdWithIsBooked(@PathVariable("themeId") Long themeId, @RequestParam("date") LocalDate date) {
         return reservationTimeService.findReservationTimeByDateAndThemeIdWithIsBooked(date, themeId);
     }
 
