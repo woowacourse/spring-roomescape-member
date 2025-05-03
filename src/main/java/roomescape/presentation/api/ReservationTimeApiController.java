@@ -54,7 +54,7 @@ public class ReservationTimeApiController {
 
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimes(
-            @ModelAttribute AvailableReservationTimeRequest request
+            @ModelAttribute @Valid AvailableReservationTimeRequest request
     ) {
         List<AvailableReservationTimeResponse> responses =
                 reservationTimeService.getAvailableReservationTimes(request);
