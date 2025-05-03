@@ -77,9 +77,9 @@ class ThemeServiceTest {
                 new Theme(8L, "테마8", "설명", "섬네일"),
                 new Theme(9L, "테마9", "설명", "섬네일"),
                 new Theme(10L, "테마10", "설명", "섬네일"));
-        when(themeRepository.getTopThemesByCount(TODAY.minusDays(7), TODAY)).thenReturn(expectedThemes);
+        when(themeRepository.getTopThemes(TODAY.minusDays(7), TODAY, 10)).thenReturn(expectedThemes);
 
-        List<Theme> actualThemes = themeService.findTopThemes(TODAY.minusDays(7), TODAY);
+        List<Theme> actualThemes = themeService.findTopThemes(TODAY.minusDays(7), TODAY, 10);
 
         assertThat(actualThemes).containsExactlyElementsOf(expectedThemes);
     }

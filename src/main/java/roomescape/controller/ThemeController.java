@@ -39,7 +39,7 @@ public class ThemeController {
     public List<ThemeResponse> getTopThemes() {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(7);
-        List<Theme> themes = themeService.findTopThemes(startDate, endDate);
+        List<Theme> themes = themeService.findTopThemes(startDate, endDate, 10);
         return themes.stream()
                 .map(ThemeResponse::new)
                 .toList();

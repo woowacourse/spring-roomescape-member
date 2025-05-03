@@ -35,11 +35,13 @@ public class H2ThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public List<Theme> findAll() {
         String sql = "SELECT * FROM theme AS t ORDER BY t.id";
         return jdbcTemplate.query(sql, mapper);
     }
 
+    @Override
     public Optional<Theme> findById(long id) {
         String sql = "SELECT * FROM theme WHERE theme.id = ?";
         try {
@@ -50,7 +52,8 @@ public class H2ThemeRepository implements ThemeRepository {
         }
     }
 
-    public List<Theme> getTopThemesByCount(LocalDate startDate, LocalDate endDate) {
+    @Override
+    public List<Theme> getTopThemes(LocalDate startDate, LocalDate endDate, int count) {
         String sql = """
                 SELECT t.id, t.name, t.description, t.thumbnail
                 FROM theme AS t
@@ -60,12 +63,13 @@ public class H2ThemeRepository implements ThemeRepository {
                     WHERE r.theme_id = t.id 
                     AND r.date >= ? AND r.date <= ?
                 ) DESC 
-                LIMIT 10;
+                LIMIT ?;
                 """;
 
-        return jdbcTemplate.query(sql, mapper, startDate, endDate);
+        return jdbcTemplate.query(sql, mapper, startDate, endDate, count);
     }
 
+    @Override
     public long add(Theme theme) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());
@@ -74,6 +78,7 @@ public class H2ThemeRepository implements ThemeRepository {
         return insertTheme.executeAndReturnKey(parameters).longValue();
     }
 
+    @Override
     public void deleteById(long id) {
         String sql = "DELETE FROM theme where theme.id = ?";
         jdbcTemplate.update(sql, id);

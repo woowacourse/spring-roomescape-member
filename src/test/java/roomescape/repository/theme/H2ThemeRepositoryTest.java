@@ -83,7 +83,7 @@ class H2ThemeRepositoryTest {
 
     @DisplayName("인기있는 테마를 조회할 수 있다")
     @Test
-    void canGetTopThemesByCount() {
+    void canGetTopThemes() {
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         for (int i = 0; i < 15; i++) {
             template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
@@ -97,7 +97,7 @@ class H2ThemeRepositoryTest {
         template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "이름1", YESTERDAY.toString(), 1L, 2L);
 
-        List<Theme> topThemes = themeRepository.getTopThemesByCount(YESTERDAY.minusDays(1), TODAY);
+        List<Theme> topThemes = themeRepository.getTopThemes(YESTERDAY, TODAY, 10);
 
         assertAll(
                 () -> assertThat(topThemes).hasSize(10),

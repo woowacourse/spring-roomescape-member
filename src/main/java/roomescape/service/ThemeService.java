@@ -30,8 +30,8 @@ public class ThemeService {
         return loadThemeById(themeId);
     }
 
-    public List<Theme> findTopThemes(LocalDate startDate, LocalDate endDate) {
-        return themeRepository.getTopThemesByCount(startDate, endDate);
+    public List<Theme> findTopThemes(LocalDate startDate, LocalDate endDate, int count) {
+        return themeRepository.getTopThemes(startDate, endDate, count);
     }
 
     public long addTheme(ThemeCreationRequest request) {
