@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,8 +79,11 @@ public class TimeSlotJdbcRepositoryTest {
         repository.save(timeSlot1);
         repository.save(timeSlot2);
 
-        // when & then
-        assertThat(repository.findAll()).hasSize(2);
+        // when
+        var timeSlots = repository.findAll();
+
+        // then
+        assertThat(timeSlots).hasSize(2);
     }
 
     private TimeSlot readyTimeSlot() {

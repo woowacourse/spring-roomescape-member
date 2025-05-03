@@ -20,15 +20,14 @@ public class ReservationTest {
     @MethodSource("nullValues")
     @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
     void anyValueNullException(String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
-        // given & when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, timeSlot, theme))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(
+            () -> new Reservation(1L, name, date, timeSlot, theme)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")
     void nameLengthException() {
-        // given & when & then
         assertThatThrownBy(() -> new Reservation(
             1L,
             "여섯글자이름",

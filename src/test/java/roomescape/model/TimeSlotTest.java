@@ -12,9 +12,9 @@ public class TimeSlotTest {
     @Test
     @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
     void anyValueNullException() {
-        // given & when & then
-        assertThatThrownBy(() -> new TimeSlot(1L, null))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(
+            () -> new TimeSlot(1L, null)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

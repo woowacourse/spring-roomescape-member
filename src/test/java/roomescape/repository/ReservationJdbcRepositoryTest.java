@@ -1,9 +1,11 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,10 +78,13 @@ public class ReservationJdbcRepositoryTest {
         var savedId = repository.save(reservation);
 
         // when
-        repository.removeById(savedId);
+        boolean isRemoved = repository.removeById(savedId);
 
         // then
-        assertThat(repository.findAll()).isEmpty();
+        assertAll(
+            () -> assertThat(isRemoved).isTrue(),
+            () -> assertThat(repository.findAll()).isEmpty()
+        );
     }
 
     @Test
@@ -91,8 +96,11 @@ public class ReservationJdbcRepositoryTest {
         repository.save(reservation1);
         repository.save(reservation2);
 
-        // when & then
-        assertThat(repository.findAll()).hasSize(2);
+        // when
+        var reservations = repository.findAll();
+
+        // then
+        assertThat(reservations).hasSize(2);
     }
 
     @Test

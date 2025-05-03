@@ -62,19 +62,15 @@ class TimeSlotServiceTest {
     void deleteTimeSlotWithReservation() {
         // given
         var reservationRepository = new ReservationFakeRepository();
-        var timeSlotService = new TimeSlotService(reservationRepository,
-            new TimeSlotFakeRepository());
+        var timeSlotRepository = new TimeSlotFakeRepository();
+        var timeSlotService = new TimeSlotService(reservationRepository, timeSlotRepository);
 
-        var startAt = LocalTime.of(10, 0);
-        var timeSlot = timeSlotService.add(startAt);
-
-        var name = "포포";
-        var date = Fixtures.ofTomorrow();
-        var reservation = new Reservation(name, date, timeSlot, JUNK_THEME);
-        reservationRepository.save(reservation);
+        var timeSlotToBeRemoved = timeSlotService.add(LocalTime.of(10, 0));
+        var reservationWithTheTimeSlot = new Reservation("포포", Fixtures.ofTomorrow(), timeSlotToBeRemoved, JUNK_THEME);
+        reservationRepository.save(reservationWithTheTimeSlot);
 
         // when & then
-        assertThatThrownBy(() -> timeSlotService.removeById(timeSlot.id()))
+        assertThatThrownBy(() -> timeSlotService.removeById(timeSlotToBeRemoved.id()))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다.");
     }

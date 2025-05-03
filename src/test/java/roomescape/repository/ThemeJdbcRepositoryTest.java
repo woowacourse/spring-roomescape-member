@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -75,8 +76,11 @@ public class ThemeJdbcRepositoryTest {
         repository.save(theme1);
         repository.save(theme2);
 
-        // when & then
-        assertThat(repository.findAll()).hasSize(2);
+        // when
+        var themes = repository.findAll();
+
+        // then
+        assertThat(themes).hasSize(2);
     }
 
     private Theme readyTheme() {

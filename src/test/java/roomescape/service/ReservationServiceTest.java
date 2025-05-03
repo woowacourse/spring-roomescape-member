@@ -93,8 +93,9 @@ public class ReservationServiceTest {
         var themeId = JUNK_THEME.id();
 
         // when & then
-        assertThatCode(() -> service.reserve(name, date, timeSlotId, themeId))
-            .doesNotThrowAnyException();
+        assertThatCode(
+            () -> service.reserve(name, date, timeSlotId, themeId)
+        ).doesNotThrowAnyException();
     }
 
     @Test
@@ -110,7 +111,8 @@ public class ReservationServiceTest {
         service.reserve(name, date, timeSlotId, themeId);
 
         // then
-        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId, themeId))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(
+            () -> service.reserve(name, date, timeSlotId, themeId)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 }
