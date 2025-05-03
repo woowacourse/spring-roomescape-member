@@ -60,17 +60,6 @@ public class FakeThemeRepository implements ThemeRepository {
                 .limit(10)
                 .map(Map.Entry::getKey)
                 .toList();
-
-//        List<Reservation> reservations1 = reservations.stream()
-//                .filter(reservation -> reservation.date().isBefore(end) && reservation.date().isAfter(start))
-//                .toList();
-//
-//        for (Reservation reservation : reservations1) {
-//            counts.computeIfPresent(reservation.theme().id(), (k, v) -> v + 1);
-//            counts.putIfAbsent(reservation.theme().id(), 1);
-//        }
-//
-////        counts.entrySet().stream().sorted(Comparator.comparing((entry1) -> ));
     }
 
     @Override
