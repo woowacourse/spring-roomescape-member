@@ -4,16 +4,13 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
@@ -83,7 +80,7 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
     @Override
     public List<ReservationTime> selectAllByThemeIdAndDate(Long themeId, LocalDate date) {
         String query = """
-                SELECT  rt.id, rt.start_at
+                SELECT rt.id, rt.start_at
                 FROM reservation r
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
                 WHERE r.theme_id = ? AND r.date = ?

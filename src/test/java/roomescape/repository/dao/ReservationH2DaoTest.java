@@ -83,6 +83,7 @@ class ReservationH2DaoTest {
         // then
         List<Reservation> reservations = reservationH2Dao.selectAll();
         assertThat(reservations).hasSize(1);
+        assertThat(reservations.getFirst().name()).isEqualTo("브라운");
     }
 
     @DisplayName("Reservation객체로 데이터를 삽입 후 삽입된 데이터를 가져올 수 있다.")
@@ -102,7 +103,6 @@ class ReservationH2DaoTest {
             softly.assertThat(insertedReservation.time().id()).isEqualTo(reservationTime.id());
             softly.assertThat(insertedReservation.theme().id()).isEqualTo(reservationTheme.id());
             softly.assertThat(insertedReservation.name()).isEqualTo("브라운");
-
         });
     }
 
@@ -151,11 +151,8 @@ class ReservationH2DaoTest {
         reservationH2Dao.deleteById(2L);
 
         // then
-        List<Reservation> reservations = reservationH2Dao.selectAll();
-        assertSoftly(softly -> {
-            softly.assertThat(reservations).hasSize(1);
-            softly.assertThat(reservations.getFirst().name()).isEqualTo("1번사람");
-        });
+        assertThatThrownBy(() -> reservationH2Dao.selectById(2L).get())
+                .isInstanceOf(NoSuchElementException.class);
     }
 
     @DisplayName("입력한 date, timeId, themeId의 값을 가진 데이터가 존재하면, true를 반환한다")
