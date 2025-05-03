@@ -2,6 +2,9 @@ package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -37,7 +40,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().get("/admin")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(OK.value());
     }
 
     @DisplayName("2단계: 예약을 조회할 수 있다.")
@@ -46,12 +49,12 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .when().get("/admin/reservation")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(OK.value());
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(OK.value())
                 .body("size()", is(0));
     }
 
@@ -78,18 +81,18 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(CREATED.value());
 
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(OK.value())
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/times/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(NO_CONTENT.value());
     }
 
     @DisplayName("8단계: 예약을 추가하고 취소할 수 있다.")
@@ -103,7 +106,7 @@ public class MissionStepTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(CREATED.value());
 
         Map<String, String> themeParams = new HashMap<>();
         themeParams.put("name", "우테코방탈출");
@@ -115,7 +118,7 @@ public class MissionStepTest {
                 .body(themeParams)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(CREATED.value());
 
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
@@ -129,23 +132,23 @@ public class MissionStepTest {
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(CREATED.value());
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(OK.value())
                 .body("size()", is(1));
 
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()
-                .statusCode(204);
+                .statusCode(NO_CONTENT.value());
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .statusCode(OK.value())
                 .body("size()", is(0));
     }
 
