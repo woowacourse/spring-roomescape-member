@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.exceptionHandler.dto.ExceptionResponse;
 import roomescape.reservation.service.ReservationService;
@@ -18,7 +19,11 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 
 @RestController
+@RequestMapping(ReservationController.RESERVATION_BASE_URL)
 public class ReservationController {
+
+    public static final String RESERVATION_BASE_URL = "/reservations";
+    private static final String SLASH = "/";
 
     private final ReservationService reservationService;
 
@@ -26,26 +31,22 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping("/reservations")
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<ReservationResponse> response = reservationService.getReservations();
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/reservations")
+    @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
         ReservationResponse response = reservationService.createReservation(request);
-        return ResponseEntity.created(URI.create("admin/reservation")).body(response);
+        return ResponseEntity.created(URI.create(RESERVATION_BASE_URL+SLASH+response.id())).body(response);
     }
 
-    @DeleteMapping("/reservations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationById(@PathVariable("id") final Long id) {
-        try {
-            reservationService.deleteReservationById(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservationService.deleteReservationById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(value = DateTimeParseException.class)

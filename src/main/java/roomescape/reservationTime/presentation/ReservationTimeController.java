@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.exceptionHandler.dto.ExceptionResponse;
 import roomescape.reservationTime.dto.ReservationTimeRequest;
@@ -20,7 +21,11 @@ import roomescape.reservationTime.dto.TimeConditionResponse;
 import roomescape.reservationTime.service.ReservationTimeService;
 
 @RestController
+@RequestMapping(ReservationTimeController.RESERVATION_TIME_BASE_URL)
 public class ReservationTimeController {
+
+    public static final String RESERVATION_TIME_BASE_URL = "/times";
+    private static final String SLASH = "/";
 
     private final ReservationTimeService reservationTimeService;
 
@@ -28,25 +33,27 @@ public class ReservationTimeController {
         this.reservationTimeService = reservationTimeService;
     }
 
-    @PostMapping("/times")
-    public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody final ReservationTimeRequest request) {
+    @PostMapping
+    public ResponseEntity<ReservationTimeResponse> createReservationTime(
+            @RequestBody final ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
-        return ResponseEntity.created(URI.create("/admin/time")).body(response);
+        return ResponseEntity.created(URI.create(RESERVATION_TIME_BASE_URL + SLASH + response.id()
+        )).body(response);
     }
 
-    @GetMapping(value = "/times")
+    @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         List<ReservationTimeResponse> response = reservationTimeService.getReservationTimes();
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(value = "/times", consumes = {"application/json"})
+    @GetMapping(consumes = {"application/json"})
     public ResponseEntity<List<TimeConditionResponse>> getReservationTimes(final TimeConditionRequest request) {
         List<TimeConditionResponse> responses = reservationTimeService.getTimesWithCondition(request);
         return ResponseEntity.ok().body(responses);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservationTimeById(@PathVariable("id") final Long id) {
         reservationTimeService.deleteReservationTimeById(id);
         return ResponseEntity.noContent().build();
