@@ -82,7 +82,7 @@ class ReservationServiceTest {
         //given
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(12, 1));
-        ReservationTime reservationTime2 = new ReservationTime(1L, LocalTime.of(13, 1));
+        ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(13, 1));
         themeRepository.create(theme);
         reservationTimeRepository.create(reservationTime1);
         reservationTimeRepository.create(reservationTime2);
@@ -98,7 +98,7 @@ class ReservationServiceTest {
                         new ReservationTimeResult(1L, LocalTime.of(12, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail")),
                 new ReservationResult(2L, "test2", RESERVATION_DATE,
-                        new ReservationTimeResult(1L, LocalTime.of(13, 1)),
+                        new ReservationTimeResult(2L, LocalTime.of(13, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail"))
         ));
     }

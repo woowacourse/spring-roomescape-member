@@ -37,7 +37,7 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    void 예약_시간을_저장할_수_있다() {
+    void 테마를_저장할_수_있다() {
         //when
         Long createdId = themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
 
@@ -47,7 +47,7 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    void id로_예약_시간을_조회할_수_있다() {
+    void id로_테마_조회할_수_있다() {
         //given
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
 
@@ -68,7 +68,7 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    void 전체_예약_시간을_조회할_수_있다() {
+    void 전체_테마_목록을_조회할_수_있다() {
         //given
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test2', 'description2', 'thumbnail2')");
@@ -84,7 +84,7 @@ class JdbcThemeRepositoryTest {
     }
 
     @Test
-    void id값으로_예약_시간을_삭제한다() {
+    void id값으로_테마를_삭제한다() {
         //given
         jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
 

@@ -121,7 +121,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
 
         //when
-        boolean result = reservationDao.existByTimeId(1L);
+        boolean result = reservationDao.existsByTimeId(1L);
 
         //then
         assertThat(result).isTrue();
@@ -135,7 +135,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
 
         //when
-        boolean result = reservationDao.existByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 21), 1L, 1L);
+        boolean result = reservationDao.existsByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 21), 1L, 1L);
 
         //then
         assertThat(result).isTrue();
@@ -149,7 +149,7 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
 
         //when
-        boolean result = reservationDao.existByThemeId(1L);
+        boolean result = reservationDao.existsByThemeId(1L);
 
         //then
         assertThat(result).isTrue();

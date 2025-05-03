@@ -5,6 +5,7 @@ import roomescape.domain.ReservationTimeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,14 +28,14 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public void deleteById(Long reservationTimeId) {
         reservationTimes = reservationTimes.stream()
-                .filter(reservationTime -> reservationTime.id() != reservationTimeId)
+                .filter(reservationTime -> !Objects.equals(reservationTime.id(), reservationTimeId))
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<ReservationTime> findById(Long reservationTimeId) {
         return reservationTimes.stream()
-                .filter(reservationTime -> reservationTime.id() == reservationTimeId)
+                .filter(reservationTime -> Objects.equals(reservationTime.id(), reservationTimeId))
                 .findFirst();
     }
 }

@@ -6,6 +6,7 @@ import roomescape.domain.ThemeRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public void deleteById(Long themeId) {
         themes = themes.stream()
-                .filter(theme -> theme.getId() != themeId)
+                .filter(theme -> !Objects.equals(theme.getId(), themeId))
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +41,7 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(Long themeId) {
         return themes.stream()
-                .filter(theme -> theme.getId() == themeId)
+                .filter(theme -> Objects.equals(theme.getId(), themeId))
                 .findFirst();
     }
 }
