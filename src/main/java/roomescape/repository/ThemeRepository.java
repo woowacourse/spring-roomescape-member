@@ -1,17 +1,16 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.model.Theme;
 
 public interface ThemeRepository {
 
-    Optional<Theme> findById(long id);
+    Optional<Theme> findById(final long id);
 
-    long save(Theme theme);
+    long save(final Theme theme);
 
-    boolean removeById(long id);
+    boolean removeById(final long id);
 
     List<Theme> findAll();
 }

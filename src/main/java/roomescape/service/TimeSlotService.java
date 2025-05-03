@@ -17,13 +17,15 @@ public class TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    public TimeSlotService(ReservationRepository reservationRepository,
-        TimeSlotRepository timeSlotRepository) {
+    public TimeSlotService(
+        final ReservationRepository reservationRepository,
+        final TimeSlotRepository timeSlotRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeSlotRepository = timeSlotRepository;
     }
 
-    public TimeSlot register(LocalTime startAt) {
+    public TimeSlot register(final LocalTime startAt) {
         var timeSlot = new TimeSlot(startAt);
         var id = timeSlotRepository.save(timeSlot);
         return new TimeSlot(id, startAt);
@@ -33,7 +35,7 @@ public class TimeSlotService {
         return timeSlotRepository.findAll();
     }
 
-    public boolean removeById(long id) {
+    public boolean removeById(final long id) {
         List<Reservation> reservations = reservationRepository.findByTimeSlotId(id);
         if (!reservations.isEmpty()) {
             throw new IllegalStateException("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다.");
@@ -41,7 +43,7 @@ public class TimeSlotService {
         return timeSlotRepository.removeById(id);
     }
 
-    public List<AvailableTimeSlotDto> findAvailableTimeSlots(LocalDate date, long themeId) {
+    public List<AvailableTimeSlotDto> findAvailableTimeSlots(final LocalDate date, final long themeId) {
         var filteredReservations = reservationRepository.findByDateAndThemeId(date, themeId);
         var filteredTimeSlots = filteredReservations.stream()
             .map(Reservation::timeSlot)

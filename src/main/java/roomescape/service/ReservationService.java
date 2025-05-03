@@ -70,7 +70,7 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public boolean removeById(long id) {
+    public boolean removeById(final long id) {
         return reservationRepository.removeById(id);
     }
 }

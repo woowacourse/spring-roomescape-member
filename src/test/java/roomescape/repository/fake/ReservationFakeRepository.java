@@ -83,7 +83,7 @@ public class ReservationFakeRepository implements ReservationRepository {
             .toList();
     }
 
-    private boolean isBetween(LocalDate date, LocalDate startDate, LocalDate endDate) {
+    private boolean isBetween(final LocalDate date, final LocalDate startDate, final LocalDate endDate) {
         return (date.isAfter(startDate) || date.isEqual(startDate)) && (date.isEqual(endDate) || date.isBefore(endDate));
     }
 }

@@ -10,7 +10,7 @@ public record ThemeResponse(
     String thumbnail
 ) {
 
-    public static ThemeResponse from(Theme theme) {
+    public static ThemeResponse from(final Theme theme) {
         return new ThemeResponse(
             theme.id(),
             theme.name(),
@@ -19,7 +19,7 @@ public record ThemeResponse(
         );
     }
 
-    public static List<ThemeResponse> from(List<Theme> themes) {
+    public static List<ThemeResponse> from(final List<Theme> themes) {
         return themes.stream()
             .map(ThemeResponse::from)
             .toList();

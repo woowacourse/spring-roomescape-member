@@ -16,12 +16,15 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     @Autowired
-    public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+    public ThemeService(
+        final ReservationRepository reservationRepository,
+        final ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
     }
 
-    public Theme register(String name, String description, String thumbnail) {
+    public Theme register(final String name, final String description, final String thumbnail) {
         var theme = new Theme(name, description, thumbnail);
         var id = themeRepository.save(theme);
         return new Theme(id, name, description, thumbnail);
@@ -39,7 +42,7 @@ public class ThemeService {
         return themeRepository.removeById(id);
     }
 
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
+    public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
         return reservationRepository.findThemeRankingByPeriod(startDate, endDate, limit);
     }
 }

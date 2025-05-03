@@ -8,19 +8,19 @@ import roomescape.model.Theme;
 
 public interface ReservationRepository {
 
-    Optional<Reservation> findById(long id);
+    Optional<Reservation> findById(final long id);
 
-    long save(Reservation reservation);
+    long save(final Reservation reservation);
 
-    boolean removeById(long id);
+    boolean removeById(final long id);
 
     List<Reservation> findAll();
 
-    List<Reservation> findByTimeSlotId(long id);
+    List<Reservation> findByTimeSlotId(final long id);
 
-    List<Reservation> findByThemeId(long id);
+    List<Reservation> findByThemeId(final long id);
 
-    List<Reservation> findByDateAndThemeId(LocalDate date, long themeId);
+    List<Reservation> findByDateAndThemeId(final LocalDate date, final long themeId);
 
-    List<Theme> findThemeRankingByPeriod(LocalDate startDate, LocalDate endDate, int limit);
+    List<Theme> findThemeRankingByPeriod(final LocalDate startDate, final LocalDate endDate, final int limit);
 }

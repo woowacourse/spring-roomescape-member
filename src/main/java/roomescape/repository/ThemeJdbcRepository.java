@@ -31,7 +31,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public long save(Theme theme) {
+    public long save(final Theme theme) {
         var insert = new SimpleJdbcInsert(jdbcTemplate);
         var generatedId = insert.withTableName("THEME")
             .usingGeneratedKeyColumns("id")
@@ -44,7 +44,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean removeById(long id) {
+    public boolean removeById(final long id) {
         var sql = "delete from THEME where id = ?";
 
         var removedRowsCount = jdbcTemplate.update(sql, id);

@@ -9,7 +9,7 @@ public record AvailableTimeSlotDto(
     Boolean alreadyBooked
 ) {
 
-    public static AvailableTimeSlotDto from(TimeSlot timeSlot, Boolean alreadyBooked) {
+    public static AvailableTimeSlotDto from(final TimeSlot timeSlot, final boolean alreadyBooked) {
         return new AvailableTimeSlotDto(
             timeSlot.id(),
             timeSlot.startAt(),
