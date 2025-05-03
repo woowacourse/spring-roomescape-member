@@ -52,10 +52,6 @@ public class Reservation {
         return id.getValue();
     }
 
-    public void setId(Long value) {
-        id.setValue(value);
-    }
-
     public String getName() {
         return name;
     }
