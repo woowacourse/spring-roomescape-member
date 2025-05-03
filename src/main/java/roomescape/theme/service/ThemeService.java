@@ -1,9 +1,9 @@
 package roomescape.theme.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.util.DateTime;
+import roomescape.reservation.domain.ReservationPeriod;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
@@ -15,6 +15,8 @@ import roomescape.theme.dto.ThemeResponse;
 public class ThemeService {
 
     private static final int POPULAR_THEME_COUNT = 10;
+    private static final int START_OFFSET_DAYS = 8;
+    private static final int END_OFFSET_DAYS = 1;
 
     private final DateTime dateTime;
     private final ThemeRepository themeRepository;
@@ -56,12 +58,9 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> getPopularThemes() {
-        LocalDate now = dateTime.now().toLocalDate();
+        ReservationPeriod period = new ReservationPeriod(dateTime.now().toLocalDate(), START_OFFSET_DAYS, END_OFFSET_DAYS);
 
-        LocalDate start = now.minusDays(8);
-        LocalDate end = now.minusDays(1);
-
-        return themeRepository.findPopularThemes(start, end, POPULAR_THEME_COUNT).stream()
+        return themeRepository.findPopularThemes(period, POPULAR_THEME_COUNT).stream()
                 .map(theme -> new PopularThemeResponse(theme.getName(), theme.getThumbnail(), theme.getDescription()))
                 .toList();
     }

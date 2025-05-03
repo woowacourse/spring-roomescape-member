@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationPeriod;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.infrastructure.JdbcReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -128,8 +129,9 @@ class JdbcReservationThemeRepositoryTest {
         reservationRepository.save(reservation2);
         reservationRepository.save(reservation3);
 
-        List<Theme> popularThemes = repository.findPopularThemes(LocalDate.of(2000, 11, 2), LocalDate.of(2000, 11, 4),
-                3);
+        ReservationPeriod period = new ReservationPeriod(LocalDate.of(2000, 11, 5), 3, 1);
+
+        List<Theme> popularThemes = repository.findPopularThemes(period, 3);
         List<String> names = popularThemes.stream()
                 .map(Theme::getName)
                 .toList();
@@ -167,8 +169,9 @@ class JdbcReservationThemeRepositoryTest {
         reservationRepository.save(reservation3);
         reservationRepository.save(reservation4);
 
-        List<Theme> popularThemes = repository.findPopularThemes(LocalDate.of(2000, 11, 3), LocalDate.of(2000, 11, 4),
-                3);
+        ReservationPeriod period = new ReservationPeriod(LocalDate.of(2000, 11, 5), 2, 1);
+
+        List<Theme> popularThemes = repository.findPopularThemes(period, 3);
         List<String> names = popularThemes.stream()
                 .map(Theme::getName)
                 .toList();
@@ -206,8 +209,9 @@ class JdbcReservationThemeRepositoryTest {
         reservationRepository.save(reservation3);
         reservationRepository.save(reservation4);
 
-        List<Theme> popularThemes = repository.findPopularThemes(LocalDate.of(2000, 11, 3), LocalDate.of(2000, 11, 4),
-                1);
+        ReservationPeriod period = new ReservationPeriod(LocalDate.of(2000, 11, 5), 2, 1);
+
+        List<Theme> popularThemes = repository.findPopularThemes(period, 1);
         List<String> names = popularThemes.stream()
                 .map(Theme::getName)
                 .toList();

@@ -1,7 +1,6 @@
 package roomescape.theme.infrastructure;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.ReservationPeriod;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
@@ -43,7 +43,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(final LocalDate start, final LocalDate end, final int popularCount) {
+    public List<Theme> findPopularThemes(ReservationPeriod period, int popularCount) {
         String sql = """
                 SELECT
                     count(*) as count,
@@ -59,7 +59,8 @@ public class JdbcThemeRepository implements ThemeRepository {
                 LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(start), Date.valueOf(end), popularCount);
+        return jdbcTemplate.query(sql, ROW_MAPPER, Date.valueOf(period.findStartDate()),
+                Date.valueOf(period.findEndDate()), popularCount);
     }
 
     @Override

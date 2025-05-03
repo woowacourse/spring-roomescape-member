@@ -1,7 +1,5 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.domain.ReservationPeriod;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
@@ -34,9 +32,10 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate start, LocalDate end, int popularCount) {
+    public List<Theme> findPopularThemes(ReservationPeriod period, int popularCount) {
         List<Reservation> filterReservations = reservations.stream()
-                .filter(reservation -> !(reservation.getDate().isBefore(start) || reservation.getDate().isAfter(end)))
+                .filter(reservation -> !(reservation.getDate().isBefore(period.findStartDate()) || reservation.getDate()
+                        .isAfter(period.findEndDate())))
                 .toList();
 
         Map<Theme, Long> themes = new HashMap<>();

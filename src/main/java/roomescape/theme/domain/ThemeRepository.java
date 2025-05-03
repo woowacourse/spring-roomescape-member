@@ -1,13 +1,13 @@
 package roomescape.theme.domain;
 
-import java.time.LocalDate;
 import java.util.List;
+import roomescape.reservation.domain.ReservationPeriod;
 
 public interface ThemeRepository {
 
     Long save(Theme theme);
 
-    List<Theme> findPopularThemes(LocalDate start, LocalDate end, int popularCount);
+    List<Theme> findPopularThemes(ReservationPeriod period, int popularCount);
 
     List<Theme> findAll();
 
