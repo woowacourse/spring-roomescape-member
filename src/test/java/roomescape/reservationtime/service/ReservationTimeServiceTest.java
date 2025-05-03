@@ -29,15 +29,12 @@ class ReservationTimeServiceTest {
 
     private ReservationService reservationService;
     private ReservationTimeService reservationTimeService;
-    private ReservationRepository reservationRepository;
-    private ReservationTimeRepository reservationTimeRepository;
-    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setUp() {
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationRepository = new FakeReservationRepository();
-        themeRepository = new FakeThemeRepository();
+        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
+        ReservationRepository reservationRepository = new FakeReservationRepository();
+        ThemeRepository themeRepository = new FakeThemeRepository();
         themeRepository.put(theme);
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
@@ -106,8 +103,6 @@ class ReservationTimeServiceTest {
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(10, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(11, 0)));
         reservationTimeService.create(new ReservationTimeCreateRequest(LocalTime.of(12, 0)));
-
-        themeRepository.put(Theme.of(1L, "추리", "셜록 with Danny", "image.png"));
 
         reservationService.create(new ReservationCreateRequest("mint", futureDate, 1L, 1L));
         List<AvailableReservationTimeResponse> availableReservationTimes = reservationTimeService.getAvailableReservationTimes(
