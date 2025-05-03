@@ -36,10 +36,10 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest request) {
-        validateDuplicateDateTime(request.timeId(), request.date());
-        validatePastDateTime(request);
         validateExistsReservationTime(request);
         validateExistsTheme(request);
+        validateDuplicateDateTime(request);
+        validatePastDateTime(request);
 
         final Reservation reservation = new Reservation(request.name(), request.date());
         final long id = reservationRepository.save(reservation, request.timeId(), request.themeId());
@@ -78,8 +78,8 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicateDateTime(final Long reservationTimeId, final LocalDate date) {
-        if (reservationRepository.existsByReservationTimeIdAndDate(reservationTimeId, date)) {
+    private void validateDuplicateDateTime(final ReservationRequest request) {
+        if (reservationRepository.existsByReservationTimeIdAndDate(request.timeId(), request.date())) {
             throw new ReservationConflictException();
         }
     }
