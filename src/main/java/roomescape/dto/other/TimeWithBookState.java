@@ -3,9 +3,9 @@ package roomescape.dto.other;
 import java.time.LocalTime;
 
 public record TimeWithBookState(
-        long id,
+        Long id,
         LocalTime startAt,
-        boolean bookState
+        Boolean bookState
 ) {
 
 }

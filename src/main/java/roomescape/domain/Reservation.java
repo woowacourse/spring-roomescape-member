@@ -16,8 +16,7 @@ public final class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
-            final Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateField(id, name, date, time, theme);
         this.id = id;
         this.name = name;
@@ -30,7 +29,7 @@ public final class Reservation {
         return new Reservation(DEFAULT_ID, name, date, time, theme);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
