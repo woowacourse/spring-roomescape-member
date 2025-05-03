@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public final class ThemeName {
 
+    private static final int MAX_LENGTH = 20;
+
     private final String name;
 
     public ThemeName(final String name) {
@@ -12,7 +14,7 @@ public final class ThemeName {
     }
 
     private void validateName(String name) {
-        if (name == null || name.isBlank() || name.length() > 20) {
+        if (name == null || name.isBlank() || name.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("테마 이름은 최소 1글자, 최대 20글자여야합니다.");
         }
     }

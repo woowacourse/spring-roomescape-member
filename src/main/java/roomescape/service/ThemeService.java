@@ -11,6 +11,9 @@ import roomescape.service.reservation.Theme;
 
 @Service
 public class ThemeService {
+    private static final int POPULAR_THEME_FROM_DAYS_AGO = 7;
+    private static final int POPULAR_THEME_TO_DAYS_AGO = 1;
+    private static final int POPULAR_THEME_MAX_COUNT = 10;
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
@@ -44,9 +47,9 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        final LocalDate from = LocalDate.now().minusDays(7);
-        final LocalDate to = LocalDate.now().minusDays(1);
-        final List<Theme> popularThemes = themeDao.findPopularThemes(from, to, 10);
+        final LocalDate from = LocalDate.now().minusDays(POPULAR_THEME_FROM_DAYS_AGO);
+        final LocalDate to = LocalDate.now().minusDays(POPULAR_THEME_TO_DAYS_AGO);
+        final List<Theme> popularThemes = themeDao.findPopularThemes(from, to, POPULAR_THEME_MAX_COUNT);
         return popularThemes.stream()
                 .map(ThemeResponse::new)
                 .toList();
