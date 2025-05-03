@@ -25,13 +25,11 @@ public class ThemeController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponse> readThemes() {
         return themeService.findAllThemes();
     }
 
     @GetMapping("rank")
-    @ResponseStatus(HttpStatus.OK)
     public List<ThemeResponse> readThemeRank() {
         return themeService.findThemeRank();
     }

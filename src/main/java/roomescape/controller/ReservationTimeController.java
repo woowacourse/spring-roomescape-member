@@ -28,14 +28,12 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<ReservationTimeResponse> readTimes(
     ) {
         return reservationTimeService.findAllTimes();
     }
 
     @GetMapping("available")
-    @ResponseStatus(HttpStatus.OK)
     public List<ReservationTimeAvailableResponse> readAvailableTimes(
             @RequestParam LocalDate date,
             @RequestParam Long themeId
