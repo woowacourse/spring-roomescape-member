@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.common.NotFoundEntityException;
+import roomescape.common.BusinessRuleViolationException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -20,7 +22,7 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTImeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTImeRepository, final ReservationRepository reservationRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTImeRepository, ReservationRepository reservationRepository) {
         this.reservationTImeRepository = reservationTImeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -31,7 +33,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResult findById(Long reservationTimeId) {
         ReservationTime reservationTime = reservationTImeRepository.findById(reservationTimeId).orElseThrow(
-                () -> new IllegalArgumentException(reservationTimeId + "에 해당하는 reservation_time 튜플이 없습니다."));
+                () -> new NotFoundEntityException(reservationTimeId + "에 해당하는 reservation_time 튜플이 없습니다."));
         return toReservationResult(reservationTime);
     }
 
@@ -64,7 +66,7 @@ public class ReservationTimeService {
 
     public void deleteById(Long reservationTimeId) {
         if (reservationRepository.existByTimeId(reservationTimeId)) {
-            throw new IllegalArgumentException("해당 예약 시간에 예약이 존재합니다.");
+            throw new BusinessRuleViolationException("해당 예약 시간에 예약이 존재합니다.");
         }
         reservationTImeRepository.deleteById(reservationTimeId);
     }

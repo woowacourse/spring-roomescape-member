@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import roomescape.common.BusinessRuleViolationException;
+import roomescape.common.CoreException;
 
 public record ReservationTime(Long id, LocalTime startAt) {
 
@@ -13,7 +15,6 @@ public record ReservationTime(Long id, LocalTime startAt) {
 
     public ReservationTime {
         if (startAt.isBefore(RESERVATION_START_TIME) || startAt.isAfter(RESERVATION_END_TIME)) {
-            throw new IllegalArgumentException("해당 시간은 예약 가능 시간이 아닙니다.");//TODO: 이후에 커스텀 예외 고려하기
-        }
+            throw new BusinessRuleViolationException("해당 시간은 예약 가능 시간이 아닙니다.");        }
     }
 }

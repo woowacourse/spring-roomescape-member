@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.common.NotFoundEntityException;
+import roomescape.common.BusinessRuleViolationException;
 import roomescape.domain.*;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
@@ -26,12 +28,12 @@ public class ReservationService {
 
     public Long create(CreateReservationParam createReservationParam) {
         ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
-                () -> new IllegalArgumentException(
+                () -> new NotFoundEntityException(
                         createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
-        Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(() -> new IllegalArgumentException(
+        Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(() -> new NotFoundEntityException(
                 createReservationParam.themeId() + "에 해당하는 theme 튜플이 없습니다."));
         if (reservationRepository.existByDateAndTimeId(createReservationParam.date(), reservationTime.id())) {
-            throw new IllegalArgumentException("날짜와 시간이 중복된 예약이 존재합니다.");
+            throw new BusinessRuleViolationException("날짜와 시간이 중복된 예약이 존재합니다.");
         }
         return reservationRepository.create(
                 new Reservation(
@@ -55,7 +57,7 @@ public class ReservationService {
 
     public ReservationResult findById(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
+                .orElseThrow(() -> new NotFoundEntityException(reservationId + "에 해당하는 reservation 튜플이 없습니다."));
         return toReservationResult(reservation);
     }
 

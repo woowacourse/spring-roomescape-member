@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.common.NotFoundEntityException;
+import roomescape.common.BusinessRuleViolationException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
@@ -37,14 +39,14 @@ public class ThemeService {
 
     public ThemeResult findById(Long id) {
         Theme theme = themeRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("id에 해당하는 Theme이 없습니다."));
+                () -> new NotFoundEntityException("id에 해당하는 Theme이 없습니다."));
 
         return ThemeResult.from(theme);
     }
 
     public void deleteById(final Long themeId) {
         if (reservationRepository.existByThemeId(themeId)) {
-            throw new IllegalArgumentException("해당 테마에 예약이 존재합니다.");
+            throw new BusinessRuleViolationException("해당 테마에 예약이 존재합니다.");
         }
         themeRepository.deleteById(themeId);
     }

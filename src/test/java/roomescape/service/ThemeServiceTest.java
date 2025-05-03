@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.Test;
+import roomescape.common.BusinessRuleViolationException;
+import roomescape.common.NotFoundEntityException;
 import roomescape.domain.*;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeThemeRepository;
@@ -66,7 +68,7 @@ class ThemeServiceTest {
     void id값으로_테마를_찾을때_없다면_예외가_발생한다() {
         // given & when & then
         assertThatThrownBy(() -> themeService.findById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage("id에 해당하는 Theme이 없습니다.");
     }
 
@@ -94,7 +96,7 @@ class ThemeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> themeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("해당 테마에 예약이 존재합니다.");
     }
 

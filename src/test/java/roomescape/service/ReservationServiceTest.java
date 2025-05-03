@@ -1,6 +1,8 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.Test;
+import roomescape.common.BusinessRuleViolationException;
+import roomescape.common.NotFoundEntityException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -53,7 +55,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(createReservationParam))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage("1에 해당하는 reservation_time 튜플이 없습니다.");
     }
 
@@ -130,7 +132,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.findById(2L))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NotFoundEntityException.class)
                 .hasMessage("2에 해당하는 reservation 튜플이 없습니다.");
     }
 
@@ -145,7 +147,7 @@ class ReservationServiceTest {
 
         //when & then
         assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test2", RESERVATION_DATE, 1L, 1L)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("날짜와 시간이 중복된 예약이 존재합니다.");
     }
 }
