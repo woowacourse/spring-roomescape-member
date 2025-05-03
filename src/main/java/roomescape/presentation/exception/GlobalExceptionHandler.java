@@ -1,4 +1,4 @@
-package roomescape.global;
+package roomescape.presentation.exception;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.presentation.dto.response.ErrorResponse;
 
 @RestControllerAdvice
-public class RoomescapeExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Void> handleNoSuchElementException(NoSuchElementException e) {

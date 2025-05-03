@@ -18,11 +18,11 @@ import roomescape.application.ThemeService;
 
 @RestController
 @RequestMapping("/themes")
-public class ThemeApiController {
+public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeApiController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
