@@ -102,17 +102,4 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, RowMappers.RESERVATION, date, themeId);
     }
-
-    @Override
-    public List<Theme> findThemeRankingByPeriod(final LocalDate startDate, final LocalDate endDate, final int limit) {
-        var sql = """
-            select T.id, T.name, T.description, T.thumbnail from THEME T
-            join RESERVATION R on T.id = R.theme_id
-            where R.date >= ? and R.date <= ?
-            group by T.id
-            order by count(R.id) desc
-            limit ?
-            """;
-        return jdbcTemplate.query(sql, RowMappers.THEME, startDate, endDate, limit);
-    }
 }

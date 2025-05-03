@@ -44,6 +44,6 @@ public class ThemeService {
 
     public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, int count) {
         count = Math.min(count, 10);
-        return reservationRepository.findThemeRankingByPeriod(startDate, endDate, count);
+        return themeRepository.findRankingByPeriod(startDate, endDate, count);
     }
 }

@@ -68,22 +68,4 @@ public class ReservationFakeRepository implements ReservationRepository {
             .filter(r -> r.date().equals(date) && r.theme().id() == themeId)
             .toList();
     }
-
-    @Override
-    public List<Theme> findThemeRankingByPeriod(final LocalDate startDate, final LocalDate endDate,
-        final int limit) {
-        var themeCounts = reservations.values().stream()
-            .filter(r -> isBetween(r.date(), startDate, endDate))
-            .collect(Collectors.groupingBy(Reservation::theme, Collectors.counting()));
-
-        return themeCounts.keySet()
-            .stream()
-            .sorted(Comparator.comparingLong(themeCounts::get))
-            .limit(limit)
-            .toList();
-    }
-
-    private boolean isBetween(final LocalDate date, final LocalDate startDate, final LocalDate endDate) {
-        return (date.isAfter(startDate) || date.isEqual(startDate)) && (date.isEqual(endDate) || date.isBefore(endDate));
-    }
 }

@@ -1,17 +1,32 @@
 package roomescape.repository.fake;
 
+import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.model.Reservation;
 import roomescape.model.Theme;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 
 public class ThemeFakeRepository implements ThemeRepository {
 
     private final Map<Long, Theme> themes = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1L);
+    private ReservationRepository reservationRepository;
+
+    public ThemeFakeRepository() {
+    }
+
+    public ThemeFakeRepository(final ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     @Override
     public Optional<Theme> findById(final long id) {
@@ -35,5 +50,24 @@ public class ThemeFakeRepository implements ThemeRepository {
     @Override
     public List<Theme> findAll() {
         return List.copyOf(themes.values());
+    }
+
+    @Override
+    public List<Theme> findRankingByPeriod(final LocalDate startDate, final LocalDate endDate, final int limit) {
+        var reservations = reservationRepository.findAll();
+        var themeCounts = reservations.stream()
+            .filter(r -> isBetween(r.date(), startDate, endDate))
+            .collect(groupingBy(Reservation::theme, counting()));
+
+        return themeCounts.keySet()
+            .stream()
+            .sorted(comparingLong(themeCounts::get).reversed())
+            .limit(limit)
+            .toList();
+    }
+
+    private boolean isBetween(final LocalDate date, final LocalDate startDate, final LocalDate endDate) {
+        return (date.isAfter(startDate) || date.isEqual(startDate))
+               && (date.isEqual(endDate) || date.isBefore(endDate));
     }
 }
