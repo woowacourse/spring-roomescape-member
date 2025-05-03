@@ -1,4 +1,4 @@
-package roomescape.mapper;
+package roomescape.domain.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

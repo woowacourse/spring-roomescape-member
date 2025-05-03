@@ -7,10 +7,11 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.ReservationTimeRequest;
+import roomescape.application.dto.ReservationTimeResponse;
+import roomescape.application.service.ReservationTimeService;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
 import roomescape.service.fake_dao.FakeReservationDao;
 import roomescape.service.fake_dao.FakeReservationTimeDao;
 

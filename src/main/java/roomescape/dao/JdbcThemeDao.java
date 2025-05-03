@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Theme;
-import roomescape.mapper.ThemeMapper;
+import roomescape.domain.mapper.ThemeMapper;
 
 @Component
 public class JdbcThemeDao implements ThemeDao {
