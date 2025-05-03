@@ -49,13 +49,13 @@ public class ReservationService {
         return ReservationResponse.from(reservation.assignId(id));
     }
 
-    private void validateExistDuplicateReservation(ReservationRequest request, ReservationTime time) {
+    private void validateExistDuplicateReservation(final ReservationRequest request, final ReservationTime time) {
         if (reservationRepository.existBy(request.themeId(), request.date(), time.getStartAt())) {
             throw new IllegalArgumentException("이미 예약이 존재합니다.");
         }
     }
 
-    private void validateCanReserveDateTime(LocalDateTime reservationDateTime, LocalDateTime now) {
+    private void validateCanReserveDateTime(final LocalDateTime reservationDateTime, final LocalDateTime now) {
         if (reservationDateTime.isBefore(now)) {
             throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
         }
