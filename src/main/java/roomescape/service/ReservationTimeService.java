@@ -18,33 +18,33 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeRepository reservationTImeRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTImeRepository, final ReservationRepository reservationRepository) {
-        this.reservationTImeRepository = reservationTImeRepository;
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository, final ReservationRepository reservationRepository) {
+        this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
 
     public Long create(CreateReservationTimeParam createReservationTimeParam) {
-        return reservationTImeRepository.create(new ReservationTime(createReservationTimeParam.startAt()));
+        return reservationTimeRepository.create(new ReservationTime(createReservationTimeParam.startAt()));
     }
 
     public ReservationTimeResult findById(Long reservationTimeId) {
-        ReservationTime reservationTime = reservationTImeRepository.findById(reservationTimeId).orElseThrow(
+        ReservationTime reservationTime = reservationTimeRepository.findById(reservationTimeId).orElseThrow(
                 () -> new ReservationException(reservationTimeId + "에 해당하는 reservation_time 튜플이 없습니다."));
         return toReservationResult(reservationTime);
     }
 
     public List<ReservationTimeResult> findAll() {
-        List<ReservationTime> reservationTimes = reservationTImeRepository.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream()
                 .map(this::toReservationResult)
                 .toList();
     }
 
     public List<AvailableReservationTimeResult> findAvailableTimesByThemeIdAndDate(Long themeId, LocalDate reservationDate) {
-        List<ReservationTime> reservationTimes = reservationTImeRepository.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         Set<ReservationTime> bookedTimes = reservationRepository.findByThemeIdAndReservationDate(themeId, reservationDate).stream()
                 .map(Reservation::getTime)
@@ -63,10 +63,10 @@ public class ReservationTimeService {
     }
 
     public void deleteById(Long reservationTimeId) {
-        if (reservationRepository.existByTimeId(reservationTimeId)) {
+        if (reservationRepository.existsByTimeId(reservationTimeId)) {
             throw new ReservationException("해당 예약 시간에 예약이 존재합니다.");
         }
-        reservationTImeRepository.deleteById(reservationTimeId);
+        reservationTimeRepository.deleteById(reservationTimeId);
     }
 
     private ReservationTimeResult toReservationResult(ReservationTime reservationTime) {

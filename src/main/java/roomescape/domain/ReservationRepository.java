@@ -17,11 +17,11 @@ public interface ReservationRepository {
 
     Optional<Reservation> findById(Long reservationId);
 
-    boolean existByTimeId(Long reservationTimeId);
+    boolean existsByTimeId(Long reservationTimeId);
 
-    boolean existByDateAndTimeIdAndThemeId(LocalDate reservationDate, Long timeId, Long themeId);
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate reservationDate, Long timeId, Long themeId);
 
-    boolean existByThemeId(Long themeId);
+    boolean existsByThemeId(Long themeId);
 
     List<Reservation> findByThemeIdAndReservationDate(Long themeId, LocalDate reservationDate);
 }

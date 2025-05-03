@@ -44,7 +44,7 @@ public class ThemeService {
     }
 
     public void deleteById(final Long themeId) {
-        if (reservationRepository.existByThemeId(themeId)) {
+        if (reservationRepository.existsByThemeId(themeId)) {
             throw new ReservationException("해당 테마에 예약이 존재합니다.");
         }
         themeRepository.deleteById(themeId);
