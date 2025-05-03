@@ -24,12 +24,14 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         this.reservationRepository = reservationRepository;
     }
 
+    @Override
     public List<ReservationTimeResponse> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         return ReservationTimeResponse.from(reservationTimes);
     }
 
+    @Override
     public ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request) {
 
         LocalTime startAt = request.startAt();
@@ -43,6 +45,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         return ReservationTimeResponse.from(created);
     }
 
+    @Override
     public void deleteReservationTimeById(Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("[ERROR] 해당 시간에 이미 예약이 존재하여 삭제할 수 없습니다.");
@@ -52,11 +55,13 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         reservationTimeRepository.deleteById(reservationTime.getId());
     }
 
+    @Override
     public ReservationTime findReservationTimeById(Long id) {
         return reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("[ERROR] 예약 시간을 찾을 수 없습니다."));
     }
 
+    @Override
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(
             AvailableReservationTimeRequest request) {
         return reservationTimeRepository.findAllAvailableReservationTimes(request.date(), request.themeId());
