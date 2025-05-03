@@ -19,6 +19,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Optional<Theme> findById(final long id) {
         var sql = """
             select T.id, T.name, T.description, T.thumbnail from THEME T
@@ -29,6 +30,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return themeList.stream().findAny();
     }
 
+    @Override
     public long save(Theme theme) {
         var insert = new SimpleJdbcInsert(jdbcTemplate);
         var generatedId = insert.withTableName("THEME")
@@ -41,6 +43,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return generatedId.longValue();
     }
 
+    @Override
     public boolean removeById(long id) {
         var sql = "delete from THEME where id = ?";
 
@@ -48,6 +51,7 @@ public class ThemeJdbcRepository implements ThemeRepository {
         return removedRowsCount > 0;
     }
 
+    @Override
     public List<Theme> findAll() {
         var sql = """
             select T.id, T.name, T.description, T.thumbnail from THEME T
