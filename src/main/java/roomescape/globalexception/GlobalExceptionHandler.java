@@ -24,4 +24,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("잘못된 형식의 요청입니다."));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleNotCaughtExceptions(
+            final Exception e
+    ){
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("서버에서 예기치 못한 예외가 발생하였습니다."));
+    }
 }
