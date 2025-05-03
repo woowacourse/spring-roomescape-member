@@ -20,9 +20,13 @@ import roomescape.domain.ReservationTime;
 public class ReservationJdbcRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     public List<Reservation> findAll() {
@@ -60,10 +64,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reserverName.getName())
                 .addValue("date", reservationDateTime.reservationDate().getDate())
