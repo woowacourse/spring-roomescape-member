@@ -27,18 +27,29 @@ public class ThemeController {
         this.service = service;
     }
 
+    @PostMapping
+    public ResponseEntity<ThemeResponse> register(@RequestBody @Valid CreateThemeRequest request) {
+        var theme = service.register(request.name(), request.description(), request.thumbnail());
+        var response = ThemeResponse.from(theme);
+        return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
+    }
+
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> allThemes() {
+    public ResponseEntity<List<ThemeResponse>> getAllThemes() {
         var themes = service.findAllThemes();
         var response = ThemeResponse.from(themes);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    public ResponseEntity<ThemeResponse> add(@RequestBody @Valid CreateThemeRequest request) {
-        var theme = service.register(request.name(), request.description(), request.thumbnail());
-        var response = ThemeResponse.from(theme);
-        return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
+    @GetMapping(value = "/popular", params = {"startDate", "endDate", "count"})
+    public ResponseEntity<List<ThemeResponse>> getAvailableTimes(
+        @RequestParam("startDate") LocalDate startDate,
+        @RequestParam("endDate") LocalDate endDate,
+        @RequestParam("count") Integer count
+    ) {
+        var themes = service.findPopularThemes(startDate, endDate, count);
+        var response = ThemeResponse.from(themes);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -48,16 +59,5 @@ public class ThemeController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-    @GetMapping(value = "/popular", params = {"startDate", "endDate", "count"})
-    public ResponseEntity<List<ThemeResponse>> availableTimes(
-        @RequestParam("startDate") LocalDate startDate,
-        @RequestParam("endDate") LocalDate endDate,
-        @RequestParam("count") Integer count
-    ) {
-        var themes = service.findPopularThemes(startDate, endDate, count);
-        var response = ThemeResponse.from(themes);
-        return ResponseEntity.ok(response);
     }
 }

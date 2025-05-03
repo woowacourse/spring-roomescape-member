@@ -33,7 +33,7 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> allReservations() {
+    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
         var reservations = service.findAllReservations();
         var response = ReservationResponse.from(reservations);
         return ResponseEntity.ok(response);
