@@ -1,29 +1,31 @@
 package roomescape.application;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Theme;
 import roomescape.infrastructure.ReservationRepository;
 import roomescape.infrastructure.ThemeRepository;
 import roomescape.presentation.dto.request.ThemeCreateRequest;
 import roomescape.presentation.dto.response.ThemeResponse;
-import roomescape.domain.Theme;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ThemeService {
 
     private static final int POPULAR_THEME_COUNTS = 10;
 
+    private final CurrentTimeService currentTimeService;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
+    public ThemeService(CurrentTimeService currentTimeService,
+                        ThemeRepository themeRepository,
+                        ReservationRepository reservationRepository) {
+        this.currentTimeService = currentTimeService;
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
-        this.clock = clock;
     }
 
     public List<ThemeResponse> getThemes() {
@@ -50,7 +52,8 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(POPULAR_THEME_COUNTS, LocalDate.now(clock));
+        LocalDate now = currentTimeService.now().toLocalDate();
+        List<Theme> themes = themeRepository.findPopularThemeDuringAWeek(POPULAR_THEME_COUNTS, now);
         return ThemeResponse.from(themes);
     }
 }

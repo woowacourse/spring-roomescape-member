@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Import(ClockConfig.class)
+@Import(TestConfig.class)
 public class BaseTest {
 
     @Autowired
