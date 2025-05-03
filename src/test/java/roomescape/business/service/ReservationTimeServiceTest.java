@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class ReservationTimeServiceTest {
     @Test
     void readTimeOne() {
         // given
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.now(ZoneId.of("Asia/Seoul"));
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));
         ReservationTimeResponseDto expected = new ReservationTimeResponseDto(timeId, time);
 
@@ -56,7 +57,7 @@ class ReservationTimeServiceTest {
     @Test
     void createTime() {
         // given
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.now(ZoneId.of("Asia/Seoul"));
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(time);
 
         // when
@@ -76,7 +77,7 @@ class ReservationTimeServiceTest {
     @Test
     void deleteTime() {
         // given
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.now(ZoneId.of("Asia/Seoul"));
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(time);
         Long timeId = reservationTimeService.createTime(reservationTimeRequestDto);
 
@@ -92,7 +93,8 @@ class ReservationTimeServiceTest {
     @Test
     void deleteReferencedTime() {
         // given
-        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+        LocalDateTime tomorrow = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
+                .plusDays(1);
         LocalDate date = tomorrow.toLocalDate();
         LocalTime time = tomorrow.toLocalTime();
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));

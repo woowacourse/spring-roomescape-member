@@ -1,6 +1,7 @@
 package roomescape.business.service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class ReservationThemeService {
     }
 
     public List<ReservationThemeResponseDto> readBestReservedThemes() {
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
         LocalDate start = calculateStartDate(now);
         LocalDate end = calculateEndDate(now);
         List<ReservationTheme> bestReservedReservationThemes = reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(

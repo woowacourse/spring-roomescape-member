@@ -1,4 +1,4 @@
-package roomescape.business;
+package roomescape.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -6,13 +6,15 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.business.ReservationTheme;
+import roomescape.business.ReservationTime;
 import roomescape.business.fakerepository.FakeReservationRepository;
 import roomescape.business.fakerepository.FakeReservationThemeRepository;
 import roomescape.business.fakerepository.FakeReservationTimeRepository;
-import roomescape.business.service.ReservationService;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
@@ -40,12 +42,12 @@ class ReservationServiceTest {
     @Test
     void createReservation() {
         // given
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        LocalDate tomorrow = LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1);
+        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
 
         // when
-        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow,timeId, themeId));
+        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
 
         // then
         assertThat(reservationService.readReservationAll())
@@ -56,7 +58,7 @@ class ReservationServiceTest {
     @Test
     void createPastReservation() {
         // given
-        LocalDateTime pastDateTime = LocalDateTime.now().minusDays(1);
+        LocalDateTime pastDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul")).minusDays(1);
         Long timeId = reservationTimeRepository.add(new ReservationTime(pastDateTime.toLocalTime()));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto("벨로", pastDateTime.toLocalDate(),
@@ -73,8 +75,8 @@ class ReservationServiceTest {
     @Test
     void failCreateReservation() {
         // given
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        LocalDate tomorrow = LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1);
+        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
         reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
 
@@ -90,11 +92,11 @@ class ReservationServiceTest {
     @Test
     void deleteReservation() {
         // given
-        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
         Long id = reservationService.createReservation(new ReservationRequestDto(
                 "예약자",
-                LocalDate.now().plusDays(1),
+                LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),
                 timeId,
                 themeId)
         );
@@ -110,12 +112,12 @@ class ReservationServiceTest {
     @Test
     void readReservationAll() {
         // given
-        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
+        Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now(ZoneId.of("Asia/Seoul"))));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
         Long id = reservationService.createReservation(
                 new ReservationRequestDto(
                         "예약자",
-                        LocalDate.now().plusDays(1),
+                        LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1),
                         timeId,
                         themeId)
         );

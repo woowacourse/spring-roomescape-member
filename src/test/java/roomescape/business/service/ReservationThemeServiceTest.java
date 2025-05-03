@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class ReservationThemeServiceTest {
     void deleteReferencedTheme() {
         // given
         Long themeId = reservationThemeRepository.add(new ReservationTheme("수양", "수양테마", "수양썸네일"));
-        reservationRepository.add(new Reservation("수양", LocalDate.now().plusDays(1), null,
+        reservationRepository.add(new Reservation("수양", LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1), null,
                 new ReservationTheme(themeId, "수양", "수양테마", "수양썸네일")));
 
         // when
