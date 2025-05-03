@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.time.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.service.ReservationService;
+import roomescape.time.controller.dto.AvailableTimeResponse;
 
 @RequestMapping("/reservations")
 @RestController
@@ -35,8 +35,6 @@ public class ReservationController {
     @GetMapping("/available")
     public List<AvailableTimeResponse> getAvailableTimes(@RequestParam("date") LocalDate date,
                                                          @RequestParam("themeId") Long themeId) {
-        validateDate(date);
-        validateThemeId(themeId);
         return reservationService.getAvailableTimes(date, themeId);
     }
 
@@ -50,18 +48,6 @@ public class ReservationController {
     @DeleteMapping("/{reservationId}")
     public void deleteReservation(@PathVariable("reservationId") Long reservationId) {
         reservationService.remove(reservationId);
-    }
-
-    private void validateThemeId(Long themeId) {
-        if (themeId == null) {
-            throw new IllegalArgumentException("테마 ID는 필수입니다.");
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
-        }
     }
 
 }
