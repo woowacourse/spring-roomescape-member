@@ -19,7 +19,7 @@ public class TimeSlotService {
 
     @Autowired
     public TimeSlotService(ReservationRepository reservationRepository,
-        TimeSlotRepository timeSlotRepository) {
+                           TimeSlotRepository timeSlotRepository) {
         this.reservationRepository = reservationRepository;
         this.timeSlotRepository = timeSlotRepository;
     }
@@ -45,12 +45,12 @@ public class TimeSlotService {
     public List<AvailableTimeSlotDto> findAvailableTimeSlots(LocalDate date, long themeId) {
         var filteredReservations = reservationRepository.findByDateAndThemeId(date, themeId);
         var filteredTimeSlots = filteredReservations.stream()
-            .map(Reservation::timeSlot)
-            .toList();
+                .map(Reservation::timeSlot)
+                .toList();
 
         var allTimeSlots = timeSlotRepository.findAll();
         return allTimeSlots.stream()
-            .map(ts -> AvailableTimeSlotDto.from(ts, filteredTimeSlots.contains(ts)))
-            .toList();
+                .map(ts -> AvailableTimeSlotDto.from(ts, filteredTimeSlots.contains(ts)))
+                .toList();
     }
 }

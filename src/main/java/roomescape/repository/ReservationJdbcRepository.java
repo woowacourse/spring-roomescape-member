@@ -17,30 +17,30 @@ import roomescape.model.TimeSlot;
 public class ReservationJdbcRepository implements ReservationRepository {
 
     static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
-        (rs, rowNum) -> {
-            var id = rs.getLong("id");
-            var name = rs.getString("name");
-            var date = rs.getDate("date").toLocalDate();
-            var timeSlotId = rs.getLong("time_id");
-            var time = rs.getTime("start_at").toLocalTime();
-            var themeId = rs.getLong("theme_id");
-            var themeName = rs.getString("theme_name");
-            var themeDescription = rs.getString("theme_description");
-            var themeThumbnail = rs.getString("theme_thumbnail");
+            (rs, rowNum) -> {
+                var id = rs.getLong("id");
+                var name = rs.getString("name");
+                var date = rs.getDate("date").toLocalDate();
+                var timeSlotId = rs.getLong("time_id");
+                var time = rs.getTime("start_at").toLocalTime();
+                var themeId = rs.getLong("theme_id");
+                var themeName = rs.getString("theme_name");
+                var themeDescription = rs.getString("theme_description");
+                var themeThumbnail = rs.getString("theme_thumbnail");
 
-            var timeSlot = new TimeSlot(timeSlotId, time);
-            var theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
-            return new Reservation(id, name, date, timeSlot, theme);
-        };
+                var timeSlot = new TimeSlot(timeSlotId, time);
+                var theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
+                return new Reservation(id, name, date, timeSlot, theme);
+            };
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER =
-        (rs, rowNum) -> {
-            var id = rs.getLong("id");
-            var name = rs.getString("name");
-            var description = rs.getString("description");
-            var thumbnail = rs.getString("thumbnail");
-            return new Theme(id, name, description, thumbnail);
-        };
+            (rs, rowNum) -> {
+                var id = rs.getLong("id");
+                var name = rs.getString("name");
+                var description = rs.getString("description");
+                var thumbnail = rs.getString("thumbnail");
+                return new Theme(id, name, description, thumbnail);
+            };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -52,11 +52,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(final long id) {
         var sql = """
-            select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-            left join RESERVATION_TIME RT on R.time_id = RT.id 
-            left join THEME T on T.id = R.theme_id                                                                                                                              
-            where R.id = ?
-            """;
+                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
+                left join RESERVATION_TIME RT on R.time_id = RT.id 
+                left join THEME T on T.id = R.theme_id                                                                                                                              
+                where R.id = ?
+                """;
 
         var reservationList = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
         return reservationList.stream().findAny();
@@ -66,13 +66,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public long save(Reservation reservation) {
         var insert = new SimpleJdbcInsert(jdbcTemplate);
         var generatedId = insert.withTableName("RESERVATION")
-            .usingGeneratedKeyColumns("id")
-            .executeAndReturnKey(Map.of(
-                "name", reservation.name(),
-                "date", reservation.date(),
-                "time_id", reservation.timeSlot().id(),
-                "theme_id", reservation.theme().id()
-            ));
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(Map.of(
+                        "name", reservation.name(),
+                        "date", reservation.date(),
+                        "time_id", reservation.timeSlot().id(),
+                        "theme_id", reservation.theme().id()
+                ));
         return generatedId.longValue();
     }
 
@@ -87,10 +87,10 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         var sql = """
-            select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-            left join RESERVATION_TIME RT on R.time_id = RT.id 
-            left join THEME T on T.id = R.theme_id
-            """;
+                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
+                left join RESERVATION_TIME RT on R.time_id = RT.id 
+                left join THEME T on T.id = R.theme_id
+                """;
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
     }
@@ -98,11 +98,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByTimeSlotId(long id) {
         var sql = """
-            select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-            left join RESERVATION_TIME RT on R.time_id = RT.id
-            left join THEME T on T.id = R.theme_id
-            WHERE R.time_id = ?
-            """;
+                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
+                left join RESERVATION_TIME RT on R.time_id = RT.id
+                left join THEME T on T.id = R.theme_id
+                WHERE R.time_id = ?
+                """;
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
     }
@@ -110,11 +110,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByThemeId(long id) {
         var sql = """
-            select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-            left join RESERVATION_TIME RT on R.time_id = RT.id 
-            left join THEME T on T.id = R.theme_id
-            WHERE R.theme_id = ?
-            """;
+                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
+                left join RESERVATION_TIME RT on R.time_id = RT.id 
+                left join THEME T on T.id = R.theme_id
+                WHERE R.theme_id = ?
+                """;
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
     }
@@ -122,11 +122,11 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, long themeId) {
         var sql = """
-            select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-            left join RESERVATION_TIME RT on R.time_id = RT.id 
-            left join THEME T on T.id = R.theme_id
-            WHERE R.date = ? AND R.theme_id = ?
-            """;
+                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
+                left join RESERVATION_TIME RT on R.time_id = RT.id 
+                left join THEME T on T.id = R.theme_id
+                WHERE R.date = ? AND R.theme_id = ?
+                """;
 
         return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, date, themeId);
     }
@@ -134,13 +134,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Theme> findThemeRankingByPeriod(LocalDate startDate, LocalDate endDate, int limit) {
         var sql = """
-            select T.id, T.name, T.description, T.thumbnail from THEME T
-            join RESERVATION R on T.id = R.theme_id
-            where R.date >= ? and R.date <= ?
-            group by T.id
-            order by count(R.id) desc
-            limit ?
-            """;
+                select T.id, T.name, T.description, T.thumbnail from THEME T
+                join RESERVATION R on T.id = R.theme_id
+                where R.date >= ? and R.date <= ?
+                group by T.id
+                order by count(R.id) desc
+                limit ?
+                """;
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
     }
 }

@@ -14,13 +14,13 @@ import roomescape.model.Theme;
 public class ThemeJdbcRepository implements ThemeRepository {
 
     static final RowMapper<Theme> THEME_ROW_MAPPER =
-        (rs, rowNum) -> {
-            var id = rs.getLong("id");
-            var name = rs.getString("name");
-            var description = rs.getString("description");
-            var thumbnail = rs.getString("thumbnail");
-            return new Theme(id, name, description, thumbnail);
-        };
+            (rs, rowNum) -> {
+                var id = rs.getLong("id");
+                var name = rs.getString("name");
+                var description = rs.getString("description");
+                var thumbnail = rs.getString("thumbnail");
+                return new Theme(id, name, description, thumbnail);
+            };
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -31,9 +31,9 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
     public Optional<Theme> findById(final long id) {
         var sql = """
-            select T.id, T.name, T.description, T.thumbnail from THEME T
-            where T.id = ?
-            """;
+                select T.id, T.name, T.description, T.thumbnail from THEME T
+                where T.id = ?
+                """;
 
         var themeList = jdbcTemplate.query(sql, THEME_ROW_MAPPER, id);
         return themeList.stream().findAny();
@@ -42,12 +42,12 @@ public class ThemeJdbcRepository implements ThemeRepository {
     public long save(Theme theme) {
         var insert = new SimpleJdbcInsert(jdbcTemplate);
         var generatedId = insert.withTableName("THEME")
-            .usingGeneratedKeyColumns("id")
-            .executeAndReturnKey(Map.of(
-                "name", theme.name(),
-                "description", theme.description(),
-                "thumbnail", theme.thumbnail()
-            ));
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(Map.of(
+                        "name", theme.name(),
+                        "description", theme.description(),
+                        "thumbnail", theme.thumbnail()
+                ));
         return generatedId.longValue();
     }
 
@@ -60,8 +60,8 @@ public class ThemeJdbcRepository implements ThemeRepository {
 
     public List<Theme> findAll() {
         var sql = """
-            select T.id, T.name, T.description, T.thumbnail from THEME T
-            """;
+                select T.id, T.name, T.description, T.thumbnail from THEME T
+                """;
 
         return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
     }

@@ -40,10 +40,10 @@ public class TimeSlotJdbcRepository implements TimeSlotRepository {
         var insert = new SimpleJdbcInsert(jdbcTemplate);
 
         var generatedId = insert.withTableName("reservation_time")
-            .usingGeneratedKeyColumns("id")
-            .executeAndReturnKey(Map.of(
-                "start_at", timeSlot.startAt()
-            ));
+                .usingGeneratedKeyColumns("id")
+                .executeAndReturnKey(Map.of(
+                        "start_at", timeSlot.startAt()
+                ));
         return generatedId.longValue();
     }
 

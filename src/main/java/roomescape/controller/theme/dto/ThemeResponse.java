@@ -4,24 +4,24 @@ import java.util.List;
 import roomescape.model.Theme;
 
 public record ThemeResponse(
-    Long id,
-    String name,
-    String description,
-    String thumbnail
+        Long id,
+        String name,
+        String description,
+        String thumbnail
 ) {
 
     public static ThemeResponse from(Theme theme) {
         return new ThemeResponse(
-            theme.id(),
-            theme.name(),
-            theme.description(),
-            theme.thumbnail()
+                theme.id(),
+                theme.name(),
+                theme.description(),
+                theme.thumbnail()
         );
     }
 
     public static List<ThemeResponse> from(List<Theme> themes) {
         return themes.stream()
-            .map(ThemeResponse::from)
-            .toList();
+                .map(ThemeResponse::from)
+                .toList();
     }
 }
