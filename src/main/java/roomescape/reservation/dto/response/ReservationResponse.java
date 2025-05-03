@@ -14,7 +14,7 @@ public record ReservationResponse(
         ReservationTimeResponse time,
         ThemeResponse theme
 ) {
-    public static ReservationResponse from(Reservation reservation, ReservationTime reservationTime, Theme theme) {
+    public static ReservationResponse of(Reservation reservation, ReservationTime reservationTime, Theme theme) {
         return new ReservationResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
                 ReservationTimeResponse.from(reservationTime), ThemeResponse.from(theme)
         );

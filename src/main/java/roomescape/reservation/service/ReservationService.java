@@ -32,7 +32,7 @@ public class ReservationService {
                 .map(reservation -> {
                     ReservationTime time = reservation.getTime();
                     Theme theme = reservation.getTheme();
-                    return ReservationResponse.from(reservation, time, theme);
+                    return ReservationResponse.of(reservation, time, theme);
                 })
                 .toList();
     }
@@ -55,6 +55,6 @@ public class ReservationService {
 
         Reservation newReservation = reservationRepository.put(
                 Reservation.withUnassignedId(request.name(), request.date(), time, theme));
-        return ReservationResponse.from(newReservation, time, theme);
+        return ReservationResponse.of(newReservation, time, theme);
     }
 }
