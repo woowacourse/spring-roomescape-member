@@ -34,7 +34,7 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(final ReservationRequest request) {
-        ReservationTime time = reservationTimeRepository.findById(request.timeId());
+        ReservationTime time = reservationTimeRepository.findBy(request.timeId());
         Theme theme = themeRepository.findBy(request.themeId());
 
         LocalDateTime now = dateTime.now();

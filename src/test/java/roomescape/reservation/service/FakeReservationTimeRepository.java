@@ -26,7 +26,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime findById(Long id) {
+    public ReservationTime findBy(Long id) {
         return reservationTimes.stream()
                 .filter(reservationTime -> Objects.equals(reservationTime.getId(), id))
                 .findAny()

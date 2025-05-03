@@ -41,8 +41,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcReservationRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcReservationRepository(final DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -122,9 +122,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         String sql = """               
                 SELECT COUNT(*)
                 FROM reservation as r
-                INNER JOIN reservation_time as t
-                INNER JOIN theme as th
-                ON r.time_id = t.id
+                INNER JOIN reservation_time as t ON r.time_id = t.id
+                INNER JOIN theme as th ON r.theme_id = th.id
                 WHERE r.date = ? and t.start_at = ? and th.id = ?
                 """;
         Long count = jdbcTemplate.queryForObject(sql, Long.class, Date.valueOf(date), Time.valueOf(time), themeId);

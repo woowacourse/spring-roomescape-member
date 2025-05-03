@@ -30,7 +30,7 @@ class ReservationTimeServiceTest {
         Long id = reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
-        reservationTime1 = reservationTimeRepository.findById(id);
+        reservationTime1 = reservationTimeRepository.findBy(id);
         ReservationRepository reservationRepository = new FakeReservationRepository();
         reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
 

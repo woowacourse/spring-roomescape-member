@@ -8,7 +8,7 @@ public interface ReservationTimeRepository {
 
     boolean deleteBy(Long id);
 
-    ReservationTime findById(Long id);
+    ReservationTime findBy(Long id);
 
     List<ReservationTime> findAll();
 }
