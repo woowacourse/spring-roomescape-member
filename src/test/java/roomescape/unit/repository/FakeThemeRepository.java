@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Theme;
+import roomescape.exception.InvalidThemeException;
 import roomescape.repository.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
-    AtomicLong index = new AtomicLong(1L);
-    List<Theme> themes = new ArrayList<>();
+    private final AtomicLong index = new AtomicLong(1L);
+    private final List<Theme> themes = new ArrayList<>();
 
     @Override
     public Theme add(Theme theme) {
@@ -38,7 +39,7 @@ public class FakeThemeRepository implements ThemeRepository {
         Optional<Theme> findTheme = themes.stream()
                 .filter(theme -> theme.getId().equals(id))
                 .findAny();
-        findTheme.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다."));
+        findTheme.orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
         themes.remove(findTheme.get());
     }
 }

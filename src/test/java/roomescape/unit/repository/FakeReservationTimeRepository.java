@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
+import roomescape.exception.InvalidReservationTimeException;
 import roomescape.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeRepository implements ReservationTimeRepository {
 
-    AtomicLong index = new AtomicLong(1L);
-    List<ReservationTime> reservationTimes = new ArrayList<>();
+    private final AtomicLong index = new AtomicLong(1L);
+    private final List<ReservationTime> reservationTimes = new ArrayList<>();
 
     @Override
     public ReservationTime add(ReservationTime reservationTime) {
@@ -28,15 +29,6 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteById(Long id) {
-        Optional<ReservationTime> findReservationTimes = reservationTimes.stream()
-                .filter(reservation -> reservation.getId().equals(id))
-                .findAny();
-        findReservationTimes.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id입니다." + id));
-        reservationTimes.remove(findReservationTimes.get());
-    }
-
-    @Override
     public Optional<ReservationTime> findById(Long id) {
         return reservationTimes.stream()
                 .filter(reservation -> reservation.getId().equals(id))
@@ -47,5 +39,14 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public boolean existsByTime(LocalTime time) {
         return reservationTimes.stream()
                 .anyMatch((reservationTime) -> reservationTime.getTime().equals(time));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Optional<ReservationTime> findReservationTimes = reservationTimes.stream()
+                .filter(reservation -> reservation.getId().equals(id))
+                .findAny();
+        findReservationTimes.orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다." + id));
+        reservationTimes.remove(findReservationTimes.get());
     }
 }
