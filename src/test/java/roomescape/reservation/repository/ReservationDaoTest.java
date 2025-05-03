@@ -11,12 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservation.repository.H2ReservationDao;
-import roomescape.reservation.repository.H2ReservationTimeDao;
-import roomescape.reservation.repository.H2ThemeDao;
-import roomescape.reservation.repository.ReservationDao;
-import roomescape.reservation.repository.ReservationTimeDao;
-import roomescape.reservation.repository.ThemeDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -28,7 +22,6 @@ class ReservationDaoTest {
     private ReservationTimeDao reservationTimeDao;
     private ThemeDao themeDao;
     private final LocalTime time = LocalTime.of(10, 0);
-    private ReservationTime reservationTime;
     private Theme theme;
 
     @Autowired
@@ -72,7 +65,7 @@ class ReservationDaoTest {
                     FOREIGN KEY (theme_id) REFERENCES theme (id)
                 );
                 """);
-        reservationTime = reservationTimeDao.save(new ReservationTime(time));
+        reservationTimeDao.save(new ReservationTime(time));
         theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
         themeDao.save(theme);
     }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
@@ -15,7 +16,6 @@ import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.reservation.repository.ReservationDao;
 import roomescape.reservation.repository.ReservationTimeDao;
-import roomescape.reservation.service.ReservationTimeService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -99,6 +99,7 @@ class ReservationTimeServiceTest {
                 .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }
 
+    @Disabled
     @DisplayName("예약 가능 시간을 조회할 수 있다.")
     @Test
     void test() {

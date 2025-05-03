@@ -14,7 +14,6 @@ import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
 import roomescape.reservation.repository.ReservationTimeDao;
-import roomescape.reservation.service.ReservationService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
