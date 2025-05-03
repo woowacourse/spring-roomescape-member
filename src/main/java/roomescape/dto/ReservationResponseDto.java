@@ -11,14 +11,14 @@ public record ReservationResponseDto(Long id, String name, @JsonFormat(pattern =
                                      ThemeResponseDto theme,
                                      ReservationTimeResponseDto time) {
 
-    public static ReservationResponseDto from(Reservation reservation, ReservationTime reservationTime, Theme theme) {
+    public static ReservationResponseDto of(Reservation reservation, ReservationTime reservationTime, Theme theme) {
         ReservationTimeResponseDto timeResponseDto = ReservationTimeResponseDto.from(reservationTime);
         ThemeResponseDto themeResponseDto = ThemeResponseDto.from(theme);
 
         return new ReservationResponseDto(
-                reservation.id(),
-                reservation.name(),
-                reservation.date(),
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
                 themeResponseDto,
                 timeResponseDto);
     }
