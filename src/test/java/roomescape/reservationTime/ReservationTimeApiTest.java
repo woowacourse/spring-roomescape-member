@@ -7,13 +7,18 @@ import io.restassured.http.ContentType;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservationtime.dto.ReservationTimeRequest;
 
@@ -38,15 +43,24 @@ public class ReservationTimeApiTest {
     }
 
     @DisplayName("시간 생성")
-    @Test
-    void createTime() {
+    @ParameterizedTest
+    @MethodSource
+    void createTime(final Map<String, Object> body, final HttpStatus expectedStatus) {
         // given & when & then
         RestAssured.given().port(port).log().all()
                 .contentType(ContentType.JSON)
-                .body(new ReservationTimeRequest(LocalTime.of(10, 0)))
+                .body(body)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(expectedStatus.value());
+    }
+
+    static Stream<Arguments> createTime() {
+        return Stream.of(
+                Arguments.of(Map.of("startAt", "10:40"), HttpStatus.CREATED),
+                Arguments.of(Map.of("startAt", "25:40"), HttpStatus.BAD_REQUEST),
+                Arguments.of(Map.of(), HttpStatus.BAD_REQUEST)
+        );
     }
 
     @DisplayName("시간 모두 조회")

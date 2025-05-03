@@ -6,15 +6,20 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -63,21 +68,68 @@ public class ReservationApiTest {
     @DisplayName("예약 생성")
     class Post {
 
-        @DisplayName("예약을 생성하고, 201 CREATED를 응답")
-        @Test
-        void post() {
+        @DisplayName("reservation POST 요청 테스트")
+        @ParameterizedTest
+        @MethodSource
+        void post(final Map<String, Object> body, final HttpStatus expectedStatusCode) {
             // given
             givenCreateReservationTime();
             givenCreateTheme();
 
             // when & then
-            RestAssured.given().port(port).log().all()
+            RestAssured.given().port(port)
                     .contentType(ContentType.JSON)
-                    .body(RESERVATION_BODY)
+                    .body(body)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(201)
-                    .body("id", is(1));
+                    .statusCode(expectedStatusCode.value());
+        }
+
+        static Stream<Arguments> post(){
+            return Stream.of(
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "date", "2026-12-01",
+                            "timeId", 1L,
+                            "themeId", 1L
+                    ), HttpStatus.CREATED),
+
+                    Arguments.of(Map.of(
+                            "date", "2026-12-01",
+                            "timeId", 1L,
+                            "themeId", 1L
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "timeId", 1L,
+                            "themeId", 1L
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "date", "2026-12-01",
+                            "themeId", 1L
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "date", "2026-12-01",
+                            "timeId", 1L
+                    ), HttpStatus.BAD_REQUEST),
+
+                    Arguments.of(Map.of(
+                            "name", "",
+                            "date", "2026-12-01",
+                            "timeId", 1L,
+                            "themeId", 1L
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "date", "",
+                            "timeId", 1L,
+                            "themeId", 1L
+                    ), HttpStatus.BAD_REQUEST),
+
+                    Arguments.of(Map.of(), HttpStatus.BAD_REQUEST)
+            );
         }
 
         @DisplayName("존재하지 않는 시간을 선택하면, 400을 응답한다.")

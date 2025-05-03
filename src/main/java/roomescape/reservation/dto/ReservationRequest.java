@@ -1,17 +1,13 @@
 package roomescape.reservation.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.exception.custom.reason.RequestInvalidException;
 
 public record ReservationRequest(
-        String name,
-        LocalDate date,
-        Long timeId,
-        Long themeId
+        @NotBlank String name,
+        @NotNull LocalDate date,
+        @NotNull Long timeId,
+        @NotNull Long themeId
 ) {
-    public ReservationRequest {
-        if (name == null || date == null || timeId == null || themeId == null) {
-            throw new RequestInvalidException();
-        }
-    }
 }

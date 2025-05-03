@@ -1,5 +1,6 @@
 package roomescape.reservationtime;
 
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class ReservationTimeController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> create(
-            @RequestBody final ReservationTimeRequest request
+            @RequestBody @Valid final ReservationTimeRequest request
     ) {
         final ReservationTimeResponse response = reservationTimeService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

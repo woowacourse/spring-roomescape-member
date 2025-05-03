@@ -1,5 +1,6 @@
 package roomescape.theme;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<ThemeResponse> create(
-            @RequestBody final ThemeRequest request
+            @RequestBody @Valid final ThemeRequest request
     ) {
         final ThemeResponse response = themeService.create(request);
         return ResponseEntity

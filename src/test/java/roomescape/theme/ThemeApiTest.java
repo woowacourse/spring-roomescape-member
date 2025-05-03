@@ -4,14 +4,20 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.theme.dto.ThemeRequest;
 
@@ -40,21 +46,73 @@ public class ThemeApiTest {
     @DisplayName("Post")
     class Post {
 
-        @DisplayName("theme 생성")
+        @DisplayName("theme post 요청")
+        @ParameterizedTest
+        @MethodSource
+        void post1(final Map<String, Object> body, final HttpStatus expectedStatusCode) {
+            RestAssured.given().port(port).log().all()
+                    .contentType(ContentType.JSON)
+                    .body(body)
+                    .when().post("/themes")
+                    .then().log().all()
+                    .statusCode(expectedStatusCode.value());
+        }
+
+        static Stream<Arguments> post1(){
+            return Stream.of(
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "description", "부기입니다.",
+                            "thumbnail", "http://www.google.com"
+                    ), HttpStatus.CREATED),
+
+                    Arguments.of(Map.of(
+                            "description", "부기입니다.",
+                            "thumbnail", "http://www.google.com"
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "thumbnail", "http://www.google.com"
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "description", "부기입니다."
+                    ), HttpStatus.BAD_REQUEST),
+
+                    Arguments.of(Map.of(
+                            "name", "",
+                            "description", "부기입니다.",
+                            "thumbnail", "http://www.google.com"
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "description", "",
+                            "thumbnail", "http://www.google.com"
+                    ), HttpStatus.BAD_REQUEST),
+                    Arguments.of(Map.of(
+                            "name", "boogie",
+                            "description", "부기입니다.",
+                            "thumbnail", ""
+                    ), HttpStatus.BAD_REQUEST)
+            );
+        }
+
+        @DisplayName("theme post 요청시 location header가 반환된다.")
         @Test
-        void post1() {
-            final ThemeRequest dummy = new ThemeRequest(
-                    "", "", ""
+        void post2() {
+            final ThemeRequest body = new ThemeRequest(
+                    "boogie", "부기입니다.", "http://www.google.com"
             );
 
             RestAssured.given().port(port).log().all()
                     .contentType(ContentType.JSON)
-                    .body(dummy)
+                    .body(body)
                     .when().post("/themes")
                     .then().log().all()
-                    .statusCode(201)
+                    .statusCode(HttpStatus.CREATED.value())
                     .header("location", "/themes/1");
         }
+
     }
 
     @Nested

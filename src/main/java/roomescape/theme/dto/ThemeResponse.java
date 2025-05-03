@@ -1,6 +1,6 @@
 package roomescape.theme.dto;
 
-import roomescape.exception.custom.reason.RequestInvalidException;
+import roomescape.exception.custom.reason.ResponseInvalidException;
 import roomescape.theme.Theme;
 
 public record ThemeResponse(
@@ -11,7 +11,7 @@ public record ThemeResponse(
 ) {
     public ThemeResponse {
         if (id == null || name == null || description == null || thumbnail == null) {
-            throw new RequestInvalidException();
+            throw new ResponseInvalidException();
         }
     }
 

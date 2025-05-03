@@ -1,15 +1,10 @@
 package roomescape.theme.dto;
 
-import roomescape.exception.custom.reason.RequestInvalidException;
+import jakarta.validation.constraints.NotBlank;
 
 public record ThemeRequest(
-        String name,
-        String description,
-        String thumbnail
+        @NotBlank String name,
+        @NotBlank String description,
+        @NotBlank String thumbnail
 ) {
-    public ThemeRequest {
-        if (name == null || description == null || thumbnail == null) {
-            throw new RequestInvalidException();
-        }
-    }
 }
