@@ -62,13 +62,13 @@ public class ThemeService {
     }
 
     private void validateThemeName(ThemeRequest request) {
-        if (themeDao.getCountByName(request.name()) != 0) {
+        if (themeDao.getCountByName(request.name())) {
             throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
         }
     }
 
     private void validateIsConstraint(Long id) {
-        if (reservationDao.getCountByThemeId(id) != 0) {
+        if (reservationDao.existsByThemeId(id)) {
             throw new ThemeConstraintException();
         }
     }

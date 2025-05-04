@@ -3,7 +3,6 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -71,8 +70,7 @@ public class ReservationService {
     }
 
     private void validateIsDuplicate(ReservationRequest request) {
-        int count = reservationDao.getCountByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
-        if (count != 0) {
+        if (reservationDao.existsByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date())) {
             throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
         }
     }

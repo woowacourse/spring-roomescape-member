@@ -63,7 +63,7 @@ public class ReservationTimeService {
         return times.stream()
             .map(time -> {
                 Long timeId = time.getId();
-                boolean isBooked = (reservationDao.getCountByTimeIdAndThemeIdAndDate(timeId, themeId, date) != 0);
+                boolean isBooked = reservationDao.existsByTimeIdAndThemeIdAndDate(timeId, themeId, date);
                 return ReservationAvailableTimeResponse.from(time, isBooked);
             }).toList();
     }
