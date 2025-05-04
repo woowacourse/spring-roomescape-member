@@ -50,7 +50,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopular(LocalDate start, LocalDate end) {
+    public List<Theme> findMostReservedByDateRange(LocalDate start, LocalDate end) {
         Map<Theme, Long> themeCounts = reservations.stream()
                 .filter(r -> !r.getDate().isBefore(start) && r.getDate().isBefore(end))
                 .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));

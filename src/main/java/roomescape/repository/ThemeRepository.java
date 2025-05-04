@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     Optional<Theme> findById(long id);
 
-    List<Theme> findPopular(LocalDate start, LocalDate end);
+    List<Theme> findMostReservedByDateRange(LocalDate start, LocalDate end);
 
     int deleteById(long id);
 }

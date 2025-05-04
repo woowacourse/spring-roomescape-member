@@ -70,7 +70,7 @@ public class JdbcThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopular(LocalDate start, LocalDate end) {
+    public List<Theme> findMostReservedByDateRange(LocalDate start, LocalDate end) {
         String sql = """
                 SELECT
                 th.id,
