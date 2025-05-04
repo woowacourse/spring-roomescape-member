@@ -2,6 +2,7 @@ package roomescape.reservation.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
@@ -15,6 +16,7 @@ import roomescape.time.domain.ReservationTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase {
 
     private final ReservationRepository reservationRepository;

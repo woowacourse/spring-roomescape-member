@@ -2,6 +2,7 @@ package roomescape.reservation.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.application.dto.ThemeToBookCountServiceResponse;
@@ -22,6 +23,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
 
     private final ReservationRepository reservationRepository;
