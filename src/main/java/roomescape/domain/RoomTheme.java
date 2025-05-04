@@ -50,4 +50,20 @@ public class RoomTheme {
     public String getThumbnail() {
         return thumbnail;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RoomTheme roomTheme = (RoomTheme) o;
+        return getId() == roomTheme.getId() && Objects.equals(getName(), roomTheme.getName())
+                && Objects.equals(getDescription(), roomTheme.getDescription()) && Objects.equals(
+                getThumbnail(), roomTheme.getThumbnail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), getThumbnail());
+    }
 }
