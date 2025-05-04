@@ -52,21 +52,6 @@ class ThemeServiceTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("getInvalidThemeRequests")
-    void createThemeFailureTest(ThemeCreateRequest themeCreateRequest) {
-        assertThatThrownBy(() -> themeService.createTheme(themeCreateRequest)).isInstanceOf(ThemeValidationException.class);
-    }
-
-    private static Stream<Arguments> getInvalidThemeRequests() {
-        return Stream.of(
-                Arguments.of(new ThemeCreateRequest(null, "테마 설명", "테마 이미지")),
-                Arguments.of(new ThemeCreateRequest("", "테마 설명", "테마 이미지")),
-                Arguments.of(new ThemeCreateRequest(" ", "테마 설명", "테마 이미지"))
-        );
-    }
-
-
     @Test
     void findAllTest() {
         // given

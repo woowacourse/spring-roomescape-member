@@ -1,6 +1,9 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -11,8 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.common.exception.DeleteReservationException;
+import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 
@@ -21,10 +28,14 @@ import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ReservationTimeServiceTest {
 
+    private final ReservationService reservationService;
+    private final ThemeService themeService;
     private final ReservationTimeService reservationTimeService;
 
     @Autowired
-    public ReservationTimeServiceTest(ReservationTimeService reservationTimeService) {
+    public ReservationTimeServiceTest(ReservationService reservationService, ThemeService themeService,ReservationTimeService reservationTimeService) {
+        this.reservationService = reservationService;
+        this.themeService = themeService;
         this.reservationTimeService = reservationTimeService;
     }
 
@@ -38,7 +49,7 @@ public class ReservationTimeServiceTest {
 
         // then
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(reservationTimes).hasSize(1),
                 () -> assertThat(reservationTimes.get(0).startAt()).isEqualTo("10:00")
         );
@@ -56,7 +67,7 @@ public class ReservationTimeServiceTest {
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(reservationTimes).hasSize(2),
                 () -> assertThat(reservationTimes.get(0).startAt()).isEqualTo("10:00"),
                 () -> assertThat(reservationTimes.get(1).startAt()).isEqualTo("11:00")
@@ -66,8 +77,8 @@ public class ReservationTimeServiceTest {
     @Test
     void deleteReservationTimeByIdTest() {
         // given
-        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10,0));
-        reservationTimeService.createReservationTime(request);
+        ReservationTimeCreateRequest reservationTimeCreateRequest = new ReservationTimeCreateRequest(LocalTime.of(10,0));
+        reservationTimeService.createReservationTime(reservationTimeCreateRequest);
         List<ReservationTimeResponse> reservationTimesBeforeDelete = reservationTimeService.findAll();
 
         // when
@@ -75,7 +86,7 @@ public class ReservationTimeServiceTest {
         List<ReservationTimeResponse> reservationTimesAfterDelete = reservationTimeService.findAll();
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(reservationTimesBeforeDelete).hasSize(1),
                 () -> assertThat(reservationTimesAfterDelete).isEmpty()
         );
@@ -93,7 +104,7 @@ public class ReservationTimeServiceTest {
         List<ReservationTimeResponseWithBookedStatus> availableTimes = reservationTimeService.findAvailableReservationTimesByDateAndThemeId(LocalDate.now(), 1L);
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(availableTimes).hasSize(2),
                 () -> assertThat(availableTimes.get(0).booked()).isFalse(),
                 () -> assertThat(availableTimes.get(1).booked()).isFalse()

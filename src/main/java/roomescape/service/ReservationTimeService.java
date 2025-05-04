@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.DeleteReservationException;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 import roomescape.repository.ReservationRepository;
