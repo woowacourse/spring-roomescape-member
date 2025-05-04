@@ -22,6 +22,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<Void> handleDataAccessException(DataAccessException e) {
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.internalServerError().build();
     }
 }
