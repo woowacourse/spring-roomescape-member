@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import roomescape.common.exception.InternalLogicException;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,7 +23,7 @@ public class BookedCount {
 
     private static void validateNegative(final int value) {
         if (value < 0) {
-            throw new InternalLogicException("BookedCount must not be negative: " + value);
+            throw new IllegalArgumentException("BookedCount must not be negative: " + value);
         }
     }
 }
