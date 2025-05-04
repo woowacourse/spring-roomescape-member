@@ -12,18 +12,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
 
 @JdbcTest
+@Sql(scripts = "/schema.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 class ReservationDaoTest {
 
     private ReservationDao reservationDao;
     private ReservationTimeDao reservationTimeDao;
     private ThemeDao themeDao;
     private final LocalTime time = LocalTime.of(10, 0);
-    private Theme theme;
+    private Theme theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -34,38 +37,7 @@ class ReservationDaoTest {
         reservationDao = new H2ReservationDao(namedParameterJdbcTemplate);
         reservationTimeDao = new H2ReservationTimeDao(namedParameterJdbcTemplate);
         themeDao = new H2ThemeDao(namedParameterJdbcTemplate);
-        jdbcTemplate.execute("DROP TABLE reservation IF EXISTS");
-        jdbcTemplate.execute("DROP TABLE reservation_time IF EXISTS");
-        jdbcTemplate.execute("DROP TABLE theme IF EXISTS");
-        jdbcTemplate.execute("""            
-                CREATE TABLE theme
-                (
-                    id          BIGINT       NOT NULL AUTO_INCREMENT,
-                    name        VARCHAR(255) NOT NULL,
-                    description VARCHAR(255) NOT NULL,
-                    thumbnail   VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (id)
-                );
-                CREATE TABLE reservation_time
-                (
-                    id       BIGINT       NOT NULL AUTO_INCREMENT,
-                    start_at VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (id)
-                );
-                CREATE TABLE reservation
-                (
-                    id      BIGINT       NOT NULL AUTO_INCREMENT,
-                    name    VARCHAR(255) NOT NULL,
-                    date    VARCHAR(255) NOT NULL,
-                    time_id BIGINT,
-                    theme_id BIGINT,
-                    PRIMARY KEY (id),
-                    FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-                    FOREIGN KEY (theme_id) REFERENCES theme (id)
-                );
-                """);
         reservationTimeDao.save(new ReservationTime(time));
-        theme = new Theme(1L, "우테코방탈출", "탈출탈출탈출", "abcdefg");
         themeDao.save(theme);
     }
 
