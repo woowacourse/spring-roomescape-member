@@ -66,18 +66,17 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public Optional<ReservationTime> findByIdAndDateAndTheme(final long id, final long themeId, final LocalDate date) {
+    public List<ReservationTime> findAllReservedByThemeAndDate(final long themeId, final LocalDate date) {
         final String sql = """
                 SELECT id, start_at
                 FROM reservation_time rt
                 WHERE EXISTS (
                     SELECT 1
                     FROM reservation r
-                    WHERE r.time_id = ? AND r.theme_id = ? AND r.date = ?
+                    WHERE r.theme_id = ? AND r.date = ?
                 )
                 """;
-        return jdbcTemplate.query(sql, reservationTimeMapper, id, themeId, date).stream()
-                .findFirst();
+        return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);
     }
 
     @Override

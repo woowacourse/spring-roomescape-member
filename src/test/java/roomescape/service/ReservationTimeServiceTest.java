@@ -49,9 +49,9 @@ class ReservationTimeServiceTest {
 
         // given
         LocalDate date = LocalDate.now();
-        Optional<ReservationTime> reservationTime = Optional.of(new ReservationTime(1L, LocalTime.of(10, 10)));
-        when(reservationTimeDao.findByIdAndDateAndTheme(1L, 1L, date)).thenReturn(reservationTime);
-        when(reservationTimeDao.findAll()).thenReturn(List.of(reservationTime.get()));
+        List<ReservationTime> reservationTimes = List.of(new ReservationTime(1L, LocalTime.of(10, 10)));
+        when(reservationTimeDao.findAllReservedByThemeAndDate(1L, date)).thenReturn(reservationTimes);
+        when(reservationTimeDao.findAll()).thenReturn(reservationTimes);
 
         // when
         List<ReservationTimeUserResponse> reservationTimeUserResponses = reservationTimeService.findAllByDateAndTheme(
@@ -59,7 +59,7 @@ class ReservationTimeServiceTest {
 
         // then
         assertThat(reservationTimeUserResponses.getFirst()).isEqualTo(
-                ReservationTimeUserResponse.from(reservationTime.get(), true));
+                ReservationTimeUserResponse.from(reservationTimes.getFirst(), true));
     }
 
     @DisplayName("예약 시간이 사용되지 않는 경우 삭제한다.")

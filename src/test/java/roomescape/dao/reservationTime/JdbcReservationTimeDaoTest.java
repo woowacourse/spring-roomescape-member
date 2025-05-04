@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,13 +107,12 @@ class JdbcReservationTimeDaoTest {
         Reservation savedReservation = jdbcReservationDao.create(reservation);
 
         // when
-        Optional<ReservationTime> optionalReservationTime = jdbcReservationTimeDao.findByIdAndDateAndTheme(
-                savedReservationTime.getId(), savedTheme.getId(), date);
+        List<ReservationTime> optionalReservationTime = jdbcReservationTimeDao.findAllReservedByThemeAndDate(
+                savedTheme.getId(), date);
 
         // then
         assertAll(
-                () -> assertThat(optionalReservationTime.isPresent()).isTrue(),
-                () -> assertThat(optionalReservationTime.get()).isEqualTo(savedReservationTime)
+                () -> assertThat(optionalReservationTime.getFirst()).isEqualTo(savedReservationTime)
         );
     }
 }

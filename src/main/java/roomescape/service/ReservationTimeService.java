@@ -29,12 +29,12 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeUserResponse> findAllByDateAndTheme(final long themeId, final LocalDate date) {
-        return reservationTimeDao.findAll().stream()
-                .map(reservationTime ->
-                        ReservationTimeUserResponse.from(
-                                reservationTime,
-                                reservationTimeDao.findByIdAndDateAndTheme(reservationTime.getId(), themeId, date)
-                                        .isPresent()))
+        List<ReservationTime> allTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservedTimes = reservationTimeDao.findAllReservedByThemeAndDate(themeId, date);
+        return allTimes.stream()
+                .map(time -> ReservationTimeUserResponse.from(
+                        time,
+                        reservedTimes.contains(time)))
                 .toList();
     }
 
