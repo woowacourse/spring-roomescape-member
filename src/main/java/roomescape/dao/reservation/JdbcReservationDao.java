@@ -65,7 +65,7 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
         return jdbcTemplate.query(sql, reservationMapper);
     }
-    
+
     @Override
     public Reservation create(final Reservation reservation) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -84,7 +84,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public void delete(final long id) {
-        final String sql = "DELETE reservation WHERE id = ?";
+        final String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
