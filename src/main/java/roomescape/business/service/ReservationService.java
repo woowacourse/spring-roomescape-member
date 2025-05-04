@@ -38,7 +38,7 @@ public class ReservationService {
         this.reservationThemeRepository = reservationThemeRepository;
     }
 
-    public List<ReservationResponseDto> readReservationAll() {
+    public List<ReservationResponseDto> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
                 .map(reservation -> new ReservationResponseDto(
@@ -59,7 +59,7 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponseDto readReservationOne(Long id) {
+    public ReservationResponseDto getReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationException("존재하지 않는 예약입니다."));
         return new ReservationResponseDto(
@@ -104,7 +104,7 @@ public class ReservationService {
         }
     }
 
-    public void deleteReservation(Long id) {
+    public void deleteReservationById(Long id) {
         reservationRepository.deleteById(id);
     }
 }

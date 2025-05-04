@@ -28,28 +28,28 @@ public final class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> readReservations() {
-        List<ReservationResponseDto> reservations = reservationService.readReservationAll();
+    public ResponseEntity<List<ReservationResponseDto>> getReservations() {
+        List<ReservationResponseDto> reservations = reservationService.getAllReservations();
         return ResponseEntity.ok(reservations);
     }
 
     @GetMapping("/{reservationId}")
-    public ResponseEntity<ReservationResponseDto> readReservation(@PathVariable("reservationId") Long id) {
-        ReservationResponseDto reservation = reservationService.readReservationOne(id);
+    public ResponseEntity<ReservationResponseDto> getReservation(@PathVariable("reservationId") Long id) {
+        ReservationResponseDto reservation = reservationService.getReservationById(id);
         return ResponseEntity.ok(reservation);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponseDto> create(@Valid @RequestBody ReservationRequestDto reservationDto) {
+    public ResponseEntity<ReservationResponseDto> reserve(@Valid @RequestBody ReservationRequestDto reservationDto) {
         Long id = reservationService.createReservation(reservationDto);
-        ReservationResponseDto reservation = reservationService.readReservationOne(id);
+        ReservationResponseDto reservation = reservationService.getReservationById(id);
         String location = "/reservations/" + id;
         return ResponseEntity.created(URI.create(location)).body(reservation);
     }
 
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("reservationId") Long id) {
-        reservationService.deleteReservation(id);
+        reservationService.deleteReservationById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -27,7 +27,7 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public List<ReservationTimeResponseDto> readTimeAll() {
+    public List<ReservationTimeResponseDto> getAllTimes() {
         return reservationTimeRepository.findAll()
                 .stream()
                 .map(reservationTime -> new ReservationTimeResponseDto(
@@ -37,7 +37,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponseDto readTimeOne(Long id) {
+    public ReservationTimeResponseDto getTimeById(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
         return new ReservationTimeResponseDto(
@@ -46,7 +46,7 @@ public class ReservationTimeService {
         );
     }
 
-    public List<AvailableTimesResponseDto> readAvailableTimes(LocalDate date, Long themeId) {
+    public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
         return reservationTimeRepository.findAvailableTimes(date, themeId);
     }
 
@@ -54,7 +54,7 @@ public class ReservationTimeService {
         return reservationTimeRepository.add(new ReservationTime(reservationTimeRequestDto.startAt()));
     }
 
-    public void deleteTime(Long timeId) {
+    public void deleteTimeById(Long timeId) {
         if (reservationRepository.existsByTimeId(timeId)) {
             throw new ReservationTimeException("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");
         }

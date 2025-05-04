@@ -28,19 +28,19 @@ public final class ReservationThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationThemeResponseDto>> readReservationThemes() {
-        List<ReservationThemeResponseDto> reservationThemes = reservationThemeService.readThemeAll();
+    public ResponseEntity<List<ReservationThemeResponseDto>> getReservationThemes() {
+        List<ReservationThemeResponseDto> reservationThemes = reservationThemeService.getAllThemes();
         return ResponseEntity.ok(reservationThemes);
     }
 
     @GetMapping("/ranks")
-    public ResponseEntity<List<ReservationThemeResponseDto>> readBestReservedReservationThemes() {
-        List<ReservationThemeResponseDto> bestReservedThemes = reservationThemeService.readBestReservedThemes();
+    public ResponseEntity<List<ReservationThemeResponseDto>> getBestReservedReservationThemes() {
+        List<ReservationThemeResponseDto> bestReservedThemes = reservationThemeService.findBestReservedThemes();
         return ResponseEntity.ok(bestReservedThemes);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationThemeResponseDto> create(
+    public ResponseEntity<ReservationThemeResponseDto> createReservationTheme(
             @Valid @RequestBody ReservationThemeRequestDto reservationThemeDto) {
         ReservationThemeResponseDto reservationTheme = reservationThemeService.createTheme(reservationThemeDto);
         String location = "/themes/" + reservationTheme.id();
@@ -49,7 +49,7 @@ public final class ReservationThemeController {
 
     @DeleteMapping("/{themeId}")
     public ResponseEntity<Void> deleteReservationTheme(@PathVariable("themeId") Long id) {
-        reservationThemeService.deleteTheme(id);
+        reservationThemeService.deleteThemeById(id);
         return ResponseEntity.noContent().build();
     }
 }

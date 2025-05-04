@@ -26,7 +26,7 @@ public class ReservationThemeService {
         this.reservationThemeRepository = reservationThemeRepository;
     }
 
-    public List<ReservationThemeResponseDto> readThemeAll() {
+    public List<ReservationThemeResponseDto> getAllThemes() {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
         return reservationThemes.stream()
                 .map(reservationTheme -> new ReservationThemeResponseDto(
@@ -39,7 +39,7 @@ public class ReservationThemeService {
                 .toList();
     }
 
-    public List<ReservationThemeResponseDto> readBestReservedThemes() {
+    public List<ReservationThemeResponseDto> findBestReservedThemes() {
         LocalDate now = LocalDate.now();
         LocalDate start = calculateStartDate(now);
         LocalDate end = calculateEndDate(now);
@@ -82,7 +82,7 @@ public class ReservationThemeService {
         );
     }
 
-    public void deleteTheme(Long id) {
+    public void deleteThemeById(Long id) {
         if (reservationRepository.existByThemeId(id)) {
             throw new ReservationThemeException("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
         }

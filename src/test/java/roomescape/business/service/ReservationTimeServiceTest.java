@@ -38,14 +38,14 @@ class ReservationTimeServiceTest {
 
     @DisplayName("아이디로 예약 가능한 시간을 조회한다")
     @Test
-    void readTimeOne() {
+    void getTimeById() {
         // given
         LocalTime time = LocalTime.now();
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));
         ReservationTimeResponseDto expected = new ReservationTimeResponseDto(timeId, time);
 
         // when
-        ReservationTimeResponseDto actual = reservationTimeService.readTimeOne(timeId);
+        ReservationTimeResponseDto actual = reservationTimeService.getTimeById(timeId);
 
         // then
         assertThat(actual)
@@ -74,14 +74,14 @@ class ReservationTimeServiceTest {
 
     @DisplayName("예약 시간대 하나를 삭제한다")
     @Test
-    void deleteTime() {
+    void deleteTimeById() {
         // given
         LocalTime time = LocalTime.now();
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(time);
         Long timeId = reservationTimeService.createTime(reservationTimeRequestDto);
 
         // when
-        reservationTimeService.deleteTime(timeId);
+        reservationTimeService.deleteTimeById(timeId);
 
         // then
         assertThat(reservationTimeRepository.findById(timeId))
@@ -100,7 +100,7 @@ class ReservationTimeServiceTest {
 
         // when
         // then
-        assertThatCode(() -> reservationTimeService.deleteTime(timeId))
+        assertThatCode(() -> reservationTimeService.deleteTimeById(timeId))
                 .isInstanceOf(ReservationTimeException.class)
                 .hasMessage("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");
     }

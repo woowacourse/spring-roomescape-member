@@ -31,36 +31,36 @@ public final class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponseDto>> readReservationTimes() {
-        List<ReservationTimeResponseDto> reservationTimes = reservationTimeService.readTimeAll();
+    public ResponseEntity<List<ReservationTimeResponseDto>> getReservationTimes() {
+        List<ReservationTimeResponseDto> reservationTimes = reservationTimeService.getAllTimes();
         return ResponseEntity.ok(reservationTimes);
     }
 
     @GetMapping("/reservation")
-    public ResponseEntity<List<AvailableTimesResponseDto>> readReservationAvailableTimes(
+    public ResponseEntity<List<AvailableTimesResponseDto>> getReservationAvailableTimes(
             @RequestParam("date") LocalDate date, @RequestParam("themeId") Long themeId) {
-        List<AvailableTimesResponseDto> availableReservationTimes = reservationTimeService.readAvailableTimes(date, themeId);
+        List<AvailableTimesResponseDto> availableReservationTimes = reservationTimeService.findAvailableTimes(date, themeId);
         return ResponseEntity.ok(availableReservationTimes);
     }
 
     @GetMapping("/{timeId}")
-    public ResponseEntity<ReservationTimeResponseDto> readReservationTime(@PathVariable("timeId") Long id) {
-        ReservationTimeResponseDto reservationTime = reservationTimeService.readTimeOne(id);
+    public ResponseEntity<ReservationTimeResponseDto> getReservationTime(@PathVariable("timeId") Long id) {
+        ReservationTimeResponseDto reservationTime = reservationTimeService.getTimeById(id);
         return ResponseEntity.ok(reservationTime);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationTimeResponseDto> create(
+    public ResponseEntity<ReservationTimeResponseDto> createReservationTime(
             @Valid @RequestBody ReservationTimeRequestDto reservationTimeDto) {
         Long id = reservationTimeService.createTime(reservationTimeDto);
-        ReservationTimeResponseDto reservationTime = reservationTimeService.readTimeOne(id);
+        ReservationTimeResponseDto reservationTime = reservationTimeService.getTimeById(id);
         String location = "/times/" + id;
         return ResponseEntity.created(URI.create(location)).body(reservationTime);
     }
 
     @DeleteMapping("/{timeId}")
     public ResponseEntity<Void> deleteReservationTime(@PathVariable("timeId") Long id) {
-        reservationTimeService.deleteTime(id);
+        reservationTimeService.deleteTimeById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -48,7 +48,7 @@ class ReservationServiceTest {
         reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow,timeId, themeId));
 
         // then
-        assertThat(reservationService.readReservationAll())
+        assertThat(reservationService.getAllReservations())
                 .isNotEmpty();
     }
 
@@ -88,7 +88,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약을 취소한다.")
     @Test
-    void deleteReservation() {
+    void deleteReservationById() {
         // given
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
@@ -100,15 +100,15 @@ class ReservationServiceTest {
         );
 
         // when
-        reservationService.deleteReservation(id);
+        reservationService.deleteReservationById(id);
 
         // then
-        assertThat(reservationService.readReservationAll()).isEmpty();
+        assertThat(reservationService.getAllReservations()).isEmpty();
     }
 
     @DisplayName("예약 목록을 불러온다")
     @Test
-    void readReservationAll() {
+    void getAllReservations() {
         // given
         Long timeId = reservationTimeRepository.add(new ReservationTime(LocalTime.now()));
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
@@ -121,9 +121,9 @@ class ReservationServiceTest {
         );
 
         // when
-        int firstReadSize = reservationService.readReservationAll().size();
-        reservationService.deleteReservation(id);
-        int secondReadSize = reservationService.readReservationAll().size();
+        int firstReadSize = reservationService.getAllReservations().size();
+        reservationService.deleteReservationById(id);
+        int secondReadSize = reservationService.getAllReservations().size();
 
         // then
         assertThat(firstReadSize).isEqualTo(1);

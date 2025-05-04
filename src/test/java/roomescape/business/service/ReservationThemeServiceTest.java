@@ -44,12 +44,12 @@ class ReservationThemeServiceTest {
 
     @DisplayName("테마를 삭제한다.")
     @Test
-    void deleteTheme() {
+    void deleteThemeById() {
         // given
         Long themeId = reservationThemeRepository.add(new ReservationTheme("수양", "수양테마", "수양썸네일"));
 
         // when
-        reservationThemeService.deleteTheme(themeId);
+        reservationThemeService.deleteThemeById(themeId);
 
         // then
         assertThat(reservationThemeRepository.findById(themeId))
@@ -67,7 +67,7 @@ class ReservationThemeServiceTest {
 
         // when
         // then
-        assertThatCode(() -> reservationThemeService.deleteTheme(themeId))
+        assertThatCode(() -> reservationThemeService.deleteThemeById(themeId))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
     }
