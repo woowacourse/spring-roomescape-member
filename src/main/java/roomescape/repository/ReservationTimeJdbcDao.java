@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -25,7 +26,7 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
     @Override
     public ReservationTime findById(Long id) {
         String sql = "select * from reservation_time where id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
         return namedJdbcTemplate.queryForObject(sql, params, getReservationTimeRowMapper());
     }
 
@@ -39,7 +40,7 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
     public ReservationTime save(ReservationTime reservationTime) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation_time (start_at) values (:startAt)";
-        MapSqlParameterSource params = new MapSqlParameterSource("startAt", Time.valueOf(reservationTime.startAt()));
+        SqlParameterSource params = new MapSqlParameterSource("startAt", Time.valueOf(reservationTime.startAt()));
 
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
@@ -50,7 +51,7 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
     @Override
     public void deleteById(Long id) {
         String sql = "delete from reservation_time where id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
         int result = namedJdbcTemplate.update(sql, params);
 
         if (result == 0) {
@@ -61,7 +62,7 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
     @Override
     public boolean existsByStartAt(LocalTime startAt) {
         String sql = "select count(*) from reservation_time where start_at = :startAt";
-        MapSqlParameterSource params = new MapSqlParameterSource("startAt", startAt);
+        SqlParameterSource params = new MapSqlParameterSource("startAt", startAt);
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }

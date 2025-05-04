@@ -3,17 +3,62 @@ package roomescape.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+public class Reservation {
 
     private static final int NAME_LENGTH = 10;
 
-    public Reservation {
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final Theme theme;
+
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
+        this.id = id;
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
     }
 
     public static Reservation createIfDateTimeValid(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateDateTime(date, time);
         return new Reservation(null, name, date, time, theme);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public Long getTimeId() {
+        if (time == null) {
+            return null;
+        }
+        return time.id();
+    }
+
+    public Long getThemeId() {
+        if (theme == null) {
+            return null;
+        }
+        return theme.id();
     }
 
     private static void validateDateTime(LocalDate date, ReservationTime time) {

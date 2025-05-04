@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -23,7 +24,7 @@ public class ThemeJdbcDao implements ThemeRepository {
     @Override
     public Theme findById(Long id) {
         String sql = "select * from theme where id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
         return namedJdbcTemplate.queryForObject(sql, params, getThemeRowMapper());
     }
 
@@ -37,7 +38,7 @@ public class ThemeJdbcDao implements ThemeRepository {
     public Theme save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into theme (name,description,thumbnail) values (:name,:description,:thumbnail)";
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.name())
                 .addValue("description", theme.description())
                 .addValue("thumbnail", theme.thumbnail());
@@ -51,7 +52,7 @@ public class ThemeJdbcDao implements ThemeRepository {
     @Override
     public void deleteById(Long id) {
         String sql = "delete from theme where id = :id";
-        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
+        SqlParameterSource params = new MapSqlParameterSource("id", id);
         int result = namedJdbcTemplate.update(sql, params);
 
         if (result == 0) {
@@ -78,7 +79,7 @@ public class ThemeJdbcDao implements ThemeRepository {
     @Override
     public boolean existsByName(String name) {
         String sql = "select count(*) from theme where name = :name";
-        MapSqlParameterSource params = new MapSqlParameterSource("name", name);
+        SqlParameterSource params = new MapSqlParameterSource("name", name);
         Integer count = namedJdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }

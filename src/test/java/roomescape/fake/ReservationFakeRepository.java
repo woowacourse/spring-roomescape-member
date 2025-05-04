@@ -48,12 +48,12 @@ public class ReservationFakeRepository implements ReservationRepository {
 
     @Override
     public Reservation save(Reservation reservation) {
-        Long timeId = reservation.time().id();
+        Long timeId = reservation.getTimeId();
         if (!reservationTimes.containsKey(timeId)) {
             throw new EntityNotFoundException("예약 시간을 찾을 수 없습니다: " + timeId);
         }
 
-        Long themeId = reservation.theme().id();
+        Long themeId = reservation.getThemeId();
         if (!themes.containsKey(themeId)) {
             throw new EntityNotFoundException("테마를 찾을 수 없습니다: " + themeId);
         }
@@ -65,8 +65,8 @@ public class ReservationFakeRepository implements ReservationRepository {
 
         Reservation savedReservation = new Reservation(
                 newId,
-                reservation.name(),
-                reservation.date(),
+                reservation.getName(),
+                reservation.getDate(),
                 time,
                 theme);
 
@@ -87,9 +87,9 @@ public class ReservationFakeRepository implements ReservationRepository {
     @Override
     public List<Long> findBookedTimeIdsByDateAndThemeId(LocalDate date, Long themeId) {
         return reservations.values().stream()
-                .filter(reservation -> reservation.date().equals(date))
-                .filter(reservation -> reservation.theme().id().equals(themeId))
-                .map(reservation -> reservation.time().id())
+                .filter(reservation -> reservation.getDate().equals(date))
+                .filter(reservation -> reservation.getTheme().id().equals(themeId))
+                .map(reservation -> reservation.getTime().id())
                 .toList();
     }
 
@@ -97,8 +97,8 @@ public class ReservationFakeRepository implements ReservationRepository {
     public boolean existsByDateAndTimeAndTheme(LocalDate date, ReservationTime time, Theme theme) {
         return reservations.values().stream()
                 .anyMatch(reservation ->
-                        reservation.date().equals(date) &&
-                                reservation.time().id().equals(time.id()) &&
-                                reservation.theme().id().equals(theme.id()));
+                        reservation.getDate().equals(date) &&
+                                reservation.getTimeId().equals(time.id()) &&
+                                reservation.getThemeId().equals(theme.id()));
     }
 }
