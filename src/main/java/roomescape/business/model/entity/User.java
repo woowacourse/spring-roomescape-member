@@ -15,4 +15,8 @@ public class User {
     public boolean isPasswordCorrect(final String password) {
         return this.password.equals(password);
     }
+
+    public String email() {
+        return email;
+    }
 }
