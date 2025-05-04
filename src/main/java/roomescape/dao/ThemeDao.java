@@ -61,7 +61,7 @@ public class ThemeDao {
                     select * 
                     from reservation as r 
                     where PARSEDATETIME(r.date, 'yyyy-MM-dd') 
-                        between TIMESTAMPADD(DAY, -8, CURRENT_DATE) 
+                        between TIMESTAMPADD(DAY, -7, CURRENT_DATE) 
                             and TIMESTAMPADD(DAY, -1, CURRENT_DATE)
                     )
                 as r on t.id = r.theme_id
