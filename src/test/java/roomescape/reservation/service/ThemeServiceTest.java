@@ -6,8 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import roomescape.common.CleanUp;
 import roomescape.common.RoomescapeTestSupport;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.fixture.ReservationDateFixture;
@@ -30,8 +32,17 @@ class ThemeServiceTest extends RoomescapeTestSupport {
 
     @Autowired
     private ThemeDbFixture themeDbFixture;
+
     @Autowired
     private ThemeService themeService;
+
+    @Autowired
+    private CleanUp cleanUp;
+
+    @BeforeEach
+    void setUp() {
+        cleanUp.all();
+    }
 
     @Test
     void 테마를_생성한다() {

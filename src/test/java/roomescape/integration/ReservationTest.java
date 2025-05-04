@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.common.CleanUp;
 import roomescape.common.RoomescapeTestSupport;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
@@ -27,15 +28,16 @@ class ReservationTest extends RoomescapeTestSupport {
 
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private CleanUp cleanUp;
 
     private Theme theme;
-
     private Map<String, Object> reservation;
-
     private Map<String, String> reservationTime;
 
     @BeforeEach
     void setUp() {
+        cleanUp.all();
         RestAssured.port = port;
         theme = themeRepository.save("테마1", "설명1", "썸네일1");
         reservation = new HashMap<>();

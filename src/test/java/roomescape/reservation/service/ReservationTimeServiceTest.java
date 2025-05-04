@@ -6,8 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import roomescape.common.CleanUp;
 import roomescape.common.RoomescapeTestSupport;
 import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
@@ -31,6 +33,13 @@ class ReservationTimeServiceTest extends RoomescapeTestSupport {
     private ReservationDbFixture reservationDbFixture;
     @Autowired
     private ThemeDbFixture themeDbFixture;
+    @Autowired
+    private CleanUp cleanUp;
+
+    @BeforeEach
+    void setUp() {
+        cleanUp.all();
+    }
 
     @Test
     void 예약시간을_생성한다() {
