@@ -90,4 +90,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 themeId
         );
     }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        String query = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation_time
+                    WHERE start_at = ?
+                )
+                """;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, startAt));
+    }
 }

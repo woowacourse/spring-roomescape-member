@@ -1,6 +1,7 @@
 package roomescape.persistence.fakerepository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +48,12 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository,
     @Override
     public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
         return List.of();
+    }
+
+    @Override
+    public boolean existsByStartAt(LocalTime startAt) {
+        return reservationTimes.stream()
+                .anyMatch(reservationTime -> reservationTime.getStartAt().equals(startAt));
     }
 
     @Override

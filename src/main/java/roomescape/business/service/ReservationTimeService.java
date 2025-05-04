@@ -46,6 +46,9 @@ public class ReservationTimeService {
 
     @Transactional
     public Long createTime(ReservationTimeRequestDto reservationTimeRequestDto) {
+        if (reservationTimeRepository.existsByStartAt(reservationTimeRequestDto.startAt())) {
+            throw new ReservationTimeException("해당 시간은 이미 존재합니다.");
+        }
         return reservationTimeRepository.add(new ReservationTime(reservationTimeRequestDto.startAt()));
     }
 

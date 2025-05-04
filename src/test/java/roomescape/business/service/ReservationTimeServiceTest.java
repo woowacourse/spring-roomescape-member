@@ -72,6 +72,21 @@ class ReservationTimeServiceTest {
         );
     }
 
+    @DisplayName("예약 가능한 시간을 추가할 때 중복된 시간이 존재하면 예외를 발생시킨다")
+    @Test
+    void createTimeWithDuplicate() {
+        // given
+        LocalTime time = LocalTime.now();
+        ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(time);
+        reservationTimeService.createTime(reservationTimeRequestDto);
+
+        // when
+        // then
+        assertThatCode(() -> reservationTimeService.createTime(reservationTimeRequestDto))
+                .isInstanceOf(ReservationTimeException.class)
+                .hasMessage("해당 시간은 이미 존재합니다.");
+    }
+
     @DisplayName("예약 시간대 하나를 삭제한다")
     @Test
     void deleteTimeById() {
