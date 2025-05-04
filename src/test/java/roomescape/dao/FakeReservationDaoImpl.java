@@ -56,7 +56,7 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int findAlreadyExistReservationBy(String date, long timeId, Long themeId) {
+    public int calculateAlreadyExistReservationBy(String date, long timeId, Long themeId) {
         return 0;
     }
 }

@@ -100,7 +100,7 @@ public class ReservationService {
 
     private boolean isAlreadyBookedTime(String date, Long themeId,
         ReservationTime reservationTime) {
-        int alreadyExistReservationCount = reservationDao.findAlreadyExistReservationBy(
+        int alreadyExistReservationCount = reservationDao.calculateAlreadyExistReservationBy(
             date, themeId, reservationTime.getId());
         return alreadyExistReservationCount != 0;
     }

@@ -112,7 +112,7 @@ public class ReservationServiceTest {
         String date = "2025-05-02";
         List<ReservationTime> reservationTimes = List.of(reservationTime1);
         when(reservationTimeDao.findAllReservationTimes()).thenReturn(reservationTimes);
-        when(reservationDao.findAlreadyExistReservationBy(date, 1L, 1L)).thenReturn(1);
+        when(reservationDao.calculateAlreadyExistReservationBy(date, 1L, 1L)).thenReturn(1);
 
         List<BookedReservationTimeResponseDto> allBookedReservationTimes =
             reservationService.getAllBookedReservationTimes("2025-05-02", 1L);
