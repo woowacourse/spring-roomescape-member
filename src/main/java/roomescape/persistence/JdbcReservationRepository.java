@@ -147,7 +147,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existByThemeId(Long themeId) {
+    public boolean existsByThemeId(Long themeId) {
         String query = """
                 SELECT EXISTS (
                     SELECT 1

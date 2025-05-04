@@ -82,7 +82,7 @@ public class ReservationThemeService {
 
     @Transactional
     public void deleteThemeById(Long id) {
-        if (reservationRepository.existByThemeId(id)) {
+        if (reservationRepository.existsByThemeId(id)) {
             throw new ReservationThemeException("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
         }
         reservationThemeRepository.deleteById(id);
