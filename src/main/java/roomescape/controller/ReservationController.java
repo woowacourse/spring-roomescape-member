@@ -39,7 +39,7 @@ public class ReservationController {
         long id = reservationService.saveReservation(request);
         Reservation savedReservation = reservationService.getReservationById(id);
         return ResponseEntity
-                .created(URI.create("reservations/" + id))
+                .created(URI.create("/reservations/" + id))
                 .body(new ReservationResponse(savedReservation));
     }
 

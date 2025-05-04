@@ -52,7 +52,7 @@ public class ThemeController {
         long savedId = themeService.addTheme(request);
         Theme theme = themeService.findThemeById(savedId);
         return ResponseEntity
-                .created(URI.create("theme/" + savedId))
+                .created(URI.create("/theme/" + savedId))
                 .body(new ThemeResponse(theme));
     }
 

@@ -75,7 +75,7 @@ class RoomescapeApplicationTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("location", "reservations/1");
+                .header("location", "/reservations/1");
     }
 
     @DisplayName("유효하지 않은 입력값으로 예약 추가가 불가능하다")
@@ -163,7 +163,7 @@ class RoomescapeApplicationTest {
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(201)
-                .header("location", "times/1");
+                .header("location", "/times/1");
     }
 
     @DisplayName("이미 존재하는 예약 가능 시간은 추가할 수 없다")
@@ -279,7 +279,7 @@ class RoomescapeApplicationTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .header("location", "theme/1");
+                .header("location", "/theme/1");
     }
 
     @DisplayName("유효하지 않은 요청으로는 테마를 추가할 수 없다")

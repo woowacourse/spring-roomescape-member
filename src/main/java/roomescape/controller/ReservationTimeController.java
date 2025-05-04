@@ -55,7 +55,7 @@ public class ReservationTimeController {
         long savedId = reservationTimeService.saveReservationTime(request);
         ReservationTime savedTime = reservationTimeService.getReservationTimeById(savedId);
         return ResponseEntity
-                .created(URI.create("times/" + savedId))
+                .created(URI.create("/times/" + savedId))
                 .body(new ReservationTimeResponse(savedTime));
     }
 
