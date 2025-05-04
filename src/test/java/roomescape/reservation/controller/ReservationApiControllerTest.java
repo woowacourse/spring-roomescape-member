@@ -33,9 +33,9 @@ class ReservationApiControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("추가하려는 예약 내역 속성에 빈 값이 있는 경우 예외가 발생한다")
+    @DisplayName("추가하려는 예약 내역 속성에 빈 값이 있는 경우 잘못된 요청으로 처리한다")
     @Test
-    void add() throws Exception {
+    void exception_add_empty() throws Exception {
         String requestBody = """
                 {
                     "date": "",
@@ -50,7 +50,7 @@ class ReservationApiControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("존재하지 않는 예약 내역 아이디를 삭제하는 경우 예외가 발생한다")
+    @DisplayName("해당 아이디의 예약 내역을 삭제한다")
     @Test
     void deleteById() throws Exception {
         mockMvc.perform(delete(URI + "/1")

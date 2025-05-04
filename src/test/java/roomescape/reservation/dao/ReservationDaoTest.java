@@ -79,10 +79,8 @@ class ReservationDaoTest {
                         "start_at", "10:00"
                 )
         );
-
-        String insertSqlReservationTime2 = "INSERT INTO reservation_time(start_at) VALUES (:start_at)";
         namedParameterJdbcTemplate.update(
-                insertSqlReservationTime2,
+                insertSqlReservationTime,
                 Map.of(
                         "start_at", "11:00"
                 )

@@ -9,11 +9,17 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.dto.ReservationTimeResponse;
+import roomescape.reservationTime.dto.admin.ReservationTimeResponse;
 import roomescape.theme.domain.Theme;
 
 @Service
 public class ReservationService {
+    private static final String PAST_TIME_EXCEPTION_MESSAGE = "[ERROR] 당일의 과거 시간대로는 예약할 수 없습니다.";
+    private static final String ALREADY_RESERVED_EXCEPTION_MESSAGE = "[ERROR] 이미 예약이 존재합니다.";
+    private static final String INVALID_TIME_ID_EXCEPTION_MESSAGE = "[ERROR] 시간 id가 존재하지 않습니다.";
+    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "[ERROR] 테마 id가 존재하지 않습니다.";
+    private static final String INVALID_ID_EXCEPTION_MESSAGE = "[ERROR] id에 해당하는 예약이 존재하지 않습니다";
+
     private final Dao<Reservation> reservationDao;
     private final Dao<ReservationTime> reservationTimeDao;
     private final Dao<Theme> themeDao;
@@ -42,12 +48,11 @@ public class ReservationService {
 
     public ReservationResponse add(final ReservationRequest reservationRequest) {
         ReservationTime reservationTimeResult = searchReservationTime(reservationRequest);
-        validateDate(reservationRequest, reservationTimeResult);
+        validateTime(reservationRequest, reservationTimeResult);
         validateAvailability(reservationRequest, reservationTimeResult);
         Theme themeResult = searchTheme(reservationRequest);
 
         Reservation newReservation = new Reservation(
-                null,
                 reservationRequest.name(),
                 reservationRequest.date(),
                 reservationTimeResult,
@@ -64,13 +69,13 @@ public class ReservationService {
         );
     }
 
-    private void validateDate(
+    private void validateTime(
             final ReservationRequest reservationRequest,
             final ReservationTime reservationTimeResult
     ) {
         if (reservationRequest.date().isEqual(LocalDate.now())
                 && reservationTimeResult.getStartAt().isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("[ERROR] 이미 지난 시간으로는 예약할 수 없습니다.");
+            throw new IllegalArgumentException(PAST_TIME_EXCEPTION_MESSAGE);
         }
     }
 
@@ -85,7 +90,7 @@ public class ReservationService {
                         && reservation.getTime().equals(reservationTimeResult));
 
         if (isNotAvailable) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약이 존재합니다.");
+            throw new IllegalArgumentException(ALREADY_RESERVED_EXCEPTION_MESSAGE);
         }
     }
 
@@ -97,16 +102,16 @@ public class ReservationService {
 
     private Reservation searchReservation(final Long id) {
         return reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] id에 해당하는 예약이 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_ID_EXCEPTION_MESSAGE));
     }
 
     private ReservationTime searchReservationTime(final ReservationRequest reservationRequest) {
         return reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 시간 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_TIME_ID_EXCEPTION_MESSAGE));
     }
 
     private Theme searchTheme(final ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 테마 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
     }
 }
