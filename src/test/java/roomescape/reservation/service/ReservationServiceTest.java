@@ -91,7 +91,7 @@ class ReservationServiceTest {
         // given
         final String name = "헤일러";
         final LocalTime time = LocalTime.parse("10:00");
-        final LocalDate date = LocalDate.parse("2023-08-05");
+        final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
         final String themeName = "공포";
@@ -109,7 +109,7 @@ class ReservationServiceTest {
         // given
         final String name = "헤일러";
         final LocalTime time = LocalTime.parse("10:00");
-        final LocalDate date = LocalDate.parse("2023-08-05");
+        final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
         final String themeName = "공포";
@@ -137,7 +137,7 @@ class ReservationServiceTest {
         // given
         final String name = "헤일러";
         final LocalTime time = LocalTime.parse("10:00");
-        final LocalDate date = LocalDate.parse("2023-08-05");
+        final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
         final String themeName = "공포";
@@ -161,7 +161,7 @@ class ReservationServiceTest {
         // given
         final String name = "헤일러";
         final LocalTime time = LocalTime.parse("10:00");
-        final LocalDate date = LocalDate.parse("2023-08-05");
+        final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
         final String themeName = "공포";
@@ -195,7 +195,7 @@ class ReservationServiceTest {
         // given
         final String name = "헤일러";
         final LocalTime time = LocalTime.parse("10:00");
-        final LocalDate date = LocalDate.parse("2023-08-05");
+        final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
         final String themeName = "공포";
@@ -221,7 +221,7 @@ class ReservationServiceTest {
     void 예약_정보를_저장할_때_예약시간이_존재하지않으면_예외가_발생한다() {
         // given
         final String name = "헤일러";
-        final LocalDate date = LocalDate.parse("2023-08-05");
+        final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = Long.MAX_VALUE;
 
         final String themeName = "공포";
@@ -239,7 +239,7 @@ class ReservationServiceTest {
         // given
         final String name = "헤일러";
         final LocalTime time = LocalTime.parse("10:00");
-        final LocalDate date = LocalDate.parse("2023-08-05");
+        final LocalDate date = LocalDate.parse("2025-11-28");
         final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
 
         final String themeName = "공포";

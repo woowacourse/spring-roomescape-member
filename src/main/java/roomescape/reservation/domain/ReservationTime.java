@@ -3,6 +3,7 @@ package roomescape.reservation.domain;
 import java.time.LocalTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.exception.ReservationException;
 
 @Getter
 @EqualsAndHashCode(of = {"id"})
@@ -31,13 +32,13 @@ public class ReservationTime {
 
     private void validateNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("time cannot be null");
+            throw new ReservationException("time cannot be null");
         }
     }
 
     private void validateTimeRange(final LocalTime startAt) {
         if (startAt.isBefore(OPEN_TIME) || startAt.isAfter(CLOSE_TIME)) {
-            throw new IllegalArgumentException("Invalid time range. startAt : " + startAt);
+            throw new ReservationException("Invalid time range. startAt : " + startAt);
         }
     }
 }

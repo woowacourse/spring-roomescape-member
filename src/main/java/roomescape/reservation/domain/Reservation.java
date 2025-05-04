@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import roomescape.exception.ReservationException;
 import roomescape.theme.domain.Theme;
 
 @Getter
@@ -36,25 +37,28 @@ public class Reservation {
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be null or blank");
+            throw new ReservationException("Name cannot be null or blank");
         }
     }
 
     private void validateDate(final LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date cannot be null");
+            throw new ReservationException("Date cannot be null");
+        }
+        if (date.isBefore(LocalDate.now())) {
+            throw new ReservationException("Date cannot be in the past");
         }
     }
 
     private void validateTime(final ReservationTime time) {
         if (time == null) {
-            throw new IllegalArgumentException("Time cannot be null");
+            throw new ReservationException("Time cannot be null");
         }
     }
 
     private void validateTheme(final Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("Theme cannot be null");
+            throw new ReservationException("Theme cannot be null");
         }
     }
 }

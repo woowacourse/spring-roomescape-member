@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ReservationException;
 import roomescape.theme.domain.Theme;
 
 class ReservationTest {
@@ -19,7 +20,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(() -> {
             new Reservation(name, date, reservationTime, theme);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationException.class);
     }
 
     @Test
@@ -33,7 +34,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(() -> {
             new Reservation(name, date, reservationTime, theme);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationException.class);
     }
 
     @Test
@@ -47,7 +48,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(() -> {
             new Reservation(name, date, reservationTime, theme);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationException.class);
     }
 
     @Test
@@ -61,7 +62,7 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(() -> {
             new Reservation(name, date, reservationTime, theme);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationException.class);
     }
 
     @Test
@@ -75,6 +76,20 @@ class ReservationTest {
         // when & then
         Assertions.assertThatThrownBy(() -> {
             new Reservation(name, date, reservationTime, theme);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(ReservationException.class);
+    }
+
+    @Test
+    void 날짜가_현재날짜보다_이전_날짜이면_예외가_발생한다() {
+        // given
+        final String name = "강산";
+        final LocalDate date = LocalDate.of(2020, 4, 24);
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
+        final Theme theme = new Theme("헤일러", "헤일러 설명", "헤일러 썸네일");
+
+        // when & then
+        Assertions.assertThatThrownBy(() -> {
+            new Reservation(name, date, reservationTime, theme);
+        }).isInstanceOf(ReservationException.class);
     }
 }
