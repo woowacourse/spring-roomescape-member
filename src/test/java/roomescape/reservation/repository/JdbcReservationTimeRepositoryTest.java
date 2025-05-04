@@ -12,11 +12,11 @@ import roomescape.reservation.domain.ReservationTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Import(H2ReservationTimeRepository.class)
-class H2ReservationTimeRepositoryTest {
+@Import(JdbcReservationTimeRepository.class)
+class JdbcReservationTimeRepositoryTest {
 
     @Autowired
-    private H2ReservationTimeRepository h2ReservationTimeRepository;
+    private JdbcReservationTimeRepository jdbcReservationTimeRepository;
 
     @Test
     void 예약_시간을_추가한다() {
@@ -25,7 +25,7 @@ class H2ReservationTimeRepositoryTest {
         final ReservationTime reservationTime = new ReservationTime(null, startAt);
 
         // when & then
-        Assertions.assertThatCode(() -> h2ReservationTimeRepository.save(reservationTime))
+        Assertions.assertThatCode(() -> jdbcReservationTimeRepository.save(reservationTime))
                 .doesNotThrowAnyException();
     }
 
@@ -37,11 +37,11 @@ class H2ReservationTimeRepositoryTest {
 
         final LocalTime time2 = LocalTime.parse("11:00");
         final ReservationTime reservationTime2 = new ReservationTime(null, time2);
-        h2ReservationTimeRepository.save(reservationTime1);
-        h2ReservationTimeRepository.save(reservationTime2);
+        jdbcReservationTimeRepository.save(reservationTime1);
+        jdbcReservationTimeRepository.save(reservationTime2);
 
         // when
-        final List<ReservationTime> reservationTimes = h2ReservationTimeRepository.findAll();
+        final List<ReservationTime> reservationTimes = jdbcReservationTimeRepository.findAll();
 
         // then
         assertThat(reservationTimes.size()).isEqualTo(2);

@@ -15,7 +15,7 @@ import roomescape.reservation.domain.ReservationTime;
 
 @Repository
 @RequiredArgsConstructor
-public class H2ReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (rs, rowNum) ->
             new ReservationTime(rs.getLong("id"),
