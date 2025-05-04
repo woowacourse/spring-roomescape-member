@@ -83,13 +83,15 @@ class ThemeServiceTest extends RoomescapeTestSupport {
         reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
 
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 해당 테마에 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test
     void 존재하지_않는_테마를_삭제할_수_없다() {
         assertThatThrownBy(() -> themeService.deleteById(3L))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("[ERROR] 해당 테마가 존재하지 않습니다.");
     }
 
     @Test

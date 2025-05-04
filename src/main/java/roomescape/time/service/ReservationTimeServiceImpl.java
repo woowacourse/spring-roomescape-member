@@ -27,7 +27,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
     public ReservationTimeResponse create(ReservationTimeCreateRequest request) {
         LocalTime startAt = request.startAt();
         if (reservationTimeRepository.existByStartAt(startAt)) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 시간입니다.");
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약 시간입니다.");
         }
 
         ReservationTime reservationTime = ReservationTime.create(request.startAt());

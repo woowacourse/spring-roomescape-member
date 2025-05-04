@@ -83,7 +83,8 @@ class ReservationServiceTest extends RoomescapeTestSupport {
         );
 
         assertThatThrownBy(() -> reservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 이미 예약이 찼습니다.");
     }
 
     @Test
@@ -128,6 +129,7 @@ class ReservationServiceTest extends RoomescapeTestSupport {
     @Test
     void 존재하지_않는_예약을_삭제할_수_없다() {
         assertThatThrownBy(() -> reservationService.deleteById(3L))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("[ERROR] 예약을 찾을 수 없습니다.");
     }
 }

@@ -21,7 +21,8 @@ class ReservationDateTimeTest {
         ReservationTime reservationTime = ReservationTime.create(time);
 
         assertThatThrownBy(() -> new ReservationDateTime(reservationDate, reservationTime))
-                .isInstanceOf(PastReservationException.class);
+                .isInstanceOf(PastReservationException.class)
+                .hasMessage("[ERROR] 현재 시간 이후로 예약할 수 있습니다.");
     }
 
     @Test
