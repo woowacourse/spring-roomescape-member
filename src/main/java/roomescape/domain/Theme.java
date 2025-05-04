@@ -19,7 +19,7 @@ public class Theme {
     }
 
     private void validateName(String name) {
-        if (name == null || name.isBlank() || name.isEmpty()) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 테마의 이름은 1글자 이상으로 이루어져야 합니다.");
         }
     }
