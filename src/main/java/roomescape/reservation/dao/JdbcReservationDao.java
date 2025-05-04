@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,26 @@ import roomescape.theme.Theme;
 @Repository
 public class JdbcReservationDao implements ReservationDao {
 
+    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+        ReservationTime reservationTime = new ReservationTime(
+                resultSet.getLong("time_id"),
+                resultSet.getObject("start_at", LocalTime.class)
+        );
+        Theme theme = new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail")
+        );
+        return Reservation.of(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getObject("date", LocalDate.class),
+                reservationTime,
+                theme
+        );
+    };
+
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
@@ -25,44 +46,26 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT \n"
-                + "    r.id as reservation_id, \n"
-                + "    r.name, \n"
-                + "    r.date, \n"
-                + "    rt.id as time_id, \n"
-                + "    rt.start_at as time_value, \n"
-                + "    t.id as theme_id,\n"
-                + "    t.name as theme_name,\n"
-                + "    t.description as theme_des,\n"
-                + "    t.thumbnail as theme_thumb\n"
-                + "FROM reservation as r \n"
-                + "inner join reservation_time as rt \n"
-                + "on r.time_id = rt.id\n"
-                + "inner join theme as t\n"
-                + "on t.id = r.theme_id";
+        String sql = """
+                SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t
+                ON r.theme_id = t.id
+                """;
 
         return this.jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            resultSet.getObject("time_value", LocalTime.class)
-                    );
-
-                    Theme theme = new Theme(
-                            resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
-                            resultSet.getString("theme_des"),
-                            resultSet.getString("theme_thumb")
-                    );
-
-                    return Reservation.of(
-                            resultSet.getLong("reservation_id"),
-                            resultSet.getString("name"),
-                            resultSet.getObject("date", LocalDate.class),
-                            reservationTime,
-                            theme
-                    );
-                });
+                reservationRowMapper);
     }
 
     @Override
@@ -95,41 +98,25 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findByTimeId(Long id) {
         String sql = """
-                SELECT r.id as reservation_id,
-                       r.name as reservation_name,
-                       r.date as reservation_date,
-                       rt.start_at as time_start_at,
-                       rt.id as time_id,
-                       t.id as theme_id,
-                       t.name as theme_name,
-                       t.description as theme_des,
-                       t.thumbnail as theme_thumb
-                    FROM reservation as r 
-                    INNER JOIN reservation_time as rt ON rt.id = r.time_id 
-                    INNER JOIN theme as t ON r.theme_id = t.id
-                    WHERE r.time_id = ?
+                SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t
+                ON r.theme_id = t.id
+                WHERE r.time_id = ?
                 """;
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        Theme theme = new Theme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("theme_des"),
-                                rs.getString("theme_thumb")
-                        );
-
-                        return Reservation.of(
-                                rs.getLong("reservation_id"),
-                                rs.getString("reservation_name"),
-                                rs.getDate("reservation_date").toLocalDate(),
-                                new ReservationTime(rs.getLong("time_id"), rs.getTime("time_start_at").toLocalTime()),
-                                theme
-                        );
-                    },
-                    id
-            );
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -139,42 +126,25 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
-                SELECT r.id as reservation_id,
-                       r.name as reservation_name,
-                       r.date as reservation_date,
-                       rt.start_at as time_start_at,
-                       rt.id as time_id,
-                       t.id as theme_id,
-                       t.name as theme_name,
-                       t.description as theme_des,
-                       t.thumbnail as theme_thumb
-                    FROM reservation as r 
-                    INNER JOIN reservation_time as rt ON rt.id = r.time_id
-                    INNER JOIN theme as t ON t.id = r.theme_id
-                    WHERE r.id= ?
+                SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t
+                ON r.theme_id = t.id
+                WHERE r.id= ?
                 """;
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        Theme theme = new Theme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("theme_des"),
-                                rs.getString("theme_thumb")
-                        );
-
-                        return Reservation.of(
-                                rs.getLong("reservation_id"),
-                                rs.getString("reservation_name"),
-                                rs.getDate("reservation_date").toLocalDate(),
-                                new ReservationTime(rs.getLong("time_id"),
-                                        rs.getTime("time_start_at").toLocalTime()),
-                                theme
-                        );
-                    },
-                    id
-            );
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -184,32 +154,25 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
         String sql = """
-                SELECT * FROM reservation as r 
-                    INNER JOIN reservation_time as rt ON rt.id = r.id 
-                         INNER JOIN theme as t ON r.theme_id = t.id
-                         WHERE r.date = ? and rt.start_at = ?""";
+                SELECT
+                    r.id,
+                    r.name,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t
+                ON r.theme_id = t.id
+                WHERE r.date = ? AND rt.start_at = ?
+                """;
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(
-                    sql,
-                    (rs, rowNum) -> {
-                        Theme theme = new Theme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("theme_des"),
-                                rs.getString("theme_thumb")
-                        );
-
-                        return Reservation.of(
-                                rs.getLong("id"),
-                                rs.getString("name"),
-                                rs.getDate("date").toLocalDate(),
-                                new ReservationTime(rs.getLong("id"), rs.getTime("start_at").toLocalTime()),
-                                theme
-                        );
-                    },
-                    date,
-                    time
-            );
+            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, date, time);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
