@@ -1,10 +1,11 @@
-package roomescape.dao;
+package roomescape.fake;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import roomescape.dao.ReservationTimeDao;
 import roomescape.model.AvailableReservationTime;
 import roomescape.model.ReservationTime;
 
