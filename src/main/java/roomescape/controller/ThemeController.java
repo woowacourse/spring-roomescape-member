@@ -43,13 +43,13 @@ public class ThemeController {
         return ResponseEntity.created(location).body(themeCreateResponse);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         themeService.deleteIfNoReservation(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("rank")
+    @GetMapping("/rank")
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
         return themeService.findPopularThemesInRecentSevenDays();
     }

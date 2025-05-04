@@ -6,5 +6,5 @@ public record FailureResponse(
         HttpStatus error,
         String message
 ) {
-    
+
 }

@@ -2,7 +2,6 @@ package roomescape.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.exception.EmptyValueException;
 import roomescape.exception.ExceptionCause;
