@@ -3,8 +3,11 @@ package roomescape.domain.reservation.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
+import lombok.Builder;
+import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
 
+@Getter
 public class Reservation {
 
     private static final int MAX_NAME_LENGTH = 25;
@@ -14,6 +17,7 @@ public class Reservation {
     private final ReservationTime reservationTime;
     private final Theme theme;
 
+    @Builder
     public Reservation(Long id, String name, LocalDate reservationDate, ReservationTime reservationTime, Theme theme) {
         this.id = id;
         this.name = name;
@@ -45,32 +49,12 @@ public class Reservation {
         return id != null;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public Long getReservationTimeId() {
         return reservationTime.getId();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getReservationDate() {
-        return reservationDate;
-    }
-
-    public ReservationTime getReservationTime() {
-        return reservationTime;
-    }
-
     public LocalTime getReservationStartTime() {
         return reservationTime.getStartAt();
-    }
-
-    public Theme getTheme() {
-        return theme;
     }
 
     public Long getThemeId() {

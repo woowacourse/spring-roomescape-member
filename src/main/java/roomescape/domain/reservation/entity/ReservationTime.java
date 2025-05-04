@@ -2,13 +2,17 @@ package roomescape.domain.reservation.entity;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import lombok.Builder;
+import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
 
+@Getter
 public class ReservationTime {
 
     private final Long id;
     private final LocalTime startAt;
 
+    @Builder
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
@@ -29,12 +33,9 @@ public class ReservationTime {
         return id != null;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override
@@ -44,10 +45,5 @@ public class ReservationTime {
         }
         ReservationTime that = (ReservationTime) o;
         return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }

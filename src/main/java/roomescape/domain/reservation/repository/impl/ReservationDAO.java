@@ -146,31 +146,30 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     private Reservation reservationOf(ResultSet resultSet) throws SQLException {
-        // TODO 빌더 패턴을 사용하기
-
-        return new Reservation(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
-                LocalDate.parse(resultSet.getString("date")),
-                reservationTimeOf(resultSet),
-                themeOf(resultSet)
-        );
+        return Reservation.builder()
+                .id(resultSet.getLong("reservation_id"))
+                .name(resultSet.getString("name"))
+                .reservationDate(LocalDate.parse(resultSet.getString("date")))
+                .reservationTime(reservationTimeOf(resultSet))
+                .theme(themeOf(resultSet))
+                .build();
     }
 
     private ReservationTime reservationTimeOf(ResultSet resultSet) throws SQLException {
-        return new ReservationTime(
-                resultSet.getLong("reservation_time_id"),
-                LocalTime.parse(resultSet.getString("start_at")
-                ));
+
+        return ReservationTime.builder()
+                .id(resultSet.getLong("reservation_time_id"))
+                .startAt(LocalTime.parse(resultSet.getString("start_at")))
+                .build();
     }
 
     private Theme themeOf(ResultSet resultSet) throws SQLException {
-        return new Theme(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        );
+        return Theme.builder()
+                .id(resultSet.getLong("theme_id"))
+                .name(resultSet.getString("theme_name"))
+                .description(resultSet.getString("description"))
+                .thumbnail(resultSet.getString("thumbnail"))
+                .build();
     }
 
     private Reservation create(Reservation reservation) {

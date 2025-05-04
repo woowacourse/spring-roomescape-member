@@ -60,10 +60,10 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     }
 
     private ReservationTime reservationTimeOf(ResultSet resultSet) throws SQLException {
-        return new ReservationTime(
-                resultSet.getLong("id"),
-                LocalTime.parse(resultSet.getString("start_at"))
-        );
+        return ReservationTime.builder()
+                .id(resultSet.getLong("id"))
+                .startAt(LocalTime.parse(resultSet.getString("start_at")))
+                .build();
     }
 
     @Override
