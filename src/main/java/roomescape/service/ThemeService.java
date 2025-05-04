@@ -32,6 +32,13 @@ public class ThemeService {
         return ThemeResponseDto.from(theme);
     }
 
+    public List<ThemeResponseDto> getAllThemeOfRanks() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = currentDate.minusDays(7);
+        List<Theme> themes = themeDao.findAllThemeOfRanks(startDate, currentDate);
+        return themes.stream().map(ThemeResponseDto::from).toList();
+    }
+
     public void deleteTheme(Long id) {
         validateNotFoundThemeBy(id);
         validateExistsThemeBy(id);
@@ -47,12 +54,5 @@ public class ThemeService {
         if (reservationDao.existsByThemeId(id)) {
             throw new InvalidReservationException("이미 예약된 테마를 삭제할 수 없습니다.");
         }
-    }
-
-    public List<ThemeResponseDto> getAllThemeOfRanks() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.minusDays(7);
-        List<Theme> themes = themeDao.findAllThemeOfRanks(startDate, currentDate);
-        return themes.stream().map(ThemeResponseDto::from).toList();
     }
 }

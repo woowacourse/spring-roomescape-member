@@ -24,7 +24,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     public JdbcReservationDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
+        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
     }
@@ -48,22 +48,27 @@ public class JdbcReservationDaoImpl implements ReservationDao {
                    inner join theme as t on r.theme_id = t.id 
                 """;
 
-        return jdbcTemplate.query(sql,
-                (resultSet, RowNum) ->
-                        new Reservation(resultSet.getLong("reservation_id"),
-                                createPerson(resultSet),
-                                createReservationDate(resultSet),
-                                createReservationTime(resultSet),
-                                createTheme(resultSet)
-                        ));
+        return jdbcTemplate.query(sql, (resultSet, RowNum) ->
+                new Reservation(resultSet.getLong("reservation_id"),
+                        createPerson(resultSet),
+                        createReservationDate(resultSet),
+                        createReservationTime(resultSet),
+                        createTheme(resultSet)
+                ));
+    }
+
+    private Person createPerson(ResultSet resultSet) throws SQLException {
+        return new Person(resultSet.getString("name"));
     }
 
     private ReservationDate createReservationDate(ResultSet resultSet) throws SQLException {
         return new ReservationDate(LocalDate.parse(resultSet.getString("date")));
     }
 
-    private Person createPerson(ResultSet resultSet) throws SQLException {
-        return new Person(resultSet.getString("name"));
+    private ReservationTime createReservationTime(ResultSet resultSet) throws SQLException {
+        return new ReservationTime(
+                resultSet.getLong("time_id"),
+                LocalTime.parse(resultSet.getString("time_value")));
     }
 
     private Theme createTheme(ResultSet resultSet) throws SQLException {
@@ -73,12 +78,6 @@ public class JdbcReservationDaoImpl implements ReservationDao {
                 resultSet.getString("theme_description"),
                 resultSet.getString("theme_thumbnail")
         );
-    }
-
-    private ReservationTime createReservationTime(ResultSet resultSet) throws SQLException {
-        return new ReservationTime(
-                resultSet.getLong("time_id"),
-                LocalTime.parse(resultSet.getString("time_value")));
     }
 
     @Override
@@ -100,15 +99,9 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Boolean existsByTimeId(Long id) {
-        String query = "select exists (select 1 from reservation where time_id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, id);
-    }
-
-    @Override
-    public Boolean existsByThemeId(final Long id) {
-        String query = "select exists (select 1 from reservation where theme_id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    public Boolean existReservationBy(String date, long timeId, Long themeId) {
+        String query = "select (exists(select 1 from reservation where date = ? AND time_id = ? AND theme_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId);
     }
 
     @Override
@@ -118,8 +111,14 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Boolean existReservationBy(String date, long timeId, Long themeId) {
-        String query = "select (exists(select 1 from reservation where date = ? AND time_id = ? AND theme_id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId);
+    public Boolean existsByTimeId(Long id) {
+        String query = "select exists (select 1 from reservation where time_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
+
+    @Override
+    public Boolean existsByThemeId(final Long id) {
+        String query = "select exists (select 1 from reservation where theme_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }
 }
