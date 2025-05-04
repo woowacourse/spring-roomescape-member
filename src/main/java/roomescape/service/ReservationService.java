@@ -5,30 +5,30 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.ReservationResponse;
-import roomescape.dao.ReservationDAO;
-import roomescape.dao.ReservationTimeDAO;
-import roomescape.dao.RoomThemeDAO;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.ReservationCreation;
 
 @Service
 public class ReservationService {
 
-    private final ReservationDAO reservationDAO;
-    private final ReservationTimeDAO reservationTimeDAO;
-    private final RoomThemeDAO themeDAO;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final RoomThemeRepository roomThemeRepository;
 
-    public ReservationService(final ReservationDAO reservationDAO,
-                              final ReservationTimeDAO reservationTimeDAO,
-                              final RoomThemeDAO themeDAO) {
-        this.reservationDAO = reservationDAO;
-        this.reservationTimeDAO = reservationTimeDAO;
-        this.themeDAO = themeDAO;
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ReservationTimeRepository reservationTimeRepository,
+                              final RoomThemeRepository roomThemeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.roomThemeRepository = roomThemeRepository;
     }
 
     public ReservationResponse addReservation(final ReservationCreation creation) {
@@ -39,20 +39,20 @@ public class ReservationService {
         validatePastDateAndTime(reservation.getDate(), reservation.getTime());
         validateDuplicateReservation(reservation);
 
-        final long savedId = reservationDAO.insert(reservation);
+        final long savedId = reservationRepository.insert(reservation);
         final Reservation savedReservation = findById(savedId);
 
         return ReservationResponse.from(savedReservation);
     }
 
     private ReservationTime findReservationTimeByTimeId(final long timeId) {
-        return reservationTimeDAO.findById(timeId)
+        return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d"
                         .formatted(timeId)));
     }
 
     private RoomTheme findThemeByThemeId(final long themeId) {
-        return themeDAO.findById(themeId)
+        return roomThemeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 테마 입니다"));
     }
 
@@ -75,25 +75,25 @@ public class ReservationService {
     }
 
     private boolean existsSameReservation(final Reservation reservation) {
-        return reservationDAO.existSameReservation(reservation.getDate(),
+        return reservationRepository.existSameReservation(reservation.getDate(),
                 reservation.getTime().getId(),
                 reservation.getTheme().getId());
     }
 
     private Reservation findById(final long savedId) {
-        return reservationDAO.findById(savedId)
+        return reservationRepository.findById(savedId)
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약입니다"));
     }
 
     public List<ReservationResponse> findAllReservations() {
-        return reservationDAO.findAll()
+        return reservationRepository.findAll()
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
 
     public void removeReservationById(final long id) {
-        boolean deleted = reservationDAO.deleteById(id);
+        boolean deleted = reservationRepository.deleteById(id);
 
         if (!deleted) {
             throw new NotFoundValueException("존재하지 않는 예약입니다");

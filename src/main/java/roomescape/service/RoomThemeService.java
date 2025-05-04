@@ -5,45 +5,48 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
-import roomescape.dao.ReservationDAO;
-import roomescape.dao.RoomThemeDAO;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.RoomThemeRepository;
 import roomescape.service.dto.RoomThemeCreation;
 
 @Service
 public class RoomThemeService {
 
-    private final ReservationDAO reservationDAO;
-    private final RoomThemeDAO themeDAO;
+    public static final int TOP_LIMIT = 10;
 
-    public RoomThemeService(final ReservationDAO reservationDAO, final RoomThemeDAO themeDAO) {
-        this.reservationDAO = reservationDAO;
-        this.themeDAO = themeDAO;
+    private final ReservationRepository reservationRepository;
+    private final RoomThemeRepository roomThemeRepository;
+
+    public RoomThemeService(final ReservationRepository reservationRepository,
+                            final RoomThemeRepository roomThemeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.roomThemeRepository = roomThemeRepository;
     }
 
     public RoomThemeResponse addTheme(final RoomThemeCreation themeCreation) {
-        if (themeDAO.existsByName(themeCreation.name())) {
+        if (roomThemeRepository.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
 
         final RoomTheme theme = new RoomTheme(themeCreation.name(), themeCreation.description(),
                 themeCreation.thumbnail());
-        final long id = themeDAO.insert(theme);
+        final long id = roomThemeRepository.insert(theme);
 
         final RoomTheme savedTheme = findById(id);
         return RoomThemeResponse.from(savedTheme);
     }
 
     private RoomTheme findById(final long id) {
-        return themeDAO.findById(id)
+        return roomThemeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 테마입니다"));
     }
 
     public List<RoomThemeResponse> findAllThemes() {
-        return themeDAO.findAll()
+        return roomThemeRepository.findAll()
                 .stream()
                 .map(RoomThemeResponse::from)
                 .toList();
@@ -54,17 +57,17 @@ public class RoomThemeService {
         final LocalDate start = currentDate.minusDays(8);
         final LocalDate end = currentDate.minusDays(1);
 
-        return themeDAO.findPopularThemes(start, end).stream()
+        return roomThemeRepository.findPopularThemes(start, end, TOP_LIMIT).stream()
                 .map(PopularThemeResponse::from)
                 .toList();
     }
 
     public void deleteTheme(final long id) {
-        if (reservationDAO.existsByThemeId(id)) {
+        if (reservationRepository.existsByThemeId(id)) {
             throw new BusinessRuleViolationException("사용 중인 테마입니다");
         }
 
-        final boolean deleted = themeDAO.deleteById(id);
+        final boolean deleted = roomThemeRepository.deleteById(id);
 
         if (!deleted) {
             throw new NotFoundValueException("존재하지 않는 테마입니다");

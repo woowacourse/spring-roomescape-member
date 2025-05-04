@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
 
-public interface ReservationTimeDAO {
+public interface ReservationTimeRepository {
 
     long insert(ReservationTime reservationTime);
 

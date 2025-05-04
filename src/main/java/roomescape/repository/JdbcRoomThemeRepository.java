@@ -1,4 +1,4 @@
-package roomescape.dao;
+package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.RoomTheme;
 
 @Repository
-public class JdbcRoomThemeDAO implements RoomThemeDAO {
+public class JdbcRoomThemeRepository implements RoomThemeRepository {
 
     private static final RowMapper<RoomTheme> THEME_ROW_MAPPER = (resultSet, rowNumber) ->
             new RoomTheme(resultSet.getLong("id"),
@@ -24,7 +24,7 @@ public class JdbcRoomThemeDAO implements RoomThemeDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcRoomThemeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcRoomThemeRepository(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")
@@ -62,7 +62,7 @@ public class JdbcRoomThemeDAO implements RoomThemeDAO {
     }
 
     @Override
-    public List<RoomTheme> findPopularThemes(LocalDate start, LocalDate end) {
+    public List<RoomTheme> findPopularThemes(LocalDate start, LocalDate end, int topLimit) {
 
         final String query = """
                         SELECT
@@ -76,9 +76,9 @@ public class JdbcRoomThemeDAO implements RoomThemeDAO {
                         WHERE r.date BETWEEN ? AND ?
                         GROUP BY t.id
                         ORDER BY COUNT(r.id) DESC
-                        LIMIT 10
+                        LIMIT ?
                 """;
-        return jdbcTemplate.query(query, THEME_ROW_MAPPER, start, end);
+        return jdbcTemplate.query(query, THEME_ROW_MAPPER, start, end, topLimit);
     }
 
     @Override
