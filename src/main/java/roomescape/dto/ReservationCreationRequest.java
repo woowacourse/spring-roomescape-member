@@ -2,35 +2,10 @@ package roomescape.dto;
 
 import java.time.LocalDate;
 
-public final class ReservationCreationRequest {
+public record ReservationCreationRequest(String name, LocalDate date, Long timeId, Long themeId) {
 
-    private final String name;
-    private final LocalDate date;
-    private final Long timeId;
-    private final Long themeId;
-
-    public ReservationCreationRequest(final String name, final LocalDate date, final Long timeId, final Long themeId) {
+    public ReservationCreationRequest {
         validate(name, date, timeId, themeId);
-        this.name = name;
-        this.date = date;
-        this.timeId = timeId;
-        this.themeId = themeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public Long getTimeId() {
-        return timeId;
-    }
-
-    public Long getThemeId() {
-        return themeId;
     }
 
     private void validate(String name, LocalDate date, Long timeId, Long themeId) {

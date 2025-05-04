@@ -37,10 +37,10 @@ public class ReservationService {
     }
 
     public long saveReservation(ReservationCreationRequest request) {
-        Theme theme = loadThemeById(request.getThemeId());
-        ReservationTime reservationTime = loadReservationTimeById(request.getTimeId());
+        Theme theme = loadThemeById(request.themeId());
+        ReservationTime reservationTime = loadReservationTimeById(request.timeId());
         Reservation reservation = Reservation.createWithoutId(
-                request.getName(), request.getDate(), reservationTime, theme);
+                request.name(), request.date(), reservationTime, theme);
 
         reservation.validatePastDateTime();
         //TODO: 이미 존재하는 예약인지 체크할때 테마 조건도 추가

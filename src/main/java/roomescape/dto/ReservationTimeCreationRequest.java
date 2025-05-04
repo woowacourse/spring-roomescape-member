@@ -2,17 +2,10 @@ package roomescape.dto;
 
 import java.time.LocalTime;
 
-public class ReservationTimeCreationRequest {
+public record ReservationTimeCreationRequest(LocalTime startAt) {
 
-    private final LocalTime startAt;
-
-    public ReservationTimeCreationRequest(LocalTime startAt) {
+    public ReservationTimeCreationRequest {
         validateTime(startAt);
-        this.startAt = startAt;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
     }
 
     private void validateTime(LocalTime time) {

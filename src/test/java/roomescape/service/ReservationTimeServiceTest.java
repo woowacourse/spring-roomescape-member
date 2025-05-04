@@ -70,7 +70,7 @@ class ReservationTimeServiceTest {
         long savedId = reservationTimeService.saveReservationTime(request);
 
         ReservationTime savedTime = timeRepository.findAll().getFirst();
-        ReservationTime expectedSavedTime = new ReservationTime(1L, request.getStartAt());
+        ReservationTime expectedSavedTime = new ReservationTime(1L, request.startAt());
 
         assertAll(
                 () -> assertThat(savedId).isEqualTo(1L),
