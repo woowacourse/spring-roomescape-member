@@ -107,7 +107,7 @@ class ReservationTimeServiceTest {
 
     @DisplayName("예약 가능 시간을 추가할때, 이미 추가한 시간의 경우 추가할 수 없다")
     @Test
-    void canCreateSameReservationTime() {
+    void cannotCreateSameReservationTime() {
         // given
         ReservationTimeCreationRequest request = new ReservationTimeCreationRequest(LocalTime.now());
         when(timeRepository.checkExistenceByStartAt(request.startAt())).thenReturn(true);
@@ -137,7 +137,7 @@ class ReservationTimeServiceTest {
 
     @DisplayName("ID를 통해 예약 가능 시간을 삭제할때, 존재하지 않는 예약 가능 시간을 삭제하려고 할 경우 예외를 발생시킨다")
     @Test
-    void canNotDeleteWithInvalidId() {
+    void cannotDeleteWithInvalidId() {
         // given
         long noneExistentId = 1L;
         when(timeRepository.findById(noneExistentId)).thenReturn(Optional.empty());
@@ -151,7 +151,7 @@ class ReservationTimeServiceTest {
 
     @DisplayName("이미 해당 시간에 예약이 존재하는 경우 예약을 제거할 수 없다")
     @Test
-    void canNotDeleteBecauseReservations() {
+    void cannotDeleteBecauseReservations() {
         // given
         ReservationTime time = new ReservationTime(1L, LocalTime.now());
         when(timeRepository.findById(time.getId())).thenReturn(Optional.of(time));

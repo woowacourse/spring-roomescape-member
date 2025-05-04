@@ -136,7 +136,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약을 추가할 때, 과거 날짜와 시간으로는 예약을 추가할 수 없다")
     @Test
-    void canNotCreateReservationWithPastDateTime() {
+    void cannotCreateReservationWithPastDateTime() {
         // given
         ReservationCreationRequest request = new ReservationCreationRequest("예약", TODAY, 1L, 1L);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
@@ -155,7 +155,7 @@ class ReservationServiceTest {
 
     @DisplayName("예약을 추가할 때, 중복된 예약은 허용하지 않는다")
     @Test
-    void canNotCreateReservationWithSameDateTime() {
+    void cannotCreateReservationWithSameDateTime() {
         // given
         ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
@@ -174,7 +174,7 @@ class ReservationServiceTest {
 
     @DisplayName("ID를 통해 예약을 삭제할 수 있다.")
     @Test
-    void deleteReservation() {
+    void canDeleteReservation() {
         // given
         Reservation reservation = ReservationFixture.create(1L, "예약1");
         when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
@@ -189,7 +189,7 @@ class ReservationServiceTest {
 
     @DisplayName("존재하지 않는 예약을 삭제하려고 할 경우 예외를 발생시킨다")
     @Test
-    void deleteNoneExistentReservation() {
+    void cannotDeleteNoneExistentReservation() {
         // given
         long noneExistentId = 1L;
         when(reservationRepository.findById(noneExistentId)).thenReturn(Optional.empty());
