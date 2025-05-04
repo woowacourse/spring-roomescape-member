@@ -88,14 +88,14 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public boolean existsByDateAndTime(LocalDate date, Long id) {
-        String sql = "select count(*) from reservation where date = ? and time_id = ?";
+        String sql = "select exists(select 1 from reservation where date = ? and time_id = ?)";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, date, id);
         return count != 0;
     }
 
     @Override
     public boolean existsByTimeId(Long timeId) {
-        String sql = "select count(*) from reservation where time_id = ?";
+        String sql = "select exists(select 1 from reservation where time_id = ?)";
         int count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count != 0;
     }
@@ -112,14 +112,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findTopThemesByReservationCountBetween(LocalDate startDate, LocalDate endDate) {
+    public List<Long> findThemeIdsOrderByReservationCountBetween(LocalDate startDate, LocalDate endDate) {
         String sql = """
                 SELECT theme_id
                 FROM reservation
                 WHERE date BETWEEN ? AND ?
                 GROUP BY theme_id
                 ORDER BY COUNT(*) DESC
-                LIMIT 10
                 """;
         List<Long> themeIds = jdbcTemplate.query(
                 sql,

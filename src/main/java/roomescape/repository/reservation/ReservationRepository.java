@@ -18,5 +18,5 @@ public interface ReservationRepository {
 
     List<Long> findTimeIdsByDateAndTheme(LocalDate date, Long themeId);
 
-    List<Long> findTopThemesByReservationCountBetween(LocalDate startDate, LocalDate endDate);
+    List<Long> findThemeIdsOrderByReservationCountBetween(LocalDate startDate, LocalDate endDate);
 }
