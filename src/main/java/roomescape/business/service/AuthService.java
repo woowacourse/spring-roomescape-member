@@ -26,7 +26,6 @@ public class AuthService {
             throw new LoginFailException();
         }
 
-        // TODO : secret을 진짜로 비밀로 작성
         return jwtUtil.getAuthentication(user);
     }
 }
