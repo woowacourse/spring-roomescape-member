@@ -54,7 +54,8 @@ public class ReservationService {
         }
 
         ReservationTime time = requestReservation.getTime();
-        List<Reservation> reservations = reservationRepository.findByDateTime(requestReservation.getDate(), time.getStartAt());
+        Theme theme = requestReservation.getTheme();
+        List<Reservation> reservations = reservationRepository.findByDateTimeTheme(requestReservation.getDate(), time.getStartAt(), theme.getId());
         if (!reservations.isEmpty()) {
             throw new DuplicateContentException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
         }
