@@ -15,6 +15,11 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        validateId(id);
+        validateName(name);
+        validateDate(date);
+        validateReservationTime(reservationTime);
+        validateTheme(theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -37,6 +42,36 @@ public class Reservation {
     private static boolean isPastTense(LocalDateTime dateTime) {
         LocalDateTime now = LocalDateTime.now();
         return dateTime.isBefore(now);
+    }
+
+    private void validateId(Long id) {
+        if (id == null) {
+            throw new BadRequestException("예약 ID가 없습니다.");
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("예약자 이름이 없습니다.");
+        }
+    }
+
+    private void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new BadRequestException("예약 날짜가 없습니다.");
+        }
+    }
+
+    private void validateReservationTime(ReservationTime reservationTime) {
+        if (reservationTime == null) {
+            throw new BadRequestException("예약 시간이 없습니다.");
+        }
+    }
+
+    private void validateTheme(Theme theme) {
+        if (theme == null) {
+            throw new BadRequestException("예약 테마가 없습니다.");
+        }
     }
 
     public boolean isSameDateTime(Reservation compare) {
