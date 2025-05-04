@@ -3,8 +3,7 @@ package roomescape.repository.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,18 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
+import roomescape.support.JdbcTestSupport;
 
-@JdbcTest
-@ActiveProfiles("test")
+
 @Import(ReservationH2Dao.class)
-class ReservationH2DaoTest {
+class ReservationH2DaoTest extends JdbcTestSupport {
 
     @Autowired
     private ReservationH2Dao reservationH2Dao;
@@ -36,16 +33,6 @@ class ReservationH2DaoTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("""
-                SET REFERENTIAL_INTEGRITY FALSE;
-                TRUNCATE TABLE reservation;
-                ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE reservation_time;
-                ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE theme;
-                ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
-                SET REFERENTIAL_INTEGRITY TRUE;
-                """);
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
     }

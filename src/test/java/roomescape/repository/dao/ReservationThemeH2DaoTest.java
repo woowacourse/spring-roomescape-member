@@ -3,47 +3,28 @@ package roomescape.repository.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.InstanceOfAssertFactories.PATH;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTheme;
+import roomescape.support.JdbcTestSupport;
 
-@JdbcTest
-@ActiveProfiles("test")
 @Import(ReservationThemeH2Dao.class)
-class ReservationThemeH2DaoTest {
+class ReservationThemeH2DaoTest extends JdbcTestSupport {
 
     @Autowired
     private ReservationThemeH2Dao reservationThemeH2Dao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("""
-                SET REFERENTIAL_INTEGRITY FALSE;
-                TRUNCATE TABLE reservation;
-                ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE reservation_time;
-                ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE theme;
-                ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
-                SET REFERENTIAL_INTEGRITY TRUE;
-                """);
-    }
 
     @DisplayName("저장한 모든 테마 조회할 수 있다.")
     @Test

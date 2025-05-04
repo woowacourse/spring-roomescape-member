@@ -10,40 +10,22 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
+import roomescape.support.JdbcTestSupport;
 
-@JdbcTest
-@ActiveProfiles("test")
 @Import(ReservationTimeH2Dao.class)
-class ReservationTimeH2DaoTest {
+class ReservationTimeH2DaoTest extends JdbcTestSupport {
 
     @Autowired
     private ReservationTimeH2Dao reservationTimeH2Dao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("""
-                SET REFERENTIAL_INTEGRITY FALSE;
-                TRUNCATE TABLE reservation;
-                ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE reservation_time;
-                ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE theme;
-                ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
-                SET REFERENTIAL_INTEGRITY TRUE;
-                """);
-    }
 
     @DisplayName("저장한 모든 예약 시간을 조회할 수 있다.")
     @Test

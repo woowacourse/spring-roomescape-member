@@ -1,24 +1,21 @@
 package roomescape.repository;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Reservation;
 import roomescape.repository.dao.ReservationH2Dao;
+import roomescape.support.JdbcTestSupport;
 
-@JdbcTest
-@ActiveProfiles("test")
 @Import({ReservationDbRepository.class, ReservationH2Dao.class})
-class ReservationDbRepositoryTest {
+class ReservationDbRepositoryTest extends JdbcTestSupport {
 
     @Autowired
     private ReservationDbRepository reservationDbRepository;
@@ -28,16 +25,6 @@ class ReservationDbRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.update("""
-                SET REFERENTIAL_INTEGRITY FALSE;
-                TRUNCATE TABLE reservation;
-                ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE reservation_time;
-                ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1;
-                TRUNCATE TABLE theme;
-                ALTER TABLE theme ALTER COLUMN id RESTART WITH 1;
-                SET REFERENTIAL_INTEGRITY TRUE;
-                """);
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
     }
