@@ -8,19 +8,12 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.BaseTest;
-import roomescape.common.Constant;
 
 class TimeApiTest extends BaseTest {
 
-    private Map<String, String> reservationTime;
-
-    @BeforeEach
-    void setUp() {
-        reservationTime = Map.of("startAt", "10:00");
-    }
+    private Map<String, String> reservationTime = Map.of("startAt", "10:00");
 
     @Test
     void 예약_시간을_생성한다() {

@@ -67,9 +67,8 @@ public class ReservationTimeRepository {
     }
 
     public boolean existByStartAt(LocalTime startAt) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, startAt);
-        return count > 0;
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
     public List<AvailableReservationTimeResponse> findAllAvailableReservationTimes(LocalDate date, Long themeId) {

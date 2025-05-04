@@ -10,7 +10,7 @@ import roomescape.theme.controller.request.CreateThemeRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.domain.LastWeekRange;
+import roomescape.theme.domain.LastWeekRange;
 
 @Service
 public class ThemeService {

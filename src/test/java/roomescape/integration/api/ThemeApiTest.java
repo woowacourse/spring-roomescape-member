@@ -11,16 +11,11 @@ import roomescape.common.BaseTest;
 
 class ThemeApiTest extends BaseTest {
 
-    private Map<String, String> createThemeRequest;
-
-    @BeforeEach
-    void setUp() {
-        createThemeRequest = Map.of(
-                "name", "공포의 방탈출",
-                "description", "무서운 분위기 속에서 탈출",
-                "thumbnail", "https://example.com/horror.jpg"
-        );
-    }
+    private Map<String, String> createThemeRequest = Map.of(
+            "name", "공포의 방탈출",
+            "description", "무서운 분위기 속에서 탈출",
+            "thumbnail", "https://example.com/horror.jpg"
+    );
 
     @Test
     void 테마를_생성한다() {
