@@ -1,8 +1,8 @@
 package roomescape.controller;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
@@ -26,7 +26,7 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> create(@NotNull @RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> create(@Validated @RequestBody ThemeRequest request) {
         ThemeResponse themeResponse = themeService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(themeResponse);
     }
