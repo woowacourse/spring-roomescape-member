@@ -1,0 +1,24 @@
+package roomescape.business.service;
+
+import org.springframework.stereotype.Service;
+import roomescape.business.model.entity.User;
+import roomescape.business.model.repository.UserRepository;
+import roomescape.exception.DuplicatedEmailException;
+
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    public UserService(final UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public void register(final String name, final String email, final String password) {
+        if (userRepository.existByEmail(email)) {
+            throw new DuplicatedEmailException();
+        }
+        User user = User.beforeSave(name, email, password);
+        userRepository.save(user);
+    }
+}
