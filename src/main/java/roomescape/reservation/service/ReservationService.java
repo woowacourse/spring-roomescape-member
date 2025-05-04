@@ -5,6 +5,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.Dao;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.InvalidIdException;
+import roomescape.common.exception.InvalidTimeException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
@@ -14,11 +17,11 @@ import roomescape.theme.domain.Theme;
 
 @Service
 public class ReservationService {
-    private static final String PAST_TIME_EXCEPTION_MESSAGE = "[ERROR] 당일의 과거 시간대로는 예약할 수 없습니다.";
-    private static final String ALREADY_RESERVED_EXCEPTION_MESSAGE = "[ERROR] 이미 예약이 존재합니다.";
-    private static final String INVALID_TIME_ID_EXCEPTION_MESSAGE = "[ERROR] 시간 id가 존재하지 않습니다.";
-    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "[ERROR] 테마 id가 존재하지 않습니다.";
-    private static final String INVALID_ID_EXCEPTION_MESSAGE = "[ERROR] id에 해당하는 예약이 존재하지 않습니다";
+    private static final String INVALID_TIME_EXCEPTION_MESSAGE = "당일의 과거 시간대로는 예약할 수 없습니다.";
+    private static final String DUPLICATE_RESERVATION_EXCEPTION_MESSAGE = "이미 동일한 예약이 존재합니다.";
+    private static final String INVALID_TIME_ID_EXCEPTION_MESSAGE = "해당 시간 아이디는 존재하지 않습니다.";
+    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "해당 테마 아이디는 존재하지 않습니다.";
+    private static final String INVALID_ID_EXCEPTION_MESSAGE = "해당 예약 아이디는 존재하지 않습니다";
 
     private final Dao<Reservation> reservationDao;
     private final Dao<ReservationTime> reservationTimeDao;
@@ -75,7 +78,7 @@ public class ReservationService {
     ) {
         if (reservationRequest.date().isEqual(LocalDate.now())
                 && reservationTimeResult.getStartAt().isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException(PAST_TIME_EXCEPTION_MESSAGE);
+            throw new InvalidTimeException(INVALID_TIME_EXCEPTION_MESSAGE);
         }
     }
 
@@ -90,7 +93,7 @@ public class ReservationService {
                         && reservation.getTime().equals(reservationTimeResult));
 
         if (isNotAvailable) {
-            throw new IllegalArgumentException(ALREADY_RESERVED_EXCEPTION_MESSAGE);
+            throw new DuplicateException(DUPLICATE_RESERVATION_EXCEPTION_MESSAGE);
         }
     }
 
@@ -102,16 +105,16 @@ public class ReservationService {
 
     private Reservation searchReservation(final Long id) {
         return reservationDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(INVALID_ID_EXCEPTION_MESSAGE));
     }
 
     private ReservationTime searchReservationTime(final ReservationRequest reservationRequest) {
         return reservationTimeDao.findById(reservationRequest.timeId())
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_TIME_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(INVALID_TIME_ID_EXCEPTION_MESSAGE));
     }
 
     private Theme searchTheme(final ReservationRequest reservationRequest) {
         return themeDao.findById(reservationRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
     }
 }

@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.Dao;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.ForeignKeyException;
+import roomescape.common.exception.InvalidIdException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
@@ -13,9 +16,9 @@ import roomescape.theme.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
-    private static final String THEME_ALREADY_EXISTS_EXCEPTION_MESSAGE = "[ERROR] 이미 테마가 존재합니다.";
-    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "[ERROR] 해당 테마 아이디는 존재하지 않습니다";
-    private static final String RESERVED_THEME_ID_EXCEPTION_MESSAGE = "[ERROR] 이미 예약된 테마는 삭제할 수 없습니다.";
+    private static final String DUPLICATE_THEME_EXCEPTION_MESSAGE = "이미 테마가 존재합니다.";
+    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "해당 테마 아이디는 존재하지 않습니다";
+    private static final String RESERVED_THEME_ID_EXCEPTION_MESSAGE = "이미 예약된 테마는 삭제할 수 없습니다.";
 
     private final Dao<Reservation> reservationDao;
     private final ThemeDao themeDao;
@@ -69,7 +72,7 @@ public class ThemeService {
                 .anyMatch(theme -> theme.getName().equals(themeRequest.name()));
 
         if (isDuplicate) {
-            throw new IllegalArgumentException(THEME_ALREADY_EXISTS_EXCEPTION_MESSAGE);
+            throw new DuplicateException(DUPLICATE_THEME_EXCEPTION_MESSAGE);
         }
     }
 
@@ -82,7 +85,7 @@ public class ThemeService {
     }
 
     private void searchThemeId(Long id) {
-        themeDao.findById(id).orElseThrow(() -> new IllegalArgumentException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
+        themeDao.findById(id).orElseThrow(() -> new InvalidIdException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
     }
 
     private void validateUnoccupiedThemeId(Long id, List<Reservation> reservations) {
@@ -90,7 +93,7 @@ public class ThemeService {
                 .anyMatch(reservation -> reservation.getThemeId().equals(id));
 
         if (isOccupiedThemeId) {
-            throw new IllegalArgumentException(RESERVED_THEME_ID_EXCEPTION_MESSAGE);
+            throw new ForeignKeyException(RESERVED_THEME_ID_EXCEPTION_MESSAGE);
         }
     }
 }

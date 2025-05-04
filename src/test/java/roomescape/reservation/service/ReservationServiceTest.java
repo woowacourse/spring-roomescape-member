@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.common.Dao;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.InvalidIdException;
+import roomescape.common.exception.InvalidTimeException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
@@ -50,8 +53,7 @@ class ReservationServiceTest {
 
         ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.now(), 1L, 1L);
         assertThatThrownBy(() -> reservationService.add(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 당일의 과거 시간대로는 예약할 수 없습니다.");
+                .isInstanceOf(InvalidTimeException.class);
 
         verify(reservationTimeDao, times(1)).findById(1L);
     }
@@ -68,8 +70,7 @@ class ReservationServiceTest {
 
         ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.of(2025, 5, 5), 1L, 1L);
         assertThatThrownBy(() -> reservationService.add(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 예약이 존재합니다.");
+                .isInstanceOf(DuplicateException.class);
 
         verify(reservationTimeDao, times(1)).findById(1L);
         verify(reservationDao, times(1)).findAll();
@@ -82,8 +83,7 @@ class ReservationServiceTest {
 
         ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.now(), 2L, 1L);
         assertThatThrownBy(() -> reservationService.add(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 시간 id가 존재하지 않습니다.");
+                .isInstanceOf(InvalidIdException.class);
 
         verify(reservationTimeDao, times(1)).findById(2L);
     }
@@ -97,8 +97,7 @@ class ReservationServiceTest {
 
         ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.of(2025, 5, 5), 1L, 2L);
         assertThatThrownBy(() -> reservationService.add(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 테마 id가 존재하지 않습니다.");
+                .isInstanceOf(InvalidIdException.class);
 
         verify(reservationTimeDao, times(1)).findById(1L);
         verify(themeDao, times(1)).findById(2L);
@@ -108,8 +107,7 @@ class ReservationServiceTest {
     @Test
     void exception_invalid_id() {
         assertThatThrownBy(() -> reservationService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] id에 해당하는 예약이 존재하지 않습니다");
+                .isInstanceOf(InvalidIdException.class);
 
         verify(reservationDao, times(1)).findById(1L);
     }

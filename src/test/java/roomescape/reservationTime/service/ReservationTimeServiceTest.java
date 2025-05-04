@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.common.Dao;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.ForeignKeyException;
+import roomescape.common.exception.InvalidIdException;
 import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDao;
@@ -51,7 +54,6 @@ class ReservationTimeServiceTest {
         when(reservationTimeDao.findAll()).thenReturn(List.of(reservationTime));
 
         assertThat(reservationTimeService.findAll()).hasSize(1);
-
         verify(reservationTimeDao, times(1)).findAll();
     }
 
@@ -59,14 +61,12 @@ class ReservationTimeServiceTest {
     @Test
     void exception_find_invalid_themeId() {
         when(themeDao.findById(1L)).thenReturn(Optional.empty());
-
         AvailableReservationTimeRequest availableReservationTimeRequest = new AvailableReservationTimeRequest(
                 LocalDate.now(), 1L
         );
 
         assertThatThrownBy(() -> reservationTimeService.findByDateAndTheme(availableReservationTimeRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 존재하지 않는 테마 아이디입니다");
+                .isInstanceOf(InvalidIdException.class);
     }
 
     @DisplayName("시간 내역을 추가 시 중복되는 시간인 경우 예외를 발생시킨다")
@@ -76,10 +76,8 @@ class ReservationTimeServiceTest {
         when(reservationTimeDao.findAll()).thenReturn(List.of(reservationTime));
 
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(11, 0));
-
         assertThatThrownBy(() -> reservationTimeService.add(reservationTimeRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 해당 시간이 존재합니다");
+                .isInstanceOf(DuplicateException.class);
     }
 
     @DisplayName("시간 내역을 삭제 시 존재하지 않는 시간 아이디인 경우 예외를 발생시킨다")
@@ -88,8 +86,7 @@ class ReservationTimeServiceTest {
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 존재하지 않는 시간 아이디입니다");
+                .isInstanceOf(InvalidIdException.class);
     }
 
     @DisplayName("시간 내역을 삭제 시 이미 예약된 시간 아이디인 경우 예외를 발생시킨다")
@@ -104,7 +101,6 @@ class ReservationTimeServiceTest {
         when(reservationDao.findAll()).thenReturn(List.of(reservation));
 
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 이미 예약된 시간은 삭제할 수 없습니다");
+                .isInstanceOf(ForeignKeyException.class);
     }
 }

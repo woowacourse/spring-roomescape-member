@@ -5,6 +5,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.common.Dao;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.ForeignKeyException;
+import roomescape.common.exception.InvalidIdException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.dto.admin.ReservationTimeRequest;
@@ -15,10 +18,10 @@ import roomescape.theme.domain.Theme;
 
 @Service
 public class ReservationTimeService {
-    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "[ERROR] 존재하지 않는 테마 아이디입니다";
-    private static final String INVALID_TIME_ID_EXCEPTION_MESSAGE = "[ERROR] 존재하지 않는 시간 아이디입니다";
-    private static final String TIME_ALREADY_EXISTS_EXCEPTION_MESSAGE = "[ERROR] 이미 해당 시간이 존재합니다";
-    private static final String RESERVED_TIME_EXCEPTION_MESSAGE = "[ERROR] 이미 예약된 시간은 삭제할 수 없습니다";
+    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "존재하지 않는 테마 아이디입니다";
+    private static final String INVALID_TIME_ID_EXCEPTION_MESSAGE = "존재하지 않는 시간 아이디입니다";
+    private static final String DUPLICATE_TIME_EXCEPTION_MESSAGE = "이미 해당 시간이 존재합니다";
+    private static final String RESERVED_TIME_EXCEPTION_MESSAGE = "이미 예약된 시간은 삭제할 수 없습니다";
 
     private final Dao<ReservationTime> reservationTimeDao;
     private final Dao<Reservation> reservationDao;
@@ -64,7 +67,7 @@ public class ReservationTimeService {
             final AvailableReservationTimeRequest availableReservationTimeRequest
     ) {
         themeDao.findById(availableReservationTimeRequest.themeId())
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
     }
 
     private List<ReservationTime> findReservedTimes(
@@ -103,7 +106,7 @@ public class ReservationTimeService {
                 .anyMatch(reservationTime -> reservationTime.getStartAt().equals(reservationTimeRequest.startAt()));
 
         if (isAlreadyExisted) {
-            throw new IllegalArgumentException(TIME_ALREADY_EXISTS_EXCEPTION_MESSAGE);
+            throw new DuplicateException(DUPLICATE_TIME_EXCEPTION_MESSAGE);
         }
     }
 
@@ -117,7 +120,7 @@ public class ReservationTimeService {
 
     private void searchReservationTimeId(final Long id) {
         reservationTimeDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_TIME_ID_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new InvalidIdException(INVALID_TIME_ID_EXCEPTION_MESSAGE));
     }
 
     private void validateUnoccupiedTime(final Long id, final List<Reservation> reservations) {
@@ -125,7 +128,7 @@ public class ReservationTimeService {
                 .anyMatch(reservation -> reservation.getTimeId().equals(id));
 
         if (isOccupiedTimeId) {
-            throw new IllegalArgumentException(RESERVED_TIME_EXCEPTION_MESSAGE);
+            throw new ForeignKeyException(RESERVED_TIME_EXCEPTION_MESSAGE);
         }
     }
 }
