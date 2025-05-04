@@ -1,7 +1,10 @@
 package roomescape.dao;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -40,6 +43,31 @@ public class JdbcThemeDao implements ThemeDao {
         } catch (EmptyResultDataAccessException e) {
             throw new IllegalArgumentException("존재하지 않는 테마 데이터입니다.");
         }
+    }
+
+    @Override
+    public List<Theme> findAllById(List<Long> themeIds) {
+        if (themeIds == null || themeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        String themeIdsToSql = themeIds.stream()
+                .map(id -> "?")
+                .collect(Collectors.joining(", "));
+        String sql = String.format("SELECT * FROM theme WHERE id IN (%s)", themeIdsToSql);
+
+        List<Theme> themesById = jdbcTemplate.query(
+                sql,
+                themeIds.toArray(),
+                new ThemeMapper()
+        );
+
+        return themeIds.stream().map(themeId ->
+                        themesById.stream()
+                                .filter(theme -> Objects.equals(theme.getId(), themeId))
+                                .findFirst()
+                                .orElseThrow(IllegalStateException::new))
+                .toList();
     }
 
     @Override

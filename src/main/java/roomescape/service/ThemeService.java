@@ -31,11 +31,11 @@ public class ThemeService {
         LocalDate startDate = now.minusDays(8);
         LocalDate endDate = now.minusDays(1);
         List<Long> themeIds = reservationDao.findMostReservedThemeIdsBetween(startDate, endDate);
+        List<Theme> themes = themeDao.findAllById(themeIds);
 
-        return themeIds.stream().map(themeId -> {
-            Theme theme = themeDao.findById(themeId);
-            return new ThemeResponse(theme);
-        }).toList();
+        return themes.stream()
+                .map(ThemeResponse::new)
+                .toList();
     }
 
     public ThemeResponse createTheme(ThemeRequest themeRequest) {

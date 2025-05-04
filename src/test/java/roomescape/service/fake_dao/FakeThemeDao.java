@@ -26,6 +26,11 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
+    public List<Theme> findAllById(List<Long> themeIds) {
+        return List.of();
+    }
+
+    @Override
     public Long create(Theme theme) {
         Long timeId = id++;
         fakeMemory.add(theme.copyWithId(timeId));
