@@ -31,8 +31,8 @@ public class RoomThemeService {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
 
-        final RoomTheme theme = new RoomTheme(themeCreation.name(), themeCreation.description(),
-                themeCreation.thumbnail());
+        final RoomTheme theme =
+                new RoomTheme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
         final long id = themeDAO.insert(theme);
 
         return findById(id);
@@ -48,9 +48,8 @@ public class RoomThemeService {
     }
 
     public List<RoomTheme> findPopularThemes() {
-        LocalDate now = LocalDate.now();
         PopularThemeSelectionCriteria criteria =
-                new PopularThemeSelectionCriteria(now, POPULAR_THEME_SELECTION_DURATION);
+                new PopularThemeSelectionCriteria(LocalDate.now(), POPULAR_THEME_SELECTION_DURATION);
 
         List<RoomTheme> popularThemes = themeDAO.findPopularThemes(criteria.getStartDay(), criteria.getEndDay());
 

@@ -30,7 +30,6 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse addReservation(@RequestBody CreateReservationRequest request) {
         final ReservationCreation creation = ReservationCreation.from(request);
-
         final Reservation savedReservation = reservationService.addReservation(creation);
         return ReservationResponse.from(savedReservation);
     }

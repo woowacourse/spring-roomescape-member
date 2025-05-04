@@ -34,7 +34,6 @@ public class ReservationTimeController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationTimeResponse addReservationTime(@RequestBody CreateReservationTimeRequest request) {
         final ReservationTimeCreation creation = ReservationTimeCreation.from(request);
-
         final ReservationTime savedReservationTime = reservationTimeService.addReservationTime(creation);
         return ReservationTimeResponse.from(savedReservationTime);
     }
@@ -52,8 +51,8 @@ public class ReservationTimeController {
     @ResponseStatus(HttpStatus.OK)
     public List<AvailableReservationTimeResponse> findAvailableTime(@RequestParam(value = "date") LocalDate date,
                                                                     @RequestParam(value = "themeId") long themeId) {
-        List<AvailableReservationTime> availableReservationTimes
-                = reservationTimeService.findAllAvailableTime(date, themeId);
+        List<AvailableReservationTime> availableReservationTimes =
+                reservationTimeService.findAllAvailableTime(date, themeId);
 
         return availableReservationTimes.stream()
                 .map(AvailableReservationTimeResponse::from)

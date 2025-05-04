@@ -31,7 +31,6 @@ public class RoomThemeController {
     @ResponseStatus(HttpStatus.CREATED)
     public RoomThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
         final RoomThemeCreation creation = RoomThemeCreation.from(request);
-
         final RoomTheme savedTheme = roomThemeService.addTheme(creation);
         return RoomThemeResponse.from(savedTheme);
     }

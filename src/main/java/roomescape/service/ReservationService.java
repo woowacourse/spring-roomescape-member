@@ -42,8 +42,7 @@ public class ReservationService {
 
     private ReservationTime findReservationTimeByTimeId(final long timeId) {
         return reservationTimeDAO.findById(timeId)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d"
-                        .formatted(timeId)));
+                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 가능 시간입니다: timeId=%d".formatted(timeId)));
     }
 
     private RoomTheme findThemeByThemeId(final long themeId) {
@@ -65,9 +64,8 @@ public class ReservationService {
     }
 
     private boolean existsSameReservation(final Reservation reservation) {
-        return reservationDAO.existSameReservation(reservation.getDate(),
-                reservation.getTime().getId(),
-                reservation.getTheme().getId());
+        return reservationDAO.existSameReservation(
+                reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
     }
 
     private Reservation findById(final long savedId) {

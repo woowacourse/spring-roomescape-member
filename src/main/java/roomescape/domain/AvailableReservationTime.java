@@ -18,6 +18,7 @@ public class AvailableReservationTime {
         if (bookedTimes == null) {
             throw new InvalidInputException("예약된 시간 목록은 null이 될 수 없습니다");
         }
+
         if (reservationTime == null) {
             throw new InvalidInputException("예약 시간은 null이 될 수 없습니다");
         }
