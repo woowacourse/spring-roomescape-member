@@ -22,13 +22,6 @@ import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
 public class ReservationServiceTest {
-    private static final ReservationRequest RESERVATION_REQUEST = new ReservationRequest(
-            LocalDate.of(2025, 8, 5),
-            "브라운",
-            1L,
-            1L
-    );
-
     private ReservationService reservationService;
     private ReservationTimeRepository reservationTimeRepository;
     private ThemeRepository themeRepository;
@@ -52,8 +45,15 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
+        ReservationRequest reservationRequest = new ReservationRequest(
+                LocalDate.of(2025, 8, 5),
+                "브라운",
+                1L,
+                1L
+        );
+
         // when
-        ReservationResponse reservationResponse = reservationService.createReservation(RESERVATION_REQUEST);
+        ReservationResponse reservationResponse = reservationService.createReservation(reservationRequest);
 
         // then
         assertThat(reservationResponse.getId()).isEqualTo(1L);
@@ -70,8 +70,15 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
+        ReservationRequest reservationRequest = new ReservationRequest(
+                LocalDate.of(2025, 8, 5),
+                "브라운",
+                1L,
+                1L
+        );
+
         // when - then
-        assertThatThrownBy(() -> reservationService.createReservation(RESERVATION_REQUEST))
+        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("예약 시간 정보를 찾을 수 없습니다.");
     }
@@ -83,8 +90,15 @@ public class ReservationServiceTest {
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
         reservationTimeRepository.insert(reservationTimeRequest.getStartAt());
 
+        ReservationRequest reservationRequest = new ReservationRequest(
+                LocalDate.of(2025, 8, 5),
+                "브라운",
+                1L,
+                1L
+        );
+
         // when - then
-        assertThatThrownBy(() -> reservationService.createReservation(RESERVATION_REQUEST))
+        assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("테마 정보를 찾을 수 없습니다.");
     }
@@ -100,7 +114,13 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
-        reservationService.createReservation(RESERVATION_REQUEST);
+        ReservationRequest reservationRequest = new ReservationRequest(
+                LocalDate.of(2025, 8, 5),
+                "브라운",
+                1L,
+                1L
+        );
+        reservationService.createReservation(reservationRequest);
 
         // when - then
         assertThat(reservationService.getReservations().size()).isEqualTo(1);
@@ -117,7 +137,13 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
-        reservationService.createReservation(RESERVATION_REQUEST);
+        ReservationRequest reservationRequest = new ReservationRequest(
+                LocalDate.of(2025, 8, 5),
+                "브라운",
+                1L,
+                1L
+        );
+        reservationService.createReservation(reservationRequest);
 
         // when - then
         assertThat(reservationService.getReservations().size()).isEqualTo(1);
@@ -134,7 +160,13 @@ public class ReservationServiceTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         themeRepository.insert(themeRequest);
 
-        reservationService.createReservation(RESERVATION_REQUEST);
+        ReservationRequest reservationRequest = new ReservationRequest(
+                LocalDate.of(2025, 8, 5),
+                "브라운",
+                1L,
+                1L
+        );
+        reservationService.createReservation(reservationRequest);
 
         // when
         reservationService.deleteReservation(1L);
