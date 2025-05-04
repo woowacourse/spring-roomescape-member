@@ -46,7 +46,10 @@ public class ThemeServiceImpl implements ThemeService {
     public List<PopularThemeResponse> getPopularThemes() {
         LocalDate endDate = LocalDate.now().minusDays(1);
         LocalDate startDate = endDate.minusDays(7);
-        List<Long> themeIds = reservationRepository.findTopThemesByReservationCountBetween(startDate, endDate);
+        List<Long> themeIds = reservationRepository.findThemeIdsOrderByReservationCountBetween(startDate, endDate)
+                .stream()
+                .limit(10)
+                .toList();
 
         return themeIds.stream().map(themeId -> {
             ThemeEntity themeEntity = themeRepository.findById(themeId)
