@@ -46,7 +46,7 @@ public class ThemeService {
     private void validateTheme(final ThemeRequestDto themeRequestDto) {
         boolean duplicatedNameExisted = themeDao.isDuplicatedNameExisted(themeRequestDto.name());
         if (duplicatedNameExisted) {
-            throw new DuplicatedException("중복된 예약시각은 등록할 수 없습니다.");
+            throw new DuplicatedException("중복된 테마명은 등록할 수 없습니다.");
         }
     }
 
