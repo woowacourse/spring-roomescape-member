@@ -1,0 +1,17 @@
+### 예약 추가 API request
+POST http://localhost:8080/reservations HTTP/1.1
+content-type: application/json
+
+{
+  "date": "3000-03-17",
+  "name": "브라운",
+  "timeId": 1,
+  "themeId": 1
+}
+
+### 예약 조회 API request
+GET http://localhost:8080/reservations HTTP/1.1
+
+### 예약 삭제 API request
+DELETE http://localhost:8080/reservations/1 HTTP/1.1
+

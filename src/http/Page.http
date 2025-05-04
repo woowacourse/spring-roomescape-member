@@ -1,0 +1,14 @@
+### 인기 테마 페이지
+GET http://localhost:8080
+
+### 어드민 메인 페이지
+GET http://localhost:8080/admin
+
+### 어드민 예약 관리 페이지
+GET http://localhost:8080/admin/reservation
+
+### 어드민 예약 시간 관리 페이지
+GET http://localhost:8080/admin/time
+
+### 어드민 예약 테마 관리 페이지
+GET http://localhost:8080/admin/theme
