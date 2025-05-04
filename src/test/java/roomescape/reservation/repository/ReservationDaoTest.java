@@ -1,16 +1,17 @@
 package roomescape.reservation.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -27,14 +28,12 @@ class ReservationDaoTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private DataSource dataSource;
-
     @BeforeEach
     void setUp() {
-        reservationDao = new H2ReservationDao(jdbcTemplate, dataSource);
-        reservationTimeDao = new H2ReservationTimeDao(jdbcTemplate, dataSource);
-        themeDao = new H2ThemeDao(jdbcTemplate, dataSource);
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        reservationDao = new H2ReservationDao(namedParameterJdbcTemplate);
+        reservationTimeDao = new H2ReservationTimeDao(namedParameterJdbcTemplate);
+        themeDao = new H2ThemeDao(namedParameterJdbcTemplate);
         jdbcTemplate.execute("DROP TABLE reservation IF EXISTS");
         jdbcTemplate.execute("DROP TABLE reservation_time IF EXISTS");
         jdbcTemplate.execute("DROP TABLE theme IF EXISTS");
@@ -76,13 +75,25 @@ class ReservationDaoTest {
         // given
         String name = "leo";
         LocalDate date = LocalDate.of(2025, 9, 24);
+        ReservationTime time = new ReservationTime(1L, LocalTime.now());
 
         // when
-        Reservation reservation = reservationDao.save(
-                new Reservation(null, name, date, new ReservationTime(1L, LocalTime.now()), theme));
+        Reservation result = reservationDao.save(
+                new Reservation(null, name, date, time, theme));
         // then
-        assertThat(reservation).isEqualTo(
-                new Reservation(1L, name, date, new ReservationTime(1L, LocalTime.of(10, 0)), theme));
+        Reservation savedReservation = reservationDao.findAll().getFirst();
+        assertAll(
+                () -> assertThat(result.getId()).isEqualTo(1L),
+                () -> assertThat(result.getName()).isEqualTo(name),
+                () -> assertThat(result.getDate()).isEqualTo(date),
+                () -> assertThat(result.getTime()).isEqualTo(time),
+                () -> assertThat(result.getTheme()).isEqualTo(theme),
+                () -> assertThat(savedReservation.getId()).isEqualTo(1L),
+                () -> assertThat(savedReservation.getName()).isEqualTo(name),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(date),
+                () -> assertThat(savedReservation.getTime()).isEqualTo(time),
+                () -> assertThat(savedReservation.getTheme()).isEqualTo(theme)
+        );
     }
 
     @DisplayName("예약을 삭제할 수 있다.")

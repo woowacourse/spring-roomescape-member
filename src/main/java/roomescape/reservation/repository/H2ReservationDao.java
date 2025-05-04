@@ -3,11 +3,12 @@ package roomescape.reservation.repository;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -16,11 +17,7 @@ import roomescape.reservation.domain.Theme;
 @Repository
 public class H2ReservationDao implements ReservationDao {
 
-    public static final String RESERVATION_TABLE = "reservation";
-    public static final String RESERVATION_PK = "id";
-
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert reservationInserter;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
             new Reservation(
                     resultSet.getLong("reservation_id"),
@@ -38,11 +35,8 @@ public class H2ReservationDao implements ReservationDao {
                     )
             );
 
-    public H2ReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public H2ReservationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.reservationInserter = new SimpleJdbcInsert(dataSource)
-                .withTableName(RESERVATION_TABLE)
-                .usingGeneratedKeyColumns(RESERVATION_PK);
     }
 
     @Override
@@ -67,35 +61,48 @@ public class H2ReservationDao implements ReservationDao {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        long id = insertReservationAndRetrieveKey(reservation);
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        final String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES(:name, :date, :timeId, :themeId)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", Date.valueOf(reservation.getDate()))
+                .addValue("timeId", reservation.getTimeId())
+                .addValue("themeId", reservation.getTheme().getId());
+        jdbcTemplate.update(sql, parameters, keyHolder, new String[]{"id"});
+        return new Reservation(keyHolder.getKeyAs(Long.class), reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
     }
 
     @Override
     public void deleteById(final long id) {
-        final String sql = "DELETE FROM reservation WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        final String sql = "DELETE FROM reservation WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        jdbcTemplate.update(sql, parameters);
     }
 
     @Override
     public boolean isExistsByDateAndTimeId(final LocalDate date, final long timeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE date = ? AND time_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, date, timeId);
+        final String sql = "SELECT count(*) FROM reservation WHERE date = :date AND time_id = :timeId";
+        final SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId);
+        final Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
         return count > 0;
     }
 
     @Override
     public boolean isExistsByTimeId(final long timeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
+        final String sql = "SELECT count(*) FROM reservation WHERE time_id = :timeId";
+        final SqlParameterSource parameters = new MapSqlParameterSource("timeId", timeId);
+        Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
         return count > 0;
     }
 
     @Override
     public boolean isExistsByThemeId(Long themeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
+        final String sql = "SELECT count(*) FROM reservation WHERE theme_id = :themeId";
+        final SqlParameterSource parameters = new MapSqlParameterSource("themeId", themeId);
+        final Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
         return count > 0;
     }
 
@@ -115,18 +122,11 @@ public class H2ReservationDao implements ReservationDao {
                 FROM reservation AS r 
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.date = ? AND r.theme_id = ?
+                WHERE r.date = :date AND r.theme_id = :themeId
                 """;
-        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
-    }
-
-    private long insertReservationAndRetrieveKey(final Reservation reservation) {
-        final Map<String, Object> parameters = Map.of(
-                "name", reservation.getName(),
-                "date", Date.valueOf(reservation.getDate()),
-                "time_id", reservation.getTimeId(),
-                "theme_id", reservation.getTheme().getId()
-        );
-        return reservationInserter.executeAndReturnKey(parameters).longValue();
+        final SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("themeId", themeId);
+        return jdbcTemplate.query(sql, parameters, reservationRowMapper);
     }
 }

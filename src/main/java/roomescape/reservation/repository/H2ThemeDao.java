@@ -2,11 +2,12 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.ThemeName;
@@ -14,8 +15,7 @@ import roomescape.reservation.domain.ThemeName;
 @Repository
 public class H2ThemeDao implements ThemeDao {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert themeInserter;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final RowMapper<Theme> themeMapper = (resultSet, rowNum) ->
             new Theme(
                     resultSet.getLong("id"),
@@ -24,29 +24,28 @@ public class H2ThemeDao implements ThemeDao {
                     resultSet.getString("thumbnail")
             );
 
-    public H2ThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public H2ThemeDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.themeInserter = new SimpleJdbcInsert(dataSource)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public boolean isExists(final ThemeName name) {
-        final String sql = "SELECT COUNT(*) FROM theme WHERE name = ?";
-        long count = jdbcTemplate.queryForObject(sql, Long.class, name.getName());
+        final String sql = "SELECT COUNT(*) FROM theme WHERE name = :name";
+        final SqlParameterSource parameters = new MapSqlParameterSource("name", name.getName());
+        final long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
         return count > 0;
     }
 
     @Override
     public Theme save(final Theme theme) {
-        final Map<String, Object> parameters = Map.of(
-                "name", theme.getName(),
-                "description", theme.getDescription(),
-                "thumbnail", theme.getThumbnail()
-        );
-        long id = themeInserter.executeAndReturnKey(parameters).longValue();
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        final String sql = "INSERT INTO theme(name, description, thumbnail) VALUES(:name, :description, :thumbnail)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", theme.getName())
+                .addValue("description", theme.getDescription())
+                .addValue("thumbnail", theme.getThumbnail());
+        jdbcTemplate.update(sql, parameters, keyHolder, new String[]{"id"});
+        return new Theme(keyHolder.getKeyAs(Long.class), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
@@ -57,14 +56,16 @@ public class H2ThemeDao implements ThemeDao {
 
     @Override
     public Theme findById(final long id) {
-        final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, themeMapper, id);
+        final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(sql, parameters, themeMapper);
     }
 
     @Override
     public void deleteById(final long id) {
-        final String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        final String sql = "DELETE FROM theme WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        jdbcTemplate.update(sql, parameters);
     }
 
     @Override
@@ -73,18 +74,23 @@ public class H2ThemeDao implements ThemeDao {
                      SELECT t.id, t.name, t.description, t.thumbnail
                      FROM theme AS t
                      INNER JOIN reservation AS r ON t.id = r.theme_id
-                     WHERE r.date >= ? AND r.date <= ?
+                     WHERE r.date >= :fromDate AND r.date <= :toDate
                      GROUP BY t.id
                      ORDER BY COUNT(*) DESC
-                     LIMIT ?
+                     LIMIT :count
                 """;
-        return jdbcTemplate.query(sql, themeMapper, from , to, count);
+        final SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("fromDate", from)
+                .addValue("toDate", to)
+                .addValue("count", count);
+        return jdbcTemplate.query(sql, parameters, themeMapper);
     }
 
     @Override
     public boolean isNotExistsById(long id) {
-        final String sql = "SELECT COUNT(*) FROM theme WHERE id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, id);
+        final String sql = "SELECT COUNT(*) FROM theme WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        final Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
         return count == 0;
     }
 }
