@@ -36,7 +36,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                     id
             );
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("존재하지 않는 시간 데이터입니다.");
+            throw new IllegalArgumentException("존재하지 않는 시간 id입니다.");
         }
     }
 

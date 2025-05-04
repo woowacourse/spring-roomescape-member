@@ -41,7 +41,7 @@ public class JdbcThemeDao implements ThemeDao {
                     id
             );
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("존재하지 않는 테마 데이터입니다.");
+            throw new IllegalArgumentException("존재하지 않는 테마 id입니다.");
         }
     }
 
