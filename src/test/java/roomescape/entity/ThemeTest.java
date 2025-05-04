@@ -13,10 +13,10 @@ class ThemeTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "  ", "\t", "\n"})
     @DisplayName("이름이 null이나 공백일 경우, 예외가 발생한다.")
-    void error_validationName(String name) {
+    void validationName(String name) {
         // given
-        var description = "test";
-        var thumbnail = "test";
+        String description = "test";
+        String thumbnail = "test";
 
         // when & then
         assertThatThrownBy(() -> new Theme(1L, name, description, thumbnail))
@@ -28,10 +28,10 @@ class ThemeTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "  ", "\t", "\n"})
     @DisplayName("테마 설명이 null이나 공백일 경우, 예외가 발생한다.")
-    void error_validationDescription(String description) {
+    void validationDescription(String description) {
         // given
-        var name = "test";
-        var thumbnail = "test";
+        String name = "test";
+        String thumbnail = "test";
 
         // when & then
         assertThatThrownBy(() -> new Theme(1L, name, description, thumbnail))
@@ -44,10 +44,10 @@ class ThemeTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "  ", "\t", "\n"})
     @DisplayName("썸네일 주소가 null이나 공백일 경우, 예외가 발생한다.")
-    void error_validationThumbnail(String thumbnail) {
+    void validationThumbnail(String thumbnail) {
         // given
-        var description = "test";
-        var name = "test";
+        String description = "test";
+        String name = "test";
 
         // when & then
         assertThatThrownBy(() -> new Theme(1L, name, description, thumbnail))

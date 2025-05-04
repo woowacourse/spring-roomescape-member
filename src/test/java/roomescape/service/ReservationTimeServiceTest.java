@@ -21,7 +21,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
-    void test_readAllReservationTime() {
+    void readAllReservationTime() {
         //given & when
         List<ReservationTimeResponse> actual = reservationService.readAllReservationTime();
         //then
@@ -31,7 +31,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("엔티티를 저장한 후, DTO로 반환한다.")
-    void test_postReservationTime() {
+    void postReservationTime() {
         //given
         LocalTime time = LocalTime.MIN;
         ReservationTimeRequest request = new ReservationTimeRequest(time);
@@ -43,7 +43,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("예약 시간을 성공적으로 삭제한다.")
-    void test_successfulDeleteReservationTime() {
+    void successfulDeleteReservationTime() {
         // given
         Long existingId = 1L;
 
@@ -57,14 +57,14 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
-    void test_deleteReservationTime() {
+    void deleteReservationTime() {
         assertThatThrownBy(() -> reservationService.deleteReservationTime(999L))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
     @DisplayName("예약 시간 생성 시, 중복된 시간일 경우 예외가 발생한다.")
-    void error_postReservationTimeIfDuplicationDatetime() {
+    void postReservationTimeIfDuplicationDatetime() {
         //given
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.MAX);
         //when&then

@@ -1,10 +1,10 @@
 package roomescape.entity;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,15 +13,26 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class ReservationTest {
 
+    @DisplayName("유효한 값을 입력할 경우, 성공적으로 ReservationTime을 생성한다.")
+    void generateReservation() {
+        // given
+        String name = "테스트";
+        Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
+        LocalDate date = LocalDate.now();
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
+        // when & then
+        assertThatCode(() -> new Reservation(1L, name, date, time, theme)).doesNotThrowAnyException();
+    }
+
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "  ", "\t", "\n"})
     @DisplayName("이름이 null이나 공백을 입력할 경우, 예외가 발생한다.")
-    void error_validationName(String name) {
+    void validationName(String name) {
         // given
-        var theme = new Theme(1L, "테스트", "테스트", "테스트");
-        var date = LocalDate.now();
-        var time = new ReservationTime(1L, LocalTime.of(15, 0));
+        Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
+        LocalDate date = LocalDate.now();
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
 
         // when & then
         assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
@@ -30,26 +41,13 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("예약자의 이름이 10자인 경우 예외가 발생하지 않는다.")
-    void test_validationNameLength() {
-        // given
-        var theme = new Theme(1L, "테스트", "테스트", "테스트");
-        var name = "abcdefgfhi";
-        var date = LocalDate.now();
-        var time = new ReservationTime(1L, LocalTime.of(15, 0));
-
-        // when & then
-        Assertions.assertDoesNotThrow(() -> new Reservation(1L, name, date, time, theme));
-    }
-
-    @Test
     @DisplayName("예약자의 이름이 10자를 초과하는 경우 예외가 발생한다.")
-    void error_validationNameLength() {
+    void validationNameLength() {
         // given
-        var theme = new Theme(1L, "테스트", "테스트", "테스트");
-        var name = "abcdefgfhij";
-        var date = LocalDate.now();
-        var time = new ReservationTime(1L, LocalTime.of(15, 0));
+        Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
+        String name = "abcdefgfhij";
+        LocalDate date = LocalDate.now();
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
 
         // when & then
         assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
@@ -59,12 +57,12 @@ class ReservationTest {
 
     @Test
     @DisplayName("날짜가 null일 경우, 예외가 발생한다.")
-    void error_validationDate() {
+    void validationDate() {
         //given
-        var theme = new Theme(1L, "테스트", "테스트", "테스트");
+        Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
         LocalDate date = null;
-        var name = "브라운";
-        var time = new ReservationTime(1L, LocalTime.of(15, 0));
+        String name = "브라운";
+        ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
         //when & then
         assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -73,12 +71,12 @@ class ReservationTest {
 
     @Test
     @DisplayName("time 값이 null이나 공백을 입력할 경우, 예외가 발생한다.")
-    void error_validationTime() {
+    void validationTime() {
         //given
-        var theme = new Theme(1L, "테스트", "테스트", "테스트");
+        Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
         ReservationTime time = null;
-        var name = "브라운";
-        var date = LocalDate.now();
+        String name = "브라운";
+        LocalDate date = LocalDate.now();
         //when & then
         assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
                 .isInstanceOf(IllegalArgumentException.class)

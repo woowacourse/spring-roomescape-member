@@ -28,7 +28,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
-    void test_readReservation() {
+    void readReservation() {
         //given & when
         List<ReservationResponse> actual = reservationService.readReservation();
         //then
@@ -38,7 +38,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 생성 시, 저장한 엔티티를 DTO로 반환한다.")
-    void test_postReservation() {
+    void postReservation() {
         //given
         List<ReservationResponse> given = reservationService.readReservation();
         assertThat(given.size()).isEqualTo(1);
@@ -55,7 +55,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 생성 시, 저장할 날짜가 과거일 경우 예외를 발생한다.")
-    void error_postReservationIfBeforeDate() {
+    void postReservationIfBeforeDate() {
         //given
         LocalDate givenDate = LocalDate.MIN;
         long timeId = 1L;
@@ -70,7 +70,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 생성 시, 날짜, 시간, 테마가 중복될 경우 예외가 발생한다.")
-    void error_postReservationIfDuplication() {
+    void postReservationIfDuplication() {
         //given
         LocalDate givenDate = LocalDate.MAX;
         long timeId = 1L;
@@ -85,7 +85,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("저장소에 없는 값을 삭제하려할 경우, 예외가 발생한다.")
-    void test_deleteReservation() {
+    void deleteReservation() {
         assertThatThrownBy(() -> reservationService.deleteReservation(Long.MAX_VALUE))
                 .isInstanceOf(EntityNotFoundException.class);
     }

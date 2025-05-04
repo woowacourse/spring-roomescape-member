@@ -23,7 +23,7 @@ class UserReservationTimeServiceTest {
 
     @Test
     @DisplayName("사용자가 날짜와 테마를 선택하면 예약 가능한 시간들을 DTO로 반환한다.")
-    void test_readAvailableReservationTimes() {
+    void readAvailableReservationTimes() {
         //given
         LocalDate givenDate = LocalDate.MAX;
         Long givenTheme = 1L;
