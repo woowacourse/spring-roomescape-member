@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.CreateThemeRequest;
+import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.service.RoomThemeService;
 import roomescape.service.dto.request.RoomThemeCreation;
-import roomescape.service.dto.response.PopularThemeResult;
 import roomescape.service.dto.response.RoomThemeResult;
 
 @RequestMapping("/themes")
@@ -44,8 +44,11 @@ public class RoomThemeController {
     }
 
     @GetMapping("/popular")
-    public List<PopularThemeResult> findPopularThemes() {
-        return roomThemeService.findPopularThemes();
+    public List<PopularThemeResponse> findPopularThemes() {
+        return roomThemeService.findPopularThemes()
+                .stream()
+                .map(PopularThemeResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
