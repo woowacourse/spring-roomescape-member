@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -35,12 +34,16 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
         validateDuplicate(dto.date(), reservationTime.getStartAt());
-        validateReservationDateTime(dto.date(), reservationTime.getStartAt());
 
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.timeId()));
 
         Reservation requestReservation = dto.createWithoutId(reservationTime, theme);
+
+        if (requestReservation.isBeforeCurrentDateTime()) {
+            throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
+        }
+
         Reservation newReservation = reservationRepository.save(requestReservation)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약 생성을 실패하였습니다."));
 
@@ -51,14 +54,6 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findByDateTime(date, time);
         if (!reservations.isEmpty()) {
             throw new DuplicateContentException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
-        }
-    }
-
-    private void validateReservationDateTime(LocalDate date, LocalTime time) {
-        LocalDateTime dateTime = LocalDateTime.of(date, time);
-        LocalDateTime currentTime = LocalDateTime.now();
-        if (dateTime.isBefore(currentTime) || dateTime.equals(currentTime)) {
-            throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
         }
     }
 

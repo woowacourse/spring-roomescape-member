@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Reservation {
 
@@ -10,7 +11,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, java.lang.String name, LocalDate date, roomescape.domain.ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateReservationTime(time);
@@ -38,6 +39,12 @@ public class Reservation {
         if (reservationTime == null) {
             throw new IllegalArgumentException("[ERROR] 예약 시간을 반드시 입력해야 합니다.");
         }
+    }
+
+    public boolean isBeforeCurrentDateTime() {
+        LocalDateTime dateTime = LocalDateTime.of(date, time.getStartAt());
+        LocalDateTime currentTime = LocalDateTime.now();
+        return dateTime.isBefore(currentTime) || dateTime.equals(currentTime);
     }
 
     public Long getId() {
