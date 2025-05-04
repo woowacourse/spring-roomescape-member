@@ -37,13 +37,10 @@ public class ReservationService {
         ReservationTime time = reservationTimeRepository.findById(request.timeId());
         Theme theme = themeRepository.findById(request.themeId());
 
-        LocalDateTime now = dateTime.now();
-        LocalDateTime reservationDateTime = LocalDateTime.of(request.date(), time.getStartAt());
-
         validateExistDuplicateReservation(request, time);
-        validateCanReserveDateTime(reservationDateTime, now);
 
         Reservation reservation = Reservation.createWithoutId(request.name(), request.date(), time, theme);
+        validateCanReserveDateTime(reservation, dateTime.now());
         Long id = reservationRepository.save(reservation);
 
         return ReservationResponse.from(reservation.assignId(id));
@@ -55,8 +52,8 @@ public class ReservationService {
         }
     }
 
-    private void validateCanReserveDateTime(final LocalDateTime reservationDateTime, final LocalDateTime now) {
-        if (reservationDateTime.isBefore(now)) {
+    private void validateCanReserveDateTime(final Reservation reservation, final LocalDateTime now) {
+        if (reservation.isCanReserveDateTime(now)) {
             throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
         }
     }

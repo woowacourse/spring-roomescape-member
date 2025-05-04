@@ -25,8 +25,12 @@ public class ReservationTime {
         return new ReservationTime(Objects.requireNonNull(id), startAt);
     }
 
-    public boolean isSameTime(final ReservationTime time) {
-        return startAt.equals(time.startAt);
+    public boolean isBefore(final LocalTime time) {
+        return this.startAt.isBefore(time);
+    }
+
+    public boolean isEqual(final LocalTime time) {
+        return startAt.equals(time);
     }
 
     public Long getId() {
