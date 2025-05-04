@@ -31,6 +31,7 @@ public class ReservationTimeDbRepository implements ReservationTimeRepository {
         return reservationTimeDao.selectById(id);
     }
 
+    @Override
     public ReservationTime getById(Long id) {
         return findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 시간이 존재하지 않습니다."));
