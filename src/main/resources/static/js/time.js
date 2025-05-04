@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add-button').addEventListener('click', addRow);
   requestRead()
       .then(render)
-      .catch(error => console.error('Error fetching times:', error));
+      .catch(error => console.error(error.message));
 });
 
 function render(data) {
@@ -83,7 +83,7 @@ function saveRow(event) {
       .then(() => {
         location.reload();
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error(error.message));
 
   isEditing = false;  // isEditing 값을 false로 설정
 }
@@ -94,41 +94,38 @@ function deleteRow(event) {
 
   requestDelete(id)
       .then(() => row.remove())
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error(error.message));
 }
 
 
 // request
 
-function requestCreate(data) {
+async function requestCreate(data) {
   const requestOptions = {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(data)
   };
 
-  return fetch(API_ENDPOINT, requestOptions)
-      .then(response => {
-        if (response.status === 201) return response.json();
-        throw new Error('Create failed');
-      });
+  const response = await fetch(API_ENDPOINT, requestOptions);
+  if (response.status === 201)
+      return await response.json();
+  throw new Error(await response.text());
 }
 
-function requestRead() {
-  return fetch(API_ENDPOINT)
-      .then(response => {
-        if (response.status === 200) return response.json();
-        throw new Error('Read failed');
-      });
+async function requestRead() {
+  const response = await fetch(API_ENDPOINT);
+  if (response.status === 200)
+      return await response.json();
+  throw new Error(await response.text());
 }
 
-function requestDelete(id) {
+async function requestDelete(id) {
   const requestOptions = {
     method: 'DELETE',
   };
 
-  return fetch(`${API_ENDPOINT}/${id}`, requestOptions)
-      .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
-      });
+  const response = await fetch(`${API_ENDPOINT}/${id}`, requestOptions);
+  if (response.status !== 204)
+      throw new Error(await response.text());
 }
