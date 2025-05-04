@@ -6,8 +6,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.exception.DataExistException;
-import roomescape.exception.DataNotFoundException;
+import roomescape.exception.AlreadyExistException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.ReservationTimeRepository;
 
@@ -20,7 +20,7 @@ public class ReservationTimeService {
     public Long save(final LocalTime startAt) {
         final List<ReservationTime> foundReservationTimes = reservationTimeRepository.findAllByStartAt(startAt);
         if (!foundReservationTimes.isEmpty()) {
-            throw new DataExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
+            throw new AlreadyExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
         }
 
         final ReservationTime reservationTimeEntity = new ReservationTime(startAt);
@@ -32,19 +32,19 @@ public class ReservationTimeService {
         final Optional<ReservationTime> found = reservationTimeRepository.findById(id);
 
         if (found.isEmpty()) {
-            throw new DataNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id);
+            throw new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id);
         }
 
         try {
             reservationTimeRepository.deleteById(id);
         } catch (final DataIntegrityViolationException e) {
-            throw new DataExistException("해당 예약 시간을 사용하고 있는 예약 정보가 존재합니다. id = " + id);
+            throw new AlreadyExistException("해당 예약 시간을 사용하고 있는 예약 정보가 존재합니다. id = " + id);
         }
     }
 
     public ReservationTime getById(final Long id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id));
     }
 
     public List<ReservationTime> findAll() {

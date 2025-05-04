@@ -11,8 +11,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.exception.DataExistException;
-import roomescape.exception.DataNotFoundException;
+import roomescape.exception.AlreadyExistException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.repository.H2ReservationRepository;
@@ -214,7 +214,7 @@ class ReservationServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.save(name, date, timeId, themeId))
-                .isInstanceOf(DataExistException.class);
+                .isInstanceOf(AlreadyExistException.class);
     }
 
     @Test
@@ -231,7 +231,7 @@ class ReservationServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.save(name, date, timeId, themeId))
-                .isInstanceOf(DataNotFoundException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -258,7 +258,7 @@ class ReservationServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> reservationService.save("우가", date, timeId, themeId))
-                .isInstanceOf(DataExistException.class);
+                .isInstanceOf(AlreadyExistException.class);
     }
 
     @TestConfiguration

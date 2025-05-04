@@ -13,13 +13,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity<Void> handleDataNotFoundException(final DataNotFoundException e) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Void> handleDataNotFoundException(final ResourceNotFoundException e) {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(DataExistException.class)
-    public ResponseEntity<Void> handDataExistException(final DataExistException e) {
+    @ExceptionHandler(AlreadyExistException.class)
+    public ResponseEntity<Void> handDataExistException(final AlreadyExistException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }

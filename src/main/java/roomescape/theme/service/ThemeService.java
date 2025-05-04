@@ -4,8 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.exception.DataExistException;
-import roomescape.exception.DataNotFoundException;
+import roomescape.exception.AlreadyExistException;
+import roomescape.exception.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -18,7 +18,7 @@ public class ThemeService {
     public Long save(final String name, final String description, final String thumbnail) {
         final long count = themeRepository.countByName(name);
         if (count >= 1) {
-            throw new DataExistException("해당 테마명이 이미 존재합니다. name = " + name);
+            throw new AlreadyExistException("해당 테마명이 이미 존재합니다. name = " + name);
         }
 
         final Theme theme = new Theme(name, description, thumbnail);
@@ -28,18 +28,18 @@ public class ThemeService {
 
     public void deleteById(final Long id) {
         themeRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
 
         try {
             themeRepository.deleteById(id);
         } catch (final DataIntegrityViolationException e) {
-            throw new DataExistException("해당 테마를 사용하고 있는 예약 정보가 존재합니다. id = " + id);
+            throw new AlreadyExistException("해당 테마를 사용하고 있는 예약 정보가 존재합니다. id = " + id);
         }
     }
 
     public Theme getById(final Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
     }
 
     public List<Theme> findAll() {

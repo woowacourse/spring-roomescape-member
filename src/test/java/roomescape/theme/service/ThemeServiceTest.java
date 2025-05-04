@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.exception.DataExistException;
+import roomescape.exception.AlreadyExistException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.H2ThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
@@ -114,7 +114,7 @@ class ThemeServiceTest {
         // when & then
         Assertions.assertThatThrownBy(() -> {
             themeService.save(name, description, thumbnail);
-        }).isInstanceOf(DataExistException.class);
+        }).isInstanceOf(AlreadyExistException.class);
     }
 
     @TestConfiguration
