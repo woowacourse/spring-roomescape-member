@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -20,11 +21,17 @@ public class Reservation {
             ReservationTime reservationTime,
             Theme theme
     ) {
-        this.id = id;
-        this.reserverName = new ReserverName(reserverName);
-        this.reservationDate = new ReservationDate(reservationDate);
-        this.reservationTime = reservationTime;
-        this.theme = theme;
+        this.id = Objects.requireNonNull(id, "id는 null일 수 없습니다.");
+        this.reserverName = new ReserverName(Objects.requireNonNull(
+                reserverName,
+                "예약자 이름은 null일 수 없습니다."
+        ));
+        this.reservationDate = new ReservationDate(Objects.requireNonNull(
+                reservationDate,
+                "예약일은 null일 수 없습니다."
+        ));
+        this.reservationTime = Objects.requireNonNull(reservationTime, "예약 시간은 null일 수 없습니다.");
+        this.theme = Objects.requireNonNull(theme, "테마는 null일 수 없습니다.");
     }
 
     public Long getId() {

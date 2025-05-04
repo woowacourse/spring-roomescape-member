@@ -1,18 +1,29 @@
 package roomescape.reservation.domain;
 
+import java.util.Objects;
+
 public class ReserverName {
+
+    private static final int MAX_NAME_LENGTH = 5;
 
     private final String name;
 
     public ReserverName(String name) {
-        this.name = validateBlank(name);
+        this.name = validate(name);
     }
 
-    private String validateBlank(String reserverName) {
-        if (reserverName == null || reserverName.isBlank()) {
-            throw new IllegalStateException("예약자 이름은 필수입니다.");
+    private String validate(String reserverName) {
+        String validated = Objects.requireNonNull(reserverName, "예약자 이름은 null일 수 없습니다.");
+
+        if (validated.isBlank()) {
+            throw new IllegalStateException("예약자 이름은 공백일 수 없습니다.");
         }
-        return reserverName;
+
+        if (validated.length() > MAX_NAME_LENGTH) {
+            throw new IllegalStateException("예약자 이름은 " + MAX_NAME_LENGTH + "자 이내여야 합니다.");
+        }
+
+        return validated;
     }
 
     public String getName() {

@@ -10,6 +10,12 @@ import roomescape.theme.domain.LastWeekRange;
 public class LastWeekRangeTest {
 
     @Test
+    void now는_null일_수_없다() {
+        assertThatThrownBy(() -> new LastWeekRange(null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     void 시작일은_현재_기준_7일_전이다() {
         // given
         LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
