@@ -1,6 +1,7 @@
 package roomescape.common.domain;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 
@@ -11,6 +12,7 @@ public abstract class DomainId {
     public static final String domainName = "식별자";
 
     private final Long value;
+    @Getter
     private final boolean assigned;
 
     protected DomainId(final Long value, final boolean assigned) {
@@ -26,10 +28,15 @@ public abstract class DomainId {
     }
 
     public Long getValue() {
+        requireAssigned();
+        return value;
+    }
+
+    public void requireAssigned() {
         if (assigned) {
-            return value;
+            return;
         }
-        throw new IllegalStateException("식별자가 할당되지 않아 사용할 수 없습니다.");
+        throw new IllegalStateException("식별자가 할당되지 않았습니다.");
     }
 
     @Override

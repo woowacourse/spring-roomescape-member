@@ -32,6 +32,7 @@ public class Theme {
                                final ThemeName name,
                                final ThemeDescription description,
                                final ThemeThumbnail thumbnail) {
+        id.requireAssigned();
         return of(id, name, description, thumbnail);
     }
 

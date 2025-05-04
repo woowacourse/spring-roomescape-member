@@ -28,6 +28,7 @@ public class ReservationTime {
     }
 
     public static ReservationTime withId(final ReservationTimeId id, final LocalTime value) {
+        id.requireAssigned();
         return of(id, value);
     }
 

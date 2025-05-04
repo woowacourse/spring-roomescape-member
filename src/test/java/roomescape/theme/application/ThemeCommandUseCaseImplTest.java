@@ -87,6 +87,6 @@ class ThemeCommandUseCaseImplTest {
         // then
         assertThatThrownBy(() -> themeCommandUseCase.delete(unassigned))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("식별자가 할당되지 않아 사용할 수 없습니다.");
+                .hasMessage("식별자가 할당되지 않았습니다.");
     }
 }

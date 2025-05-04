@@ -9,6 +9,7 @@ import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
@@ -31,7 +32,7 @@ class DomainIdTest {
         // then
         assertThatThrownBy(id::getValue)
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("식별자가 할당되지 않아 사용할 수 없습니다.");
+                .hasMessage("식별자가 할당되지 않았습니다.");
     }
 
     @Test
@@ -45,7 +46,7 @@ class DomainIdTest {
         // then
         assertThatThrownBy(() -> id1.equals(id2))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("식별자가 할당되지 않아 사용할 수 없습니다.");
+                .hasMessage("식별자가 할당되지 않았습니다.");
     }
 
     @Test
@@ -88,5 +89,21 @@ class DomainIdTest {
         // when
         // then
         assertThat(sameReservation1).isEqualTo(sameReservation2);
+    }
+
+    @Test
+    @DisplayName("엔티티를 생성할 때, withId로 생성했다면 assigned된 값을 줘야 한다")
+    void requireAssignedDomainId() {
+        // given
+        final ThemeId unassignedId = ThemeId.unassigned();
+        final ThemeName name = ThemeName.from("테마 이름");
+        final ThemeDescription description = ThemeDescription.from("재미있는 테마");
+        final ThemeThumbnail thumbnail = ThemeThumbnail.from("https://example.com/image.png");
+
+        // when
+        // then
+        assertThatThrownBy(() -> Theme.withId(unassignedId, name, description, thumbnail))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("식별자가 할당되지 않았습니다");
     }
 }

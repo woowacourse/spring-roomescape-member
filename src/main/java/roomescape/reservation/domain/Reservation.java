@@ -43,6 +43,7 @@ public class Reservation {
                                      final ReservationDate date,
                                      final ReservationTime time,
                                      final Theme theme) {
+        id.requireAssigned();
         return of(id, name, date, time, theme);
     }
 
