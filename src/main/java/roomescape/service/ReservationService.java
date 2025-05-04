@@ -48,45 +48,32 @@ public class ReservationService {
     }
 
     public ReservationResponse save(ReservationRequest request) {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(request.timeId());
-        Optional<Theme> theme = themeDao.findById(request.themeId());
-        validateSaveReservation(request, reservationTime, theme);
+        ReservationTime reservationTime = reservationTimeDao.findById(request.timeId())
+            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다"));
+        Theme theme = themeDao.findById(request.themeId())
+            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다"));
+        validateSaveReservation(request, reservationTime);
         Reservation reservation = new Reservation(
             request.name(),
             request.date(),
-            reservationTime.get(),
-            theme.get()
+            reservationTime,
+            theme
         );
         return getReservationResponse(reservation);
     }
 
     private void validateSaveReservation(
         ReservationRequest request,
-        Optional<ReservationTime> reservationTime,
-        Optional<Theme> theme
+        ReservationTime reservationTime
     ) {
         validateIsDuplicate(request);
-        validateHasTime(reservationTime);
-        validateHasTheme(theme);
-        validateNotPast(request.date(), reservationTime.get());
+        validateNotPast(request.date(), reservationTime);
     }
 
     private void validateIsDuplicate(ReservationRequest request) {
         int count = reservationDao.getCountByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
         if (count != 0) {
             throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
-        }
-    }
-
-    private void validateHasTime(Optional<ReservationTime> reservationTime) {
-        if (reservationTime.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 해당하는 시간이 없습니다");
-        }
-    }
-
-    private void validateHasTheme(Optional<Theme> theme) {
-        if (theme.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 해당하는 테마가 없습니다");
         }
     }
 
