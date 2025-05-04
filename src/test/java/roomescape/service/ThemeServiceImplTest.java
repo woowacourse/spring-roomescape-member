@@ -24,7 +24,7 @@ public class ThemeServiceImplTest {
         ThemeRequestDto themeRequestDto = new ThemeRequestDto(
             "테마1", "공포테마입니다", "http://aaa");
         ThemeResponseDto themeResponseDto = themeService.saveTheme(themeRequestDto);
-        assertThat(themeResponseDto.themeId()).isNotNull();
+        assertThat(themeResponseDto.id()).isNotNull();
         assertThat(themeResponseDto.name()).isEqualTo("테마1");
         assertThat(themeResponseDto.description()).isEqualTo("공포테마입니다");
         assertThat(themeResponseDto.thumbnail()).isEqualTo("http://aaa");

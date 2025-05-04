@@ -31,7 +31,7 @@ public class ReservationTimeServiceTest {
             "10:00");
         ReservationTimeResponseDto reservationTimeResponseDto = reservationTimeService.saveReservationTime(
             reservationTimeRequestDto);
-        assertThat(reservationTimeResponseDto.timeId()).isNotNull();
+        assertThat(reservationTimeResponseDto.id()).isNotNull();
     }
 
     @DisplayName("다른 예약에서 예약 시간을 이미 사용하고 있다면, 삭제할 수 없다.")
