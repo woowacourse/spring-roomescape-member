@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 import roomescape.time.domain.ReservationTime;
+import roomescape.time.domain.ReservationTimeId;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -19,7 +20,7 @@ public record ReservationTimeResponse(Long id,
     public static ReservationTimeResponse from(final ReservationTime domain) {
         return new ReservationTimeResponse(
                 domain.getId().getValue(),
-                domain.getValue());
+                domain.getStartAt());
     }
 
     public static List<ReservationTimeResponse> from(final List<ReservationTime> domains) {
@@ -30,7 +31,7 @@ public record ReservationTimeResponse(Long id,
 
     private void validate(final Long id, final LocalTime startAt) {
         Validator.of(ReservationTimeResponse.class)
-                .notNullField(ReservationTimeResponse.Fields.id, id)
-                .notNullField(ReservationTimeResponse.Fields.startAt, startAt);
+                .notNullField(ReservationTimeResponse.Fields.id, id, ReservationTimeId.domainName)
+                .notNullField(ReservationTimeResponse.Fields.startAt, startAt, ReservationTime.domainName);
     }
 }

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 
@@ -13,10 +14,13 @@ import java.time.LocalTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
+@ToString
 public class ReservationTime {
 
+    public static final String domainName = "예약 시간";
+
     private final ReservationTimeId id;
-    private final LocalTime value;
+    private final LocalTime startAt;
 
     private static ReservationTime of(final ReservationTimeId id, final LocalTime value) {
         validate(id, value);
@@ -33,11 +37,11 @@ public class ReservationTime {
 
     private static void validate(final ReservationTimeId id, final LocalTime value) {
         Validator.of(ReservationTime.class)
-                .notNullField(Fields.id, id)
-                .notNullField(Fields.value, value);
+                .notNullField(Fields.id, id, ReservationTimeId.domainName)
+                .notNullField(Fields.startAt, value, domainName);
     }
 
     public boolean isBefore(final LocalTime time) {
-        return value.isBefore(time);
+        return startAt.isBefore(time);
     }
 }

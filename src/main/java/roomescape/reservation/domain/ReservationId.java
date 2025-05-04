@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public class ReservationId extends DomainId {
 
+    public static final String domainName = "예약 식별자";
+
     private ReservationId(final Long value, final boolean assigned) {
         super(value, assigned);
     }

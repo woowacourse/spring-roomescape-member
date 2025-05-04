@@ -2,6 +2,7 @@ package roomescape.common.validate;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Validator {
@@ -12,17 +13,40 @@ public class Validator {
         return new Validator(clazz);
     }
 
-    public Validator notNullField(final String fieldName, final Object target) {
+    public Validator notNullField(final String fieldName,
+                                  final Object target,
+                                  final String fieldDescription) {
         if (target == null) {
-            throw new IllegalArgumentException(clazz.getSimpleName() + "." + fieldName + " 은(는) null일 수 없습니다.");
+            throw new InvalidInputException(
+                    ValidationType.NULL_CHECK,
+                    clazz.getSimpleName(),
+                    fieldName,
+                    fieldDescription
+            );
         }
         return this;
     }
 
-    public Validator notBlankField(final String fieldName, final String target) {
-        if (target == null || target.isBlank()) {
-            throw new IllegalArgumentException(clazz.getSimpleName() + "." + fieldName + " 은(는) 비어있을 수 없습니다.");
+    public Validator notBlankField(final String fieldName,
+                                   final String target,
+                                   final String fieldDescription) {
+        if (target == null || target.strip().isBlank()) {
+            throw new InvalidInputException(
+                    ValidationType.BLANK_CHECK,
+                    clazz.getSimpleName(),
+                    fieldName,
+                    fieldDescription
+            );
         }
         return this;
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    public enum ValidationType {
+        NULL_CHECK("while checking null"),
+        BLANK_CHECK("while checking blank");
+
+        private final String description;
     }
 }

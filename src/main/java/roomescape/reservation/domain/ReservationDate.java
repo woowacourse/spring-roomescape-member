@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 
@@ -13,7 +14,10 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
+@ToString
 public final class ReservationDate {
+
+    public static final String domainName = "예약 날짜";
 
     private final LocalDate value;
 
@@ -24,7 +28,7 @@ public final class ReservationDate {
 
     private static void validate(final LocalDate value) {
         Validator.of(ReservationDate.class)
-                .notNullField(Fields.value, value);
+                .notNullField(Fields.value, value, domainName);
     }
 
     public boolean isBefore(final LocalDate date) {

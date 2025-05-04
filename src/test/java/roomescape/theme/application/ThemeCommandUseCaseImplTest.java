@@ -14,8 +14,6 @@ import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.domain.ThemeThumbnail;
 
-import java.util.NoSuchElementException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -38,10 +36,10 @@ class ThemeCommandUseCaseImplTest {
         final String description = "공포 방탈출 대표 테마";
         final String url = "https://www.naver.com";
         final CreateThemeServiceRequest request = new CreateThemeServiceRequest(
-                name,
-                description,
-                url
-        );
+                ThemeName.from(name),
+                ThemeDescription.from(description),
+                ThemeThumbnail.from(url
+                ));
 
         // when
         final Theme theme = themeCommandUseCase.create(request);
@@ -76,9 +74,7 @@ class ThemeCommandUseCaseImplTest {
         themeCommandUseCase.delete(saved.getId());
 
         // then
-        assertThatThrownBy(() -> themeRepository.findById(saved.getId())
-                .orElseThrow())
-                .isInstanceOf(NoSuchElementException.class);
+        assertThat(themeRepository.findById(saved.getId()).isEmpty()).isTrue();
     }
 
     @Test
@@ -91,6 +87,6 @@ class ThemeCommandUseCaseImplTest {
         // then
         assertThatThrownBy(() -> themeCommandUseCase.delete(unassigned))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("저장되지 않아서 식별할 수 없습니다.");
+                .hasMessage("식별자가 할당되지 않아 사용할 수 없습니다.");
     }
 }

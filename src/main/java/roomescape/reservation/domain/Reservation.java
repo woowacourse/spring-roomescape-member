@@ -4,8 +4,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
+import roomescape.reservation.exception.PastDateReservationException;
+import roomescape.reservation.exception.PastTimeReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.time.domain.ReservationTime;
 
@@ -15,7 +18,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
+@ToString
 public class Reservation {
+
+    public static final String domainName = "예약";
 
     private final ReservationId id;
     private final ReserverName name;
@@ -56,11 +62,11 @@ public class Reservation {
                                  final Theme theme) {
 
         Validator.of(Reservation.class)
-                .notNullField(Fields.id, id)
-                .notNullField(Fields.name, name)
-                .notNullField(Fields.date, date)
-                .notNullField(Fields.time, time)
-                .notNullField(Fields.theme, theme);
+                .notNullField(Fields.id, id, ReservationId.domainName)
+                .notNullField(Fields.name, name, ReserverName.domainName)
+                .notNullField(Fields.date, date, ReservationDate.domainName)
+                .notNullField(Fields.time, time, ReservationTime.domainName)
+                .notNullField(Fields.theme, theme, Theme.domainName);
     }
 
     public static void validatePast(final ReservationDate date, final ReservationTime time) {
@@ -68,11 +74,13 @@ public class Reservation {
         if (date.isAfter(now.toLocalDate())) {
             return;
         }
+
         if (date.isBefore(now.toLocalDate())) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
+            throw new PastDateReservationException(date, now);
         }
+
         if (time.isBefore(now.toLocalTime())) {
-            throw new IllegalArgumentException("이미 지난 시간에는 예약할 수 없습니다.");
+            throw new PastTimeReservationException(time, now);
         }
     }
 }

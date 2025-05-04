@@ -4,17 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.application.usecase.ThemeQueryUseCase;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeId;
 import roomescape.time.application.usecase.ReservationTimeQueryUseCase;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationTimeId;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,18 +25,21 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
     @Override
     public Reservation create(final CreateReservationServiceRequest request) {
         if (reservationQueryUseCase.existsByParams(
-                ReservationDate.from(request.date()),
-                ReservationTimeId.from(request.timeId()),
-                ThemeId.from(request.themeId()))) {
-
-            throw new IllegalStateException("추가하려는 예약이 이미 존재합니다.");
+                request.date(),
+                request.timeId(),
+                request.themeId())
+        ) {
+            throw new DuplicateReservationException(
+                    request.date(),
+                    request.timeId(),
+                    request.themeId());
         }
 
         final ReservationTime reservationTime = reservationTimeQueryUseCase.get(
-                ReservationTimeId.from(request.timeId()));
+                request.timeId());
 
         final Theme theme = themeQueryUseCase.get(
-                ThemeId.from(request.themeId()));
+                request.themeId());
 
         return reservationRepository.save(
                 request.toDomain(reservationTime, theme));
@@ -52,6 +52,6 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
             return;
         }
 
-        throw new NoSuchElementException();
+        throw new ReservationNotFoundException(id);
     }
 }

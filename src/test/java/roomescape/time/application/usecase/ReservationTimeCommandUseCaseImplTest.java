@@ -52,7 +52,7 @@ class ReservationTimeCommandUseCaseImplTest {
         final ReservationTime reservationTime = reservationTimeCommandUseCase.create(request);
 
         // then
-        assertThat(reservationTime.getValue()).isEqualTo(LocalTime.of(12, 30));
+        assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(12, 30));
         assertThat(reservationTimeRepository.findById(reservationTime.getId()))
                 .isPresent();
     }

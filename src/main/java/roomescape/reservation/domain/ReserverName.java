@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 
@@ -11,7 +12,10 @@ import roomescape.common.validate.Validator;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
+@ToString
 public class ReserverName {
+
+    public static final String domainName = "예약자 이름";
 
     private final String value;
 
@@ -22,7 +26,6 @@ public class ReserverName {
 
     private static void validate(final String value) {
         Validator.of(ReserverName.class)
-                .notNullField(Fields.value, value)
-                .notBlankField(Fields.value, value.strip());
+                .notBlankField(Fields.value, value, domainName);
     }
 }

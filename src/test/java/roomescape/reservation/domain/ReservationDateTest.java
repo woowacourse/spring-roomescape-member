@@ -1,6 +1,7 @@
 package roomescape.reservation.domain;
 
 import org.junit.jupiter.api.Test;
+import roomescape.common.validate.InvalidInputException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -12,7 +13,7 @@ class ReservationDateTest {
         // when
         // then
         assertThatThrownBy(() -> ReservationDate.from(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("ReservationDate.value 은(는) null일 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("Validation failed [while checking null]: ReservationDate.value");
     }
 }

@@ -3,21 +3,22 @@ package roomescape.reservation.application.dto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
+import roomescape.reservation.domain.BookedCount;
 import roomescape.theme.domain.Theme;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record ThemeToBookCountServiceResponse(
         Theme theme,
-        int bookedCount
+        BookedCount bookedCount
 ) {
 
     public ThemeToBookCountServiceResponse {
         validate(theme, bookedCount);
     }
 
-    private void validate(final Theme theme, final int bookedCount) {
+    private void validate(final Theme theme, final BookedCount bookedCount) {
         Validator.of(ThemeToBookCountServiceResponse.class)
-                .notNullField(Fields.theme, theme)
-                .notNullField(Fields.bookedCount, bookedCount);
+                .notNullField(Fields.theme, theme, Theme.domainName)
+                .notNullField(Fields.bookedCount, bookedCount, BookedCount.domainName);
     }
 }

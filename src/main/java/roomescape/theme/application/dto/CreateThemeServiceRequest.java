@@ -10,9 +10,9 @@ import roomescape.theme.domain.ThemeThumbnail;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record CreateThemeServiceRequest(
-        String name,
-        String description,
-        String thumbnail
+        ThemeName name,
+        ThemeDescription description,
+        ThemeThumbnail thumbnail
 ) {
 
     public CreateThemeServiceRequest {
@@ -21,16 +21,16 @@ public record CreateThemeServiceRequest(
 
     public Theme toDomain() {
         return Theme.withoutId(
-                ThemeName.from(name),
-                ThemeDescription.from(description),
-                ThemeThumbnail.from(thumbnail)
+                name,
+                description,
+                thumbnail
         );
     }
 
-    private void validate(final String name, final String description, final String thumbnail) {
+    private void validate(final ThemeName name, final ThemeDescription description, final ThemeThumbnail thumbnail) {
         Validator.of(CreateThemeServiceRequest.class)
-                .notNullField(CreateThemeServiceRequest.Fields.name, name)
-                .notNullField(CreateThemeServiceRequest.Fields.description, description)
-                .notNullField(CreateThemeServiceRequest.Fields.thumbnail, thumbnail);
+                .notNullField(CreateThemeServiceRequest.Fields.name, name, ThemeName.domainName)
+                .notNullField(CreateThemeServiceRequest.Fields.description, description, ThemeDescription.domainName)
+                .notNullField(CreateThemeServiceRequest.Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
     }
 }

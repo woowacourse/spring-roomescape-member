@@ -21,6 +21,6 @@ public record CreateReservationTimeServiceRequest(LocalTime startAt) {
 
     private void validate(final LocalTime startAt) {
         Validator.of(CreateReservationTimeServiceRequest.class)
-                .notNullField(CreateReservationTimeServiceRequest.Fields.startAt, startAt);
+                .notNullField(Fields.startAt, startAt, ReservationTime.domainName);
     }
 }

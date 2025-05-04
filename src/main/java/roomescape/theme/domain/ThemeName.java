@@ -13,6 +13,8 @@ import roomescape.common.validate.Validator;
 @EqualsAndHashCode
 public class ThemeName {
 
+    public static final String domainName = "테마 이름";
+
     private final String value;
 
     public static ThemeName from(final String name) {
@@ -22,7 +24,6 @@ public class ThemeName {
 
     private static void validate(final String value) {
         Validator.of(ThemeName.class)
-                .notNullField(Fields.value, value)
-                .notBlankField(Fields.value, value.strip());
+                .notBlankField(Fields.value, value, domainName);
     }
 }

@@ -2,6 +2,7 @@ package roomescape.common.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.common.validate.InvalidInputException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
@@ -54,8 +55,8 @@ class DomainIdTest {
         // when
         // then
         assertThatThrownBy(() -> ReservationId.from(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("DomainId.value 은(는) null일 수 없습니다.");
+                .isInstanceOf(InvalidInputException.class)
+                .hasMessage("Validation failed [while checking null]: DomainId.value");
     }
 
     @Test

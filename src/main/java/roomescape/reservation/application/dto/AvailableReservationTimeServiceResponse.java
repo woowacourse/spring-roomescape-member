@@ -3,24 +3,22 @@ package roomescape.reservation.application.dto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
-
-import java.time.LocalTime;
+import roomescape.reservation.domain.BookedStatus;
+import roomescape.time.domain.ReservationTime;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record AvailableReservationTimeServiceResponse(
-        LocalTime startAt,
-        Long timeId,
-        Boolean isBooked
+        ReservationTime time,
+        BookedStatus isBooked
 ) {
 
     public AvailableReservationTimeServiceResponse {
-        validate(startAt, timeId, isBooked);
+        validate(time, isBooked);
     }
 
-    private void validate(final LocalTime startAt, final Long timeId, final Boolean isBooked) {
+    private void validate(final ReservationTime time, final BookedStatus isBooked) {
         Validator.of(AvailableReservationTimeServiceResponse.class)
-                .notNullField(Fields.startAt, startAt)
-                .notNullField(Fields.timeId, timeId)
-                .notNullField(Fields.isBooked, isBooked);
+                .notNullField(Fields.time, time, ReservationTime.domainName)
+                .notNullField(Fields.isBooked, isBooked, BookedStatus.domainName);
     }
 }

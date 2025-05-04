@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public class ThemeId extends DomainId {
 
+    public static final String domainName = "테마 식별자";
+
     private ThemeId(final Long value, final boolean assigned) {
         super(value, assigned);
     }

@@ -11,6 +11,8 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
+import roomescape.reservation.exception.DuplicateReservationException;
+import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -56,10 +58,10 @@ class ReservationCommandUseCaseImplTest {
                         ThemeThumbnail.from("www.making.com")));
 
         final CreateReservationServiceRequest requestDto = new CreateReservationServiceRequest(
-                "브라운",
-                LocalDate.of(2025, 8, 5),
-                reservationTime.getId().getValue(),
-                theme.getId().getValue());
+                ReserverName.from("브라운"),
+                ReservationDate.from(LocalDate.of(2025, 8, 5)),
+                reservationTime.getId(),
+                theme.getId());
 
         // when
         final Reservation reservation = reservationCommandUseCase.create(requestDto);
@@ -91,23 +93,23 @@ class ReservationCommandUseCaseImplTest {
 
         final Reservation savedReservation = reservationCommandUseCase.create(
                 new CreateReservationServiceRequest(
-                        "브라운",
-                        LocalDate.of(2025, 8, 5),
-                        reservationTime.getId().getValue(),
-                        theme.getId().getValue()
+                        ReserverName.from("브라운"),
+                        ReservationDate.from(LocalDate.of(2025, 8, 5)),
+                        reservationTime.getId(),
+                        theme.getId()
                 ));
 
         // when
         // then
         assertThatThrownBy(() -> reservationCommandUseCase.create(
                 new CreateReservationServiceRequest(
-                        "강산",
-                        LocalDate.of(2025, 8, 5),
-                        reservationTime.getId().getValue(),
-                        theme.getId().getValue())))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("추가하려는 예약이 이미 존재합니다.");
+                        ReserverName.from("강산"),
+                        ReservationDate.from(LocalDate.of(2025, 8, 5)),
+                        reservationTime.getId(),
+                        theme.getId())))
+                .isInstanceOf(DuplicateReservationException.class);
     }
+
 
     @Test
     @DisplayName("예약을 삭제할 수 있다")
@@ -145,6 +147,6 @@ class ReservationCommandUseCaseImplTest {
         // when
         // then
         assertThatThrownBy(() -> reservationCommandUseCase.delete(id))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 }

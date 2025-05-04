@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceRequest;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceResponse;
 import roomescape.reservation.application.dto.ThemeToBookCountServiceResponse;
+import roomescape.reservation.domain.BookedCount;
+import roomescape.reservation.domain.BookedStatus;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
@@ -36,17 +38,16 @@ public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
         final List<ReservationTime> allTimes = reservationTimeQueryUseCase.getAll();
 
         final Set<ReservationTimeId> bookedTimeIds = new HashSet<>(reservationRepository.findTimeIdByParams(
-                ReservationDate.from(availableReservationTimeServiceRequest.date()),
+                availableReservationTimeServiceRequest.date(),
                 availableReservationTimeServiceRequest.themeId())
         );
 
         final List<AvailableReservationTimeServiceResponse> responses = new ArrayList<>();
 
         for (final ReservationTime reservationTime : allTimes) {
-            final boolean isBooked = bookedTimeIds.contains(reservationTime.getId());
+            final BookedStatus isBooked = BookedStatus.from(bookedTimeIds.contains(reservationTime.getId()));
             responses.add(new AvailableReservationTimeServiceResponse(
-                    reservationTime.getValue(),
-                    reservationTime.getId().getValue(),
+                    reservationTime,
                     isBooked));
         }
 
@@ -60,7 +61,7 @@ public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
 
         return reservationRepository.findThemesToBookedCountByParamsOrderByBookedCount(startDate, endDate, bookCount)
                 .entrySet().stream()
-                .map(entry -> new ThemeToBookCountServiceResponse(entry.getKey(), entry.getValue()))
+                .map(entry -> new ThemeToBookCountServiceResponse(entry.getKey(), BookedCount.from(entry.getValue())))
                 .toList();
     }
 

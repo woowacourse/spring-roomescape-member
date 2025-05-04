@@ -4,6 +4,9 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.validate.Validator;
 import roomescape.theme.application.dto.CreateThemeServiceRequest;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 public record CreateThemeWebRequest(
@@ -18,15 +21,15 @@ public record CreateThemeWebRequest(
 
     public CreateThemeServiceRequest toServiceRequest() {
         return new CreateThemeServiceRequest(
-                name,
-                description,
-                thumbnail);
+                ThemeName.from(name),
+                ThemeDescription.from(description),
+                ThemeThumbnail.from(thumbnail));
     }
 
     private void validate(final String name, final String description, final String thumbnail) {
         Validator.of(CreateThemeWebRequest.class)
-                .notNullField(Fields.name, name)
-                .notNullField(Fields.description, description)
-                .notNullField(Fields.thumbnail, thumbnail);
+                .notNullField(Fields.name, name, ThemeName.domainName)
+                .notNullField(Fields.description, description, ThemeDescription.domainName)
+                .notNullField(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
     }
 }

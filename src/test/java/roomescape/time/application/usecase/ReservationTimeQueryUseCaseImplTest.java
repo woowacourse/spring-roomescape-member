@@ -36,7 +36,7 @@ class ReservationTimeQueryUseCaseImplTest {
         final ReservationTime reservationTime = reservationTimeQueryUseCase.get(id);
 
         // then
-        assertThat(reservationTime.getValue()).isEqualTo(time);
+        assertThat(reservationTime.getStartAt()).isEqualTo(time);
     }
 
     @Test

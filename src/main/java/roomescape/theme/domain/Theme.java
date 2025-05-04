@@ -13,6 +13,8 @@ import roomescape.common.validate.Validator;
 @EqualsAndHashCode(of = "id")
 public class Theme {
 
+    public static final String domainName = "테마";
+
     private final ThemeId id;
     private final ThemeName name;
     private final ThemeDescription description;
@@ -44,9 +46,9 @@ public class Theme {
                                  final ThemeDescription description,
                                  final ThemeThumbnail thumbnail) {
         Validator.of(Theme.class)
-                .notNullField(Fields.id, id)
-                .notNullField(Fields.name, name)
-                .notNullField(Fields.description, description)
-                .notNullField(Fields.thumbnail, thumbnail);
+                .notNullField(Fields.id, id, ThemeId.domainName)
+                .notNullField(Fields.name, name, ThemeName.domainName)
+                .notNullField(Fields.description, description, ThemeDescription.domainName)
+                .notNullField(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
     }
 }

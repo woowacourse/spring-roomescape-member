@@ -3,9 +3,9 @@ package roomescape.reservation.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceRequest;
-import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.application.usecase.ReservationCommandUseCase;
 import roomescape.reservation.application.usecase.ReservationQueryUseCase;
+import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.ui.dto.CreateReservationWebRequest;
@@ -31,7 +31,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<AvailableReservationTimeWebResponse> getAvailable(final LocalDate date, final Long id) {
         final AvailableReservationTimeServiceRequest request = new AvailableReservationTimeServiceRequest(
-                date,
+                ReservationDate.from(date),
                 ThemeId.from(id));
 
         return reservationQueryUseCase.getTimesWithAvailability(request).stream()
@@ -43,7 +43,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse create(final CreateReservationWebRequest request) {
         return ReservationResponse.from(
                 reservationCommandUseCase.create(
-                        CreateReservationServiceRequest.from(request)));
+                        request.toServiceRequest()));
     }
 
     @Override

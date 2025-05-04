@@ -75,14 +75,14 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
 
         jdbcTemplate.update(connection -> {
             final PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            preparedStatement.setTime(1, Time.valueOf(reservationTime.getValue()));
+            preparedStatement.setTime(1, Time.valueOf(reservationTime.getStartAt()));
 
             return preparedStatement;
         }, keyHolder);
 
         final long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        return ReservationTime.withId(ReservationTimeId.from(generatedId), reservationTime.getValue());
+        return ReservationTime.withId(ReservationTimeId.from(generatedId), reservationTime.getStartAt());
     }
 
     @Override

@@ -112,7 +112,7 @@ class ReservationQueryUseCaseImplTest {
 
         // when
         final List<AvailableReservationTimeServiceResponse> timesWithAvailability = reservationQueryUseCase.getTimesWithAvailability(
-                new AvailableReservationTimeServiceRequest(date.getValue(), theme.getId()));
+                new AvailableReservationTimeServiceRequest(date, theme.getId()));
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
@@ -120,15 +120,16 @@ class ReservationQueryUseCaseImplTest {
             assertThat(timesWithAvailability)
                     .hasSize(2);
 
-            assertThat(timesWithAvailability.stream().filter(AvailableReservationTimeServiceResponse::isBooked))
+            assertThat(timesWithAvailability.stream()
+                    .filter(a -> a.isBooked().isBooked()))
                     .hasSize(1);
 
             assertThat(timesWithAvailability.stream()
-                    .filter(AvailableReservationTimeServiceResponse::isBooked)
-                    .map(AvailableReservationTimeServiceResponse::startAt)
+                    .filter(a -> a.isBooked().isBooked())
+                    .map(AvailableReservationTimeServiceResponse::time)
                     .findFirst()
                     .orElseThrow()
-            ).isEqualTo(booked.getValue());
+            ).isEqualTo(booked);
         });
     }
 }
