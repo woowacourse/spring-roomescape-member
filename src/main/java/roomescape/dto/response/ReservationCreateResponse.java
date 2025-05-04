@@ -1,11 +1,13 @@
 package roomescape.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import roomescape.domain.Reservation;
 
 public record ReservationCreateResponse(
         long id,
         String name,
+        @Schema(type = "string")
         LocalDate date,
         ReservationTimeCreateResponse time,
         ThemeCreateResponse theme
