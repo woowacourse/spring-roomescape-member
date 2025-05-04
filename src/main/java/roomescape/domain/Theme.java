@@ -1,6 +1,10 @@
 package roomescape.domain;
 
+import java.util.regex.Pattern;
+
 public class Theme {
+
+    private static final String URL_REGEX = "^https?://.*";
 
     private final Long id;
     private final String name;
@@ -33,6 +37,9 @@ public class Theme {
     private void validateThumbnail(String thumbnail) {
         if (thumbnail == null) {
             throw new IllegalArgumentException("[ERROR] 테마 이미지가 없습니다.");
+        }
+        if (!Pattern.matches(URL_REGEX, thumbnail)) {
+            throw new IllegalArgumentException("[ERROR] URL 형식이 아닙니다.");
         }
     }
 
