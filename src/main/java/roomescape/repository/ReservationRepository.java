@@ -1,0 +1,26 @@
+package roomescape.repository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import roomescape.domain.Reservation;
+
+public interface ReservationRepository {
+
+    Reservation save(final Reservation reservation);
+
+    List<Reservation> findAll();
+
+    Optional<Reservation> findById(final Long id);
+
+    List<Reservation> findByDateTimeAndThemeId(final LocalDate date, final LocalTime time, final long themeId);
+
+    List<Reservation> findByDateAndTheme(final LocalDate date, final long themeId);
+
+    boolean existsByThemeId(long themeId);
+
+    boolean existsByTimeId(long timeId);
+
+    int deleteById(final long id);
+}
