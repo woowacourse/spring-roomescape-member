@@ -120,7 +120,7 @@
 
   - Request
     ```
-    GET /themes/ranking HTTP/1.1
+    GET /reservation/available HTTP/1.1
     ```
 
   - Response
@@ -145,7 +145,7 @@
 
 - Request
   ```
-  GET /themes HTTP/1.1
+  GET /themes/ranking HTTP/1.1
   ```
 
 - Response
