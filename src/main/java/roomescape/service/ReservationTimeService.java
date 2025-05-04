@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.DeleteReservationException;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -23,12 +24,14 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public ReservationTime createReservationTime(ReservationTimeCreateRequest request) {
-        return reservationTimeRepository.save(request.toReservationTime());
+    public ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.save(request.toReservationTime());
+        return ReservationTimeResponse.from(reservationTime);
     }
 
-    public List<ReservationTime> findAll() {
-        return reservationTimeRepository.findAll();
+    public List<ReservationTimeResponse> findAll() {
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        return toReservationTimeResponses(reservationTimes);
     }
 
     public void deleteReservationTimeById(Long id) {
@@ -47,5 +50,11 @@ public class ReservationTimeService {
                 .map(time ->
                         ReservationTimeResponseWithBookedStatus.of(time, !availableTimes.contains(time))
                 ).toList();
+    }
+
+    private List<ReservationTimeResponse> toReservationTimeResponses(List<ReservationTime> times) {
+        return times.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 }
