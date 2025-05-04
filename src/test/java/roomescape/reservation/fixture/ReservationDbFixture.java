@@ -19,13 +19,13 @@ public class ReservationDbFixture {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Reservation 예약_한스_25_4_22_10시_공포(ReservationTime reservationTime, Theme theme) {
+    public Reservation 예약_한스_내일_10시_공포(ReservationTime reservationTime, Theme theme) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
         String name = ReserverNameFixture.한스.getName();
-        LocalDate date = ReservationDateFixture.예약날짜_25_4_22.getDate();
+        LocalDate date = ReservationDateFixture.예약날짜_내일.getDate();
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", name)

@@ -1,6 +1,5 @@
 package roomescape.theme.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,12 +14,10 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
-    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
-        this.clock = clock;
     }
 
     public void deleteById(Long id) {
@@ -48,9 +45,9 @@ public class ThemeService {
 
     public List<ThemeResponse> getPopularThemes() {
         int limit = 10;
-        LocalDate from = LocalDate.now(clock);
+        LocalDate from = LocalDate.now();
         LocalDate to = from.plusDays(7);
-        
+
         return themeRepository.findAll().stream()
                 .sorted((t1, t2) -> Integer.compare(
                         reservationRepository.countReservationByThemeIdAndDuration(from, to, t1.getId()),

@@ -69,7 +69,7 @@ class ThemeServiceTest extends RoomescapeTestSupport {
     void 이미_해당_테마의_예약이_존재한다면_삭제할_수_없다() {
         Theme theme = themeDbFixture.공포();
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
+        reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
 
         assertThatThrownBy(() -> themeService.deleteById(theme.getId()))
                 .isInstanceOf(IllegalArgumentException.class);

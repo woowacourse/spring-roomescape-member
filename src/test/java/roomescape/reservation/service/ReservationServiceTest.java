@@ -60,14 +60,14 @@ class ReservationServiceTest extends RoomescapeTestSupport {
 
         reservationService.create(new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
 
         ReservationCreateRequest request = new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -83,7 +83,7 @@ class ReservationServiceTest extends RoomescapeTestSupport {
 
         reservationService.create(new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
@@ -92,7 +92,7 @@ class ReservationServiceTest extends RoomescapeTestSupport {
 
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
-        assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate());
+        assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_내일.getDate());
         assertThat(response.time()).isEqualTo(
                 new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
     }
@@ -104,7 +104,7 @@ class ReservationServiceTest extends RoomescapeTestSupport {
 
         reservationService.create(new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                ReservationDateFixture.예약날짜_내일.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
