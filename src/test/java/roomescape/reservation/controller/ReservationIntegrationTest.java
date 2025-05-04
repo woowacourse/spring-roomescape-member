@@ -159,15 +159,15 @@ class ReservationIntegrationTest {
 
     }
 
-    @DisplayName("이용 가능한 시간 목록 조회 시 입력 값이 공백이거나 null이면 예외가 발생한다")
+    @DisplayName("이용 가능한 시간 목록 조회 시 date 형식이 올바르지 않으면 예외가 발생한다")
     @MethodSource
     @ParameterizedTest
-    void get_available_times_null_exception(Map<String, String> requestParam) {
+    void get_available_times_format_exception(Map<String, String> requestParam) {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .queryParams(requestParam)
-                .when().post("/reservations")
+                .when().get("/reservations/available")
                 .then().log().all()
                 .statusCode(400)
                 .body(equalTo("요청 형식이 올바르지 않습니다."));
@@ -271,17 +271,17 @@ class ReservationIntegrationTest {
         );
     }
 
-    static Stream<Arguments> get_available_times_null_exception() {
+    static Stream<Arguments> get_available_times_format_exception() {
         return Stream.of(
                 Arguments.of(
                         Map.of(
-                                "date", "null",
+                                "date", "2022:05:09",
                                 "themeId", "1"
                         )
                 ),
                 Arguments.of(
                         Map.of(
-                                "date", "null",
+                                "date", "20250503",
                                 "themeId", "1"
                         )
                 )
