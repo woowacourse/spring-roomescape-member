@@ -18,4 +18,8 @@ public record ThemeDto(
                 .map(ThemeDto::from)
                 .toList();
     }
+
+    public Theme toEntity() {
+        return Theme.of(id, name, description, thumbnail);
+    }
 }

@@ -47,9 +47,10 @@ public class ThemeService {
         }
     }
 
-    public Theme getThemeById(@NotNull Long id) {
-        return themeRepository.findById(id)
+    public ThemeDto getThemeById(@NotNull Long id) {
+        Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("id에 해당하는 테마가 없습니다."));
+        return ThemeDto.from(theme);
     }
 
     public List<ThemeDto> getThemeRanking() {

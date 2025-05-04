@@ -46,9 +46,10 @@ public class TimeService {
         }
     }
 
-    public ReservationTime getTimeById(Long id) {
-        return repository.findById(id)
+    public TimeDto getTimeById(Long id) {
+        ReservationTime reservationTime = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("찾으려는 id가 존재하지 않습니다. id: " + id));
+        return TimeDto.from(reservationTime);
     }
 
     public List<TimeDataWithBookingInfo> getTimesWithBookingInfo(LocalDate date, Long themeId) {

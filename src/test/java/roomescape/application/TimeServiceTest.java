@@ -88,7 +88,7 @@ class TimeServiceTest {
         timeRepository.save(ReservationTime.of(1L, LocalTime.of(10, 0)));
 
         // when
-        ReservationTime reservationTime = timeService.getTimeById(1L);
+        ReservationTime reservationTime = timeService.getTimeById(1L).toEntity();
 
         // then
         assertAll(

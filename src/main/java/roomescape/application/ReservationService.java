@@ -25,8 +25,8 @@ public class ReservationService {
     }
 
     public ReservationDto registerReservation(ReservationRequest request) {
-        Theme theme = themeService.getThemeById(request.themeId());
-        ReservationTime reservationTime = timeService.getTimeById(request.timeId());
+        Theme theme = themeService.getThemeById(request.themeId()).toEntity();
+        ReservationTime reservationTime = timeService.getTimeById(request.timeId()).toEntity();
         Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
         validateNotPast(reservation);
         validteNotDuplicate(reservation);
