@@ -34,6 +34,15 @@ public class Reservation {
         this(NON_SAVED_STATUS, name, date, reservationTime, theme);
     }
 
+    public boolean validatePastDateAndTime() {
+        final LocalDate currentDate = LocalDate.now();
+
+        final boolean isPastDate = date.isBefore(currentDate);
+        final boolean isPastTime = date.isEqual(currentDate) && time.validatePastTime();
+
+        return isPastDate || isPastTime;
+    }
+
     private void validate(final String name, final LocalDate date,
                           final ReservationTime reservationTime, final RoomTheme theme) {
         if (name == null || name.isBlank()) {
@@ -46,19 +55,9 @@ public class Reservation {
             throw new InvalidInputException("예약 시간은 빈 값이 입력될 수 없습니다");
         }
         if (theme == null) {
-            throw new InvalidInputException("테마는 빈 값이 입력될 수 없습니다");
+            throw new InvalidInputException("예약 테마는 빈 값이 입력될 수 없습니다");
         }
     }
-
-    public boolean validatePastDateAndTime() {
-        final LocalDate currentDate = LocalDate.now();
-
-        final boolean isPastDate = date.isBefore(currentDate);
-        final boolean isPastTime = date.isEqual(currentDate) && time.validatePastTime();
-
-        return isPastDate || isPastTime;
-    }
-
 
     public long getId() {
         return id;
