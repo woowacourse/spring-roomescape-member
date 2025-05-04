@@ -16,6 +16,7 @@ import roomescape.dto.BookedReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
+import roomescape.exception.InvalidReservationTimeException;
 import roomescape.exception.InvalidThemeException;
 
 @Service
@@ -60,7 +61,8 @@ public class ReservationService {
     }
 
     private ReservationTime getReservationTime(final ReservationRequestDto request) {
-        return reservationTimeDao.findById(request.timeId());
+        return reservationTimeDao.findById(request.timeId())
+                .orElseThrow(() -> new InvalidReservationTimeException("해당 ID의 예약 시간을 찾을 수 없습니다."));
     }
 
     private Theme getTheme(final ReservationRequestDto request) {

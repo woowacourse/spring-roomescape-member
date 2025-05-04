@@ -8,6 +8,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.exception.InvalidReservationException;
+import roomescape.exception.InvalidReservationTimeException;
 
 @Service
 public class ReservationTimeService {
@@ -35,9 +36,19 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
+        validateNotFountBy(id);
+        validateExistsBy(id);
+        reservationTimeDao.deleteReservationTime(id);
+    }
+
+    private void validateNotFountBy(final Long id) {
+        reservationTimeDao.findById(id)
+                .orElseThrow(() -> new InvalidReservationTimeException("해당 ID의 예약 시간을 찾을 수 없습니다."));
+    }
+
+    private void validateExistsBy(final Long id) {
         if (reservationDao.existsByTimeId(id)) {
             throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
         }
-        reservationTimeDao.deleteReservationTime(id);
     }
 }

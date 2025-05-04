@@ -17,4 +17,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidReservation(InvalidReservationException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidReservationTimeException.class)
+    public ResponseEntity<String> handleInvalidReservationTime(InvalidReservationTimeException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
 }

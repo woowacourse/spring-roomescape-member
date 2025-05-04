@@ -23,10 +23,10 @@ public class JdbcReservationTimeDaoTest {
     @BeforeEach
     void init() {
         datasource = new EmbeddedDatabaseBuilder()
-            .setName("testdb-" + UUID.randomUUID())
-            .setType(EmbeddedDatabaseType.H2)
-            .addScript("schema.sql")
-            .build();
+                .setName("testdb-" + UUID.randomUUID())
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("schema.sql")
+                .build();
         jdbcTemplate = new JdbcTemplate(datasource);
         reservationTimeDao = new JdbcReservationTimeDaoImpl(jdbcTemplate);
     }
@@ -61,7 +61,7 @@ public class JdbcReservationTimeDaoTest {
         // when, then
         assertThat(reservationTimeDao.findAllReservationTimes()).hasSize(3);
         assertThat(reservationTimeDao.findAllReservationTimes()).containsExactlyInAnyOrder(
-            reservationTime1, reservationTime2, reservationTime3
+                reservationTime1, reservationTime2, reservationTime3
         );
     }
 
@@ -87,7 +87,8 @@ public class JdbcReservationTimeDaoTest {
         reservationTimeDao.saveReservationTime(reservationTime);
 
         //when
-        ReservationTime findReservationTimeResult = reservationTimeDao.findById(1L);
+        ReservationTime findReservationTimeResult = reservationTimeDao.findById(1L)
+                .orElse(null);
 
         //then
         assertThat(reservationTime).isEqualTo(findReservationTimeResult);

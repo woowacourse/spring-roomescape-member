@@ -33,7 +33,8 @@ public class FakeReservationDaoImpl implements ReservationDao {
 
     @Override
     public Boolean existsByTimeId(Long id) {
-        return true;
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.getTimeId() == id);
     }
 
     @Override
