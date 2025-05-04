@@ -27,23 +27,6 @@ public class ThemeDao implements Dao<Theme> {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public List<Theme> findBest(LocalDate startDate, LocalDate endDate) {
-        String sql = "SELECT t.id, t.name, t.description, t.thumbnail "
-                + "FROM theme AS t "
-                + "INNER JOIN reservation AS r ON r.theme_id = t.id "
-                + "WHERE r.date BETWEEN :startDate AND :endDate "
-                + "GROUP BY t.id, t.name, t.description, t.thumbnail "
-                + "ORDER BY COUNT(r.id) DESC "
-                + "LIMIT 10";
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("startDate", startDate);
-        parameters.put("endDate", endDate);
-
-        return namedParameterJdbcTemplate.query(sql, parameters,
-                (resultSet, rowNum) -> createTheme(resultSet));
-    }
-
     @Override
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
@@ -55,12 +38,29 @@ public class ThemeDao implements Dao<Theme> {
     public Optional<Theme> findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail from theme where id = :id";
         Map<String, Object> parameter = Map.of("id", id);
+
         try {
             return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameter,
                     (resultSet, rowNum) -> createTheme(resultSet)));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Theme> findRankedByPeriod(final LocalDate startDate, final LocalDate endDate) {
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail 
+                FROM theme AS t 
+                INNER JOIN reservation AS r ON r.theme_id = t.id 
+                WHERE r.date BETWEEN :startDate AND :endDate 
+                GROUP BY t.id, t.name, t.description, t.thumbnail 
+                ORDER BY COUNT(r.id) DESC 
+                LIMIT 10
+                """;
+        Map<String, Object> parameters = Map.of("startDate", startDate, "endDate", endDate);
+
+        return namedParameterJdbcTemplate.query(sql, parameters,
+                (resultSet, rowNum) -> createTheme(resultSet));
     }
 
     @Override

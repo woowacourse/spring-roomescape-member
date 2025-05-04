@@ -7,12 +7,16 @@ import roomescape.common.Dao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.dto.BestThemeResponse;
+import roomescape.theme.dto.RankedThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 
 @Service
 public class ThemeService {
+    private static final String THEME_ALREADY_EXISTS_EXCEPTION_MESSAGE = "[ERROR] 이미 테마가 존재합니다.";
+    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "[ERROR] 해당 테마 아이디는 존재하지 않습니다";
+    private static final String RESERVED_THEME_ID_EXCEPTION_MESSAGE = "[ERROR] 이미 예약된 테마는 삭제할 수 없습니다.";
+
     private final Dao<Reservation> reservationDao;
     private final ThemeDao themeDao;
 
@@ -31,46 +35,62 @@ public class ThemeService {
                 .toList();
     }
 
-    public ThemeResponse add(ThemeRequest themeRequest) {
-        if (isAlreadyExisted(themeRequest)) {
-            throw new IllegalArgumentException("[ERROR] 이미 테마가 존재합니다.");
-        }
-
-        Theme theme = new Theme(null, themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
-        Theme savedTheme = themeDao.add(theme);
-        return new ThemeResponse(savedTheme.getId(),
-                savedTheme.getName(),
-                savedTheme.getDescription(),
-                savedTheme.getThumbnail());
+    public List<RankedThemeResponse> findRankedByPeriod() {
+        List<Theme> topRankedThemes = themeDao.findRankedByPeriod(
+                LocalDate.now().minusDays(7),
+                LocalDate.now().minusDays(1)
+        );
+        return topRankedThemes.stream()
+                .map(theme -> new RankedThemeResponse(
+                        theme.getName(),
+                        theme.getDescription(),
+                        theme.getThumbnail())
+                )
+                .toList();
     }
 
-    private boolean isAlreadyExisted(ThemeRequest themeRequest) {
+    public ThemeResponse add(final ThemeRequest themeRequest) {
+        validateDuplicate(themeRequest);
+        Theme newTheme = new Theme(themeRequest.name(), themeRequest.description(), themeRequest.thumbnail());
+        Theme savedTheme = themeDao.add(newTheme);
+
+        return new ThemeResponse(
+                savedTheme.getId(),
+                savedTheme.getName(),
+                savedTheme.getDescription(),
+                savedTheme.getThumbnail()
+        );
+    }
+
+    private void validateDuplicate(ThemeRequest themeRequest) {
         List<Theme> themes = themeDao.findAll();
-        return themes.stream()
-                .anyMatch(
-                        theme -> theme.getName().equals(themeRequest.name())
-                );
+
+        boolean isDuplicate = themes.stream()
+                .anyMatch(theme -> theme.getName().equals(themeRequest.name()));
+
+        if (isDuplicate) {
+            throw new IllegalArgumentException(THEME_ALREADY_EXISTS_EXCEPTION_MESSAGE);
+        }
     }
 
     public void deleteById(Long id) {
-        themeDao.findById(id).orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 테마 아이디는 존재하지 않습니다"));
-
+        searchThemeId(id);
         List<Reservation> reservations = reservationDao.findAll();
-        boolean isOccupiedThemeId = reservations.stream().anyMatch(
-                reservation -> reservation.getTheme().getId().equals(id)
-        );
 
-        if (isOccupiedThemeId) {
-            throw new IllegalArgumentException("[ERROR] 이미 예약된 테마 id는 삭제할 수 없습니다.");
-        }
-
+        validateUnoccupiedThemeId(id, reservations);
         themeDao.deleteById(id);
     }
 
-    public List<BestThemeResponse> findBest() {
-        List<Theme> bestThemes = themeDao.findBest(LocalDate.now().minusDays(7), LocalDate.now().minusDays(1));
-        return bestThemes.stream()
-                .map(theme -> new BestThemeResponse(theme.getName(), theme.getDescription(), theme.getThumbnail()))
-                .toList();
+    private void searchThemeId(Long id) {
+        themeDao.findById(id).orElseThrow(() -> new IllegalArgumentException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
+    }
+
+    private void validateUnoccupiedThemeId(Long id, List<Reservation> reservations) {
+        boolean isOccupiedThemeId = reservations.stream()
+                .anyMatch(reservation -> reservation.getThemeId().equals(id));
+
+        if (isOccupiedThemeId) {
+            throw new IllegalArgumentException(RESERVED_THEME_ID_EXCEPTION_MESSAGE);
+        }
     }
 }

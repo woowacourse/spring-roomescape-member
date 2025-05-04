@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.theme.dto.BestThemeResponse;
+import roomescape.theme.dto.RankedThemeResponse;
 import roomescape.theme.dto.ThemeRequest;
 import roomescape.theme.dto.ThemeResponse;
 import roomescape.theme.service.ThemeService;
@@ -25,24 +25,24 @@ public class ThemeApiController {
         this.themeService = themeService;
     }
 
-    @PostMapping
-    public ResponseEntity<ThemeResponse> add(@RequestBody ThemeRequest themeRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(themeService.add(themeRequest));
-    }
-
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> findAll() {
         return ResponseEntity.ok(themeService.findAll());
     }
 
-    @GetMapping("/best")
-    public ResponseEntity<List<BestThemeResponse>> findBest() {
-        return ResponseEntity.ok(themeService.findBest());
+    @GetMapping("/ranked")
+    public ResponseEntity<List<RankedThemeResponse>> findRankedByPeriod() {
+        return ResponseEntity.ok(themeService.findRankedByPeriod());
+    }
+
+    @PostMapping
+    public ResponseEntity<ThemeResponse> add(@RequestBody ThemeRequest themeRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(themeService.add(themeRequest));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         themeService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 }
