@@ -44,16 +44,6 @@ public class Theme {
     }
 
     @Override
-    public String toString() {
-        return "Theme{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", thumbnail='" + thumbnail + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
