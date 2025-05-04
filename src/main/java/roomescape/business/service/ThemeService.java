@@ -46,8 +46,8 @@ public class ThemeService {
 
     public List<ThemeResponse> findPopularThemes() {
         final LocalDate now = LocalDate.now();
-        final String startDate = ReservationEntity.formatDate(now);
-        final String endDate = ReservationEntity.formatDate(now.minusDays(7));
+        final String startDate = ReservationEntity.formatDate(now.minusDays(8));
+        final String endDate = ReservationEntity.formatDate(now.minusDays(1));
 
         return themeDao.findPopularThemesBetween(startDate, endDate).stream()
                 .map(ThemeResponse::from)
