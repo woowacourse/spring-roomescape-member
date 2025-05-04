@@ -25,6 +25,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = Map.ofEntries(
                 Map.entry("name", reservation.getName()),
@@ -38,6 +39,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return Reservation.generateWithPrimaryKey(reservation, generatedKey);
     }
 
+    @Override
     public List<Reservation> findAll() {
         final String query = """
                 SELECT
@@ -77,6 +79,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         );
     }
 
+    @Override
     public boolean existsByTimeId(Long timeId) {
         final String query = """
                 SELECT EXISTS (
@@ -89,6 +92,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(query, Boolean.class, timeId);
     }
 
+    @Override
     public void deleteById(Long id) {
         final String query = "DELETE FROM reservation WHERE id = ?";
         int affectedRows = jdbcTemplate.update(query, id);

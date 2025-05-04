@@ -24,6 +24,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Theme save(Theme theme) {
         Map<String, Object> parameters = Map.ofEntries(
                 Map.entry("name", theme.getName()),
@@ -35,6 +36,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return Theme.generateWithPrimaryKey(theme, id);
     }
 
+    @Override
     public List<Theme> findAll() {
         final String query = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(query, (resultSet, rowNum) ->
@@ -45,6 +47,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         );
     }
 
+    @Override
     public List<Theme> findTopByReservationCountAsc(Long listNum) {
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail, rc.reservation_count
@@ -73,6 +76,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return listedTheme;
     }
 
+    @Override
     public List<Theme> findTopByReservationCountDesc(Long listNum) {
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail, rc.reservation_count
@@ -101,6 +105,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return listedTheme;
     }
 
+    @Override
     public Optional<Theme> findById(Long id) {
         final String query = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {

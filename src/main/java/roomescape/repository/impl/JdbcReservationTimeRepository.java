@@ -25,6 +25,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> parameters = Map.ofEntries(Map.entry("start_at", reservationTime.getStartAt()));
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
@@ -32,6 +33,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return ReservationTime.generateWithPrimaryKey(reservationTime, generatedKey);
     }
 
+    @Override
     public List<ReservationTime> findAll() {
         final String query = "SELECT id, start_at FROM reservation_time";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(query,
@@ -41,6 +43,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return reservationTimes;
     }
 
+    @Override
     public Optional<ReservationTime> findById(Long timeId) {
         final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
 
@@ -54,6 +57,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }
     }
 
+    @Override
     public void deleteById(Long id) {
         final String query = "DELETE FROM reservation_time WHERE id = ?";
         int affectedRows = jdbcTemplate.update(query, id);
@@ -62,6 +66,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }
     }
 
+    @Override
     public List<ReservationTime> findByReservationDateAndThemeId(LocalDate localDate, Long themeId) {
         final String query = """
                 SELECT id, start_at
