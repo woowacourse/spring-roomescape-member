@@ -63,23 +63,27 @@ public class ThemeDao {
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
-    public List<Theme> findPopularThemes(LocalDate today, int dayRange) {
-        LocalDate sevenDaysAgo = today.minusDays(dayRange);
-        String sql = """
-                    SELECT theme.id AS id,
-                           theme.name AS name,
-                           theme.description AS description,
-                           theme.thumbnail AS thumbnail,
-                           COUNT(reservation.id) AS reservation_count
-                    FROM theme
-                    INNER JOIN reservation ON theme.id = reservation.theme_id
-                    WHERE reservation.date < ?
-                      AND reservation.date >= ?
-                    GROUP BY theme.id
-                    ORDER BY reservation_count DESC
-                    LIMIT 10
-                """;
+    public List<Theme> findThemesByReservationVolumeBetweenDates(LocalDate baseDate, int dayRange, int limit) {
+        LocalDate startDate = baseDate.minusDays(dayRange);
 
-        return jdbcTemplate.query(sql, themeRowMapper, today.toString(), sevenDaysAgo.toString());
+        String sql = """
+                SELECT theme.id AS id,
+                       theme.name AS name,
+                       theme.description AS description,
+                       theme.thumbnail AS thumbnail,
+                       COUNT(reservation.id) AS reservation_count
+                FROM theme
+                INNER JOIN reservation ON theme.id = reservation.theme_id
+                WHERE reservation.date < ?
+                  AND reservation.date >= ?
+                GROUP BY theme.id
+                ORDER BY reservation_count DESC
+                LIMIT ?
+            """;
+
+        return jdbcTemplate.query(sql, themeRowMapper,
+                baseDate.toString(),
+                startDate.toString(),
+                limit);
     }
 }

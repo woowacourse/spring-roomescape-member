@@ -16,6 +16,7 @@ import roomescape.model.Theme;
 public class ThemeService {
 
     private static final int POPULAR_DAY_RANGE = 7;
+    private static final int THEME_QUERY_LIMIT = 10;
 
     private final ThemeDao themeDao;
 
@@ -52,7 +53,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDto> findPopularThemes(final LocalDate today) {
-        return themeDao.findPopularThemes(today, POPULAR_DAY_RANGE).stream()
+        return themeDao.findThemesByReservationVolumeBetweenDates(today, POPULAR_DAY_RANGE, THEME_QUERY_LIMIT).stream()
                 .map(ThemeResponseDto::from)
                 .toList();
     }
