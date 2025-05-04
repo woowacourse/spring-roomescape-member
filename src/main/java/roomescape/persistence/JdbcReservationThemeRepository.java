@@ -12,13 +12,13 @@ import org.springframework.stereotype.Repository;
 import roomescape.business.ReservationTheme;
 
 @Repository
-public class H2ReservationThemeRepository implements ReservationThemeRepository {
+public class JdbcReservationThemeRepository implements ReservationThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public H2ReservationThemeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")

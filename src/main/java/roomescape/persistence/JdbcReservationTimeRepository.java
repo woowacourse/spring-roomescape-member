@@ -14,13 +14,13 @@ import roomescape.business.ReservationTime;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 
 @Repository
-public class H2ReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public H2ReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")

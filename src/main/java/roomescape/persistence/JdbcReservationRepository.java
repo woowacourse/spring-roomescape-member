@@ -15,13 +15,13 @@ import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
 
 @Repository
-public class H2ReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public H2ReservationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
