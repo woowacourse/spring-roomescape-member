@@ -51,7 +51,7 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopularThemesBetween(final String startDate, final String endDate) {
+    public List<Theme> findPopularThemesBetweenWithLimit(final String startDate, final String endDate, final int limit) {
         return List.of();
     }
 

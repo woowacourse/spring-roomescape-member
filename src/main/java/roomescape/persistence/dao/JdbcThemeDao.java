@@ -66,9 +66,10 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopularThemesBetween(
+    public List<Theme> findPopularThemesBetweenWithLimit(
             final String startDate,
-            final String endDate
+            final String endDate,
+            final int limit
     ) {
         final String sql = """
                 SELECT
@@ -82,7 +83,8 @@ public class JdbcThemeDao implements ThemeDao {
                     ON t.id = r.theme_id
                     AND r.date BETWEEN ? AND ?
                 GROUP BY t.id, t.name, t.description, t.thumbnail
-                ORDER BY reservation_count DESC
+                ORDER BY reservation_count DESC, t.id ASC
+                LIMIT ?
                 """;
 
         return jdbcTemplate.query(
@@ -92,7 +94,7 @@ public class JdbcThemeDao implements ThemeDao {
                         rs.getString(2),
                         rs.getString(3),
                         rs.getString(4)
-                ), startDate, endDate
+                ), startDate, endDate, limit
         );
     }
 }

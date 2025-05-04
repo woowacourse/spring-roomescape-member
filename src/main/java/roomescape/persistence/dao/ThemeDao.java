@@ -1,6 +1,5 @@
 package roomescape.persistence.dao;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import roomescape.business.domain.Theme;
@@ -14,5 +13,5 @@ public interface ThemeDao {
 
     Optional<Theme> find(Long id);
 
-    List<Theme> findPopularThemesBetween(String startDate, String endDate);
+    List<Theme> findPopularThemesBetweenWithLimit(String startDate, String endDate, int limit);
 }

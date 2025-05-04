@@ -2,7 +2,6 @@ package roomescape.business.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.Theme;
 import roomescape.exception.ThemeNotFoundException;
@@ -48,8 +47,9 @@ public class ThemeService {
         final LocalDate now = LocalDate.now();
         final String startDate = ReservationEntity.formatDate(now.minusDays(8));
         final String endDate = ReservationEntity.formatDate(now.minusDays(1));
+        final int limit = 10;
 
-        return themeDao.findPopularThemesBetween(startDate, endDate).stream()
+        return themeDao.findPopularThemesBetweenWithLimit(startDate, endDate, limit).stream()
                 .map(ThemeResponse::from)
                 .toList();
     }
