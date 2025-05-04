@@ -3,13 +3,13 @@ package roomescape.common;
 import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.AlreadyExistsException;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservationtime.exception.ReservationTimeInUseException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException e) {
