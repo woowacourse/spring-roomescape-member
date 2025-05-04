@@ -6,54 +6,28 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.sql.init.DatabaseInitializationSettings;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
-class JdbcReservationRepositoryTest {
+class JdbcReservationRepositoryTest extends JdbcSupportTest {
 
-    private static final DataSource TEST_DATASOURCE = DataSourceBuilder.create()
-            .driverClassName("org.h2.Driver")
-            .url("jdbc:h2:mem:database-test")
-            .username("sa")
-            .build();
-
-
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(TEST_DATASOURCE);
-    private final JdbcReservationRepository reservationDao = new JdbcReservationRepository(
+    private final JdbcReservationRepository reservationRepository = new JdbcReservationRepository(
             new NamedParameterJdbcTemplate(TEST_DATASOURCE),
             TEST_DATASOURCE);
-
-    @BeforeEach
-    void setUp() {
-        DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-        settings.setSchemaLocations(List.of("classpath:schema.sql"));
-        SqlDataSourceScriptDatabaseInitializer sqlDataSourceScriptDatabaseInitializer =
-                new SqlDataSourceScriptDatabaseInitializer(TEST_DATASOURCE, settings);
-        sqlDataSourceScriptDatabaseInitializer.initializeDatabase();
-    }
 
     @Test
     void 전체_예약을_조회할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test2', '2025-04-22', 1, 1)");
+        insertTheme("name", "description", "thumbnail");
+        insertReservationTime(LocalTime.of(12, 0));
+        insertReservation("test1", LocalDate.of(2025, 4, 21), 1L, 1L);
+        insertReservation("test2", LocalDate.of(2025, 4, 22), 1L, 1L);
 
         //when
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
 
         //then
         assertThat(reservations).isEqualTo(List.of(
@@ -67,14 +41,12 @@ class JdbcReservationRepositoryTest {
     @Test
     void id값으로_예약을_찾을_수_있다() {
         //given
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
+        insertTheme("name", "description", "thumbnail");
+        insertReservationTime(LocalTime.of(12, 0));
+        insertReservation("test1", LocalDate.of(2025, 4, 21), 1L, 1L);
 
         //when
-        Optional<Reservation> reservation = reservationDao.findById(1L);
+        Optional<Reservation> reservation = reservationRepository.findById(1L);
 
         //then
         assertThat(reservation).hasValue(
@@ -85,7 +57,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void id값에_해당하는_예약이_없다면_Optional_empty를_반환한다() {
         //when
-        Optional<Reservation> reservation = reservationDao.findById(1L);
+        Optional<Reservation> reservation = reservationRepository.findById(1L);
 
         //then
         assertThat(reservation).isEmpty();
@@ -94,17 +66,16 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약을_생성할_수_있다() {
         //given
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
+        insertTheme("name", "description", "thumbnail");
+        insertReservationTime(LocalTime.of(12, 0));
         Reservation reservation = new Reservation("test", LocalDate.of(2025, 4, 21),
                 new ReservationTime(1L, LocalTime.of(12, 0)), new Theme(1L, "name", "description", "thumbnail"));
 
         //when
-        Long createdId = reservationDao.create(reservation);
+        Long createdId = reservationRepository.create(reservation);
 
         //then
-        assertThat(reservationDao.findById(createdId))
+        assertThat(reservationRepository.findById(createdId))
                 .hasValue(new Reservation(1L, "test", LocalDate.of(2025, 4, 21),
                         new ReservationTime(1L, LocalTime.of(12, 0)),
                         new Theme(1L, "name", "description", "thumbnail")));
@@ -113,30 +84,26 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약을_삭제할_수_있다() {
         //given
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
+        insertTheme();
+        insertReservationTime();
+        insertReservation("test1", LocalDate.of(2025, 4, 21), 1L, 1L);
 
         //when
-        reservationDao.deleteById(1L);
+        reservationRepository.deleteById(1L);
 
         //then
-        assertThat(reservationDao.findById(1L)).isEmpty();
+        assertThat(reservationRepository.findById(1L)).isEmpty();
     }
 
     @Test
     void 특정_time_id를_사용하는_예약이_존재하는지_알_수_있다() {
         //given
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
+        insertTheme();
+        insertReservationTime();
+        insertReservation("test1", LocalDate.of(2025, 4, 21), 1L, 1L);
 
         //when
-        boolean result = reservationDao.existByTimeId(1L);
+        boolean result = reservationRepository.existByTimeId(1L);
 
         //then
         assertThat(result).isTrue();
@@ -145,14 +112,12 @@ class JdbcReservationRepositoryTest {
     @Test
     void 특정_날짜와_time_id를_사용하는_예약이_존재하는지_알_수_있다() {
         //given
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
+        insertTheme();
+        insertReservationTime();
+        insertReservation("test1", LocalDate.of(2025, 4, 21), 1L, 1L);
 
         //when
-        boolean result = reservationDao.existByDateAndTimeId(LocalDate.of(2025, 4, 21), 1L);
+        boolean result = reservationRepository.existByDateAndTimeId(LocalDate.of(2025, 4, 21), 1L);
 
         //then
         assertThat(result).isTrue();
@@ -161,14 +126,12 @@ class JdbcReservationRepositoryTest {
     @Test
     void theme_id를_사용하는_예약이_존재하는지_알_수_있다() {
         //given
-        jdbcTemplate.update(
-                "INSERT INTO theme(name, description, thumbnail) VALUES ('name', 'description', 'thumbnail')");
-        jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES ('12:00')");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('test1', '2025-04-21', 1, 1)");
+        insertTheme();
+        insertReservationTime();
+        insertReservation("test1", LocalDate.of(2025, 4, 21), 1L, 1L);
 
         //when
-        boolean result = reservationDao.existByThemeId(1L);
+        boolean result = reservationRepository.existByThemeId(1L);
 
         //then
         assertThat(result).isTrue();

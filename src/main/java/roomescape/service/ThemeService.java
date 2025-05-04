@@ -1,16 +1,15 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.common.NotFoundEntityException;
 import roomescape.common.BusinessRuleViolationException;
+import roomescape.common.NotFoundEntityException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
 import roomescape.service.param.CreateThemeParam;
 import roomescape.service.result.ThemeResult;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ThemeService {
@@ -51,7 +50,7 @@ public class ThemeService {
         themeRepository.deleteById(themeId);
     }
 
-    public List<ThemeResult> findRankByTheme() {
+    public List<ThemeResult> findRankBetweenDate() {
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusWeeks(1);
         LocalDate endDate = today.minusDays(1);
