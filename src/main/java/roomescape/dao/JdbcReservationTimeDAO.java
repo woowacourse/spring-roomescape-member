@@ -33,7 +33,6 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
     @Override
     public long insert(final ReservationTime reservationTime) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("id", reservationTime.getId())
                 .addValue("start_at", reservationTime.getStartAt());
         final Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
         return newId.longValue();
