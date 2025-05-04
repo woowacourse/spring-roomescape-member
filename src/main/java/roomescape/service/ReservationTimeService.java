@@ -23,14 +23,14 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeCreateResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        ReservationTime reservationTime = reservationTimeDao.create(
+        final ReservationTime reservationTime = reservationTimeDao.create(
                 new ReservationTime(reservationTimeCreateRequest.getLocalTime()));
         return ReservationTimeCreateResponse.from(reservationTime);
     }
 
     public List<ReservationTimeUserResponse> findAllByDateAndTheme(final long themeId, final LocalDate date) {
-        List<ReservationTime> allTimes = reservationTimeDao.findAll();
-        List<ReservationTime> reservedTimes = reservationTimeDao.findAllReservedByThemeAndDate(themeId, date);
+        final List<ReservationTime> allTimes = reservationTimeDao.findAll();
+        final List<ReservationTime> reservedTimes = reservationTimeDao.findAllReservedByThemeAndDate(themeId, date);
         return allTimes.stream()
                 .map(time -> ReservationTimeUserResponse.from(
                         time,
@@ -49,7 +49,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTime findById(final Long id) {
-        Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
+        final Optional<ReservationTime> reservationTime = reservationTimeDao.findById(id);
         if (reservationTime.isEmpty()) {
             throw new NoSuchElementException("예약 시간이 존재하지 않습니다.");
         }

@@ -12,7 +12,7 @@ class ThemeCreateRequestTest {
     void validThrowsIfNameIsNull() {
 
         // given
-        String name = null;
+        final String name = null;
 
         // when & then
         assertThatThrownBy(() -> new ThemeCreateRequest(name, "test", "test"))
@@ -25,7 +25,7 @@ class ThemeCreateRequestTest {
     void validThrowsIfNameIsBlank() {
 
         // given
-        String name = "";
+        final String name = "";
 
         // when & then
         assertThatThrownBy(() -> new ThemeCreateRequest(name, "test", "test"))
@@ -38,7 +38,7 @@ class ThemeCreateRequestTest {
     void validThrowsIfDescriptionIsNull() {
 
         // given
-        String description = null;
+        final String description = null;
 
         // when & then
         assertThatThrownBy(() -> new ThemeCreateRequest("test", description, "test"))
@@ -51,7 +51,7 @@ class ThemeCreateRequestTest {
     void validThrowsIfDescriptionIsBlank() {
 
         // given
-        String description = "";
+        final String description = "";
 
         // when & then
         assertThatThrownBy(() -> new ThemeCreateRequest("test", description, "test"))
@@ -64,7 +64,7 @@ class ThemeCreateRequestTest {
     void validThrowsIfThumbnailIsNull() {
 
         // given
-        String thumbnail = null;
+        final String thumbnail = null;
 
         // when & then
         assertThatThrownBy(() -> new ThemeCreateRequest("test", "test", thumbnail))
@@ -77,7 +77,7 @@ class ThemeCreateRequestTest {
     void validThrowsIfThumbnailIsBlank() {
 
         // given
-        String thumbnail = "";
+        final String thumbnail = "";
 
         // when & then
         assertThatThrownBy(() -> new ThemeCreateRequest("test", "test", thumbnail))

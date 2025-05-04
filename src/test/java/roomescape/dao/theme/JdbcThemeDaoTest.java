@@ -37,13 +37,13 @@ class JdbcThemeDaoTest {
     void findAll() {
 
         // given
-        Theme theme1 = new Theme("test1", "test1", "test1");
-        Theme theme2 = new Theme("test1", "test1", "test1");
-        Theme savedTheme1 = jdbcThemeDao.create(theme1);
-        Theme savedTheme2 = jdbcThemeDao.create(theme2);
+        final Theme theme1 = new Theme("test1", "test1", "test1");
+        final Theme theme2 = new Theme("test1", "test1", "test1");
+        final Theme savedTheme1 = jdbcThemeDao.create(theme1);
+        final Theme savedTheme2 = jdbcThemeDao.create(theme2);
 
         // when
-        List<Theme> themes = jdbcThemeDao.findAll();
+        final List<Theme> themes = jdbcThemeDao.findAll();
 
         // then
         assertThat(themes.size()).isEqualTo(2);
@@ -54,10 +54,10 @@ class JdbcThemeDaoTest {
     void createTest() {
 
         // given
-        Theme theme = new Theme("test1", "test1", "test1");
+        final Theme theme = new Theme("test1", "test1", "test1");
 
         // when
-        Theme savedTheme = jdbcThemeDao.create(theme);
+        final Theme savedTheme = jdbcThemeDao.create(theme);
 
         // then
         assertAll(
@@ -72,8 +72,8 @@ class JdbcThemeDaoTest {
     void deleteTest() {
 
         // given
-        Theme theme = new Theme("test1", "test1", "test1");
-        Theme savedTheme = jdbcThemeDao.create(theme);
+        final Theme theme = new Theme("test1", "test1", "test1");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
 
         // when & then
         assertThat(jdbcThemeDao.deleteIfNoReservation(savedTheme.getId())).isTrue();
@@ -84,13 +84,13 @@ class JdbcThemeDaoTest {
     void deleteIfReservationExist() {
 
         // given
-        LocalTime time = LocalTime.of(10, 10);
-        LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = new Theme("test", "test", "test");
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
-        Reservation savedReservation = jdbcReservationDao.create(reservation);
+        final LocalTime time = LocalTime.of(10, 10);
+        final LocalDate date = LocalDate.now().plusDays(1);
+        final Theme theme = new Theme("test", "test", "test");
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
+        final Reservation savedReservation = jdbcReservationDao.create(reservation);
 
         // when & then
         assertThat(jdbcThemeDao.deleteIfNoReservation(savedTheme.getId())).isFalse();
@@ -101,11 +101,11 @@ class JdbcThemeDaoTest {
     void findByIdTest() {
 
         // given
-        Theme theme = new Theme("test1", "test1", "test1");
-        Theme savedTheme = jdbcThemeDao.create(theme);
+        final Theme theme = new Theme("test1", "test1", "test1");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
 
         // when
-        Optional<Theme> optionalTheme = jdbcThemeDao.findById(savedTheme.getId());
+        final Optional<Theme> optionalTheme = jdbcThemeDao.findById(savedTheme.getId());
 
         // then
         assertAll(
@@ -119,20 +119,20 @@ class JdbcThemeDaoTest {
     void findPopularThemesInRecentSevenDaysTest() {
 
         // given
-        LocalTime time = LocalTime.of(10, 10);
-        LocalDate beforeOneDay = LocalDate.now().minusDays(1);
-        LocalDate beforeEightDay = LocalDate.now().minusDays(8);
-        Theme popularTheme = new Theme("test", "test", "test");
-        Theme notPopularTheme = new Theme("test2", "test", "test");
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
-        Theme savedPopularTheme = jdbcThemeDao.create(popularTheme);
-        Theme savedNotPopularTheme = jdbcThemeDao.create(notPopularTheme);
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
+        final LocalTime time = LocalTime.of(10, 10);
+        final LocalDate beforeOneDay = LocalDate.now().minusDays(1);
+        final LocalDate beforeEightDay = LocalDate.now().minusDays(8);
+        final Theme popularTheme = new Theme("test", "test", "test");
+        final Theme notPopularTheme = new Theme("test2", "test", "test");
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+        final Theme savedPopularTheme = jdbcThemeDao.create(popularTheme);
+        final Theme savedNotPopularTheme = jdbcThemeDao.create(notPopularTheme);
+        final String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
         jdbcTemplate.update(sql, beforeOneDay.toString(), savedReservationTime.getId(), savedPopularTheme.getId());
         jdbcTemplate.update(sql, beforeEightDay.toString(), savedReservationTime.getId(), savedNotPopularTheme.getId());
 
         // when
-        List<Theme> themes = jdbcThemeDao.findPopularThemesInRecentSevenDays(
+        final List<Theme> themes = jdbcThemeDao.findPopularThemesInRecentSevenDays(
                 LocalDate.now().minusDays(7), beforeOneDay);
 
         // then

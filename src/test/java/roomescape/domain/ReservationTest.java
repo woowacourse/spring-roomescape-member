@@ -17,13 +17,13 @@ class ReservationTest {
     @CsvSource(value = {
             "1, 1, true",
             "1, 2, false"})
-    void equalIdTest(final long firstId, final long secondId, boolean result) {
+    void equalIdTest(final long firstId, final long secondId, final boolean result) {
 
         // given
-        Reservation reservation1 = Reservation.load(firstId, "체체", LocalDate.now(),
+        final Reservation reservation1 = Reservation.load(firstId, "체체", LocalDate.now(),
                 new ReservationTime(1L, LocalTime.now().plusHours(1)),
                 new Theme(1L, "test", "test", "test"));
-        Reservation reservation2 = Reservation.load(secondId, "체체", LocalDate.now(),
+        final Reservation reservation2 = Reservation.load(secondId, "체체", LocalDate.now(),
                 new ReservationTime(1L, LocalTime.now().plusHours(1)),
                 new Theme(1L, "test", "test", "test"));
 
@@ -35,10 +35,10 @@ class ReservationTest {
     @Test
     void inValidateNameLengthThrowExceptionTest() {
         // given
-        String nameOver10 = "a".repeat(11);
-        LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
-        Theme theme = new Theme(1L, "test", "test", "test");
+        final String nameOver10 = "a".repeat(11);
+        final LocalDate date = LocalDate.now();
+        final ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
+        final Theme theme = new Theme(1L, "test", "test", "test");
 
         // when & then
         assertThatThrownBy(() -> Reservation.create(nameOver10, date, time, theme))
@@ -51,9 +51,9 @@ class ReservationTest {
     void createReservationThrowExceptionIfDateIsPast() {
 
         // given
-        LocalDate date = LocalDate.of(2024, 12, 12);
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
-        Theme theme = new Theme(1L, "test", "test", "test");
+        final LocalDate date = LocalDate.of(2024, 12, 12);
+        final ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
+        final Theme theme = new Theme(1L, "test", "test", "test");
 
         // when & then
         assertThatThrownBy(() -> Reservation.create("test", date, time, theme))
@@ -66,9 +66,9 @@ class ReservationTest {
     void createReservationThrowExceptionIfDateIsTodayAndTimeIsPast() {
 
         // given
-        LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().minusHours(1));
-        Theme theme = new Theme(1L, "test", "test", "test");
+        final LocalDate date = LocalDate.now();
+        final ReservationTime time = new ReservationTime(LocalTime.now().minusHours(1));
+        final Theme theme = new Theme(1L, "test", "test", "test");
 
         // when & then
         assertThatThrownBy(() -> Reservation.create("test", date, time, theme))

@@ -16,7 +16,7 @@ public class ViewIntegrationTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/time", "/admin/theme", "/reservation", "/"})
-    void getPageTest(String uri) {
+    void getPageTest(final String uri) {
         RestAssured.given().log().all()
                 .when().get(uri)
                 .then().log().all()

@@ -73,10 +73,10 @@ public class TimeController {
                     required = true,
                     content = @Content(schema = @Schema(implementation = ReservationTimeCreateRequest.class))
             )
-            @RequestBody ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        ReservationTimeCreateResponse response = reservationTimeService.create(reservationTimeCreateRequest);
+            @RequestBody final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+        final ReservationTimeCreateResponse response = reservationTimeService.create(reservationTimeCreateRequest);
 
-        URI location = ServletUriComponentsBuilder
+        final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(response.id())
@@ -104,7 +104,7 @@ public class TimeController {
             }
     )
     public ResponseEntity<Void> delete(
-            @Parameter(description = "삭제할 예약 시간 ID") @PathVariable Long id) {
+            @Parameter(description = "삭제할 예약 시간 ID") @PathVariable final Long id) {
         reservationTimeService.deleteIfNoReservation(id);
         return ResponseEntity.noContent().build();
     }

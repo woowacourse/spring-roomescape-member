@@ -25,7 +25,7 @@ public class ReservationIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        Map<String, Object> reservationTime = new HashMap<>();
+        final Map<String, Object> reservationTime = new HashMap<>();
         reservationTime.put("startAt", LocalTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
@@ -35,7 +35,7 @@ public class ReservationIntegrationTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Map<String, Object> theme = new HashMap<>();
+        final Map<String, Object> theme = new HashMap<>();
         theme.put("name", "test");
         theme.put("description", "test");
         theme.put("thumbnail", "test");
@@ -52,7 +52,7 @@ public class ReservationIntegrationTest {
     @DisplayName("예약을 추가한다.")
     @Test
     void addReservationTest() {
-        Map<String, Object> reservation = new HashMap<>();
+        final Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1).toString());
@@ -70,7 +70,7 @@ public class ReservationIntegrationTest {
     @DisplayName("예약 목록을 조회한다. ")
     @Test
     void findAllReservationTest() {
-        Map<String, Object> reservation = new HashMap<>();
+        final Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1).toString());
@@ -94,7 +94,7 @@ public class ReservationIntegrationTest {
     @DisplayName("예약을 삭제한다.")
     @Test
     void deleteReservationTest() {
-        Map<String, Object> reservation = new HashMap<>();
+        final Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1).toString());

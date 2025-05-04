@@ -28,7 +28,7 @@ public class ThemeIntegrationTest {
     @DisplayName("테마를 추가한다.")
     @Test
     void addThemeTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "test");
         params.put("description", "test");
         params.put("thumbnail", "test");
@@ -44,7 +44,7 @@ public class ThemeIntegrationTest {
     @DisplayName("테마 목록을 조회한다.")
     @Test
     void findAllTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "test");
         params.put("description", "test");
         params.put("thumbnail", "test");
@@ -75,11 +75,11 @@ public class ThemeIntegrationTest {
     @DisplayName("최근 일주일 인기 테마 목록을 가져온다.")
     @Test
     void findPopularThemesInRecentSevenDaysTest() {
-        LocalDate beforeOneDay = LocalDate.now().minusDays(1);
-        LocalDate beforeEightDay = LocalDate.now().minusDays(8);
-        String themeSql = "INSERT INTO theme (name, description, thumbnail) VALUES ('test', 'test', 'test')";
-        String reservationTimeSql = "INSERT INTO reservation_time (start_at) VALUES ('10:10')";
-        String reservationSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
+        final LocalDate beforeOneDay = LocalDate.now().minusDays(1);
+        final LocalDate beforeEightDay = LocalDate.now().minusDays(8);
+        final String themeSql = "INSERT INTO theme (name, description, thumbnail) VALUES ('test', 'test', 'test')";
+        final String reservationTimeSql = "INSERT INTO reservation_time (start_at) VALUES ('10:10')";
+        final String reservationSql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
         jdbcTemplate.update(themeSql);
         jdbcTemplate.update(reservationTimeSql);
         jdbcTemplate.update(reservationSql, beforeOneDay.toString(), 1L, 1L);
@@ -96,7 +96,7 @@ public class ThemeIntegrationTest {
     @DisplayName("테마를 삭제한다.")
     @Test
     void deleteTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "test");
         params.put("description", "test");
         params.put("thumbnail", "test");

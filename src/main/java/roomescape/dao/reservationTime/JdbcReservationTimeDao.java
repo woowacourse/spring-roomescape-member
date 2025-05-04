@@ -33,20 +33,20 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public ReservationTime create(final ReservationTime reservationTime) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        final SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
 
-        Map<String, Object> parameters = new HashMap<>(Map.of(
+        final Map<String, Object> parameters = new HashMap<>(Map.of(
                 "start_at", reservationTime.getStartAt()));
 
-        Number key = jdbcInsert.executeAndReturnKey(parameters);
+        final Number key = jdbcInsert.executeAndReturnKey(parameters);
         return new ReservationTime(key.longValue(), reservationTime.getStartAt());
     }
 
     @Override
-    public boolean deleteIfNoReservation(long id) {
-        String sql = """
+    public boolean deleteIfNoReservation(final long id) {
+        final String sql = """
                 DELETE FROM reservation_time rt 
                 WHERE rt.id = ? 
                 AND NOT EXISTS (
@@ -80,9 +80,9 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+    public boolean existsById(final Long id) {
+        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 }

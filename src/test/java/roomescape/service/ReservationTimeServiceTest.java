@@ -48,13 +48,13 @@ class ReservationTimeServiceTest {
     void findAllByDateAndThemeTest() {
 
         // given
-        LocalDate date = LocalDate.now();
-        List<ReservationTime> reservationTimes = List.of(new ReservationTime(1L, LocalTime.of(10, 10)));
+        final LocalDate date = LocalDate.now();
+        final List<ReservationTime> reservationTimes = List.of(new ReservationTime(1L, LocalTime.of(10, 10)));
         when(reservationTimeDao.findAllReservedByThemeAndDate(1L, date)).thenReturn(reservationTimes);
         when(reservationTimeDao.findAll()).thenReturn(reservationTimes);
 
         // when
-        List<ReservationTimeUserResponse> reservationTimeUserResponses = reservationTimeService.findAllByDateAndTheme(
+        final List<ReservationTimeUserResponse> reservationTimeUserResponses = reservationTimeService.findAllByDateAndTheme(
                 1L, date);
 
         // then

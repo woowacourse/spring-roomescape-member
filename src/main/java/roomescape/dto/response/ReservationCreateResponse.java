@@ -13,7 +13,7 @@ public record ReservationCreateResponse(
         ThemeCreateResponse theme
 ) {
 
-    public static ReservationCreateResponse from(Reservation reservation) {
+    public static ReservationCreateResponse from(final Reservation reservation) {
         return new ReservationCreateResponse(reservation.getId(), reservation.getName(), reservation.getDate(),
                 ReservationTimeCreateResponse.from(reservation.getTime()),
                 ThemeCreateResponse.from(reservation.getTheme()));

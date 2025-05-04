@@ -28,15 +28,15 @@ public class ThemeService {
     }
 
     public Theme findById(final Long id) {
-        Optional<Theme> theme = themeDao.findById(id);
+        final Optional<Theme> theme = themeDao.findById(id);
         if (theme.isEmpty()) {
             throw new NoSuchElementException("테마가 존재하지 않습니다.");
         }
         return theme.get();
     }
 
-    public ThemeCreateResponse create(ThemeCreateRequest themeCreateRequest) {
-        Theme theme = new Theme(
+    public ThemeCreateResponse create(final ThemeCreateRequest themeCreateRequest) {
+        final Theme theme = new Theme(
                 themeCreateRequest.name(),
                 themeCreateRequest.description(),
                 themeCreateRequest.thumbnail());
@@ -54,7 +54,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
-        LocalDate today = LocalDate.now();
+        final LocalDate today = LocalDate.now();
         return themeDao.findPopularThemesInRecentSevenDays(today.minusDays(7), today.minusDays(1)).stream()
                 .map(ThemeResponse::from)
                 .toList();

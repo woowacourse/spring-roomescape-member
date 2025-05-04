@@ -26,7 +26,7 @@ public class ReservationTimeIntegrationTest {
     @DisplayName("예약 시간을 추가한다.")
     @Test
     void addReservationTimeTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
@@ -40,7 +40,7 @@ public class ReservationTimeIntegrationTest {
     @DisplayName("특정 테마, 날짜에 대한 예약 시간 목록을 조회한다.")
     @Test
     void findAllByDateAndThemeTest() {
-        Map<String, Object> reservationTime = new HashMap<>();
+        final Map<String, Object> reservationTime = new HashMap<>();
         reservationTime.put("startAt", LocalTime.now().plusHours(1).format(DateTimeFormatter.ofPattern("HH:mm")));
 
         RestAssured.given().log().all()
@@ -50,7 +50,7 @@ public class ReservationTimeIntegrationTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Map<String, Object> theme = new HashMap<>();
+        final Map<String, Object> theme = new HashMap<>();
         theme.put("name", "test");
         theme.put("description", "test");
         theme.put("thumbnail", "test");
@@ -62,7 +62,7 @@ public class ReservationTimeIntegrationTest {
                 .then().log().all()
                 .statusCode(201);
 
-        Map<String, Object> reservation = new HashMap<>();
+        final Map<String, Object> reservation = new HashMap<>();
 
         reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1).toString());
@@ -89,7 +89,7 @@ public class ReservationTimeIntegrationTest {
     @DisplayName("예약 시간 목록을 조회한다")
     @Test
     void findAllReservationTimeTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
@@ -109,7 +109,7 @@ public class ReservationTimeIntegrationTest {
     @DisplayName("예약 시간을 삭제한다.")
     @Test
     void deleteReservationTimeTest() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
         RestAssured.given().log().all()

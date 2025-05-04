@@ -36,15 +36,15 @@ class JdbcReservationDaoTest {
     void addTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Theme theme = new Theme("test", "test", "test");
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        Reservation reservation = Reservation.create("체체", LocalDate.now(),
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final Theme theme = new Theme("test", "test", "test");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation reservation = Reservation.create("체체", LocalDate.now(),
                 savedReservationTime, savedTheme);
 
         // when
-        Reservation savedReservation = jdbcReservationDao.create(reservation);
+        final Reservation savedReservation = jdbcReservationDao.create(reservation);
 
         // then
         assertThat(savedReservation.getName()).isEqualTo("체체");
@@ -55,19 +55,19 @@ class JdbcReservationDaoTest {
     void findAllTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Theme theme = new Theme("test", "test", "test");
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        Reservation reservation1 = Reservation.create("체체", LocalDate.now(),
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final Theme theme = new Theme("test", "test", "test");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation reservation1 = Reservation.create("체체", LocalDate.now(),
                 savedReservationTime, savedTheme);
-        Reservation reservation2 = Reservation.create("체체", LocalDate.now(),
+        final Reservation reservation2 = Reservation.create("체체", LocalDate.now(),
                 savedReservationTime, savedTheme);
         jdbcReservationDao.create(reservation1);
         jdbcReservationDao.create(reservation2);
 
         // when
-        List<Reservation> reservations = jdbcReservationDao.findAll();
+        final List<Reservation> reservations = jdbcReservationDao.findAll();
         System.out.println(reservations.getFirst().getName());
 
         // then
@@ -79,17 +79,17 @@ class JdbcReservationDaoTest {
     void deleteTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Theme theme = new Theme("test", "test", "test");
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        Reservation reservation = Reservation.create("체체", LocalDate.now(),
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final Theme theme = new Theme("test", "test", "test");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation reservation = Reservation.create("체체", LocalDate.now(),
                 savedReservationTime, savedTheme);
-        Reservation savedReservation = jdbcReservationDao.create(reservation);
+        final Reservation savedReservation = jdbcReservationDao.create(reservation);
 
         // when
         jdbcReservationDao.delete(savedReservation.getId());
-        List<Reservation> reservations = jdbcReservationDao.findAll();
+        final List<Reservation> reservations = jdbcReservationDao.findAll();
 
         // then
         assertThat(reservations.size()).isEqualTo(0);
@@ -100,16 +100,17 @@ class JdbcReservationDaoTest {
     void findByThemeAndDateAndTimeTest() {
 
         //given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Theme theme = new Theme("test", "test", "test");
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        Reservation reservation = Reservation.create("체체", LocalDate.now(),
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final Theme theme = new Theme("test", "test", "test");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation reservation = Reservation.create("체체", LocalDate.now(),
                 savedReservationTime, savedTheme);
-        Reservation savedReservation = jdbcReservationDao.create(reservation);
+        final Reservation savedReservation = jdbcReservationDao.create(reservation);
 
         // when
-        Optional<Reservation> optionalReservation = jdbcReservationDao.findByThemeAndDateAndTime(savedReservation);
+        final Optional<Reservation> optionalReservation = jdbcReservationDao.findByThemeAndDateAndTime(
+                savedReservation);
 
         // then
         assertAll(

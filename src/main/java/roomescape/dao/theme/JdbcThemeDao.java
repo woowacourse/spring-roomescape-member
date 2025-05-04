@@ -40,21 +40,21 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public Theme create(final Theme theme) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        final SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
 
-        Map<String, Object> parameters = new HashMap<>(Map.of(
+        final Map<String, Object> parameters = new HashMap<>(Map.of(
                 "name", theme.getName(),
                 "description", theme.getDescription(),
                 "thumbnail", theme.getThumbnail()));
 
-        Number key = jdbcInsert.executeAndReturnKey(parameters);
+        final Number key = jdbcInsert.executeAndReturnKey(parameters);
         return new Theme(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
-    public boolean deleteIfNoReservation(long id) {
+    public boolean deleteIfNoReservation(final long id) {
         final String sql = """
                 DELETE FROM theme t 
                 WHERE t.id = ? 
@@ -68,7 +68,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopularThemesInRecentSevenDays(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findPopularThemesInRecentSevenDays(final LocalDate startDate, final LocalDate endDate) {
         final String sql = """
                 SELECT th.id, th.name, th.description, th.thumbnail
                 FROM theme th
@@ -85,9 +85,9 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM theme WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+    public boolean existsById(final Long id) {
+        final String sql = "SELECT COUNT(*) FROM theme WHERE id = ?";
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 }

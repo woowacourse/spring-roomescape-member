@@ -68,16 +68,16 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public Reservation create(final Reservation reservation) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        final SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
 
-        Map<String, Object> parameters = new HashMap<>(Map.of(
+        final Map<String, Object> parameters = new HashMap<>(Map.of(
                 "name", reservation.getName(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()));
-        Number key = jdbcInsert.executeAndReturnKey(parameters);
+        final Number key = jdbcInsert.executeAndReturnKey(parameters);
         return Reservation.load(key.longValue(), reservation.getName(), reservation.getDate(), reservation.getTime(),
                 reservation.getTheme());
     }
@@ -113,9 +113,9 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+    public boolean existsById(final Long id) {
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 }

@@ -25,10 +25,10 @@ public record ReservationCreateRequest(
         }
     }
 
-    private void validateDateFormat(String date) {
+    private void validateDateFormat(final String date) {
         try {
             LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
+        } catch (final DateTimeParseException e) {
             throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식으로 입력해주세요.");
         }
     }

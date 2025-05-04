@@ -24,10 +24,10 @@ public record ReservationTimeCreateRequest(
         }
     }
 
-    private void validateTimeFormat(String startAt) {
+    private void validateTimeFormat(final String startAt) {
         try {
             LocalTime.parse(startAt, DateTimeFormatter.ofPattern("HH:mm"));
-        } catch (DateTimeParseException e) {
+        } catch (final DateTimeParseException e) {
             throw new IllegalArgumentException("예약 시간 형식은 HH:mm 입니다.");
         }
     }

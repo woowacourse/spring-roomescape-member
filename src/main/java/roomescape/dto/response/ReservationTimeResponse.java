@@ -12,7 +12,7 @@ public record ReservationTimeResponse(
         LocalTime startAt
 ) {
 
-    public static ReservationTimeResponse from(ReservationTime time) {
+    public static ReservationTimeResponse from(final ReservationTime time) {
         return new ReservationTimeResponse(time.getId(), time.getStartAt());
     }
 }

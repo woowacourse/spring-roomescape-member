@@ -33,10 +33,10 @@ class JdbcReservationTimeDaoTest {
     void addTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
 
         // when
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
 
         // then
         assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 10));
@@ -47,13 +47,13 @@ class JdbcReservationTimeDaoTest {
     void findAllTest() {
 
         // given
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.of(10, 10));
+        final ReservationTime reservationTime1 = new ReservationTime(LocalTime.of(10, 10));
         jdbcReservationTimeDao.create(reservationTime1);
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.of(11, 10));
+        final ReservationTime reservationTime2 = new ReservationTime(LocalTime.of(11, 10));
         jdbcReservationTimeDao.create(reservationTime2);
 
         // when
-        List<ReservationTime> reservationTimes = jdbcReservationTimeDao.findAll();
+        final List<ReservationTime> reservationTimes = jdbcReservationTimeDao.findAll();
 
         // then
         assertThat(reservationTimes.size()).isEqualTo(2);
@@ -64,11 +64,11 @@ class JdbcReservationTimeDaoTest {
     void deleteIfNoExistReservationReturnTrueTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
 
         // when
-        boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
+        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
 
         // then
         assertThat(result).isTrue();
@@ -79,15 +79,15 @@ class JdbcReservationTimeDaoTest {
     void deleteIfExistReservationReturnFalseTest() {
 
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Theme theme = new Theme("test", "test", "test");
-        Theme savedTheme = jdbcThemeDao.create(theme);
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final Theme theme = new Theme("test", "test", "test");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
         jdbcReservationDao.create(
                 Reservation.create("test", LocalDate.now(), savedReservationTime, savedTheme));
 
         // when
-        boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
+        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
 
         // then
         assertThat(result).isFalse();
@@ -98,16 +98,16 @@ class JdbcReservationTimeDaoTest {
     void findByIdAndDateAndThemeTest() {
 
         // given
-        LocalTime time = LocalTime.of(10, 10);
-        LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = new Theme("test", "test", "test");
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
-        Reservation savedReservation = jdbcReservationDao.create(reservation);
+        final LocalTime time = LocalTime.of(10, 10);
+        final LocalDate date = LocalDate.now().plusDays(1);
+        final Theme theme = new Theme("test", "test", "test");
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
+        final Reservation savedReservation = jdbcReservationDao.create(reservation);
 
         // when
-        List<ReservationTime> optionalReservationTime = jdbcReservationTimeDao.findAllReservedByThemeAndDate(
+        final List<ReservationTime> optionalReservationTime = jdbcReservationTimeDao.findAllReservedByThemeAndDate(
                 savedTheme.getId(), date);
 
         // then

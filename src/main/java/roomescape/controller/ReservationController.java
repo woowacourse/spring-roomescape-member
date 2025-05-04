@@ -29,7 +29,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(final ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
@@ -77,10 +77,10 @@ public class ReservationController {
                     required = true,
                     content = @Content(schema = @Schema(implementation = ReservationCreateRequest.class))
             )
-            @RequestBody ReservationCreateRequest reservationCreateRequest) {
-        ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest);
+            @RequestBody final ReservationCreateRequest reservationCreateRequest) {
+        final ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest);
 
-        URI location = ServletUriComponentsBuilder
+        final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(reservationCreateResponse.id())
@@ -104,7 +104,7 @@ public class ReservationController {
             }
     )
     public ResponseEntity<Void> delete(
-            @Parameter(description = "삭제할 예약 ID") @PathVariable Long id) {
+            @Parameter(description = "삭제할 예약 ID") final @PathVariable Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }

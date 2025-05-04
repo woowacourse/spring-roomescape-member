@@ -29,7 +29,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(final ThemeService themeService) {
+    public ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -73,10 +73,10 @@ public class ThemeController {
                     required = true,
                     content = @Content(schema = @Schema(implementation = ThemeCreateRequest.class))
             )
-            @RequestBody ThemeCreateRequest themeCreateRequest) {
-        ThemeCreateResponse themeCreateResponse = themeService.create(themeCreateRequest);
+            @RequestBody final ThemeCreateRequest themeCreateRequest) {
+        final ThemeCreateResponse themeCreateResponse = themeService.create(themeCreateRequest);
 
-        URI location = ServletUriComponentsBuilder
+        final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(themeCreateResponse.id())
@@ -104,7 +104,7 @@ public class ThemeController {
             }
     )
     public ResponseEntity<Void> delete(
-            @Parameter(description = "삭제할 테마 ID") @PathVariable Long id) {
+            @Parameter(description = "삭제할 테마 ID") @PathVariable final Long id) {
         themeService.deleteIfNoReservation(id);
         return ResponseEntity.noContent().build();
     }
