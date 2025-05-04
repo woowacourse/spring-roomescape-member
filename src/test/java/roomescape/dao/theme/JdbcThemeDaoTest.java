@@ -114,7 +114,7 @@ class JdbcThemeDaoTest {
         );
     }
 
-    @DisplayName("")
+    @DisplayName("최근 일주일의 인기 테마를 가져온다.")
     @Test
     void findPopularThemesInRecentSevenDaysTest() {
 
@@ -137,5 +137,24 @@ class JdbcThemeDaoTest {
 
         // then
         assertThat(themes.getFirst()).isEqualTo(savedPopularTheme);
+    }
+
+    @DisplayName("데이터베이스에 존재할 경우 true를 반환한다.")
+    @Test
+    void existsByIdReturnTrueTest() {
+
+        // given
+        final Theme savedTheme = jdbcThemeDao.create(new Theme("test", "test", "test"));
+
+        // when & then
+        assertThat(jdbcThemeDao.existsById(savedTheme.getId())).isTrue();
+    }
+
+    @DisplayName("데이터베이스에 존재하지 않을 경우 false를 반환한다.")
+    @Test
+    void nonExistsByIdReturnFalseTest() {
+
+        // when & then
+        assertThat(jdbcThemeDao.existsById(1L)).isFalse();
     }
 }

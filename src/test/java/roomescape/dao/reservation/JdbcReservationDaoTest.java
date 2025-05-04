@@ -118,4 +118,29 @@ class JdbcReservationDaoTest {
                 () -> assertThat(optionalReservation.get()).isEqualTo(savedReservation)
         );
     }
+
+    @DisplayName("데이터베이스에 존재할 경우 true를 반환한다.")
+    @Test
+    void existsByIdReturnTrueTest() {
+
+        // given
+        final LocalDate date = LocalDate.now().plusDays(1);
+        final LocalTime time = LocalTime.of(10, 10);
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+        final Theme theme = new Theme("test", "test", "test");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation savedReservation = jdbcReservationDao.create(
+                Reservation.create("체체", date, savedReservationTime, savedTheme));
+
+        // when & then
+        assertThat(jdbcReservationTimeDao.existsById(savedReservation.getId())).isTrue();
+    }
+
+    @DisplayName("데이터베이스에 존재하지 않을 경우 false를 반환한다.")
+    @Test
+    void nonExistsByIdReturnFalseTest() {
+
+        // when & then
+        assertThat(jdbcReservationDao.existsById(1L)).isFalse();
+    }
 }

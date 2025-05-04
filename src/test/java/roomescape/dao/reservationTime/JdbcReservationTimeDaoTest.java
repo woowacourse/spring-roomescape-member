@@ -95,7 +95,7 @@ class JdbcReservationTimeDaoTest {
 
     @DisplayName("데이터베이스에서 id, 테마, 날짜로 시간을 찾는다.")
     @Test
-    void findByIdAndDateAndThemeTest() {
+    void findAllReservedByThemeAndDateTest() {
 
         // given
         final LocalTime time = LocalTime.of(10, 10);
@@ -114,5 +114,25 @@ class JdbcReservationTimeDaoTest {
         assertAll(
                 () -> assertThat(optionalReservationTime.getFirst()).isEqualTo(savedReservationTime)
         );
+    }
+
+    @DisplayName("데이터베이스에 존재할 경우 true를 반환한다.")
+    @Test
+    void existsByIdReturnTrueTest() {
+
+        // given
+        final LocalTime time = LocalTime.of(10, 10);
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+
+        // when & then
+        assertThat(jdbcReservationTimeDao.existsById(savedReservationTime.getId())).isTrue();
+    }
+
+    @DisplayName("데이터베이스에 존재하지 않을 경우 false를 반환한다.")
+    @Test
+    void nonExistsByIdReturnFalseTest() {
+
+        // when & then
+        assertThat(jdbcReservationTimeDao.existsById(1L)).isFalse();
     }
 }
