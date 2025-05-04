@@ -21,16 +21,16 @@ public class ReservationTime {
         this(NON_SAVED_STATUS, startAt);
     }
 
-    private void validate(final LocalTime startAt) {
-        if (startAt == null) {
-            throw new InvalidInputException("시간은 빈 값이 입력될 수 없습니다");
-        }
-    }
-
     public boolean validatePastTime() {
         final LocalTime currentTime = LocalTime.now();
 
         return startAt.isBefore(currentTime);
+    }
+
+    private void validate(final LocalTime startAt) {
+        if (startAt == null) {
+            throw new InvalidInputException("시간은 빈 값이 입력될 수 없습니다");
+        }
     }
 
     public long getId() {
