@@ -37,6 +37,7 @@ public class RoomThemeController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<RoomThemeResponse> findAllThemes() {
         return roomThemeService.findAllThemes()
                 .stream()
@@ -45,6 +46,7 @@ public class RoomThemeController {
     }
 
     @GetMapping("/popular")
+    @ResponseStatus(HttpStatus.OK)
     public List<PopularThemeResponse> findPopularThemes() {
         return roomThemeService.findPopularThemes()
                 .stream()

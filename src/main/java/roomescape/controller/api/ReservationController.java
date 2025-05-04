@@ -36,6 +36,7 @@ public class ReservationController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<ReservationResponse> findAllReservations() {
         return reservationService.findAllReservations()
                 .stream()

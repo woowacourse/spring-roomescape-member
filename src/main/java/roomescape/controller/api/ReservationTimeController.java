@@ -32,8 +32,7 @@ public class ReservationTimeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse addReservationTime(
-            @RequestBody CreateReservationTimeRequest request) {
+    public ReservationTimeResponse addReservationTime(@RequestBody CreateReservationTimeRequest request) {
         final ReservationTimeCreation creation = ReservationTimeCreation.from(request);
 
         final ReservationTime savedReservationTime = reservationTimeService.addReservationTime(creation);
@@ -41,6 +40,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<ReservationTimeResponse> findAllReservationTimes() {
         return reservationTimeService.findAllReservationTimes()
                 .stream()
@@ -49,6 +49,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/avaliable")
+    @ResponseStatus(HttpStatus.OK)
     public List<AvailableReservationTimeResponse> findAvailableTime(@RequestParam(value = "date") LocalDate date,
                                                                     @RequestParam(value = "themeId") long themeId) {
         List<AvailableReservationTime> availableReservationTimes
