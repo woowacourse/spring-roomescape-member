@@ -15,7 +15,6 @@ import roomescape.presentation.dto.ReservationTimeRequestDto;
 import roomescape.presentation.dto.ReservationTimeResponseDto;
 
 @Service
-@Transactional
 public class ReservationTimeService {
 
     private final ReservationRepository reservationRepository;
@@ -45,10 +44,12 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAvailableTimes(date, themeId);
     }
 
+    @Transactional
     public Long createTime(ReservationTimeRequestDto reservationTimeRequestDto) {
         return reservationTimeRepository.add(new ReservationTime(reservationTimeRequestDto.startAt()));
     }
 
+    @Transactional
     public void deleteTimeById(Long timeId) {
         if (reservationRepository.existsByTimeId(timeId)) {
             throw new ReservationTimeException("해당 시간의 예약이 존재하여 시간을 삭제할 수 없습니다.");

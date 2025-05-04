@@ -18,7 +18,6 @@ import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
 
 @Service
-@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -47,6 +46,7 @@ public class ReservationService {
         return ReservationMapper.toResponse(reservation);
     }
 
+    @Transactional
     public Long createReservation(ReservationRequestDto reservationDto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationDto.timeId())
                 .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
