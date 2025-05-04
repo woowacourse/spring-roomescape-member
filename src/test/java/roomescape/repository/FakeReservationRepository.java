@@ -15,14 +15,10 @@ import roomescape.domain.Theme;
 public class FakeReservationRepository implements ReservationRepository {
 
     private final List<Reservation> reservations;
-    private final List<ReservationTime> reservationTimes;
-    private final List<Theme> themes;
     private final AtomicLong reservationId = new AtomicLong(1);
 
     public FakeReservationRepository(final List<Reservation> reservations) {
         this.reservations = reservations;
-        this.reservationTimes = new ArrayList<>();
-        this.themes = new ArrayList<>();
     }
 
     @Override
@@ -60,14 +56,12 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByThemeId(long themeId) {
-        return themes.stream()
-                .anyMatch(theme -> Objects.equals(theme.id(), themeId));
+        return reservations.stream().anyMatch(reservation -> Objects.equals(reservation.getTheme().id(), themeId));
     }
 
     @Override
     public boolean existsByTimeId(long timeId) {
-        return reservationTimes.stream()
-                .anyMatch(reservationTime -> Objects.equals(reservationTime.id(), timeId));
+        return reservations.stream().anyMatch(reservation -> Objects.equals(reservation.getTime().id(), timeId));
     }
 
     @Override
