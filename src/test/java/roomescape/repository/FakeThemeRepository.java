@@ -67,7 +67,7 @@ public class FakeThemeRepository implements ThemeRepository {
         Theme deleteTheme = themes.stream()
                 .filter(theme -> Objects.equals(theme.getId(), id))
                 .findFirst()
-                .orElse(new Theme(null, "A", "b", "c"));
+                .orElse(new Theme(null, "A", "b", "http://"));
 
         if (deleteTheme.getId() != null) {
             if (reservations.stream()

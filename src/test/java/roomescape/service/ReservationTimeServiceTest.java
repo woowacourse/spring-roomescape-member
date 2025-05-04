@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,7 +14,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationTimeCreateRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
-import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -82,7 +79,7 @@ class ReservationTimeServiceTest {
             reservationTimeService.createReservationTime(new ReservationTimeCreateRequestDto(LocalTime.of(11, 0)));
 
             ReservationTime reservationTime = reservationTimeRepository.findById(1L).get();
-            Theme theme = new Theme(1L, "ABC","DEF","GHI");
+            Theme theme = new Theme(1L, "ABC","DEF","http://");
             Reservation reservation = new Reservation(1L, "가이온", LocalDate.now().plusDays(1), reservationTime, theme);
             reservationRepository.save(reservation);
 

@@ -38,7 +38,7 @@ class ThemeServiceTest {
 
             themeService = new ThemeService(themeRepository);
 
-            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
+            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "http://가이온_코딩중.png");
             ThemeResponseDto responseDto = themeService.createTheme(requestDto);
 
             Long id = responseDto.id();
@@ -50,7 +50,7 @@ class ThemeServiceTest {
                     () -> assertThat(id).isEqualTo(1L),
                     () -> assertThat(name).isEqualTo("테마 가이온"),
                     () -> assertThat(description).isEqualTo("가이온이 코딩을 합니다"),
-                    () -> assertThat(thumbnail).isEqualTo("가이온_코딩중.png")
+                    () -> assertThat(thumbnail).isEqualTo("http://가이온_코딩중.png")
             );
         }
 
@@ -60,8 +60,8 @@ class ThemeServiceTest {
 
             themeService = new ThemeService(themeRepository);
 
-            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
-            ThemeCreateRequestDto invalidRequestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "가이온_코딩중.png");
+            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "http://가이온_코딩중.png");
+            ThemeCreateRequestDto invalidRequestDto = new ThemeCreateRequestDto("테마 가이온", "가이온이 코딩을 합니다", "http://가이온_코딩중.png");
             themeService.createTheme(requestDto);
 
             assertThatThrownBy(() -> themeService.createTheme(invalidRequestDto)).isInstanceOf(DuplicateContentException.class);
@@ -73,9 +73,9 @@ class ThemeServiceTest {
     class FindTheme {
 
         private final FakeThemeRepository themeRepository = new FakeThemeRepository(new ArrayList<>(List.of(
-                new Theme(1L, "a", "a", "a"),
-                new Theme(2L, "b", "b", "b"),
-                new Theme(3L, "c", "c", "c")
+                new Theme(1L, "a", "a", "http://"),
+                new Theme(2L, "b", "b", "http://"),
+                new Theme(3L, "c", "c", "http://")
         )));
 
         @DisplayName("모든 Theme을 조회할 수 있다")
@@ -120,7 +120,7 @@ class ThemeServiceTest {
         void deleteThemeByIdTest() {
             themeService = new ThemeService(themeRepository);
 
-            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("a", "a", "a");
+            ThemeCreateRequestDto requestDto = new ThemeCreateRequestDto("a", "a", "http://");
             ThemeResponseDto responseDto = themeService.createTheme(requestDto);
 
             themeService.deleteThemeById(responseDto.id());
