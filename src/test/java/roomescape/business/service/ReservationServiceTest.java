@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -16,7 +16,6 @@ import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationDao;
 import roomescape.business.model.repository.ReservationTimeDao;
 import roomescape.business.model.repository.ThemeDao;
-import roomescape.business.service.ReservationService;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.AvailableReservationTimeResponse;
 import roomescape.presentation.dto.response.ReservationResponse;

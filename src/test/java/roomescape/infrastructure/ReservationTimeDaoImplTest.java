@@ -1,4 +1,4 @@
-package roomescape.repository;
+package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -15,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationTimeDao;
-import roomescape.infrastructure.ReservationTimeDaoImpl;
 
 @JdbcTest
 @ActiveProfiles("test")
