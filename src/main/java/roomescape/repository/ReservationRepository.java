@@ -1,14 +1,13 @@
 package roomescape.repository;
 
 import java.util.List;
-import roomescape.dto.ReservationValuesDto;
 import roomescape.model.Reservation;
 
 public interface ReservationRepository {
 
     List<Reservation> getAllReservations();
 
-    Reservation addReservation(ReservationValuesDto reservationValuesDto);
+    Reservation addReservation(Reservation reservation);
 
     void deleteReservation(Long id);
 

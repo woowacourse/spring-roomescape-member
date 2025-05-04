@@ -1,10 +1,10 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequestDto;
-import roomescape.dto.ReservationValuesDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
@@ -39,23 +39,18 @@ public class ReservationService {
                 reservationRequestDto.date(), reservationTime);
 
         validateFutureDateTime(reservationDateTime);
-        Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
-        Reservation reservation = reservationRequestDto.toEntity(null, reservationTime, theme);
-        ReservationValuesDto reservationValuesDto = ReservationValuesDto.of(reservation);
 
-        validateUniqueReservation(reservationValuesDto);
-
-        return reservationRepository.addReservation(reservationValuesDto);
-    }
-
-    private void validateUniqueReservation(final ReservationValuesDto reservationValuesDto) {
-        if (reservedChecker.contains(reservationValuesDto)) {
+        if (isAlreadyExist(reservationDateTime.getDate(), reservationRequestDto.timeId(),
+                reservationRequestDto.themeId())) {
             throw new IllegalArgumentException("Reservation already exists");
         }
+
+        Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
+
+        return reservationRepository.addReservation(reservationRequestDto.toEntity(null, reservationTime, theme));
     }
 
     public void deleteReservation(long id) {
-
         reservationRepository.deleteReservation(id);
     }
 
@@ -68,5 +63,8 @@ public class ReservationService {
         }
     }
 
+    private boolean isAlreadyExist(LocalDate reservationDate, Long timeId, Long themeId) {
+        return reservedChecker.contains(reservationDate, timeId, themeId);
+    }
 
 }
