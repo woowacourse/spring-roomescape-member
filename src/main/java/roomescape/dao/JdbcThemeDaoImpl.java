@@ -69,18 +69,17 @@ public class JdbcThemeDaoImpl implements ThemeDao {
 
     @Override
     public List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate) {
-        System.out.println(startDate);
-        System.out.println(currentDate);
         String query = """
                 SELECT id, name, description, thumbnail
-                FROM
-                (
-                    SELECT theme_id, COUNT(*) AS reservation_count
-                    FROM reservation
-                    WHERE date >= ? AND date <= ?
-                    GROUP BY theme_id
-                ) AS sub
-                INNER JOIN theme ON sub.theme_id = theme.id;     
+                        FROM (
+                            SELECT theme_id, COUNT(*) AS reservation_count
+                            FROM reservation
+                            WHERE date >= ? AND date <= ?
+                            GROUP BY theme_id
+                        ) AS sub
+                        INNER JOIN theme ON sub.theme_id = theme.id
+                        ORDER BY sub.reservation_count DESC
+                        LIMIT 10
                 """;
 
         return jdbcTemplate.query(query,
