@@ -23,7 +23,7 @@ class ReservationTimeTest {
     @Test
     void validatePastTimeTest1() {
         // given
-        LocalTime pastTime = LocalTime.now().minusHours(1);
+        LocalTime pastTime = LocalTime.now().minusMinutes(1);
         ReservationTime reservationTime = new ReservationTime(pastTime);
 
         // when // then
@@ -34,8 +34,8 @@ class ReservationTimeTest {
     @Test
     void validatePastTimeTest2() {
         // given
-        LocalTime pastTime = LocalTime.now().plusHours(1);
-        ReservationTime reservationTime = new ReservationTime(pastTime);
+        LocalTime futureTime = LocalTime.now().plusMinutes(1);
+        ReservationTime reservationTime = new ReservationTime(futureTime);
 
         // when // then
         assertThat(reservationTime.validatePastTime()).isFalse();
