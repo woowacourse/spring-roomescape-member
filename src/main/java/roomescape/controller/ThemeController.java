@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -27,15 +28,15 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<Theme> create(@RequestBody ThemeCreateRequest themeCreateRequest) {
-        Theme createdTheme = themeService.createTheme(themeCreateRequest);
-        URI location = URI.create("/themes/" + createdTheme.getId());
-        return ResponseEntity.created(location).body(createdTheme);
+    public ResponseEntity<ThemeResponse> create(@RequestBody ThemeCreateRequest themeCreateRequest) {
+        ThemeResponse response = themeService.createTheme(themeCreateRequest);
+        URI location = URI.create("/themes/" + response.id());
+        return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> read() {
-        List<Theme> themes = themeService.findAll();
+    public ResponseEntity<List<ThemeResponse>> read() {
+        List<ThemeResponse> themes = themeService.findAll();
         return ResponseEntity.ok(themes);
     }
 
@@ -47,7 +48,7 @@ public class ThemeController {
 
     // [리뷰어님에게] 리스트를 생성하는 필터 조건을 파라미터로 전달할 수 있도록 설계함. (프론트엔드와의 협업 필요, 따라서 현재는 파라미터 고정)
     @GetMapping("/lists")
-    public ResponseEntity<List<Theme>> readLists(
+    public ResponseEntity<List<ThemeResponse>> readLists(
             @RequestParam(value = "order_type", required = false) String orderType,
             @RequestParam(value = "list_num", required = false) Long listNum
     ) {
@@ -55,7 +56,7 @@ public class ThemeController {
         // TODO: 정렬 조건을 ENUM으로 관리하기.
         orderType = "popular_desc"; // 현재는 내림차순으로 고정
         listNum = 10L;
-        List<Theme> listedTheme = themeService.findLimitedThemesByPopularDesc(orderType, listNum);
+        List<ThemeResponse> listedTheme = themeService.findLimitedThemesByPopularDesc(orderType, listNum);
         return ResponseEntity.ok(listedTheme);
     }
 }

@@ -1,10 +1,12 @@
 package roomescape.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
+import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -17,23 +19,34 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme createTheme(ThemeCreateRequest request) {
-        return themeRepository.save(request.toTheme());
+    public ThemeResponse createTheme(ThemeCreateRequest request) {
+        Theme saved = themeRepository.save(request.toTheme());
+        return ThemeResponse.from(saved);
     }
 
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
+    public List<ThemeResponse> findAll() {
+        List<Theme> themes = themeRepository.findAll();
+        return toThemeResponses(themes);
     }
 
     public void deleteThemeById(Long id) {
         themeRepository.deleteById(id);
     }
 
-    public List<Theme> findLimitedThemesByPopularDesc(String orderType, Long listNum) {
+    public List<ThemeResponse> findLimitedThemesByPopularDesc(String orderType, Long listNum) {
+        List<Theme> themes;
         if (orderType.equals("popular_desc")) {
-            return themeRepository.findTopByReservationCountDesc(listNum);
+            themes = themeRepository.findTopByReservationCountDesc(listNum);
+            return toThemeResponses(themes);
         }
 
-        return themeRepository.findTopByReservationCountAsc(listNum);
+        themes = themeRepository.findTopByReservationCountDesc(listNum);
+        return toThemeResponses(themes);
+    }
+
+    private List<ThemeResponse> toThemeResponses(List<Theme> themes) {
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

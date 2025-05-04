@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
+import roomescape.dto.response.ThemeResponse;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -34,12 +35,12 @@ class ThemeServiceTest {
         themeService.createTheme(request);
 
         // then
-        List<Theme> themes = themeService.findAll();
+        List<ThemeResponse> themes = themeService.findAll();
         Assertions.assertAll(
                 () -> assertThat(themes).hasSize(1),
-                () -> assertThat(themes.getFirst().getName().equals(request.name())).isTrue(),
-                () -> assertThat(themes.getFirst().getDescription().equals(request.description())).isTrue(),
-                () -> assertThat(themes.getFirst().getThumbnail().equals(request.thumbnail())).isTrue()
+                () -> assertThat(themes.getFirst().name().equals(request.name())).isTrue(),
+                () -> assertThat(themes.getFirst().description().equals(request.description())).isTrue(),
+                () -> assertThat(themes.getFirst().thumbnail().equals(request.thumbnail())).isTrue()
         );
     }
 
@@ -52,17 +53,17 @@ class ThemeServiceTest {
         themeService.createTheme(request2);
 
         // when
-        List<Theme> themes = themeService.findAll();
+        List<ThemeResponse> themes = themeService.findAll();
 
         // then
         Assertions.assertAll(
                 () -> assertThat(themes).hasSize(2),
-                () -> assertThat(themes.get(0).getName().equals(request1.name())).isTrue(),
-                () -> assertThat(themes.get(0).getDescription().equals(request1.description())).isTrue(),
-                () -> assertThat(themes.get(0).getThumbnail().equals(request1.thumbnail())).isTrue(),
-                () -> assertThat(themes.get(1).getName().equals(request2.name())).isTrue(),
-                () -> assertThat(themes.get(1).getDescription().equals(request2.description())).isTrue(),
-                () -> assertThat(themes.get(1).getThumbnail().equals(request2.thumbnail())).isTrue()
+                () -> assertThat(themes.get(0).name().equals(request1.name())).isTrue(),
+                () -> assertThat(themes.get(0).description().equals(request1.description())).isTrue(),
+                () -> assertThat(themes.get(0).thumbnail().equals(request1.thumbnail())).isTrue(),
+                () -> assertThat(themes.get(1).name().equals(request2.name())).isTrue(),
+                () -> assertThat(themes.get(1).description().equals(request2.description())).isTrue(),
+                () -> assertThat(themes.get(1).thumbnail().equals(request2.thumbnail())).isTrue()
         );
     }
 
@@ -70,13 +71,13 @@ class ThemeServiceTest {
     void deleteThemeByIdTest() {
         // given
         ThemeCreateRequest request = new ThemeCreateRequest("Test Theme", "Test Description", "image.jpg");
-        Theme savedTheme = themeService.createTheme(request);
+        ThemeResponse savedTheme = themeService.createTheme(request);
 
         // when
-        themeService.deleteThemeById(savedTheme.getId());
+        themeService.deleteThemeById(savedTheme.id());
 
         // then
-        List<Theme> themes = themeService.findAll();
+        List<ThemeResponse> themes = themeService.findAll();
         Assertions.assertAll(
                 () -> assertThat(themes).hasSize(0)
         );
@@ -91,8 +92,8 @@ class ThemeServiceTest {
         themeService.createTheme(request2);
 
         // when
-        List<Theme> themesAsc = themeService.findLimitedThemesByPopularDesc("popular_asc", 10L);
-        List<Theme> themesDesc = themeService.findLimitedThemesByPopularDesc("popular_desc", 10L);
+        List<ThemeResponse> themesAsc = themeService.findLimitedThemesByPopularDesc("popular_asc", 10L);
+        List<ThemeResponse> themesDesc = themeService.findLimitedThemesByPopularDesc("popular_desc", 10L);
 
         // then
         Assertions.assertAll(
