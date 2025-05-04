@@ -46,7 +46,7 @@ public class Reservation {
 
     private void validateMaxNameLength(final String name) {
         if (name.length() > MAX_NAME_LENGTH) {
-            throw new OverMaxNameLengthException();
+            throw new UserNameLengthExceedException();
         }
     }
 

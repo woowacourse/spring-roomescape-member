@@ -3,9 +3,9 @@ package roomescape.business.model.entity;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.impl.NameContainsNumberException;
-import roomescape.exception.impl.OverMaxNameLengthException;
 import roomescape.exception.impl.PastDateException;
 import roomescape.exception.impl.ReservationBeforeStartException;
+import roomescape.exception.impl.UserNameLengthExceedException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,7 +27,7 @@ class ReservationTest {
             final String name = "dompoolemon";
 
             assertThatThrownBy(() -> Reservation.beforeSave(name, DATE, RESERVATION_TIME, THEME))
-                    .isInstanceOf(OverMaxNameLengthException.class);
+                    .isInstanceOf(UserNameLengthExceedException.class);
         }
 
         @Test
