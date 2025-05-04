@@ -39,7 +39,7 @@ public class ReservationTimeService {
 
     private void validateExistIdToDelete(final Long id) {
         if (reservationRepository.existByReservationTimeId(id)) {
-            throw new IllegalArgumentException("삭제할 수 없는 예약 시간입니다.");
+            throw new IllegalArgumentException("해당 시간에 예약이 존재해서 삭제할 수 없습니다.");
         }
     }
 
