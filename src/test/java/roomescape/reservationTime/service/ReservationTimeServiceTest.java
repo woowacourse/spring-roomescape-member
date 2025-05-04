@@ -21,8 +21,8 @@ import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDao;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.dto.AvailableReservationTimeRequest;
-import roomescape.reservationTime.dto.ReservationTimeRequest;
+import roomescape.reservationTime.dto.admin.ReservationTimeRequest;
+import roomescape.reservationTime.dto.user.AvailableReservationTimeRequest;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 
@@ -89,7 +89,7 @@ class ReservationTimeServiceTest {
 
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 해당 id의 시간이 존재하지 않습니다");
+                .hasMessage("[ERROR] 존재하지 않는 시간 아이디입니다");
     }
 
     @DisplayName("시간 내역을 삭제 시 이미 예약된 시간 아이디인 경우 예외를 발생시킨다")
