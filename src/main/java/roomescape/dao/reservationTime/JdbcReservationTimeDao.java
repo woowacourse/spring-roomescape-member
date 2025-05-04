@@ -92,7 +92,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
                 WHERE EXISTS (
                     SELECT 1
                     FROM reservation r
-                    WHERE r.theme_id = ? AND r.date = ?
+                    WHERE r.theme_id = ? AND r.date = ? AND r.time_id = rt.id
                 )
                 """;
         return jdbcTemplate.query(sql, reservationTimeMapper, themeId, date);

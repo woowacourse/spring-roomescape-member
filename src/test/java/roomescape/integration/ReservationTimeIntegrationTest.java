@@ -79,7 +79,7 @@ public class ReservationTimeIntegrationTest {
         // then
         RestAssured.given().log().all()
                 .param("theme-id", "1")
-                .param("date", LocalDate.now().toString())
+                .param("date", LocalDate.now().plusDays(1).toString())
                 .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)
