@@ -28,7 +28,7 @@ public class UserReservationTimeController {
             @RequestParam("themeId") Long themeId,
             @RequestParam("date") LocalDate date
     ) {
-        List<ReservationTimeServiceResponse> responses = userReservationTimeService.getAllByThemeIdAndDate(themeId, date);
+        List<ReservationTimeServiceResponse> responses = userReservationTimeService.getAllWithStatus(themeId, date);
         return responses.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();

@@ -16,7 +16,7 @@ public class UserReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public List<ReservationTimeServiceResponse> getAllByThemeIdAndDate(Long themeId, LocalDate date) {
+    public List<ReservationTimeServiceResponse> getAllWithStatus(Long themeId, LocalDate date) {
         List<ReservationTime> allTimes = reservationTimeRepository.getAll();
         List<ReservationTime> bookedTimes = reservationTimeRepository.getAllByThemeIdAndDate(themeId, date);
 
