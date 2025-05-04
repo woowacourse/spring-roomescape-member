@@ -1,4 +1,4 @@
-package roomescape.integrated;
+package roomescape.integration;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -16,7 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ThemeIntegratedTest {
+public class ThemeApiIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
