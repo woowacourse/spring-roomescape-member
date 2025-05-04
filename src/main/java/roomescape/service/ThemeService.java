@@ -17,23 +17,23 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme save(ThemeCreateRequest request) {
+    public Theme createTheme(ThemeCreateRequest request) {
         return themeRepository.save(request.toTheme());
     }
 
-    public List<Theme> read() {
-        return themeRepository.read();
+    public List<Theme> findAll() {
+        return themeRepository.findAll();
     }
 
-    public void delete(Long id) {
-        themeRepository.delete(id);
+    public void deleteThemeById(Long id) {
+        themeRepository.deleteById(id);
     }
 
-    public List<Theme> readLists(String orderType, Long listNum) {
+    public List<Theme> findLimitedThemesByPopularDesc(String orderType, Long listNum) {
         if (orderType.equals("popular_desc")) {
-            return themeRepository.readByDesc(listNum);
+            return themeRepository.findTopByReservationCountDesc(listNum);
         }
 
-        return themeRepository.readByAsc(listNum);
+        return themeRepository.findTopByReservationCountAsc(listNum);
     }
 }

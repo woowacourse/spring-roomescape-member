@@ -25,14 +25,14 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 .usingGeneratedKeyColumns("id");
     }
 
-    public ReservationTime saveReservationTime(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         Map<String, Object> parameters = Map.ofEntries(Map.entry("start_at", reservationTime.getStartAt()));
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
         return ReservationTime.generateWithPrimaryKey(reservationTime, generatedKey);
     }
 
-    public List<ReservationTime> readReservationTimes() {
+    public List<ReservationTime> findAll() {
         final String query = "SELECT id, start_at FROM reservation_time";
         List<ReservationTime> reservationTimes = jdbcTemplate.query(query,
                 (resultSet, rowNum) -> new ReservationTime(resultSet.getLong("id"),
@@ -41,7 +41,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         return reservationTimes;
     }
 
-    public Optional<ReservationTime> readReservationTime(Long timeId) {
+    public Optional<ReservationTime> findById(Long timeId) {
         final String query = "SELECT id, start_at FROM reservation_time WHERE id = ?";
 
         try {
@@ -54,7 +54,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }
     }
 
-    public void deleteReservationTime(Long id) {
+    public void deleteById(Long id) {
         final String query = "DELETE FROM reservation_time WHERE id = ?";
         int affectedRows = jdbcTemplate.update(query, id);
         if (affectedRows == 0) {
@@ -62,7 +62,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }
     }
 
-    public List<ReservationTime> findAvailableTimesBy(LocalDate localDate, Long themeId) {
+    public List<ReservationTime> findByReservationDateAndThemeId(LocalDate localDate, Long themeId) {
         final String query = """
                 SELECT id, start_at
                 FROM reservation_time

@@ -30,20 +30,20 @@ public class ReservationTimeController {
     // todo: ReservationTime Response 처리
     @PostMapping
     public ResponseEntity<ReservationTime> create(@RequestBody ReservationTimeCreateRequest reservationTimeCreateRequest) {
-        ReservationTime createdReservationTime = reservationTimeService.saveReservationTime(reservationTimeCreateRequest);
+        ReservationTime createdReservationTime = reservationTimeService.createReservationTime(reservationTimeCreateRequest);
         URI location = URI.create("/times/" + createdReservationTime.getId());
         return ResponseEntity.created(location).body(createdReservationTime);
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationTime>> read() {
-        List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
         return ResponseEntity.ok(reservationTimes);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationTimeService.deleteReservationTime(id);
+        reservationTimeService.deleteReservationTimeById(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -51,7 +51,7 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeResponseWithBookedStatus>> read(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) Long themeId) {
-        List<ReservationTimeResponseWithBookedStatus> response = reservationTimeService.readAvailableTimesBy(
+        List<ReservationTimeResponseWithBookedStatus> response = reservationTimeService.findAvailableReservationTimesByDateAndThemeId(
                 date, themeId);
         return ResponseEntity.ok(response);
     }

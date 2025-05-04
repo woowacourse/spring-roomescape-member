@@ -7,13 +7,13 @@ import roomescape.domain.ReservationTime;
 
 // todo: repository naming 고민
 public interface ReservationTimeRepository {
-    ReservationTime saveReservationTime(ReservationTime reservationTime);
+    ReservationTime save(ReservationTime reservationTime);
 
-    List<ReservationTime> readReservationTimes();
+    List<ReservationTime> findAll();
 
-    Optional<ReservationTime> readReservationTime(Long id);
+    Optional<ReservationTime> findById(Long id);
 
-    void deleteReservationTime(Long id);
+    void deleteById(Long id);
 
-    List<ReservationTime> findAvailableTimesBy(LocalDate date, Long themeId);
+    List<ReservationTime> findByReservationDateAndThemeId(LocalDate date, Long themeId);
 }

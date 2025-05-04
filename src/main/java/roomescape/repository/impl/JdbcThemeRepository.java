@@ -35,7 +35,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return Theme.generateWithPrimaryKey(theme, id);
     }
 
-    public List<Theme> read() {
+    public List<Theme> findAll() {
         final String query = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(query, (resultSet, rowNum) ->
                 new Theme(resultSet.getLong("id"),
@@ -45,7 +45,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         );
     }
 
-    public List<Theme> readByAsc(Long listNum) {
+    public List<Theme> findTopByReservationCountAsc(Long listNum) {
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail, rc.reservation_count
                 FROM (
@@ -73,7 +73,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         return listedTheme;
     }
 
-    public List<Theme> readByDesc(Long listNum) {
+    public List<Theme> findTopByReservationCountDesc(Long listNum) {
         final String query = """
                 SELECT t.id, t.name, t.description, t.thumbnail, rc.reservation_count
                 FROM (
@@ -115,7 +115,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         }
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         final String query = "DELETE FROM theme WHERE id = ?";
         jdbcTemplate.update(query, id);
     }

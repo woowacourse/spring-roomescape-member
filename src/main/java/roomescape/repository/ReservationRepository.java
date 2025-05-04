@@ -4,11 +4,11 @@ import java.util.List;
 import roomescape.domain.Reservation;
 
 public interface ReservationRepository {
-    Reservation saveReservation(Reservation reservation);
+    Reservation save(Reservation reservation);
 
-    List<Reservation> readReservations();
+    List<Reservation> findAll();
 
-    void deleteReservation(Long id);
+    void deleteById(Long id);
 
     boolean existsByTimeId(Long id);
 }

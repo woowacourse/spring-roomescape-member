@@ -25,7 +25,20 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Reservation> readReservations() {
+    public Reservation save(Reservation reservation) {
+        Map<String, Object> parameters = Map.ofEntries(
+                Map.entry("name", reservation.getName()),
+                Map.entry("date", reservation.getDate()),
+                Map.entry("time_id", reservation.getTime().getId()),
+                Map.entry("theme_id", reservation.getTheme().getId())
+        );
+
+        Long generatedKey = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+
+        return Reservation.generateWithPrimaryKey(reservation, generatedKey);
+    }
+
+    public List<Reservation> findAll() {
         final String query = """
                 SELECT
                     r.id as reservation_id,
@@ -76,20 +89,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return jdbcTemplate.queryForObject(query, Boolean.class, timeId);
     }
 
-    public Reservation saveReservation(Reservation reservation) {
-        Map<String, Object> parameters = Map.ofEntries(
-                Map.entry("name", reservation.getName()),
-                Map.entry("date", reservation.getDate()),
-                Map.entry("time_id", reservation.getTime().getId()),
-                Map.entry("theme_id", reservation.getTheme().getId())
-        );
-
-        Long generatedKey = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-
-        return Reservation.generateWithPrimaryKey(reservation, generatedKey);
-    }
-
-    public void deleteReservation(Long id) {
+    public void deleteById(Long id) {
         final String query = "DELETE FROM reservation WHERE id = ?";
         int affectedRows = jdbcTemplate.update(query, id);
         if (affectedRows == 0) {

@@ -24,16 +24,16 @@ public class StubReservationService extends ReservationService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteReservationById(Long id) {
     }
 
     @Override
-    public List<ReservationResponse> readReservation() {
+    public List<ReservationResponse> findAll() {
         return List.of(ReservationResponse.from(testReservation));
     }
 
     @Override
-    public ReservationResponse saveReservation(ReservationCreateRequest request) {
+    public ReservationResponse createReservation(ReservationCreateRequest request) {
         return ReservationResponse.from(testReservation);
     }
 }

@@ -23,26 +23,25 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public ReservationTime saveReservationTime(ReservationTimeCreateRequest request) {
-        return reservationTimeRepository.saveReservationTime(request.toReservationTime());
+    public ReservationTime createReservationTime(ReservationTimeCreateRequest request) {
+        return reservationTimeRepository.save(request.toReservationTime());
     }
 
-    public List<ReservationTime> readReservationTime() {
-        return reservationTimeRepository.readReservationTimes();
+    public List<ReservationTime> findAll() {
+        return reservationTimeRepository.findAll();
     }
 
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTimeById(Long id) {
         boolean existsByTimeId = reservationRepository.existsByTimeId(id);
         if (existsByTimeId) {
             throw new DeleteReservationException("해당 시간을 사용하는 예약이 존재하기 때문에 삭제할 수 없습니다.");
         }
-
-        reservationTimeRepository.deleteReservationTime(id);
+        reservationTimeRepository.deleteById(id);
     }
 
-    public List<ReservationTimeResponseWithBookedStatus> readAvailableTimesBy(LocalDate date, Long themeId) {
-        List<ReservationTime> allTimes = reservationTimeRepository.readReservationTimes();
-        List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(date, themeId);
+    public List<ReservationTimeResponseWithBookedStatus> findAvailableReservationTimesByDateAndThemeId(LocalDate date, Long themeId) {
+        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
+        List<ReservationTime> availableTimes = reservationTimeRepository.findByReservationDateAndThemeId(date, themeId);
 
         return allTimes.stream()
                 .map(time ->

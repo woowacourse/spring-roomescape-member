@@ -13,20 +13,20 @@ public class StubThemeService extends ThemeService {
     }
 
     @Override
-    public Theme save(ThemeCreateRequest request) {
+    public Theme createTheme(ThemeCreateRequest request) {
         return testTheme;
     }
 
     @Override
-    public List<Theme> read() {
+    public List<Theme> findAll() {
         return List.of(testTheme);
     }
 
     @Override
-    public void delete(Long id) {}
+    public void deleteThemeById(Long id) {}
 
     @Override
-    public List<Theme> readLists(String orderType, Long listNum) {
+    public List<Theme> findLimitedThemesByPopularDesc(String orderType, Long listNum) {
         return List.of(testTheme);
     }
 }

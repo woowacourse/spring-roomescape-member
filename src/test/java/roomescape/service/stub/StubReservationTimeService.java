@@ -16,21 +16,21 @@ public class StubReservationTimeService extends ReservationTimeService {
     }
 
     @Override
-    public ReservationTime saveReservationTime(ReservationTimeCreateRequest request) {
+    public ReservationTime createReservationTime(ReservationTimeCreateRequest request) {
         return testReservationTime;
     }
 
     @Override
-    public List<ReservationTime> readReservationTime() {
+    public List<ReservationTime> findAll() {
         return List.of(testReservationTime);
     }
 
     @Override
-    public void deleteReservationTime(Long id) {
+    public void deleteReservationTimeById(Long id) {
     }
 
     @Override
-    public List<ReservationTimeResponseWithBookedStatus> readAvailableTimesBy(LocalDate date, Long themeId) {
+    public List<ReservationTimeResponseWithBookedStatus> findAvailableReservationTimesByDateAndThemeId(LocalDate date, Long themeId) {
         return List.of(ReservationTimeResponseWithBookedStatus.of(testReservationTime, false));
     }
 }

@@ -26,15 +26,15 @@ class ThemeServiceTest {
     }
 
     @Test
-    void saveTest() {
+    void createThemeTest() {
         // given
         ThemeCreateRequest request = new ThemeCreateRequest("Test Theme", "Test Description", "image.jpg");
 
         // when
-        themeService.save(request);
+        themeService.createTheme(request);
 
         // then
-        List<Theme> themes = themeService.read();
+        List<Theme> themes = themeService.findAll();
         Assertions.assertAll(
                 () -> assertThat(themes).hasSize(1),
                 () -> assertThat(themes.getFirst().getName().equals(request.name())).isTrue(),
@@ -44,15 +44,15 @@ class ThemeServiceTest {
     }
 
     @Test
-    void readTest() {
+    void findAllTest() {
         // given
         ThemeCreateRequest request1 = new ThemeCreateRequest("Test Theme 1", "Test Description 1", "image1.jpg");
         ThemeCreateRequest request2 = new ThemeCreateRequest("Test Theme 2", "Test Description 2", "image2.jpg");
-        themeService.save(request1);
-        themeService.save(request2);
+        themeService.createTheme(request1);
+        themeService.createTheme(request2);
 
         // when
-        List<Theme> themes = themeService.read();
+        List<Theme> themes = themeService.findAll();
 
         // then
         Assertions.assertAll(
@@ -67,32 +67,32 @@ class ThemeServiceTest {
     }
 
     @Test
-    void deleteTest() {
+    void deleteThemeByIdTest() {
         // given
         ThemeCreateRequest request = new ThemeCreateRequest("Test Theme", "Test Description", "image.jpg");
-        Theme savedTheme = themeService.save(request);
+        Theme savedTheme = themeService.createTheme(request);
 
         // when
-        themeService.delete(savedTheme.getId());
+        themeService.deleteThemeById(savedTheme.getId());
 
         // then
-        List<Theme> themes = themeService.read();
+        List<Theme> themes = themeService.findAll();
         Assertions.assertAll(
                 () -> assertThat(themes).hasSize(0)
         );
     }
 
     @Test
-    void readListsTest() {
+    void findAllListsTest() {
         // given
         ThemeCreateRequest request1 = new ThemeCreateRequest("Test Theme 1", "Test Description 1", "image1.jpg");
         ThemeCreateRequest request2 = new ThemeCreateRequest("Test Theme 2", "Test Description 2", "image2.jpg");
-        themeService.save(request1);
-        themeService.save(request2);
+        themeService.createTheme(request1);
+        themeService.createTheme(request2);
 
         // when
-        List<Theme> themesAsc = themeService.readLists("popular_asc", 10L);
-        List<Theme> themesDesc = themeService.readLists("popular_desc", 10L);
+        List<Theme> themesAsc = themeService.findLimitedThemesByPopularDesc("popular_asc", 10L);
+        List<Theme> themesDesc = themeService.findLimitedThemesByPopularDesc("popular_desc", 10L);
 
         // then
         Assertions.assertAll(

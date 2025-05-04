@@ -35,8 +35,8 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse saveReservation(ReservationCreateRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.readReservationTime(request.timeId())
+    public ReservationResponse createReservation(ReservationCreateRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundReservationTimeException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundThemeException("올바른 방탈출 테마가 없습니다."));
@@ -45,25 +45,25 @@ public class ReservationService {
             throw new NotAbleReservationException("과거 시점의 예약을 할 수 없습니다.");
         }
 
-        List<ReservationTime> availableTimes = reservationTimeRepository.findAvailableTimesBy(request.date(),
+        List<ReservationTime> availableTimes = reservationTimeRepository.findByReservationDateAndThemeId(request.date(),
                 request.themeId());
 
         if (!availableTimes.contains(reservationTime)) {
             throw new NotAbleReservationException("이미 해당 시간과 테마에 예약이 존재하여 예약할 수 없습니다.");
         }
 
-        Reservation createdReservation = reservationRepository.create(
+        Reservation createdReservation = reservationRepository.save(
                 request.toReservation(reservationTime, theme));
         return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime),
                 ThemeResponse.from(theme));
     }
 
-    public List<ReservationResponse> readReservation() {
+    public List<ReservationResponse> findAll() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 
-    public void delete(Long id) {
-        reservationRepository.delete(id);
+    public void deleteReservationById(Long id) {
+        reservationRepository.deleteById(id);
     }
 }

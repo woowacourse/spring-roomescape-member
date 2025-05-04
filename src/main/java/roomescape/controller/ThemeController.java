@@ -28,20 +28,20 @@ public class ThemeController {
 
     @PostMapping
     public ResponseEntity<Theme> create(@RequestBody ThemeCreateRequest themeCreateRequest) {
-        Theme createdTheme = themeService.save(themeCreateRequest);
+        Theme createdTheme = themeService.createTheme(themeCreateRequest);
         URI location = URI.create("/themes/" + createdTheme.getId());
         return ResponseEntity.created(location).body(createdTheme);
     }
 
     @GetMapping
     public ResponseEntity<List<Theme>> read() {
-        List<Theme> themes = themeService.read();
+        List<Theme> themes = themeService.findAll();
         return ResponseEntity.ok(themes);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        themeService.delete(id);
+        themeService.deleteThemeById(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -55,7 +55,7 @@ public class ThemeController {
         // TODO: 정렬 조건을 ENUM으로 관리하기.
         orderType = "popular_desc"; // 현재는 내림차순으로 고정
         listNum = 10L;
-        List<Theme> listedTheme = themeService.readLists(orderType, listNum);
+        List<Theme> listedTheme = themeService.findLimitedThemesByPopularDesc(orderType, listNum);
         return ResponseEntity.ok(listedTheme);
     }
 }

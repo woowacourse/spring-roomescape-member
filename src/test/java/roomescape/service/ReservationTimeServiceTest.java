@@ -28,15 +28,15 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    void saveReservationTimeTest() {
+    void createReservationTimeTest() {
         // given
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10,0));
 
         // when
-        reservationTimeService.saveReservationTime(request);
+        reservationTimeService.createReservationTime(request);
 
         // then
-        List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
         Assertions.assertAll(
                 () -> assertThat(reservationTimes).hasSize(1),
                 () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo("10:00")
@@ -44,15 +44,15 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    void readReservationTimeTest() {
+    void findAllTest() {
         // given
         ReservationTimeCreateRequest request1 = new ReservationTimeCreateRequest(LocalTime.of(10,0));
         ReservationTimeCreateRequest request2 = new ReservationTimeCreateRequest(LocalTime.of(11,0));
-        reservationTimeService.saveReservationTime(request1);
-        reservationTimeService.saveReservationTime(request2);
+        reservationTimeService.createReservationTime(request1);
+        reservationTimeService.createReservationTime(request2);
 
         // when
-        List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
 
         // then
         Assertions.assertAll(
@@ -63,15 +63,15 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    void deleteReservationTimeTest() {
+    void deleteReservationTimeByIdTest() {
         // given
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10,0));
-        reservationTimeService.saveReservationTime(request);
-        List<ReservationTime> reservationTimesBeforeDelete = reservationTimeService.readReservationTime();
+        reservationTimeService.createReservationTime(request);
+        List<ReservationTime> reservationTimesBeforeDelete = reservationTimeService.findAll();
 
         // when
-        reservationTimeService.deleteReservationTime(reservationTimesBeforeDelete.get(0).getId());
-        List<ReservationTime> reservationTimesAfterDelete = reservationTimeService.readReservationTime();
+        reservationTimeService.deleteReservationTimeById(reservationTimesBeforeDelete.get(0).getId());
+        List<ReservationTime> reservationTimesAfterDelete = reservationTimeService.findAll();
 
         // then
         Assertions.assertAll(
@@ -81,15 +81,15 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
-    void readAvailableTimesByTest() {
+    void findAvailableReservationTimesByDateAndThemeIdTest() {
         // given
         ReservationTimeCreateRequest request1 = new ReservationTimeCreateRequest(LocalTime.of(10,0));
         ReservationTimeCreateRequest request2 = new ReservationTimeCreateRequest(LocalTime.of(11,0));
-        reservationTimeService.saveReservationTime(request1);
-        reservationTimeService.saveReservationTime(request2);
+        reservationTimeService.createReservationTime(request1);
+        reservationTimeService.createReservationTime(request2);
 
         // when
-        List<ReservationTimeResponseWithBookedStatus> availableTimes = reservationTimeService.readAvailableTimesBy(LocalDate.now(), 1L);
+        List<ReservationTimeResponseWithBookedStatus> availableTimes = reservationTimeService.findAvailableReservationTimesByDateAndThemeId(LocalDate.now(), 1L);
 
         // then
         Assertions.assertAll(
