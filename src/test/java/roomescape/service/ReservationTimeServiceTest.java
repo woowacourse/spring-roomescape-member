@@ -1,70 +1,52 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.dao.FakeReservationDaoImpl;
-import roomescape.dao.FakeReservationTimeDaoImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import roomescape.dao.ReservationDao;
 import roomescape.dto.ReservationTimeRequestDto;
+import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.InvalidReservationException;
 
+@SpringBootTest
 public class ReservationTimeServiceTest {
 
+    @Autowired
     private ReservationTimeService reservationTimeService;
 
-    @BeforeEach
-    void init() {
-        reservationTimeService = new ReservationTimeService(
-            new FakeReservationDaoImpl(),
-            new FakeReservationTimeDaoImpl());
-    }
+    @MockitoBean
+    private ReservationDao reservationDao;
 
-    @DisplayName("reservationTimeRequestDto가 들어왔을 때, Fake 객체에 저장되어야 한다.")
+    @DisplayName("예약 객체가 주어졌을 때, ID를 설정할 수 있어야 한다.")
     @Test
-    void given_reservation_time_request_dto_then_save_db() {
-        //given
+    void given_reservation_then_set_id() {
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(
             "10:00");
-
-        //when
-        reservationTimeService.saveReservationTime(reservationTimeRequestDto);
-        //then
-        assertThat(reservationTimeService.getAllReservationTimes().size()).isEqualTo(1);
+        ReservationTimeResponseDto reservationTimeResponseDto = reservationTimeService.saveReservationTime(
+            reservationTimeRequestDto);
+        assertThat(reservationTimeResponseDto.timeId()).isNotNull();
     }
 
-    @DisplayName("여러 번 ReservationTime을 저장할 때, 성공적으로 Fake객체 및 캐싱 DB에 저장되고, 읽어올 수 있어야 한다.")
+    @DisplayName("다른 예약에서 예약 시간을 이미 사용하고 있다면, 삭제할 수 없다.")
     @Test
-    void given_multiple_reservation_time_request_dto_then_all_save() {
-        //given
-        ReservationTimeRequestDto reservationTimeRequestDto1 = new ReservationTimeRequestDto(
-            "10:00");
-        ReservationTimeRequestDto reservationTimeRequestDto2 = new ReservationTimeRequestDto(
-            "11:00");
-        ReservationTimeRequestDto reservationTimeRequestDto3 = new ReservationTimeRequestDto(
-            "12:00");
-
-        //when
-        reservationTimeService.saveReservationTime(reservationTimeRequestDto1);
-        reservationTimeService.saveReservationTime(reservationTimeRequestDto2);
-        reservationTimeService.saveReservationTime(reservationTimeRequestDto3);
-
-        //then
-        assertThat(reservationTimeService.getAllReservationTimes().size()).isEqualTo(3);
+    void delete_invalid_time_id_then_throw_exception() {
+        when(reservationDao.findByTimeId(1L)).thenReturn(1);
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+            .isInstanceOf(InvalidReservationException.class);
     }
 
-    @DisplayName("reservationTimeId가 주어졌을 떄, Fake 객체 및 캐싱DB에서 삭제되어야 한다.")
+    @DisplayName("다른 예약에서 예약 시간을 사용하고 있지 않다면, 삭제할 수 있어야 한다..")
     @Test
-    void given_reservation_time_id_then_remove_db() {
-        //given
-        ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(
-            "10:00");
-        reservationTimeService.saveReservationTime(reservationTimeRequestDto);
-
-        //when
-        reservationTimeService.deleteReservationTime(1L);
-
-        //then
-        assertThat(reservationTimeService.getAllReservationTimes().size()).isEqualTo(0);
+    void delete_valid_time_id_then_throw_exception() {
+        when(reservationDao.findByTimeId(1L)).thenReturn(0);
+        assertThatCode(() -> reservationTimeService.deleteReservationTime(1L))
+            .doesNotThrowAnyException();
     }
 }
