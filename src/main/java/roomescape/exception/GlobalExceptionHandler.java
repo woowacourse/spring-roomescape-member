@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({ReservationException.class, ThemeException.class})
-    public ResponseEntity<String> handleExceptions(final Exception e) {
+    public ResponseEntity<String> handleDomainExceptions(final Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(DataExistException.class)
-    public ResponseEntity<String> handDataExistException(final DataExistException e) {
+    public ResponseEntity<String> handleDataExistException(final DataExistException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
