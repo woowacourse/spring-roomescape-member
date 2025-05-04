@@ -106,14 +106,14 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int findByDateAndTime(ReservationDate date, Long timeId) {
-        String query = "select count(*) from reservation where date = ? AND time_id = ?";
-        return jdbcTemplate.queryForObject(query, Integer.class, date.getDate(), timeId);
+    public Boolean existsByDateAndTime(ReservationDate date, Long timeId) {
+        String query = "select exists(select 1 from reservation where date = ? AND time_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, date.getDate(), timeId);
     }
 
     @Override
-    public int findAlreadyExistReservationBy(String date, long timeId, Long themeId) {
-        String query = "select count(*) from reservation where date = ? AND time_id = ? AND theme_id = ?";
-        return jdbcTemplate.queryForObject(query, Integer.class, date, timeId, themeId);
+    public Boolean existReservationBy(String date, long timeId, Long themeId) {
+        String query = "select (exists(select 1 from reservation where date = ? AND time_id = ? AND theme_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId);
     }
 }

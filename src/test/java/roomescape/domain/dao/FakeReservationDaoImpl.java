@@ -37,8 +37,8 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int findByDateAndTime(ReservationDate date, Long timeId) {
-        return 0;
+    public Boolean existsByDateAndTime(ReservationDate date, Long timeId) {
+        return true;
     }
 
     private Reservation findById(long id) {
@@ -49,7 +49,7 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int findAlreadyExistReservationBy(String date, long timeId, Long themeId) {
-        return 0;
+    public Boolean existReservationBy(String date, long timeId, Long themeId) {
+        return true;
     }
 }
