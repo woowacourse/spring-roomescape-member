@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.stereotype.Repository;
 import roomescape.business.Reservation;
 import roomescape.persistence.ReservationRepository;
 
-public final class FakeReservationRepository implements ReservationRepository {
+@Repository
+public class FakeReservationRepository implements ReservationRepository, FakeRepository {
 
     private final List<Reservation> reservations = new ArrayList<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
@@ -59,5 +61,11 @@ public final class FakeReservationRepository implements ReservationRepository {
     public boolean existByThemeId(Long id) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getTheme().getId().equals(id));
+    }
+
+    @Override
+    public void clear() {
+        reservations.clear();
+        idGenerator.set(1);
     }
 }

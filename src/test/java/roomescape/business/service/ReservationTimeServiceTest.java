@@ -12,11 +12,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTime;
-import roomescape.persistence.fakerepository.FakeReservationRepository;
-import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.exception.ReservationTimeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.persistence.fakerepository.FakeReservationRepository;
+import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.dto.ReservationTimeRequestDto;
 import roomescape.presentation.dto.ReservationTimeResponseDto;
 

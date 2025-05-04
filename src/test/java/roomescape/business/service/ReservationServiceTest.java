@@ -1,4 +1,4 @@
-package roomescape.business;
+package roomescape.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -9,14 +9,15 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.persistence.fakerepository.FakeReservationRepository;
-import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
-import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
-import roomescape.business.service.ReservationService;
+import roomescape.business.ReservationTheme;
+import roomescape.business.ReservationTime;
 import roomescape.exception.ReservationException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.persistence.fakerepository.FakeReservationRepository;
+import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
+import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.dto.ReservationRequestDto;
 
 class ReservationServiceTest {
@@ -46,7 +47,7 @@ class ReservationServiceTest {
         Long themeId = reservationThemeRepository.add(new ReservationTheme("테마", "설명", "썸네일"));
 
         // when
-        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow,timeId, themeId));
+        reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId));
 
         // then
         assertThat(reservationService.getAllReservations())

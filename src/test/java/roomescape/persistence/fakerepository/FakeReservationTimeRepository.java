@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.stereotype.Repository;
 import roomescape.business.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 
-public final class FakeReservationTimeRepository implements ReservationTimeRepository {
+@Repository
+public class FakeReservationTimeRepository implements ReservationTimeRepository, FakeRepository {
 
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
@@ -45,5 +47,11 @@ public final class FakeReservationTimeRepository implements ReservationTimeRepos
     @Override
     public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {
         return List.of();
+    }
+
+    @Override
+    public void clear() {
+        reservationTimes.clear();
+        idGenerator.set(1);
     }
 }
