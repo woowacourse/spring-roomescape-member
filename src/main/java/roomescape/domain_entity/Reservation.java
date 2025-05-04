@@ -35,7 +35,7 @@ public class Reservation {
 
     private void validateMaxLength(String name) {
         if (name.length() > 255) {
-            throw new IllegalArgumentException("요청 필드가 최대 제한 길이를 초과했습니다.");
+            throw new IllegalArgumentException("name의 최대 제한 길이를 초과했습니다.");
         }
     }
 
