@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.common.exception.NotAbleDeleteException;
 import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
@@ -122,6 +123,9 @@ public class JdbcThemeRepository implements ThemeRepository {
 
     public void deleteById(Long id) {
         final String query = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(query, id);
+        int affectedRows = jdbcTemplate.update(query, id);
+        if (affectedRows == 0) {
+            throw new NotAbleDeleteException("테마를 삭제할 수 없습니다. 존재하지 않는 ID입니다.");
+        }
     }
 }
