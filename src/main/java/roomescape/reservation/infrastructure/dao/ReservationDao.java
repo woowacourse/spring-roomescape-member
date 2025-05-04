@@ -33,16 +33,16 @@ public class ReservationDao implements ReservationRepository {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
                     new String[]{"id"});
-            ps.setString(1, request.getName().getName());
-            ps.setLong(2, request.getTheme().getId());
-            ps.setString(3, request.getDate().getReservationDate().toString());
-            ps.setLong(4, request.getTime().getId());
+            ps.setString(1, request.name().getName());
+            ps.setLong(2, request.theme().getId());
+            ps.setString(3, request.date().getReservationDate().toString());
+            ps.setLong(4, request.time().getId());
             return ps;
         }, keyHolder);
 
         long id = keyHolder.getKey().longValue();
 
-        return new Reservation(id, request.getName(), request.getTheme(), request.getDate(), request.getTime());
+        return new Reservation(id, request.name(), request.theme(), request.date(), request.time());
     }
 
     @Override
