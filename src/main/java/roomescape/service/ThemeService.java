@@ -20,8 +20,8 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(ThemeCreateRequest request) {
-        Theme saved = themeRepository.save(request.toTheme());
-        return ThemeResponse.from(saved);
+        Theme theme = themeRepository.save(request.toTheme());
+        return ThemeResponse.from(theme);
     }
 
     public List<ThemeResponse> findAll() {

@@ -52,9 +52,9 @@ public class ReservationService {
             throw new NotAbleReservationException("이미 해당 시간과 테마에 예약이 존재하여 예약할 수 없습니다.");
         }
 
-        Reservation createdReservation = reservationRepository.save(request.toReservation(reservationTime, theme));
+        Reservation reservation = reservationRepository.save(request.toReservation(reservationTime, theme));
 
-        return ReservationResponse.from(createdReservation);
+        return ReservationResponse.from(reservation);
     }
 
     public List<ReservationResponse> findAll() {
