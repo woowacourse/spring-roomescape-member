@@ -13,7 +13,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ExceptionResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 
-        //TODO : default 메세지가 안됨
         if (ex.getRootCause() == null) {
             return new ExceptionResponse("잘못된 요청 형식입니다.");
         }
