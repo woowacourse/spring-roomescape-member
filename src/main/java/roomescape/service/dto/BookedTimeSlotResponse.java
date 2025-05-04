@@ -3,14 +3,14 @@ package roomescape.service.dto;
 import java.time.LocalTime;
 import roomescape.model.TimeSlot;
 
-public record AvailableTimeSlotDto(
+public record BookedTimeSlotResponse(
         Long id,
         LocalTime startAt,
         Boolean alreadyBooked
 ) {
 
-    public static AvailableTimeSlotDto from(TimeSlot timeSlot, Boolean alreadyBooked) {
-        return new AvailableTimeSlotDto(
+    public static BookedTimeSlotResponse from(TimeSlot timeSlot, Boolean alreadyBooked) {
+        return new BookedTimeSlotResponse(
                 timeSlot.id(),
                 timeSlot.startAt(),
                 alreadyBooked

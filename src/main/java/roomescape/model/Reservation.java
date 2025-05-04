@@ -19,17 +19,16 @@ public class Reservation {
     private final TimeSlot timeSlot;
     private final Theme theme;
 
-    public Reservation(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
-        this(null, name, date, timeSlot, theme);
-    }
-
-    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot,
-                       final Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.timeSlot = timeSlot;
         this.theme = theme;
+    }
+
+    public Reservation(final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        this(null, name, date, timeSlot, theme);
     }
 
     public boolean isBefore(final LocalDateTime dateTime) {

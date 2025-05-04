@@ -19,12 +19,12 @@ public class ReservationFakeRepository implements ReservationRepository {
     private final AtomicLong index = new AtomicLong(1L);
 
     @Override
-    public Optional<Reservation> findById(final long id) {
+    public Optional<Reservation> findById(final Long id) {
         return Optional.ofNullable(reservations.get(id));
     }
 
     @Override
-    public long save(final Reservation reservation) {
+    public Long save(final Reservation reservation) {
         var id = index.getAndIncrement();
         var created = new Reservation(
             id,
@@ -38,7 +38,7 @@ public class ReservationFakeRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean removeById(final long id) {
+    public boolean removeById(final Long id) {
         Reservation removed = reservations.remove(id);
         return removed != null;
     }
@@ -49,29 +49,29 @@ public class ReservationFakeRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByTimeSlotId(final long id) {
+    public List<Reservation> findAllByTimeSlotId(final Long id) {
         return reservations.values().stream()
             .filter(reservation -> reservation.timeSlot().id() == id)
             .toList();
     }
 
     @Override
-    public List<Reservation> findByThemeId(final long id) {
+    public List<Reservation> findAllByThemeId(final Long id) {
         return reservations.values().stream()
             .filter(reservation -> reservation.theme().id() == id)
             .toList();
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final long themeId) {
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         return reservations.values().stream()
             .filter(r -> r.date().equals(date) && r.theme().id() == themeId)
             .toList();
     }
 
     @Override
-    public List<Theme> findThemeRankingByPeriod(final LocalDate startDate, final LocalDate endDate,
-        final int limit) {
+    public List<Theme> findPopularThemesByPeriod(final LocalDate startDate, final LocalDate endDate,
+                                                 final Integer limit) {
         var themeCounts = reservations.values().stream()
             .filter(r -> isBetween(r.date(), startDate, endDate))
             .collect(Collectors.groupingBy(Reservation::theme, Collectors.counting()));

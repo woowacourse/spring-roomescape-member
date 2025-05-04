@@ -15,13 +15,13 @@ public class TimeSlot {
     private final Long id;
     private final LocalTime startAt;
 
-    public TimeSlot(final LocalTime startAt) {
-        this(null, startAt);
-    }
-
     public TimeSlot(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
+    }
+
+    public TimeSlot(final LocalTime startAt) {
+        this(null, startAt);
     }
 
     public boolean isBefore(final LocalTime time) {

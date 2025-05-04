@@ -2,8 +2,9 @@ package roomescape.controller.theme.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import roomescape.model.Theme;
 
-public record CreateThemeRequest(
+public record AddThemeRequest(
 
         @NotBlank(message = "이름은 필수입니다.")
         @Size(min = 1, max = 10, message = "이름은 1자 이상, 10자 이하여야 합니다.")
@@ -16,4 +17,8 @@ public record CreateThemeRequest(
         @NotBlank(message = "썸네일은 필수입니다.")
         String thumbnail
 ) {
+
+        public Theme toEntity() {
+                return new Theme(name, description, thumbnail);
+        }
 }

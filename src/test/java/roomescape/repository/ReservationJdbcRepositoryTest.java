@@ -3,8 +3,6 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,12 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.Fixtures;
 import roomescape.model.Reservation;
-import roomescape.model.Theme;
-import roomescape.model.TimeSlot;
 
 @Sql(scripts = {"/test-schema.sql"})
 @JdbcTest
@@ -97,13 +92,13 @@ public class ReservationJdbcRepositoryTest {
 
     @Test
     @DisplayName("타임 슬롯 아이디에 해당하는 예약을 조회한다.")
-    void findByTimeSlotId() {
+    void findAllByTimeSlotId() {
         // given
         var reservation = readyReservation();
         repository.save(reservation);
 
         // when
-        var found = repository.findByTimeSlotId(reservation.timeSlot().id());
+        var found = repository.findAllByTimeSlotId(reservation.timeSlot().id());
 
         // then
         assertThat(found).contains(reservation);
@@ -111,13 +106,13 @@ public class ReservationJdbcRepositoryTest {
 
     @Test
     @DisplayName("테마 아이디에 해당하는 예약을 조회한다.")
-    void findByThemeId() {
+    void findAllByThemeId() {
         // given
         var reservation = readyReservation();
         repository.save(reservation);
 
         // when
-        var found = repository.findByThemeId(reservation.theme().id());
+        var found = repository.findAllByThemeId(reservation.theme().id());
 
         // then
         assertThat(found).contains(reservation);
@@ -125,13 +120,13 @@ public class ReservationJdbcRepositoryTest {
 
     @Test
     @DisplayName("날짜와 테마 아이디에 해당하는 예약을 조회한다.")
-    void findByDateAndThemeId() {
+    void findAllByDateAndThemeId() {
         // given
         var reservation = readyReservation();
         repository.save(reservation);
 
         // when
-        var found = repository.findByDateAndThemeId(reservation.date(), reservation.theme().id());
+        var found = repository.findAllByDateAndThemeId(reservation.date(), reservation.theme().id());
 
         // then
         assertThat(found).contains(reservation);

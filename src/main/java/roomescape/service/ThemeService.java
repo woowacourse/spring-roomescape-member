@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.controller.theme.dto.AddThemeRequest;
+import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
@@ -21,25 +23,28 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme add(String name, String description, String thumbnail) {
-        var theme = new Theme(name, description, thumbnail);
+    public ThemeResponse add(final AddThemeRequest request) {
+        var theme = request.toEntity();
         var id = themeRepository.save(theme);
-        return new Theme(id, name, description, thumbnail);
+        var savedTheme = new Theme(id, theme.name(), theme.description(), theme.thumbnail());
+        return ThemeResponse.from(savedTheme);
     }
 
-    public List<Theme> allThemes() {
-        return themeRepository.findAll();
+    public List<ThemeResponse> findAll() {
+        var themes = themeRepository.findAll();
+        return ThemeResponse.from(themes);
     }
 
-    public boolean removeById(long id) {
-        List<Reservation> reservations = reservationRepository.findByThemeId(id);
+    public boolean removeById(final Long id) {
+        List<Reservation> reservations = reservationRepository.findAllByThemeId(id);
         if (!reservations.isEmpty()) {
             throw new IllegalStateException("삭제하려는 테마를 사용하는 예약이 있습니다.");
         }
         return themeRepository.removeById(id);
     }
 
-    public List<Theme> findPopularThemes(LocalDate startDate, LocalDate endDate, Integer limit) {
-        return reservationRepository.findThemeRankingByPeriod(startDate, endDate, limit);
+    public List<ThemeResponse> findPopularThemes(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
+        var themes = reservationRepository.findPopularThemesByPeriod(startDate, endDate, limit);
+        return ThemeResponse.from(themes);
     }
 }

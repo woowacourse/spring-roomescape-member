@@ -50,7 +50,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(final long id) {
+    public Optional<Reservation> findById(final Long id) {
         var sql = """
                 select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
                 left join RESERVATION_TIME RT on R.time_id = RT.id 
@@ -63,7 +63,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public long save(Reservation reservation) {
+    public Long save(Reservation reservation) {
         var insert = new SimpleJdbcInsert(jdbcTemplate);
         var generatedId = insert.withTableName("RESERVATION")
                 .usingGeneratedKeyColumns("id")
@@ -77,7 +77,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean removeById(long id) {
+    public boolean removeById(final Long id) {
         var sql = "delete from RESERVATION where id = ?";
 
         var removedRowsCount = jdbcTemplate.update(sql, id);
@@ -96,7 +96,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByTimeSlotId(long id) {
+    public List<Reservation> findAllByTimeSlotId(final Long id) {
         var sql = """
                 select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
                 left join RESERVATION_TIME RT on R.time_id = RT.id
@@ -108,7 +108,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByThemeId(long id) {
+    public List<Reservation> findAllByThemeId(final Long id) {
         var sql = """
                 select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
                 left join RESERVATION_TIME RT on R.time_id = RT.id 
@@ -120,7 +120,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(LocalDate date, long themeId) {
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         var sql = """
                 select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
                 left join RESERVATION_TIME RT on R.time_id = RT.id 
@@ -132,7 +132,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Theme> findThemeRankingByPeriod(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findPopularThemesByPeriod(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
         var sql = """
                 select T.id, T.name, T.description, T.thumbnail from THEME T
                 join RESERVATION R on T.id = R.theme_id

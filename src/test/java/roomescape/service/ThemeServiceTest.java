@@ -2,11 +2,13 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.Fixtures.JUNK_THEME_REQUEST;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.model.Theme;
+import roomescape.controller.theme.dto.AddThemeRequest;
+import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.ThemeFakeRepository;
 
@@ -22,36 +24,28 @@ class ThemeServiceTest {
     @Test
     @DisplayName("테마를 추가할 수 있다.")
     void add() {
-        // given
-        var name = "레벨2 탈출";
-        var description = "우테코 레벨2를 탈출하는 내용입니다.";
-        var thumbnail = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
-
-        // when
-        Theme created = service.add(name, description, thumbnail);
+        // given & when
+        ThemeResponse response = service.add(JUNK_THEME_REQUEST);
 
         // then
-        var themes = service.allThemes();
-        assertThat(themes).contains(created);
+        var themes = service.findAll();
+        assertThat(themes).contains(response);
     }
 
     @Test
     @DisplayName("테마를 삭제할 수 있다.")
     void removeById() {
         // given
-        var name = "레벨2 탈출";
-        var description = "우테코 레벨2를 탈출하는 내용입니다.";
-        var thumbnail = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
-        Theme created = service.add(name, description, thumbnail);
+        var response = service.add(JUNK_THEME_REQUEST);
 
         // when
-        boolean isRemoved = service.removeById(created.id());
+        boolean isRemoved = service.removeById(response.id());
 
         // then
-        var themes = service.allThemes();
+        var themes = service.findAll();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
-            () -> assertThat(themes).doesNotContain(created)
+            () -> assertThat(themes).doesNotContain(response)
         );
     }
 }

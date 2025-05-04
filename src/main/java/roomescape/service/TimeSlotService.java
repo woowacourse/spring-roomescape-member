@@ -1,15 +1,16 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.controller.timeslot.dto.AddTimeSlotRequest;
+import roomescape.controller.timeslot.dto.TimeSlotResponse;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
-import roomescape.service.dto.AvailableTimeSlotDto;
+import roomescape.service.dto.BookedTimeSlotResponse;
 
 @Service
 public class TimeSlotService {
@@ -24,33 +25,35 @@ public class TimeSlotService {
         this.timeSlotRepository = timeSlotRepository;
     }
 
-    public TimeSlot add(LocalTime startAt) {
-        var timeSlot = new TimeSlot(startAt);
+    public TimeSlotResponse add(final AddTimeSlotRequest request) {
+        var timeSlot = request.toEntity();
         var id = timeSlotRepository.save(timeSlot);
-        return new TimeSlot(id, startAt);
+        var savedTimeSlot = new TimeSlot(id, timeSlot.startAt());
+        return TimeSlotResponse.from(savedTimeSlot);
     }
 
-    public List<TimeSlot> allTimeSlots() {
-        return timeSlotRepository.findAll();
+    public List<TimeSlotResponse> findAll() {
+        var timeSlots = timeSlotRepository.findAll();
+        return TimeSlotResponse.from(timeSlots);
     }
 
-    public boolean removeById(long id) {
-        List<Reservation> reservations = reservationRepository.findByTimeSlotId(id);
+    public boolean removeById(final Long id) {
+        List<Reservation> reservations = reservationRepository.findAllByTimeSlotId(id);
         if (!reservations.isEmpty()) {
             throw new IllegalStateException("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다.");
         }
         return timeSlotRepository.removeById(id);
     }
 
-    public List<AvailableTimeSlotDto> findAvailableTimeSlots(LocalDate date, long themeId) {
-        var filteredReservations = reservationRepository.findByDateAndThemeId(date, themeId);
+    public List<BookedTimeSlotResponse> findAvailableTimeSlots(final LocalDate date, final Long themeId) {
+        var filteredReservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         var filteredTimeSlots = filteredReservations.stream()
                 .map(Reservation::timeSlot)
                 .toList();
 
         var allTimeSlots = timeSlotRepository.findAll();
         return allTimeSlots.stream()
-                .map(ts -> AvailableTimeSlotDto.from(ts, filteredTimeSlots.contains(ts)))
+                .map(ts -> BookedTimeSlotResponse.from(ts, filteredTimeSlots.contains(ts)))
                 .toList();
     }
 }

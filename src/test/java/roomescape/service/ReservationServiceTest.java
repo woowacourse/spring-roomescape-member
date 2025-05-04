@@ -6,12 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.Fixtures.JUNK_THEME;
 import static roomescape.Fixtures.JUNK_TIME_SLOT;
+import static roomescape.Fixtures.getReservationOfYesterday;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.Fixtures;
-import roomescape.model.Reservation;
+import roomescape.controller.reservation.dto.AddReservationRequest;
+import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.ThemeFakeRepository;
 import roomescape.repository.fake.TimeSlotFakeRepository;
@@ -33,84 +35,58 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("예약을 추가할 수 있다.")
-    void reserve() {
+    void add() {
         // given
-        var name = "포포";
-        var date = Fixtures.ofTomorrow();
-        var timeSlotId = JUNK_TIME_SLOT.id();
-        var themeId = JUNK_THEME.id();
+        var request = Fixtures.getAddReservationRequestOfTomorrow();
 
         // when
-        Reservation reserved = service.reserve(name, date, timeSlotId, themeId);
+        ReservationResponse response = service.add(request);
 
         // then
-        var reservations = service.allReservations();
-        assertThat(reservations).contains(reserved);
+        var reservations = service.findAll();
+        assertThat(reservations).contains(response);
     }
 
     @Test
     @DisplayName("예약을 삭제할 수 있다.")
     void deleteReservation() {
         // given
-        var name = "포포";
-        var date = Fixtures.ofTomorrow();
-        var timeSlotId = JUNK_TIME_SLOT.id();
-        var themeId = JUNK_THEME.id();
-        var reserved = service.reserve(name, date, timeSlotId, themeId);
+        var request = Fixtures.getAddReservationRequestOfTomorrow();
+        var response = service.add(request);
 
         // when
-        boolean isRemoved = service.removeById(reserved.id());
+        boolean isRemoved = service.removeById(response.id());
 
         // then
-        var reservations = service.allReservations();
+        var reservations = service.findAll();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
-            () -> assertThat(reservations).doesNotContain(reserved)
+            () -> assertThat(reservations).doesNotContain(response)
         );
     }
 
     @Test
-    @DisplayName("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.")
-    void cannotReservePastDateTime() {
-        // given
-        var name = "포포";
-        var date = Fixtures.ofYesterday();
-        var timeSlotId = JUNK_TIME_SLOT.id();
-        var themeId = JUNK_THEME.id();
-
-        // when & then
-        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId, themeId))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     @DisplayName("지나가지 않은 날짜와 시간에 대한 예약 생성은 가능하다.")
-    void canReserveFutureDateTime() {
+    void canAddFutureDateTime() {
         // given
-        var name = "포포";
-        var date = Fixtures.ofTomorrow();
-        var timeSlotId = JUNK_TIME_SLOT.id();
-        var themeId = JUNK_THEME.id();
+        var request = Fixtures.getAddReservationRequestOfTomorrow();
 
         // when & then
-        assertThatCode(() -> service.reserve(name, date, timeSlotId, themeId))
+        assertThatCode(() -> service.add(request))
             .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("이미 예약된 날짜와 시간에 대한 예약 생성은 불가능하다.")
-    void cannotReserveIdenticalDateTimeMultipleTimes() {
+    void cannotAddIdenticalDateTimeMultipleTimes() {
         // given
-        var name = "포포";
-        var date = Fixtures.ofTomorrow();
-        var timeSlotId = JUNK_TIME_SLOT.id();
-        var themeId = JUNK_THEME.id();
+        var request = Fixtures.getAddReservationRequestOfTomorrow();
 
         // when
-        service.reserve(name, date, timeSlotId, themeId);
+        service.add(request);
 
         // then
-        assertThatThrownBy(() -> service.reserve(name, date, timeSlotId, themeId))
+        assertThatThrownBy(() -> service.add(request))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -5,8 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import roomescape.model.Reservation;
+import roomescape.model.Theme;
+import roomescape.model.TimeSlot;
 
-public record CreateReservationRequest(
+public record AddReservationRequest(
 
         @NotBlank(message = "이름은 필수입니다.")
         @Size(min = 1, max = 5, message = "이름은 1자 이상, 5자 이하여야 합니다.")
@@ -22,4 +25,8 @@ public record CreateReservationRequest(
         @NotNull(message = "테마 ID는 필수입니다.")
         Long themeId
 ) {
+
+        public Reservation toEntity(final TimeSlot timeSlot, final Theme theme) {
+                return new Reservation(name, date, timeSlot, theme);
+        }
 }

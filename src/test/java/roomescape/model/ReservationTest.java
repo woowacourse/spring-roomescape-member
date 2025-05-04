@@ -16,28 +16,6 @@ import roomescape.Fixtures;
 
 public class ReservationTest {
 
-    @ParameterizedTest
-    @MethodSource("nullValues")
-    @DisplayName("예약 생성 시 id가 아닌 모든 값들이 존재하지 않으면 예외가 발생한다")
-    void anyValueNullException(String name, LocalDate date, TimeSlot timeSlot, Theme theme) {
-        // given & when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, timeSlot, theme))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")
-    void nameLengthException() {
-        // given & when & then
-        assertThatThrownBy(() -> new Reservation(
-            1L,
-            "여섯글자이름",
-            LocalDate.of(2023, 12, 1),
-            new TimeSlot(1L, LocalTime.of(10, 0)),
-            Fixtures.JUNK_THEME)
-        ).isInstanceOf(IllegalArgumentException.class);
-    }
-
     @Test
     @DisplayName("예약 일시가 주어진 일시보다 이전인지 확인한다")
     void isBefore() {
@@ -71,34 +49,5 @@ public class ReservationTest {
 
         // then
         assertThat(isSameDateTime).isTrue();
-    }
-
-    private static Stream<Arguments> nullValues() {
-        return Stream.of(
-            Arguments.of(
-                null,
-                LocalDate.of(2023, 12, 1),
-                new TimeSlot(1L, LocalTime.of(10, 0)),
-                Fixtures.JUNK_THEME
-            ),
-            Arguments.of(
-                "brown",
-                null,
-                new TimeSlot(1L, LocalTime.of(10, 0)),
-                Fixtures.JUNK_THEME
-            ),
-            Arguments.of(
-                "brown",
-                LocalDate.of(2023, 12, 1),
-                null,
-                Fixtures.JUNK_THEME
-            ),
-            Arguments.of(
-                "brown",
-                LocalDate.of(2023, 12, 1),
-                new TimeSlot(1L, LocalTime.of(10, 0)),
-                null
-            )
-        );
     }
 }

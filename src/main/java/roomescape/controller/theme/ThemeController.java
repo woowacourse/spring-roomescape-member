@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import roomescape.controller.theme.dto.CreateThemeRequest;
+import roomescape.controller.theme.dto.AddThemeRequest;
 import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.service.ThemeService;
 
@@ -29,16 +29,14 @@ public class ThemeController {
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> allThemes() {
-        var themes = service.allThemes();
-        var response = ThemeResponse.from(themes);
-        return ResponseEntity.ok(response);
+        var themes = service.findAll();
+        return ResponseEntity.ok(themes);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> add(@RequestBody @Valid CreateThemeRequest request) {
-        var theme = service.add(request.name(), request.description(), request.thumbnail());
-        var response = ThemeResponse.from(theme);
-        return ResponseEntity.created(URI.create("/themes/" + response.id())).body(response);
+    public ResponseEntity<ThemeResponse> add(@RequestBody @Valid AddThemeRequest request) {
+        var theme = service.add(request);
+        return ResponseEntity.created(URI.create("/themes/" + theme.id())).body(theme);
     }
 
     @DeleteMapping("/{id}")
@@ -57,7 +55,6 @@ public class ThemeController {
             @RequestParam("limit") Integer limit
     ) {
         var themes = service.findPopularThemes(startDate, endDate, limit);
-        var response = ThemeResponse.from(themes);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(themes);
     }
 }

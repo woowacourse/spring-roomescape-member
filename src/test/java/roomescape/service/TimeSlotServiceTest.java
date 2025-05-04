@@ -3,15 +3,13 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.Fixtures.JUNK_THEME;
+import static roomescape.Fixtures.JUNK_TIME_SLOT_REQUEST;
 
-import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.Fixtures;
-import roomescape.model.Reservation;
-import roomescape.model.TimeSlot;
+import roomescape.controller.timeslot.dto.TimeSlotResponse;
 import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.TimeSlotFakeRepository;
 
@@ -28,32 +26,28 @@ class TimeSlotServiceTest {
     @Test
     @DisplayName("예약 시간을 추가할 수 있다.")
     void addTimeSlot() {
-        // given
-        var startAt = LocalTime.of(10, 0);
-
-        // when
-        TimeSlot created = service.add(startAt);
+        // given & when
+        TimeSlotResponse response = service.add(JUNK_TIME_SLOT_REQUEST);
 
         // then
-        var timeSlots = service.allTimeSlots();
-        assertThat(timeSlots).contains(created);
+        var timeSlots = service.findAll();
+        assertThat(timeSlots).contains(response);
     }
 
     @Test
     @DisplayName("예약 시간을 삭제할 수 있다.")
     void deleteTimeSlot() {
         // given
-        var startAt = LocalTime.of(10, 0);
-        var target = service.add(startAt);
+        var response = service.add(JUNK_TIME_SLOT_REQUEST);
 
         // when
-        boolean isRemoved = service.removeById(target.id());
+        boolean isRemoved = service.removeById(response.id());
 
         // then
-        var timeSlots = service.allTimeSlots();
+        var timeSlots = service.findAll();
         assertAll(
             () -> assertThat(isRemoved).isTrue(),
-            () -> assertThat(timeSlots).doesNotContain(target)
+            () -> assertThat(timeSlots).doesNotContain(response)
         );
     }
 
@@ -65,16 +59,13 @@ class TimeSlotServiceTest {
         var timeSlotService = new TimeSlotService(reservationRepository,
             new TimeSlotFakeRepository());
 
-        var startAt = LocalTime.of(10, 0);
-        var timeSlot = timeSlotService.add(startAt);
+        var timeSlotResponse = timeSlotService.add(JUNK_TIME_SLOT_REQUEST);
 
-        var name = "포포";
-        var date = Fixtures.ofTomorrow();
-        var reservation = new Reservation(name, date, timeSlot, JUNK_THEME);
+        var reservation = Fixtures.getReservationOfTomorrow();
         reservationRepository.save(reservation);
 
         // when & then
-        assertThatThrownBy(() -> timeSlotService.removeById(timeSlot.id()))
+        assertThatThrownBy(() -> timeSlotService.removeById(timeSlotResponse.id()))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다.");
     }

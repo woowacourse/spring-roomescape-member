@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.controller.reservation.dto.AddReservationRequest;
+import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 import roomescape.model.TimeSlot;
@@ -29,17 +31,28 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation reserve(final String name, final LocalDate date, final Long timeId, final Long themeId) {
-        var timeSlot = findTimeSlot(timeId);
-        var theme = findTheme(themeId);
-        var reservation = new Reservation(name, date, timeSlot, theme);
+    public ReservationResponse add(final AddReservationRequest request) {
+        var timeSlot = findTimeSlot(request);
+        var theme = findTheme(request);
+        var reservation = request.toEntity(timeSlot, theme);
         validateDuplicateReservation(reservation);
+
         var id = reservationRepository.save(reservation);
-        return new Reservation(id, name, date, timeSlot, theme);
+        var savedReservation = new Reservation(id, reservation.name(), reservation.date(), reservation.timeSlot(), reservation.theme());
+        return ReservationResponse.from(savedReservation);
+    }
+
+    public List<ReservationResponse> findAll() {
+        var reservations = reservationRepository.findAll();
+        return ReservationResponse.from(reservations);
+    }
+
+    public boolean removeById(final Long id) {
+        return reservationRepository.removeById(id);
     }
 
     private void validateDuplicateReservation(final Reservation reservation) {
-        var reservations = allReservations();
+        var reservations = reservationRepository.findAll();
         var hasDuplicate = reservations.stream()
                 .anyMatch(r -> r.isSameDateTime(reservation));
         if (hasDuplicate) {
@@ -47,22 +60,13 @@ public class ReservationService {
         }
     }
 
-    private TimeSlot findTimeSlot(final Long timeId) {
-        return timeSlotRepository.findById(timeId)
+    private TimeSlot findTimeSlot(final AddReservationRequest request) {
+        return timeSlotRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타임 슬롯입니다."));
     }
 
-    private Theme findTheme(final Long themeId) {
-        return themeRepository.findById(themeId)
+    private Theme findTheme(final AddReservationRequest request) {
+        return themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
-    }
-
-    public List<Reservation> allReservations() {
-        return reservationRepository.findAll();
-    }
-
-    public boolean removeById(long id) {
-        return reservationRepository.removeById(id);
     }
 }
