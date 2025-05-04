@@ -68,9 +68,9 @@ class JdbcReservationRepositoryTest {
         assertAll(
                 () -> assertThat(savedId).isNotNull(),
 
-                () -> assertThat(result.get("name")).isEqualTo("테스트행님"),
-                () -> assertThat(result.get("date")).isEqualTo(Date.valueOf(LocalDate.of(2025, 4, 30))),
-                () -> assertThat(result.get("time_id")).isEqualTo(1L)
+                () -> assertThat(result).containsEntry("name", "테스트행님"),
+                () -> assertThat(result).containsEntry("date", Date.valueOf(LocalDate.of(2025, 4, 30))),
+                () -> assertThat(result).containsEntry("time_id", 1L)
         );
     }
 
@@ -103,7 +103,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void deleteByIdTest() {
         // given
-        assertThat(reservationRepository.findAll()).hasSize(0);
+        assertThat(reservationRepository.findAll()).isEmpty();
         jdbcTemplate.update(
                 "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
@@ -116,6 +116,6 @@ class JdbcReservationRepositoryTest {
 
         // then
         List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations).hasSize(0);
+        assertThat(reservations).isEmpty();
     }
 }

@@ -58,7 +58,7 @@ class JdbcTimeRepositoryTest {
 
         assertAll(
                 () -> assertThat(savedId).isNotNull(),
-                () -> assertThat(result.get("start_at")).isEqualTo(Time.valueOf(startAt))
+                () -> assertThat(result).containsEntry("start_at", Time.valueOf(startAt))
         );
     }
 
@@ -88,7 +88,7 @@ class JdbcTimeRepositoryTest {
     @Test
     void deleteByIdTest() {
         // given
-        assertThat(timeRepository.findAll()).hasSize(0);
+        assertThat(timeRepository.findAll()).isEmpty();
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
         assertThat(timeRepository.findAll()).hasSize(1);
 
@@ -96,7 +96,7 @@ class JdbcTimeRepositoryTest {
         timeRepository.deleteById(1L);
 
         // then
-        assertThat(timeRepository.findAll()).hasSize(0);
+        assertThat(timeRepository.findAll()).isEmpty();
     }
 
     @DisplayName("다른 테이블에서 참조되고 있는 시간 삭제 시 예외 발생")

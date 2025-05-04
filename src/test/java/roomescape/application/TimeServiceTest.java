@@ -78,7 +78,7 @@ class TimeServiceTest {
         timeService.deleteTime(1L);
 
         // then
-        assertThat(timeRepository.findAll()).hasSize(0);
+        assertThat(timeRepository.findAll()).isEmpty();
     }
 
     @DisplayName("id로 ReservationTime 객체를 가져올 수 있다.")

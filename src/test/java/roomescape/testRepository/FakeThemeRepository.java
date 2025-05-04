@@ -11,13 +11,13 @@ import roomescape.exception.NotFoundException;
 public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> themes = new ArrayList<>();
-
+    
     private Long index = 0L;
 
     @Override
     public Long save(Theme theme) {
-        Theme.assignId(++index, theme);
-        themes.add(theme);
+        Theme themeWithId = Theme.assignId(++index, theme);
+        themes.add(themeWithId);
         return index;
     }
 

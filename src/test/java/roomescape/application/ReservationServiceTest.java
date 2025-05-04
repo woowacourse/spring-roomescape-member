@@ -137,7 +137,7 @@ class ReservationServiceTest {
         reservationService.deleteReservation(1L);
 
         // then
-        assertThat(reservationRepository.findAll()).hasSize(0);
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @DisplayName("과거 일시로 예약할 수 없다.")
