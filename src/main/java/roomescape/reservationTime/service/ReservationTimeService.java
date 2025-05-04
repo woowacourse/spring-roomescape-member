@@ -26,9 +26,9 @@ public class ReservationTimeService {
     private final ThemeRepository themeRepository;
 
     public ReservationTimeService(
-        ReservationTimeRepository repository,
-        ReservationRepository reservationRepository,
-        ThemeRepository themeRepository
+            ReservationTimeRepository repository,
+            ReservationRepository reservationRepository,
+            ThemeRepository themeRepository
     ) {
         this.repository = repository;
         this.reservationRepository = reservationRepository;
@@ -38,27 +38,27 @@ public class ReservationTimeService {
     public List<ReservationTimeResDto> findAll() {
         List<ReservationTime> reservationTimes = repository.findAll();
         return reservationTimes.stream()
-            .map(this::convertToReservationTimeResDto)
-            .toList();
+                .map(this::convertToReservationTimeResDto)
+                .toList();
     }
 
     public List<AvailableReservationTimeResDto> findAllAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
-            .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
         Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findByThemeAndDate(theme, date)
-            .stream()
-            .map(Reservation::getReservationTime)
-            .collect(Collectors.toSet());
+                .stream()
+                .map(Reservation::getReservationTime)
+                .collect(Collectors.toSet());
 
         return allTime.stream()
-            .map(reservationTime ->
-                AvailableReservationTimeResDto.from(
-                    reservationTime,
-                    reservationTimesByThemeAndDate.contains(reservationTime)
+                .map(reservationTime ->
+                        AvailableReservationTimeResDto.from(
+                                reservationTime,
+                                reservationTimesByThemeAndDate.contains(reservationTime)
+                        )
                 )
-            )
-            .toList();
+                .toList();
     }
 
     public void delete(Long id) {
@@ -77,11 +77,10 @@ public class ReservationTimeService {
     }
 
     private void validateDuplicateTime(ReservationTime inputReservationTime) {
-        List<ReservationTime> reservationTimes = repository.findAll();
-        for (ReservationTime reservationTime : reservationTimes) {
-            if (inputReservationTime.isSameTime(reservationTime)) {
-                throw new ConflictException("이미 등록되어 있는 시간입니다.");
-            }
+        boolean exists = repository.existsByReservationTime(inputReservationTime.getStartAt());
+
+        if (exists) {
+            throw new ConflictException("이미 등록되어 있는 예약 시간입니다.");
         }
     }
 

@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.globalException.BadRequestException;
+import roomescape.globalException.ConflictException;
 import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.repository.ReservationRepositoryImpl;
@@ -30,12 +31,12 @@ import roomescape.theme.repository.ThemeRepositoryImpl;
 
 @JdbcTest
 @Import({
-    ReservationTimeRepositoryImpl.class,
-    ReservationTimeService.class,
-    ReservationRepositoryImpl.class,
-    ReservationService.class,
-    ThemeRepositoryImpl.class,
-    ReservationTimeTestDataConfig.class
+        ReservationTimeRepositoryImpl.class,
+        ReservationTimeService.class,
+        ReservationRepositoryImpl.class,
+        ReservationService.class,
+        ThemeRepositoryImpl.class,
+        ReservationTimeTestDataConfig.class
 })
 class ReservationTimeServiceTest {
 
@@ -80,13 +81,13 @@ class ReservationTimeServiceTest {
 
             // then
             assertSoftly(s -> {
-                    s.assertThat(resDtos).hasSize(1);
-                    s.assertThat(resDtos)
-                        .extracting(ReservationTimeResDto::startAt)
-                        .contains(DEFAULT_DUMMY_TIME);
-                    resDtos.forEach(resDto ->
-                        s.assertThat(resDto.id()).isNotNull());
-                }
+                        s.assertThat(resDtos).hasSize(1);
+                        s.assertThat(resDtos)
+                                .extracting(ReservationTimeResDto::startAt)
+                                .contains(DEFAULT_DUMMY_TIME);
+                        resDtos.forEach(resDto ->
+                                s.assertThat(resDto.id()).isNotNull());
+                    }
             );
         }
 
@@ -120,8 +121,22 @@ class ReservationTimeServiceTest {
             // then
             List<ReservationTimeResDto> resDtos = service.findAll();
             Assertions.assertThat(resDtos)
-                .extracting(ReservationTimeResDto::startAt)
-                .contains(dummyTime1);
+                    .extracting(ReservationTimeResDto::startAt)
+                    .contains(dummyTime1);
+        }
+
+        @DisplayName("이미 등록되어 있는 예약 시간으로 추가 요청 시 예외 발생한다")
+        @Test
+        void add_throwException_byDuplicationReservationTime() {
+            // given
+            LocalTime dummyTime1 = LocalTime.of(12, 33);
+            service.add(ReservationTimeFixture.createReqDto(dummyTime1));
+
+            // when
+            // then
+            Assertions.assertThatThrownBy(
+                    () -> service.add(ReservationTimeFixture.createReqDto(dummyTime1))
+            ).isInstanceOf(ConflictException.class);
         }
     }
 
@@ -149,7 +164,7 @@ class ReservationTimeServiceTest {
             // when
             // then
             Assertions.assertThatCode(
-                () -> service.delete(Long.MAX_VALUE)
+                    () -> service.delete(Long.MAX_VALUE)
             ).isInstanceOf(NotFoundException.class);
         }
 
@@ -160,16 +175,16 @@ class ReservationTimeServiceTest {
 
             Theme theme = themeRepository.add(new Theme("name1", "dd", "tt"));
             reservationService.add(
-                new ReservationReqDto(
-                    "r1",
-                    LocalDate.now().plusMonths(3),
-                    testDataConfig.getDefaultDummyTimeId(),
-                    theme.getId()
-                ));
+                    new ReservationReqDto(
+                            "r1",
+                            LocalDate.now().plusMonths(3),
+                            testDataConfig.getDefaultDummyTimeId(),
+                            theme.getId()
+                    ));
 
             // when, then
             Assertions.assertThatCode(
-                () -> service.delete(testDataConfig.getDefaultDummyTimeId())
+                    () -> service.delete(testDataConfig.getDefaultDummyTimeId())
             ).isInstanceOf(BadRequestException.class);
         }
     }
