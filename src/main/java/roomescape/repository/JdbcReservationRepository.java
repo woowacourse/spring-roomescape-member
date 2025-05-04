@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.dto.ReservationValueDto;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;

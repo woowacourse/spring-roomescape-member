@@ -1,7 +1,7 @@
 package roomescape.repository;
 
 import java.util.List;
-import roomescape.dto.ReservationValueDto;
+
 import roomescape.model.Reservation;
 
 public class MemoryReservationRepository implements ReservationRepository {
