@@ -36,7 +36,7 @@ class ReservationTest {
     void when_current_date_and_past_hour_then_success() {
 
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 21));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 23));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
         Reservation reservation = new Reservation(new Person("james"), reservationDate,
                 reservationTime, theme);
