@@ -4,6 +4,8 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -49,14 +51,17 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         String query = "select * from reservation_time where id = ?";
-        return jdbcTemplate.queryForObject(query,
-            (resultSet, rowNum) -> {
-                ReservationTime reservationTime = new ReservationTime(
-                    resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at")));
-                return reservationTime;
-            }, id);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) -> {
+                    return new ReservationTime(
+                        resultSet.getLong("id"),
+                        LocalTime.parse(resultSet.getString("start_at")));
+                }, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

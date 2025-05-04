@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
 
@@ -25,15 +26,15 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
 
     @Override
     public void deleteReservationTime(Long id) {
-        ReservationTime reservationTime = findById(id);
+        ReservationTime reservationTime = findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약시간입니다."));
         reservationTimes.remove(reservationTime);
     }
 
     @Override
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         return reservationTimes.stream()
             .filter(reservationTime -> reservationTime.getId().equals(id))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호 입니다."));
+            .findFirst();
     }
 }

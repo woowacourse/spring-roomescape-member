@@ -7,6 +7,8 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -97,6 +99,43 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     public void deleteReservation(Long id) {
         String query = "delete from reservation where id = ?";
         jdbcTemplate.update(query, id);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        String query = """
+                SELECT r.id AS reservation_id,
+                       r.name,
+                       r.date,
+            
+                       rt.id AS time_id,
+                       rt.start_at AS time_value,
+            
+                       t.id AS theme_id,
+                       t.name AS theme_name,
+                       t.description AS theme_description,
+                       t.thumbnail AS theme_thumbnail
+                FROM reservation r
+                INNER JOIN reservation_time rt ON r.time_id = rt.id
+                INNER JOIN theme t ON r.theme_id = t.id
+                WHERE r.id = ?
+            """;
+        try {
+            Reservation reservation = jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) ->
+                    new Reservation(
+                        resultSet.getLong("id"),
+                        createPerson(resultSet),
+                        createReservationDate(resultSet),
+                        createReservationTime(resultSet),
+                        createTheme(resultSet)
+                    ),
+                id
+            );
+            return Optional.of(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

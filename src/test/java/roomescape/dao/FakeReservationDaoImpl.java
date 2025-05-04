@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
@@ -26,8 +27,15 @@ public class FakeReservationDaoImpl implements ReservationDao {
 
     @Override
     public void deleteReservation(Long id) {
-        Reservation reservation = findById(id);
+        Reservation reservation = findById(id).orElseThrow(() -> new IllegalArgumentException());
         reservations.remove(reservation);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long id) {
+        return reservations.stream()
+            .filter(reservation -> reservation.getId().equals(id))
+            .findFirst();
     }
 
     @Override
