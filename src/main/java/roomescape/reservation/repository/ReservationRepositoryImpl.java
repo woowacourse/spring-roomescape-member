@@ -180,4 +180,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
         return keyHolder.getKey().longValue();
     }
+
+    @Override
+    public boolean existsByTheme(Theme theme) {
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, theme.getId()) >= 1;
+    }
 }
