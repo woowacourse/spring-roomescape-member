@@ -27,6 +27,6 @@ public class AuthService {
         }
 
         // TODO : secret을 진짜로 비밀로 작성
-        return jwtUtil.getAuthentication("", user);
+        return jwtUtil.getAuthentication(user);
     }
 }
