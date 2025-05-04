@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -14,7 +13,8 @@ import roomescape.exception.custom.NotFoundValueException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.RoomThemeRepository;
-import roomescape.service.dto.ReservationCreation;
+import roomescape.service.dto.request.ReservationCreation;
+import roomescape.service.dto.response.ReservationResult;
 
 @Service
 public class ReservationService {
@@ -31,7 +31,7 @@ public class ReservationService {
         this.roomThemeRepository = roomThemeRepository;
     }
 
-    public ReservationResponse addReservation(final ReservationCreation creation) {
+    public ReservationResult addReservation(final ReservationCreation creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
         final RoomTheme theme = findThemeByThemeId(creation.themeId());
         final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
@@ -42,7 +42,7 @@ public class ReservationService {
         final long savedId = reservationRepository.insert(reservation);
         final Reservation savedReservation = findById(savedId);
 
-        return ReservationResponse.from(savedReservation);
+        return ReservationResult.from(savedReservation);
     }
 
     private ReservationTime findReservationTimeByTimeId(final long timeId) {
@@ -85,10 +85,10 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 예약입니다"));
     }
 
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationResult> findAllReservations() {
         return reservationRepository.findAll()
                 .stream()
-                .map(ReservationResponse::from)
+                .map(ReservationResult::from)
                 .toList();
     }
 

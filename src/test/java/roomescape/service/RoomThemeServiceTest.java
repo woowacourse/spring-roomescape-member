@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
-import roomescape.service.dto.RoomThemeCreation;
+import roomescape.service.dto.request.RoomThemeCreation;
+import roomescape.service.dto.response.RoomThemeResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -50,7 +50,7 @@ class RoomThemeServiceTest {
     @DisplayName("존재하는 모든 테마를 조회한다")
     void findAllThemes() {
         //given //when
-        List<RoomThemeResponse> allThemes = roomThemeService.findAllThemes();
+        List<RoomThemeResult> allThemes = roomThemeService.findAllThemes();
 
         //then
         assertThat(allThemes).hasSize(1);

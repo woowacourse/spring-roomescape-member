@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.request.CreateReservationRequest;
-import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
-import roomescape.service.dto.ReservationCreation;
+import roomescape.service.dto.request.ReservationCreation;
+import roomescape.service.dto.response.ReservationResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -34,7 +34,7 @@ class ReservationServiceTest {
 
         //when
         ReservationCreation creation = new ReservationCreation("test", date, 1L, 1L);
-        ReservationResponse actual = reservationService.addReservation(creation);
+        ReservationResult actual = reservationService.addReservation(creation);
 
         //then
         assertAll(
@@ -94,7 +94,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 조회한다")
     void findReservation() {
         //given //when
-        List<ReservationResponse> actual = reservationService.findAllReservations();
+        List<ReservationResult> actual = reservationService.findAllReservations();
 
         //then
         assertThat(actual).hasSize(1);

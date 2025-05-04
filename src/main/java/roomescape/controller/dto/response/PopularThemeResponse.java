@@ -1,10 +1,10 @@
 package roomescape.controller.dto.response;
 
-import roomescape.domain.RoomTheme;
+import roomescape.service.dto.response.RoomThemeResult;
 
 public record PopularThemeResponse(String name, String description, String thumbnail) {
 
-    public static PopularThemeResponse from(RoomTheme theme) {
-        return new PopularThemeResponse(theme.getName(), theme.getDescription(), theme.getThumbnail());
+    public static PopularThemeResponse from(RoomThemeResult result) {
+        return new PopularThemeResponse(result.name(), result.description(), result.thumbnail());
     }
 }

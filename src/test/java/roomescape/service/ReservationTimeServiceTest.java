@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.response.AvailableReservationTimeResponse;
-import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
-import roomescape.service.dto.ReservationTimeCreation;
+import roomescape.service.dto.request.ReservationTimeCreation;
+import roomescape.service.dto.response.AvailableReservationTimeResult;
+import roomescape.service.dto.response.ReservationTimeResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -53,7 +53,7 @@ class ReservationTimeServiceTest {
     @DisplayName("시간 데이터를 조회할 수 있어야 한다")
     void findAllReservationTimes() {
         //given //when
-        List<ReservationTimeResponse> actual = reservationTimeService.findAllReservationTimes();
+        List<ReservationTimeResult> actual = reservationTimeService.findAllReservationTimes();
 
         //then
         assertThat(actual).hasSize(2);
@@ -63,7 +63,7 @@ class ReservationTimeServiceTest {
     @DisplayName("이용가능한 예약 시간을 조회한다")
     void findAvailableTime() {
         //given //when
-        List<AvailableReservationTimeResponse> actual = reservationTimeService.findAllAvailableTime(
+        List<AvailableReservationTimeResult> actual = reservationTimeService.findAllAvailableTime(
                 LocalDate.of(2025, 4, 28), 1
         );
 

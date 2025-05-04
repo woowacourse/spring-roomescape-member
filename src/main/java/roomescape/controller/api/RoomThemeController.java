@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.CreateThemeRequest;
-import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.service.RoomThemeService;
-import roomescape.service.dto.RoomThemeCreation;
+import roomescape.service.dto.request.RoomThemeCreation;
+import roomescape.service.dto.response.PopularThemeResult;
+import roomescape.service.dto.response.RoomThemeResult;
 
 @RequestMapping("/themes")
 @RestController
@@ -30,16 +31,20 @@ public class RoomThemeController {
     @ResponseStatus(HttpStatus.CREATED)
     public RoomThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
         final RoomThemeCreation creation = RoomThemeCreation.from(request);
-        return roomThemeService.addTheme(creation);
+        RoomThemeResult roomThemeResult = roomThemeService.addTheme(creation);
+        return RoomThemeResponse.from(roomThemeResult);
     }
 
     @GetMapping
     public List<RoomThemeResponse> findAllThemes() {
-        return roomThemeService.findAllThemes();
+        return roomThemeService.findAllThemes()
+                .stream()
+                .map(RoomThemeResponse::from)
+                .toList();
     }
 
     @GetMapping("/popular")
-    public List<PopularThemeResponse> findPopularThemes() {
+    public List<PopularThemeResult> findPopularThemes() {
         return roomThemeService.findPopularThemes();
     }
 

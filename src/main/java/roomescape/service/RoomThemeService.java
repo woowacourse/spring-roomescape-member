@@ -3,15 +3,15 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.response.PopularThemeResponse;
-import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotFoundValueException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.RoomThemeRepository;
-import roomescape.service.dto.RoomThemeCreation;
+import roomescape.service.dto.request.RoomThemeCreation;
+import roomescape.service.dto.response.PopularThemeResult;
+import roomescape.service.dto.response.RoomThemeResult;
 
 @Service
 public class RoomThemeService {
@@ -27,7 +27,7 @@ public class RoomThemeService {
         this.roomThemeRepository = roomThemeRepository;
     }
 
-    public RoomThemeResponse addTheme(final RoomThemeCreation themeCreation) {
+    public RoomThemeResult addTheme(final RoomThemeCreation themeCreation) {
         if (roomThemeRepository.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
@@ -37,7 +37,7 @@ public class RoomThemeService {
         final long id = roomThemeRepository.insert(theme);
 
         final RoomTheme savedTheme = findById(id);
-        return RoomThemeResponse.from(savedTheme);
+        return RoomThemeResult.from(savedTheme);
     }
 
     private RoomTheme findById(final long id) {
@@ -45,20 +45,20 @@ public class RoomThemeService {
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 테마입니다"));
     }
 
-    public List<RoomThemeResponse> findAllThemes() {
+    public List<RoomThemeResult> findAllThemes() {
         return roomThemeRepository.findAll()
                 .stream()
-                .map(RoomThemeResponse::from)
+                .map(RoomThemeResult::from)
                 .toList();
     }
 
-    public List<PopularThemeResponse> findPopularThemes() {
+    public List<PopularThemeResult> findPopularThemes() {
         final LocalDate currentDate = LocalDate.now();
         final LocalDate start = currentDate.minusDays(8);
         final LocalDate end = currentDate.minusDays(1);
 
         return roomThemeRepository.findPopularThemes(start, end, TOP_LIMIT).stream()
-                .map(PopularThemeResponse::from)
+                .map(PopularThemeResult::from)
                 .toList();
     }
 

@@ -16,7 +16,8 @@ import roomescape.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.ReservationTimeCreation;
+import roomescape.service.dto.request.ReservationTimeCreation;
+import roomescape.service.dto.response.ReservationTimeResult;
 
 @RequestMapping("/times")
 @RestController
@@ -30,21 +31,27 @@ public class ReservationTimeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationTimeResponse addReservationTime(
-            @RequestBody CreateReservationTimeRequest request) {
+    public ReservationTimeResponse addReservationTime(@RequestBody CreateReservationTimeRequest request) {
         final ReservationTimeCreation creation = ReservationTimeCreation.from(request);
-        return reservationTimeService.addReservationTime(creation);
+        ReservationTimeResult reservationTimeResult = reservationTimeService.addReservationTime(creation);
+        return ReservationTimeResponse.from(reservationTimeResult);
     }
 
     @GetMapping
     public List<ReservationTimeResponse> findAllReservationTimes() {
-        return reservationTimeService.findAllReservationTimes();
+        return reservationTimeService.findAllReservationTimes()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 
     @GetMapping("/available")
     public List<AvailableReservationTimeResponse> findAvailableTime(@RequestParam(value = "date") LocalDate date,
                                                                     @RequestParam(value = "themeId") long themeId) {
-        return reservationTimeService.findAllAvailableTime(date, themeId);
+        return reservationTimeService.findAllAvailableTime(date, themeId)
+                .stream()
+                .map(AvailableReservationTimeResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
