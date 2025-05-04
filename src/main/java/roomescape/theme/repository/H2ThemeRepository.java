@@ -11,8 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
 
-@RequiredArgsConstructor
 @Repository
+@RequiredArgsConstructor
 public class H2ThemeRepository implements ThemeRepository {
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->

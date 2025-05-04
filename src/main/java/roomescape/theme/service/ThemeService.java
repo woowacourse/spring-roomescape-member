@@ -9,8 +9,8 @@ import roomescape.exception.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class ThemeService {
 
     private final ThemeRepository themeRepository;
