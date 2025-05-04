@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.common.BaseTest;
+import roomescape.common.RoomescapeTestSupport;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeRepository;
 
-public class ReservationTest extends BaseTest {
+public class ReservationTest extends RoomescapeTestSupport {
 
     @LocalServerPort
     private int port;

@@ -3,11 +3,12 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.common.BaseTest;
+import roomescape.common.RoomescapeTestSupport;
 import roomescape.reservation.controller.request.ReservationCreateRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.reservation.fixture.ReservationDateFixture;
@@ -18,7 +19,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 
-public class ReservationServiceTest extends BaseTest {
+public class ReservationServiceTest extends RoomescapeTestSupport {
 
     @Autowired
     private ReservationService reservationService;
@@ -34,9 +35,11 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
 
+        LocalDate now = LocalDate.now();
+
         ReservationCreateRequest request = new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
+                now.plusDays(1),
                 reservationTime.getId(),
                 theme.getId()
         );
@@ -45,7 +48,7 @@ public class ReservationServiceTest extends BaseTest {
 
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
-        assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate());
+        assertThat(response.date()).isEqualTo(now.plusDays(1));
         assertThat(response.time()).isEqualTo(
                 new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
     }

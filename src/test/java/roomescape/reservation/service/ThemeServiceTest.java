@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.common.BaseTest;
+import roomescape.common.RoomescapeTestSupport;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
@@ -20,7 +20,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 
-public class ThemeServiceTest extends BaseTest {
+public class ThemeServiceTest extends RoomescapeTestSupport {
 
     @Autowired
     private ReservationDbFixture reservationDbFixture;
