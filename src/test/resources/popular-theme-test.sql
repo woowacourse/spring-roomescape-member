@@ -1,6 +1,6 @@
 INSERT INTO reservation_time (id, start_at) VALUES
-(100, '12:00:00'),
-(200, '13:00:00');
+(100, '12:00'),
+(200, '13:00');
 
 INSERT INTO theme (id, theme_name, description, thumbnail) VALUES
 (100, 'top1', 'description1', 'thumbnail1'),

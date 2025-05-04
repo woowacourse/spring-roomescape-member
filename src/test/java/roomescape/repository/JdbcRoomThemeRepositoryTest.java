@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.domain.RoomTheme;
@@ -20,9 +22,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(JdbcRoomThemeRepository.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
+@Sql(scripts = "/schema.sql")
 @Sql(scripts = "/reservation-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/clean-test.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class JdbcRoomThemeRepositoryTest {
 
     @Autowired
@@ -90,7 +94,7 @@ class JdbcRoomThemeRepositoryTest {
 
     @Test
     @DisplayName("특정 기간 내에 존재하는 예약 횟수를 기반으로 인기 테마를 조회한다")
-    @Sql(scripts = "/popular-theme-test.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = {"/schema.sql", "/popular-theme-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void findPopularThemes() {
         //given
         LocalDate start = LocalDate.of(2025, 5, 1);
