@@ -12,14 +12,14 @@ public record ReservationRequest(
         validateNotNull(name, date, timeId, themeId);
     }
 
-    private void validateNotNull(String name, LocalDate date, long timeId, Long themeId) {
-        if (name == null) {
+    private void validateNotNull(String name, LocalDate date, Long timeId, Long themeId) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("잘못된 name 입력입니다.");
         }
         if (date == null) {
             throw new IllegalArgumentException("잘못된 date 입력입니다.");
         }
-        if (timeId < 1) {
+        if (timeId == null || timeId < 1) {
             throw new IllegalArgumentException("잘못된 timeId 입력입니다.");
         }
         if (themeId == null || themeId < 1) {
