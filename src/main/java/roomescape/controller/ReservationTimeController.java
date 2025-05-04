@@ -36,7 +36,7 @@ public class ReservationTimeController {
                 .toList();
     }
 
-    @GetMapping("/theme/date/times")
+    @GetMapping(value = "/times", params = {"date", "themeId"})
     public List<TimeWithBookStateResponse> getReservationTimesInThemeAndDate(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themId

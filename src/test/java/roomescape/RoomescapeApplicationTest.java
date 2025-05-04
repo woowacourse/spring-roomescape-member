@@ -222,7 +222,7 @@ class RoomescapeApplicationTest {
                 .param("date", NEXT_DAY.toString())
                 .param("themeId", 1)
                 .log().all()
-                .when().get("theme/date/times")
+                .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("get(0).isBooked", is(true));
@@ -233,7 +233,7 @@ class RoomescapeApplicationTest {
                 .param("date", NEXT_DAY.toString())
                 .param("themeId", 1)
                 .log().all()
-                .when().get("theme/date/times")
+                .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
                 .body("get(0).isBooked", is(false));
