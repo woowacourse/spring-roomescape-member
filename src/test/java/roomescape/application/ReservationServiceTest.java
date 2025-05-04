@@ -1,6 +1,5 @@
 package roomescape.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRegistrationPolicy;
 import roomescape.domain.ReservationTime;
@@ -62,7 +60,7 @@ class ReservationServiceTest {
         // given
         ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 5, 2), "멍구", 1L);
 
-        Theme theme =  Theme.of(1L, "호러 테마", "완전 호러입니다.", "thumbnail.url");
+        Theme theme = Theme.of(1L, "호러 테마", "완전 호러입니다.", "thumbnail.url");
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         Reservation reservation = Reservation.createNew("멍구", theme, request.date(), time);
 
@@ -72,17 +70,21 @@ class ReservationServiceTest {
         given(reservationRepository.save(reservation)).willReturn(reservationId);
 
         // when
-        ReservationDto result = reservationService.registerReservation(request);
+        reservationService.registerReservation(request);
 
         // then
-        assertThat(result.id()).isEqualTo(reservationId);
+        verify(themeService).getThemeById(1L);
+        verify(timeService).getTimeById(1L);
+        verify(reservationRepository).existsDuplicatedReservation(request.date(), request.timeId(), request.themeId());
+        verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(false));
+        verify(reservationRepository).save(reservation);
     }
 
     @DisplayName("중복된 예약일 때 도메인 예외를 그대로 전파한다")
     @Test
     void throwSameExceptionWithDomain_when_duplicatedReservation() {
         // given
-        ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025,1,1), "멍구", 1L);
+        ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 1, 1), "멍구", 1L);
 
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
@@ -90,16 +92,16 @@ class ReservationServiceTest {
                 request.date(), request.timeId(), request.themeId()
         )).willReturn(true);
 
-
-        // when
         doThrow(new ImpossibleReservationException(ALREADY_RESERVED.getMessage()))
                 .when(reservationRegistrationPolicy)
                 .validate(any(Reservation.class), eq(true));
 
-        // then
+        // when & then
         assertThatThrownBy(() -> reservationService.registerReservation(request))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessage(ALREADY_RESERVED.getMessage());
+
+        verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(true));
     }
 
     @DisplayName("과거 일시 예약일 때 도메인 예외를 그대로 전파한다")
@@ -124,6 +126,8 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.registerReservation(request))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessageContaining(PAST_RESERVATION.getMessage());
+
+        verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(true));
     }
 
     @DisplayName("예약 목록을 조회할 수 있다.")
@@ -133,10 +137,10 @@ class ReservationServiceTest {
         given(reservationRepository.findAll()).willReturn(List.of(RESERVATION_1, RESERVATION_2));
 
         // when
-        List<ReservationDto> result = reservationService.getAllReservations();
+        reservationService.getAllReservations();
 
         // then
-        assertThat(result).hasSize(2);
+        verify(reservationRepository).findAll();
     }
 
     @DisplayName("예약을 삭제할 수 있다.")

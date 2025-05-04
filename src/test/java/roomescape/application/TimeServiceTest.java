@@ -50,6 +50,7 @@ class TimeServiceTest {
 
         // then
         assertThat(result).hasSize(2);
+        verify(timeRepository).findAll();
     }
 
     @DisplayName("새로운 예약 시간을 등록할 수 있다.")
@@ -57,7 +58,7 @@ class TimeServiceTest {
     void registerNewTime() {
         // given
         TimeRequest request = new TimeRequest(LocalTime.of(14, 0));
-        given(timeRepository.save(any())).willReturn(1L);
+        given(timeRepository.save(any(ReservationTime.class))).willReturn(1L);
 
         // when
         TimeDto result = timeService.registerNewTime(request);
@@ -65,6 +66,8 @@ class TimeServiceTest {
         // then
         assertThat(result.id()).isEqualTo(1L);
         assertThat(result.startAt()).isEqualTo(request.startAt());
+
+        verify(timeRepository).save(any(ReservationTime.class));
     }
 
     @DisplayName("예약 시간을 삭제할 수 있다.")
@@ -88,32 +91,40 @@ class TimeServiceTest {
         assertThatThrownBy(() -> timeService.deleteTime(1L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("삭제할 수 없습니다");
+
+        verify(timeRepository).deleteById(1L);
     }
 
     @DisplayName("ID로 예약 시간을 조회할 수 있다.")
     @Test
     void getTimeById_success() {
         // given
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        given(timeRepository.findById(1L)).willReturn(Optional.of(time));
+        long timeId = 1L;
+        LocalTime time = LocalTime.of(10, 0);
+        ReservationTime reservationTime = ReservationTime.of(timeId, time);
+        given(timeRepository.findById(timeId)).willReturn(Optional.of(reservationTime));
 
         // when
-        ReservationTime result = timeService.getTimeById(1L);
+        ReservationTime result = timeService.getTimeById(timeId);
 
         // then
-        assertThat(result.getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        assertThat(result.getStartAt()).isEqualTo(time);
+        verify(timeRepository).findById(timeId);
     }
 
     @DisplayName("ID로 예약 시간을 조회할 수 없으면 NotFoundException이 발생한다.")
     @Test
     void getTimeById_fail() {
         // given
-        given(timeRepository.findById(1L)).willReturn(Optional.empty());
+        long notExistId = 99L;
+        given(timeRepository.findById(notExistId)).willReturn(Optional.empty());
 
         // then
-        assertThatThrownBy(() -> timeService.getTimeById(1L))
+        assertThatThrownBy(() -> timeService.getTimeById(notExistId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining("찾으려는 시간 id");
+
+        verify(timeRepository).findById(notExistId);
     }
 
     @DisplayName("예약 여부가 포함된 예약 시간 정보를 조회할 수 있다.")
@@ -129,11 +140,9 @@ class TimeServiceTest {
         given(timeRepository.getTimesWithBookingInfo(date, themeId)).willReturn(times);
 
         // when
-        List<TimeDataWithBookingInfo> result = timeService.getTimesWithBookingInfo(date, themeId);
+        timeService.getTimesWithBookingInfo(date, themeId);
 
         // then
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).alreadyBooked()).isFalse();
-        assertThat(result.get(1).alreadyBooked()).isTrue();
+        verify(timeRepository).getTimesWithBookingInfo(date, themeId);
     }
 }

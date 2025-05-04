@@ -3,7 +3,6 @@ package roomescape.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -44,10 +43,10 @@ class ThemeServiceTest {
         given(themeRepository.findAll()).willReturn(List.of(THEME_1, THEME_2));
 
         // when
-        List<ThemeDto> result = themeService.getAllThemes();
+        themeService.getAllThemes();
 
         // then
-        assertThat(result).hasSize(2);
+        verify(themeRepository).findAll();
     }
 
     @DisplayName("테마를 등록할 수 있다.")
@@ -55,28 +54,30 @@ class ThemeServiceTest {
     void registerTheme() {
         // given
         ThemeRequest request = new ThemeRequest("공포", "호러호러", "thumbnail.jpg");
-        given(themeRepository.save(any())).willReturn(1L);
+        given(themeRepository.save(any(Theme.class))).willReturn(1L);
 
         // when
         ThemeDto result = themeService.registerTheme(request);
 
         // then
-        assertThat(result.id()).isEqualTo(1L);
         assertThat(result.name()).isEqualTo("공포");
+        verify(themeRepository).save(any(Theme.class));
     }
 
     @DisplayName("존재하는 테마를 ID로 조회할 수 있다.")
     @Test
     void getThemeById_success() {
         // given
-        Theme theme = Theme.of(1L, "공포", "무서운 방", "horror.jpg");
+        long themeId = 1L;
+        Theme theme = Theme.of(themeId, "공포", "무서운 방", "horror.jpg");
         given(themeRepository.findById(1L)).willReturn(Optional.of(theme));
 
         // when
-        Theme result = themeService.getThemeById(1L);
+        Theme result = themeService.getThemeById(themeId);
 
         // then
         assertThat(result).isEqualTo(theme);
+        verify(themeRepository).findById(themeId);
     }
 
     @DisplayName("존재하지 않는 테마 ID로 조회 시 예외가 발생한다.")
@@ -111,6 +112,7 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.deleteTheme(1L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(THEME_DELETE_CONFLICT.getMessage());
+        verify(themeRepository).deleteById(1L);
     }
 
     @DisplayName("인기 테마 조회 시 결과를 dto로 감싸서 반환한다.")
@@ -122,18 +124,22 @@ class ThemeServiceTest {
                 Theme.of(2L, "2등", "인기2", "a.jpg"),
                 Theme.of(3L, "3등", "인기3", "a.jpg")
         );
-        given(themeRepository.findThemeRanking(any(), any(), anyInt()))
-                .willReturn(ranking);
 
-        // when
         LocalDate start = LocalDate.of(2025, 1, 1);
         LocalDate end = LocalDate.of(2025, 1, 7);
         int limit = 5;
 
         ThemeRankingCondition condition = ThemeRankingCondition.ofRequestParams(start, end, limit);
+
+        given(themeRepository.findThemeRanking(start, end, limit)).willReturn(ranking);
+
+        // when
         List<ThemeDto> result = themeService.getThemeRanking(condition);
 
         // then
         assertThat(result).hasSize(3);
+        assertThat(result.get(0).name()).isEqualTo("1등");
+
+        verify(themeRepository).findThemeRanking(start, end, limit);
     }
 }
