@@ -23,7 +23,7 @@ import roomescape.exceptions.EntityNotFoundException;
 import roomescape.service.ThemeService;
 
 @WebMvcTest(ThemeController.class)
-public class ThemeControllerTest {
+class ThemeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

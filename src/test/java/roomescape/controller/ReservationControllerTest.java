@@ -27,7 +27,7 @@ import roomescape.exceptions.EntityNotFoundException;
 import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
-public class ReservationControllerTest {
+class ReservationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -1,5 +1,10 @@
 package roomescape.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.dto.ReservationRequest;
@@ -13,13 +18,7 @@ import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-public class ReservationServiceTest {
+class ReservationServiceTest {
 
     private final ReservationRepository reservationRepository = new ReservationFakeRepository();
     private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();

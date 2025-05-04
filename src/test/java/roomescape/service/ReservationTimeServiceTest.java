@@ -14,7 +14,7 @@ import roomescape.exceptions.ReservationTimeDuplicateException;
 import roomescape.fake.ReservationTimeFakeRepository;
 import roomescape.repository.ReservationTimeRepository;
 
-public class ReservationTimeServiceTest {
+class ReservationTimeServiceTest {
 
     private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
     private final ReservationTimeService reservationService = new ReservationTimeService(reservationTimeRepository);

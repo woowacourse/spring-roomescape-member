@@ -11,7 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class RoomEscapeApplicationTest {
+class RoomEscapeApplicationTest {
 
     @Test
     @DisplayName("존재하지 않는 ID로 삭제 요청 시 404 응답이 반환되어야 한다")
