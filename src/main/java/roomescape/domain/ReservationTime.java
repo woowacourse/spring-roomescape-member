@@ -5,8 +5,9 @@ import java.util.Objects;
 
 public class ReservationTime {
 
-    private final LocalTime startAt;
     private Long id;
+    private final LocalTime startAt;
+
 
     public ReservationTime(final Long id, final LocalTime startAt) {
         this.id = id;
@@ -14,9 +15,9 @@ public class ReservationTime {
     }
 
     public ReservationTime(final LocalTime startAt) {
-        this.startAt = startAt;
+        this(null, startAt);
     }
-    
+
     public Long getId() {
         return id;
     }

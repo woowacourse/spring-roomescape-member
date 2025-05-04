@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Theme {
 
-    private Long id;
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
@@ -17,9 +17,7 @@ public class Theme {
     }
 
     public Theme(final String name, final String description, final String thumbnail) {
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this(null, name, description, thumbnail);
     }
 
     public Long getId() {
