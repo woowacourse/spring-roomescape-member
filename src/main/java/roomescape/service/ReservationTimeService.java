@@ -1,13 +1,11 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.response.AvailableReservationTimeResponse;
-import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
+import roomescape.domain.AvailableReservationTime;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
@@ -26,16 +24,14 @@ public class ReservationTimeService {
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
-    public ReservationTimeResponse addReservationTime(final ReservationTimeCreation creation) {
+    public ReservationTime addReservationTime(final ReservationTimeCreation creation) {
         if (reservationTimeDAO.existsByStartAt(creation.startAt())) {
             throw new ExistedDuplicateValueException("이미 존재하는 예약 가능 시간입니다: %s".formatted(creation.startAt()));
         }
         final ReservationTime reservationTime = new ReservationTime(creation.startAt());
         final long id = reservationTimeDAO.insert(reservationTime);
 
-        final ReservationTime savedReservationTime = findById(id);
-
-        return ReservationTimeResponse.from(savedReservationTime);
+        return findById(id);
     }
 
     private ReservationTime findById(final long id) {
@@ -43,26 +39,17 @@ public class ReservationTimeService {
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약 시간입니다"));
     }
 
-    public List<ReservationTimeResponse> findAllReservationTimes() {
-        return reservationTimeDAO.findAll()
-                .stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+    public List<ReservationTime> findAllReservationTimes() {
+        return reservationTimeDAO.findAll();
     }
 
-    public List<AvailableReservationTimeResponse> findAllAvailableTime(final LocalDate date, final long themeId) {
-        List<ReservationTime> totalReservationTime = reservationTimeDAO.findAll();
-        List<ReservationTime> bookedTime = reservationTimeDAO.findAllBookedTime(date, themeId);
-        List<AvailableReservationTimeResponse> responses = new ArrayList<>();
+    public List<AvailableReservationTime> findAllAvailableTime(final LocalDate date, final long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeDAO.findAll();
+        List<ReservationTime> bookedTimes = reservationTimeDAO.findAllBookedTime(date, themeId);
 
-        for (ReservationTime reservationTime : totalReservationTime) {
-            final boolean isBookedTime = bookedTime.contains(reservationTime);
-            AvailableReservationTimeResponse response =
-                    AvailableReservationTimeResponse.fromReservationTimeWithBookingStatus(
-                            reservationTime, isBookedTime);
-            responses.add(response);
-        }
-        return responses;
+        return reservationTimes.stream()
+                .map(time -> new AvailableReservationTime(bookedTimes, time))
+                .toList();
     }
 
     public void deleteById(final long id) {

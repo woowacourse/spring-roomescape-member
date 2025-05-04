@@ -1,20 +1,20 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.controller.dto.response.RoomThemeResponse;
+import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.RoomThemeCreation;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -50,7 +50,7 @@ class RoomThemeServiceTest {
     @DisplayName("존재하는 모든 테마를 조회한다")
     void findAllThemes() {
         //given //when
-        List<RoomThemeResponse> allThemes = roomThemeService.findAllThemes();
+        List<RoomTheme> allThemes = roomThemeService.findAllThemes();
 
         //then
         assertThat(allThemes).hasSize(1);

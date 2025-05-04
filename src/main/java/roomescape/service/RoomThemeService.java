@@ -3,8 +3,6 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.response.PopularThemeResponse;
-import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.RoomThemeDAO;
 import roomescape.domain.PopularThemeSelectionCriteria;
@@ -28,7 +26,7 @@ public class RoomThemeService {
         this.themeDAO = themeDAO;
     }
 
-    public RoomThemeResponse addTheme(final RoomThemeCreation themeCreation) {
+    public RoomTheme addTheme(final RoomThemeCreation themeCreation) {
         if (themeDAO.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
@@ -37,8 +35,7 @@ public class RoomThemeService {
                 themeCreation.thumbnail());
         final long id = themeDAO.insert(theme);
 
-        final RoomTheme savedTheme = findById(id);
-        return RoomThemeResponse.from(savedTheme);
+        return findById(id);
     }
 
     private RoomTheme findById(final long id) {
@@ -46,24 +43,18 @@ public class RoomThemeService {
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마입니다"));
     }
 
-    public List<RoomThemeResponse> findAllThemes() {
-        return themeDAO.findAll()
-                .stream()
-                .map(RoomThemeResponse::from)
-                .toList();
+    public List<RoomTheme> findAllThemes() {
+        return themeDAO.findAll();
     }
 
-    public List<PopularThemeResponse> findPopularThemes() {
+    public List<RoomTheme> findPopularThemes() {
         LocalDate now = LocalDate.now();
         PopularThemeSelectionCriteria criteria =
                 new PopularThemeSelectionCriteria(now, POPULAR_THEME_SELECTION_DURATION);
 
         List<RoomTheme> popularThemes = themeDAO.findPopularThemes(criteria.getStartDay(), criteria.getEndDay());
 
-        return popularThemes.stream()
-                .limit(POPULAR_THEMES_TOP_COUNT)
-                .map(PopularThemeResponse::from)
-                .toList();
+        return popularThemes.subList(0, Math.min(POPULAR_THEMES_TOP_COUNT, popularThemes.size()));
     }
 
     public void deleteTheme(final long id) {

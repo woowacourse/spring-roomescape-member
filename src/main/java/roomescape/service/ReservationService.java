@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.dao.ReservationDAO;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.dao.RoomThemeDAO;
@@ -29,7 +28,7 @@ public class ReservationService {
         this.themeDAO = themeDAO;
     }
 
-    public ReservationResponse addReservation(final ReservationCreation creation) {
+    public Reservation addReservation(final ReservationCreation creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
         final RoomTheme theme = findThemeByThemeId(creation.themeId());
         final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
@@ -38,9 +37,7 @@ public class ReservationService {
         validateDuplicateReservation(reservation);
 
         final long savedId = reservationDAO.insert(reservation);
-        final Reservation savedReservation = findById(savedId);
-
-        return ReservationResponse.from(savedReservation);
+        return findById(savedId);
     }
 
     private ReservationTime findReservationTimeByTimeId(final long timeId) {
@@ -78,11 +75,8 @@ public class ReservationService {
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약입니다"));
     }
 
-    public List<ReservationResponse> findAllReservations() {
-        return reservationDAO.findAll()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> findAllReservations() {
+        return reservationDAO.findAll();
     }
 
     public void removeReservationById(final long id) {

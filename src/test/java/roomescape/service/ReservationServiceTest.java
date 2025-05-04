@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.request.CreateReservationRequest;
-import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.domain.Reservation;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
 import roomescape.exception.custom.PharmaceuticalViolationException;
@@ -34,12 +34,12 @@ class ReservationServiceTest {
 
         //when
         ReservationCreation creation = new ReservationCreation("test", date, 1L, 1L);
-        ReservationResponse actual = reservationService.addReservation(creation);
+        Reservation actual = reservationService.addReservation(creation);
 
         //then
         assertAll(
                 () -> assertThat(reservationService.findAllReservations()).hasSize(2),
-                () -> assertThat(actual.id()).isEqualTo(2L)
+                () -> assertThat(actual.getId()).isEqualTo(2L)
         );
     }
 
@@ -94,7 +94,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 조회한다")
     void findReservation() {
         //given //when
-        List<ReservationResponse> actual = reservationService.findAllReservations();
+        List<Reservation> actual = reservationService.findAllReservations();
 
         //then
         assertThat(actual).hasSize(1);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.domain.Reservation;
 import roomescape.service.ReservationService;
 import roomescape.service.dto.ReservationCreation;
 
@@ -29,12 +30,17 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse addReservation(@RequestBody CreateReservationRequest request) {
         final ReservationCreation creation = ReservationCreation.from(request);
-        return reservationService.addReservation(creation);
+
+        final Reservation savedReservation = reservationService.addReservation(creation);
+        return ReservationResponse.from(savedReservation);
     }
 
     @GetMapping
     public List<ReservationResponse> findAllReservations() {
-        return reservationService.findAllReservations();
+        return reservationService.findAllReservations()
+                .stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{id}")

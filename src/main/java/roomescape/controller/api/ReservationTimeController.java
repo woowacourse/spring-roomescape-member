@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.CreateReservationTimeRequest;
 import roomescape.controller.dto.response.AvailableReservationTimeResponse;
 import roomescape.controller.dto.response.ReservationTimeResponse;
+import roomescape.domain.AvailableReservationTime;
+import roomescape.domain.ReservationTime;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.ReservationTimeCreation;
 
@@ -33,18 +35,28 @@ public class ReservationTimeController {
     public ReservationTimeResponse addReservationTime(
             @RequestBody CreateReservationTimeRequest request) {
         final ReservationTimeCreation creation = ReservationTimeCreation.from(request);
-        return reservationTimeService.addReservationTime(creation);
+
+        final ReservationTime savedReservationTime = reservationTimeService.addReservationTime(creation);
+        return ReservationTimeResponse.from(savedReservationTime);
     }
 
     @GetMapping
     public List<ReservationTimeResponse> findAllReservationTimes() {
-        return reservationTimeService.findAllReservationTimes();
+        return reservationTimeService.findAllReservationTimes()
+                .stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 
     @GetMapping("/avaliable")
     public List<AvailableReservationTimeResponse> findAvailableTime(@RequestParam(value = "date") LocalDate date,
                                                                     @RequestParam(value = "themeId") long themeId) {
-        return reservationTimeService.findAllAvailableTime(date, themeId);
+        List<AvailableReservationTime> availableReservationTimes
+                = reservationTimeService.findAllAvailableTime(date, themeId);
+
+        return availableReservationTimes.stream()
+                .map(AvailableReservationTimeResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
