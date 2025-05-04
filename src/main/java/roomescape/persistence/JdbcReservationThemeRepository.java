@@ -64,7 +64,7 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
     @Override
     public void deleteById(Long id) {
         String query = """
-                DELETE FROM thema
+                DELETE FROM theme
                 WHERE id = ?
                 """;
         jdbcTemplate.update(query, id);
