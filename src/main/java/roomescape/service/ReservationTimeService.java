@@ -57,10 +57,10 @@ public class ReservationTimeService {
 
         for (ReservationTime reservationTime : totalReservationTime) {
             if (bookedTime.contains(reservationTime)) {
-                responses.add(AvailableReservationTimeResponse.from(reservationTime, true));
+                responses.add(AvailableReservationTimeResponse.of(reservationTime, true));
                 continue;
             }
-            responses.add(AvailableReservationTimeResponse.from(reservationTime, false));
+            responses.add(AvailableReservationTimeResponse.of(reservationTime, false));
         }
         return responses;
     }

@@ -5,7 +5,7 @@ import roomescape.domain.ReservationTime;
 
 public record AvailableReservationTimeResponse(long id, LocalTime startAt, boolean alreadyBooked) {
 
-    public static AvailableReservationTimeResponse from(ReservationTime reservationTime, boolean alreadyBooked) {
+    public static AvailableReservationTimeResponse of(ReservationTime reservationTime, boolean alreadyBooked) {
         return new AvailableReservationTimeResponse(reservationTime.getId(),
                 reservationTime.getStartAt(),
                 alreadyBooked);
