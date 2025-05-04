@@ -8,9 +8,9 @@ import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.ReservationCreation;
 
 @Service
@@ -53,7 +53,7 @@ public class ReservationService {
 
     private void validatePastDateAndTime(final Reservation reservation) {
         if (reservation.validatePastDateAndTime()) {
-            throw new PharmaceuticalViolationException("과거 시점은 예약할 수 없습니다");
+            throw new BusinessRuleViolationException("과거 시점은 예약할 수 없습니다");
         }
     }
 

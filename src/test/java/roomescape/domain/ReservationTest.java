@@ -88,7 +88,7 @@ class ReservationTest {
     @Test
     void validatePastDateAndTimeTest4() {
         // given
-        ReservationTime futureTime = new ReservationTime(2L, LocalTime.now().plusHours(1));
+        ReservationTime futureTime = new ReservationTime(2L, LocalTime.now().plusMinutes(1));
         Reservation reservation = new Reservation(NAME, LocalDate.now(), futureTime, ROOM_THEME);
 
         // when // then

@@ -12,8 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.RoomThemeCreation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -76,7 +76,7 @@ class RoomThemeServiceTest {
 
         //when //then
         assertThatThrownBy(() -> roomThemeService.deleteTheme(deleteId))
-                .isInstanceOf(PharmaceuticalViolationException.class)
+                .isInstanceOf(InUseException.class)
                 .hasMessageContaining("사용 중인 테마입니다");
     }
 

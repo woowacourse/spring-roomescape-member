@@ -8,8 +8,8 @@ import roomescape.dao.RoomThemeDao;
 import roomescape.domain.PopularThemeSelectionCriteria;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.RoomThemeCreation;
 
 @Service
@@ -59,7 +59,7 @@ public class RoomThemeService {
 
     public void deleteTheme(final long id) {
         if (reservationDAO.existsByThemeId(id)) {
-            throw new PharmaceuticalViolationException("사용 중인 테마입니다");
+            throw new InUseException("사용 중인 테마입니다");
         }
 
         final boolean deleted = themeDAO.deleteById(id);

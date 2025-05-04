@@ -15,8 +15,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.domain.AvailableReservationTime;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.ReservationTimeCreation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -94,7 +94,7 @@ class ReservationTimeServiceTest {
     void deleteUsedTimeById() {
         //given //when //then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
-                .isInstanceOf(PharmaceuticalViolationException.class)
+                .isInstanceOf(InUseException.class)
                 .hasMessageContaining("사용 중인 예약 시간입니다");
     }
 }

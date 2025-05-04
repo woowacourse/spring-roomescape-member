@@ -14,9 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.domain.Reservation;
+import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.ReservationCreation;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -66,7 +66,7 @@ class ReservationServiceTest {
         //when & then
         ReservationCreation past = new ReservationCreation("test", date, 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(past))
-                .isInstanceOf(PharmaceuticalViolationException.class)
+                .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("과거 시점은 예약할 수 없습니다");
     }
 

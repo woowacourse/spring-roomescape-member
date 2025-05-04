@@ -8,8 +8,8 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.AvailableReservationTime;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
+import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.exception.custom.PharmaceuticalViolationException;
 import roomescape.service.dto.ReservationTimeCreation;
 
 @Service
@@ -54,7 +54,7 @@ public class ReservationTimeService {
 
     public void deleteById(final long id) {
         if (reservationDAO.existsByTimeId(id)) {
-            throw new PharmaceuticalViolationException("사용 중인 예약 시간입니다");
+            throw new InUseException("사용 중인 예약 시간입니다");
         }
 
         boolean deleted = reservationTimeDAO.deleteById(id);
