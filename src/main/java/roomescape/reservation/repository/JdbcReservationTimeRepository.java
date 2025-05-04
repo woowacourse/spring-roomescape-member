@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.SaveException;
 import roomescape.reservation.domain.ReservationTime;
 
 @Repository
@@ -35,13 +36,10 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         }, keyHolder);
 
         if (rowAffected != 1) {
-            throw new IllegalStateException("예약 시간 저장에 실패했습니다.");
+            throw new SaveException("예약 시간 저장에 실패했습니다.");
         }
 
         final Number key = keyHolder.getKey();
-        if (key == null) {
-            throw new IllegalStateException("생성된 키가 존재하지 않습니다.");
-        }
 
         return key.longValue();
     }
