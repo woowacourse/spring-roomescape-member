@@ -6,28 +6,22 @@ import static org.hamcrest.Matchers.is;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.presentation.dto.request.ReservationRequest;
 
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 class ReservationApiTest {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     void 어드민_페이지로_접근할_수_있다() {
@@ -64,15 +58,16 @@ class ReservationApiTest {
 
     @Test
     void 시간을_추가한뒤_예약을_추가한다() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1));
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        ReservationRequest request = new ReservationRequest(
+                "브라운",
+                LocalDate.now().plusDays(1),
+                1L,
+                1L
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -86,15 +81,11 @@ class ReservationApiTest {
 
     @Test
     void 예약날짜는_null을_받을_수_없다() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", null);
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        ReservationRequest request = new ReservationRequest("브라운", null, 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -103,15 +94,11 @@ class ReservationApiTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "abcdefghijk"})
     void 예약자_이름은_빈_값을_받을_수_없다(String name) {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", name);
-        reservation.put("date", LocalDate.now().plusDays(1));
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
+        ReservationRequest request = new ReservationRequest(name, LocalDate.now().plusDays(1), 1L, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -119,15 +106,11 @@ class ReservationApiTest {
 
     @Test
     void 예약_시간_id는_null을_받을_수_없다() {
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1));
-        reservation.put("timeId", null);
-        reservation.put("themeId", 1);
+        ReservationRequest request = new ReservationRequest("브라운", LocalDate.now().plusDays(1), null, 1L);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
@@ -135,15 +118,16 @@ class ReservationApiTest {
 
     @Test
     void 과거날짜로_예약을_하면_에러를_반환한다() {
-        Map<String, Object> reservationParams = new HashMap<>();
-        reservationParams.put("name", "브라운");
-        reservationParams.put("date", LocalDate.now().minusDays(10));
-        reservationParams.put("timeId", 1);
-        reservationParams.put("themeId", 1);
+        ReservationRequest request = new ReservationRequest(
+                "브라운",
+                LocalDate.now().minusDays(10),
+                1L,
+                1L
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationParams)
+                .body(request)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400)
@@ -152,28 +136,30 @@ class ReservationApiTest {
 
     @Test
     void 중복된_시간에_예약을_하면_에러가_발생한다() {
-        Map<String, Object> reservationParams = new HashMap<>();
-        reservationParams.put("name", "브라운");
-        reservationParams.put("date", LocalDate.now().plusDays(10));
-        reservationParams.put("timeId", 1);
-        reservationParams.put("themeId", 1);
+        ReservationRequest request1 = new ReservationRequest(
+                "브라운",
+                LocalDate.now().plusDays(10),
+                1L,
+                1L
+        );
 
-        Map<String, Object> reservationParams2 = new HashMap<>();
-        reservationParams2.put("name", "드라고");
-        reservationParams2.put("date", LocalDate.now().plusDays(10));
-        reservationParams2.put("timeId", 1);
-        reservationParams2.put("themeId", 1);
+        ReservationRequest request2 = new ReservationRequest(
+                "드라고",
+                LocalDate.now().plusDays(10),
+                1L,
+                1L
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationParams)
+                .body(request1)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationParams2)
+                .body(request2)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(409);

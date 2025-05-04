@@ -5,13 +5,12 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import roomescape.presentation.dto.request.ThemeRequest;
 
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
@@ -21,14 +20,11 @@ public class ThemeApiTest {
 
     @Test
     void 테마를_추가한다() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "배트맨");
-        params.put("description", "");
-        params.put("thumbnail", "");
+        ThemeRequest request = new ThemeRequest("배트맨", "", "");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(request)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201);
@@ -45,14 +41,11 @@ public class ThemeApiTest {
 
     @Test
     void 이름은_null값을_받을_수_없다() {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", null);
-        params.put("description", "");
-        params.put("thumbnail", "");
+        ThemeRequest request = new ThemeRequest(null, "", "");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(request)
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(400);
