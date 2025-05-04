@@ -146,6 +146,8 @@ public class ReservationDAO implements ReservationRepository {
     }
 
     private Reservation reservationOf(ResultSet resultSet) throws SQLException {
+        // TODO 빌더 패턴을 사용하기
+
         return new Reservation(
                 resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),

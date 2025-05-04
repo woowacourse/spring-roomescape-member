@@ -48,7 +48,7 @@ public class ThemeDAO implements ThemeRepository {
                 WHERE R.date BETWEEN :start_date AND :end_date
                 GROUP BY T.id
                 ORDER BY reservation_count DESC
-                LIMIT :count;               
+                LIMIT :count;
                 """;
 
         Map<String, Object> params = Map.of(
