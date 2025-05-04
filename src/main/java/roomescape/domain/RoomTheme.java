@@ -33,7 +33,7 @@ public class RoomTheme {
             throw new InvalidInputException("테마 상세 설명은 빈 값이 입력될 수 없습니다");
         }
         if (Objects.isNull(thumbnail) || thumbnail.isBlank()) {
-            throw new InvalidInputException("섬네일 주소는 빈 값이 입력될 수 없습니다");
+            throw new InvalidInputException("썸네일 주소는 빈 값이 입력될 수 없습니다");
         }
     }
 
