@@ -11,7 +11,7 @@ public class ReservationDate {
     }
 
     public boolean isCurrentDay(LocalDate currentDate) {
-        return currentDate.equals(date);
+        return this.date.equals(currentDate);
     }
 
     public void validateDate(LocalDate currentDate) {

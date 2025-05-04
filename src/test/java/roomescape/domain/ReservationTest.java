@@ -18,10 +18,10 @@ class ReservationTest {
     void when_current_date_and_past_hour_then_throw_exception() {
 
         //given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 21));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 19));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
-        Reservation reservation = new Reservation(new Person("james"), reservationDate,
-            reservationTime, theme);
+        Reservation reservation = new Reservation(new Person("james"), reservationDate, reservationTime, theme);
+
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 20);
 
         //when, then
@@ -39,13 +39,13 @@ class ReservationTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 21));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
         Reservation reservation = new Reservation(new Person("james"), reservationDate,
-            reservationTime, theme);
+                reservationTime, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 22);
 
         //when, then
         assertThatCode(
-            () -> reservation.validateDateTime(reservationDate, reservationTime, currentDateTime))
-            .doesNotThrowAnyException();
+                () -> reservation.validateDateTime(reservationDate, reservationTime, currentDateTime))
+                .doesNotThrowAnyException();
     }
 
 }
