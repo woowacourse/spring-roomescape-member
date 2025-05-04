@@ -1,8 +1,8 @@
 package roomescape.integration;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -14,36 +14,11 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ViewIntegrationTest {
 
-    @DisplayName("URI에 따른 뷰를 로드한다.")
-    @Test
-    void getPageTest() {
+    @ParameterizedTest
+    @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/time", "/admin/theme", "/reservation", "/"})
+    void getPageTest(String uri) {
         RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/time")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/admin/theme")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/reservation")
-                .then().log().all()
-                .statusCode(200);
-
-        RestAssured.given().log().all()
-                .when().get("/")
+                .when().get(uri)
                 .then().log().all()
                 .statusCode(200);
     }
