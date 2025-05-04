@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.InvalidReservationException;
 
 class ReservationTest {
 
@@ -25,10 +26,9 @@ class ReservationTest {
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 20);
 
         //when, then
-        assertThatThrownBy(
-            () -> reservation.validateDateTime(reservationDate, reservationTime, currentDateTime))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("과거 시간으로는 예약할 수 없습니다.");
+        assertThatThrownBy(() -> reservation.validateDateTime(reservationDate, reservationTime, currentDateTime))
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("과거 시간으로는 예약할 수 없습니다.");
     }
 
     @DisplayName("현재 날짜로 예약을 생성할 때 과거 시간이 아니라면 예약을 생성할 수 있다.")

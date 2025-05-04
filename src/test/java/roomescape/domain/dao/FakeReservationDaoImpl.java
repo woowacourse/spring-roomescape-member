@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
+import roomescape.exception.InvalidReservationException;
 
 public class FakeReservationDaoImpl implements ReservationDao {
 
@@ -42,9 +43,9 @@ public class FakeReservationDaoImpl implements ReservationDao {
 
     private Reservation findById(long id) {
         return reservations.stream()
-            .filter(reservation -> reservation.getId() == id)
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호 입니다."));
+                .filter(reservation -> reservation.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약번호 입니다."));
     }
 
     @Override

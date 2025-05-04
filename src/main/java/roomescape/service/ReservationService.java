@@ -16,6 +16,7 @@ import roomescape.dto.BookedReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
+import roomescape.exception.InvalidThemeException;
 
 @Service
 public class ReservationService {
@@ -47,7 +48,7 @@ public class ReservationService {
                 reservationRequestDto.timeId());
 
         Theme theme = themeDao.findById(reservationRequestDto.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다"));
+                .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
 
         Reservation reservation = new Reservation(person, date, reservationTime, theme);
         reservation.validateDateTime(date, reservationTime, currentDateTime);
@@ -84,7 +85,7 @@ public class ReservationService {
                                         ReservationTime reservationTime) {
         int alreadyExistReservationCount = reservationDao.findAlreadyExistReservationBy(
                 date, themeId, reservationTime.getId());
-        return alreadyExistReservationCount != 0; //ture == 1이상 부터
+        return alreadyExistReservationCount != 0;
     }
 
     private void validateAlreadyExistDateTime(ReservationRequestDto reservationRequestDto,

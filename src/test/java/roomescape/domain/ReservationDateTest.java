@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.InvalidReservationException;
 
 class ReservationDateTest {
 
@@ -17,8 +18,8 @@ class ReservationDateTest {
 
         ReservationDate reservationDate = new ReservationDate(date);
         assertThatThrownBy(() -> reservationDate.validateDate(current))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("현재 날짜 기준으로 과거의 날짜는 예약할 수 없습니다.");
+                .isInstanceOf(InvalidReservationException.class)
+                .hasMessage("현재 날짜 기준으로 과거의 날짜는 예약할 수 없습니다.");
     }
 
     @DisplayName("현재 날짜 기준으로 같거나, 이후 날짜면 성공한다.")
@@ -29,6 +30,6 @@ class ReservationDateTest {
 
         ReservationDate reservationDate = new ReservationDate(date);
         assertThatCode(() -> reservationDate.validateDate(current))
-            .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
     }
 }

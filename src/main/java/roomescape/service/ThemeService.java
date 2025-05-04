@@ -7,6 +7,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
+import roomescape.exception.InvalidThemeException;
 
 @Service
 public class ThemeService {
@@ -34,7 +35,7 @@ public class ThemeService {
 
     private void validateIsExistThemeBy(Long id) {
         themeDao.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다: " + id));
+                .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
     }
 
     public List<ThemeResponseDto> getAllThemeOfRanks() {
