@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 class AdminViewControllerTest {
     @DisplayName("/admin 페이지 연결 테스트")
     @Test
-    void adminPage() {
+    void getAdminPagePage() {
         RestAssured.given().log().all()
                 .when().get("/admin")
                 .then().log().all()
@@ -28,7 +28,7 @@ class AdminViewControllerTest {
 
     @DisplayName("/admin/reservation 페이지 연결 테스트")
     @Test
-    void adminReservationPage() {
+    void getAdminPageReservationPage() {
         RestAssured.given().log().all()
                 .when().get("admin/reservation")
                 .then().log().all()
@@ -37,7 +37,7 @@ class AdminViewControllerTest {
 
     @DisplayName("/admin/time 페이지 연결 테스트")
     @Test
-    void adminTimePage() throws URISyntaxException, IOException {
+    void getAdminPageTimePage() throws URISyntaxException, IOException {
         // [요구사항] RestAssured 를 사용하지 않고 테스트 코드 작성해보기.
         HttpURLConnection connection = (HttpURLConnection) new URI("http://localhost:8080/admin/time").toURL().openConnection();
         int responseCode = connection.getResponseCode();
@@ -47,7 +47,7 @@ class AdminViewControllerTest {
 
     @DisplayName("/admin/theme 페이지 연결 테스트")
     @Test
-    void adminThemePage() throws URISyntaxException, IOException {
+    void getAdminPageThemePage() throws URISyntaxException, IOException {
         HttpURLConnection connection = (HttpURLConnection) new URI("http://localhost:8080/admin/theme").toURL().openConnection();
         int responseCode = connection.getResponseCode();
 

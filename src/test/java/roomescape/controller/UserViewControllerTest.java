@@ -18,7 +18,7 @@ class UserViewControllerTest {
     }
 
     @Test
-    void reservation() {
+    void getReservationPage() {
         RestAssured.given().log().all()
                 .when().get("/reservation")
                 .then().log().all()
