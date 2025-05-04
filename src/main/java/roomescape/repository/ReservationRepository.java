@@ -8,7 +8,7 @@ public interface ReservationRepository {
 
     List<Reservation> getAllReservations();
 
-    Reservation addReservation(ReservationValueDto reservationValueDto);
+    Reservation addReservation(Reservation reservation);
 
     void deleteReservation(Long id);
 

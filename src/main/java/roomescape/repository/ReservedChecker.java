@@ -1,7 +1,8 @@
 package roomescape.repository;
 
-import roomescape.dto.ReservationValueDto;
+
+import java.time.LocalDate;
 
 public interface ReservedChecker {
-    boolean contains(ReservationValueDto reservationValueDto);
+    boolean contains(LocalDate reservationDate, Long timeId, Long themeId);
 }

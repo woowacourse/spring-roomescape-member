@@ -46,36 +46,32 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
     }
 
     @Override
-    public Reservation addReservation(ReservationValueDto reservationValueDto) {
+    public boolean contains(LocalDate reservationDate, Long timeId, Long themeId) {
+        String sql = "select exists (select 1 from reservation where date = ? and time_id = ? and theme_id = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationDate, timeId, themeId);
+    }
+
+
+    @Override
+    public Reservation addReservation(Reservation reservationWithNoId) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql, new String[]{"id"});
-            ps.setString(1, reservationValueDto.userName().getName());
-            ps.setString(2, reservationValueDto.reservationDateTime().getDate().toString());
-            ps.setLong(3, reservationValueDto.reservationDateTime().getTime().getId());
-            ps.setLong(4, reservationValueDto.theme().getId());
+            ps.setString(1, reservationWithNoId.getUserName().getName());
+            ps.setString(2, reservationWithNoId.getReservationDateTime().getDate().toString());
+            ps.setLong(3, reservationWithNoId.getReservationDateTime().getTime().getId());
+            ps.setLong(4, reservationWithNoId.getTheme().getId());
             return ps;
         }, keyHolder);
-        return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                reservationValueDto.userName(),
-                reservationValueDto.reservationDateTime(),
-                reservationValueDto.theme());
+        return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservationWithNoId.getUserName(),
+                reservationWithNoId.getReservationDateTime(), reservationWithNoId.getTheme());
     }
 
     @Override
     public void deleteReservation(Long id) {
         jdbcTemplate.update("delete from reservation where id = ?", id);
-    }
-
-    @Override
-    public boolean contains(ReservationValueDto reservationValueDto) {
-        String sql = "select exists (select 1 from reservation where date = ? and time_id = ? and theme_id = ?)";
-        LocalDate date = reservationValueDto.reservationDateTime().getDate();
-        Long timeId = reservationValueDto.reservationDateTime().getTime().getId();
-        Long themeId = reservationValueDto.theme().getId();
-        return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
     }
 
     @Override

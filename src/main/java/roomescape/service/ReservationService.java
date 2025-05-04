@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -32,22 +33,18 @@ public class ReservationService {
     }
 
     public Reservation addReservation(ReservationRequestDto reservationRequestDto) {
-        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(
-                reservationRequestDto.timeId());
-        ReservationDateTime reservationDateTime = new ReservationDateTime(
-                reservationRequestDto.date(), reservationTime);
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(reservationRequestDto.timeId());
+        validateFutureDateTime(new ReservationDateTime(reservationRequestDto.date(), reservationTime));
 
-        validateFutureDateTime(reservationDateTime);
         Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
-        Reservation reservation = reservationRequestDto.toEntity(null, reservationTime, theme);
+        Reservation reservationWithNoId = reservationRequestDto.toEntity(null, reservationTime, theme);
 
-        ReservationValueDto reservationValueDto = ReservationValueDto.of(reservation);
-        validateUniqueReservation(reservationValueDto);
-        return reservationRepository.addReservation(reservationValueDto);
+        validateUniqueReservation(reservationRequestDto.date(), reservationRequestDto.timeId(), reservationRequestDto.themeId());
+        return reservationRepository.addReservation(reservationWithNoId);
     }
 
-    private void validateUniqueReservation(ReservationValueDto reservationValueDto) {
-        if (reservedChecker.contains(reservationValueDto)) {
+    private void validateUniqueReservation(LocalDate reservationDate, Long timeId, Long themeId) {
+        if (reservedChecker.contains(reservationDate, timeId, themeId)) {
             throw new IllegalArgumentException("Reservation already exists");
         }
     }

@@ -12,7 +12,7 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation addReservation(ReservationValueDto reservationValueDto) {
+    public Reservation addReservation(Reservation reservation) {
         return null;
     }
 
