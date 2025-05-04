@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.AvailableTimeResponseDto;
+import roomescape.dto.ReservationValuesDto;
+import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ReservedChecker;
@@ -50,6 +52,7 @@ public class ReservationTimeService {
         List<AvailableTimeResponseDto> availableTimeResponseDtos = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             boolean alreadyBooked = false;
+            new ReservationValuesDto(null, new ReservationDateTime(date, reservationTime), themeId);
             if (reservedChecker.contains(date, reservationTime.getId(), themeId)) {
                 alreadyBooked = true;
             }
