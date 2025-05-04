@@ -58,7 +58,8 @@ public class ReservationTimeService {
         for (ReservationTime reservationTime : totalReservationTime) {
             final boolean isBookedTime = bookedTime.contains(reservationTime);
             AvailableReservationTimeResponse response =
-                    AvailableReservationTimeResponse.from(reservationTime, isBookedTime);
+                    AvailableReservationTimeResponse.fromReservationTimeWithBookingStatus(
+                            reservationTime, isBookedTime);
             responses.add(response);
         }
         return responses;
