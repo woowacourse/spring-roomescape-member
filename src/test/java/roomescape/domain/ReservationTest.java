@@ -1,12 +1,13 @@
 package roomescape.domain;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.TestConstants.DEFAULT_THEME;
-import static roomescape.TestConstants.DEFAULT_TIME;
-
-import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static roomescape.constant.TestConstants.DEFAULT_THEME;
+import static roomescape.constant.TestConstants.DEFAULT_TIME;
 
 class ReservationTest {
 
@@ -15,10 +16,10 @@ class ReservationTest {
     void name_not_null() {
         assertThatThrownBy(() -> {
             new Reservation(
-                null,
-                LocalDate.now().plusDays(1),
-                DEFAULT_TIME,
-                DEFAULT_THEME);
+                    null,
+                    LocalDate.now().plusDays(1),
+                    DEFAULT_TIME,
+                    DEFAULT_THEME);
         }).isInstanceOf(NullPointerException.class);
     }
 
@@ -27,10 +28,10 @@ class ReservationTest {
     void date_not_null() {
         assertThatThrownBy(() -> {
             new Reservation(
-                "두리",
-                null,
-                DEFAULT_TIME,
-                DEFAULT_THEME);
+                    "두리",
+                    null,
+                    DEFAULT_TIME,
+                    DEFAULT_THEME);
         }).isInstanceOf(NullPointerException.class);
     }
 
@@ -39,10 +40,10 @@ class ReservationTest {
     void time_not_null() {
         assertThatThrownBy(() -> {
             new Reservation(
-                "두리",
-                LocalDate.of(2025, 10, 5),
-                null,
-                DEFAULT_THEME
+                    "두리",
+                    LocalDate.of(2025, 10, 5),
+                    null,
+                    DEFAULT_THEME
             );
         }).isInstanceOf(NullPointerException.class);
     }

@@ -1,8 +1,9 @@
-package roomescape;
+package roomescape.constant;
 
-import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+
+import java.time.LocalTime;
 
 public class TestConstants {
 
