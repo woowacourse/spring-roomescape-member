@@ -24,6 +24,9 @@ public class Theme {
     }
 
     public Long getId() {
+        if (id == null) {
+            throw new NullPointerException("id값이 존재하지 않습니다.");
+        }
         return id;
     }
 
