@@ -67,11 +67,12 @@ public class FakeReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndThemeIdAndTimeId(LocalDate date, Long timeId, Long themeId) {
+    public List<Long> findBookedTimeIds(LocalDate date, Long themeId) {
         return store.values().stream()
-                .anyMatch(reservation ->
+                .filter(reservation ->
                         reservation.getDate().getReservationDate().equals(date) &&
-                                reservation.getReservationTime().getId().equals(timeId) &&
-                                reservation.getTheme().getId().equals(themeId));
+                                reservation.getTheme().getId().equals(themeId))
+                .map(reservation -> reservation.getReservationTime().getId())
+                .toList();
     }
 }

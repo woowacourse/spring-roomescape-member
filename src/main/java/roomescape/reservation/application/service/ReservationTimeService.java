@@ -1,7 +1,9 @@
 package roomescape.reservation.application.service;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
@@ -41,10 +43,11 @@ public class ReservationTimeService {
     }
 
     public List<AvailableReservationTimeResponse> getReservationTimes(final LocalDate date, final Long themeId) {
+        Set<Long> bookedTimeIds = new HashSet<>(reservationRepository.findBookedTimeIds(date, themeId));
+
         return reservationTimeRepository.findAllTimes().stream()
                 .map(reservationTime -> {
-                    boolean alreadyBooked = reservationRepository.existsByDateAndThemeIdAndTimeId(date,
-                            reservationTime.getId(), themeId);
+                    boolean alreadyBooked = bookedTimeIds.contains(reservationTime.getId());
                     return new AvailableReservationTimeResponse(reservationTime, alreadyBooked);
                 })
                 .toList();
