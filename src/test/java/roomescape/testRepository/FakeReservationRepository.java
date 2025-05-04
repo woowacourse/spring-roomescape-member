@@ -10,7 +10,7 @@ import roomescape.exception.NotFoundException;
 public class FakeReservationRepository implements ReservationRepository {
     private final List<Reservation> reservations = new ArrayList<>();
 
-    private Long index = 1L;
+    private Long index = 0L;
 
     @Override
     public List<Reservation> findAll() {
@@ -19,8 +19,9 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Long save(Reservation reservation) {
-        reservations.add(reservation);
-        return index++;
+        Reservation reservationWithId = Reservation.assignId(++index, reservation);
+        reservations.add(reservationWithId);
+        return index;
     }
 
     @Override
