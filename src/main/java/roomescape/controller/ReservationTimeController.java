@@ -39,10 +39,10 @@ public class ReservationTimeController {
     @GetMapping(value = "/times", params = {"date", "themeId"})
     public List<TimeWithBookStateResponse> getReservationTimesInThemeAndDate(
             @RequestParam("date") LocalDate date,
-            @RequestParam("themeId") Long themId
+            @RequestParam("themeId") Long themeId
     ) {
         List<TimeWithBookState> times = reservationTimeService
-                .getAllReservationTimeWithBookState(date, themId);
+                .getAllReservationTimeWithBookState(date, themeId);
         return times.stream()
                 .map(TimeWithBookStateResponse::new)
                 .toList();
