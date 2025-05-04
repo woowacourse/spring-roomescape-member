@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 import roomescape.service.ReservationTimeService;
 
@@ -16,13 +17,13 @@ public class StubReservationTimeService extends ReservationTimeService {
     }
 
     @Override
-    public ReservationTime createReservationTime(ReservationTimeCreateRequest request) {
-        return testReservationTime;
+    public ReservationTimeResponse createReservationTime(ReservationTimeCreateRequest request) {
+        return ReservationTimeResponse.from(testReservationTime);
     }
 
     @Override
-    public List<ReservationTime> findAll() {
-        return List.of(testReservationTime);
+    public List<ReservationTimeResponse> findAll() {
+        return List.of(ReservationTimeResponse.from(testReservationTime));
     }
 
     @Override

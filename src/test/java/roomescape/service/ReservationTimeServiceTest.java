@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 
 @ActiveProfiles("test")
@@ -36,10 +37,10 @@ public class ReservationTimeServiceTest {
         reservationTimeService.createReservationTime(request);
 
         // then
-        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
         Assertions.assertAll(
                 () -> assertThat(reservationTimes).hasSize(1),
-                () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo("10:00")
+                () -> assertThat(reservationTimes.get(0).startAt()).isEqualTo("10:00")
         );
     }
 
@@ -52,13 +53,13 @@ public class ReservationTimeServiceTest {
         reservationTimeService.createReservationTime(request2);
 
         // when
-        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.findAll();
 
         // then
         Assertions.assertAll(
                 () -> assertThat(reservationTimes).hasSize(2),
-                () -> assertThat(reservationTimes.get(0).getStartAt()).isEqualTo("10:00"),
-                () -> assertThat(reservationTimes.get(1).getStartAt()).isEqualTo("11:00")
+                () -> assertThat(reservationTimes.get(0).startAt()).isEqualTo("10:00"),
+                () -> assertThat(reservationTimes.get(1).startAt()).isEqualTo("11:00")
         );
     }
 
@@ -67,11 +68,11 @@ public class ReservationTimeServiceTest {
         // given
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10,0));
         reservationTimeService.createReservationTime(request);
-        List<ReservationTime> reservationTimesBeforeDelete = reservationTimeService.findAll();
+        List<ReservationTimeResponse> reservationTimesBeforeDelete = reservationTimeService.findAll();
 
         // when
-        reservationTimeService.deleteReservationTimeById(reservationTimesBeforeDelete.get(0).getId());
-        List<ReservationTime> reservationTimesAfterDelete = reservationTimeService.findAll();
+        reservationTimeService.deleteReservationTimeById(reservationTimesBeforeDelete.get(0).id());
+        List<ReservationTimeResponse> reservationTimesAfterDelete = reservationTimeService.findAll();
 
         // then
         Assertions.assertAll(
