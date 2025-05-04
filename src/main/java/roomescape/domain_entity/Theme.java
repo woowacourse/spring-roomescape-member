@@ -1,5 +1,7 @@
 package roomescape.domain_entity;
 
+import java.util.Objects;
+
 public class Theme {
     private final Long id;
     private final String name;
@@ -8,9 +10,9 @@ public class Theme {
 
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
+        this.name = Objects.requireNonNull(name);
+        this.description = Objects.requireNonNull(description);
+        this.thumbnail = Objects.requireNonNull(thumbnail);
     }
 
     public Theme(String name, String description, String thumbnail) {

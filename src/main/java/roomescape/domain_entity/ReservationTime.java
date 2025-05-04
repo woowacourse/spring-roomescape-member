@@ -2,6 +2,7 @@ package roomescape.domain_entity;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 public class ReservationTime {
     private final Long id;
@@ -9,7 +10,7 @@ public class ReservationTime {
 
     public ReservationTime(Long id, LocalTime startAt) {
         this.id = id;
-        this.startAt = startAt;
+        this.startAt = Objects.requireNonNull(startAt);
     }
 
     public ReservationTime(LocalTime startAt) {
