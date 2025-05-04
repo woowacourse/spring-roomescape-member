@@ -1,4 +1,4 @@
-package roomescape.domain.dao;
+package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import roomescape.dao.JdbcReservationTimeDaoImpl;
 import roomescape.domain.ReservationTime;
 
 public class JdbcReservationTimeDaoTest {

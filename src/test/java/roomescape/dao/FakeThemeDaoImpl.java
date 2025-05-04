@@ -1,4 +1,4 @@
-package roomescape.domain.dao;
+package roomescape.dao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 
 public class FakeThemeDaoImpl implements ThemeDao {

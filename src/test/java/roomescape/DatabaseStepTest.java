@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +23,7 @@ public class DatabaseStepTest {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
             assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
-                .next()).isTrue();
+                    .next()).isTrue();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

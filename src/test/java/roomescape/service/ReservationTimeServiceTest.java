@@ -1,14 +1,13 @@
-package roomescape.domain.service;
+package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.dao.FakeReservationDaoImpl;
-import roomescape.domain.dao.FakeReservationTimeDaoImpl;
+import roomescape.dao.FakeReservationDaoImpl;
+import roomescape.dao.FakeReservationTimeDaoImpl;
 import roomescape.dto.ReservationTimeRequestDto;
-import roomescape.service.ReservationTimeService;
 
 public class ReservationTimeServiceTest {
 
@@ -17,8 +16,8 @@ public class ReservationTimeServiceTest {
     @BeforeEach
     void init() {
         reservationTimeService = new ReservationTimeService(
-            new FakeReservationDaoImpl(),
-            new FakeReservationTimeDaoImpl());
+                new FakeReservationDaoImpl(),
+                new FakeReservationTimeDaoImpl());
     }
 
     @DisplayName("reservationTimeRequestDto가 들어왔을 때, Fake 객체에 저장되어야 한다.")
@@ -26,7 +25,7 @@ public class ReservationTimeServiceTest {
     void given_reservation_time_request_dto_then_save_db() {
         //given
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(
-            "10:00");
+                "10:00");
 
         //when
         reservationTimeService.saveReservationTime(reservationTimeRequestDto);
@@ -39,11 +38,11 @@ public class ReservationTimeServiceTest {
     void given_multiple_reservation_time_request_dto_then_all_save() {
         //given
         ReservationTimeRequestDto reservationTimeRequestDto1 = new ReservationTimeRequestDto(
-            "10:00");
+                "10:00");
         ReservationTimeRequestDto reservationTimeRequestDto2 = new ReservationTimeRequestDto(
-            "11:00");
+                "11:00");
         ReservationTimeRequestDto reservationTimeRequestDto3 = new ReservationTimeRequestDto(
-            "12:00");
+                "12:00");
 
         //when
         reservationTimeService.saveReservationTime(reservationTimeRequestDto1);
@@ -59,7 +58,7 @@ public class ReservationTimeServiceTest {
     void given_reservation_time_id_then_remove_db() {
         //given
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(
-            "10:00");
+                "10:00");
         reservationTimeService.saveReservationTime(reservationTimeRequestDto);
 
         //when
