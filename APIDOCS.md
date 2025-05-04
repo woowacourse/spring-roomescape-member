@@ -38,7 +38,7 @@
     - 설명 : 사용자 예약페이지 응답
     - 정상 응답 (200)
       ```
-      테마 페이지 HTML 문서
+      사용자 예약페이지 HTML 문서
       ```
 
 ### 예약 API
@@ -102,9 +102,9 @@
 - DELETE /reservations/{reservationId}
     - 설명 : 예약 취소
     - 정상 응답 (204)
-    - 예외 응답 (404)
-        - reservationId가 NULL인 경우
     - 예외 응답 (400)
+        - reservationId가 NULL인 경우
+    - 예외 응답 (404)
         - reservationId에 해당하는 예약이 없는 경우
 
 ### 예약 시간 API
@@ -128,7 +128,7 @@
     ```
     {
         String "date": 2025-01-01,          // NotNull, NotBlank
-        LocalDate "themeId": 1,             // NotNull
+        Long "themeId": 1,                  // NotNull
     }
     ```
     - 정상 응답 (200)

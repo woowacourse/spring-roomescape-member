@@ -315,7 +315,7 @@ class RoomescapeApplicationTest {
                 .body("size()", is(3));
     }
 
-    @DisplayName("모든 테마를 조회할 수 있다")
+    @DisplayName("인기 테마를 조회할 수 있다")
     @Test
     void canResponseTopThemes() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
