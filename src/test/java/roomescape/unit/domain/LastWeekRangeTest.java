@@ -1,0 +1,37 @@
+package roomescape.unit.domain;
+
+import static org.assertj.core.api.Assertions.*;
+import static roomescape.common.Constant.FIXED_CLOCK;
+
+import java.time.LocalDate;
+import org.junit.jupiter.api.Test;
+import roomescape.theme.domain.LastWeekRange;
+
+public class LastWeekRangeTest {
+
+    @Test
+    void 시작일은_현재_기준_7일_전이다() {
+        // given
+        LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
+        LastWeekRange lastWeekRange = new LastWeekRange(beforeSevenDays);
+
+        // when
+        LocalDate start = lastWeekRange.getStart();
+
+        // then
+        assertThat(start).isEqualTo(beforeSevenDays.minusDays(7));
+    }
+
+    @Test
+    void 종료일은_현재_기준_하루_전이다() {
+        // given
+        LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
+        LastWeekRange lastWeekRange = new LastWeekRange(beforeSevenDays);
+
+        // when
+        LocalDate end = lastWeekRange.getEnd();
+
+        // then
+        assertThat(end).isEqualTo(beforeSevenDays.minusDays(1));
+    }
+}
