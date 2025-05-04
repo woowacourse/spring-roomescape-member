@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.exception.EmptyValueException;
@@ -36,10 +37,8 @@ public class Reservation {
     }
 
     private static void validateDateTime(final LocalDate localDate, final ReservationTime reservationTime) {
-        if (localDate.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("예약은 미래만 가능합니다.");
-        }
-        if (localDate.isEqual(LocalDate.now()) && reservationTime.isBefore(LocalTime.now())) {
+        LocalDateTime dateTime = LocalDateTime.of(localDate, reservationTime.getStartAt());
+        if (dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("예약은 미래만 가능합니다.");
         }
     }

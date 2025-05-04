@@ -30,10 +30,6 @@ public class ReservationTime {
         }
     }
 
-    public boolean isBefore(final LocalTime now) {
-        return startAt.isBefore(now);
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
