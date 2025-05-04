@@ -16,26 +16,26 @@ public class ReservationTimeService {
     private final ReservationTimeDao reservationTimeDao;
 
     public ReservationTimeService(ReservationDao reservationDao,
-        ReservationTimeDao reservationTimeDao) {
+                                  ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
     }
 
     public List<ReservationTimeResponseDto> getAllReservationTimes() {
         return reservationTimeDao.findAllReservationTimes().stream()
-            .map(ReservationTimeResponseDto::from)
-            .toList();
+                .map(ReservationTimeResponseDto::from)
+                .toList();
     }
 
     public ReservationTimeResponseDto saveReservationTime(
-        ReservationTimeRequestDto reservationTimeRequestDto) {
+            ReservationTimeRequestDto reservationTimeRequestDto) {
         ReservationTime reservationTime = reservationTimeRequestDto.toReservationTime();
         reservationTimeDao.saveReservationTime(reservationTime);
         return ReservationTimeResponseDto.from(reservationTime);
     }
 
     public void deleteReservationTime(Long id) {
-        if (reservationDao.findByTimeId(id) != 0) {
+        if (reservationDao.existsByTimeId(id)) {
             throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteReservationTime(id);
