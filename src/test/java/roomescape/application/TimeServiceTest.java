@@ -18,13 +18,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import roomescape.application.dto.TimeDto;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.repository.TimeRepository;
-import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
+import roomescape.reservation.application.TimeService;
+import roomescape.reservation.application.dto.TimeDto;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.repository.TimeRepository;
+import roomescape.reservation.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.exception.BusinessException;
 import roomescape.exception.NotFoundException;
-import roomescape.presentation.dto.request.TimeRequest;
+import roomescape.reservation.presentation.dto.request.TimeRequest;
 
 @ExtendWith(MockitoExtension.class)
 class TimeServiceTest {

@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

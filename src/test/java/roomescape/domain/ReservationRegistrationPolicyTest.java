@@ -10,7 +10,9 @@ import java.time.LocalDate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.exception.ImpossibleReservationException;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationRegistrationPolicy;
+import roomescape.reservation.domain.exception.ImpossibleReservationException;
 
 class ReservationRegistrationPolicyTest {
 

@@ -10,7 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.domain.exception.ImpossibleReservationException;
+import roomescape.reservation.domain.exception.ImpossibleReservationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

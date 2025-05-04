@@ -14,7 +14,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Theme;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.infrastructure.JdbcThemeRepository;
 
 @JdbcTest
 @Import(JdbcThemeRepository.class)

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.presentation.controller.ThemeRankingCondition;
+import roomescape.reservation.presentation.controller.ThemeRankingCondition;
 
 class ThemeRankingConditionTest {
 

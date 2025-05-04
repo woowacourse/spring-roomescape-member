@@ -1,0 +1,29 @@
+package roomescape.reservation.application.dto;
+
+import java.time.LocalDate;
+import java.util.List;
+import roomescape.reservation.domain.Reservation;
+
+public record ReservationDto(
+        long id,
+        String name,
+        ThemeDto theme,
+        LocalDate date,
+        TimeDto time
+) {
+    public static ReservationDto from(Reservation reservation) {
+        return new ReservationDto(
+                reservation.getId(),
+                reservation.getName(),
+                ThemeDto.from(reservation.getTheme()),
+                reservation.getReservationDate(),
+                TimeDto.from(reservation.getReservationTime())
+        );
+    }
+
+    public static List<ReservationDto> from(List<Reservation> reservations) {
+        return reservations.stream()
+                .map(ReservationDto::from)
+                .toList();
+    }
+}

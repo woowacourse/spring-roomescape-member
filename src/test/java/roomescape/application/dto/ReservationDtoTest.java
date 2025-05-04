@@ -9,8 +9,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.application.dto.ReservationDto;
 
 class ReservationDtoTest {
     @DisplayName("Reservation 객체를 응답객체로 변환한다.")
