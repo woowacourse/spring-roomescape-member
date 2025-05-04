@@ -1,27 +1,21 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.Test;
-import roomescape.common.BusinessRuleViolationException;
-import roomescape.common.NotFoundEntityException;
-import roomescape.domain.*;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeThemeRepository;
-import roomescape.service.param.CreateThemeParam;
-import roomescape.service.result.ThemeResult;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ThemeServiceTest {
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.service.param.CreateThemeParam;
+import roomescape.service.result.ThemeResult;
 
-    private final ReservationRepository reservationRepository = new FakeReservationRepository();
-    private final ThemeRepository themeRepository = new FakeThemeRepository();
-    private final ThemeService themeService = new ThemeService(themeRepository, reservationRepository);
+class ThemeServiceTest extends ServiceIntegrationTest {
 
     @Test
     void 테마를_전체_조회할_수_있다() {
@@ -88,6 +82,7 @@ class ThemeServiceTest {
     void id값으로_테마를_삭제할떄_예약에서_id가_사용중이라면_예외를_발생시킨다() {
         //given
         themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
+        reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 0)));
         reservationRepository.create(new Reservation(
                 "test",
                 LocalDate.of(2025, 5, 1),
@@ -98,6 +93,38 @@ class ThemeServiceTest {
         assertThatThrownBy(() -> themeService.deleteById(1L))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("해당 테마에 예약이 존재합니다.");
+    }
+
+    @Test
+    void 최근_일주일간_예약_건수가_많은_테마를_내림차순으로_찾을_수_있다() {
+        //given
+        themeRepository.create(new Theme("test1", "description1", "thumbnail1"));
+        themeRepository.create(new Theme("test2", "description2", "thumbnail2"));
+        themeRepository.create(new Theme("test3", "description3", "thumbnail3"));
+        themeRepository.create(new Theme("test4", "description4", "thumbnail4"));
+
+        reservationTimeRepository.create(new ReservationTime(LocalTime.of(12, 0)));
+
+        insertReservation("test1", LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation("test1", LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation("test2", LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation("test3", LocalDate.now(clock).minusDays(1), 1L, 3L);
+        insertReservation("test4", LocalDate.now(clock).minusDays(3), 1L, 2L);
+        insertReservation("test5", LocalDate.now(clock).minusDays(3), 1L, 2L);
+        insertReservation("test6", LocalDate.now(clock).minusDays(4), 1L, 4L);
+        insertReservation("test7", LocalDate.now(clock).minusDays(8), 1L, 4L);
+        insertReservation("test8", LocalDate.now(clock).minusDays(8), 1L, 4L);
+        insertReservation("test9", LocalDate.now(clock).minusDays(8), 1L, 4L);
+
+        //when
+        List<ThemeResult> rankBetweenDate = themeService.findRankBetweenDate();
+
+        //then
+        assertThat(rankBetweenDate).isEqualTo(List.of(
+                new ThemeResult(3L, "test3", "description3", "thumbnail3"),
+                new ThemeResult(2L, "test2", "description2", "thumbnail2"),
+                new ThemeResult(4L, "test4", "description4", "thumbnail4")
+        ));
     }
 
 }

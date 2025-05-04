@@ -1,4 +1,4 @@
-package roomescape.common;
+package roomescape.common.exception;
 
 public class CoreException extends RuntimeException {
     public CoreException(String message) {

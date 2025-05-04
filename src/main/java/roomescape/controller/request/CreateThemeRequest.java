@@ -4,7 +4,7 @@ import roomescape.service.param.CreateThemeParam;
 
 public record CreateThemeRequest(String name, String description, String thumbnail) {
 
-    private static final String ERROR_MESSAGE_FORMAT = "[ERROR]  예약 필수 정보가 누락되었습니다. %s: %s";
+    private static final String ERROR_MESSAGE_FORMAT = "테마 필수 정보가 누락되었습니다. %s: %s";
 
     public CreateThemeRequest {
         validateString(name, "name");
@@ -12,9 +12,9 @@ public record CreateThemeRequest(String name, String description, String thumbna
         validateString(thumbnail, "thumbnail");
     }
 
-    private void validateString(String value, String filedName) {
+    private void validateString(String value, String fieldName) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_FORMAT, filedName, value));
+            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_FORMAT, fieldName, value));
         }
     }
 

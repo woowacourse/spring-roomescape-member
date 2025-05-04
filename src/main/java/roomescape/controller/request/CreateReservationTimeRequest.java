@@ -8,7 +8,7 @@ public record CreateReservationTimeRequest(
 ) {
     public CreateReservationTimeRequest {
         if (startAt == null) {
-            throw new IllegalArgumentException("startAt은 필수값입니다.");
+            throw new IllegalArgumentException("예약 시간 정보가 누락되었습니다.");
         }
     }
 

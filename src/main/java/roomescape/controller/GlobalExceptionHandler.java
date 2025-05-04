@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.common.BusinessRuleViolationException;
-import roomescape.common.CoreException;
-import roomescape.common.NotFoundEntityException;
+import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.common.exception.CoreException;
+import roomescape.common.exception.NotFoundEntityException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

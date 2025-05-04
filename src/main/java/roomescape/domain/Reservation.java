@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import roomescape.common.BusinessRuleViolationException;
+import roomescape.common.exception.BusinessRuleViolationException;
 
 public class Reservation {
 
@@ -62,9 +62,12 @@ public class Reservation {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Reservation that = (Reservation) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date) && Objects.equals(time, that.time) && Objects.equals(theme, that.theme);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(date, that.date)
+                && Objects.equals(time, that.time) && Objects.equals(theme, that.theme);
     }
 
     @Override

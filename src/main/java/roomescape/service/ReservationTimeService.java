@@ -1,8 +1,12 @@
 package roomescape.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.common.NotFoundEntityException;
-import roomescape.common.BusinessRuleViolationException;
+import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -11,18 +15,14 @@ import roomescape.service.param.CreateReservationTimeParam;
 import roomescape.service.result.AvailableReservationTimeResult;
 import roomescape.service.result.ReservationTimeResult;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTImeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTImeRepository, ReservationRepository reservationRepository) {
+    public ReservationTimeService(ReservationTimeRepository reservationTImeRepository,
+                                  ReservationRepository reservationRepository) {
         this.reservationTImeRepository = reservationTImeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -44,9 +44,11 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResult> findAvailableTimesByThemeIdAndDate(Long themeId, LocalDate reservationDate) {
+    public List<AvailableReservationTimeResult> findAvailableTimesByThemeIdAndDate(Long themeId,
+                                                                                   LocalDate reservationDate) {
         List<ReservationTime> reservationTimes = reservationTImeRepository.findAll();
-        List<Reservation> reservations = reservationRepository.findByThemeIdAndReservationDate(themeId, reservationDate);
+        List<Reservation> reservations = reservationRepository.findByThemeIdAndReservationDate(themeId,
+                reservationDate);
 
         Set<ReservationTime> bookedTimes = reservations.stream()
                 .map(Reservation::getTime)

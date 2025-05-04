@@ -1,10 +1,11 @@
 package roomescape.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.common.BusinessRuleViolationException;
-import roomescape.common.NotFoundEntityException;
+import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
@@ -18,10 +19,12 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
+    private final Clock clock;
 
-    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeService(ThemeRepository themeRepository, ReservationRepository reservationRepository, Clock clock) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
+        this.clock = clock;
     }
 
     public List<ThemeResult> findAll() {
@@ -51,11 +54,11 @@ public class ThemeService {
     }
 
     public List<ThemeResult> findRankBetweenDate() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         LocalDate startDate = today.minusWeeks(1);
         LocalDate endDate = today.minusDays(1);
 
-        List<Theme> rankForWeek = themeRepository.findRankByDate(startDate, endDate, RANK_LIMIT);
+        List<Theme> rankForWeek = themeRepository.findRankBetweenDate(startDate, endDate, RANK_LIMIT);
 
         return rankForWeek.stream()
                 .map(ThemeResult::from)

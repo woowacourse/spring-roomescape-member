@@ -64,7 +64,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findRankByDate(LocalDate startDate, LocalDate endDate, int limit) {
+    public List<Theme> findRankBetweenDate(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                     SELECT t.id, t.name, t.description, t.thumbnail
                     FROM theme t

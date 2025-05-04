@@ -1,16 +1,21 @@
 package roomescape.service;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.common.NotFoundEntityException;
-import roomescape.common.BusinessRuleViolationException;
-import roomescape.domain.*;
+import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationRepository;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.ReservationTimeRepository;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ReservationService {
@@ -18,26 +23,32 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTImeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ReservationService(ReservationTimeRepository reservationTImeRepository,
-                              ReservationRepository reservationRepository, final ThemeRepository themeRepository) {
+                              ReservationRepository reservationRepository, final ThemeRepository themeRepository,
+                              Clock clock) {
         this.reservationTImeRepository = reservationTImeRepository;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
+        this.clock = clock;
     }
 
     public Long create(CreateReservationParam createReservationParam) {
-        ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
-                () -> new NotFoundEntityException(
-                        createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
-        Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(() -> new NotFoundEntityException(
-                createReservationParam.themeId() + "에 해당하는 theme 튜플이 없습니다."));
+        ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId())
+                .orElseThrow(
+                        () -> new NotFoundEntityException(
+                                createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
+        Theme theme = themeRepository.findById(createReservationParam.themeId())
+                .orElseThrow(() -> new NotFoundEntityException(
+                        createReservationParam.themeId() + "에 해당하는 theme 튜플이 없습니다."));
         if (reservationRepository.existByDateAndTimeId(createReservationParam.date(), reservationTime.id())) {
             throw new BusinessRuleViolationException("날짜와 시간이 중복된 예약이 존재합니다.");
         }
 
-        Reservation reservation = new Reservation(createReservationParam.name(), createReservationParam.date(), reservationTime, theme);
-        reservation.validateReservable(LocalDateTime.now());
+        Reservation reservation = new Reservation(createReservationParam.name(), createReservationParam.date(),
+                reservationTime, theme);
+        reservation.validateReservable(LocalDateTime.now(clock));
 
         return reservationRepository.create(reservation);
     }

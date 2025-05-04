@@ -1,4 +1,4 @@
-package roomescape.common;
+package roomescape.common.exception;
 
 public class BusinessRuleViolationException extends CoreException {
     public BusinessRuleViolationException(String message) {

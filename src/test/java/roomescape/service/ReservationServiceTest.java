@@ -1,34 +1,25 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import roomescape.common.BusinessRuleViolationException;
-import roomescape.common.NotFoundEntityException;
+import roomescape.common.exception.BusinessRuleViolationException;
+import roomescape.common.exception.NotFoundEntityException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.fake.FakeThemeRepository;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-class ReservationServiceTest {
+class ReservationServiceTest extends ServiceIntegrationTest {
 
     public static final LocalDate RESERVATION_DATE = LocalDate.now().plusDays(1);
-
-    FakeReservationRepository reservationRepository = new FakeReservationRepository();
-    FakeThemeRepository themeRepository = new FakeThemeRepository();
-    FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
-    ReservationService reservationService = new ReservationService(reservationTimeRepository, reservationRepository, themeRepository);
 
     @Test
     void 예약을_생성한다() {
@@ -80,7 +71,7 @@ class ReservationServiceTest {
         //given
         Theme theme = new Theme(1L, "test", "description", "thumbnail");
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(12, 1));
-        ReservationTime reservationTime2 = new ReservationTime(1L, LocalTime.of(13, 1));
+        ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(13, 1));
         themeRepository.create(theme);
         reservationTimeRepository.create(reservationTime1);
         reservationTimeRepository.create(reservationTime2);
@@ -96,7 +87,7 @@ class ReservationServiceTest {
                         new ReservationTimeResult(1L, LocalTime.of(12, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail")),
                 new ReservationResult(2L, "test2", RESERVATION_DATE,
-                        new ReservationTimeResult(1L, LocalTime.of(13, 1)),
+                        new ReservationTimeResult(2L, LocalTime.of(13, 1)),
                         new ThemeResult(1L, "test", "description", "thumbnail"))
         ));
     }
@@ -146,7 +137,8 @@ class ReservationServiceTest {
         reservationRepository.create(new Reservation(1L, "test", RESERVATION_DATE, reservationTime, theme));
 
         //when & then
-        assertThatThrownBy(() -> reservationService.create(new CreateReservationParam("test2", RESERVATION_DATE, 1L, 1L)))
+        assertThatThrownBy(
+                () -> reservationService.create(new CreateReservationParam("test2", RESERVATION_DATE, 1L, 1L)))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("날짜와 시간이 중복된 예약이 존재합니다.");
     }

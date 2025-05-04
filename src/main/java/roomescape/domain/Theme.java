@@ -1,7 +1,7 @@
 package roomescape.domain;
 
 import java.util.Objects;
-import roomescape.common.BusinessRuleViolationException;
+import roomescape.common.exception.BusinessRuleViolationException;
 
 public class Theme {
 
@@ -24,9 +24,9 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public void validateLength(String value, int maxLength, String filedName) {
+    public void validateLength(String value, int maxLength, String fieldName) {
         if (value.length() > maxLength) {
-            throw new BusinessRuleViolationException(filedName + "은 " + maxLength + "자를 넘을 수 없습니다.");
+            throw new BusinessRuleViolationException(fieldName + "은 " + maxLength + "자를 넘을 수 없습니다.");
         }
     }
 
