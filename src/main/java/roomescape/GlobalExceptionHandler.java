@@ -16,19 +16,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {ReservationNotFoundException.class, PlayTimeNotFoundException.class, ThemeNotFoundException.class})
     public ResponseEntity<Void> handleNotFoundException(final NoSuchElementException e) {
-        e.printStackTrace();
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(value = {DuplicateReservationException.class, DuplicatePlayTimeException.class})
     public ResponseEntity<Void> handleDuplicateException(final IllegalStateException e) {
-        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException(final IllegalArgumentException e) {
-        e.printStackTrace();
         return ResponseEntity.badRequest().build();
     }
 }
