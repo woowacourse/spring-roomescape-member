@@ -1,0 +1,19 @@
+### 모든 예약 조회
+GET http://localhost:8080/reservations
+
+### id를 통해 예약 조회
+GET http://localhost:8080/reservations/1
+
+### 예약 추가 (사용 시, 과거 시간인지 확인 필요)
+POST http://localhost:8080/reservations
+Content-Type: application/json
+
+{
+  "name": "hula",
+  "date": "2025-06-25",
+  "timeId": 1,
+  "themeId": 1
+}
+
+### id를 통해 예약 삭제
+DELETE http://localhost:8080/reservations/1
