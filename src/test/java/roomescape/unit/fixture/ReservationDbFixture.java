@@ -19,7 +19,7 @@ public class ReservationDbFixture {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Reservation 예약_한스_25_4_22_10시_공포(ReservationTime reservationTime, Theme theme) {
+    public Reservation 예약_한스_25_4_22(ReservationTime reservationTime, Theme theme) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");

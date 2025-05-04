@@ -70,7 +70,7 @@ public class ReservationTimeServiceTest extends BaseTest {
     void 이미_해당_시간의_예약이_존재한다면_삭제할_수_없다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
+        reservationDbFixture.예약_한스_25_4_22(reservationTime, theme);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L))
                 .isInstanceOf(IllegalArgumentException.class);

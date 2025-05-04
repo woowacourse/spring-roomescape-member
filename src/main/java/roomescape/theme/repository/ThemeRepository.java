@@ -7,8 +7,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.LastWeekRange;
+import roomescape.theme.domain.Theme;
 
 @Repository
 public class ThemeRepository {

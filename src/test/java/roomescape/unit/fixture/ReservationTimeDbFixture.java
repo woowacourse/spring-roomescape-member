@@ -29,4 +29,18 @@ public class ReservationTimeDbFixture {
 
         return new ReservationTime(id, startAt);
     }
+
+    public ReservationTime 예약시간_11시() {
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
+
+        LocalTime startAt = LocalTime.of(11, 0);
+
+        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
+                .addValue("start_at", startAt)
+        ).longValue();
+
+        return new ReservationTime(id, startAt);
+    }
 }
