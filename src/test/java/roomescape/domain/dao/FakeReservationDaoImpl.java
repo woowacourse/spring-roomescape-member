@@ -55,7 +55,7 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Boolean existReservationBy(String date, long timeId, Long themeId) {
+    public Boolean existsReservationBy(String date, long timeId, Long themeId) {
         return true;
     }
 }

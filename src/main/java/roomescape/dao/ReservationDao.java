@@ -18,5 +18,5 @@ public interface ReservationDao {
 
     Boolean existsByDateAndTime(ReservationDate date, Long timeId);
 
-    Boolean existReservationBy(String date, long timeId, Long themeId);
+    Boolean existsReservationBy(String date, long timeId, Long themeId);
 }
