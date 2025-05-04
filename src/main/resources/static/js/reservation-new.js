@@ -10,7 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestRead(RESERVATION_API_ENDPOINT)
         .then(render)
-        .catch(error => console.error('Error fetching reservations:', error));
+        .catch(error => {
+            console.error('Error fetching reservations:', error)
+            alert(error.message);
+        });
 
     fetchTimes();
     fetchThemes();
@@ -39,7 +42,10 @@ function fetchTimes() {
         .then(data => {
             timesOptions.push(...data);
         })
-        .catch(error => console.error('Error fetching time:', error));
+        .catch(error => {
+            console.error('Error fetching time:', error)
+            alert(error.message);
+        });
 }
 
 function fetchThemes() {
@@ -47,7 +53,10 @@ function fetchThemes() {
         .then(data => {
             themesOptions.push(...data);
         })
-        .catch(error => console.error('Error fetching theme:', error));
+        .catch(error => {
+            console.error('Error fetching theme:', error)
+            alert(error.message);
+        });
 }
 
 function createSelect(options, defaultText, selectId, textProperty) {

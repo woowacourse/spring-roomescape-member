@@ -2,7 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestRead('/themes/ranking') // 인기 테마 목록 조회 API endpoint
         .then(render)
-        .catch(error => console.error('Error fetching times:', error));
+        .catch(error => {
+            console.error('Error fetching times:', error)
+            alert(error.message);
+        });
 });
 
 function render(data) {
@@ -34,5 +37,5 @@ function requestRead(endpoint) {
         .then(response => {
             if (response.status === 200) return response.json();
             throw new Error('Read failed');
-        });
+        })
 }

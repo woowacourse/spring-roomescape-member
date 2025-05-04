@@ -3,7 +3,10 @@ const THEME_API_ENDPOINT = '/themes';
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
         .then(renderTheme)
-        .catch(error => console.error('Error fetching times:', error));
+        .catch(error => {
+            console.error('Error fetching times:', error)
+            alert(error.message);
+        });
 
     flatpickr("#datepicker", {
         inline: true,
@@ -68,7 +71,10 @@ function checkDate() {
 
         requestRead(THEME_API_ENDPOINT)
             .then(renderTheme)
-            .catch(error => console.error('Error fetching times:', error));
+            .catch(error => {
+                console.error('Error fetching times:', error)
+                alert(error.message);
+            });
     }
 }
 
