@@ -60,8 +60,8 @@ class RoomThemeServiceTest {
     @DisplayName("테마를 삭제한다")
     void deleteTheme() {
         //given
-        roomThemeService.addTheme(new RoomThemeCreation("test", "description", "thumbnail"));
-        long deleteId = 2L;
+        RoomThemeResult theme = roomThemeService.addTheme(new RoomThemeCreation("test", "description", "thumbnail"));
+        long deleteId = theme.id();
 
         //when //then
         assertThatCode(() -> roomThemeService.deleteTheme(deleteId))

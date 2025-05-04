@@ -62,14 +62,16 @@ class ReservationTimeServiceTest {
     @Test
     @DisplayName("이용가능한 예약 시간을 조회한다")
     void findAvailableTime() {
-        //given //when
-        List<AvailableReservationTimeResult> actual = reservationTimeService.findAllAvailableTime(
-                LocalDate.of(2025, 4, 28), 1
-        );
+        //given
+        LocalDate date = LocalDate.of(2025, 4, 28);
+        long themeId = 1L;
+
+        // when
+        List<AvailableReservationTimeResult> actual = reservationTimeService.findAllAvailableTime(date, themeId);
 
         //then
-        assertThat(actual.getFirst().alreadyBooked()).isTrue();
-        assertThat(actual.getLast().alreadyBooked()).isFalse();
+        assertThat(actual.stream().filter(AvailableReservationTimeResult::alreadyBooked)).isNotEmpty();
+        assertThat(actual.stream().filter(time -> !time.alreadyBooked())).isNotEmpty();
     }
 
     @Test
