@@ -24,7 +24,6 @@ public class ThemeDao implements ThemeRepository {
     public Theme insert(ThemeRequest themeRequest) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("theme")
-                .usingColumns("name", "description", "thumbnail")
                 .usingGeneratedKeyColumns("id");
 
         MapSqlParameterSource params = new MapSqlParameterSource()

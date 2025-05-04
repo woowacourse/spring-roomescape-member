@@ -4,8 +4,11 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -27,21 +30,17 @@ public class ReservationDao implements ReservationRepository {
 
     @Override
     public Reservation insert(final CreateReservationRequest request) {
-        String sql = "insert into reservation (name, theme_id, date, time_id) values (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"});
-            ps.setString(1, request.name().getName());
-            ps.setLong(2, request.theme().getId());
-            ps.setString(3, request.date().getReservationDate().toString());
-            ps.setLong(4, request.time().getId());
-            return ps;
-        }, keyHolder);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
 
-        long id = keyHolder.getKey().longValue();
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", request.name().getName());
+        params.put("theme_id", request.theme().getId());
+        params.put("date", request.date().getReservationDate().toString());
+        params.put("time_id", request.time().getId());
 
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Reservation(id, request.name(), request.theme(), request.date(), request.time());
     }
 

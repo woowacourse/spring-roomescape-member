@@ -2,10 +2,13 @@ package roomescape.reservation.infrastructure.dao;
 
 import java.sql.PreparedStatement;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -22,19 +25,14 @@ public class ReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public ReservationTime insert(final LocalTime reservationTime) {
-        String sql = "insert into reservation_time (start_at) values (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    sql,
-                    new String[]{"id"}
-            );
-            ps.setString(1, reservationTime.toString());
-            return ps;
-        }, keyHolder);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
 
-        long id = keyHolder.getKey().longValue();
+        Map<String, Object> params = new HashMap<>();
+        params.put("start_at", reservationTime.toString());
 
+        Long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new ReservationTime(id, reservationTime);
     }
 
