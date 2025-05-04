@@ -7,8 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.exception.InvalidReservationException;
-import roomescape.exception.InvalidReservationTimeException;
 
 public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
 
@@ -28,17 +26,18 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
 
     @Override
     public void deleteReservationTime(Long id) {
-        ReservationTime reservationTime = findById(id)
-                .orElseThrow(() -> new InvalidReservationTimeException("해당 ID의 예약 시간을 찾을 수 없습니다."));
+        ReservationTime reservationTime = reservationTimes.stream()
+                .filter(time -> time.getId().equals(id))
+                .findFirst()
+                .orElse(null);
 
         reservationTimes.remove(reservationTime);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        return Optional.ofNullable(reservationTimes.stream()
+        return reservationTimes.stream()
                 .filter(reservationTime -> reservationTime.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약번호 입니다.")));
+                .findFirst();
     }
 }

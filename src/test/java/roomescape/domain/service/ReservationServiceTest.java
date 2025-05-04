@@ -1,17 +1,36 @@
 package roomescape.domain.service;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalTime;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.domain.dao.FakeReservationDaoImpl;
+import roomescape.domain.dao.FakeReservationTimeDaoImpl;
+import roomescape.domain.dao.FakeThemeDaoImpl;
+import roomescape.dto.ReservationRequestDto;
+import roomescape.service.ReservationService;
+
 public class ReservationServiceTest {
-/*
+
     private ReservationService reservationService;
     private ReservationDao reservationDao;
     private ReservationTimeDao reservationTimeDao;
+    private ThemeDao themeDao;
 
     @BeforeEach
     void init() {
         reservationDao = new FakeReservationDaoImpl();
         reservationTimeDao = new FakeReservationTimeDaoImpl();
-        reservationService = new ReservationService(reservationDao, reservationTimeDao);
+        themeDao = new FakeThemeDaoImpl();
+        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     }
 
     @DisplayName("ReservationRequestDto가 주어졌을 때, Fake 객체에 정상적으로 저장되어야 한다.")
@@ -19,8 +38,9 @@ public class ReservationServiceTest {
     void given_reservation_request_dto_then_save() {
         //given
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 30)));
+        themeDao.saveTheme(new Theme(1L, "name", "description", "thumbnail"));
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(
-            "james", "2025-05-12", 1L);
+                "james", "2025-05-12", 1L, 1L);
 
         //when
         reservationService.saveReservation(reservationRequestDto);
@@ -35,14 +55,17 @@ public class ReservationServiceTest {
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 30)));
         reservationTimeDao.saveReservationTime(new ReservationTime(2L, LocalTime.of(11, 30)));
         reservationTimeDao.saveReservationTime(new ReservationTime(3L, LocalTime.of(12, 30)));
+        themeDao.saveTheme(new Theme(1L, "name1", "description1", "thumbnail1"));
+        themeDao.saveTheme(new Theme(2L, "name2", "description2", "thumbnail2"));
+        themeDao.saveTheme(new Theme(3L, "name3", "description3", "thumbnail3"));
 
         //given
         ReservationRequestDto reservationRequestDto1 = new ReservationRequestDto(
-            "james", "2025-05-12", 1L);
+                "james", "2025-05-12", 1L, 1L);
         ReservationRequestDto reservationRequestDto2 = new ReservationRequestDto(
-            "james", "2025-05-13", 2L);
+                "james", "2025-05-13", 2L, 2L);
         ReservationRequestDto reservationRequestDto3 = new ReservationRequestDto(
-            "james", "2025-05-14", 2L);
+                "james", "2025-05-14", 3L, 3L);
 
         //when
         reservationService.saveReservation(reservationRequestDto1);
@@ -58,9 +81,10 @@ public class ReservationServiceTest {
     void given_reservation_id_then_remove_db() {
         //given
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 30)));
-        
+        themeDao.saveTheme(new Theme(1L, "name", "description", "thumbnail"));
+
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(
-            "james", "2025-05-12", 1L);
+                "james", "2025-05-12", 1L, 1L);
         reservationService.saveReservation(reservationRequestDto);
 
         //when
@@ -70,5 +94,4 @@ public class ReservationServiceTest {
         assertThat(reservationService.getAllReservations().size()).isEqualTo(0);
     }
 
- */
 }
