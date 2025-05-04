@@ -20,9 +20,9 @@ public class Fixture {
     public static final Reservation RESERVATION_1 = Reservation.of(
             1L, "이름1", THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
     public static final Reservation RESERVATION_2 = Reservation.of(
-            1L, "이름2", THEME_2, LocalDate.now().plusDays(1), RESERVATION_TIME_2);
+            2L, "이름2", THEME_2, LocalDate.now().plusDays(1), RESERVATION_TIME_2);
     public static final Reservation RESERVATION_3 = Reservation.of(
-            1L, "이름3", THEME_3, LocalDate.now().plusDays(1), RESERVATION_TIME_3);
+            3L, "이름3", THEME_3, LocalDate.now().plusDays(1), RESERVATION_TIME_3);
 
     public static final Map<String, Object> RESERVATION_BODY = createReservationBody();
 
