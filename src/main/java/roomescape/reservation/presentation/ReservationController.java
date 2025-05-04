@@ -22,6 +22,8 @@ import roomescape.reservation.service.ReservationService;
 @RequestMapping("/reservations")
 public class ReservationController {
 
+    public static final String GET_ADMIN_RESERVATION = "admin/reservation";
+
     private final ReservationService reservationService;
 
     public ReservationController(final ReservationService reservationService) {
@@ -37,7 +39,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
         ReservationResponse response = reservationService.createReservation(request);
-        return ResponseEntity.created(URI.create("admin/reservation")).body(response);
+        return ResponseEntity.created(URI.create(GET_ADMIN_RESERVATION)).body(response);
     }
 
     @DeleteMapping("/{id}")
