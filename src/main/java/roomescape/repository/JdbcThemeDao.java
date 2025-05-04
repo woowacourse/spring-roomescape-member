@@ -36,7 +36,7 @@ public class JdbcThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> save(Theme theme) {
+    public Theme save(Theme theme) {
         try{
             String name = theme.name();
             String description = theme.description();
@@ -46,7 +46,7 @@ public class JdbcThemeDao implements ThemeRepository {
                     .addValue("description", description)
                     .addValue("thumbnail", thumbnail);
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return findById(id);
+            return new Theme(id,name,description,thumbnail);
         } catch (DuplicateKeyException e) {
             throw new IllegalStateException("[ERROR] 이미 동일한 테마 이름이 존재하여 생성에 실패햐였습니다." + theme.name());
         }

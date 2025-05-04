@@ -21,7 +21,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> save(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         long count = reservationTimes.stream()
                 .filter(rt -> rt.startAt().equals(reservationTime.startAt()))
                 .count();
@@ -31,7 +31,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
         ReservationTime newReservationTime = new ReservationTime(reservationTimeId.getAndIncrement(), reservationTime.startAt());
         reservationTimes.add(newReservationTime);
-        return findById(newReservationTime.id());
+        return findById(newReservationTime.id()).get();
     }
 
     @Override

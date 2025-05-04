@@ -38,13 +38,13 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> save(ReservationTime reservationTime) {
+    public ReservationTime save(ReservationTime reservationTime) {
         try {
             LocalTime startTime = reservationTime.startAt();
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("start_at", startTime.toString());
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return findById(id);
+            return new ReservationTime(id, reservationTime.startAt());
         } catch (DuplicateKeyException e) {
             throw new IllegalStateException("[ERROR] 이미 등록된 예약 시간 입니다.");
         }

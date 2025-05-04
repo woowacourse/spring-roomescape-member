@@ -40,8 +40,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.themeId()));
 
         Reservation requestReservation = dto.createWithoutId(reservationTime, theme);
-        Reservation newReservation = reservationRepository.save(requestReservation)
-                .orElseThrow(() -> new IllegalStateException("[ERROR] 예약 생성을 실패하였습니다."));
+        Reservation newReservation = reservationRepository.save(requestReservation);
 
         return ReservationResponseDto.of(newReservation, newReservation.getTime(), theme);
     }

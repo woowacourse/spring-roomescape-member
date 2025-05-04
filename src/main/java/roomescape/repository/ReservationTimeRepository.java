@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ReservationTimeRepository {
 
-    Optional<ReservationTime> save(ReservationTime reservationTime);
+    ReservationTime save(ReservationTime reservationTime);
 
     List<ReservationTime> findAll();
 

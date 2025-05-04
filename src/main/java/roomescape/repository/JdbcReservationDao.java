@@ -53,7 +53,7 @@ public class JdbcReservationDao implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> save(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         try {
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("name", reservation.getName())
@@ -62,7 +62,7 @@ public class JdbcReservationDao implements ReservationRepository {
                     .addValue("theme_id", reservation.getTheme().id());
 
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return findById(id);
+            return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
         } catch (DuplicateKeyException e) {
             throw new IllegalStateException("[ERROR] 이미 등록된 예약 입니다.");
         }

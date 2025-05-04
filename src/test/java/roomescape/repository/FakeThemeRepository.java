@@ -24,7 +24,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> save(Theme theme) {
+    public Theme save(Theme theme) {
         long count = themes.stream()
                 .filter(t -> t.name().equals(theme.name()))
                 .count();
@@ -34,7 +34,7 @@ public class FakeThemeRepository implements ThemeRepository {
 
         Theme newTheme = new Theme(themeId.getAndIncrement(), theme.name(), theme.description(), theme.thumbnail());
         themes.add(newTheme);
-        return findById(newTheme.id());
+        return findById(newTheme.id()).get();
     }
 
     @Override
