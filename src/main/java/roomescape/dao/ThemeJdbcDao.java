@@ -64,7 +64,7 @@ public class ThemeJdbcDao implements ThemeDao {
     }
 
     public List<Theme> findPopularThemes(LocalDate today, int dayRange) {
-        LocalDate sevenDaysAgo = today.minusDays(dayRange);
+        LocalDate startDay = today.minusDays(dayRange);
 
         String sql = """
                     SELECT theme.id AS id,
@@ -81,6 +81,6 @@ public class ThemeJdbcDao implements ThemeDao {
                     LIMIT 10
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, today.toString(), sevenDaysAgo.toString());
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, today.toString(), startDay.toString());
     }
 }
