@@ -27,6 +27,12 @@ public class ReservationTime {
         }
     }
 
+    public boolean validatePastTime() {
+        final LocalTime currentTime = LocalTime.now();
+
+        return startAt.isBefore(currentTime);
+    }
+
     public long getId() {
         return id;
     }

@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.controller.dto.response.ReservationResponse;
@@ -36,7 +34,7 @@ public class ReservationService {
         final RoomTheme theme = findThemeByThemeId(creation.themeId());
         final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);
 
-        validatePastDateAndTime(reservation.getDate(), reservation.getTime());
+        validatePastDateAndTime(reservation);
         validateDuplicateReservation(reservation);
 
         final long savedId = reservationDAO.insert(reservation);
@@ -56,13 +54,8 @@ public class ReservationService {
                 .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마 입니다"));
     }
 
-    private void validatePastDateAndTime(final LocalDate date, final ReservationTime time) {
-        final LocalDate currentDate = LocalDate.now();
-
-        final boolean isPastDate = date.isBefore(currentDate);
-        final boolean isPastTime = date.isEqual(currentDate) && time.getStartAt().isBefore(LocalTime.now());
-
-        if (isPastDate || isPastTime) {
+    private void validatePastDateAndTime(final Reservation reservation) {
+        if (reservation.validatePastDateAndTime()) {
             throw new PharmaceuticalViolationException("과거 시점은 예약할 수 없습니다");
         }
     }

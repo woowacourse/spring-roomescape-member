@@ -6,7 +6,7 @@ import roomescape.exception.custom.InvalidInputException;
 public class Reservation {
 
     private static final int NON_SAVED_STATUS = 0;
-    
+
     private final long id;
     private final String name;
     private final LocalDate date;
@@ -49,6 +49,16 @@ public class Reservation {
             throw new InvalidInputException("테마는 빈 값이 입력될 수 없습니다");
         }
     }
+
+    public boolean validatePastDateAndTime() {
+        final LocalDate currentDate = LocalDate.now();
+
+        final boolean isPastDate = date.isBefore(currentDate);
+        final boolean isPastTime = date.isEqual(currentDate) && time.validatePastTime();
+
+        return isPastDate || isPastTime;
+    }
+
 
     public long getId() {
         return id;
