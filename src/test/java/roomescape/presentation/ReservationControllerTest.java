@@ -22,6 +22,7 @@ import roomescape.TestRepositoryConfig;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
+import roomescape.exception.ErrorResponseDto;
 import roomescape.persistence.fakerepository.FakeReservationRepository;
 import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
@@ -175,6 +176,78 @@ class ReservationControllerTest {
                 () -> assertThat(response.theme().description()).isEqualTo("설명1"),
                 () -> assertThat(response.theme().thumbnail()).isEqualTo("테마1.jpg")
         );
+    }
+
+    @DisplayName("과거 일시로 예약을 추가할 수 없다.")
+    @Test
+    void createReservationWithPastDate() {
+        // given
+        reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
+        reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
+        ReservationRequestDto requestDto = new ReservationRequestDto(
+                "예약1",
+                LocalDate.now().minusDays(1),
+                1L,
+                1L
+        );
+
+        // when
+        ErrorResponseDto errorResponseDto = RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .body(requestDto)
+                .when()
+                .post("/reservations")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // then
+        assertThat(errorResponseDto.message())
+            .isEqualTo("과거 일시로 예약을 생성할 수 없습니다.");
+    }
+
+    @DisplayName("이미 예약된 시간에 예약을 추가할 수 없다.")
+    @Test
+    void createReservationWithAlreadyReservedTime() {
+        // given
+        reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
+        reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
+        reservationRepository.add(new Reservation(
+                        "예약1",
+                        LocalDate.now().plusDays(1),
+                        reservationTimeRepository.findById(1L).get(),
+                        reservationThemeRepository.findById(1L).get()
+                )
+        );
+
+        ReservationRequestDto requestDto = new ReservationRequestDto(
+                "예약2",
+                LocalDate.now().plusDays(1),
+                1L,
+                1L
+        );
+
+        // when
+        ErrorResponseDto errorResponseDto = RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .body(requestDto)
+                .when()
+                .post("/reservations")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // then
+        assertThat(errorResponseDto.message())
+            .isEqualTo("해당 날짜와 시간에 이미 예약이 존재합니다.");
     }
 
     @DisplayName("예약을 삭제하면 상태 코드 204가 반환된다.")

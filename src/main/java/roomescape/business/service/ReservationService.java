@@ -62,7 +62,7 @@ public class ReservationService {
 
     private void validateDuplicatedReservation(Reservation reservation) {
         if (reservationRepository.existsByReservation(reservation)) {
-            throw new ReservationException("이미 예약되었습니다.");
+            throw new ReservationException("해당 날짜와 시간에 이미 예약이 존재합니다.");
         }
     }
 

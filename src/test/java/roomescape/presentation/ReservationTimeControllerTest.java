@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.TestRepositoryConfig;
 import roomescape.business.ReservationTime;
+import roomescape.exception.ErrorResponseDto;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.dto.ReservationTimeRequestDto;
 import roomescape.presentation.dto.ReservationTimeResponseDto;
@@ -131,6 +132,33 @@ class ReservationTimeControllerTest {
                 () -> assertThat(response.startAt())
                         .isEqualTo(LocalTime.of(20, 0))
         );
+    }
+
+    @DisplayName("예약 가능한 시간을 생성할 때 이미 존재하는 시간인 경우 예외가 발생한다.")
+    @Test
+    void createReservationTime_AlreadyExists() {
+        // given
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(20, 0));
+        reservationTimeRepository.add(reservationTime);
+        ReservationTimeRequestDto requestDto = new ReservationTimeRequestDto(LocalTime.of(20, 0));
+
+        // when
+        ErrorResponseDto errorResponseDto = RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .body(requestDto)
+                .when()
+                .post("/times")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // then
+        assertThat(errorResponseDto.message())
+                .isEqualTo("해당 시간은 이미 존재합니다.");
     }
 
     @DisplayName("예약 가능한 시간을 삭제하면 상태 코드 204가 반환된다.")

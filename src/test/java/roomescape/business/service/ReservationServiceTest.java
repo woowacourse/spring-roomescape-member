@@ -85,7 +85,7 @@ class ReservationServiceTest {
         assertThatCode(
                 () -> reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId)))
                 .isInstanceOf(ReservationException.class)
-                .hasMessage("이미 예약되었습니다.");
+                .hasMessage("해당 날짜와 시간에 이미 예약이 존재합니다.");
     }
 
     @DisplayName("예약을 취소한다.")

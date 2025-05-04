@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import roomescape.TestRepositoryConfig;
 import roomescape.business.ReservationTheme;
+import roomescape.exception.ErrorResponseDto;
 import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.presentation.dto.ReservationThemeResponseDto;
 
@@ -103,6 +104,33 @@ class ReservationThemeControllerTest {
                 () -> assertThat(response.description()).isEqualTo("설명1"),
                 () -> assertThat(response.thumbnail()).isEqualTo("테마1.jpg")
         );
+    }
+
+    @DisplayName("예약 가능한 테마를 생성할 때 중복된 이름이 있으면 예외가 발생한다.")
+    @Test
+    void createReservationThemeWithDuplicateName() {
+        // given
+        ReservationTheme reservationTheme1 = new ReservationTheme("테마1", "설명1", "테마1.jpg");
+        reservationThemeRepository.add(reservationTheme1);
+        ReservationTheme reservationTheme2 = new ReservationTheme("테마1", "설명2", "테마2.jpg");
+
+        // when
+        ErrorResponseDto errorResponseDto = RestAssured
+                .given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTheme2)
+                .when()
+                .post("/themes")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // then
+        assertThat(errorResponseDto.message())
+                .isEqualTo("동일한 이름의 테마를 추가할 수 없습니다.");
     }
 
     @DisplayName("예약 가능한 테마를 삭제하면 상태 코드 204가 반환된다.")
