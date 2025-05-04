@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.exception.DuplicatePlayTimeException;
 import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
@@ -22,6 +23,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {DuplicateReservationException.class, DuplicatePlayTimeException.class})
     public ResponseEntity<Void> handleDuplicateException(final IllegalStateException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler(value = InvalidReservationDateException.class)
+    public ResponseEntity<Void> handleInvalidReservationDateException(final InvalidReservationDateException e) {
+        return ResponseEntity.unprocessableEntity().build();
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.ReservationService;
-import roomescape.exception.InvalidReservationDateException;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
@@ -32,12 +31,9 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> create(
             @RequestBody final ReservationRequest reservationRequest
     ) {
-        try {
-            final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-        } catch (InvalidReservationDateException e) {
-            return ResponseEntity.unprocessableEntity().build();
-        }
+        final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
     }
 
     @GetMapping
