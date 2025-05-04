@@ -32,30 +32,28 @@ class ReservationTest extends RoomescapeTestSupport {
     private CleanUp cleanUp;
 
     private Theme theme;
-    private Map<String, Object> reservation;
     private Map<String, String> reservationTime;
+    private Map<String, Object> reservation;
 
     @BeforeEach
     void setUp() {
         cleanUp.all();
         RestAssured.port = port;
+
         theme = themeRepository.save("테마1", "설명1", "썸네일1");
+        reservationTime = Map.of("startAt", "10:00");
         reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2025-08-05");
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
-        reservationTime = Map.of("startAt", "10:00");
     }
 
     @Test
     void 방탈출_예약을_생성_조회_삭제한다() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(params)
+                .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
                 .statusCode(200);
@@ -87,7 +85,6 @@ class ReservationTest extends RoomescapeTestSupport {
 
     @Test
     void 예약_시간을_생성_조회_삭제한다() {
-
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationTime)

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record AvailableReservationTimeRequest(
-        @NotNull LocalDate date,
-        @NotNull Long themeId
+        @NotNull(message = "날짜를 선택해주세요.") LocalDate date,
+        @NotNull(message = "테마를 선택해주세요.") Long themeId
 ) {
 }
