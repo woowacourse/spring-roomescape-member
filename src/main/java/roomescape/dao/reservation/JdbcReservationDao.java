@@ -111,4 +111,16 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.query(sql, reservationMapper, reservation.getDate(),
                 reservation.getTime().getId(), reservation.getTheme().getId()).stream().findFirst();
     }
+
+    @Override
+    public boolean existById(Long id) {
+        final String sql = """
+                SELECT EXISTS (
+                  SELECT 1
+                  FROM reservation
+                  WHERE id = ?
+                ) AS is_exist;
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
 }

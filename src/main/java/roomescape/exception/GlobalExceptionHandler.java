@@ -43,7 +43,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<FailureResponse> handleNoSuchElementException(NoSuchElementException ex) {
-        return createBadRequestResponse(ex.getMessage());
+        return createNotFoundResponse(ex.getMessage());
+    }
+
+    private ResponseEntity<FailureResponse> createNotFoundResponse(String message) {
+        return createFailureResponse(HttpStatus.NOT_FOUND, message);
     }
 
     private ResponseEntity<FailureResponse> createBadRequestResponse(String message) {

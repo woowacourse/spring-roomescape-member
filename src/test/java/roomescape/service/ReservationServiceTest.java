@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,5 +54,19 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(ReservationDuplicateException.class)
                 .hasMessage("이미 존재하는 예약입니다.");
+    }
+
+    @DisplayName("존재하지 않는 예약을 삭제 시 예외가 발생한다.")
+    @Test
+    void deleteTest_NoSuchElementException() {
+
+        // given
+        long id = 1L;
+        when(reservationDao.existById(id)).thenReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.delete(id))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("예약이 존재하지 않습니다.");
     }
 }

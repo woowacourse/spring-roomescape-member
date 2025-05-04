@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.dao.reservation.ReservationDao;
 import roomescape.domain.Reservation;
@@ -56,6 +57,9 @@ public class ReservationService {
     }
 
     public void delete(final Long id) {
+        if (!reservationDao.existById(id)) {
+            throw new NoSuchElementException("예약이 존재하지 않습니다.");
+        }
         reservationDao.delete(id);
     }
 }

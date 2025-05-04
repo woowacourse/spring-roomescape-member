@@ -13,4 +13,6 @@ public interface ReservationDao {
     void delete(Long id);
 
     Optional<Reservation> findByThemeAndDateAndTime(Reservation reservation);
+
+    boolean existById(Long id);
 }
