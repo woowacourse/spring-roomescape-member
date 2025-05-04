@@ -33,7 +33,7 @@ public class ReservationService {
         validateRequestReservation(requestReservation);
 
         Reservation newReservation = reservationRepository.save(requestReservation)
-                .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약 생성을 실패하였습니다."));
+                .orElseThrow(() -> new IllegalStateException("[ERROR] 예약을 저장할 수 없습니다. 관리자에게 문의해 주세요."));
 
         return ReservationResponseDto.from(newReservation, newReservation.getTime(), newReservation.getTheme());
     }

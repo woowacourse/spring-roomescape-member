@@ -23,7 +23,7 @@ public class ThemeService {
         Theme requestTheme = requestDto.createWithoutId();
         try {
             Theme savedTheme = themeRepository.save(requestTheme)
-                    .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 테마를 생성 실패하였습니다."));
+                    .orElseThrow(() -> new IllegalStateException("[ERROR] 테마를 저장할 수 없습니다. 관리자에게 문의해 주세요."));
 
             return ThemeResponseDto.from(savedTheme);
         } catch (IllegalStateException e) {
