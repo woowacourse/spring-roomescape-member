@@ -43,7 +43,7 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
         Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.timeId()));
+                .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.themeId()));
 
         return dto.createWithoutId(reservationTime, theme);
     }
