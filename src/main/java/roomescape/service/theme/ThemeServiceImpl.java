@@ -1,25 +1,20 @@
 package roomescape.service.theme;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
-import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.entity.ThemeEntity;
 import roomescape.exception.theme.ThemeNotFoundException;
-import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 @Service
 public class ThemeServiceImpl implements ThemeService {
     private final ThemeRepository themeRepository;
-    private final ReservationRepository reservationRepository;
 
-    public ThemeServiceImpl(ThemeRepository themeRepository, ReservationRepository reservationRepository) {
+    public ThemeServiceImpl(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
-        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -40,21 +35,5 @@ public class ThemeServiceImpl implements ThemeService {
         if (affectedCount == 0) {
             throw new ThemeNotFoundException();
         }
-    }
-
-    @Override
-    public List<PopularThemeResponse> getPopularThemes() {
-        LocalDate endDate = LocalDate.now().minusDays(1);
-        LocalDate startDate = endDate.minusDays(7);
-        List<Long> themeIds = reservationRepository.findThemeIdsOrderByReservationCountBetween(startDate, endDate)
-                .stream()
-                .limit(10)
-                .toList();
-
-        return themeIds.stream().map(themeId -> {
-            ThemeEntity themeEntity = themeRepository.findById(themeId)
-                    .orElseThrow(ThemeNotFoundException::new);
-            return PopularThemeResponse.of(themeEntity);
-        }).toList();
     }
 }
