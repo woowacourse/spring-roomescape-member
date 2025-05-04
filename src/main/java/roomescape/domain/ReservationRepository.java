@@ -22,11 +22,11 @@ public interface ReservationRepository {
 
     List<ReservationTime> findAllReservationTimes();
 
-    void deleteReservationTimeById(Long id);
+    int deleteReservationTimeById(Long id);
 
     List<Theme> findAllThemes();
 
-    void deleteThemeById(Long id);
+    int deleteThemeById(Long id);
 
     List<Theme> findPopularThemes(int count);
 
@@ -35,4 +35,8 @@ public interface ReservationRepository {
     Theme saveTheme(Theme theme);
 
     List<Long> findBookedTimes(Long themeId, LocalDate date);
+
+    boolean existReservationByThemeId(Long themeId);
+
+    boolean existReservationByTimeId(Long timeId);
 }

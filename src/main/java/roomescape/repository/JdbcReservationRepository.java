@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,6 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.exception.ForeignKeyConstraintViolationException;
 import roomescape.exception.ResourceNotExistException;
 
 import java.time.LocalDate;
@@ -52,7 +52,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         try {
             return reservationTimeDao.findById(timeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간이 존재하지 않습니다.");
+            throw new ResourceNotExistException();
         }
     }
 
@@ -61,7 +61,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         try {
             return themeDao.findById(themeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 예약 테마가 존재하지 않습니다.");
+            throw new ResourceNotExistException();
         }
     }
 
@@ -96,11 +96,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteReservationTimeById(final Long id) {
-        validateTimeIsInUse(id);
-        int deleteCount = reservationTimeDao.deleteById(id);
-        if (deleteCount == 0) {
-            throw new ResourceNotExistException();
+    public int deleteReservationTimeById(final Long id) {
+        try {
+            return reservationTimeDao.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("[ERROR] 해당 시간에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
         }
     }
 
@@ -110,11 +110,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteThemeById(final Long id) {
-        validateThemeIsInUse(id);
-        int count = themeDao.deleteById(id);
-        if (count == 0) {
-            throw new ResourceNotExistException();
+    public int deleteThemeById(final Long id) {
+        try {
+            return themeDao.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("[ERROR] 해당 테마에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
         }
     }
 
@@ -144,15 +144,13 @@ public class JdbcReservationRepository implements ReservationRepository {
         return reservationDao.findBookedTimes(themeId, date);
     }
 
-    private void validateThemeIsInUse(Long id) {
-        if (reservationDao.existByThemeId(id)) {
-            throw new ForeignKeyConstraintViolationException();
-        }
+    @Override
+    public boolean existReservationByThemeId(final Long themeId) {
+        return reservationDao.existByThemeId(themeId);
     }
 
-    private void validateTimeIsInUse(final Long id) {
-        if (reservationDao.existByTimeId(id)) {
-            throw new ForeignKeyConstraintViolationException();
-        }
+    @Override
+    public boolean existReservationByTimeId(final Long timeId) {
+        return reservationDao.existByTimeId(timeId);
     }
 }

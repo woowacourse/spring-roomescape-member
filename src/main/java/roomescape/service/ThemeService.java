@@ -5,6 +5,7 @@ import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.ResourceNotExistException;
 
 import java.util.List;
 
@@ -31,11 +32,19 @@ public class ThemeService {
                 request.description(),
                 request.thumbnail()
         );
-        return getThemeResponse(theme);
+        Theme savedTheme = repository.saveTheme(theme);
+        return ThemeResponse.from(savedTheme);
     }
 
     public void deleteById(Long id) {
-        repository.deleteThemeById(id);
+        boolean isThemeInUse = repository.existReservationByThemeId(id);
+        if (isThemeInUse) {
+            throw new IllegalArgumentException("[ERROR] 해당 테마에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
+        }
+        int count = repository.deleteThemeById(id);
+        if (count == 0) {
+            throw new ResourceNotExistException();
+        }
     }
 
     public List<ThemeResponse> getPopularThemes(int count) {
@@ -49,9 +58,5 @@ public class ThemeService {
         if (repository.existByName(request.name())) {
             throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
         }
-    }
-
-    private ThemeResponse getThemeResponse(Theme theme) {
-        return ThemeResponse.from(repository.saveTheme(theme));
     }
 }

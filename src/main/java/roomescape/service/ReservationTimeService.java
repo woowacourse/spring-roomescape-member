@@ -6,6 +6,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationAvailableTimeResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.ResourceNotExistException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,9 +33,15 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(Long id) {
-        repository.deleteReservationTimeById(id);
+        boolean isTimeInUse = repository.existReservationByTimeId(id);
+        if (isTimeInUse) {
+            throw new IllegalArgumentException("[ERROR] 해당 시간에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
+        }
+        int count = repository.deleteReservationTimeById(id);
+        if (count == 0) {
+            throw new ResourceNotExistException();
+        }
     }
-
 
     public List<ReservationAvailableTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> times = repository.findAllReservationTimes();
