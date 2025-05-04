@@ -6,8 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-@Tag(name = "뷰 컨트롤러", description = "웹 페이지 뷰 제공 컨트롤러")
-public class ViewController {
+@Tag(name = "어드민 페이지 컨트롤러", description = "웹 페이지 제공 컨트롤러")
+public class AdminPageController {
 
     @GetMapping("/admin")
     @Operation(summary = "관리자 홈 페이지", description = "관리자 대시보드 홈 화면을 제공합니다.")
@@ -31,17 +31,5 @@ public class ViewController {
     @Operation(summary = "관리자 테마 관리 페이지", description = "관리자용 테마 관리 화면을 제공합니다.")
     public String getAdminThemePage() {
         return "admin/theme";
-    }
-
-    @GetMapping("/reservation")
-    @Operation(summary = "사용자 예약 페이지", description = "사용자용 예약 화면을 제공합니다.")
-    public String getReservationPage() {
-        return "reservation";
-    }
-
-    @GetMapping()
-    @Operation(summary = "메인 페이지", description = "메인 홈 화면을 제공합니다.")
-    public String getHomePage() {
-        return "index";
     }
 }
