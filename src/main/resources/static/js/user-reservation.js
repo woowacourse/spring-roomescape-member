@@ -176,8 +176,11 @@ function onReservationButtonClick() {
             },
             body: JSON.stringify(reservationData)
         })
-            .then(response => {
-                if (!response.ok) throw new Error('Reservation failed');
+            .then(async response => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(JSON.stringify(errorData));
+                }
                 return response.json();
             })
             .then(data => {
@@ -185,7 +188,12 @@ function onReservationButtonClick() {
                 location.reload();
             })
             .catch(error => {
-                alert("An error occurred while making the reservation.");
+                try {
+                    const parsed = JSON.parse(error.message);
+                    alert(parsed.message);
+                } catch (e) {
+                    alert(error.message); // fallback
+                }
                 console.error(error);
             });
     } else {
