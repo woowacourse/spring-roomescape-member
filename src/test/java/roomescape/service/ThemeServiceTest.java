@@ -1,17 +1,25 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.domain.Theme;
+import roomescape.common.exception.NotAbleDeleteException;
+import roomescape.common.exception.ThemeValidationException;
 import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.ThemeResponse;
 
@@ -36,13 +44,28 @@ class ThemeServiceTest {
 
         // then
         List<ThemeResponse> themes = themeService.findAll();
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(themes).hasSize(1),
                 () -> assertThat(themes.getFirst().name().equals(request.name())).isTrue(),
                 () -> assertThat(themes.getFirst().description().equals(request.description())).isTrue(),
                 () -> assertThat(themes.getFirst().thumbnail().equals(request.thumbnail())).isTrue()
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("getInvalidThemeRequests")
+    void createThemeFailureTest(ThemeCreateRequest themeCreateRequest) {
+        assertThatThrownBy(() -> themeService.createTheme(themeCreateRequest)).isInstanceOf(ThemeValidationException.class);
+    }
+
+    private static Stream<Arguments> getInvalidThemeRequests() {
+        return Stream.of(
+                Arguments.of(new ThemeCreateRequest(null, "테마 설명", "테마 이미지")),
+                Arguments.of(new ThemeCreateRequest("", "테마 설명", "테마 이미지")),
+                Arguments.of(new ThemeCreateRequest(" ", "테마 설명", "테마 이미지"))
+        );
+    }
+
 
     @Test
     void findAllTest() {
@@ -56,7 +79,7 @@ class ThemeServiceTest {
         List<ThemeResponse> themes = themeService.findAll();
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(themes).hasSize(2),
                 () -> assertThat(themes.get(0).name().equals(request1.name())).isTrue(),
                 () -> assertThat(themes.get(0).description().equals(request1.description())).isTrue(),
@@ -78,10 +101,24 @@ class ThemeServiceTest {
 
         // then
         List<ThemeResponse> themes = themeService.findAll();
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(themes).hasSize(0)
         );
     }
+
+    @Test
+    void deleteThemeByIdFailureTest() {
+        // given
+        ThemeCreateRequest request = new ThemeCreateRequest("Test Theme", "Test Description", "image.jpg");
+        ThemeResponse savedTheme = themeService.createTheme(request);
+
+        // when & then
+        assertAll(
+                () -> assertThat(savedTheme.id()).isEqualTo(1L),
+                () -> assertThatThrownBy(() -> themeService.deleteThemeById(2L)).isInstanceOf(NotAbleDeleteException.class)
+        );
+    }
+
 
     @Test
     void findAllListsTest() {
@@ -96,7 +133,7 @@ class ThemeServiceTest {
         List<ThemeResponse> themesDesc = themeService.findLimitedThemesByPopularDesc("popular_desc", 10L);
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(themesAsc).hasSize(0),
                 () -> assertThat(themesDesc).hasSize(0)
         );
