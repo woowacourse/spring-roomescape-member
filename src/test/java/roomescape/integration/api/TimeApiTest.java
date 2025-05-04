@@ -2,13 +2,16 @@ package roomescape.integration.api;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static roomescape.common.Constant.FIXED_CLOCK;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.BaseTest;
+import roomescape.common.Constant;
 
 class TimeApiTest extends BaseTest {
 
@@ -59,6 +62,8 @@ class TimeApiTest extends BaseTest {
         예약_시간을_생성한다();
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .queryParam("date", LocalDate.now(FIXED_CLOCK).toString())
+                .queryParam("themeId", 1L)
                 .when().get("/times/available")
                 .then().log().all()
                 .statusCode(200)

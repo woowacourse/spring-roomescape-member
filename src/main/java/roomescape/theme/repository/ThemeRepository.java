@@ -1,6 +1,5 @@
 package roomescape.theme.repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.LastWeekRange;
 
 @Repository
 public class ThemeRepository {
@@ -61,7 +61,7 @@ public class ThemeRepository {
                 .findFirst();
     }
 
-    public List<Theme> findPopularThemeDuringAWeek(int limit, LocalDate now) {
+    public List<Theme> findPopularThemeDuringAWeek(long limit, LastWeekRange lastWeekRange) {
         String sql = """
                 SELECT
                     t.id,
@@ -75,7 +75,7 @@ public class ThemeRepository {
                     reservation r ON t.id = r.theme_id
                 WHERE
                     r.date IS NOT NULL AND
-                    PARSEDATETIME(r.date, 'yyyy-MM-dd') >= DATEADD('DAY', -7, PARSEDATETIME(?, 'yyyy-MM-dd'))
+                    PARSEDATETIME(r.date, 'yyyy-MM-dd') >= PARSEDATETIME(?, 'yyyy-MM-dd')
                     AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < PARSEDATETIME(?, 'yyyy-MM-dd')
                 GROUP BY
                     t.id
@@ -88,6 +88,6 @@ public class ThemeRepository {
                 resultSet.getString("name"),
                 resultSet.getString("description"),
                 resultSet.getString("thumbnail")
-        ), now, now, limit);
+        ), lastWeekRange.getStart(), lastWeekRange.getEnd(), limit);
     }
 }
