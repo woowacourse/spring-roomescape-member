@@ -171,10 +171,13 @@ function requestCreate(reservation) {
     body: JSON.stringify(reservation)
   };
 
-  return fetch(RESERVATION_API_ENDPOINT, requestOptions)
+  return fetch(RESERVATION_API_ENDPOINT+"/admin", requestOptions)
       .then(response => {
         if (response.status === 201) return response.json();
         throw new Error('Create failed');
+      })
+      .catch(error => {
+        alert(error.message);
       });
 }
 
@@ -186,6 +189,9 @@ function requestDelete(id) {
   return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
       .then(response => {
         if (response.status !== 204) throw new Error('Delete failed');
+      })
+      .catch(error => {
+        alert(error.message);
       });
 }
 
@@ -194,5 +200,8 @@ function requestRead(endpoint) {
       .then(response => {
         if (response.status === 200) return response.json();
         throw new Error('Read failed');
+      })
+      .catch(error => {
+        alert(error.message);
       });
 }
