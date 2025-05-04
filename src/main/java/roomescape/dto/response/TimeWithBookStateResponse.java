@@ -6,10 +6,10 @@ import roomescape.dto.other.TimeWithBookState;
 public record TimeWithBookStateResponse(
         Long id,
         LocalTime startAt,
-        Boolean bookState
+        Boolean isBooked
 ) {
 
     public TimeWithBookStateResponse(TimeWithBookState time) {
-        this(time.id(), time.startAt(), time.bookState());
+        this(time.id(), time.startAt(), time.isBooked());
     }
 }

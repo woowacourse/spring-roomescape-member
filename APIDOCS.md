@@ -137,7 +137,7 @@
         {
              Long "id": 1,
              LocalTime "startAt": "10:00",
-             Boolean "bookState": true
+             Boolean "isBooked": true
         },
         ...
     ]

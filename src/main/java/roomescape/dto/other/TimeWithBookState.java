@@ -5,7 +5,7 @@ import java.time.LocalTime;
 public record TimeWithBookState(
         Long id,
         LocalTime startAt,
-        Boolean bookState
+        Boolean isBooked
 ) {
 
 }

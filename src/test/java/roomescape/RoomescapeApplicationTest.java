@@ -225,7 +225,7 @@ class RoomescapeApplicationTest {
                 .when().get("theme/date/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("get(0).bookState", is(true));
+                .body("get(0).isBooked", is(true));
 
         jdbcTemplate.update("DELETE FROM reservation");
 
@@ -236,7 +236,7 @@ class RoomescapeApplicationTest {
                 .when().get("theme/date/times")
                 .then().log().all()
                 .statusCode(200)
-                .body("get(0).bookState", is(false));
+                .body("get(0).isBooked", is(false));
     }
 
     @DisplayName("예약 가능한 시간을 삭제할 수 있다")

@@ -91,8 +91,8 @@ class H2ReservationTimeRepositoryTest {
 
         assertAll(
                 () -> assertThat(times).hasSize(2),
-                () -> assertThat(timeBooked.bookState()).isTrue(),
-                () -> assertThat(timeNotBooked.bookState()).isFalse()
+                () -> assertThat(timeBooked.isBooked()).isTrue(),
+                () -> assertThat(timeNotBooked.isBooked()).isFalse()
         );
     }
 
