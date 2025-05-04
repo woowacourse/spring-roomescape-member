@@ -32,7 +32,12 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public boolean existsByTimeId(Long id) {
+    public Boolean existsByTimeId(Long id) {
+        return true;
+    }
+
+    @Override
+    public Boolean existsByThemeId(final Long id) {
         return true;
     }
 

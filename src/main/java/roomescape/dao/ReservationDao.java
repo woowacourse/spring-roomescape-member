@@ -12,7 +12,9 @@ public interface ReservationDao {
 
     void deleteReservation(Long id);
 
-    boolean existsByTimeId(Long id);
+    Boolean existsByTimeId(Long id);
+
+    Boolean existsByThemeId(Long id);
 
     Boolean existsByDateAndTime(ReservationDate date, Long timeId);
 

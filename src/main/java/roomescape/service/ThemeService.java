@@ -3,18 +3,22 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
+import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidThemeException;
 
 @Service
 public class ThemeService {
 
+    private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
 
-    public ThemeService(ThemeDao themeDao) {
+    public ThemeService(final ReservationDao reservationDao, final ThemeDao themeDao) {
+        this.reservationDao = reservationDao;
         this.themeDao = themeDao;
     }
 
@@ -29,11 +33,18 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        validateIsExistThemeBy(id);
+        validateExistsThemeBy(id);
+        validateNotFoundThemeBy(id);
         themeDao.deleteTheme(id);
     }
 
-    private void validateIsExistThemeBy(Long id) {
+    private void validateExistsThemeBy(final Long id) {
+        if (reservationDao.existsByThemeId(id)) {
+            throw new InvalidReservationException("이미 예약된 테마를 삭제할 수 없습니다.");
+        }
+    }
+
+    private void validateNotFoundThemeBy(Long id) {
         themeDao.findById(id)
                 .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
     }

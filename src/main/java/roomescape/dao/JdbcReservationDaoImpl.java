@@ -100,9 +100,15 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public boolean existsByTimeId(Long id) {
+    public Boolean existsByTimeId(Long id) {
         String query = "select exists (select 1 from reservation where time_id = ?)";
-        return jdbcTemplate.queryForObject(query, boolean.class, id);
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
+    }
+
+    @Override
+    public Boolean existsByThemeId(final Long id) {
+        String query = "select exists (select 1 from reservation where theme_id = ?)";
+        return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }
 
     @Override
