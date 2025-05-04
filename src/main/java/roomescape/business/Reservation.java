@@ -11,6 +11,9 @@ public final class Reservation {
     private final ReservationTheme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
+        if (name == null || date == null || time == null || theme == null) {
+            throw new IllegalArgumentException("예약 정보는 null일 수 없습니다.");
+        }
         this.id = id;
         this.name = name;
         this.date = date;

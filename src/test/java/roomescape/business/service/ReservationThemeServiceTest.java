@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
+import roomescape.business.ReservationTime;
 import roomescape.exception.ReservationThemeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
@@ -63,7 +65,7 @@ class ReservationThemeServiceTest {
     void deleteReferencedTheme() {
         // given
         Long themeId = reservationThemeRepository.add(new ReservationTheme("수양", "수양테마", "수양썸네일"));
-        reservationRepository.add(new Reservation("수양", LocalDate.now().plusDays(1), null,
+        reservationRepository.add(new Reservation("수양", LocalDate.now().plusDays(1), new ReservationTime(LocalTime.now()),
                 new ReservationTheme(themeId, "수양", "수양테마", "수양썸네일")));
 
         // when

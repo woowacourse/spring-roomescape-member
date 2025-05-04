@@ -8,6 +8,9 @@ public final class ReservationTheme {
     private final String thumbnail;
 
     public ReservationTheme(Long id, String name, String description, String thumbnail) {
+        if (name == null || description == null || thumbnail == null) {
+            throw new IllegalArgumentException("테마 정보는 null일 수 없습니다.");
+        }
         this.id = id;
         this.name = name;
         this.description = description;

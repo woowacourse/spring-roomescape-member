@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.Reservation;
+import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
 import roomescape.exception.ReservationTimeException;
 import roomescape.persistence.ReservationRepository;
@@ -111,7 +112,7 @@ class ReservationTimeServiceTest {
         LocalDate date = tomorrow.toLocalDate();
         LocalTime time = tomorrow.toLocalTime();
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));
-        reservationRepository.add(new Reservation("수양", date, new ReservationTime(timeId, time), null));
+        reservationRepository.add(new Reservation("수양", date, new ReservationTime(timeId, time), new ReservationTheme(1L, "수양", "수양테마", "수양썸네일")));
 
         // when
         // then
