@@ -12,12 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import roomescape.global_exception.NotFoundException;
+import roomescape.globalexception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationFixture;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.fixture.ReservationTimeFixture;
-import roomescape.reservation_time.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.fixture.ReservationTimeFixture;
+import roomescape.reservationtime.repository.ReservationTimeRepositoryImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepositoryImpl;
 

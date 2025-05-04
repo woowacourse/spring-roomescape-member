@@ -3,8 +3,8 @@ package roomescape.reservation;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationReqDto;
 import roomescape.reservation.domain.dto.ReservationResDto;
-import roomescape.reservation_time.domain.ReservationTime;
-import roomescape.reservation_time.domain.dto.ReservationTimeResDto;
+import roomescape.reservationtime.domain.ReservationTime;
+import roomescape.reservationtime.domain.dto.ReservationTimeResDto;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.ThemeResDto;
 
