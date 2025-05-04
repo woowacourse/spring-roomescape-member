@@ -1,8 +1,5 @@
 package roomescape.business.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,18 +81,12 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
         ReservationTheme theme = reservationThemeRepository.findById(reservationDto.themeId())
                 .orElseThrow(() -> new ReservationThemeException("존재하지 않는 예약 테마입니다."));
-        validatePastDateTime(reservationDto.date(), reservationTime.getStartAt());
+        if (reservationTime.isInThePast(reservationDto.date())) {
+            throw new ReservationException("과거 일시로 예약을 생성할 수 없습니다.");
+        }
         Reservation reservation = new Reservation(reservationDto.name(), reservationDto.date(), reservationTime, theme);
         validateDuplicatedReservation(reservation);
         return reservationRepository.add(reservation);
-    }
-
-    private void validatePastDateTime(LocalDate date, LocalTime time) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
-        if (reservationDateTime.isBefore(now)) {
-            throw new ReservationException("과거 일시로 예약을 생성할 수 없습니다.");
-        }
     }
 
     private void validateDuplicatedReservation(Reservation reservation) {
