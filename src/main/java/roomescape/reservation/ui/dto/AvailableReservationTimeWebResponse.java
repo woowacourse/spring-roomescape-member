@@ -26,7 +26,7 @@ public record AvailableReservationTimeWebResponse(
         return new AvailableReservationTimeWebResponse(
                 serviceResponse.time().getStartAt(),
                 serviceResponse.time().getId().getValue(),
-                serviceResponse.isBooked().isBooked());
+                serviceResponse.bookedStatus().isBooked());
     }
 
     private void validate(final LocalTime startAt, final Long timeId, final Boolean isBooked) {

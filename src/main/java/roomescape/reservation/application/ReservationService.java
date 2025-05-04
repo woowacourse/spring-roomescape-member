@@ -11,7 +11,7 @@ public interface ReservationService {
 
     List<ReservationResponse> getAll();
 
-    List<AvailableReservationTimeWebResponse> getAvailable(LocalDate date, Long id);
+    List<AvailableReservationTimeWebResponse> getAvailable(LocalDate date, Long themeId);
 
     ReservationResponse create(CreateReservationWebRequest createReservationWebRequest);
 

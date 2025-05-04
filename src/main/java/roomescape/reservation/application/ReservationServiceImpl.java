@@ -29,10 +29,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<AvailableReservationTimeWebResponse> getAvailable(final LocalDate date, final Long id) {
+    public List<AvailableReservationTimeWebResponse> getAvailable(final LocalDate date, final Long themeId) {
         final AvailableReservationTimeServiceRequest request = new AvailableReservationTimeServiceRequest(
                 ReservationDate.from(date),
-                ThemeId.from(id));
+                ThemeId.from(themeId));
 
         return reservationQueryUseCase.getTimesWithAvailability(request).stream()
                 .map(AvailableReservationTimeWebResponse::from)
