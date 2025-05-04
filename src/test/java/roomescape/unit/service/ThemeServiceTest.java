@@ -1,110 +1,128 @@
 package roomescape.unit.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static roomescape.common.Constant.FIXED_CLOCK;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.common.BaseTest;
-import roomescape.reservation.domain.ReservationDate;
-import roomescape.unit.fixture.ReservationDateFixture;
-import roomescape.unit.fixture.ReservationDbFixture;
-import roomescape.unit.fixture.ReservationTimeDbFixture;
-import roomescape.unit.fixture.ThemeDbFixture;
+import org.mockito.Mockito;
+import roomescape.common.Constant;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.request.CreateThemeRequest;
 import roomescape.theme.controller.response.ThemeResponse;
+import roomescape.theme.domain.LastWeekRange;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
-import roomescape.time.domain.ReservationTime;
 
-public class ThemeServiceTest extends BaseTest {
+public class ThemeServiceTest {
 
-    @Autowired
-    private ReservationDbFixture reservationDbFixture;
-
-    @Autowired
-    private ReservationTimeDbFixture reservationTimeDbFixture;
-
-    @Autowired
-    private ThemeDbFixture themeDbFixture;
-
-    @Autowired
+    private ThemeRepository themeRepository;
+    private ReservationRepository reservationRepository;
     private ThemeService themeService;
 
-    @Test
-    void 테마를_생성한다() {
-        CreateThemeRequest request = new CreateThemeRequest("공포", "공포 테마", "공포.jpg");
+    @BeforeEach
+    void setUp() {
+        themeRepository = Mockito.mock(ThemeRepository.class);
+        reservationRepository = Mockito.mock(ReservationRepository.class);
+        themeService = new ThemeService(themeRepository, reservationRepository, FIXED_CLOCK);
+    }
 
+    @Test
+    void 테마를_생성할_수_있다() {
+        // given
+        CreateThemeRequest request = new CreateThemeRequest("공포", "무섭다", "thumb.jpg");
+        Theme theme = new Theme(1L, "공포", "무섭다", "thumb.jpg");
+        Mockito.when(themeRepository.save(request.name(), request.description(), request.thumbnail()))
+                .thenReturn(theme);
+
+        // when
         ThemeResponse response = themeService.createTheme(request);
 
-        assertThat(response.id()).isEqualTo(1L);
+        // then
         assertThat(response.name()).isEqualTo("공포");
-        assertThat(response.description()).isEqualTo("공포 테마");
-        assertThat(response.thumbnail()).isEqualTo("공포.jpg");
+        assertThat(response.description()).isEqualTo("무섭다");
+        assertThat(response.thumbnail()).isEqualTo("thumb.jpg");
     }
 
     @Test
-    void 테마를_조회한다() {
-        Theme theme = themeDbFixture.공포();
-        ThemeResponse response = themeService.getAllThemes().get(0);
+    void 모든_테마를_조회할_수_있다() {
+        // given
+        List<Theme> themes = List.of(
+                new Theme(1L, "공포", "무섭다", "thumb.jpg"),
+                new Theme(2L, "로맨스", "달달하다", "love.jpg")
+        );
+        Mockito.when(themeRepository.findAll()).thenReturn(themes);
 
-        assertThat(response.id()).isEqualTo(theme.getId());
-        assertThat(response.name()).isEqualTo(theme.getName());
-        assertThat(response.description()).isEqualTo(theme.getDescription());
-        assertThat(response.thumbnail()).isEqualTo(theme.getThumbnail());
+        // when
+        List<ThemeResponse> result = themeService.getAllThemes();
 
+        // then
+        assertThat(result).hasSize(2);
     }
 
     @Test
-    void 테마를_삭제한다() {
-        themeDbFixture.공포();
-        themeService.deleteThemeById(1L);
+    void 예약이_없는_테마는_삭제할_수_있다() {
+        // given
+        Long id = 1L;
+        Theme theme = new Theme(id, "공포", "무섭다", "thumb.jpg");
+        Mockito.when(reservationRepository.existReservationByThemeId(id)).thenReturn(false);
+        Mockito.when(themeRepository.findById(id)).thenReturn(Optional.of(theme));
 
-        assertThat(themeService.getAllThemes()).isEmpty();
+        // when & then
+        assertThatCode(() -> themeService.deleteThemeById(id))
+                .doesNotThrowAnyException();
+        Mockito.verify(themeRepository).deleteById(id);
     }
 
     @Test
-    void 이미_해당_테마의_예약이_존재한다면_삭제할_수_없다() {
-        Theme theme = themeDbFixture.공포();
-        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
-        reservationDbFixture.예약_한스_25_4_22(reservationTime, theme);
+    void 예약이_있는_테마는_삭제할_수_없다() {
+        // given
+        Long id = 1L;
+        Mockito.when(reservationRepository.existReservationByThemeId(id)).thenReturn(true);
 
-        assertThatThrownBy(() -> themeService.deleteThemeById(theme.getId()))
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteThemeById(id))
                 .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    void 존재하지_않는_테마를_삭제할_수_없다() {
-        assertThatThrownBy(() -> themeService.deleteThemeById(3L))
+    void 존재하지_않는_테마는_삭제할_수_없다() {
+        // given
+        Long id = 999L;
+        Mockito.when(reservationRepository.existReservationByThemeId(id)).thenReturn(false);
+        Mockito.when(themeRepository.findById(id)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> themeService.deleteThemeById(id))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
-    void 지난_일주일_간_인기_테마_10개를_조회한다() {
-        List<Theme> themes = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            themes.add(themeDbFixture.커스텀_테마("테마" + i));
-        }
+    void 최근_일주일_인기_테마를_조회할_수_있다() {
+        // given
+        List<Theme> themes = List.of(
+                new Theme(1L, "공포", "무섭다", "thumb.jpg"),
+                new Theme(2L, "로맨스", "달달하다", "love.jpg")
+        );
+        LastWeekRange lastWeekRange = new LastWeekRange(LocalDate.now(FIXED_CLOCK));
+        Mockito.when(themeRepository.findPopularThemeDuringAWeek(eq(10L), any(LastWeekRange.class)))
+                .thenReturn(themes);
 
-        for (int i = 0; i < 20; i++) {
-            addReservation(i, ReservationDateFixture.예약날짜_오늘, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
-            addReservation(19 - i, ReservationDateFixture.예약날짜_7일전, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
-        }
+        // when
+        List<ThemeResponse> result = themeService.getWeeklyPopularThemes();
 
-        List<ThemeResponse> popularThemes = themeService.getWeeklyPopularThemes();
-
-        assertThat(popularThemes)
-                .hasSize(10)
-                .extracting(ThemeResponse::id)
-                .containsExactlyInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
-    }
-
-    private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {
-        for (int i = 0; i < count; i++) {
-            reservationDbFixture.예약_생성_한스(date, time, theme);
-        }
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).name()).isEqualTo("공포");
     }
 }
