@@ -133,7 +133,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON t.id = r.time_id
                 WHERE r.date = ?
                 AND t.start_at = ?
-                AND r.time_id = ?
+                AND r.theme_id = ?
                 """;
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time, theme.getId());
         return count != null && count > 0;

@@ -31,7 +31,7 @@ public class ReservationApiTest {
         params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(3).toString());
         params.put("timeId", "1");
-        params.put("themeId", "2");
+        params.put("themeId", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

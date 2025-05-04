@@ -52,7 +52,7 @@ public class ThemeApiTest {
     @DisplayName("테마 삭제 테스트")
     void deleteThemeWithStatus204Test() {
         RestAssured.given().log().all()
-                .when().delete("/themes/1")
+                .when().delete("/themes/3")
                 .then().log().all()
                 .statusCode(204);
     }

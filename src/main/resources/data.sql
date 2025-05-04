@@ -2,7 +2,8 @@
 INSERT INTO theme (name, description, thumbnail)
 VALUES
   ('미스터리 저택', '기묘한 사건이 벌어지는 저택을 탈출하라!', 'image/escape-mystery.png'),
-  ('사라진 시간', '시간을 거슬러 단서를 찾아라!', 'image/escape-lostTime.png');
+  ('사라진 시간', '시간을 거슬러 단서를 찾아라!', 'image/escape-lostTime.png'),
+  ('스테이지', '너무나도 무서운', 'image/escape-stage.png');
 
 -- 예약 시간 추가
 INSERT INTO reservation_time (start_at)
