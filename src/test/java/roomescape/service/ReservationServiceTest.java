@@ -39,32 +39,40 @@ class ReservationServiceTest {
     @DisplayName("저장된 예약들을 조회할 수 있다")
     @Test
     void canGetReservations() {
+        // given
         List<Reservation> reservations = List.of(ReservationFixture.create(1L, "예약1"),
                 ReservationFixture.create(2L, "예약2"),
                 ReservationFixture.create(3L, "예약3"));
         when(reservationRepository.findAll()).thenReturn(reservations);
 
+        // when
         List<Reservation> allReservations = reservationService.getAllReservations();
 
+        // then
         assertThat(allReservations).hasSize(3);
     }
 
     @DisplayName("ID로 예약을 조회할 수 있다")
     @Test
     void canGetReservationById() {
+        // given
         Reservation reservation = ReservationFixture.create(1L, "예약1");
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
 
+        // when
         Reservation actualReservation = reservationService.getReservationById(1L);
 
+        // then
         assertThat(actualReservation).isEqualTo(reservation);
     }
 
     @DisplayName("ID로 예약을 조회할 때, 데이터가 없는 경우 예외를 발생시킨다")
     @Test
     void cannotGetReservationByIdBecauseOfEmptyData() {
+        // given
         when(reservationRepository.findById(1L)).thenReturn(Optional.empty());
 
+        // when & then
         assertThatThrownBy(() -> reservationService.getReservationById(1L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 예약이 존재하지 않습니다.");
@@ -73,6 +81,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가할 수 있다")
     @Test
     void canSaveReservation() {
+        // given
         ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now());
@@ -82,14 +91,17 @@ class ReservationServiceTest {
                 .thenReturn(false);
         when(reservationRepository.add(any())).thenReturn(1L);
 
+        // when
         long savedId = reservationService.saveReservation(request);
 
+        // then
         assertThat(savedId).isEqualTo(1L);
     }
 
     @DisplayName("예약을 추가할 때, 예약 테마가 유효하지 않은 경우 예외를 발생시킨다")
     @Test
     void cannotSaveReservationBecauseOfInvalidTheme() {
+        // given
         ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now());
         when(themeRepository.findById(request.themeId())).thenReturn(Optional.empty());
@@ -98,6 +110,7 @@ class ReservationServiceTest {
                 .thenReturn(false);
         when(reservationRepository.add(any())).thenReturn(1L);
 
+        // when & then
         assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 테마가 존재하지 않습니다.");
@@ -106,6 +119,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가할 때, 예약 시간이 유효하지 않은 경우 예외를 발생시킨다")
     @Test
     void cannotSaveReservationBecauseOfInvalidTime() {
+        // given
         ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
         when(themeRepository.findById(request.themeId())).thenReturn(Optional.of(theme));
@@ -114,6 +128,7 @@ class ReservationServiceTest {
                 .thenReturn(false);
         when(reservationRepository.add(any())).thenReturn(1L);
 
+        // when & then
         assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 예약시간이 존재하지 않습니다.");
@@ -122,6 +137,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가할 때, 과거 날짜와 시간으로는 예약을 추가할 수 없다")
     @Test
     void canNotCreateReservationWithPastDateTime() {
+        // given
         ReservationCreationRequest request = new ReservationCreationRequest("예약", TODAY, 1L, 1L);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now().minusSeconds(1));
@@ -131,6 +147,7 @@ class ReservationServiceTest {
                 .thenReturn(false);
         when(reservationRepository.add(any())).thenReturn(1L);
 
+        // when & then
         assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 이미 과거의 날짜와 시간입니다.");
@@ -139,6 +156,7 @@ class ReservationServiceTest {
     @DisplayName("예약을 추가할 때, 중복된 예약은 허용하지 않는다")
     @Test
     void canNotCreateReservationWithSameDateTime() {
+        // given
         ReservationCreationRequest request = new ReservationCreationRequest("예약", NEXT_DAY, 1L, 1L);
         Theme theme = new Theme(request.themeId(), "테마", "설명", "섬네일");
         ReservationTime time = new ReservationTime(request.timeId(), LocalTime.now());
@@ -148,6 +166,7 @@ class ReservationServiceTest {
                 .thenReturn(true);
         when(reservationRepository.add(any())).thenReturn(1L);
 
+        // when & then
         assertThatThrownBy(() -> reservationService.saveReservation(request))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약입니다.");
@@ -156,9 +175,11 @@ class ReservationServiceTest {
     @DisplayName("ID를 통해 예약을 삭제할 수 있다.")
     @Test
     void deleteReservation() {
+        // given
         Reservation reservation = ReservationFixture.create(1L, "예약1");
         when(reservationRepository.findById(reservation.getId())).thenReturn(Optional.of(reservation));
 
+        // when & then
         assertAll(
                 () -> assertThatCode(() -> reservationService.deleteReservation(reservation.getId()))
                         .doesNotThrowAnyException(),
@@ -169,9 +190,11 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약을 삭제하려고 할 경우 예외를 발생시킨다")
     @Test
     void deleteNoneExistentReservation() {
+        // given
         long noneExistentId = 1L;
         when(reservationRepository.findById(noneExistentId)).thenReturn(Optional.empty());
 
+        // when & then
         assertThatThrownBy(() -> reservationService.deleteReservation(noneExistentId))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("[ERROR] ID에 해당하는 예약이 존재하지 않습니다.");

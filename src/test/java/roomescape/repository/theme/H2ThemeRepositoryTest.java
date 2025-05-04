@@ -36,6 +36,7 @@ class H2ThemeRepositoryTest {
     @DisplayName("모든 테마를 조회할 수 있다")
     @Test
     void canFindAll() {
+        // given
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
@@ -43,16 +44,21 @@ class H2ThemeRepositoryTest {
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마3", "설명3", "썸네일3");
 
+        // when & then
         assertThat(themeRepository.findAll()).hasSize(3);
     }
 
     @DisplayName("ID를 기반으로 테마를 조회할 수 있다")
     @Test
     void canFindById() {
+        // given
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
 
+        // when
         Optional<Theme> actualTheme = themeRepository.findById(1L);
+
+        // then
         Theme expectedTheme = new Theme(1L, "테마1", "설명1", "썸네일1");
         assertAll(
                 () -> assertThat(actualTheme).isPresent(),
@@ -63,27 +69,34 @@ class H2ThemeRepositoryTest {
     @DisplayName("테마를 추가할 수 있다")
     @Test
     void canAdd() {
+        // given
         Theme theme = Theme.createWithoutId("테마1", "설명1", "섬네일1");
 
+        // when
         themeRepository.add(theme);
 
+        // then
         assertThat(themeRepository.findAll()).hasSize(1);
     }
 
     @DisplayName("테마를 삭제할 수 있다")
     @Test
     void canDeleteById() {
+        // given
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
                 "테마1", "설명1", "썸네일1");
 
+        // when
         themeRepository.deleteById(1L);
 
+        // then
         assertThat(themeRepository.findAll()).isEmpty();
     }
 
     @DisplayName("인기있는 테마를 조회할 수 있다")
     @Test
     void canGetTopThemes() {
+        // given
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         for (int i = 0; i < 15; i++) {
             template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)",
@@ -97,8 +110,10 @@ class H2ThemeRepositoryTest {
         template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "이름1", YESTERDAY.toString(), 1L, 2L);
 
+        // when
         List<Theme> topThemes = themeRepository.getTopThemes(YESTERDAY, TODAY, 10);
 
+        // then
         assertAll(
                 () -> assertThat(topThemes).hasSize(10),
                 () -> assertThat(topThemes.get(0).getName()).isEqualTo("테마0"),

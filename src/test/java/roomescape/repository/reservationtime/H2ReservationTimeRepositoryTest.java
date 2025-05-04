@@ -36,22 +36,29 @@ class H2ReservationTimeRepositoryTest {
     @DisplayName("모든 예약시간을 조회할 수 있다")
     @Test
     void canFindAll() {
+        // given
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(11, 0));
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(12, 0));
 
+        // when
         List<ReservationTime> actualReservationTimes = timeRepository.findAll();
+
+        // then
         assertThat(actualReservationTimes).hasSize(3);
     }
 
     @DisplayName("ID를 통해 예약을 조회할 수 있다")
     @Test
     void canFindById() {
+        // given
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
 
+        // when
         Optional<ReservationTime> actualTime = timeRepository.findById(1L);
-        ReservationTime expectedTime = new ReservationTime(1L, LocalTime.of(10, 0));
 
+        // then
+        ReservationTime expectedTime = new ReservationTime(1L, LocalTime.of(10, 0));
         assertAll(
                 () -> assertThat(actualTime).isPresent(),
                 () -> assertThat(actualTime.get()).isEqualTo(expectedTime)
@@ -61,12 +68,15 @@ class H2ReservationTimeRepositoryTest {
     @DisplayName("예약 시간을 통해 예약을 조회할 수 있다")
     @Test
     void canCheckExistenceByStartAt() {
+        // given
         LocalTime startAt = LocalTime.of(10, 0);
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", startAt);
 
+        // when
         boolean isInOfStartAt = timeRepository.checkExistenceByStartAt(startAt);
         boolean isOutOfStartAT = timeRepository.checkExistenceByStartAt(startAt.plusSeconds(1));
 
+        // then
         assertAll(
                 () -> assertThat(isInOfStartAt).isTrue(),
                 () -> assertThat(isOutOfStartAT).isFalse()
@@ -76,19 +86,21 @@ class H2ReservationTimeRepositoryTest {
     @DisplayName("예약 여부와 함께 예약 시간을 조회활 수 있다")
     @Test
     void canFindAllWithBookState() {
+        // given
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(11, 0));
         template.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "테마1", "설명1", "썸네일1");
         template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
                 "이름1", TODAY.toString(), 1L, 1L);
 
+        // when
         List<TimeWithBookState> times = timeRepository.findAllWithBookState(TODAY, 1L);
 
+        // then
         TimeWithBookState timeBooked = times.stream().filter(time -> time.startAt() == LocalTime.of(10, 0))
                 .findFirst().get();
         TimeWithBookState timeNotBooked = times.stream().filter(time -> time.startAt() == LocalTime.of(11, 0))
                 .findFirst().get();
-
         assertAll(
                 () -> assertThat(times).hasSize(2),
                 () -> assertThat(timeBooked.isBooked()).isTrue(),
@@ -99,18 +111,26 @@ class H2ReservationTimeRepositoryTest {
     @DisplayName("예약 시간을 추가할 수 있다")
     @Test
     void canAdd() {
+        // given
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+
+        // when
         timeRepository.add(time);
 
+        // then
         assertThat(timeRepository.findAll()).hasSize(1);
     }
 
     @DisplayName("예약 시간을 삭제할 수 있다")
     @Test
     void canDeleteById() {
+        // given
         template.update("INSERT INTO reservation_time (start_at) VALUES (?)", LocalTime.of(10, 0));
+
+        // when
         timeRepository.deleteById(1L);
 
+        // then
         assertThat(timeRepository.findAll()).isEmpty();
     }
 }

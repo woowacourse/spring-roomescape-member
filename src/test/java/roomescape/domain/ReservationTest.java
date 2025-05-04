@@ -19,6 +19,7 @@ class ReservationTest {
     @ParameterizedTest
     @NullAndEmptySource
     void cannotCreateReservationWithBlankName(String blankName) {
+        // when & then
         assertThatThrownBy(
                 () -> new Reservation(1L, blankName, LocalDate.now(), EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -28,7 +29,10 @@ class ReservationTest {
     @DisplayName("최대 길이를 넘는 이름으로는 예약을 생성할 수 없다")
     @Test
     void cannotCreateReservationWithTooLongName() {
+        // given
         String tooLongName = "i".repeat(256);
+
+        // when & then
         assertThatThrownBy(
                 () -> new Reservation(1L, tooLongName, LocalDate.now(), EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -38,7 +42,10 @@ class ReservationTest {
     @DisplayName("비어있는 ID로는 예약을 생성할 수 없다")
     @Test
     void cannotCreateReservationWithNullId() {
+        // given
         Long nullId = null;
+
+        // when & then
         assertThatThrownBy(
                 () -> new Reservation(nullId, "reservation", LocalDate.now(), EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -48,7 +55,10 @@ class ReservationTest {
     @DisplayName("비어있는 예약날짜로는 예약을 생성할 수 없다")
     @Test
     void cannotCreateReservationWithNullDate() {
+        // given
         LocalDate nullDate = null;
+
+        // when & then
         assertThatThrownBy(() -> new Reservation(1L, "reservation", nullDate, EXAMPLE_RESERVATION_TIME, EXAMPLE_THEME))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 예약날짜로 예약을 생성할 수 없습니다.");
@@ -57,7 +67,10 @@ class ReservationTest {
     @DisplayName("비어있는 예약시간으로는 예약을 생성할 수 없다")
     @Test
     void cannotCreateReservationWithNullTime() {
+        // given
         ReservationTime nullTime = null;
+
+        // when & then
         assertThatThrownBy(() -> new Reservation(1L, "reservation", LocalDate.now(), nullTime, EXAMPLE_THEME))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 비어있는 예약시간으로는 예약을 생성할 수 없습니다.");
@@ -66,7 +79,10 @@ class ReservationTest {
     @DisplayName("비어있는 테마로는 예약을 생성할 수 없다")
     @Test
     void cannotCreateReservationWithNullTheme() {
+        // given
         Theme nullTheme = null;
+
+        // when & then
         assertThatThrownBy(
                 () -> new Reservation(1L, "reservation", LocalDate.now(), EXAMPLE_RESERVATION_TIME, nullTheme))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -76,10 +92,12 @@ class ReservationTest {
     @DisplayName("과거 예약인지 검증할 수 있다")
     @Test
     void canValidateFieldPastReservation() {
+        // given
         ReservationTime pastReservationTime = new ReservationTime(1L, LocalTime.now().minusSeconds(1));
         Reservation pastReservation = new Reservation(1L, "reservation", LocalDate.now(), pastReservationTime,
                 EXAMPLE_THEME);
 
+        // when & then
         assertThatThrownBy(pastReservation::validatePastDateTime)
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("[ERROR] 이미 과거의 날짜와 시간입니다.");
