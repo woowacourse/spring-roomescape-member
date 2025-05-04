@@ -2,9 +2,9 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationDAO;
-import roomescape.dao.ReservationTimeDAO;
-import roomescape.dao.RoomThemeDAO;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.RoomThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
@@ -16,13 +16,13 @@ import roomescape.service.dto.ReservationCreation;
 @Service
 public class ReservationService {
 
-    private final ReservationDAO reservationDAO;
-    private final ReservationTimeDAO reservationTimeDAO;
-    private final RoomThemeDAO themeDAO;
+    private final ReservationDao reservationDAO;
+    private final ReservationTimeDao reservationTimeDAO;
+    private final RoomThemeDao themeDAO;
 
-    public ReservationService(final ReservationDAO reservationDAO,
-                              final ReservationTimeDAO reservationTimeDAO,
-                              final RoomThemeDAO themeDAO) {
+    public ReservationService(final ReservationDao reservationDAO,
+                              final ReservationTimeDao reservationTimeDAO,
+                              final RoomThemeDao themeDAO) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
         this.themeDAO = themeDAO;

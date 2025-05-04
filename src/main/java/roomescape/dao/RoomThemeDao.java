@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.domain.RoomTheme;
 
-public interface RoomThemeDAO {
+public interface RoomThemeDao {
 
     long insert(RoomTheme theme);
 

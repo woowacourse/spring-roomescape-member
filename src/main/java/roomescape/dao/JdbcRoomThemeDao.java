@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.RoomTheme;
 
 @Repository
-public class JdbcRoomThemeDAO implements RoomThemeDAO {
+public class JdbcRoomThemeDao implements RoomThemeDao {
 
     private static final RowMapper<RoomTheme> THEME_ROW_MAPPER = (resultSet, rowNumber) ->
             new RoomTheme(resultSet.getLong("id"),
@@ -24,7 +24,7 @@ public class JdbcRoomThemeDAO implements RoomThemeDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcRoomThemeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcRoomThemeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("theme")

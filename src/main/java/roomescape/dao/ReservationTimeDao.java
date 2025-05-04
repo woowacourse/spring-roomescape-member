@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
 
-public interface ReservationTimeDAO {
+public interface ReservationTimeDao {
 
     long insert(ReservationTime reservationTime);
 

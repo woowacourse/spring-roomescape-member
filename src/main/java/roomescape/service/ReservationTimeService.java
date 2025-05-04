@@ -3,8 +3,8 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationDAO;
-import roomescape.dao.ReservationTimeDAO;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.AvailableReservationTime;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
@@ -15,11 +15,11 @@ import roomescape.service.dto.ReservationTimeCreation;
 @Service
 public class ReservationTimeService {
 
-    private final ReservationDAO reservationDAO;
-    private final ReservationTimeDAO reservationTimeDAO;
+    private final ReservationDao reservationDAO;
+    private final ReservationTimeDao reservationTimeDAO;
 
-    public ReservationTimeService(final ReservationDAO reservationDAO,
-                                  final ReservationTimeDAO reservationTimeDAO) {
+    public ReservationTimeService(final ReservationDao reservationDAO,
+                                  final ReservationTimeDao reservationTimeDAO) {
         this.reservationDAO = reservationDAO;
         this.reservationTimeDAO = reservationTimeDAO;
     }

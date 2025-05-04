@@ -3,8 +3,8 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationDAO;
-import roomescape.dao.RoomThemeDAO;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.RoomThemeDao;
 import roomescape.domain.PopularThemeSelectionCriteria;
 import roomescape.domain.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
@@ -18,10 +18,10 @@ public class RoomThemeService {
     private static final int POPULAR_THEME_SELECTION_DURATION = 7;
     private static final int POPULAR_THEMES_TOP_COUNT = 10;
 
-    private final ReservationDAO reservationDAO;
-    private final RoomThemeDAO themeDAO;
+    private final ReservationDao reservationDAO;
+    private final RoomThemeDao themeDAO;
 
-    public RoomThemeService(final ReservationDAO reservationDAO, final RoomThemeDAO themeDAO) {
+    public RoomThemeService(final ReservationDao reservationDAO, final RoomThemeDao themeDAO) {
         this.reservationDAO = reservationDAO;
         this.themeDAO = themeDAO;
     }

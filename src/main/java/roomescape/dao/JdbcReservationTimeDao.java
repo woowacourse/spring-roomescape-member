@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 @Repository
-public class JdbcReservationTimeDAO implements ReservationTimeDAO {
+public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private static final RowMapper<ReservationTime> RESERVATION_TIME_ROW_MAPPER = (resultSet, rowNumber) ->
             new ReservationTime(resultSet.getLong("id"),
@@ -23,7 +23,7 @@ public class JdbcReservationTimeDAO implements ReservationTimeDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcReservationTimeDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation_time")

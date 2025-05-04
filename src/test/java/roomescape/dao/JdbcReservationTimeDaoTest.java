@@ -16,10 +16,10 @@ import roomescape.domain.ReservationTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class JdbcReservationTimeDAOTest {
+class JdbcReservationTimeDaoTest {
 
     @Autowired
-    ReservationTimeDAO reservationTimeDAO;
+    ReservationTimeDao reservationTimeDAO;
 
     @DisplayName("데이터 베이스에 예약 시간을 추가하고 id 값을 반환한다")
     @Test

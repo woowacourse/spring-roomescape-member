@@ -16,7 +16,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.RoomTheme;
 
 @Repository
-public class JdbcReservationDAO implements ReservationDAO {
+public class JdbcReservationDao implements ReservationDao {
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("reservation_id"),
@@ -32,7 +32,7 @@ public class JdbcReservationDAO implements ReservationDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcReservationDAO(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("reservation")

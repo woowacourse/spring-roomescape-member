@@ -14,10 +14,10 @@ import roomescape.domain.RoomTheme;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class JdbcRoomThemeDAOTest {
+class JdbcRoomThemeDaoTest {
 
     @Autowired
-    private RoomThemeDAO roomThemeDAO;
+    private RoomThemeDao roomThemeDAO;
 
     @DisplayName("데이터 베이스에 방 테마를 추가하고 id 값을 반환한다")
     @Test
