@@ -9,6 +9,7 @@ import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,17 +48,22 @@ public class MissionStepTest {
     private ReservationController reservationController;
 
     @BeforeEach
-    void setUp() {
+    void cleanDatabase() {
         RestAssured.port = port;
 
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        jdbcTemplate.execute((Connection connection) -> {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
+                statement.execute("TRUNCATE TABLE reservation");
+                statement.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE reservation_time");
+                statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE theme");
+                statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+                statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
+            }
+            return null;
+        });
     }
 
     @DisplayName("/ 요청 시 200 OK 반환")
@@ -138,8 +144,9 @@ public class MissionStepTest {
                 .statusCode(204);
     }
 
+    @DisplayName("4단계 - 데이터베이스 연결 성공")
     @Test
-    void 사단계() {
+    void connectionTest() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertThat(connection).isNotNull();
             assertThat(connection.getCatalog()).isEqualTo("DATABASE");
@@ -149,8 +156,9 @@ public class MissionStepTest {
         }
     }
 
+    @DisplayName("5단계 - 데이터베이스에 예약 추가 및 조회 성공")
     @Test
-    void 오단계() {
+    void postAndGetReservation() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
@@ -170,8 +178,9 @@ public class MissionStepTest {
         assertThat(reservations.size()).isEqualTo(count);
     }
 
+    @DisplayName("6단계 - 데이터베이스에 예약 추가 성공")
     @Test
-    void 육단계() {
+    void postAndDeleteReservation() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
@@ -197,8 +206,9 @@ public class MissionStepTest {
         assertThat(countAfterDelete).isEqualTo(beforeCount);
     }
 
+    @DisplayName("7단계 - 예약 시간 추가 및 삭제 성공")
     @Test
-    void 칠단계() {
+    void reservationTimeTest() {
         int beforeSize = timeRepository.findAll().size();
 
         Map<String, String> params = new HashMap<>();
@@ -223,8 +233,9 @@ public class MissionStepTest {
                 .statusCode(204);
     }
 
+    @DisplayName("8단계 - 시간을 선택해서 예약 추가 및 조회 성공")
     @Test
-    void 팔단계() {
+    void postAndGetReservationWithTime() {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES ('테마1', '테마 1입니다.', '썸네일입니다.')");
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)",
                 1L, "10:00");
@@ -243,8 +254,9 @@ public class MissionStepTest {
                 .body("size()", is(1));
     }
 
+    @DisplayName("9단계 - 데이터베이스 로직 분리 테스트")
     @Test
-    void 구단계() {
+    void layeredArchitectureTest() {
         boolean isJdbcTemplateInjected = false;
 
         for (Field field : reservationController.getClass().getDeclaredFields()) {

@@ -3,7 +3,9 @@ package roomescape.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -33,14 +35,19 @@ class JdbcReservationRepositoryTest {
 
     @BeforeEach
     void cleanDatabase() {
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+        jdbcTemplate.execute((Connection connection) -> {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
+                statement.execute("TRUNCATE TABLE reservation");
+                statement.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE reservation_time");
+                statement.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+                statement.execute("TRUNCATE TABLE theme");
+                statement.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+                statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
+            }
+            return null;
+        });
     }
 
     @DisplayName("save 후 생성된 id를 반환한다.")
