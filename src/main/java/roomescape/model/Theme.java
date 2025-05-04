@@ -7,8 +7,6 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        validateRequiredFields(id, name, description, thumbnail);
-
         this.id = id;
         this.name = name;
         this.description = description;
@@ -16,34 +14,7 @@ public class Theme {
     }
 
     public Theme(String name, String description, String thumbnail) {
-        validateRequiredFields(name, description, thumbnail);
-
-        this.id = null;
-        this.name = name;
-        this.description = description;
-        this.thumbnail = thumbnail;
-    }
-
-    private void validateRequiredFields(Long id, String name, String description, String thumbnail) {
-        if (id == null) {
-            throw new IllegalArgumentException("id는 null 일 수 없습니다.");
-        }
-
-        validateRequiredFields(name, description, thumbnail);
-    }
-
-    private void validateRequiredFields(String name, String description, String thumbnail) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("테마명은 null 이거나 빈 값일 수 없습니다.");
-        }
-
-        if (description == null || description.isEmpty()) {
-            throw new IllegalArgumentException("설명은 null 이거나 빈 값일 수 없습니다.");
-        }
-
-        if (thumbnail == null || thumbnail.isEmpty()) {
-            throw new IllegalArgumentException("설명은 null 이거나 빈 값일 수 없습니다.");
-        }
+        this(null, name, description, thumbnail);
     }
 
     public Long getId() {

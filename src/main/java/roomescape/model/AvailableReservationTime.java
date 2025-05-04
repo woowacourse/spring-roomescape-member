@@ -8,14 +8,7 @@ public class AvailableReservationTime extends ReservationTime {
 
     public AvailableReservationTime(Long id, LocalTime startAt, Boolean alreadyBooked) {
         super(id, startAt);
-        validateRequiredFields(alreadyBooked);
         this.alreadyBooked = alreadyBooked;
-    }
-
-    private void validateRequiredFields(Boolean alreadyBooked) {
-        if (alreadyBooked == null) {
-            throw new IllegalArgumentException("예약 여부 결과는 null 일 수 없습니다.");
-        }
     }
 
     public Boolean getAlreadyBooked() {
