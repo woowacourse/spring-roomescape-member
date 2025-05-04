@@ -10,13 +10,12 @@ import roomescape.business.ReservationTime;
 import roomescape.exception.ReservationException;
 import roomescape.exception.ReservationThemeException;
 import roomescape.exception.ReservationTimeException;
+import roomescape.presentation.mapper.ReservationMapper;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
-import roomescape.presentation.dto.ReservationThemeResponseDto;
-import roomescape.presentation.dto.ReservationTimeResponseDto;
 
 @Service
 @Transactional
@@ -38,42 +37,14 @@ public class ReservationService {
     public List<ReservationResponseDto> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(reservation -> new ReservationResponseDto(
-                        reservation.getId(),
-                        reservation.getName(),
-                        reservation.getDate(),
-                        new ReservationTimeResponseDto(
-                                reservation.getTime().getId(),
-                                reservation.getTime().getStartAt()
-                        ),
-                        new ReservationThemeResponseDto(
-                                reservation.getTheme().getId(),
-                                reservation.getTheme().getName(),
-                                reservation.getTheme().getDescription(),
-                                reservation.getTheme().getThumbnail()
-                        )
-                ))
+                .map(ReservationMapper::toResponse)
                 .toList();
     }
 
     public ReservationResponseDto getReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationException("존재하지 않는 예약입니다."));
-        return new ReservationResponseDto(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getDate(),
-                new ReservationTimeResponseDto(
-                        reservation.getTime().getId(),
-                        reservation.getTime().getStartAt()
-                ),
-                new ReservationThemeResponseDto(
-                        reservation.getTheme().getId(),
-                        reservation.getTheme().getName(),
-                        reservation.getTheme().getDescription(),
-                        reservation.getTheme().getThumbnail()
-                )
-        );
+        return ReservationMapper.toResponse(reservation);
     }
 
     public Long createReservation(ReservationRequestDto reservationDto) {

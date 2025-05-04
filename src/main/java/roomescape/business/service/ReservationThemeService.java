@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.ReservationTheme;
 import roomescape.exception.ReservationThemeException;
+import roomescape.presentation.mapper.ReservationThemeMapper;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.presentation.dto.ReservationThemeRequestDto;
@@ -29,13 +30,7 @@ public class ReservationThemeService {
     public List<ReservationThemeResponseDto> getAllThemes() {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
         return reservationThemes.stream()
-                .map(reservationTheme -> new ReservationThemeResponseDto(
-                                reservationTheme.getId(),
-                                reservationTheme.getName(),
-                                reservationTheme.getDescription(),
-                                reservationTheme.getThumbnail()
-                        )
-                )
+                .map(ReservationThemeMapper::toResponse)
                 .toList();
     }
 
@@ -46,13 +41,7 @@ public class ReservationThemeService {
         List<ReservationTheme> bestReservedReservationThemes = reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(
                 start, end, 10);
         return bestReservedReservationThemes.stream()
-                .map(bestTheme -> new ReservationThemeResponseDto(
-                                bestTheme.getId(),
-                                bestTheme.getName(),
-                                bestTheme.getDescription(),
-                                bestTheme.getThumbnail()
-                        )
-                )
+                .map(ReservationThemeMapper::toResponse)
                 .toList();
     }
 
@@ -74,11 +63,13 @@ public class ReservationThemeService {
                         reservationThemeDto.thumbnail()
                 )
         );
-        return new ReservationThemeResponseDto(
-                id,
-                reservationThemeDto.name(),
-                reservationThemeDto.description(),
-                reservationThemeDto.thumbnail()
+        return ReservationThemeMapper.toResponse(
+                new ReservationTheme(
+                        id,
+                        reservationThemeDto.name(),
+                        reservationThemeDto.description(),
+                        reservationThemeDto.thumbnail()
+                )
         );
     }
 
