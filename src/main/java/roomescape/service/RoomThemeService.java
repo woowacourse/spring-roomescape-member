@@ -27,15 +27,18 @@ public class RoomThemeService {
     }
 
     public RoomTheme addTheme(final RoomThemeCreation themeCreation) {
+        validateThemeNotDuplicated(themeCreation);
+        final RoomTheme theme =
+                new RoomTheme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
+
+        final long id = themeDAO.insert(theme);
+        return findById(id);
+    }
+
+    private void validateThemeNotDuplicated(final RoomThemeCreation themeCreation) {
         if (themeDAO.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
-
-        final RoomTheme theme =
-                new RoomTheme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
-        final long id = themeDAO.insert(theme);
-
-        return findById(id);
     }
 
     private RoomTheme findById(final long id) {
@@ -57,14 +60,18 @@ public class RoomThemeService {
     }
 
     public void deleteTheme(final long id) {
-        if (reservationDAO.existsByThemeId(id)) {
-            throw new InUseException("사용 중인 테마입니다");
-        }
+        validateThemeNotInUse(id);
 
         final boolean deleted = themeDAO.deleteById(id);
 
         if (!deleted) {
             throw new NotExistedValueException("존재하지 않는 테마입니다");
+        }
+    }
+
+    private void validateThemeNotInUse(final long id) {
+        if (reservationDAO.existsByThemeId(id)) {
+            throw new InUseException("사용 중인 테마입니다");
         }
     }
 }

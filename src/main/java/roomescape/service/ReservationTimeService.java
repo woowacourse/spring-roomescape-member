@@ -25,13 +25,17 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addReservationTime(final ReservationTimeCreation creation) {
+        validateTimeNotDuplicated(creation);
+        final ReservationTime reservationTime = new ReservationTime(creation.startAt());
+
+        final long id = reservationTimeDAO.insert(reservationTime);
+        return findById(id);
+    }
+
+    private void validateTimeNotDuplicated(final ReservationTimeCreation creation) {
         if (reservationTimeDAO.existsByStartAt(creation.startAt())) {
             throw new ExistedDuplicateValueException("이미 존재하는 예약 가능 시간입니다: %s".formatted(creation.startAt()));
         }
-        final ReservationTime reservationTime = new ReservationTime(creation.startAt());
-        final long id = reservationTimeDAO.insert(reservationTime);
-
-        return findById(id);
     }
 
     private ReservationTime findById(final long id) {
@@ -53,14 +57,18 @@ public class ReservationTimeService {
     }
 
     public void deleteById(final long id) {
-        if (reservationDAO.existsByTimeId(id)) {
-            throw new InUseException("사용 중인 예약 시간입니다");
-        }
+        validateTimeNotInUse(id);
 
         boolean deleted = reservationTimeDAO.deleteById(id);
 
         if (!deleted) {
             throw new NotExistedValueException("존재하지 않는 예약 시간입니다");
+        }
+    }
+
+    private void validateTimeNotInUse(final long id) {
+        if (reservationDAO.existsByTimeId(id)) {
+            throw new InUseException("사용 중인 예약 시간입니다");
         }
     }
 }
