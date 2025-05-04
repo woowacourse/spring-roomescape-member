@@ -12,7 +12,7 @@ public class ReservationTime {
     private final LocalTime startAt;
 
     public ReservationTime(final long id, final LocalTime startAt) {
-        validate(startAt);
+        validateNotNull(startAt);
         this.id = id;
         this.startAt = startAt;
     }
@@ -27,7 +27,7 @@ public class ReservationTime {
         return startAt.isBefore(currentTime);
     }
 
-    private void validate(final LocalTime startAt) {
+    private void validateNotNull(final LocalTime startAt) {
         if (startAt == null) {
             throw new InvalidInputException("시간은 빈 값이 입력될 수 없습니다");
         }

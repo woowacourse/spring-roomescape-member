@@ -9,12 +9,12 @@ public class AvailableReservationTime {
     private final boolean bookedStatus;
 
     public AvailableReservationTime(final List<ReservationTime> bookedTimes, final ReservationTime reservationTime) {
-        validate(bookedTimes, reservationTime);
+        validateNotNull(bookedTimes, reservationTime);
         this.reservationTime = reservationTime;
         this.bookedStatus = isBooked(bookedTimes, reservationTime);
     }
 
-    private void validate(final List<ReservationTime> bookedTimes, final ReservationTime reservationTime) {
+    private void validateNotNull(final List<ReservationTime> bookedTimes, final ReservationTime reservationTime) {
         if (bookedTimes == null) {
             throw new InvalidInputException("예약된 시간 목록은 null이 될 수 없습니다");
         }

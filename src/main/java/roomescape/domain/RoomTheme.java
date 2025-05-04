@@ -13,7 +13,7 @@ public class RoomTheme {
     private final String thumbnail;
 
     public RoomTheme(final long id, final String name, final String description, final String thumbnail) {
-        validate(name, description, thumbnail);
+        validateNotNull(name, description, thumbnail);
 
         this.id = id;
         this.name = name;
@@ -25,7 +25,7 @@ public class RoomTheme {
         this(NON_SAVED_STATUS, name, description, thumbnail);
     }
 
-    private void validate(final String name, final String description, final String thumbnail) {
+    private void validateNotNull(final String name, final String description, final String thumbnail) {
         if (Objects.isNull(name) || name.isBlank()) {
             throw new InvalidInputException("테마 명은 빈 값이 입력될 수 없습니다");
         }

@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleUsingStatusException(InUseException e) {
+    public ResponseEntity<String> handleInUseException(InUseException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ERROR_PREFIX + e.getMessage());
     }
 }
