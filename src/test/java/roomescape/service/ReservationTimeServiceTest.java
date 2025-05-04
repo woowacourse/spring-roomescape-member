@@ -93,6 +93,18 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
+    void deleteReservationTimeWhenInUseTest() {
+        // given
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10,0));
+        reservationTimeService.createReservationTime(request);
+        ThemeCreateRequest themeCreateRequest = new ThemeCreateRequest("테마1","테마 설명", "테마 사진");
+        themeService.createTheme(themeCreateRequest);
+        reservationService.createReservation(new ReservationCreateRequest("히스타",LocalDate.now().plusDays(1),1L, 1L));
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L)).isInstanceOf(DeleteReservationException.class);
+    }
+
+    @Test
     void findAvailableReservationTimesByDateAndThemeIdTest() {
         // given
         ReservationTimeCreateRequest request1 = new ReservationTimeCreateRequest(LocalTime.of(10,0));
