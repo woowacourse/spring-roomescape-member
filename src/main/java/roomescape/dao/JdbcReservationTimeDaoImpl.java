@@ -17,21 +17,18 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
 
     public JdbcReservationTimeDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
-            .withTableName("reservation_time")
-            .usingGeneratedKeyColumns("id");
+        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public List<ReservationTime> findAllReservationTimes() {
         String query = "select * from reservation_time";
         return jdbcTemplate.query(query,
-            (resultSet, RowNum) -> {
-                ReservationTime reservationTime = new ReservationTime(
-                    resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at")));
-                return reservationTime;
-            });
+                (resultSet, RowNum) -> new ReservationTime(
+                        resultSet.getLong("id"),
+                        LocalTime.parse(resultSet.getString("start_at"))));
     }
 
     @Override
@@ -52,11 +49,8 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
     public ReservationTime findById(Long id) {
         String query = "select * from reservation_time where id = ?";
         return jdbcTemplate.queryForObject(query,
-            (resultSet, rowNum) -> {
-                ReservationTime reservationTime = new ReservationTime(
-                    resultSet.getLong("id"),
-                    LocalTime.parse(resultSet.getString("start_at")));
-                return reservationTime;
-            }, id);
+                (resultSet, rowNum) -> new ReservationTime(
+                        resultSet.getLong("id"),
+                        LocalTime.parse(resultSet.getString("start_at"))), id);
     }
 }

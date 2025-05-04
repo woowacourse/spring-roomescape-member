@@ -38,35 +38,50 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
+    public ReservationResponseDto saveReservation(ReservationRequestDto request) {
         LocalDateTime currentDateTime = LocalDateTime.now();
+        Person person = new Person(request.name());
+        ReservationDate date = getReservationDate(request, currentDateTime);
+        ReservationTime reservationTime = getReservationTime(request);
+        Theme theme = getTheme(request);
 
-        Person person = new Person(reservationRequestDto.name());
-        ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
-        date.validateDate(currentDateTime.toLocalDate());
-        ReservationTime reservationTime = reservationTimeDao.findById(
-                reservationRequestDto.timeId());
+        Reservation reservation = createReservation(person, date, reservationTime, theme, currentDateTime);
+        validateAlreadyExistDateTime(request, date);
 
-        Theme theme = themeDao.findById(reservationRequestDto.themeId())
-                .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
+        reservationDao.saveReservation(reservation);
+        return ReservationResponseDto.from(reservation);
+    }
 
+    private Reservation createReservation(final Person person, final ReservationDate date,
+                                          final ReservationTime reservationTime, final Theme theme,
+                                          final LocalDateTime currentDateTime) {
         Reservation reservation = new Reservation(person, date, reservationTime, theme);
         reservation.validateDateTime(date, reservationTime, currentDateTime);
+        return reservation;
+    }
 
-        validateAlreadyExistDateTime(reservationRequestDto, date);
-        reservationDao.saveReservation(reservation);
+    private Theme getTheme(final ReservationRequestDto request) {
+        return themeDao.findById(request.themeId())
+                .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
+    }
 
-        return ReservationResponseDto.from(reservation);
+    private ReservationTime getReservationTime(final ReservationRequestDto request) {
+        return reservationTimeDao.findById(request.timeId());
+    }
+
+    private ReservationDate getReservationDate(final ReservationRequestDto request,
+                                               final LocalDateTime currentDateTime) {
+        ReservationDate date = new ReservationDate(LocalDate.parse(request.date()));
+        date.validateDate(currentDateTime.toLocalDate());
+        return date;
     }
 
     public void deleteReservation(Long id) {
         reservationDao.deleteReservation(id);
     }
 
-    public List<BookedReservationTimeResponseDto> getAllBookedReservationTimes(String date,
-                                                                               Long themeId) {
+    public List<BookedReservationTimeResponseDto> getAllBookedReservationTimes(String date, Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
-
         return reservationTimes.stream()
                 .map(reservationTime -> createBookedReservationTimeResponseDto(date, themeId,
                         reservationTime))

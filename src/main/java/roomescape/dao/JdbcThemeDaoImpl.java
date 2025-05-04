@@ -19,21 +19,21 @@ public class JdbcThemeDaoImpl implements ThemeDao {
 
     public JdbcThemeDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.insertActor = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
-            .withTableName("theme")
-            .usingGeneratedKeyColumns("id");
+        this.insertActor = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public List<Theme> findAllTheme() {
         String query = "select * from theme";
         return jdbcTemplate.query(query,
-            (resultSet, RowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-            ));
+                (resultSet, RowNum) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ));
     }
 
     @Override
@@ -57,11 +57,11 @@ public class JdbcThemeDaoImpl implements ThemeDao {
         String query = "select * from theme where id = ?";
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query,
-                (resultSet, rowNum) -> new Theme(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail")), id));
+                    (resultSet, rowNum) -> new Theme(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail")), id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -72,23 +72,23 @@ public class JdbcThemeDaoImpl implements ThemeDao {
         System.out.println(startDate);
         System.out.println(currentDate);
         String query = """
-            SELECT id, name, description, thumbnail
-            FROM
-            (
-                SELECT theme_id, COUNT(*) AS reservation_count
-                FROM reservation
-                WHERE date >= ? AND date <= ?
-                GROUP BY theme_id
-            ) AS sub
-            INNER JOIN theme ON sub.theme_id = theme.id;     
-            """;
+                SELECT id, name, description, thumbnail
+                FROM
+                (
+                    SELECT theme_id, COUNT(*) AS reservation_count
+                    FROM reservation
+                    WHERE date >= ? AND date <= ?
+                    GROUP BY theme_id
+                ) AS sub
+                INNER JOIN theme ON sub.theme_id = theme.id;     
+                """;
 
         return jdbcTemplate.query(query,
-            (resultSet, rowNum) -> new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-            ), startDate, currentDate);
+                (resultSet, rowNum) -> new Theme(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getString("thumbnail")
+                ), startDate, currentDate);
     }
 }
