@@ -81,8 +81,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
                     WHERE start_at = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
-        return result == 1;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt.toString()));
     }
 
 }

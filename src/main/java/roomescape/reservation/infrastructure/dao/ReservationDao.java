@@ -103,8 +103,7 @@ public class ReservationDao implements ReservationRepository {
                     WHERE time_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-        return result == 1;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, timeId));
     }
 
     @Override
@@ -116,8 +115,7 @@ public class ReservationDao implements ReservationRepository {
                     WHERE theme_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
-        return result == 1;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, themeId));
     }
 
     @Override
@@ -135,8 +133,7 @@ public class ReservationDao implements ReservationRepository {
                 )
                 """;
 
-        int result = jdbcTemplate.queryForObject(sql, Integer.class, date.toString(), time.toString());
-        return result == 1;
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, date.toString(), time.toString()));
     }
 
     @Override
