@@ -83,11 +83,11 @@ class JdbcThemeDaoTest {
         assertThat(notExists).isFalse();
     }
 
-    private Boolean existsThemeById(Long savedThemeId) {
+    private Boolean existsThemeById(Long id) {
         return jdbcTemplate.queryForObject(
                 "select exists(select 1 from theme where id = ?)",
                 Boolean.class,
-                savedThemeId
+                id
         );
     }
 }

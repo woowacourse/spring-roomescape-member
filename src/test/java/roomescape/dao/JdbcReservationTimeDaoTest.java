@@ -62,7 +62,7 @@ class JdbcReservationTimeDaoTest {
 
         // when
         Long savedTimeId = jdbcReservationTimeDao.save(time);
-        Boolean result = existsTimeById(savedTimeId);
+        Boolean result = existsReservationTimeById(savedTimeId);
 
         // then 
         assertThat(savedTimeId).isNotNull();
@@ -73,22 +73,22 @@ class JdbcReservationTimeDaoTest {
     @DisplayName("예약 시간을 삭제한다")
     void deleteReservationTime() {
         // given
-        Boolean exists = existsTimeById(1L);
+        Boolean exists = existsReservationTimeById(1L);
 
         // when
         jdbcReservationTimeDao.deleteById(1L);
-        Boolean notExists = existsTimeById(1L);
+        Boolean notExists = existsReservationTimeById(1L);
 
         // then
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
     }
 
-    private Boolean existsTimeById(Long savedTimeId) {
+    private Boolean existsReservationTimeById(Long id) {
         return jdbcTemplate.queryForObject(
                 "select exists(select 1 from reservation_time where id = ?)",
                 Boolean.class,
-                savedTimeId
+                id
         );
     }
 }
