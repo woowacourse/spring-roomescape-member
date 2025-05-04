@@ -23,15 +23,15 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Optional<ReservationTime> save(ReservationTime reservationTime) {
         long count = reservationTimes.stream()
-                .filter(rt -> rt.startAt().equals(reservationTime.startAt()))
+                .filter(rt -> rt.getStartAt().equals(reservationTime.getStartAt()))
                 .count();
-        if(count != 0){
+        if (count != 0) {
             throw new IllegalStateException("Reservation time already exists");
         }
 
-        ReservationTime newReservationTime = new ReservationTime(reservationTimeId.getAndIncrement(), reservationTime.startAt());
+        ReservationTime newReservationTime = new ReservationTime(reservationTimeId.getAndIncrement(), reservationTime.getStartAt());
         reservationTimes.add(newReservationTime);
-        return findById(newReservationTime.id());
+        return findById(newReservationTime.getId());
     }
 
     @Override
@@ -42,24 +42,24 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public Optional<ReservationTime> findById(long id) {
         return reservationTimes.stream()
-                .filter(reservationTime -> Objects.equals(reservationTime.id(), id))
+                .filter(reservationTime -> Objects.equals(reservationTime.getId(), id))
                 .findFirst();
     }
 
     @Override
     public int deleteById(long id) {
         ReservationTime deleteReservation = reservationTimes.stream()
-                .filter(reservationTime -> Objects.equals(reservationTime.id(), id))
+                .filter(reservationTime -> Objects.equals(reservationTime.getId(), id))
                 .findFirst().orElse(new ReservationTime(null, LocalTime.now()));
 
-        if (deleteReservation.id() != null) {
+        if (deleteReservation.getId() != null) {
             if (reservations.stream()
-                    .filter(reservation -> reservation.time().equals(deleteReservation))
+                    .filter(reservation -> reservation.getTime().equals(deleteReservation))
                     .count() != 0) {
                 throw new IllegalStateException();
             }
             int affectedRows = (int) reservationTimes.stream()
-                    .filter(reservationTime -> Objects.equals(reservationTime.id(), id))
+                    .filter(reservationTime -> Objects.equals(reservationTime.getId(), id))
                     .count();
             reservationTimes.remove(deleteReservation);
             return affectedRows;

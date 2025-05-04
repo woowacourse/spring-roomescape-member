@@ -1,5 +1,9 @@
 package roomescape.repository;
 
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,10 +14,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
-import javax.sql.DataSource;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeRepository {
@@ -37,7 +37,7 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     @Override
     public Optional<ReservationTime> save(ReservationTime reservationTime) {
         try {
-            LocalTime startTime = reservationTime.startAt();
+            LocalTime startTime = reservationTime.getStartAt();
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("start_at", startTime.toString());
             long id = jdbcInsert.executeAndReturnKey(params).longValue();

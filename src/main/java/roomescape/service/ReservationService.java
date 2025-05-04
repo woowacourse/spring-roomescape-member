@@ -34,8 +34,8 @@ public class ReservationService {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
 
-        validateDuplicate(dto.date(), reservationTime.startAt());
-        validateReservationDateTime(dto.date(), reservationTime.startAt());
+        validateDuplicate(dto.date(), reservationTime.getStartAt());
+        validateReservationDateTime(dto.date(), reservationTime.getStartAt());
 
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.timeId()));
@@ -44,7 +44,7 @@ public class ReservationService {
         Reservation newReservation = reservationRepository.save(requestReservation)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약 생성을 실패하였습니다."));
 
-        return ReservationResponseDto.from(newReservation, newReservation.time(), theme);
+        return ReservationResponseDto.from(newReservation, newReservation.getTime(), theme);
     }
 
     private void validateDuplicate(LocalDate date, LocalTime time) {
@@ -66,7 +66,7 @@ public class ReservationService {
         List<Reservation> allReservations = reservationRepository.findAll();
 
         return allReservations.stream()
-                .map(reservation -> ReservationResponseDto.from(reservation, reservation.time(), reservation.theme()))
+                .map(reservation -> ReservationResponseDto.from(reservation, reservation.getTime(), reservation.getTheme()))
                 .toList();
     }
 

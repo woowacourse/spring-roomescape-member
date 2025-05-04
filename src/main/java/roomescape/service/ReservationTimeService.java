@@ -48,13 +48,13 @@ public class ReservationTimeService {
         List<Reservation> availableReservationsByDate = reservationRepository.findByDateAndTheme(date, themeId);
 
         List<ReservationTime> availableReservationTimes = availableReservationsByDate.stream()
-                .map(Reservation::time)
+                .map(Reservation::getTime)
                 .toList();
 
         return allReservationTimes.stream()
                 .map(reservationTime -> new AvailableReservationTimeResponseDto(
-                        reservationTime.id(),
-                        reservationTime.startAt(),
+                        reservationTime.getId(),
+                        reservationTime.getStartAt(),
                         availableReservationTimes.contains(reservationTime)
                 ))
                 .toList();

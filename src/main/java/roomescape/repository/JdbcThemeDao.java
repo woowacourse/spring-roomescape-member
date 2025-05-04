@@ -38,9 +38,9 @@ public class JdbcThemeDao implements ThemeRepository {
     @Override
     public Optional<Theme> save(Theme theme) {
         try {
-            String name = theme.name();
-            String description = theme.description();
-            String thumbnail = theme.thumbnail();
+            String name = theme.getName();
+            String description = theme.getDescription();
+            String thumbnail = theme.getThumbnail();
             SqlParameterSource params = new MapSqlParameterSource()
                     .addValue("name", name)
                     .addValue("description", description)

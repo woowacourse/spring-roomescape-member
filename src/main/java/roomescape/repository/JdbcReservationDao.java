@@ -55,10 +55,10 @@ public class JdbcReservationDao implements ReservationRepository {
     public Optional<Reservation> save(final Reservation reservation) {
         try {
             SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", reservation.name())
-                    .addValue("date", reservation.date())
-                    .addValue("time_id", reservation.time().id())
-                    .addValue("theme_id", reservation.theme().id());
+                    .addValue("name", reservation.getName())
+                    .addValue("date", reservation.getDate())
+                    .addValue("time_id", reservation.getTime().getId())
+                    .addValue("theme_id", reservation.getTheme().getId());
 
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
             return findById(id);

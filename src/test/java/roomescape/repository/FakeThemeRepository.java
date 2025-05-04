@@ -26,15 +26,15 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> save(Theme theme) {
         long count = themes.stream()
-                .filter(t -> t.name().equals(theme.name()) && t.description().equals(theme.description()) && t.thumbnail().equals(theme.thumbnail()))
+                .filter(t -> t.getName().equals(theme.getName()) && t.getDescription().equals(theme.getDescription()) && t.getThumbnail().equals(theme.getThumbnail()))
                 .count();
         if (count != 0) {
             throw new IllegalStateException("Reservation time already exists");
         }
 
-        Theme newTheme = new Theme(themeId.getAndIncrement(), theme.name(), theme.description(), theme.thumbnail());
+        Theme newTheme = new Theme(themeId.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
         themes.add(newTheme);
-        return findById(newTheme.id());
+        return findById(newTheme.getId());
     }
 
     @Override
@@ -45,15 +45,15 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public Optional<Theme> findById(long id) {
         return themes.stream()
-                .filter(theme -> Objects.equals(theme.id(), id))
+                .filter(theme -> Objects.equals(theme.getId(), id))
                 .findFirst();
     }
 
     @Override
     public List<Theme> findPopular(LocalDate start, LocalDate end) {
         Map<Theme, Long> themeCounts = reservations.stream()
-                .filter(r -> !r.date().isBefore(start) && r.date().isBefore(end))
-                .collect(Collectors.groupingBy(Reservation::theme, Collectors.counting()));
+                .filter(r -> !r.getDate().isBefore(start) && r.getDate().isBefore(end))
+                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
 
         return themeCounts.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -65,18 +65,18 @@ public class FakeThemeRepository implements ThemeRepository {
     @Override
     public int deleteById(long id) {
         Theme deleteTheme = themes.stream()
-                .filter(theme -> Objects.equals(theme.id(), id))
+                .filter(theme -> Objects.equals(theme.getId(), id))
                 .findFirst()
                 .orElse(new Theme(null, "A", "b", "c"));
 
-        if (deleteTheme.id() != null) {
+        if (deleteTheme.getId() != null) {
             if (reservations.stream()
-                    .filter(reservation -> reservation.theme().equals(deleteTheme))
+                    .filter(reservation -> reservation.getTheme().equals(deleteTheme))
                     .count() != 0) {
                 throw new IllegalStateException();
             }
             int affectedRows = (int) themes.stream()
-                    .filter(theme -> Objects.equals(theme.id(), id))
+                    .filter(theme -> Objects.equals(theme.getId(), id))
                     .count();
             themes.remove(deleteTheme);
             return affectedRows;

@@ -1,11 +1,21 @@
 package roomescape.domain;
 
-public record Theme(Long id, String name, String description, String thumbnail) {
+public class Theme {
 
-    public Theme {
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnail;
+
+    public Theme(Long id, String name, String description, String thumbnail) {
         validateName(name);
         validateDescription(description);
         validateThumbnail(thumbnail);
+
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.thumbnail = thumbnail;
     }
 
     private void validateName(String name) {
@@ -24,5 +34,21 @@ public record Theme(Long id, String name, String description, String thumbnail) 
         if (thumbnail == null) {
             throw new IllegalArgumentException("[ERROR] 테마 이미지가 없습니다.");
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
     }
 }
