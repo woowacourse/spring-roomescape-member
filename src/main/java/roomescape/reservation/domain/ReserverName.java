@@ -10,7 +10,7 @@ public class ReserverName {
 
     private String validateBlank(String reserverName) {
         if (reserverName == null || reserverName.isBlank()) {
-            throw new IllegalStateException("[ERROR] 예약자 이름은 필수입니다.");
+            throw new IllegalStateException("예약자 이름은 필수입니다.");
         }
         return reserverName;
     }

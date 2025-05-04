@@ -30,7 +30,7 @@ public class ThemeService {
 
     public void deleteThemeById(final Long id) {
         if (reservationRepository.existReservationByThemeId(id)) {
-            throw new IllegalStateException("[ERROR] 이미 예약이 존재해서 테마를 삭제할 수 없습니다.");
+            throw new IllegalStateException("이미 예약이 존재해서 테마를 삭제할 수 없습니다.");
         }
         Theme theme = getTheme(id);
         themeRepository.deleteById(theme.getId());
@@ -53,6 +53,6 @@ public class ThemeService {
 
     private Theme getTheme(final Long id) {
         return themeRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("해당 테마가 존재하지 않습니다."));
     }
 }

@@ -1,5 +1,6 @@
 package roomescape.time.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class ReservationTimeApiController {
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> createTime(
-            @RequestBody CreateReservationTimeRequest request
+            @RequestBody @Valid CreateReservationTimeRequest request
     ) {
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
 
@@ -54,7 +55,7 @@ public class ReservationTimeApiController {
 
     @GetMapping("/available")
     public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimes(
-            @ModelAttribute AvailableReservationTimeRequest request
+            @ModelAttribute @Valid AvailableReservationTimeRequest request
     ) {
         List<AvailableReservationTimeResponse> responses =
                 reservationTimeService.findAvailableReservationTimes(request);

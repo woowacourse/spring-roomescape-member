@@ -20,7 +20,7 @@ public class ReservationDateTime {
         LocalDateTime now = LocalDateTime.now(clock);
 
         if (reservationDateTime.isBefore(now)) {
-            throw new IllegalStateException("[ERROR] 현재 시간 이후로 예약할 수 있습니다.");
+            throw new IllegalStateException("현재 시간 이후로 예약할 수 있습니다.");
         }
     }
 
