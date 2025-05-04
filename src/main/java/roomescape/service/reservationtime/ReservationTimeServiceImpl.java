@@ -45,7 +45,7 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
 
         int affectedCount = timeRepository.deleteById(id);
         if (affectedCount != 1) {
-            throw new ReservationTimeNotFoundException(id);
+            throw new ReservationTimeNotFoundException();
         }
     }
 
@@ -57,13 +57,11 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
         List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
         List<ReservationTimeEntity> reservationTimeEntities = timeRepository.findAll();
 
-        List<AvailableTimeResponse> availableTimeResponses = reservationTimeEntities.stream()
+        return reservationTimeEntities.stream()
                 .map(timeEntity -> {
                     boolean alreadyBooked = bookedTimeIds.contains(timeEntity.id());
                     return AvailableTimeResponse.of(timeEntity, alreadyBooked);
                 })
                 .toList();
-
-        return availableTimeResponses;
     }
 }

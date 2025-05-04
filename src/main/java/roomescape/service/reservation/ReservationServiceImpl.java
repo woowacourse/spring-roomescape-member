@@ -30,10 +30,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     public ReservationResponse create(ReservationRequest request) {
         ReservationTimeEntity timeEntity = timeRepository.findById(request.timeId())
-                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
+                .orElseThrow(ReservationTimeNotFoundException::new);
 
         ThemeEntity themeEntity = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
+                .orElseThrow(ThemeNotFoundException::new);
 
         Reservation newReservation = new Reservation(request.name(), request.date(),
                 timeEntity.toDomain(), themeEntity.toDomain());
@@ -52,7 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
     public void deleteById(Long id) {
         int affectedCount = reservationRepository.deleteById(id);
         if (affectedCount != 1) {
-            throw new ReservationNotFoundException(id);
+            throw new ReservationNotFoundException();
         }
     }
 }

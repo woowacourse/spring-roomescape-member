@@ -38,7 +38,7 @@ public class ThemeServiceImpl implements ThemeService {
     public void deleteById(Long id) {
         int affectedCount = themeRepository.deleteById(id);
         if (affectedCount == 0) {
-            throw new ThemeNotFoundException(id);
+            throw new ThemeNotFoundException();
         }
     }
 
@@ -50,7 +50,7 @@ public class ThemeServiceImpl implements ThemeService {
 
         return themeIds.stream().map(themeId -> {
             ThemeEntity themeEntity = themeRepository.findById(themeId)
-                    .orElseThrow(() -> new ThemeNotFoundException(themeId));
+                    .orElseThrow(ThemeNotFoundException::new);
             return PopularThemeResponse.of(themeEntity);
         }).toList();
     }
