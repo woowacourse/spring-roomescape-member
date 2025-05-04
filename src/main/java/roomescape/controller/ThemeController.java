@@ -108,4 +108,9 @@ public class ThemeController {
         themeService.deleteIfNoReservation(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("rank")
+    public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
+        return themeService.findPopularThemesInRecentSevenDays();
+    }
 }

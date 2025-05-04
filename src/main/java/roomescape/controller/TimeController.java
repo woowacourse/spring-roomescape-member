@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.ReservationTimeCreateResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.dto.response.ReservationTimeUserResponse;
 import roomescape.service.ReservationTimeService;
 import roomescape.support.page.PageRequest;
 import roomescape.support.page.PageResponse;
@@ -73,6 +75,12 @@ public class TimeController {
             @Parameter(description = "정렬 방향 (asc/desc)") @RequestParam(defaultValue = "asc") final String sortDir) {
         final PageRequest pageRequest = new PageRequest(pageNo, pageSize, sortBy, sortDir);
         return reservationTimeService.findAllWithPaging(pageRequest).getContent();
+    }
+
+    @GetMapping("/available")
+    public List<ReservationTimeUserResponse> findAllByDateAndTheme(@RequestParam(value = "theme-id") final long themeId,
+                                                                   @RequestParam(value = "date") final LocalDate date) {
+        return reservationTimeService.findAllByDateAndTheme(themeId, date);
     }
 
     @PostMapping
