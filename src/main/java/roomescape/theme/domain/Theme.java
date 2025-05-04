@@ -2,6 +2,7 @@ package roomescape.theme.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import roomescape.exception.ThemeException;
 
 @Getter
 @EqualsAndHashCode(of = {"id"})
@@ -28,19 +29,19 @@ public class Theme {
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be null or blank");
+            throw new ThemeException("Name cannot be null or blank");
         }
     }
 
     private void validateDescription(final String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("Description cannot be null or blank");
+            throw new ThemeException("Description cannot be null or blank");
         }
     }
 
     private void validateThumbnail(final String thumbnail) {
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new IllegalArgumentException("Thumbnail cannot be null or blank");
+            throw new ThemeException("Thumbnail cannot be null or blank");
         }
     }
 }

@@ -2,6 +2,7 @@ package roomescape.theme.domain;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.exception.ThemeException;
 
 class ThemeTest {
 
@@ -14,7 +15,7 @@ class ThemeTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> new Theme(name, description, thumbnail))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ThemeException.class);
     }
 
     @Test
@@ -26,7 +27,7 @@ class ThemeTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> new Theme(name, description, thumbnail))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ThemeException.class);
     }
 
     @Test
@@ -38,6 +39,6 @@ class ThemeTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> new Theme(name, description, thumbnail))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ThemeException.class);
     }
 }
