@@ -13,10 +13,10 @@ public class Reservation {
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = Objects.requireNonNull(name, "[ERROR] 이름은 null이 될 수 없습니다.");
-        this.date = Objects.requireNonNull(date, "[ERROR] 날짜는 null이 될 수 없습니다.");
-        this.time = Objects.requireNonNull(time, "[ERROR] 시간은 null이 될 수 없습니다.");
-        this.theme = Objects.requireNonNull(theme, "[ERROR] 테마는 null이 될 수 없습니다.");
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
