@@ -15,14 +15,17 @@ import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
 import roomescape.service.theme.ThemeService;
+import roomescape.service.theme.popular.PopularThemeUseCase;
 
 @RestController
 @RequestMapping("themes")
 public class ThemeController {
     private final ThemeService themeService;
+    private final PopularThemeUseCase popularThemeUseCase;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(ThemeService themeService, PopularThemeUseCase popularThemeUseCase) {
         this.themeService = themeService;
+        this.popularThemeUseCase = popularThemeUseCase;
     }
 
     @PostMapping
@@ -44,6 +47,6 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<PopularThemeResponse>> getPopularThemes() {
-        return ResponseEntity.ok(themeService.getPopularThemes());
+        return ResponseEntity.ok(popularThemeUseCase.getPopularThemes());
     }
 }

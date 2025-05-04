@@ -22,12 +22,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
-        // 검증 오류 필드를 하나씩 처리하여 메시지를 담기
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
 
-        // 400 Bad Request와 함께 오류 메시지를 반환
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }

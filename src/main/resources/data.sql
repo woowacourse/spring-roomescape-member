@@ -27,7 +27,7 @@
 -- INSERT INTO theme (name, description, thumbnail)
 -- VALUES ('마법 학교', '마법 세계를 배경으로 한 탈출', 'https://ibb.co/fR41HgN');
 --
--- -- 예약 (날짜: 2025-04-20 ~ 2025-04-30 사이 14개)
+-- -- 예약
 -- INSERT INTO reservation (name, date, time_id, theme_id)
 -- VALUES ('에드', '2025-04-20', 1, 1);
 -- INSERT INTO reservation (name, date, time_id, theme_id)
@@ -45,7 +45,7 @@
 -- INSERT INTO reservation (name, date, time_id, theme_id)
 -- VALUES ('띠용', '2025-04-25', 8, 4);
 -- INSERT INTO reservation (name, date, time_id, theme_id)
--- VALUES ('저스틴', '2025-04-26', 1, 1);
+-- VALUES ('저스틴', '2025-04-26', 1, 4);
 -- INSERT INTO reservation (name, date, time_id, theme_id)
 -- VALUES ('모다', '2025-04-27', 2, 2);
 -- INSERT INTO reservation (name, date, time_id, theme_id)
