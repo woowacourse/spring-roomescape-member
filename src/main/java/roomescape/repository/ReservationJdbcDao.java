@@ -16,11 +16,11 @@ import roomescape.entity.Theme;
 import roomescape.exceptions.EntityNotFoundException;
 
 @Repository
-public class ReservationJDBCDao implements ReservationRepository {
+public class ReservationJdbcDao implements ReservationRepository {
 
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
-    public ReservationJDBCDao(NamedParameterJdbcTemplate namedJdbcTemplate) {
+    public ReservationJdbcDao(NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.namedJdbcTemplate = namedJdbcTemplate;
     }
 
