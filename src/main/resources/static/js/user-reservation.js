@@ -163,20 +163,23 @@ function onReservationButtonClick() {
             },
             body: JSON.stringify(reservationData)
         })
-            .then(response => {
-                if (!response.ok) throw new Error('Reservation failed');
+            .then(async response => {
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    throw new Error(errorBody.message || '예약에 실패했습니다.');
+                }
                 return response.json();
             })
             .then(data => {
-                alert("Reservation successful!");
+                alert("예약이 완료되었습니다.");
                 location.reload();
             })
             .catch(error => {
-                alert("An error occurred while making the reservation.");
+                alert(error.message);
                 console.error(error);
             });
     } else {
-        alert("Please select a date, theme, and time before making a reservation.");
+        alert("모든 필드를 선택해야 예약이 가능합니다.");
     }
 }
 
