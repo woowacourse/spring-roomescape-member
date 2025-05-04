@@ -13,10 +13,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ExceptionResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 
-        if (ex.getRootCause() == null) {
-            return new ExceptionResponse("잘못된 요청 형식입니다.");
+        if (ex.getRootCause().getClass().equals(IllegalArgumentException.class)) {
+            return new ExceptionResponse(ex.getRootCause().getMessage());
         }
-        return new ExceptionResponse(ex.getRootCause().getMessage());
+        return new ExceptionResponse("잘못된 요청 형식입니다.");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
