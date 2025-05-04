@@ -1,7 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -30,28 +28,33 @@ public class ReservationService {
     }
 
     public ReservationResponseDto createReservation(ReservationCreateRequestDto dto) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-                .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
+        Reservation requestReservation = createRequestReservation(dto);
 
-        validateDuplicate(dto.date(), reservationTime.getStartAt());
-
-        Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.timeId()));
-
-        Reservation requestReservation = dto.createWithoutId(reservationTime, theme);
-
-        if (requestReservation.isBeforeCurrentDateTime()) {
-            throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
-        }
+        validateRequestReservation(requestReservation);
 
         Reservation newReservation = reservationRepository.save(requestReservation)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 알 수 없는 오류로 인해 예약 생성을 실패하였습니다."));
 
-        return ReservationResponseDto.from(newReservation, newReservation.getTime(), theme);
+        return ReservationResponseDto.from(newReservation, newReservation.getTime(), newReservation.getTheme());
     }
 
-    private void validateDuplicate(LocalDate date, LocalTime time) {
-        List<Reservation> reservations = reservationRepository.findByDateTime(date, time);
+    private Reservation createRequestReservation(ReservationCreateRequestDto dto) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
+                .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
+
+        Theme theme = themeRepository.findById(dto.themeId())
+                .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.timeId()));
+
+        return dto.createWithoutId(reservationTime, theme);
+    }
+
+    private void validateRequestReservation(Reservation requestReservation) {
+        if (requestReservation.isBeforeCurrentDateTime()) {
+            throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
+        }
+
+        ReservationTime time = requestReservation.getTime();
+        List<Reservation> reservations = reservationRepository.findByDateTime(requestReservation.getDate(), time.getStartAt());
         if (!reservations.isEmpty()) {
             throw new DuplicateContentException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
         }
