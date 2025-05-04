@@ -1,5 +1,6 @@
 package roomescape.controller.api;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,7 +30,7 @@ public class RoomThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
+    public RoomThemeResponse addTheme(@RequestBody @Valid CreateThemeRequest request) {
         final RoomThemeCreation creation = RoomThemeCreation.from(request);
         RoomThemeResult roomThemeResult = roomThemeService.addTheme(creation);
         return RoomThemeResponse.from(roomThemeResult);
