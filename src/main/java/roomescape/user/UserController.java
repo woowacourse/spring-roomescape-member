@@ -11,7 +11,7 @@ public class UserController {
     }
 
     @GetMapping
-    public String showBestTheme() {
+    public String showTopRankedTheme() {
         return "index";
     }
 }

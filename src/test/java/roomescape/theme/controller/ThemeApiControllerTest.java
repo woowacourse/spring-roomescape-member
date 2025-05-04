@@ -58,7 +58,7 @@ class ThemeApiControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    @DisplayName("존재하지 않는 테마 내역 아이디를 삭제하는 경우 예외가 발생한다")
+    @DisplayName("해당 아이디의 테마 내역을 삭제한다")
     @Test
     void deleteById() throws Exception {
         mockMvc.perform(delete(URI + "/1")

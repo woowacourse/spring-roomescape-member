@@ -73,7 +73,7 @@ class ReservationTimeApiControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @DisplayName("존재하지 않는 시간 내역 아이디를 삭제하는 경우 예외가 발생한다")
+    @DisplayName("해당 아이디의 시간 내역을 삭제한다")
     @Test
     void deleteById() throws Exception {
         mockMvc.perform(delete(URI + "/1")
