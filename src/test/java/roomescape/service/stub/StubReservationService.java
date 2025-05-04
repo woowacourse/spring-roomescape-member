@@ -6,15 +6,9 @@ import java.util.List;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequest;
-import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
-import roomescape.service.ReservationTimeService;
 
 public class StubReservationService extends ReservationService {
     private final Reservation testReservation = new Reservation(
@@ -39,7 +33,7 @@ public class StubReservationService extends ReservationService {
     }
 
     @Override
-    public ReservationResponse saveReservation(ReservationRequest request) {
+    public ReservationResponse saveReservation(ReservationCreateRequest request) {
         return ReservationResponse.from(testReservation);
     }
 }

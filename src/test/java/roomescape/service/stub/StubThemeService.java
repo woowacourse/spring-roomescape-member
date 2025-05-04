@@ -2,6 +2,7 @@ package roomescape.service.stub;
 
 import java.util.List;
 import roomescape.domain.Theme;
+import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.service.ThemeService;
 
 public class StubThemeService extends ThemeService {
@@ -12,7 +13,7 @@ public class StubThemeService extends ThemeService {
     }
 
     @Override
-    public Theme save(Theme theme) {
+    public Theme save(ThemeCreateRequest request) {
         return testTheme;
     }
 

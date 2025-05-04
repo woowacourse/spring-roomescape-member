@@ -10,7 +10,7 @@ import roomescape.common.exception.NotFoundThemeException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
@@ -21,6 +21,7 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ReservationService {
     // TODO: Repository 의존이 너무 많다. 개선할 방법이 없을까?
+    // todo: 왜 Repository에 의존성이 너무 많다고 생각하면 안되는지
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -34,7 +35,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public ReservationResponse saveReservation(ReservationRequest request) {
+    public ReservationResponse saveReservation(ReservationCreateRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.readReservationTime(request.timeId())
                 .orElseThrow(() -> new NotFoundReservationTimeException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
         Theme theme = themeRepository.findById(request.themeId())
@@ -51,18 +52,18 @@ public class ReservationService {
             throw new NotAbleReservationException("이미 해당 시간과 테마에 예약이 존재하여 예약할 수 없습니다.");
         }
 
-        Reservation createdReservation = reservationRepository.saveReservation(
+        Reservation createdReservation = reservationRepository.create(
                 request.toReservation(reservationTime, theme));
         return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime),
                 ThemeResponse.from(theme));
     }
 
     public List<ReservationResponse> readReservation() {
-        List<Reservation> reservations = reservationRepository.readReservations();
+        List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 
     public void delete(Long id) {
-        reservationRepository.deleteReservation(id);
+        reservationRepository.delete(id);
     }
 }

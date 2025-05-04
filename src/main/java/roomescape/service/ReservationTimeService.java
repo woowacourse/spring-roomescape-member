@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DeleteReservationException;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -23,7 +23,7 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
-    public ReservationTime saveReservationTime(ReservationTimeRequest request) {
+    public ReservationTime saveReservationTime(ReservationTimeCreateRequest request) {
         return reservationTimeRepository.saveReservationTime(request.toReservationTime());
     }
 

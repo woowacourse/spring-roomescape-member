@@ -4,10 +4,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
+import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {
+    // todo: Service naming 다시 생각해보기
     private final ThemeRepository themeRepository;
 
     @Autowired
@@ -15,8 +17,8 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme save(Theme theme) {
-        return themeRepository.save(theme);
+    public Theme save(ThemeCreateRequest request) {
+        return themeRepository.save(request.toTheme());
     }
 
     public List<Theme> read() {

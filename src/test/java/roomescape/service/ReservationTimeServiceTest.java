@@ -12,7 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.search.ReservationTimeResponseWithBookedStatus;
 
 @ActiveProfiles("test")
@@ -30,7 +30,7 @@ public class ReservationTimeServiceTest {
     @Test
     void saveReservationTimeTest() {
         // given
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10,0));
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10,0));
 
         // when
         reservationTimeService.saveReservationTime(request);
@@ -46,8 +46,8 @@ public class ReservationTimeServiceTest {
     @Test
     void readReservationTimeTest() {
         // given
-        ReservationTimeRequest request1 = new ReservationTimeRequest(LocalTime.of(10,0));
-        ReservationTimeRequest request2 = new ReservationTimeRequest(LocalTime.of(11,0));
+        ReservationTimeCreateRequest request1 = new ReservationTimeCreateRequest(LocalTime.of(10,0));
+        ReservationTimeCreateRequest request2 = new ReservationTimeCreateRequest(LocalTime.of(11,0));
         reservationTimeService.saveReservationTime(request1);
         reservationTimeService.saveReservationTime(request2);
 
@@ -65,7 +65,7 @@ public class ReservationTimeServiceTest {
     @Test
     void deleteReservationTimeTest() {
         // given
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10,0));
+        ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(10,0));
         reservationTimeService.saveReservationTime(request);
         List<ReservationTime> reservationTimesBeforeDelete = reservationTimeService.readReservationTime();
 
@@ -83,8 +83,8 @@ public class ReservationTimeServiceTest {
     @Test
     void readAvailableTimesByTest() {
         // given
-        ReservationTimeRequest request1 = new ReservationTimeRequest(LocalTime.of(10,0));
-        ReservationTimeRequest request2 = new ReservationTimeRequest(LocalTime.of(11,0));
+        ReservationTimeCreateRequest request1 = new ReservationTimeCreateRequest(LocalTime.of(10,0));
+        ReservationTimeCreateRequest request2 = new ReservationTimeCreateRequest(LocalTime.of(11,0));
         reservationTimeService.saveReservationTime(request1);
         reservationTimeService.saveReservationTime(request2);
 

@@ -1,7 +1,9 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.domain.Theme;
+import roomescape.dto.request.ThemeCreateRequest;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -25,61 +28,67 @@ class ThemeServiceTest {
     @Test
     void saveTest() {
         // given
-        Theme theme = new Theme(1L, "Test Theme", "Test Description", "image.jpg");
+        ThemeCreateRequest request = new ThemeCreateRequest("Test Theme", "Test Description", "image.jpg");
 
         // when
-        themeService.save(theme);
+        themeService.save(request);
 
         // then
         List<Theme> themes = themeService.read();
         Assertions.assertAll(
-            () -> assertThat(themes).hasSize(1),
-            () -> assertThat(themes.getFirst().equals(theme)).isTrue()
+                () -> assertThat(themes).hasSize(1),
+                () -> assertThat(themes.getFirst().getName().equals(request.name())).isTrue(),
+                () -> assertThat(themes.getFirst().getDescription().equals(request.description())).isTrue(),
+                () -> assertThat(themes.getFirst().getThumbnail().equals(request.thumbnail())).isTrue()
         );
     }
 
     @Test
     void readTest() {
         // given
-        Theme theme1 = new Theme(1L, "Test Theme 1", "Test Description 1", "image1.jpg");
-        Theme theme2 = new Theme(2L, "Test Theme 2", "Test Description 2", "image2.jpg");
-        themeService.save(theme1);
-        themeService.save(theme2);
+        ThemeCreateRequest request1 = new ThemeCreateRequest("Test Theme 1", "Test Description 1", "image1.jpg");
+        ThemeCreateRequest request2 = new ThemeCreateRequest("Test Theme 2", "Test Description 2", "image2.jpg");
+        themeService.save(request1);
+        themeService.save(request2);
 
         // when
         List<Theme> themes = themeService.read();
 
         // then
         Assertions.assertAll(
-            () -> assertThat(themes).hasSize(2),
-            () -> assertThat(themes.get(0)).isEqualTo(theme1),
-            () -> assertThat(themes.get(1)).isEqualTo(theme2)
+                () -> assertThat(themes).hasSize(2),
+                () -> assertThat(themes.get(0).getName().equals(request1.name())).isTrue(),
+                () -> assertThat(themes.get(0).getDescription().equals(request1.description())).isTrue(),
+                () -> assertThat(themes.get(0).getThumbnail().equals(request1.thumbnail())).isTrue(),
+                () -> assertThat(themes.get(1).getName().equals(request2.name())).isTrue(),
+                () -> assertThat(themes.get(1).getDescription().equals(request2.description())).isTrue(),
+                () -> assertThat(themes.get(1).getThumbnail().equals(request2.thumbnail())).isTrue()
         );
     }
 
     @Test
     void deleteTest() {
         // given
-        Theme theme = new Theme(1L, "Test Theme", "Test Description", "image.jpg");
-        themeService.save(theme);
+        ThemeCreateRequest request = new ThemeCreateRequest("Test Theme", "Test Description", "image.jpg");
+        Theme savedTheme = themeService.save(request);
 
         // when
-        themeService.delete(theme.getId());
+        themeService.delete(savedTheme.getId());
 
         // then
         List<Theme> themes = themeService.read();
         Assertions.assertAll(
-            () -> assertThat(themes).hasSize(0)
+                () -> assertThat(themes).hasSize(0)
         );
     }
 
     @Test
     void readListsTest() {
         // given
-        Theme theme1 = new Theme(1L, "Test Theme 1", "Test Description 1", "image1.jpg");
-        Theme theme2 = new Theme(2L, "Test Theme 2", "Test Description 2", "image2.jpg");
-        themeService.save(theme1);
-        themeService.save(theme2);
+        ThemeCreateRequest request1 = new ThemeCreateRequest("Test Theme 1", "Test Description 1", "image1.jpg");
+        ThemeCreateRequest request2 = new ThemeCreateRequest("Test Theme 2", "Test Description 2", "image2.jpg");
+        themeService.save(request1);
+        themeService.save(request2);
 
         // when
         List<Theme> themesAsc = themeService.readLists("popular_asc", 10L);

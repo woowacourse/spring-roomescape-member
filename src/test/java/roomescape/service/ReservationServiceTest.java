@@ -18,7 +18,7 @@ import roomescape.common.exception.NotFoundReservationTimeException;
 import roomescape.common.exception.NotFoundThemeException;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -54,7 +54,7 @@ public class ReservationServiceTest {
     void saveReservationTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("히스타", givenDate, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
 
         // when
         ReservationResponse reservationResponse = reservationService.saveReservation(request);
@@ -76,7 +76,7 @@ public class ReservationServiceTest {
     void readReservationTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("히스타", givenDate, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
         reservationService.saveReservation(request);
 
         // when
@@ -100,7 +100,7 @@ public class ReservationServiceTest {
     void deleteReservationTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("히스타", givenDate, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
         reservationService.saveReservation(request);
 
         // when
@@ -119,7 +119,7 @@ public class ReservationServiceTest {
     void saveReservationWithPastDateTest() {
         // given
         LocalDate givenDate = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest("히스타", givenDate, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
 
         // when
         Assertions.assertThrows(NotAbleReservationException.class, () -> reservationService.saveReservation(request));
@@ -129,8 +129,8 @@ public class ReservationServiceTest {
     void saveReservationWithAlreadyBookedTimeTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationRequest request1 = new ReservationRequest("히스타", givenDate, 1L, 1L);
-        ReservationRequest request2 = new ReservationRequest("히스타2", givenDate, 1L, 1L);
+        ReservationCreateRequest request1 = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
+        ReservationCreateRequest request2 = new ReservationCreateRequest("히스타2", givenDate, 1L, 1L);
         reservationService.saveReservation(request1);
 
         // when
@@ -141,7 +141,7 @@ public class ReservationServiceTest {
     void saveReservationWithInvalidThemeTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("히스타", givenDate, 1L, 2L);
+        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 2L);
 
         // when
         Assertions.assertThrows(NotFoundThemeException.class, () -> reservationService.saveReservation(request));
@@ -151,7 +151,7 @@ public class ReservationServiceTest {
     void saveReservationWithInvalidTimeTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("히스타", givenDate, 2L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 2L, 1L);
 
         // when
         Assertions.assertThrows(NotFoundReservationTimeException.class, () -> reservationService.saveReservation(request));
@@ -161,7 +161,7 @@ public class ReservationServiceTest {
     void deleteReservationWithInvalidIdTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
-        ReservationRequest request = new ReservationRequest("히스타", givenDate, 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest("히스타", givenDate, 1L, 1L);
         reservationService.saveReservation(request);
 
         // when
