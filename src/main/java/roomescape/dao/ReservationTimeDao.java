@@ -7,9 +7,9 @@ public interface ReservationTimeDao {
 
     List<ReservationTime> findAll();
 
-    ReservationTime findById(Long id);
+    ReservationTime findById(long id);
 
-    Long create(ReservationTime time);
+    Long save(ReservationTime time);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 }

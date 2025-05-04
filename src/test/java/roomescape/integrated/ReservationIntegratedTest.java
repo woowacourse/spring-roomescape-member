@@ -122,8 +122,8 @@ public class ReservationIntegratedTest {
     @DisplayName("Read 요청 수행 시 DB 전체 데이터를 조회한다.")
     void retrieveReservationsWhenRead() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0, 0));
-        timeDao.create(time);
-        reservationDao.create(new Reservation(
+        timeDao.save(time);
+        reservationDao.save(new Reservation(
                 "브라운", LocalDate.of(2025, 4, 26), time,
                 new Theme("moda", "description", "thumbnail")
         ));
@@ -147,7 +147,7 @@ public class ReservationIntegratedTest {
     @Disabled
     @DisplayName("Post 요청 수행 시 Database에 예약 데이터 생성된다.")
     void addReservationDataWhenPost() {
-        timeDao.create(new ReservationTime(LocalTime.of(10, 0, 0)));
+        timeDao.save(new ReservationTime(LocalTime.of(10, 0, 0)));
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");

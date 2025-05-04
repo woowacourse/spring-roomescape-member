@@ -26,14 +26,14 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long create(Theme theme) {
+    public Long save(Theme theme) {
         Long timeId = id++;
         fakeMemory.add(theme.copyWithId(timeId));
         return timeId;
     }
 
     @Override
-    public void deleteById(Long idRequest) {
-        fakeMemory.removeIf(theme -> Objects.equals(theme.getId(), idRequest));
+    public void deleteById(Long id) {
+        fakeMemory.removeIf(theme -> Objects.equals(theme.getId(), id));
     }
 }

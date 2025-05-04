@@ -7,9 +7,9 @@ public interface ThemeDao {
 
     List<Theme> findAll();
 
-    Theme findById(Long id);
+    Theme findById(long id);
 
-    Long create(Theme theme);
+    Long save(Theme theme);
 
-    void deleteById(Long idRequest);
+    void deleteById(long id);
 }

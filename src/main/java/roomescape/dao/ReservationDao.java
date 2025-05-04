@@ -3,21 +3,20 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 
 public interface ReservationDao {
 
     List<Reservation> findAll();
 
-    Long create(Reservation reservation);
+    Long save(Reservation reservation);
 
-    void deleteById(Long id);
+    void deleteById(long id);
 
-    Boolean existByTimeId(Long timeId);
+    Boolean existByTimeId(long timeId);
 
-    Boolean existBySameDateTime(Reservation reservation);
+    Boolean existByDateAndTimeId(LocalDate date, long timeId);
 
-    Boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId);
+    Boolean existByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
 
-    List<Long> findRank(LocalDate startDate, LocalDate endDate);
+    List<Long> findTop10ByBetweenDates(LocalDate start, LocalDate end);
 }

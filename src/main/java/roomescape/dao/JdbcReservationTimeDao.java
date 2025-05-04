@@ -27,7 +27,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         );
     }
 
-    public ReservationTime findById(Long id) {
+    public ReservationTime findById(long id) {
         try {
             String sql = "select id, start_at from reservation_time where id = ?";
             return jdbcTemplate.queryForObject(
@@ -40,7 +40,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         }
     }
 
-    public Long create(ReservationTime time) {
+    public Long save(ReservationTime time) {
         String sql = "insert into reservation_time (start_at) values (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -56,7 +56,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return keyHolder.getKey().longValue();
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "delete from reservation_time where id = ?";
         jdbcTemplate.update(
                 sql,

@@ -2,7 +2,7 @@ package roomescape.application.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import roomescape.application.dto.ReservationTimeAvailableResponse;
 import roomescape.application.dto.ReservationTimeRequest;
 import roomescape.application.dto.ReservationTimeResponse;
@@ -10,7 +10,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 
-@Component
+@Service
 public class ReservationTimeService {
 
     private static final String ERROR_RESERVATION_TIME_WITH_HAS_RESERVATION = "예약 시간에 존재하는 예약 정보가 있습니다.";
@@ -32,7 +32,7 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         return reservationTimes.stream()
                 .map(time -> {
-                    boolean alreadyBooked = reservationDao.existByDateTimeAndTheme(date, time, themeId);
+                    boolean alreadyBooked = reservationDao.existByDateAndTimeIdAndThemeId(date, time.getId(), themeId);
                     return new ReservationTimeAvailableResponse(time, alreadyBooked);
                 }).toList();
     }
@@ -50,7 +50,7 @@ public class ReservationTimeService {
     }
 
     private ReservationTime saveReservationTime(ReservationTime reservationTimeWithoutId) {
-        Long id = reservationTimeDao.create(reservationTimeWithoutId);
+        Long id = reservationTimeDao.save(reservationTimeWithoutId);
         return reservationTimeWithoutId.copyWithId(id);
     }
 

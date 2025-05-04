@@ -30,7 +30,7 @@ public class ThemeService {
         LocalDate now = LocalDate.now();
         LocalDate startDate = now.minusDays(8);
         LocalDate endDate = now.minusDays(1);
-        List<Long> rank = reservationDao.findRank(startDate, endDate);
+        List<Long> rank = reservationDao.findTop10ByBetweenDates(startDate, endDate);
 
         return convertThemeIdsToThemeResponses(rank);
     }
@@ -54,7 +54,7 @@ public class ThemeService {
     }
 
     private Theme saveTheme(Theme themeWithoutId) {
-        Long id = themeDao.create(themeWithoutId);
+        Long id = themeDao.save(themeWithoutId);
         return themeWithoutId.copyWithId(id);
     }
 }

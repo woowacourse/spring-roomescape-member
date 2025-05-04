@@ -52,13 +52,14 @@ public class ReservationService {
 
     private void validateForCreation(Reservation reservationWithoutId) {
         reservationWithoutId.validatePastDateTime();
-        if (reservationDao.existBySameDateTime(reservationWithoutId)) {
+        if (reservationDao.existByDateAndTimeId(reservationWithoutId.getDate(),
+                reservationWithoutId.getTheme().getId())) {
             throw new IllegalArgumentException(ERROR_DUPLICATE_RESERVATION);
         }
     }
 
     private Reservation saveReservation(Reservation reservationWithoutId) {
-        Long reservationId = reservationDao.create(reservationWithoutId);
+        Long reservationId = reservationDao.save(reservationWithoutId);
         return reservationWithoutId.copyWithId(reservationId);
     }
 }

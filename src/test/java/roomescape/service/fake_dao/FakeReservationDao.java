@@ -19,7 +19,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long create(Reservation reservation) {
+    public Long save(Reservation reservation) {
         long reservationId = id++;
         fakeMemory.add(reservation.copyWithId(reservationId));
         return reservationId;
@@ -36,17 +36,17 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existBySameDateTime(Reservation reservation) {
-        return true;
-    }
-
-    @Override
-    public Boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId) {
+    public Boolean existByDateAndTimeId(LocalDate date, Long timeId) {
         return null;
     }
 
     @Override
-    public List<Long> findRank(LocalDate startDate, LocalDate endDate) {
+    public Boolean existByDateAndTimeIdAndThemeId(LocalDate date, ReservationTime time, Long themeId) {
+        return null;
+    }
+
+    @Override
+    public List<Long> findTop10ByBetweenDates(LocalDate start, LocalDate end) {
         return List.of();
     }
 }

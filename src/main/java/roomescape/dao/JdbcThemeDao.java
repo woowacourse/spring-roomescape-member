@@ -29,7 +29,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme findById(Long id) {
+    public Theme findById(long id) {
         try {
             String sql = "select * from theme where id = ?";
             return jdbcTemplate.queryForObject(
@@ -43,7 +43,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long create(Theme theme) {
+    public Long save(Theme theme) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into theme (name, description, thumbnail) values (?, ?, ?)";
         jdbcTemplate.update(
@@ -63,11 +63,11 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public void deleteById(Long idRequest) {
+    public void deleteById(long id) {
         String sql = "delete from theme where id = ?";
         jdbcTemplate.update(
                 sql,
-                idRequest
+                id
         );
     }
 }

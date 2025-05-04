@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.mapper.ReservationMapper;
 
 @Component
@@ -35,7 +34,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long create(Reservation newReservation) {
+    public Long save(Reservation newReservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(
@@ -56,7 +55,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(long id) {
         String sql = "delete from reservation where id = ?";
         jdbcTemplate.update(
                 sql,
@@ -65,7 +64,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existByTimeId(Long timeId) {
+    public Boolean existByTimeId(long timeId) {
         String sql = "select exists(select 1 from reservation where time_id = ?)";
         return jdbcTemplate.queryForObject(
                 sql,
@@ -75,30 +74,30 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existBySameDateTime(Reservation reservation) {
+    public Boolean existByDateAndTimeId(LocalDate date, long timeId) {
         String sql = "select exists(select 1 from reservation where date = ? AND time_id = ?)";
         return jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
-                reservation.getDate(),
-                reservation.getReservationTime().getId()
+                date,
+                timeId
         );
     }
 
     @Override
-    public Boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId) {
+    public Boolean existByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         String sql = "select exists(select 1 from reservation where date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
                 date,
-                time.getId(),
+                timeId,
                 themeId
         );
     }
 
     @Override
-    public List<Long> findRank(LocalDate startDate, LocalDate endDate) {
+    public List<Long> findTop10ByBetweenDates(LocalDate start, LocalDate end) {
         String sql = """
                 SELECT
                     t.id AS theme_id
@@ -114,8 +113,8 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.query(
                 sql,
                 (rs, rowNum) -> rs.getLong("theme_id"),
-                startDate,
-                endDate
+                start,
+                end
         );
     }
 }

@@ -31,7 +31,7 @@ class ReservationServiceTest {
     @Disabled
     void createReservation() {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0, 0));
-        timeDao.create(time);
+        timeDao.save(time);
 
         ReservationResponse reservation = reservationService.createReservation(new ReservationRequest(
                 "moda", LocalDate.of(2025, 4, 27), 1L, 1L
