@@ -91,8 +91,8 @@ async function fetchAvailableTimes(date, themeId) {
   TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  const queryParam = '?date=' + date + '&themeId=' + themeId;
-  const response = await fetch('/times' + queryParam, { // 예약 가능 시간 조회 API endpoint
+  const params = new URLSearchParams({ date, themeId });
+  const response = await fetch(`/times?${params}`, { // 예약 가능 시간 조회 API endpoint
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
