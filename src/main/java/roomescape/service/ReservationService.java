@@ -12,7 +12,8 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.BookedReservationTimeResponseDto;
+import roomescape.dto.AvailableReservationTimeRequestDto;
+import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
@@ -85,22 +86,24 @@ public class ReservationService {
         reservationDao.deleteReservation(id);
     }
 
-    public List<BookedReservationTimeResponseDto> getAllBookedReservationTimes(String date, Long themeId) {
+    public List<AvailableReservationTimeResponseDto> getAvailableReservationTimes(
+            AvailableReservationTimeRequestDto request) {
         List<ReservationTime> times = reservationTimeDao.findAllReservationTimes();
         return times.stream()
-                .map(time -> createBookedReservationTimeResponseDto(date, themeId, time))
+                .map(time -> createAvailableReservationTimeResponseDto(request, time))
                 .toList();
     }
 
-    private BookedReservationTimeResponseDto createBookedReservationTimeResponseDto(String date, Long themeId,
-                                                                                    ReservationTime time) {
-        if (isAlreadyBookedTime(date, themeId, time.getId())) {
-            return BookedReservationTimeResponseDto.from(time, true);
+    private AvailableReservationTimeResponseDto createAvailableReservationTimeResponseDto(
+            AvailableReservationTimeRequestDto request,
+            ReservationTime time) {
+        if (isAlreadyBookedTime(request.date(), request.themeId(), time.getId())) {
+            return AvailableReservationTimeResponseDto.from(time, true);
         }
-        return BookedReservationTimeResponseDto.from(time, false);
+        return AvailableReservationTimeResponseDto.from(time, false);
     }
 
     private boolean isAlreadyBookedTime(String date, Long themeId, Long timeId) {
-        return reservationDao.existReservationBy(date, themeId, timeId);
+        return reservationDao.existsReservationBy(date, themeId, timeId);
     }
 }

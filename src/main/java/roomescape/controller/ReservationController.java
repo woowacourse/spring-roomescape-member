@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.BookedReservationTimeResponseDto;
+import roomescape.dto.AvailableReservationTimeRequestDto;
+import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.service.ReservationService;
@@ -31,10 +32,10 @@ public class ReservationController {
         return reservationService.getAllReservations();
     }
 
-    @GetMapping("/dates/{date}/themes/{themeId}/times")
-    public List<BookedReservationTimeResponseDto> readBookedReservationTimes(
-            @PathVariable String date, @PathVariable Long themeId) {
-        return reservationService.getAllBookedReservationTimes(date, themeId);
+    @PostMapping("/available-times")
+    public List<AvailableReservationTimeResponseDto> readAvailableReservationTimes(
+            @RequestBody AvailableReservationTimeRequestDto request) {
+        return reservationService.getAvailableReservationTimes(request);
     }
 
     @PostMapping
