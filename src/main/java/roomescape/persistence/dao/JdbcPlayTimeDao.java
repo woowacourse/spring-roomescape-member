@@ -67,8 +67,7 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
     @Override
     public boolean existsByStartAt(final LocalTime startAt) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?) AS is_exists";
-        final int flag = jdbcTemplate.queryForObject(sql, Integer.class ,PlayTimeEntity.formatStartAt(startAt));
 
-        return flag == 1;
+        return jdbcTemplate.queryForObject(sql, Boolean.class ,PlayTimeEntity.formatStartAt(startAt));
     }
 }
