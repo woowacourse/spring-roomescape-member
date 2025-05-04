@@ -18,6 +18,7 @@ import roomescape.service.dto.RoomThemeCreation;
 public class RoomThemeService {
 
     private static final int POPULAR_THEME_SELECTION_DURATION = 7;
+    private static final int POPULAR_THEMES_TOP_COUNT = 10;
 
     private final ReservationDAO reservationDAO;
     private final RoomThemeDAO themeDAO;
@@ -57,7 +58,10 @@ public class RoomThemeService {
         PopularThemeSelectionCriteria criteria =
                 new PopularThemeSelectionCriteria(now, POPULAR_THEME_SELECTION_DURATION);
 
-        return themeDAO.findPopularThemes(criteria.getStartDay(), criteria.getEndDay()).stream()
+        List<RoomTheme> popularThemes = themeDAO.findPopularThemes(criteria.getStartDay(), criteria.getEndDay());
+
+        return popularThemes.stream()
+                .limit(POPULAR_THEMES_TOP_COUNT)
                 .map(PopularThemeResponse::from)
                 .toList();
     }

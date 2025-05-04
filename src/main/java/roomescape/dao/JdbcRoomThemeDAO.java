@@ -76,7 +76,6 @@ public class JdbcRoomThemeDAO implements RoomThemeDAO {
                         WHERE r.date BETWEEN ? AND ?
                         GROUP BY t.id
                         ORDER BY COUNT(r.id) DESC
-                        LIMIT 10
                 """;
         return jdbcTemplate.query(query, THEME_ROW_MAPPER, start, end);
     }
