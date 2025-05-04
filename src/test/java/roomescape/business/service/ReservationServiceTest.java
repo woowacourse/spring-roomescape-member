@@ -13,6 +13,7 @@ import roomescape.business.fakerepository.FakeReservationRepository;
 import roomescape.business.fakerepository.FakeReservationThemeRepository;
 import roomescape.business.fakerepository.FakeReservationTimeRepository;
 import roomescape.business.service.ReservationService;
+import roomescape.exception.ReservationException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
@@ -65,7 +66,7 @@ class ReservationServiceTest {
         // when
         // then
         assertThatCode(() -> reservationService.createReservation(reservationRequestDto))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationException.class)
                 .hasMessage("과거 일시로 예약을 생성할 수 없습니다.");
     }
 
@@ -82,7 +83,7 @@ class ReservationServiceTest {
         // then
         assertThatCode(
                 () -> reservationService.createReservation(new ReservationRequestDto("예약자", tomorrow, timeId, themeId)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationException.class)
                 .hasMessage("이미 예약되었습니다.");
     }
 
