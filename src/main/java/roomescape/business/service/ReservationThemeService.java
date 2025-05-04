@@ -17,6 +17,10 @@ import roomescape.presentation.dto.ReservationThemeResponseDto;
 @Transactional
 public class ReservationThemeService {
 
+    private static final int BEST_THEME_RANGE_DAYS = 7;
+    private static final int BEST_THEME_END_OFFSET = 1;
+    private static final int TOP_THEME_LIMIT = 10;
+
     private final ReservationRepository reservationRepository;
     private final ReservationThemeRepository reservationThemeRepository;
 
@@ -38,19 +42,22 @@ public class ReservationThemeService {
         LocalDate now = LocalDate.now();
         LocalDate start = calculateStartDate(now);
         LocalDate end = calculateEndDate(now);
-        List<ReservationTheme> bestReservedReservationThemes = reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(
-                start, end, 10);
-        return bestReservedReservationThemes.stream()
+        return getBestReservedThemes(start, end, TOP_THEME_LIMIT)
+                .stream()
                 .map(ReservationThemeMapper::toResponse)
                 .toList();
     }
 
-    private static LocalDate calculateEndDate(LocalDate nowDate) {
-        return nowDate.minusDays(1);
+    private List<ReservationTheme> getBestReservedThemes(LocalDate start, LocalDate end, int limit) {
+        return reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(start, end, limit);
     }
 
     private static LocalDate calculateStartDate(LocalDate nowDate) {
-        return nowDate.minusDays(7);
+        return nowDate.minusDays(BEST_THEME_RANGE_DAYS);
+    }
+
+    private static LocalDate calculateEndDate(LocalDate nowDate) {
+        return nowDate.minusDays(BEST_THEME_END_OFFSET);
     }
 
     public ReservationThemeResponseDto createTheme(ReservationThemeRequestDto reservationThemeDto) {
