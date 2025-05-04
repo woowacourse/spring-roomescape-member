@@ -33,20 +33,20 @@ public class ThemeService {
     }
 
     public void deleteTheme(Long id) {
-        validateExistsThemeBy(id);
         validateNotFoundThemeBy(id);
+        validateExistsThemeBy(id);
         themeDao.deleteTheme(id);
+    }
+
+    private void validateNotFoundThemeBy(Long id) {
+        themeDao.findById(id)
+                .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
     }
 
     private void validateExistsThemeBy(final Long id) {
         if (reservationDao.existsByThemeId(id)) {
             throw new InvalidReservationException("이미 예약된 테마를 삭제할 수 없습니다.");
         }
-    }
-
-    private void validateNotFoundThemeBy(Long id) {
-        themeDao.findById(id)
-                .orElseThrow(() -> new InvalidThemeException("해당 ID의 테마를 찾을 수 없습니다"));
     }
 
     public List<ThemeResponseDto> getAllThemeOfRanks() {
