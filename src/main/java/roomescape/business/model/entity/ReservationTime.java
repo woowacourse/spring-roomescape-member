@@ -1,5 +1,6 @@
 package roomescape.business.model.entity;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -17,14 +18,10 @@ public class ReservationTime {
         this(null, startAt);
     }
 
-    public boolean hasConflict(Theme theme, LocalTime anotherTime) {
-        LocalTime max = startAt.plusHours(theme.getDuringTime());
-        LocalTime min = startAt.minusHours(theme.getDuringTime());
+    public boolean hasConflict(Duration duration, LocalTime anotherTime) {
+        LocalTime max = startAt.plus(duration);
+        LocalTime min = startAt.minus(duration);
         return anotherTime.isAfter(min) && anotherTime.isBefore(max);
-    }
-
-    public boolean isSameId(Long id) {
-        return this.id == id;
     }
 
     public Long getId() {

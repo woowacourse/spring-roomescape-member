@@ -1,10 +1,11 @@
 package roomescape.business.model.entity;
 
+import java.time.Duration;
 import java.util.Objects;
 
 public class Theme {
 
-    private static final int DURING_TIME = 2;
+    private static final Duration DURATION = Duration.ofHours(2);
 
     private final Long id;
     private final String name;
@@ -38,8 +39,8 @@ public class Theme {
         return id;
     }
 
-    public int getDuringTime() {
-        return DURING_TIME;
+    public Duration getDuration() {
+        return DURATION;
     }
 
     @Override
