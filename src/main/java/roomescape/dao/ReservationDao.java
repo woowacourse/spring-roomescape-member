@@ -15,6 +15,8 @@ public interface ReservationDao {
 
     boolean existByTimeId(Long timeId);
 
+    boolean existByThemeId(Long themeId);
+
     boolean existBySameDateTime(Reservation reservation);
 
     boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId);

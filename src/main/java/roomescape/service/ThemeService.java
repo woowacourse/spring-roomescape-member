@@ -45,7 +45,11 @@ public class ThemeService {
         return new ThemeResponse(created);
     }
 
-    public void deleteTheme(Long idRequest) {
-        themeDao.deleteById(idRequest);
+    public void deleteTheme(Long id) {
+        boolean hasReservation = reservationDao.existByThemeId(id);
+        if (hasReservation) {
+            throw new IllegalArgumentException("해당 테마에 예약한 예약 정보가 있습니다.");
+        }
+        themeDao.deleteById(id);
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import roomescape.dao.ReservationDao;
 import roomescape.domain_entity.Reservation;
 import roomescape.domain_entity.ReservationTime;
@@ -27,22 +28,27 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public void deleteById(Long id) {
-        fakeMemory.removeIf(reservation -> reservation.getId() == id);
+        fakeMemory.removeIf(reservation -> Objects.equals(reservation.getId(), id));
     }
 
     @Override
     public boolean existByTimeId(Long timeId) {
-        return true;
+        return false;
     }
 
     @Override
     public boolean existBySameDateTime(Reservation reservation) {
-        return true;
+        return false;
+    }
+
+    @Override
+    public boolean existByThemeId(Long themeId) {
+        return false;
     }
 
     @Override
     public boolean existByDateTimeAndTheme(LocalDate date, ReservationTime time, Long themeId) {
-        return true;
+        return false;
     }
 
     @Override
