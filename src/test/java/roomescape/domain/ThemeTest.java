@@ -1,10 +1,11 @@
 package roomescape.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.common.exception.ThemeValidationException;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class ThemeTest {
     @Test
@@ -12,9 +13,7 @@ public class ThemeTest {
         // given
 
         // when & then
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> new Theme(1L, null, "테마 설명", "테마 이미지")
-        );
+        assertThatThrownBy(() -> new Theme(1L, null, "테마 설명", "테마 이미지")).isInstanceOf(ThemeValidationException.class);
     }
 
     @Test
@@ -23,9 +22,7 @@ public class ThemeTest {
         String name = "  ";
 
         // when & then
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> new Theme(1L, name, "테마 설명", "테마 이미지")
-        );
+        assertThatThrownBy(() -> new Theme(1L, name, "테마 설명", "테마 이미지")).isInstanceOf(ThemeValidationException.class);
     }
 
     @Test

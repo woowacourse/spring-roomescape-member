@@ -1,5 +1,9 @@
 package roomescape.domain;
 
+import roomescape.common.exception.DomainValidationException;
+import roomescape.common.exception.ReservationValidationException;
+import roomescape.common.exception.ThemeValidationException;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -25,10 +29,10 @@ public class Reservation {
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         if (name == null || date == null || time == null || theme == null) {
-            throw new IllegalArgumentException("예약 정보가 비어있습니다.");
+            throw new ReservationValidationException("예약 정보가 비어있습니다.");
         }
         if (name.isBlank()) {
-            throw new IllegalArgumentException("예약자명은 비워둘 수 없습니다.");
+            throw new ReservationValidationException("예약자명은 비워둘 수 없습니다.");
         }
     }
 

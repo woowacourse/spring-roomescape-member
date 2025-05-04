@@ -11,8 +11,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import roomescape.common.exception.ReservationValidationException;
 
 class ReservationTest {
+
+    @ParameterizedTest
+    @MethodSource("getInvalidReservations")
+    void validate(Supplier<Reservation> reservationSupplier) {
+        // when & then
+        assertThatThrownBy(reservationSupplier::get).isInstanceOf(ReservationValidationException.class);
+    }
 
     private static Stream<Arguments> getInvalidReservations() {
         return Stream.of(
@@ -23,16 +31,7 @@ class ReservationTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("getInvalidReservations")
-    void validate(Supplier<Reservation> reservationSupplier) {
-        // when & then
-        assertThatIllegalArgumentException().isThrownBy(
-                reservationSupplier::get
-        );
-    }
-
-    @DisplayName("name이 빈 값일 때(공백) IllegalArgumentException을 throw 한다.")
+    @DisplayName("name이 빈 값일 때(공백) ReservationValidationException을 throw 한다.")
     @Test
     void validateBlankName() {
         // given
@@ -40,8 +39,6 @@ class ReservationTest {
 
 
         // when & then
-        assertThatIllegalArgumentException().isThrownBy(
-                supplier::get
-        );
+        assertThatThrownBy(supplier::get).isInstanceOf(ReservationValidationException.class);
     }
 }

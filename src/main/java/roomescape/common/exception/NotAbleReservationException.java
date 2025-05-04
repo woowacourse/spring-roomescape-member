@@ -1,6 +1,6 @@
 package roomescape.common.exception;
 
-public class NotAbleReservationException extends RuntimeException {
+public class NotAbleReservationException extends InvalidRequestException {
     public NotAbleReservationException() {
     }
 

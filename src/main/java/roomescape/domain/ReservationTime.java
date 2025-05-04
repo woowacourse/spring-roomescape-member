@@ -1,5 +1,8 @@
 package roomescape.domain;
 
+import roomescape.common.exception.DomainValidationException;
+import roomescape.common.exception.ReservationTimeValidationException;
+
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -19,7 +22,7 @@ public class ReservationTime {
 
     private void validate(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("startAt(시작 시간)은 비어있을 수 없습니다.");
+            throw new ReservationTimeValidationException("startAt(시작 시간)은 비어있을 수 없습니다.");
         }
     }
 

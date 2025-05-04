@@ -8,28 +8,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> nonExpectedExceptionHandler() {
+        return new ResponseEntity<>("예상하지 못한 예외가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(DomainValidationException.class)
+    public ResponseEntity<String> InvalidDomainExceptionHandler(Exception exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<String> InvalidRequestExceptionHandler(Exception exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> notFoundExceptionHandler(NotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(DeleteReservationException.class)
-    public ResponseEntity<String> deleteReservationExceptionHandler(DeleteReservationException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NotAbleReservationException.class)
-    public ResponseEntity<String> deleteReservationExceptionHandler(NotAbleReservationException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentExceptionHandler(IllegalArgumentException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NotAbleDeleteException.class)
-    public ResponseEntity<String> notAbleDeleteExceptionHandler(NotAbleDeleteException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
