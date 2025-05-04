@@ -50,8 +50,11 @@ public class ReservationService {
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date,
-                themeId);
+        List<Reservation> reservations = reservationRepository.findAllByThemeId(themeId)
+                .stream()
+                .filter(reservation -> reservation.hasSameDate(date))
+                .toList();
+
         List<ReservationTime> times = reservationTimeRepository.findAll();
         return convertTimeToResponses(reservations, times);
     }
@@ -79,7 +82,7 @@ public class ReservationService {
 
     private Boolean isAlreadyBooked(ReservationTime time, List<Reservation> reservations) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getTimeId().equals(time.getId()));
+                .anyMatch(reservation -> reservation.hasTimeId(time.getId()));
     }
 
     private void validateDateAndTime(LocalDate date, LocalTime time) {
@@ -92,8 +95,12 @@ public class ReservationService {
         }
     }
 
-    private void validateDuplicateReservation(LocalDate localDate, Long timeId, Long themeId) {
-        if (reservationRepository.existReservationByDateAndTimeIdAndThemeId(localDate, timeId, themeId)) {
+    private void validateDuplicateReservation(LocalDate date, Long timeId, Long themeId) {
+        boolean hasDuplicatedReservation = reservationRepository.findAllByTimeId(timeId)
+                .stream()
+                .anyMatch(reservation -> reservation.hasThemeId(themeId) && reservation.hasSameDate(date));
+
+        if (hasDuplicatedReservation) {
             throw new IllegalArgumentException("해당 날짜, 시간, 테마에 대한 동일한 예약이 존재합니다.");
         }
     }

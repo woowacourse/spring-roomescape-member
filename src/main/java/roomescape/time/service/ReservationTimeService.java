@@ -3,6 +3,7 @@ package roomescape.time.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.controller.dto.ReservationTimeResponse;
@@ -22,10 +23,15 @@ public class ReservationTimeService {
     }
 
     public void remove(Long id) {
-        if (reservationRepository.existReservationByTimeId(id)) {
+        validateReservationConstraint(id);
+        reservationTimeRepository.deleteById(id);
+    }
+
+    private void validateReservationConstraint(Long id) {
+        List<Reservation> constraintReservations = reservationRepository.findAllByTimeId(id);
+        if (!constraintReservations.isEmpty()) {
             throw new IllegalStateException("해당 시간과 연관된 예약이 있어 삭제할 수 없습니다.");
         }
-        reservationTimeRepository.deleteById(id);
     }
 
     public ReservationTimeResponse add(ReservationTimeRequest request) {

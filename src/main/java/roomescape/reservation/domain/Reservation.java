@@ -20,7 +20,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation withId(Long id){
+    public Reservation withId(Long id) {
         return new Reservation(id, this.name, this.date, this.time, this.theme);
     }
 
@@ -46,6 +46,22 @@ public class Reservation {
 
     public Long getTimeId() {
         return time.getId();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public boolean hasTimeId(Long timeId) {
+        return time.isSameId(timeId);
+    }
+
+    public boolean hasThemeId(Long themeId) {
+        return theme.isSameId(themeId);
+    }
+
+    public boolean hasSameDate(LocalDate date) {
+        return this.date.isEqual(date);
     }
 
 }

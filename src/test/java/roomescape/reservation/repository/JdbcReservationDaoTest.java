@@ -50,7 +50,7 @@ class JdbcReservationDaoTest {
         Long id = jdbcReservationDao.saveAndReturnId(reservation);
 
         // then
-        String existsSql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE id = ?";
+        String existsSql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE id = ?)";
         Boolean isExist = jdbcTemplate.queryForObject(existsSql, Boolean.class, id);
         assertAll(
                 () -> assertThat(id).isEqualTo(17L),
@@ -96,52 +96,50 @@ class JdbcReservationDaoTest {
 
     }
 
-    @DisplayName("시간 id 일치 여부를 반환한다")
+    @DisplayName("예약 시간 ID에 해당하는 예약 목록을 반환한다")
     @Test
-    void exist_by_time_id_test() {
-        // when
-        Boolean actual = jdbcReservationDao.existReservationByTimeId(1L);
-
-        // then
-        assertThat(actual).isTrue();
-    }
-
-    @DisplayName("시간과 날짜 일치 여부를 반환한다")
-    @Test
-    void exist_by_time_id_and_date_test() {
-        // when
-        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L,
-                1L);
-
-        // then
-        assertThat(actual).isTrue();
-    }
-
-    @DisplayName("해당 테마 id에 예약이 존재하는지 반환한다")
-    @Test
-    void exist_reservation_by_theme_id_test() {
-        // when
-        Boolean actual = jdbcReservationDao.existReservationByThemeId(1L);
-
-        // then
-        assertThat(actual).isTrue();
-    }
-
-    @DisplayName("날짜와 테마 id가 일치하는 모든 예약을 찾는다")
-    @Test
-    void find_all_by_date_and_theme_id_test() {
+    void find_all_by_time_id_test() {
         // given
-        LocalDate date = LocalDate.of(2025, 4, 25);
-        Long themeId = 1L;
+        Long timeId = 4L;
 
         // when
-        List<Reservation> actual = jdbcReservationDao.findAllByDateAndThemeId(date, themeId);
+        List<Reservation> reservations = jdbcReservationDao.findAllByTimeId(timeId);
 
         // then
         assertAll(
-                () -> assertThat(actual).hasSize(2),
-                () -> assertThat(actual).extracting(Reservation::getName).contains("하루", "제이미"),
-                () -> assertThat(actual).extracting(Reservation::getTimeId).contains(2L, 3L)
+                () -> assertThat(reservations).hasSize(4),
+                () -> assertThat(reservations).extracting(Reservation::getThemeId)
+                        .containsExactlyInAnyOrder(2L, 3L, 4L, 5L),
+                () -> assertThat(reservations).extracting(Reservation::getDate)
+                        .containsExactlyInAnyOrder(
+                                LocalDate.of(2025, 4, 26),
+                                LocalDate.of(2025, 4, 28),
+                                LocalDate.of(2025, 5, 2),
+                                LocalDate.of(2025, 5, 5)
+                        )
+        );
+
+    }
+
+    @DisplayName("테마 ID에 해당하는 예약 목록을 반환한다")
+    @Test
+    void find_all_by_theme_id_test() {
+        // given
+        Long themeId = 4L;
+
+        // when
+        List<Reservation> reservations = jdbcReservationDao.findAllByThemeId(themeId);
+
+        // then
+        assertAll(
+                () -> assertThat(reservations).hasSize(2),
+                () -> assertThat(reservations).extracting(Reservation::getTimeId)
+                        .containsExactlyInAnyOrder(3L, 4L),
+                () -> assertThat(reservations).extracting(Reservation::getDate)
+                        .containsExactlyInAnyOrder(
+                                LocalDate.of(2025, 5, 1),
+                                LocalDate.of(2025, 5, 2)
+                        )
         );
     }
 

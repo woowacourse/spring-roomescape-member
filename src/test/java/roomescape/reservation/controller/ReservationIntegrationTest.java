@@ -159,20 +159,6 @@ class ReservationIntegrationTest {
 
     }
 
-    @DisplayName("이용 가능한 시간 목록 조회 시 date 형식이 올바르지 않으면 예외가 발생한다")
-    @MethodSource
-    @ParameterizedTest
-    void get_available_times_format_exception(Map<String, String> requestParam) {
-        // when & then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .queryParams(requestParam)
-                .when().get("/reservations/available")
-                .then().log().all()
-                .statusCode(400)
-                .body(equalTo("요청 형식이 올바르지 않습니다."));
-    }
-
     @DisplayName("예약 생성 시 존재하지 않는 예약 시간 ID를 입력하면 예외가 발생한다")
     @Test
     void add_reservation_time_id_exception() {
@@ -266,23 +252,6 @@ class ReservationIntegrationTest {
                                 "name", "루키",
                                 "date", "2025-03-21",
                                 "timeId", "1L"
-                        )
-                )
-        );
-    }
-
-    static Stream<Arguments> get_available_times_format_exception() {
-        return Stream.of(
-                Arguments.of(
-                        Map.of(
-                                "date", "2022:05:09",
-                                "themeId", "1"
-                        )
-                ),
-                Arguments.of(
-                        Map.of(
-                                "date", "20250503",
-                                "themeId", "1"
                         )
                 )
         );

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRankingResponse;
 import roomescape.theme.controller.dto.ThemeRequest;
@@ -45,10 +46,15 @@ public class ThemeService {
     }
 
     public void remove(Long id) {
-        if (reservationRepository.existReservationByThemeId(id)) {
+        validateReservationConstraint(id);
+        themeRepository.deleteById(id);
+    }
+
+    private void validateReservationConstraint(Long id) {
+        List<Reservation> constraintReservations = reservationRepository.findAllByThemeId(id);
+        if (!constraintReservations.isEmpty()) {
             throw new IllegalStateException("해당 테마와 연관된 예약이 있어 삭제할 수 없습니다.");
         }
-        themeRepository.deleteById(id);
     }
 
     public List<ThemeRankingResponse> getThemeRankings() {
@@ -63,7 +69,7 @@ public class ThemeService {
                 .toList();
     }
 
-    private List<Theme> sortByInOrder(List<Theme> themes, List<Long> idOrder){
+    private List<Theme> sortByInOrder(List<Theme> themes, List<Long> idOrder) {
         Map<Long, Theme> idThemes = themes.stream()
                 .collect(Collectors.toMap(Theme::getId, Function.identity()));
 
