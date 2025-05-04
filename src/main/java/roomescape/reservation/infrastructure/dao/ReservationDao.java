@@ -9,9 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.global.exception.DeleteReservationException;
-import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.dto.CreateReservationRequest;
+import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationName;
@@ -33,9 +32,9 @@ public class ReservationDao implements ReservationRepository {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
-                    new String[] {"id"});
+                    new String[]{"id"});
             ps.setString(1, request.getName().getName());
-            ps.setLong(2,request.getTheme().getId());
+            ps.setLong(2, request.getTheme().getId());
             ps.setString(3, request.getDate().getReservationDate().toString());
             ps.setLong(4, request.getTime().getId());
             return ps;
@@ -81,7 +80,7 @@ public class ReservationDao implements ReservationRepository {
                                     resultSet.getString("theme_thumbnail")
                             ),
                             new ReservationDate(
-                                resultSet.getDate("date").toLocalDate()
+                                    resultSet.getDate("date").toLocalDate()
                             ),
                             new ReservationTime(
                                     resultSet.getLong("time_id"),
@@ -105,7 +104,7 @@ public class ReservationDao implements ReservationRepository {
                     WHERE time_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql,Integer.class, timeId);
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return result == 1;
     }
 
@@ -118,7 +117,7 @@ public class ReservationDao implements ReservationRepository {
                     WHERE theme_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql,Integer.class, themeId);
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return result == 1;
     }
 
@@ -152,7 +151,7 @@ public class ReservationDao implements ReservationRepository {
                     AND r.theme_id = ?
                 )
                 """;
-        int result = jdbcTemplate.queryForObject(sql,Integer.class, date, timeId, themeId);
+        int result = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
         return result == 1;
     }
 }
