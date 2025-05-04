@@ -54,14 +54,9 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        String sql = """
-                DELETE FROM theme WHERE id = ?
-                """;
-        int result = jdbcTemplate.update(sql, id);
-        if (result != 1) {
-            throw new DeleteThemeException("[ERROR] 삭제하지 못했습니다.");
-        }
+    public int delete(Long id) {
+        String sql = "DELETE FROM theme WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
     @Override

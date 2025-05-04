@@ -10,7 +10,7 @@ public interface ThemeRepository {
 
     List<Theme> findAllThemes();
 
-    void delete(Long id);
+    int delete(Long id);
 
     Optional<Theme> findById(Long themeId);
 

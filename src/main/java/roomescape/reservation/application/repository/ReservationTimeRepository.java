@@ -12,7 +12,7 @@ public interface ReservationTimeRepository {
 
     Optional<ReservationTime> findById(Long timeId);
 
-    void delete(Long id);
+    int delete(Long id);
 
     boolean isExists(LocalTime startAt);
 }

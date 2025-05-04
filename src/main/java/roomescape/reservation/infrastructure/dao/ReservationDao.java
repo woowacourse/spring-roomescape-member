@@ -91,12 +91,9 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public void delete(final Long id) {
+    public int delete(final Long id) {
         String sql = "delete from reservation where id = ?";
-        int rows = jdbcTemplate.update(sql, id);
-        if (rows != 1) {
-            throw new DeleteReservationException("[ERROR] 삭제하지 못했습니다.");
-        }
+        return jdbcTemplate.update(sql, id);
     }
 
     @Override

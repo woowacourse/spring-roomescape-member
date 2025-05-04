@@ -36,7 +36,9 @@ public class ThemeService {
             throw new DeleteThemeException("[ERROR] 예약이 이미 존재하는 테마입니다.");
         }
 
-        themeRepository.delete(id);
+        if(themeRepository.delete(id)==0){
+            throw new DeleteThemeException("[ERROR] 이미 삭제되어 있는 리소스입니다.");
+        }
     }
 
     public List<ThemeResponse> getPopularThemes() {

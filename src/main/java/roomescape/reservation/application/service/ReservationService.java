@@ -3,6 +3,7 @@ package roomescape.reservation.application.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.global.exception.DeleteReservationException;
 import roomescape.global.exception.DuplicateReservationException;
 import roomescape.global.exception.GetThemeException;
 import roomescape.global.exception.GetTimeException;
@@ -56,7 +57,9 @@ public class ReservationService {
     }
 
     public void deleteReservation(final Long id) {
-        reservationRepository.delete(id);
+        if(reservationRepository.delete(id)==0){
+            throw new DeleteReservationException("[ERROR] 이미 삭제되어 있는 리소스입니다.");
+        }
     }
 
     private ReservationTime getReservationTime(Long timeId) {

@@ -28,8 +28,12 @@ public class FakeThemeDao implements ThemeRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        store.remove(id);
+    public int delete(Long themeId) {
+        if(!store.containsKey(themeId)){
+            return 0;
+        }
+        store.remove(themeId);
+        return 1;
     }
 
     @Override

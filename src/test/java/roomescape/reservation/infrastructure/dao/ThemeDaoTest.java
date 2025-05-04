@@ -86,14 +86,6 @@ public class ThemeDaoTest {
         assertThat(count()).isEqualTo(0);
     }
 
-    @Test
-    @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
-    void deleteExceptionTest() {
-        assertThatThrownBy(() -> themeDao.delete(1L))
-                .isInstanceOf(DeleteThemeException.class)
-                .hasMessage("[ERROR] 삭제하지 못했습니다.");
-    }
-
     private int count() {
         String sql = "select count(*) from theme";
         return jdbcTemplate.queryForObject(sql, Integer.class);

@@ -35,8 +35,13 @@ public class FakeReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public void delete(Long timeId) {
+    public int delete(Long timeId) {
+        if(!store.containsKey(timeId)){
+            return 0;
+        }
+
         store.remove(timeId);
+        return 1;
     }
 
     @Override

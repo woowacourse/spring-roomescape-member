@@ -15,7 +15,7 @@ import roomescape.reservation.presentation.fixture.ReservationFixture;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ReservationTimeControllerTest {
-    private ReservationFixture reservationFixture = new ReservationFixture();
+    private final ReservationFixture reservationFixture = new ReservationFixture();
 
     @Test
     @DisplayName("시간 추가 테스트")

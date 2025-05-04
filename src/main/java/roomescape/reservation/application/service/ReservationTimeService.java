@@ -40,7 +40,10 @@ public class ReservationTimeService {
         if (reservationRepository.existsByTimeId(id)) {
             throw new DeleteTimeException("[ERROR] 예약이 이미 존재하는 시간입니다.");
         }
-        reservationTimeRepository.delete(id);
+
+        if(reservationTimeRepository.delete(id)==0){
+            throw new DeleteTimeException("[ERROR] 이미 삭제되어 있는 리소스입니다.");
+        }
     }
 
     public List<AvailableReservationTimeResponse> getReservationTimes(final LocalDate date, final Long themeId) {

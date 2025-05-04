@@ -16,8 +16,8 @@ import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 @JdbcTest
 public class ReservationTimeDaoTest {
 
-    private ReservationTimeDao reservationTimeDao;
-    private JdbcTemplate jdbcTemplate;
+    private final ReservationTimeDao reservationTimeDao;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public ReservationTimeDaoTest(JdbcTemplate jdbcTemplate) {
@@ -66,14 +66,6 @@ public class ReservationTimeDaoTest {
 
         // then
         assertThat(count()).isEqualTo(0);
-    }
-
-    @Test
-    @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
-    void deleteExceptionTest() {
-        assertThatThrownBy(() -> reservationTimeDao.delete(1L))
-                .isInstanceOf(DeleteTimeException.class)
-                .hasMessage("[ERROR] 삭제하지 못했습니다.");
     }
 
     private int count() {

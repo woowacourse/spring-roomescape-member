@@ -2,11 +2,13 @@ package roomescape.reservation.application;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.DeleteThemeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.application.service.ThemeService;
@@ -76,6 +78,14 @@ public class ThemeServiceTest {
 
         // then
         assertThat(themeService.getThemes()).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
+    void deleteExceptionTest() {
+        assertThatThrownBy(() -> themeService.deleteTheme(1L))
+                .isInstanceOf(DeleteThemeException.class)
+                .hasMessage("[ERROR] 이미 삭제되어 있는 리소스입니다.");
     }
 
 }

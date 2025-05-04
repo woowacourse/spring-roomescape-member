@@ -70,12 +70,9 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public void delete(final Long id) {
+    public int delete(final Long id) {
         String sql = "delete from reservation_time where id = ?";
-        int rows = jdbcTemplate.update(sql, id);
-        if (rows != 1) {
-            throw new DeleteTimeException("[ERROR] 삭제하지 못했습니다.");
-        }
+        return jdbcTemplate.update(sql, id);
     }
 
     @Override

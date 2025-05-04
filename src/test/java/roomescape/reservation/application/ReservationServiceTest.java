@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.global.exception.DeleteReservationException;
 import roomescape.global.exception.GetThemeException;
 import roomescape.global.exception.GetTimeException;
 import roomescape.reservation.application.repository.ReservationRepository;
@@ -142,5 +143,13 @@ public class ReservationServiceTest {
 
         // then
         assertThat(reservationService.getReservations().size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
+    void deleteExceptionTest() {
+        assertThatThrownBy(() -> reservationService.deleteReservation(1L))
+                .isInstanceOf(DeleteReservationException.class)
+                .hasMessage("[ERROR] 이미 삭제되어 있는 리소스입니다.");
     }
 }
