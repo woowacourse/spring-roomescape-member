@@ -2,6 +2,7 @@ package roomescape.reservationtime;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.exception.ArgumentNullException;
 
 public class ReservationTime {
 
@@ -20,7 +21,7 @@ public class ReservationTime {
 
     private void validateNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new NullPointerException("시작 시간은 null일 수 없습니다.");
+            throw new ArgumentNullException();
         }
     }
 
