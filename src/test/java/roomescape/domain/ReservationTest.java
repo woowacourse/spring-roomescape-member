@@ -1,6 +1,5 @@
 package roomescape.domain;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -12,8 +11,7 @@ import static roomescape.constant.TestConstants.DEFAULT_TIME;
 class ReservationTest {
 
     @Test
-    @DisplayName("name이 null이면 예외를 던진다")
-    void name_not_null() {
+    void 이름이_null이면_예외를_발생시킨다() {
         assertThatThrownBy(() -> {
             new Reservation(
                     null,
@@ -24,8 +22,7 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("date가 null이면 예외를 던진다")
-    void date_not_null() {
+    void 날짜가_null이면_예외를_발생시킨다() {
         assertThatThrownBy(() -> {
             new Reservation(
                     "두리",
@@ -36,8 +33,7 @@ class ReservationTest {
     }
 
     @Test
-    @DisplayName("time이 null이면 예외를 던진다")
-    void time_not_null() {
+    void 시간이_null이면_예외를_발생시킨다() {
         assertThatThrownBy(() -> {
             new Reservation(
                     "두리",

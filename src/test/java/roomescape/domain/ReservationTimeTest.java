@@ -1,20 +1,17 @@
 package roomescape.domain;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ReservationTimeTest {
 
     @Test
-    @DisplayName("startAt이 null이면 예외를 던진다")
-    void startAt_not_null() {
+    void 시작_시간이_null이면_예외를_발생시킨다() {
         assertThatThrownBy(() -> {
             new ReservationTime(
-                null
+                    null
             );
         }).isInstanceOf(NullPointerException.class);
     }
-
 }

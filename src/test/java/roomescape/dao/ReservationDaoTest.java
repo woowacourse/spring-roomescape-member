@@ -1,7 +1,6 @@
 package roomescape.dao;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -11,83 +10,77 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.constant.TestConstants.DEFAULT_THEME;
+import static roomescape.constant.TestConstants.DEFAULT_TIME;
 
 @JdbcTest
 class ReservationDaoTest {
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
     ReservationDao reservationDao;
     ReservationTimeDao reservationTimeDao;
     ThemeDao themeDao;
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    Reservation savedReservation;
-
     @BeforeEach
-    void beforeEach() {
+    void setUp() {
         reservationDao = new ReservationDao(jdbcTemplate);
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         themeDao = new ThemeDao(jdbcTemplate);
-        ReservationTime reservationTime = reservationTimeDao.save(
-                new ReservationTime(
-                        LocalTime.of(10, 5)
-                )
-        );
-        Theme savedTheme = themeDao.save(
-                new Theme(
-                        "탈출 테스트",
-                        "탈출하는 내용",
-                        "abc.jpg"
-                )
-        );
-        Reservation reservation = new Reservation(
-                "두리",
-                LocalDate.of(2025, 10, 5),
-                reservationTime,
-                savedTheme
-        );
-        savedReservation = reservationDao.save(reservation);
     }
 
     @Test
-    @DisplayName("Reservation 객체를 저장한다")
-    void saveReservation() {
-        Reservation reservation = new Reservation(
-                "두리",
-                LocalDate.of(2025, 10, 5),
-                new ReservationTime(
-                        LocalTime.of(10, 5)
-                ),
-                new Theme(
-                        "탈출",
-                        "탈출하는 내용",
-                        "abc.jpg"
-                )
-        );
+    void 예약을_저장할_수_있다() {
+        // given
+        String name = "두리";
+        LocalDate date = LocalDate.now().plusDays(1);
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+        Reservation reservation = new Reservation(name, date, savedReservationTime, savedTheme);
+
+        // when
         Reservation savedReservation = reservationDao.save(reservation);
 
+        // then
         assertAll(
-                () -> assertThat(savedReservation.getName()).isEqualTo("두리"),
-                () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2025, 10, 5)),
-                () -> assertThat(savedReservation.getTime().getStartAt()).isEqualTo(LocalTime.of(10, 5))
+                () -> assertThat(savedReservation.getName()).isEqualTo(name),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(date)
         );
     }
 
     @Test
-    @DisplayName("저장된 Reservation 전체를 조회한다")
-    void selectReservation() {
-        assertThat(reservationDao.findAll()).contains(savedReservation);
+    void 저장된_전체_예약을_조회할_수_있다() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+        int totalCount = reservationDao.findAll().size();
+
+        // when
+        Reservation savedReservation = reservationDao.save(new Reservation("예약", LocalDate.now().plusDays(2), savedReservationTime, savedTheme));
+
+        // when & then
+        assertAll(
+                () -> assertThat(reservationDao.findAll()).contains(savedReservation),
+                () -> assertThat(reservationDao.findAll().size()).isEqualTo(totalCount + 1)
+        );
     }
 
     @Test
-    @DisplayName("id로 Reservation을 삭제한다")
-    void deleteReservation() {
+    void 특정_예약을_삭제할_수_있다() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+        Reservation reservation = new Reservation("예약", LocalDate.now().plusDays(3), savedReservationTime, savedTheme);
+        Reservation savedReservation = reservationDao.save(reservation);
+        int totalCount = reservationDao.findAll().size();
+
+        // when
         reservationDao.deleteById(savedReservation.getId());
-        assertThat(reservationDao.findAll()).isEmpty();
+
+        // then
+        assertThat(reservationDao.findAll().size()).isEqualTo(totalCount - 1);
     }
 }

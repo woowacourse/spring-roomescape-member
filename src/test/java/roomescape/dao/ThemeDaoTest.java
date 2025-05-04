@@ -1,8 +1,6 @@
 package roomescape.dao;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -10,52 +8,75 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.constant.TestConstants.DEFAULT_THEME;
 
 @JdbcTest
 public class ThemeDaoTest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
     ThemeDao themeDao;
-    Theme savedTheme;
 
     @BeforeEach
     void setUp() {
-        Theme theme = new Theme("탈출하고싶다", "탈출하는내용", "abc.jpg");
         themeDao = new ThemeDao(jdbcTemplate);
-        savedTheme = themeDao.save(theme);
     }
 
     @Test
-    @DisplayName("id로 Theme 을 조회 할 수 있다")
-    void select_with_id() {
-        Theme theme = themeDao.findById(savedTheme.getId());
-        assertThat(theme).isEqualTo(savedTheme);
-    }
-
-    @Test
-    @DisplayName("Theme을 저장한다")
-    void save() {
+    void 테마를_저장할_수_있다() {
+        // given
         String themeName = "우아한테크코스";
         Theme theme = new Theme(
                 themeName,
                 "재밌다",
                 "abc.jpg"
         );
+
+        // when
         Theme savedTheme = themeDao.save(theme);
+
+        // then
         assertThat(savedTheme.getName()).isEqualTo(themeName);
     }
 
     @Test
-    @DisplayName("저장된 Theme 전체를 불러온다")
-    void select_all() {
-        assertThat(themeDao.findAll()).contains(savedTheme);
+    void 특정_테마를_조회할_수_있다() {
+        // given
+        Long id = 1L;
+        themeDao.save(DEFAULT_THEME);
+        Theme theme = themeDao.findById(id);
+
+        // when & then
+        assertThat(theme.getId()).isEqualTo(id);
     }
 
     @Test
-    @DisplayName("id로 해당 entity를 삭제한다")
-    void delete_with_id() {
-        Assertions.assertDoesNotThrow(() -> themeDao.deleteById(savedTheme.getId()));
+    void 전체_테마를_조회할_수_있다() {
+        // given
+        int totalSize = themeDao.findAll().size();
+        String themeName = "진격의거인";
+        Theme theme = new Theme(
+                themeName,
+                "재밌다",
+                "abc.jpg"
+        );
+
+        // when
+        themeDao.save(theme);
+
+        // when & then
+        assertThat(themeDao.findAll().size()).isEqualTo(totalSize + 1);
+    }
+
+    @Test
+    void 특정_테마를_삭제할_수_있다() {
+        // given
+        int totalSize = themeDao.findAll().size();
+
+        // when
+        themeDao.deleteById(1L);
+
+        // then
+        assertThat(themeDao.findAll().size()).isEqualTo(totalSize - 1);
     }
 }

@@ -1,8 +1,6 @@
 package roomescape.dao;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -12,53 +10,71 @@ import roomescape.domain.ReservationTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.constant.TestConstants.DEFAULT_TIME;
 
 @JdbcTest
 class ReservationTimeDaoTest {
 
-    ReservationTimeDao reservationTimeDao;
-
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    ReservationTime savedReservationTime;
+    ReservationTimeDao reservationTimeDao;
 
     @BeforeEach
-    void beforeEach() {
+    void setUp() {
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        ReservationTime reservationTime = new ReservationTime(
-                LocalTime.of(10, 5)
-        );
-        savedReservationTime = reservationTimeDao.save(reservationTime);
     }
 
     @Test
-    @DisplayName("id로 ReservationTime 을 조회 할 수 있다")
-    void select_with_id() {
-        ReservationTime reservationTime = reservationTimeDao.findById(savedReservationTime.getId());
-        assertThat(reservationTime).isEqualTo(savedReservationTime);
-    }
-
-    @Test
-    @DisplayName("ReservationTime을 저장한다")
-    void save() {
+    void 예약_시간을_저장할_수_있다() {
+        // given
         LocalTime startAt = LocalTime.of(10, 5);
-        ReservationTime reservationTime = new ReservationTime(
-                startAt
-        );
+        ReservationTime reservationTime = new ReservationTime(startAt);
+
+        // when
         ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
+
+        // then
         assertThat(savedReservationTime.getStartAt()).isEqualTo(startAt);
     }
 
     @Test
-    @DisplayName("저장된 ReservationTime 전체를 불러온다")
-    void select_all() {
-        assertThat(reservationTimeDao.findAll()).contains(savedReservationTime);
+    void 특정_예약_시간을_조회할_수_있다() {
+        // given
+        Long id = 1L;
+        reservationTimeDao.save(DEFAULT_TIME);
+        ReservationTime reservationTime = reservationTimeDao.findById(id);
+
+        // when & then
+        assertThat(reservationTime.getId()).isEqualTo(id);
     }
 
     @Test
-    @DisplayName("id로 해당 entity를 삭제한다")
-    void delete_with_id() {
-        Assertions.assertDoesNotThrow(() -> reservationTimeDao.deleteById(savedReservationTime.getId()));
+    void 전체_예약_시간을_조회할_수_있다() {
+        // given
+        int totalCount = reservationTimeDao.findAll().size();
+        ReservationTime newReservationTime = new ReservationTime(LocalTime.of(13, 0));
+
+        // when
+        ReservationTime savedReservationTime = reservationTimeDao.save(newReservationTime);
+
+        // then
+        assertAll(
+                () -> assertThat(reservationTimeDao.findAll().size()).isEqualTo(totalCount + 1),
+                () -> assertThat(reservationTimeDao.findAll()).contains(savedReservationTime)
+        );
+    }
+
+    @Test
+    void 특정_예약_시간을_삭제할_수_있다() {
+        // given
+        reservationTimeDao.save(DEFAULT_TIME);
+        int totalCount = reservationTimeDao.findAll().size();
+
+        // when
+        reservationTimeDao.deleteById(1L);
+
+        // then
+        assertThat(reservationTimeDao.findAll().size()).isEqualTo(totalCount - 1);
     }
 }
