@@ -13,7 +13,7 @@ import roomescape.exception.dto.ErrorMessageResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    public static final String ERROR_PREFIX = "[ERROR] ";
+    private static final String ERROR_PREFIX = "[ERROR] ";
 
     @ExceptionHandler
     public ResponseEntity<ErrorMessageResponse> handleExistedDuplicateValueException(ExistedDuplicateValueException e) {
