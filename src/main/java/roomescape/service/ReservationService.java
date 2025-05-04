@@ -48,7 +48,7 @@ public class ReservationService {
 
         Reservation reservation = createReservation(person, date, reservationTime, theme);
         reservation.validateDateTime(date, reservationTime, currentDateTime);
-        validateAlreadyExistDateTime(request, date);
+        validateAlreadyReservation(request, date);
 
         reservationDao.saveReservation(reservation);
         return ReservationResponseDto.from(reservation);
@@ -76,9 +76,9 @@ public class ReservationService {
         return new Reservation(person, date, reservationTime, theme);
     }
 
-    private void validateAlreadyExistDateTime(ReservationRequestDto request, ReservationDate date) {
-        if (reservationDao.existsByDateAndTime(date, request.timeId())) {
-            throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
+    private void validateAlreadyReservation(ReservationRequestDto request, ReservationDate date) {
+        if (reservationDao.existsReservationBy(date.getDate(), request.timeId(), request.themeId())) {
+            throw new InvalidReservationException("해당 날짜와 시간에 이미 같은 테마가 예약되어 있습니다.");
         }
     }
 
@@ -97,13 +97,13 @@ public class ReservationService {
     private AvailableReservationTimeResponseDto createAvailableReservationTimeResponseDto(
             AvailableReservationTimeRequestDto request,
             ReservationTime time) {
-        if (isAlreadyBookedTime(request.date(), request.themeId(), time.getId())) {
+        if (isAlreadyBookedTime(request.date(), time.getId(), request.themeId())) {
             return AvailableReservationTimeResponseDto.from(time, true);
         }
         return AvailableReservationTimeResponseDto.from(time, false);
     }
 
-    private boolean isAlreadyBookedTime(String date, Long themeId, Long timeId) {
-        return reservationDao.existsReservationBy(date, themeId, timeId);
+    private boolean isAlreadyBookedTime(LocalDate date, Long timeId, Long themeId) {
+        return reservationDao.existsReservationBy(date, timeId, themeId);
     }
 }

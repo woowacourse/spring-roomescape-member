@@ -1,8 +1,8 @@
 package roomescape.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationDate;
 
 public interface ReservationDao {
 
@@ -16,7 +16,5 @@ public interface ReservationDao {
 
     Boolean existsByThemeId(Long id);
 
-    Boolean existsByDateAndTime(ReservationDate date, Long timeId);
-
-    Boolean existsReservationBy(String date, long timeId, Long themeId);
+    Boolean existsReservationBy(LocalDate date, Long timeId, Long themeId);
 }
