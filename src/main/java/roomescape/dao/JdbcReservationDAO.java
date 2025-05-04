@@ -71,7 +71,7 @@ public class JdbcReservationDAO implements ReservationDAO {
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
-                JOIN theme AS t 
+                JOIN theme AS t
                 ON r.theme_id = t.id
                 """;
         return jdbcTemplate.query(query, RESERVATION_ROW_MAPPER);
@@ -92,7 +92,7 @@ public class JdbcReservationDAO implements ReservationDAO {
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
-                JOIN theme AS t 
+                JOIN theme AS t
                 ON r.theme_id = t.id
                 WHERE r.id = ?
                 """;
