@@ -1,4 +1,4 @@
-package roomescape.business.fakerepository;
+package roomescape.persistence.fakerepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

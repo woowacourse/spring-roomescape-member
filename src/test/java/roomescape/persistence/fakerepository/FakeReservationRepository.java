@@ -1,4 +1,4 @@
-package roomescape.business.fakerepository;
+package roomescape.persistence.fakerepository;
 
 import java.util.ArrayList;
 import java.util.List;
