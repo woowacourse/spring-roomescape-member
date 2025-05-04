@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS reservation_time;
 DROP TABLE IF EXISTS reservation;
 
 -- 유저 테이블
-CREATE TABLE user
+CREATE TABLE users
 (
     email    VARCHAR(255) NOT NULL,
     name     VARCHAR(255) NOT NULL,

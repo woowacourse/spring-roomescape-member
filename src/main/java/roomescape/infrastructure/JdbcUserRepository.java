@@ -27,7 +27,7 @@ public class JdbcUserRepository implements UserRepository {
     public JdbcUserRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("user");
+                .withTableName("users");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public Optional<User> findByEmail(final String email) {
         final String sql = """
-                SELECT * FROM user
+                SELECT * FROM users
                 WHERE email = ?
                 """;
         try {
@@ -55,7 +55,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public boolean existByEmail(final String email) {
         final String sql = """
-                SELECT COUNT(*) FROM user
+                SELECT COUNT(*) FROM users
                 WHERE email = ?
                 """;
 
