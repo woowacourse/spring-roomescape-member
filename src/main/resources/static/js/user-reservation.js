@@ -194,7 +194,7 @@ async function onReservationButtonClick() {
      location.reload();
 
   } else {
-    alert("Please select a date, theme, and time before making a reservation.");
+    alert("날짜, 테마, 시간을 모두 선택해주세요.");
   }
 }
 
