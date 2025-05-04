@@ -20,7 +20,8 @@ class RoomEscapeApplicationTest {
                 .when().delete("/reservations/999")
                 .then().log().all()
                 .statusCode(404)
-                .body("body.detail", equalTo("[ERROR] 예약 데이터를 찾을 수 없습니다:999"));
+                .body("title", equalTo("EntityNotFoundException"))
+                .body("detail", equalTo("[ERROR] 예약 데이터를 찾을 수 없습니다:999"));
     }
 
     @Test
