@@ -3,8 +3,6 @@ package roomescape.reservation.application.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.global.exception.DeleteTimeException;
-import roomescape.global.exception.DuplicateTimeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.presentation.dto.AvailableReservationTimeResponse;
@@ -23,9 +21,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
-        if (reservationTimeRepository.isExists(reservationTimeRequest.getStartAt())) {
-            throw new DuplicateTimeException("[ERROR] 중복된 시간은 추가할 수 없습니다.");
-        }
+        validateIsDuplicatedTime(reservationTimeRequest);
 
         return new ReservationTimeResponse(reservationTimeRepository.insert(reservationTimeRequest.getStartAt()));
     }
@@ -37,12 +33,10 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTime(final Long id) {
-        if (reservationRepository.existsByTimeId(id)) {
-            throw new DeleteTimeException("[ERROR] 예약이 이미 존재하는 시간입니다.");
-        }
+        validateIsDuplicatedReservation(id);
 
-        if(reservationTimeRepository.delete(id)==0){
-            throw new DeleteTimeException("[ERROR] 이미 삭제되어 있는 리소스입니다.");
+        if (reservationTimeRepository.delete(id) == 0) {
+            throw new IllegalStateException("이미 삭제되어 있는 리소스입니다.");
         }
     }
 
@@ -54,5 +48,17 @@ public class ReservationTimeService {
                     return new AvailableReservationTimeResponse(reservationTime, alreadyBooked);
                 })
                 .toList();
+    }
+
+    private void validateIsDuplicatedTime(ReservationTimeRequest reservationTimeRequest) {
+        if (reservationTimeRepository.isExists(reservationTimeRequest.getStartAt())) {
+            throw new IllegalStateException("중복된 시간은 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateIsDuplicatedReservation(Long id) {
+        if (reservationRepository.existsByTimeId(id)) {
+            throw new IllegalStateException("예약이 이미 존재하는 시간입니다.");
+        }
     }
 }

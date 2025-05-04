@@ -1,6 +1,8 @@
 package roomescape.global.exception;
 
+import java.time.DateTimeException;
 import java.time.format.DateTimeParseException;
+import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,29 +18,19 @@ public class ExceptionController {
         return ResponseEntity.badRequest().body(PREFIX + "시간 형식이 잘못되었습니다.");
     }
 
-    @ExceptionHandler(DuplicateTimeException.class)
-    public ResponseEntity<String> handleDuplicateTimeException(DuplicateTimeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
     }
 
-    @ExceptionHandler({GetTimeException.class, GetThemeException.class})
-    public ResponseEntity<String> handleGetTimeException(Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
     }
 
-    @ExceptionHandler({DeleteTimeException.class, DeleteReservationException.class, DeleteThemeException.class})
-    public ResponseEntity<String> handleDeleteException(Exception e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(PastTimeException.class)
-    public ResponseEntity<String> handlePastTimeException(PastTimeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateReservationException.class)
-    public ResponseEntity<String> handleDuplicateReservationException(DuplicateReservationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(DateTimeException.class)
+    public ResponseEntity<String> handleDateTimeException(DateTimeException e) {
+        return ResponseEntity.badRequest().body(PREFIX + e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

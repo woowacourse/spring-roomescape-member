@@ -5,12 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.global.exception.DeleteReservationException;
-import roomescape.global.exception.GetThemeException;
-import roomescape.global.exception.GetTimeException;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ReservationTimeRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
@@ -74,8 +72,8 @@ public class ReservationServiceTest {
 
         // when - then
         assertThatThrownBy(() -> reservationService.createReservation(RESERVATION_REQUEST))
-                .isInstanceOf(GetTimeException.class)
-                .hasMessage("[ERROR] 예약 시간 정보를 찾을 수 없습니다.");
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("예약 시간 정보를 찾을 수 없습니다.");
     }
 
     @Test
@@ -87,8 +85,8 @@ public class ReservationServiceTest {
 
         // when - then
         assertThatThrownBy(() -> reservationService.createReservation(RESERVATION_REQUEST))
-                .isInstanceOf(GetThemeException.class)
-                .hasMessage("[ERROR] 테마 정보를 찾을 수 없습니다.");
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("테마 정보를 찾을 수 없습니다.");
     }
 
     @Test
@@ -149,7 +147,7 @@ public class ReservationServiceTest {
     @DisplayName("저장되어 있지 않은 id로 요청을 보내면 예외가 발생한다.")
     void deleteExceptionTest() {
         assertThatThrownBy(() -> reservationService.deleteReservation(1L))
-                .isInstanceOf(DeleteReservationException.class)
-                .hasMessage("[ERROR] 이미 삭제되어 있는 리소스입니다.");
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("이미 삭제되어 있는 리소스입니다.");
     }
 }

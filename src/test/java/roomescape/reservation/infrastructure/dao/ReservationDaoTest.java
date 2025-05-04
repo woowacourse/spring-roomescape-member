@@ -1,7 +1,6 @@
 package roomescape.reservation.infrastructure.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.global.exception.DeleteReservationException;
 import roomescape.reservation.application.dto.CreateReservationRequest;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationName;
