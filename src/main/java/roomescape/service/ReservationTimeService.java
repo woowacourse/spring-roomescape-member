@@ -12,6 +12,8 @@ import roomescape.dto.response.ReservationTimeCreateResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeUserResponse;
 import roomescape.exception.ReservationExistException;
+import roomescape.support.page.PageRequest;
+import roomescape.support.page.PageResponse;
 
 @Service
 public class ReservationTimeService {
@@ -60,5 +62,21 @@ public class ReservationTimeService {
         return reservationTimeDao.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
+    }
+
+    public PageResponse<ReservationTimeResponse> findAllWithPaging(final PageRequest pageRequest) {
+        final List<ReservationTime> reservationTimes = reservationTimeDao.findAllWithPaging(pageRequest);
+        final List<ReservationTimeResponse> reservationTimeResponses = reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
+
+        final long totalElements = reservationTimeDao.countAll();
+
+        return new PageResponse<>(
+                reservationTimeResponses,
+                pageRequest.getPageNo(),
+                pageRequest.getPageSize(),
+                totalElements
+        );
     }
 }

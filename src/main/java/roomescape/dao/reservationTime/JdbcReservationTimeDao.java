@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.support.page.PageRequest;
 
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
@@ -29,6 +30,24 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     public List<ReservationTime> findAll() {
         final String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, reservationTimeMapper);
+    }
+
+    @Override
+    public List<ReservationTime> findAllWithPaging(final PageRequest pageRequest) {
+        final int offset = pageRequest.getPageNo() * pageRequest.getPageSize();
+        final String sortDirection = pageRequest.getSortDir().equalsIgnoreCase("asc") ? "ASC" : "DESC";
+
+        final String sql = String.format(
+                "SELECT id, start_at FROM reservation_time ORDER BY %s %s LIMIT ? OFFSET ?",
+                pageRequest.getSortBy(), sortDirection);
+
+        return jdbcTemplate.query(sql, reservationTimeMapper, pageRequest.getPageSize(), offset);
+    }
+
+    @Override
+    public long countAll() {
+        final String sql = "SELECT COUNT(*) FROM reservation_time";
+        return jdbcTemplate.queryForObject(sql, Long.class);
     }
 
     @Override

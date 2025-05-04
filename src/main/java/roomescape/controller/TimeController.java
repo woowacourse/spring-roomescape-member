@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.ReservationTimeCreateResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
+import roomescape.support.page.PageRequest;
+import roomescape.support.page.PageResponse;
 
 @RestController
 @RequestMapping("/times")
@@ -29,7 +32,7 @@ public class TimeController {
 
     private final ReservationTimeService reservationTimeService;
 
-    public TimeController(final ReservationTimeService reservationTimeService) {
+    public TimeController(ReservationTimeService reservationTimeService) {
         this.reservationTimeService = reservationTimeService;
     }
 
@@ -48,6 +51,28 @@ public class TimeController {
     )
     public List<ReservationTimeResponse> findAll() {
         return reservationTimeService.findAll();
+    }
+
+    @GetMapping("/paged")
+    @Operation(
+            summary = "페이징을 적용한 예약 시간 조회",
+            description = "페이징을 적용하여 예약 시간을 조회합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "예약 시간 목록 조회 성공",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PageResponse.class))
+                    )
+            }
+    )
+    public List<ReservationTimeResponse> findAllWithPaging(
+            @Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") final int pageNo,
+            @Parameter(description = "페이지 크기") @RequestParam(defaultValue = "10") final int pageSize,
+            @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "id") final String sortBy,
+            @Parameter(description = "정렬 방향 (asc/desc)") @RequestParam(defaultValue = "asc") final String sortDir) {
+        final PageRequest pageRequest = new PageRequest(pageNo, pageSize, sortBy, sortDir);
+        return reservationTimeService.findAllWithPaging(pageRequest).getContent();
     }
 
     @PostMapping
