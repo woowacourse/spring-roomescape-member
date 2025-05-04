@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.dao.theme.ThemeDao;
-import roomescape.domain.Theme;
 import roomescape.exception.ReservationExistException;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +42,7 @@ class ThemeServiceTest {
     void deleteIfNoReservationTest() {
 
         // given
-        when(themeDao.findById(1L)).thenReturn(Optional.of(new Theme(1L, "test", "test", "test")));
+        when(themeDao.existsById(1L)).thenReturn(true);
         when(themeDao.deleteIfNoReservation(1L)).thenReturn(true);
 
         // when & then
@@ -56,7 +55,7 @@ class ThemeServiceTest {
     void deleteIfNoReservationThrowExceptionTest() {
 
         // given
-        when(themeDao.findById(1L)).thenReturn(Optional.of(new Theme(1L, "test", "test", "test")));
+        when(themeDao.existsById(1L)).thenReturn(true);
         when(themeDao.deleteIfNoReservation(1L)).thenReturn(false);
 
         // when & then

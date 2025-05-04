@@ -79,4 +79,11 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return jdbcTemplate.query(sql, reservationTimeMapper, id, themeId, date).stream()
                 .findFirst();
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
 }

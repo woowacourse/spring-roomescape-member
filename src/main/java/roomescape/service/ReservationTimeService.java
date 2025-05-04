@@ -39,8 +39,10 @@ public class ReservationTimeService {
     }
 
     public void deleteIfNoReservation(final long id) {
-        ReservationTime reservationTime = findById(id);
-        if (reservationTimeDao.deleteIfNoReservation(reservationTime.getId())) {
+        if (!reservationTimeDao.existsById(id)) {
+            throw new NoSuchElementException("예약 시간이 존재하지 않습니다.");
+        }
+        if (reservationTimeDao.deleteIfNoReservation(id)) {
             return;
         }
         throw new ReservationExistException("이 시간에 대한 예약이 존재합니다.");

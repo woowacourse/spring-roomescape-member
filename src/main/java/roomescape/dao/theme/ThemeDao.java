@@ -16,4 +16,6 @@ public interface ThemeDao {
     boolean deleteIfNoReservation(long id);
 
     List<Theme> findPopularThemesInRecentSevenDays(LocalDate startDate, LocalDate endDate);
+
+    boolean existsById(Long id);
 }

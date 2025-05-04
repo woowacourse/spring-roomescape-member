@@ -44,8 +44,10 @@ public class ThemeService {
     }
 
     public void deleteIfNoReservation(final long id) {
-        Theme theme = findById(id);
-        if (themeDao.deleteIfNoReservation(theme.getId())) {
+        if (!themeDao.existsById(id)) {
+            throw new NoSuchElementException("예약 시간이 존재하지 않습니다.");
+        }
+        if (themeDao.deleteIfNoReservation(id)) {
             return;
         }
         throw new ReservationExistException("이 테마에 대한 예약이 존재합니다.");

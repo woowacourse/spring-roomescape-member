@@ -67,7 +67,7 @@ class ReservationTimeServiceTest {
     void deleteIfNoReservationTest() {
 
         // given
-        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(10, 10))));
+        when(reservationTimeDao.existsById(1L)).thenReturn(true);
         when(reservationTimeDao.deleteIfNoReservation(1L)).thenReturn(true);
 
         // when & then
@@ -80,7 +80,7 @@ class ReservationTimeServiceTest {
     void deleteIfNoReservationThrowExceptionTest() {
 
         // given
-        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(new ReservationTime(1L, LocalTime.of(10, 10))));
+        when(reservationTimeDao.existsById(1L)).thenReturn(true);
         when(reservationTimeDao.deleteIfNoReservation(1L)).thenReturn(false);
 
         // when & then
