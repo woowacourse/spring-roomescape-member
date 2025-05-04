@@ -42,13 +42,13 @@ public class ThemeDAO implements ThemeRepository {
     @Override
     public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate, long count) {
         String sql = """
-                select T.*, count(R.id) as reservation_count
-                from theme T
-                inner join reservation R
-                ON T.id = R.theme_id    AND R.date between :start_date and :end_date
-                group by T.id
-                order by reservation_count desc
-                limit :count
+                SELECT T.*, COUNT(R.id) AS reservation_count
+                FROM theme T
+                INNER JOIN reservation R ON T.id = R.theme_id
+                WHERE R.date BETWEEN :start_date AND :end_date
+                GROUP BY T.id
+                ORDER BY reservation_count DESC
+                LIMIT :count;               
                 """;
 
         Map<String, Object> params = Map.of(
