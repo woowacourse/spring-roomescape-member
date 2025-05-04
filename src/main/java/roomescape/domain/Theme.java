@@ -9,15 +9,15 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
+    public Theme(final String name, final String description, final String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
     public Theme(Long id, String name, String description, String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
-    }
-
-    public Theme(final String name, final String description, final String thumbnail) {
-        this(null, name, description, thumbnail);
     }
 
     public Long getId() {
@@ -38,9 +38,12 @@ public class Theme {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name) && Objects.equals(description, theme.description) && Objects.equals(thumbnail, theme.thumbnail);
+        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name) && Objects.equals(description,
+                theme.description) && Objects.equals(thumbnail, theme.thumbnail);
     }
 
     @Override

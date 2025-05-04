@@ -1,20 +1,21 @@
 package roomescape.persistence;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-
-import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -25,79 +26,84 @@ public class JdbcReservationRepository implements ReservationRepository {
                     rs.getString("name"),
                     rs.getDate("date").toLocalDate(),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
-                    new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))
+                    new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"),
+                            rs.getString("theme_thumbnail"))
             );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcReservationRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate, DataSource dataSource) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public List<Reservation> findAll() {
-        return jdbcTemplate.query("SELECT \n"
-                        + "    r.id as reservation_id, \n"
-                        + "    r.name, \n"
-                        + "    r.date, \n"
-                        + "    t.id as time_id, \n"
-                        + "    t.start_at as time_value, \n"
-                        + "    r.theme_id, \n"
-                        + "    tm.name as theme_name, \n"
-                        + "    tm.description as theme_description, \n"
-                        + "    tm.thumbnail as theme_thumbnail \n"
-                        + "FROM reservation as r \n"
-                        + "inner join reservation_time as t \n"
-                        + "on r.time_id = t.id \n"
-                        + "inner join theme as tm \n"
-                        + "on r.theme_id = tm.id",
-                reservationRowMapper);
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    r.theme_id,
+                    tm.name as theme_name,
+                    tm.description as theme_description,
+                    tm.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                    ON r.time_id = t.id
+                INNER JOIN theme as tm
+                    ON r.theme_id = tm.id
+                """;
+        return namedParameterJdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
     public Long create(Reservation reservation) {
-        String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getTime().id());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().id())
+                .addValue("theme_id", reservation.getTheme().getId());
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
     @Override
     public void deleteById(Long reservationId) {
-        jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", reservationId);
+        namedParameterJdbcTemplate.update("DELETE FROM reservation WHERE id = :id", Map.of("id", reservationId));
     }
 
     @Override
     public Optional<Reservation> findById(Long reservationId) {
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(
-                    "SELECT \n"
-                            + "    r.id as reservation_id, \n"
-                            + "    r.name, \n"
-                            + "    r.date, \n"
-                            + "    t.id as time_id, \n"
-                            + "    t.start_at as time_value, \n"
-                            + "    r.theme_id, \n"
-                            + "    tm.name as theme_name, \n"
-                            + "    tm.description as theme_description,\n"
-                            + "    tm.thumbnail as theme_thumbnail \n"
-                            + "FROM reservation as r \n"
-                            + "inner join reservation_time as t \n"
-                            + "on r.time_id = t.id \n"
-                            + "inner join theme as tm \n"
-                            + "on r.theme_id = tm.id \n"
-                            + "WHERE r.id = ?",
-                    reservationRowMapper, reservationId);
-            return Optional.of(reservation);
+            String sql = """
+                    SELECT
+                        r.id as reservation_id,
+                        r.name,
+                        r.date,
+                        t.id as time_id,
+                        t.start_at as time_value,
+                        r.theme_id,
+                        tm.name as theme_name,
+                        tm.description as theme_description,
+                        tm.thumbnail as theme_thumbnail
+                    FROM reservation as r
+                    INNER JOIN reservation_time as t
+                        ON r.time_id = t.id
+                    INNER JOIN theme as tm
+                        ON r.theme_id = tm.id
+                    WHERE r.id = :id
+                    """;
+
+            Reservation reservation = namedParameterJdbcTemplate.queryForObject(
+                    sql,
+                    Map.of("id", reservationId),
+                    reservationRowMapper);
+            return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException exception) {
             return Optional.empty();
         }
@@ -105,41 +111,52 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existByTimeId(final Long reservationTimeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, reservationTimeId) > 0;
+        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = :timeId";
+        Long count = namedParameterJdbcTemplate.queryForObject(sql, Map.of("timeId", reservationTimeId), Long.class);
+        return count != null && count > 0;
     }
 
     @Override
     public boolean existByDateAndTimeId(final LocalDate reservationDate, final Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, reservationDate, timeId) > 0;
+        String sql = "SELECT COUNT(*) FROM reservation WHERE date = :date AND time_id = :timeId";
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("date", reservationDate)
+                .addValue("timeId", timeId);
+        Long count = namedParameterJdbcTemplate.queryForObject(sql, param, Long.class);
+        return count != null && count > 0;
     }
 
     @Override
     public boolean existByThemeId(final Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
-        return jdbcTemplate.queryForObject(sql, Long.class, themeId) > 0;
+        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = :themeId";
+        Long count = namedParameterJdbcTemplate.queryForObject(sql, Map.of("themeId", themeId), Long.class);
+        return count != null && count > 0;
     }
 
     @Override
     public List<Reservation> findByThemeIdAndReservationDate(final Long themeId, final LocalDate reservationDate) {
-        String sql = "SELECT \n"
-                + "    r.id as reservation_id, \n"
-                + "    r.name, \n"
-                + "    r.date, \n"
-                + "    t.id as time_id, \n"
-                + "    t.start_at as time_value, \n"
-                + "    r.theme_id, \n"
-                + "    tm.name as theme_name, \n"
-                + "    tm.description as theme_description,\n"
-                + "    tm.thumbnail as theme_thumbnail \n"
-                + "FROM reservation as r \n"
-                + "inner join reservation_time as t \n"
-                + "on r.time_id = t.id \n"
-                + "inner join theme as tm \n"
-                + "on r.theme_id = tm.id \n"
-                + "WHERE r.theme_id = ? \n"
-                + "AND r.date = ?";
-        return jdbcTemplate.query(sql, reservationRowMapper, themeId, reservationDate);
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    r.theme_id,
+                    tm.name as theme_name,
+                    tm.description as theme_description,
+                    tm.thumbnail as theme_thumbnail
+                FROM reservation as r
+                INNER JOIN reservation_time as t
+                    ON r.time_id = t.id
+                INNER JOIN theme as tm
+                    ON r.theme_id = tm.id
+                WHERE r.theme_id = :themeId
+                  AND r.date = :date
+                """;
+        SqlParameterSource param = new MapSqlParameterSource()
+                .addValue("themeId", themeId)
+                .addValue("date", reservationDate);
+        return namedParameterJdbcTemplate.query(sql, param, reservationRowMapper);
     }
 }

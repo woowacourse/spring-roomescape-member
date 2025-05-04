@@ -1,19 +1,19 @@
 package roomescape.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.domain.ReservationTime;
-
-import javax.sql.DataSource;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class JdbcReservationTimeRepositoryTest {
 
@@ -25,7 +25,8 @@ class JdbcReservationTimeRepositoryTest {
 
 
     private final JdbcTemplate jdbcTemplate = new JdbcTemplate(TEST_DATASOURCE);
-    private final JdbcReservationTimeRepository reservationTimeDao = new JdbcReservationTimeRepository(jdbcTemplate);
+    private final JdbcReservationTimeRepository reservationTimeDao = new JdbcReservationTimeRepository(
+            new NamedParameterJdbcTemplate(TEST_DATASOURCE), TEST_DATASOURCE);
 
 
     @BeforeEach

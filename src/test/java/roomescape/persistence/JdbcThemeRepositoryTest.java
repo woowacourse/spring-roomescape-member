@@ -1,18 +1,18 @@
 package roomescape.persistence;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Optional;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.domain.Theme;
-
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class JdbcThemeRepositoryTest {
 
@@ -24,7 +24,8 @@ class JdbcThemeRepositoryTest {
 
 
     private final JdbcTemplate jdbcTemplate = new JdbcTemplate(TEST_DATASOURCE);
-    private final JdbcThemeRepository themeRepository = new JdbcThemeRepository(jdbcTemplate);
+    private final JdbcThemeRepository themeRepository = new JdbcThemeRepository(
+            new NamedParameterJdbcTemplate(TEST_DATASOURCE), TEST_DATASOURCE);
 
 
     @BeforeEach
@@ -49,7 +50,8 @@ class JdbcThemeRepositoryTest {
     @Test
     void id로_예약_시간을_조회할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
 
         //when
         Optional<Theme> theme = themeRepository.findById(1L);
@@ -70,8 +72,10 @@ class JdbcThemeRepositoryTest {
     @Test
     void 전체_예약_시간을_조회할_수_있다() {
         //given
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test2', 'description2', 'thumbnail2')");
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES ('test2', 'description2', 'thumbnail2')");
 
         //when
         List<Theme> themes = themeRepository.findAll();
@@ -86,7 +90,8 @@ class JdbcThemeRepositoryTest {
     @Test
     void id값으로_예약_시간을_삭제한다() {
         //given
-        jdbcTemplate.update("INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
+        jdbcTemplate.update(
+                "INSERT INTO theme(name, description, thumbnail) VALUES ('test1', 'description1', 'thumbnail1')");
 
         //when
         themeRepository.deleteById(1L);
