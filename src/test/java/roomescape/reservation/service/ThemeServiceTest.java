@@ -20,7 +20,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 
-public class ThemeServiceTest extends RoomescapeTestSupport {
+class ThemeServiceTest extends RoomescapeTestSupport {
 
     @Autowired
     private ReservationDbFixture reservationDbFixture;

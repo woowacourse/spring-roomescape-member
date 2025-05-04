@@ -21,7 +21,7 @@ import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.service.ReservationTimeService;
 
-public class ReservationTimeServiceTest extends RoomescapeTestSupport {
+class ReservationTimeServiceTest extends RoomescapeTestSupport {
 
     @Autowired
     private ReservationTimeService reservationTimeService;

@@ -19,7 +19,7 @@ import roomescape.theme.domain.Theme;
 import roomescape.time.controller.response.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 
-public class ReservationServiceTest extends RoomescapeTestSupport {
+class ReservationServiceTest extends RoomescapeTestSupport {
 
     @Autowired
     private ReservationService reservationService;

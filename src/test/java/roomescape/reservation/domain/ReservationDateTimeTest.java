@@ -11,7 +11,7 @@ import roomescape.common.Constant;
 import roomescape.reservation.domain.exception.PastReservationException;
 import roomescape.time.domain.ReservationTime;
 
-public class ReservationDateTimeTest {
+class ReservationDateTimeTest {
 
     @Test
     void 현재_이전_시간에는_예약할_수_없다() {

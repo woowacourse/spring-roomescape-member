@@ -20,7 +20,7 @@ import roomescape.reservation.controller.response.ReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeRepository;
 
-public class ReservationTest extends RoomescapeTestSupport {
+class ReservationTest extends RoomescapeTestSupport {
 
     @LocalServerPort
     private int port;
