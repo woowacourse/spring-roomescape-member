@@ -1,0 +1,70 @@
+package roomescape.theme.domain;
+
+import java.util.Objects;
+
+public class Theme {
+
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnail;
+
+    private Theme(final Long id, final String name, final String description, final String thumbnail) {
+        this.id = id;
+        this.name = Objects.requireNonNull(name, "이름은 null 일 수 없습니다.");
+        validateNameIsBlank(name);
+        this.description = Objects.requireNonNull(description, "테마 설명은 null 일 수 없습니다.");
+        this.thumbnail = Objects.requireNonNull(thumbnail, "썸네일은 null 일 수 없습니다.");
+    }
+
+    private static void validateNameIsBlank(final String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+        }
+    }
+
+    public static Theme createWithoutId(final String name, final String description, final String thumbnail) {
+        return new Theme(null, name, description, thumbnail);
+    }
+
+    public static Theme createWithId(final Long id, final String name, final String description, final String thumbnail) {
+        return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
+    }
+
+    public Theme assignId(final Long id) {
+        return new Theme(Objects.requireNonNull(id), name, description, thumbnail);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (!(object instanceof Theme that)) {
+            return false;
+        }
+
+        if (getId() == null && that.getId() == null) {
+            return false;
+        }
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
+    }
+}
