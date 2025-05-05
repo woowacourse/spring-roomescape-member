@@ -1,6 +1,7 @@
 package roomescape.repository;
 
 import java.util.List;
+import java.util.Optional;
 import roomescape.model.Theme;
 
 public interface ThemeRepository {
@@ -10,7 +11,7 @@ public interface ThemeRepository {
 
     int deleteTheme(Long id);
 
-    Theme findById(Long id);
+    Optional<Theme> findById(Long id);
 
     List<Theme> findAllByIdIn(List<Long> ids);
 }

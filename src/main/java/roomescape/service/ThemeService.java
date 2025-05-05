@@ -42,7 +42,8 @@ public class ThemeService {
     }
 
     public Theme getThemeById(Long id) {
-        return themeRepository.findById(id);
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다. id: " + id));
     }
 
     public List<Theme> getWeeklyBestThemes() {

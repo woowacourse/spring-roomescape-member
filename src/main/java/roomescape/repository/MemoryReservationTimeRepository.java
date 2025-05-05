@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.model.ReservationTime;
 
@@ -37,10 +38,10 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     }
 
     @Override
-    public ReservationTime findById(Long id) {
+    public Optional<ReservationTime> findById(Long id){
         for (ReservationTime reservationTime : reservationTimes) {
             if (reservationTime.getId().equals(id)) {
-                return reservationTime;
+                return Optional.of(reservationTime);
             }
         }
         return null;

@@ -45,9 +45,9 @@ public class ReservationTimeService {
     }
 
     public ReservationTime getReservationTimeById(Long id) {
-        return reservationTimeRepository.findById(id);
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 시간입니다. id: " + id));
     }
-
     public List<AvailableTimeResponseDto> getAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.getAllTime();
         List<AvailableTimeResponseDto> availableTimeResponseDtos = new ArrayList<>();
