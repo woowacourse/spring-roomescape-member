@@ -19,6 +19,18 @@ public class Member {
         return new Member(id, member.email, member.password, member.role);
     }
 
+    public boolean isSameUserInfo(Member compareMember) {
+        return this.email.equals(compareMember.email) && this.password.equals(compareMember.password);
+    }
+
+    public boolean isSamePassword(String password) {
+        return this.password.equals(password);
+    }
+
+    public boolean isSameUsername(String username) {
+        return this.email.equals(username);
+    }
+
     public String getEmail() {
         return email;
     }
@@ -31,7 +43,7 @@ public class Member {
         return role;
     }
 
-    public boolean isSameUserInfo(Member compareMember) {
-        return this.email.equals(compareMember.email) && this.password.equals(compareMember.password);
+    public String getPassword() {
+        return password;
     }
 }

@@ -7,9 +7,9 @@ public interface MemberRepository {
 
     long add(Member member);
 
-    boolean existsByEmailAndPassword(Member member);
-
     Optional<Member> findById(long id);
 
-    Optional<Member> findByEmailAndPassword(Member requestMember);
+    Optional<Member> findByEmailAndPassword(String email, String password);
+
+    boolean existsByUsernameAndPassword(String email, String password);
 }

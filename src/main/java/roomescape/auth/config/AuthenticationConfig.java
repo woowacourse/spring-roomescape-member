@@ -9,7 +9,7 @@ import roomescape.auth.JwtTokenProvider;
 public class AuthenticationConfig {
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider(@Value("jwt.secret_key") String secretKey) {
+    public JwtTokenProvider jwtTokenProvider(@Value("${jwt.secret_key}") String secretKey) {
         return new JwtTokenProvider(secretKey);
     }
 }

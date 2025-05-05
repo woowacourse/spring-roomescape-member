@@ -18,7 +18,7 @@ class MemberServiceTest {
 
     private MemberService memberService;
     private JwtTokenProvider jwtTokenProvider;
-    private static final String TEST_SECRET_KEY = "testtesttesttesttesttesttesttesttesttest";
+    private static final String TEST_SECRET_KEY = "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest";
 
     @BeforeEach
     void setUp() {
@@ -48,6 +48,6 @@ class MemberServiceTest {
         long id = memberService.signup(signupRequestDto);
         Member memberById = memberService.getMemberById(id);
 
-        assertThat(memberById.getEmail().equals(signupRequestDto.email()));
+        assertThat(memberById.getEmail().equals(signupRequestDto.username()));
     }
 }
