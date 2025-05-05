@@ -73,7 +73,7 @@ class ThemeServiceTest {
         // expect
         assertThatThrownBy(() -> themeService.saveTheme(request))
                 .isInstanceOf(DuplicatedException.class)
-                .hasMessage("중복된 예약시각은 등록할 수 없습니다.");
+                .hasMessage("중복된 테마는 등록할 수 없습니다.");
     }
 
     @DisplayName("테마를 삭제한다")
