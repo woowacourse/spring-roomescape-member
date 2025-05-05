@@ -3,7 +3,6 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static roomescape.constant.TestData.RESERVATION_COUNT;
 import static roomescape.constant.TestData.RESERVATION_THEME_COUNT;
 
 import java.time.LocalDate;
@@ -73,7 +72,7 @@ class ReservationThemeServiceTest extends DataBasedTest {
         reservationThemeService.delete(theme.id());
 
         // then
-        assertThat(reservationThemeRepository.getAll()).hasSize(RESERVATION_COUNT - 1);
+        assertThat(reservationThemeRepository.getAll()).hasSize(RESERVATION_THEME_COUNT);
     }
 
     @Test
