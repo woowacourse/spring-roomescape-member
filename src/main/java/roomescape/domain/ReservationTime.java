@@ -35,12 +35,12 @@ public class ReservationTime {
             return false;
         }
         final ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id, startAt);
     }
 
     private void validateNullId(Long id) {
