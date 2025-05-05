@@ -8,11 +8,11 @@ public class UserController {
 
     @GetMapping("/reservation")
     public String reservation() {
-        return "/reservation";
+        return "reservation";
     }
 
     @GetMapping
     public String home() {
-        return "/index";
+        return "index";
     }
 }
