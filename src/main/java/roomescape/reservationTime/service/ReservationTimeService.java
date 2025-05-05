@@ -89,7 +89,7 @@ public class ReservationTimeService {
         return ReservationTimeMapper.toEntity(requestDto);
     }
 
-    public ReservationTimeResponseDto convertToReservationTimeResponseDto(ReservationTime reservationTime) {
+    private ReservationTimeResponseDto convertToReservationTimeResponseDto(ReservationTime reservationTime) {
         return ReservationTimeMapper.toResponseDto(reservationTime);
     }
 }
