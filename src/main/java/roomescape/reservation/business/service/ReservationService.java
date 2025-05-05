@@ -6,18 +6,20 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.business.model.entity.Reservation;
-import roomescape.reservation.business.model.entity.ReservationTime;
-import roomescape.theme.business.model.entity.Theme;
-import roomescape.reservation.business.model.repository.ReservationDao;
-import roomescape.reservation.business.model.repository.ReservationTimeDao;
-import roomescape.theme.business.model.repository.ThemeDao;
 import roomescape.global.exception.impl.BadRequestException;
 import roomescape.global.exception.impl.ConflictException;
 import roomescape.global.exception.impl.NotFoundException;
+import roomescape.member.business.model.entity.Member;
+import roomescape.member.business.model.repository.MemberDao;
+import roomescape.reservation.business.model.entity.Reservation;
+import roomescape.reservation.business.model.entity.ReservationTime;
+import roomescape.reservation.business.model.repository.ReservationDao;
+import roomescape.reservation.business.model.repository.ReservationTimeDao;
 import roomescape.reservation.presentation.request.ReservationRequest;
 import roomescape.reservation.presentation.response.AvailableReservationTimeResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
+import roomescape.theme.business.model.entity.Theme;
+import roomescape.theme.business.model.repository.ThemeDao;
 
 @Service
 public class ReservationService {
@@ -25,11 +27,15 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao,
+                              final ThemeDao themeDao,
+                              final MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
     public List<ReservationResponse> findAll() {
@@ -39,16 +45,18 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(ReservationRequest requestDto) {
+    public ReservationResponse add(ReservationRequest requestDto, Long memberId) {
         ReservationTime reservationTime = getReservationTime(requestDto.timeId());
         Theme theme = getTheme(requestDto.themeId());
+        Member member = getMember(memberId);
+
         List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(),
                 requestDto.themeId());
 
         validateIsBooked(sameTimeReservations, reservationTime, theme);
         validatePastDateTime(requestDto.date(), reservationTime.getStartAt());
 
-        Reservation reservation = new Reservation(requestDto.name(), requestDto.date(), reservationTime, theme);
+        Reservation reservation = new Reservation(requestDto.date(), reservationTime, theme, member);
         Reservation saved = reservationDao.save(reservation);
         return ReservationResponse.of(saved);
     }
@@ -76,6 +84,11 @@ public class ReservationService {
     private Theme getTheme(Long themeId) {
         return themeDao.findById(themeId)
                 .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다."));
+    }
+
+    private Member getMember(Long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("선택한 멤버가 존재하지 않습니다."));
     }
 
     private void validateIsBooked(List<Reservation> sameTimeReservations, ReservationTime reservationTime,

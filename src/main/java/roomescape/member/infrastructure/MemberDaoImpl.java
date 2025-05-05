@@ -63,10 +63,14 @@ public class MemberDaoImpl implements MemberDao {
     public Optional<Member> findById(final Long id) {
         String sql = "SELECT * FROM member WHERE id = :id";
 
-        List<Member> findMember = jdbcTemplate.query(
-                sql, new MapSqlParameterSource("id", id),
-                ROW_MAPPER);
-        return findMember.stream().findFirst();
+        try {
+            Member findMember = jdbcTemplate.queryForObject(
+                    sql, new MapSqlParameterSource("id", id),
+                    ROW_MAPPER);
+            return Optional.of(findMember);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
