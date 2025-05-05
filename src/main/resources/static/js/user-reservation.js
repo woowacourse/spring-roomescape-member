@@ -44,7 +44,7 @@ function renderTheme(themes) {
   themes.forEach(theme => {
     console.log(theme)
     const name = theme.name;
-    const themeId = theme.themeId;
+    const themeId = theme.id;
     /*
     TODO: [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
@@ -99,7 +99,7 @@ function fetchAvailableTimes(date, themeId) {
   TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch(`/reservations/dates/${date}/themes/${themeId}/times`, { // 예약 가능 시간 조회 API endpoint
+  fetch(`/themes/${themeId}/times?date=${encodeURIComponent(date)}`, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
