@@ -46,7 +46,7 @@ public class JdbcUserRepository implements UserRepository {
                 WHERE email = ?
                 """;
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, email));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

@@ -21,4 +21,9 @@ public class UserService {
         User user = User.beforeSave(name, email, password);
         userRepository.save(user);
     }
+
+    public User findByEmail(final String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+    }
 }
