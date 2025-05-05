@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ExistedThemeException;
-import roomescape.reservation.dao.ReservationDao;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.dto.request.ThemeRequest;
@@ -15,11 +14,9 @@ import roomescape.theme.dto.response.ThemeResponse;
 public class ThemeService {
 
     private final ThemeDao themeDao;
-    private final ReservationDao reservationDao;
 
-    public ThemeService(ThemeDao themeDao, ReservationDao reservationDao) {
+    public ThemeService(ThemeDao themeDao) {
         this.themeDao = themeDao;
-        this.reservationDao = reservationDao;
     }
 
     public ThemeResponse create(ThemeRequest themeRequest) {
