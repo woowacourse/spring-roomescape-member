@@ -42,7 +42,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> MethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return ResponseEntity.badRequest()
                 .body(PREFIX + e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
