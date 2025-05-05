@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.controller.theme.dto.AddThemeRequest;
 import roomescape.controller.theme.dto.ThemeResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
@@ -38,7 +39,7 @@ public class ThemeService {
     public boolean removeById(final Long id) {
         List<Reservation> reservations = reservationRepository.findAllByThemeId(id);
         if (!reservations.isEmpty()) {
-            throw new IllegalStateException("삭제하려는 테마를 사용하는 예약이 있습니다. 삭제하려는 테마 ID: " + id);
+            throw new RoomescapeException("삭제하려는 테마를 사용하는 예약이 있습니다. 삭제하려는 테마 ID: " + id);
         }
         return themeRepository.removeById(id);
     }

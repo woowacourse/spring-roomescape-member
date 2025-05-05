@@ -1,10 +1,11 @@
-package roomescape.controller;
+package roomescape.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,40 +13,39 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final String ERROR_PREFIX = "[ERROR]";
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body(formatErrorMessage(ex.getMessage()));
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return new ResponseEntity<>(formatErrorMessage(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = IllegalStateException.class)
+    @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
-        return new ResponseEntity<>(formatErrorMessage(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RoomescapeException.class)
+    public ResponseEntity<String> handleReservationConflict(RoomescapeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
-        StringBuilder errorMessages = new StringBuilder();
+        final String errorMessages = "";
         StringBuilder errorMessage;
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
             errorMessage = new StringBuilder();
             errorMessage.append(fieldError.getField())
                     .append(" 에러 발생: ")
                     .append(fieldError.getDefaultMessage())
-                    .append("\n");
-            errorMessages.append(formatErrorMessage(errorMessage.toString()));
+                    .append("\n")
+                    .append(errorMessage);
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages.toString());
-    }
-
-    private String formatErrorMessage(String errorMessage) {
-        return String.format("%s %s", ERROR_PREFIX, errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
     }
 }

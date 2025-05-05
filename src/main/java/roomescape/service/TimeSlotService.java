@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.controller.timeslot.dto.AddTimeSlotRequest;
 import roomescape.controller.timeslot.dto.TimeSlotResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationRepository;
@@ -40,7 +41,7 @@ public class TimeSlotService {
     public boolean removeById(final Long id) {
         List<Reservation> reservations = reservationRepository.findAllByTimeSlotId(id);
         if (!reservations.isEmpty()) {
-            throw new IllegalStateException("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다. 삭제하려는 타임 슬롯 ID: " + id);
+            throw new RoomescapeException("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다. 삭제하려는 타임 슬롯 ID: " + id);
         }
         return timeSlotRepository.removeById(id);
     }

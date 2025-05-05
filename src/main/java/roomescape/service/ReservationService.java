@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.controller.reservation.dto.AddReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
 import roomescape.model.TimeSlot;
@@ -55,17 +56,17 @@ public class ReservationService {
         var hasDuplicate = reservations.stream()
                 .anyMatch(r -> r.isSameDateTime(reservation));
         if (hasDuplicate) {
-            throw new IllegalArgumentException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다. 예약 날짜: " + reservation.date());
+            throw new RoomescapeException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다. 예약 날짜: " + reservation.date());
         }
     }
 
     private TimeSlot findTimeSlot(final AddReservationRequest request) {
         return timeSlotRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타임 슬롯입니다. 타임 슬롯 ID: " + request.timeId()));
+                .orElseThrow(() -> new RoomescapeException("존재하지 않는 타임 슬롯입니다. 타임 슬롯 ID: " + request.timeId()));
     }
 
     private Theme findTheme(final AddReservationRequest request) {
         return themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다. 테마 ID: " + request.themeId()));
+                .orElseThrow(() -> new RoomescapeException("존재하지 않는 테마입니다. 테마 ID: " + request.themeId()));
     }
 }
