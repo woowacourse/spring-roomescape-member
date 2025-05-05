@@ -47,7 +47,7 @@ class ThemeServiceTest {
         // when
         ThemeResponse result = themeService.createTheme(request);
         // then
-        Theme saved = fakeThemeDao.findById(result.id());
+        Theme saved = fakeThemeDao.findById(result.id()).orElseThrow();
         assertAll(
                 () -> assertThat(result.id()).isEqualTo(1L),
                 () -> assertThat(result.name()).isEqualTo(request.name()),

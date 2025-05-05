@@ -3,6 +3,7 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -56,9 +57,9 @@ public class H2ThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme findById(final long id) {
+    public Optional<Theme> findById(final long id) {
         final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, themeMapper, id);
+        return jdbcTemplate.query(sql, themeMapper, id).stream().findFirst();
     }
 
     @Override
@@ -78,13 +79,6 @@ public class H2ThemeDao implements ThemeDao {
                      ORDER BY COUNT(*) DESC
                      LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, themeMapper, from , to, count);
-    }
-
-    @Override
-    public boolean isNotExistsById(long id) {
-        final String sql = "SELECT COUNT(*) FROM theme WHERE id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, id);
-        return count == 0;
+        return jdbcTemplate.query(sql, themeMapper, from, to, count);
     }
 }

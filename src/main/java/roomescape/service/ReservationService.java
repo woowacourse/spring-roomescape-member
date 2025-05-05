@@ -27,8 +27,10 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
-        final Theme theme = findTheme(reservationRequest.themeId());
+        final ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new IllegalArgumentException("예약 시간이 존재하지 않습니다."));
+        final Theme theme = themeDao.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new IllegalArgumentException("테마가 존재하지 않습니다."));
         final Reservation reservation = reservationRequest.convertToReservation(reservationTime, theme);
         if (reservation.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
@@ -48,19 +50,5 @@ public class ReservationService {
 
     public void cancelReservationById(final long id) {
         reservationDao.deleteById(id);
-    }
-
-    private ReservationTime findReservationTime(final long timeId) {
-        if (reservationTimeDao.isNotExistsById(timeId)) {
-            throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
-        }
-        return reservationTimeDao.findById(timeId);
-    }
-
-    private Theme findTheme(final long themeId) {
-        if (themeDao.isNotExistsById(themeId)) {
-            throw new IllegalArgumentException("테마가 존재하지 않습니다.");
-        }
-        return themeDao.findById(themeId);
     }
 }

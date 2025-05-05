@@ -3,6 +3,7 @@ package roomescape.fake;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import roomescape.repository.ReservationTimeDao;
 import roomescape.service.reservation.ReservationTime;
 
@@ -24,11 +25,10 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(final long id) {
+    public Optional<ReservationTime> findById(final long id) {
         return times.stream()
                 .filter(time -> time.getId() == id)
-                .findFirst()
-                .orElseThrow();
+                .findFirst();
     }
 
     @Override
@@ -38,14 +38,8 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public boolean isNotExistsById(final long id) {
-        return times.stream()
-                .noneMatch(time -> time.getId() == id);
-    }
-
-    @Override
     public void deleteById(final long id) {
-        ReservationTime reservationTime = findById(id);
+        ReservationTime reservationTime = findById(id).orElseThrow();
         times.remove(reservationTime);
     }
 }

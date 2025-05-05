@@ -3,6 +3,7 @@ package roomescape.fake;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import roomescape.repository.ThemeDao;
 import roomescape.service.reservation.Theme;
 import roomescape.service.reservation.ThemeName;
@@ -31,16 +32,15 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme findById(final long id) {
+    public Optional<Theme> findById(final long id) {
         return themes.stream()
                 .filter(theme -> theme.getId() == id)
-                .findAny()
-                .orElseThrow();
+                .findAny();
     }
 
     @Override
     public void deleteById(long id) {
-        Theme theme = findById(id);
+        Theme theme = findById(id).orElseThrow(); // TODO 이거 맞나?
         themes.remove(theme);
     }
 
@@ -51,11 +51,5 @@ public class FakeThemeDao implements ThemeDao {
     @Override
     public List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count) {
         return null;
-    }
-
-    @Override
-    public boolean isNotExistsById(long id) {
-        return themes.stream()
-                .noneMatch(theme -> theme.getId() == id);
     }
 }

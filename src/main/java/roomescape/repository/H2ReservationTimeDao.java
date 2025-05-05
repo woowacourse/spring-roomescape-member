@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -45,9 +46,9 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(final long id) {
+    public Optional<ReservationTime> findById(final long id) {
         final String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id);
+        return jdbcTemplate.query(sql, reservationTimeRowMapper, id).stream().findFirst();
     }
 
     @Override
@@ -55,13 +56,6 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
         final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, reservationTime);
         return count > 0;
-    }
-
-    @Override
-    public boolean isNotExistsById(final long id) {
-        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, id);
-        return count == 0;
     }
 
     @Override
