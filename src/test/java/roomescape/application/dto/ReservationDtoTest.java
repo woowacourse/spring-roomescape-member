@@ -2,6 +2,9 @@ package roomescape.application.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static roomescape.testFixture.Fixture.RESERVATION_1;
+import static roomescape.testFixture.Fixture.RESERVATION_2;
+import static roomescape.testFixture.Fixture.RESERVATION_3;
 import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
@@ -11,7 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.application.dto.ReservationDto;
+import roomescape.reservation.application.dto.info.ReservationDto;
 
 class ReservationDtoTest {
     @DisplayName("Reservation 객체를 응답객체로 변환한다.")
@@ -20,10 +23,11 @@ class ReservationDtoTest {
         // given
         Long timeId = 1L;
         String name = "멍구";
+        long memberId = 1L;
 
         LocalDate reservationDate = LocalDate.of(2025, 4, 1);
         ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.of(timeId, name, THEME_1, reservationDate, reservationTime);
+        Reservation reservation = Reservation.of(timeId, memberId, THEME_1, reservationDate, reservationTime);
 
         // when
         ReservationDto dto = ReservationDto.from(reservation);
@@ -31,7 +35,7 @@ class ReservationDtoTest {
         // then
         assertAll(
                 () -> assertThat(dto.id()).isEqualTo(timeId),
-                () -> assertThat(dto.name()).isEqualTo(name),
+                () -> assertThat(dto.memberId()).isEqualTo(memberId),
                 () -> assertThat(dto.date()).isEqualTo(reservationDate),
                 () -> assertThat(dto.time().id()).isEqualTo(timeId)
         );
@@ -41,14 +45,7 @@ class ReservationDtoTest {
     @Test
     void multipleReservations_toResponse() {
         // given
-        ReservationTime time1 = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationTime time2 = ReservationTime.of(2L, LocalTime.of(11, 0));
-
-        Reservation reservation1 = Reservation.of(1L, "브라운", THEME_1, LocalDate.of(2024, 4, 1), time1);
-        Reservation reservation2 = Reservation.of(2L, "솔라", THEME_1, LocalDate.of(2024, 4, 1), time2);
-        Reservation reservation3 = Reservation.of(3L, "브리", THEME_1, LocalDate.of(2024, 4, 2), time1);
-
-        List<Reservation> reservations = List.of(reservation1, reservation2, reservation3);
+        List<Reservation> reservations = List.of(RESERVATION_1, RESERVATION_2, RESERVATION_3);
 
         // when
         List<ReservationDto> dtos = ReservationDto.from(reservations);
@@ -57,8 +54,8 @@ class ReservationDtoTest {
         assertAll(
                 () -> assertThat(dtos).hasSize(3),
                 () -> assertThat(dtos)
-                        .extracting(ReservationDto::name)
-                        .containsExactly("브라운", "솔라", "브리")
+                        .extracting(ReservationDto::id)
+                        .containsExactly(RESERVATION_1.getId(), RESERVATION_2.getId(), RESERVATION_3.getId())
         );
     }
 

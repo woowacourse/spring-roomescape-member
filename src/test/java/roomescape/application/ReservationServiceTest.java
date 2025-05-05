@@ -8,20 +8,18 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static roomescape.reservation.exception.ReservationErrorCode.ALREADY_RESERVED;
 import static roomescape.reservation.exception.ReservationErrorCode.PAST_RESERVATION;
-import static roomescape.testFixture.Fixture.RESERVATION_1;
-import static roomescape.testFixture.Fixture.RESERVATION_2;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.reservation.application.MemberService;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ThemeService;
 import roomescape.reservation.application.TimeService;
@@ -46,6 +44,9 @@ class ReservationServiceTest {
     private ThemeService themeService;
 
     @Mock
+    private MemberService memberService;
+
+    @Mock
     private ReservationRegistrationPolicy reservationRegistrationPolicy;
 
     private ReservationService reservationService;
@@ -53,7 +54,7 @@ class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         reservationService = new ReservationService(
-                reservationRepository, timeService, themeService, reservationRegistrationPolicy
+                reservationRepository, timeService, themeService, memberService, reservationRegistrationPolicy
         );
     }
 
@@ -65,8 +66,8 @@ class ReservationServiceTest {
 
         Theme theme = Theme.of(1L, "호러 테마", "완전 호러입니다.", "thumbnail.url");
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        String memberName = "멍구";
-        Reservation reservation = Reservation.createNew(memberName, theme, request.date(), time);
+        Long memberId = 1L;
+        Reservation reservation = Reservation.createNew(memberId, theme, request.date(), time);
 
         given(themeService.getThemeById(1L)).willReturn(theme);
         given(timeService.getTimeById(1L)).willReturn(time);
@@ -74,7 +75,7 @@ class ReservationServiceTest {
         given(reservationRepository.save(reservation)).willReturn(reservationId);
 
         // when
-        reservationService.registerReservation(request, memberName);
+        reservationService.registerReservationForUser(request, memberId);
 
         // then
         verify(themeService).getThemeById(1L);
@@ -89,8 +90,7 @@ class ReservationServiceTest {
     void throwSameExceptionWithDomain_when_duplicatedReservation() {
         // given
         ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 1, 1), 1L);
-        String memberName = "멍구";
-
+        Long memberId = 1L;
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
         given(reservationRepository.existsDuplicatedReservation(
@@ -102,7 +102,7 @@ class ReservationServiceTest {
                 .validate(any(Reservation.class), eq(true));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.registerReservation(request, memberName))
+        assertThatThrownBy(() -> reservationService.registerReservationForUser(request, memberId))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessage(ALREADY_RESERVED.getMessage());
 
@@ -115,7 +115,7 @@ class ReservationServiceTest {
         // given
         LocalDate pastDate = LocalDate.now().minusDays(1);
         ReservationRequest request = new ReservationRequest(1L, pastDate, 1L);
-        String memberName = "멍구";
+        Long memberId = 1L;
 
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
@@ -129,24 +129,11 @@ class ReservationServiceTest {
                 .validate(any(Reservation.class), eq(true));
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(request, memberName))
+        assertThatThrownBy(() -> reservationService.registerReservationForUser(request, memberId))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessageContaining(PAST_RESERVATION.getMessage());
 
         verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(true));
-    }
-
-    @DisplayName("예약 목록을 조회할 수 있다.")
-    @Test
-    void getAllReservations() {
-        // given
-        given(reservationRepository.findAll()).willReturn(List.of(RESERVATION_1, RESERVATION_2));
-
-        // when
-        reservationService.getAllReservations();
-
-        // then
-        verify(reservationRepository).findAll();
     }
 
     @DisplayName("예약을 삭제할 수 있다.")

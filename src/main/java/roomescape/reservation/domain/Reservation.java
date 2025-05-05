@@ -6,30 +6,30 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Long memberId;
     private final Theme theme;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
 
-    private Reservation(Long id, String name, Theme theme, LocalDate reservationDate, ReservationTime reservationTime) {
+    private Reservation(Long id, Long memberId, Theme theme, LocalDate reservationDate, ReservationTime reservationTime) {
         this.id = id;
-        this.name = name;
+        this.memberId = memberId;
         this.theme = theme;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
     }
 
-    public static Reservation of(Long id, String name, Theme theme, LocalDate date, ReservationTime time) {
-        return new Reservation(id, name, theme, date, time);
+    public static Reservation of(Long id, Long memberId, Theme theme, LocalDate date, ReservationTime time) {
+        return new Reservation(id, memberId, theme, date, time);
     }
 
-    public static Reservation createNew(String name, Theme theme, LocalDate reservationDate,
+    public static Reservation createNew(Long memberId, Theme theme, LocalDate reservationDate,
                                         ReservationTime reservationTime) {
-        return new Reservation(null, name, theme, reservationDate, reservationTime);
+        return new Reservation(null, memberId, theme, reservationDate, reservationTime);
     }
 
     public static Reservation assignId(Long id, Reservation reservation) {
-        return new Reservation(id, reservation.getName(), reservation.getTheme(), reservation.getReservationDate(),
+        return new Reservation(id, reservation.memberId, reservation.getTheme(), reservation.getReservationDate(),
                 reservation.getReservationTime());
     }
 
@@ -49,8 +49,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Long getMemberId() {
+        return memberId;
     }
 
     public Theme getTheme() {

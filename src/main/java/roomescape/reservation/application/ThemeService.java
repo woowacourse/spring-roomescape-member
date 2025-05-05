@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.application.dto.ThemeDto;
+import roomescape.reservation.application.dto.info.ThemeDto;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.repository.ThemeRepository;
 import roomescape.exception.BusinessException;

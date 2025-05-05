@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.reservation.application.TimeService;
-import roomescape.reservation.application.dto.TimeDto;
+import roomescape.reservation.application.dto.info.TimeDto;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.repository.TimeRepository;
 import roomescape.reservation.domain.repository.dto.TimeDataWithBookingInfo;

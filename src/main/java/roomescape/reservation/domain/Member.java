@@ -1,16 +1,22 @@
-package roomescape.auth.domain;
+package roomescape.reservation.domain;
 
 import java.util.Objects;
 
 public class Member {
+    private final Long id;
     private final String email;
     private final String password;
     private final String name;
 
-    public Member(String email, String password, String name) {
+    public Member(Long id, String email, String password, String name) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getEmail() {
@@ -33,11 +39,11 @@ public class Member {
         if (!(o instanceof Member member)) {
             return false;
         }
-        return Objects.equals(email, member.email);
+        return Objects.equals(id, member.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(id);
     }
 }

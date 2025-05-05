@@ -5,12 +5,12 @@ import static roomescape.auth.exception.AuthErrorCode.INVALID_TOKEN;
 import static roomescape.auth.exception.AuthErrorCode.MEMBER_NOT_FOUND;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.domain.Member;
-import roomescape.auth.domain.MemberRepository;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.reservation.domain.Member;
+import roomescape.reservation.domain.repository.MemberRepository;
 
 @Service
 public class AuthService {
@@ -23,30 +23,35 @@ public class AuthService {
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        Member member = getMember(tokenRequest.email());
+        Member member = getMemberByEmail(tokenRequest.email());
 
         if (!tokenRequest.password().equals(member.getPassword())) {
             throw new AuthorizationException(INVALID_PASSWORD);
         }
 
-        String accessToken = jwtTokenProvider.createToken(tokenRequest.email());
+        String accessToken = jwtTokenProvider.createToken(String.valueOf(member.getId()));
         return new TokenResponse(accessToken);
+    }
+
+    private Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthorizationException(MEMBER_NOT_FOUND));
     }
 
     public Member findMemberByToken(String token) {
         validateMemberToken(token);
-        String email = jwtTokenProvider.getPayload(token);
-        return getMember(email);
-    }
-
-    private Member getMember(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new AuthorizationException(MEMBER_NOT_FOUND));
+        String id = jwtTokenProvider.getPayload(token);
+        return getMemberById(Long.parseLong(id));
     }
 
     private void validateMemberToken(String token) {
         if(!jwtTokenProvider.validateToken(token)) {
             throw new AuthorizationException(INVALID_TOKEN);
         }
+    }
+
+    private Member getMemberById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new AuthorizationException(MEMBER_NOT_FOUND));
     }
 }

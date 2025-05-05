@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.auth.domain.Member;
+import roomescape.reservation.domain.Member;
+import roomescape.reservation.infrastructure.JdbcMemberRepository;
 
 @JdbcTest
 @Import(JdbcMemberRepository.class)
@@ -29,11 +30,21 @@ class JdbcMemberRepositoryTest {
 
     @BeforeEach
     void cleanDatabase() {
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE theme");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE members");
+        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     private final static RowMapper<Member> MEMBER_ROW_MAPPER =
             (rs, rowNum) -> new Member(
+                    rs.getLong("id"),
                     rs.getString("email"),
                     rs.getString("password"),
                     rs.getString("name")
@@ -43,16 +54,16 @@ class JdbcMemberRepositoryTest {
     @Test
     void save() {
         // given
-        Member member = new Member("test@example.com", "password", "멍구");
+        Member member = new Member( null, "test@example.com", "password", "멍구");
 
         // when
         jdbcMemberRepository.save(member);
 
         // then
-        List<Member> members = jdbcTemplate.query("SELECT email, password, name FROM members", MEMBER_ROW_MAPPER);
+        List<Member> members = jdbcTemplate.query("SELECT id, email, password, name FROM members", MEMBER_ROW_MAPPER);
 
         assertThat(members).hasSize(1);
-        assertThat(members.getFirst()).isEqualTo(member);
+        assertThat(members.getFirst().getEmail()).isEqualTo(member.getEmail());
     }
 
     @DisplayName("유저를 이메일로 조회할 수 있다.")

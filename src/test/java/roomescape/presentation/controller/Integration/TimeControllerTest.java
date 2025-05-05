@@ -96,7 +96,7 @@ class TimeControllerTest {
         ReservationTime reservationTime = RESERVATION_TIME_1;
         JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
-        JdbcHelper.insertReservation(jdbcTemplate, RESERVATION_1);
+        JdbcHelper.insertReservationOnly(jdbcTemplate, RESERVATION_1);
 
         Long timeId = reservationTime.getId();
         RestAssured.given().log().all()
@@ -110,7 +110,7 @@ class TimeControllerTest {
     void getTimesWithBookingInfo() {
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
         JdbcHelper.insertReservationTimes(jdbcTemplate, RESERVATION_TIME_1, RESERVATION_TIME_2, RESERVATION_TIME_3);
-        JdbcHelper.insertReservation(jdbcTemplate, RESERVATION_1);
+        JdbcHelper.insertReservationOnly(jdbcTemplate, RESERVATION_1);
 
         String date = RESERVATION_1.getReservationDate().toString();
 

@@ -30,8 +30,18 @@ class TokenLoginControllerTest {
 
     @BeforeEach
     void cleanDatabase() {
-        RestAssured.port = port;
+        RestAssured.port = this.port;
+
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE theme");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE members");
+        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
     @Test
@@ -62,10 +72,10 @@ class TokenLoginControllerTest {
         String email = "email@example.com";
         String password = "password";
         String name = "멍구";
-        jdbcTemplate.update("INSERT INTO members (email, password, name) VALUES (?, ?, ?)",
-                email, password, name);
-
-        String token = jwtTokenProvider.createToken(email);
+        Long memberId = 1L;
+        jdbcTemplate.update("INSERT INTO members (id, email, password, name) VALUES (?, ?, ?, ?)",
+                memberId, email, password, name);
+        String token = jwtTokenProvider.createToken(String.valueOf(memberId));
 
         // when & then
         RestAssured

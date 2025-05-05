@@ -9,6 +9,9 @@ ALTER TABLE reservation_time
 TRUNCATE TABLE theme;
 ALTER TABLE theme
     ALTER COLUMN id RESTART WITH 1;
+TRUNCATE TABLE members;
+ALTER TABLE members
+    ALTER COLUMN id RESTART WITH 1;
 SET REFERENTIAL_INTEGRITY TRUE;
 
 INSERT INTO reservation_time (start_at)
@@ -29,14 +32,17 @@ VALUES ('1등테마', '테마 1입니다', '썸네일1'),
        ('테마10', '테마 10입니다', '썸네일10'),
        ('테마11', '테마 11입니다', '썸네일11');
 
-INSERT INTO reservation (name, theme_id, date, time_id)
-VALUES ('브라운', 1, '2025-01-01', 1),
-       ('솔라', 1, '2025-01-01', 2),
-       ('브리', 1, '2025-01-01', 1),
-       ('브리1', 1, '2025-01-01', 1),
-       ('브리2', 1, '2025-01-01', 1),  --테마 1 5개
-       ('브리3', 2, '2025-01-05', 1),
-       ('브리4', 2, '2025-01-05', 1),
-       ('브리5', 2, '2025-01-05', 1),
-       ('브리6', 2, '2025-01-07', 1),  -- 테마 2 4개
-       ('브리7', 3, '2025-01-07', 1);  -- 테마 3 1개
+INSERT INTO members(email, password, name)
+VALUES ('test@email.com', 'password', '멍구');
+
+INSERT INTO reservation (member_id, theme_id, date, time_id)
+VALUES (1, 1, '2025-01-01', 1),
+       (1, 1, '2025-01-01', 2),
+       (1, 1, '2025-01-01', 1),
+       (1, 1, '2025-01-01', 1),
+       (1, 1, '2025-01-01', 1),  --테마 1 5개
+       (1, 2, '2025-01-05', 1),
+       (1, 2, '2025-01-05', 1),
+       (1, 2, '2025-01-05', 1),
+       (1, 2, '2025-01-07', 1),  -- 테마 2 4개
+       (1, 3, '2025-01-07', 1);  -- 테마 3 1개

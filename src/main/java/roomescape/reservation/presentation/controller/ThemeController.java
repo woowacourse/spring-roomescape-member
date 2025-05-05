@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.application.ThemeService;
-import roomescape.reservation.application.dto.ThemeDto;
+import roomescape.reservation.application.dto.info.ThemeDto;
 import roomescape.reservation.presentation.dto.request.ThemeRankingRequest;
 import roomescape.reservation.presentation.dto.request.ThemeRequest;
 import roomescape.reservation.presentation.dto.response.ThemeResponse;

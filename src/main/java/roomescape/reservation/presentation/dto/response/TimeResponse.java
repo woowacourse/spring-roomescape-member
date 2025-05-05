@@ -3,7 +3,7 @@ package roomescape.reservation.presentation.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 import java.util.List;
-import roomescape.reservation.application.dto.TimeDto;
+import roomescape.reservation.application.dto.info.TimeDto;
 
 public record TimeResponse(
 

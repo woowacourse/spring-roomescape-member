@@ -3,6 +3,8 @@ package roomescape.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.RESERVATION_1;
+import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 
 import java.sql.Time;
 import java.time.LocalTime;
@@ -19,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.infrastructure.JdbcTimeRepository;
+import roomescape.testFixture.JdbcHelper;
 
 @JdbcTest
 @Import(JdbcTimeRepository.class)
@@ -40,6 +43,8 @@ class JdbcTimeRepositoryTest {
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE theme");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE members");
+        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -89,26 +94,28 @@ class JdbcTimeRepositoryTest {
     @Test
     void deleteByIdTest() {
         // given
-        assertThat(timeRepository.findAll()).hasSize(0);
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
-        assertThat(timeRepository.findAll()).hasSize(1);
+        JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
+        assertThat(getTimeCount()).isEqualTo(1);
 
         // when
-        timeRepository.deleteById(1L);
+        timeRepository.deleteById(RESERVATION_TIME_1.getId());
 
         // then
-        assertThat(timeRepository.findAll()).hasSize(0);
+        assertThat(getTimeCount()).isEqualTo(0);
     }
 
     @DisplayName("다른 테이블에서 참조되고 있는 시간 삭제 시 예외 발생")
     @Test
     void error_when_delete_referencedTime() {
         // given
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1L, '10:00:00')");
-        jdbcTemplate.update("INSERT INTO reservation (name, date,time_id) VALUES ('브라운', '2025-01-01', 1)");
+        JdbcHelper.prepareAndInsertReservation(jdbcTemplate, RESERVATION_1);
 
         // when & then
-        assertThatThrownBy(() -> timeRepository.deleteById(1L))
+        assertThatThrownBy(() -> timeRepository.deleteById(RESERVATION_TIME_1.getId()))
                 .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    private int getTimeCount() {
+        return jdbcTemplate.queryForObject("SELECT COUNT (*) FROM reservation_time", Integer.class);
     }
 }

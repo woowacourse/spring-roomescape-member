@@ -1,4 +1,4 @@
-package roomescape.reservation.application.dto;
+package roomescape.reservation.application.dto.info;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,7 +6,7 @@ import roomescape.reservation.domain.Reservation;
 
 public record ReservationDto(
         long id,
-        String name,
+        long memberId,
         ThemeDto theme,
         LocalDate date,
         TimeDto time
@@ -14,7 +14,7 @@ public record ReservationDto(
     public static ReservationDto from(Reservation reservation) {
         return new ReservationDto(
                 reservation.getId(),
-                reservation.getName(),
+                reservation.getMemberId(),
                 ThemeDto.from(reservation.getTheme()),
                 reservation.getReservationDate(),
                 TimeDto.from(reservation.getReservationTime())

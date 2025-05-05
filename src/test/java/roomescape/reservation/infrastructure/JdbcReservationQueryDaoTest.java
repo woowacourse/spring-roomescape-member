@@ -1,0 +1,57 @@
+package roomescape.reservation.infrastructure;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.testFixture.Fixture.RESERVATION_1;
+import static roomescape.testFixture.Fixture.RESERVATION_2;
+import static roomescape.testFixture.Fixture.RESERVATION_3;
+
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import roomescape.reservation.infrastructure.dto.ReservationDetailData;
+import roomescape.testFixture.JdbcHelper;
+
+@JdbcTest
+@Import(JdbcReservationQueryDao.class)
+@ActiveProfiles("test")
+class JdbcReservationQueryDaoTest {
+
+    @Autowired
+    private JdbcReservationQueryDao reservationQueryDao;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void cleanDatabase() {
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation");
+        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
+        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE theme");
+        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE members");
+        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
+    }
+
+    @DisplayName("모든 예약을 조회할 수 있다.")
+    @Test
+    void findAllTest() {
+        // given
+        JdbcHelper.insertReservations(jdbcTemplate, RESERVATION_1, RESERVATION_2, RESERVATION_3);
+
+        // when
+        List<ReservationDetailData> reservationDetails = reservationQueryDao.findAllReservationDetails();
+
+        // then
+        assertThat(reservationDetails).hasSize(3);
+    }
+}

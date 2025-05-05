@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.reservation.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -18,23 +19,24 @@ public class Fixture {
     public static final ReservationTime RESERVATION_TIME_2 = ReservationTime.of(2L, LocalTime.of(11, 0));
     public static final ReservationTime RESERVATION_TIME_3 = ReservationTime.of(3L, LocalTime.of(12, 0));
     public static final Reservation RESERVATION_1 = Reservation.of(
-            1L, "이름1", THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
+            1L, 1L, THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
     public static final Reservation RESERVATION_2 = Reservation.of(
-            2L, "이름2", THEME_2, LocalDate.now().plusDays(1), RESERVATION_TIME_2);
+            2L, 1L, THEME_2, LocalDate.now().plusDays(1), RESERVATION_TIME_2);
     public static final Reservation RESERVATION_3 = Reservation.of(
-            3L, "이름3", THEME_3, LocalDate.now().plusDays(1), RESERVATION_TIME_3);
+            3L, 1L, THEME_3, LocalDate.now().plusDays(1), RESERVATION_TIME_3);
+    public static final Member MEMBER_1 = new Member(1L, "test@email.com", "password", "멍구");
 
     public static final Map<String, Object> RESERVATION_BODY = createReservationBody();
 
-    public static Reservation createReservation(LocalDate date, String name, Long timeId, Long themeId) {
+    public static Reservation createReservation(LocalDate date, Long memberId, Long timeId, Long themeId) {
         Theme theme = Theme.of(themeId, "테마", "테마 설명입니다.", "썸네일");
         ReservationTime reservationTime = ReservationTime.of(timeId, LocalTime.of(10, 0));
-        return Reservation.of(1L, name, theme, date, reservationTime);
+        return Reservation.of(1L, memberId, theme, date, reservationTime);
     }
 
     public static Reservation createReservationById(Long id) {
         return Reservation.of(
-                id, "멍구", THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
+                id, 1L, THEME_1, LocalDate.now().plusDays(1), RESERVATION_TIME_1);
     }
 
     public static ReservationTime createTimeById(Long timeId) {

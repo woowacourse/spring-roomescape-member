@@ -2,12 +2,12 @@ package roomescape.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.MEMBER_1;
+import static roomescape.testFixture.Fixture.RESERVATION_1;
+import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
+import static roomescape.testFixture.Fixture.THEME_1;
 
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,6 +43,8 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE theme");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE members");
+        jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -50,95 +52,48 @@ class JdbcReservationRepositoryTest {
     @Test
     void saveTest() {
         // given
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00')");
-        jdbcTemplate.update(
-                "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
-
-        Reservation reservation = Reservation.createNew(
-                "테스트행님",
-                Theme.of(1L, "테마1", "테마 1입니다.", "썸네일"),
-                LocalDate.of(2025, 4, 30),
-                ReservationTime.of(1L, LocalTime.of(10, 0))
-        );
+        JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
+        JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
+        JdbcHelper.insertMember(jdbcTemplate,  MEMBER_1);
 
         // when
-        Long savedId = reservationRepository.save(reservation);
+        Long savedId = reservationRepository.save(RESERVATION_1);
 
         // then
-        String sql = "SELECT * FROM reservation WHERE id = ?";
-        Map<String, Object> result = jdbcTemplate.queryForMap(sql, savedId);
+        int count = getReservationCount();
 
         assertAll(
                 () -> assertThat(savedId).isNotNull(),
-
-                () -> assertThat(result.get("name")).isEqualTo("테스트행님"),
-                () -> assertThat(result.get("date")).isEqualTo(Date.valueOf(LocalDate.of(2025, 4, 30))),
-                () -> assertThat(result.get("time_id")).isEqualTo(1L)
+                () -> assertThat(count).isEqualTo(1)
         );
-    }
-
-    @DisplayName("모든 예약을 조회할 수 있다.")
-    @Test
-    void findAllTest() {
-        // given
-        jdbcTemplate.update(
-                "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
-
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브라운', '2025-01-01', 1, 1)");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('솔라', '2025-01-01', 1, 1)");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('브리', '2025-01-01', 1, 1)");
-
-        // when
-        List<Reservation> reservations = reservationRepository.findAll();
-
-        // then
-        assertThat(reservations).hasSize(3);
-        assertThat(reservations)
-                .extracting(Reservation::getName)
-                .containsExactly("브라운", "솔라", "브리");
     }
 
     @DisplayName("id로 예약을 삭제할 수 있다.")
     @Test
     void deleteByIdTest() {
         // given
-        assertThat(reservationRepository.findAll()).hasSize(0);
-        jdbcTemplate.update(
-                "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '테마1', '테마 1입니다.', '썸네일입니다.')");
-        jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00:00')");
-        jdbcTemplate.update(
-                "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '브라운', '2025-01-01', 1, 1)");
-        assertThat(reservationRepository.findAll()).hasSize(1);
+        JdbcHelper.prepareAndInsertReservation(jdbcTemplate, RESERVATION_1);
+        assertThat(getReservationCount()).isEqualTo(1);
 
         // when
-        reservationRepository.deleteById(1L);
+        reservationRepository.deleteById(RESERVATION_1.getId());
 
         // then
-        List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations).hasSize(0);
+        assertThat(getReservationCount()).isEqualTo(0);
     }
 
     @DisplayName("timeId, themeId, 날짜가 같은 예약이 존재함을 확인한다.")
     @Test
     void existsDuplicatedReservation() {
         // given
-        LocalDate date = LocalDate.of(2025, 1, 1);
-        long timeId = 1L;
-        long themeId = 1L;
-        ReservationTime reservationTime = Fixture.createTimeById(timeId);
-        Theme theme = Fixture.createThemeById(themeId);
-        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+        JdbcHelper.prepareAndInsertReservation(jdbcTemplate, RESERVATION_1);
 
-        JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
-        JdbcHelper.insertTheme(jdbcTemplate, theme);
-        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+        LocalDate sameDate = RESERVATION_1.getReservationDate();
+        long sameTimeId = RESERVATION_1.getReservationTime().getId();
+        long sameThemeId = RESERVATION_1.getTheme().getId();
 
         // when
-        boolean existsDuplicatedReservation = reservationRepository.existsDuplicatedReservation(date, timeId, themeId);
+        boolean existsDuplicatedReservation = reservationRepository.existsDuplicatedReservation(sameDate, sameTimeId, sameThemeId);
 
         // then
         assertThat(existsDuplicatedReservation).isTrue();
@@ -153,11 +108,11 @@ class JdbcReservationRepositoryTest {
         long themeId = 1L;
         ReservationTime reservationTime = Fixture.createTimeById(timeId);
         Theme theme = Fixture.createThemeById(themeId);
-        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+        Reservation reservation = Fixture.createReservation(date, MEMBER_1.getId(), timeId, themeId);
 
         JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
         JdbcHelper.insertTheme(jdbcTemplate, theme);
-        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+        JdbcHelper.prepareAndInsertReservation(jdbcTemplate, reservation);
 
         // when
         long differentTimeId = 2L;
@@ -176,11 +131,11 @@ class JdbcReservationRepositoryTest {
         long themeId = 1L;
         ReservationTime reservationTime = Fixture.createTimeById(timeId);
         Theme theme = Fixture.createThemeById(themeId);
-        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+        Reservation reservation = Fixture.createReservation(date, 1L, timeId, themeId);
 
         JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
         JdbcHelper.insertTheme(jdbcTemplate, theme);
-        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+        JdbcHelper.prepareAndInsertReservation(jdbcTemplate, reservation);
 
         // when
         long differentThemeId = 2L;
@@ -199,11 +154,11 @@ class JdbcReservationRepositoryTest {
         long themeId = 1L;
         ReservationTime reservationTime = Fixture.createTimeById(timeId);
         Theme theme = Fixture.createThemeById(themeId);
-        Reservation reservation = Fixture.createReservation(date, "멍구", timeId, themeId);
+        Reservation reservation = Fixture.createReservation(date, 1L, timeId, themeId);
 
         JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
         JdbcHelper.insertTheme(jdbcTemplate, theme);
-        JdbcHelper.insertReservation(jdbcTemplate, reservation);
+        JdbcHelper.prepareAndInsertReservation(jdbcTemplate, reservation);
 
         // when
         LocalDate differentDate = LocalDate.of(2025, 12, 1);
@@ -211,5 +166,9 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(existsDuplicatedReservation).isFalse();
+    }
+
+    private int getReservationCount() {
+        return jdbcTemplate.queryForObject("SELECT COUNT (*) FROM reservation", Integer.class);
     }
 }

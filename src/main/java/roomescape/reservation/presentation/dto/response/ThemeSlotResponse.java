@@ -1,7 +1,7 @@
 package roomescape.reservation.presentation.dto.response;
 
 import java.util.List;
-import roomescape.reservation.application.dto.ThemeDto;
+import roomescape.reservation.application.dto.info.ThemeDto;
 
 public record ThemeSlotResponse(
         Long id,

@@ -14,12 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.auth.domain.Member;
-import roomescape.auth.domain.MemberRepository;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.reservation.domain.Member;
+import roomescape.reservation.domain.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -36,10 +36,11 @@ class AuthServiceTest {
     @DisplayName("이메일과 비밀번호로 토큰을 생성할 수 있다")
     void createToken_success() {
         TokenRequest request = new TokenRequest("email@test.com", "1234");
-        Member member = new Member("email@test.com", "1234", "멍구");
+        long memberId = 1L;
+        Member member = new Member(memberId, "email@test.com", "1234", "멍구");
 
         given(memberRepository.findByEmail("email@test.com")).willReturn(Optional.of(member));
-        given(jwtTokenProvider.createToken("email@test.com")).willReturn("token-value");
+        given(jwtTokenProvider.createToken(String.valueOf(memberId))).willReturn("token-value");
 
         TokenResponse response = authService.createToken(request);
 
@@ -51,11 +52,13 @@ class AuthServiceTest {
     void findMemberByToken_success() {
         String token = "valid-token";
         String email = "email@test.com";
-        Member member = new Member( email, "pass", "멍구");
+        Member member = new Member(1L, email, "pass", "멍구");
+
+        Long memberId = 1L;
 
         given(jwtTokenProvider.validateToken(token)).willReturn(true);
-        given(jwtTokenProvider.getPayload(token)).willReturn(email);
-        given(memberRepository.findByEmail(email)).willReturn(Optional.of(member));
+        given(jwtTokenProvider.getPayload(token)).willReturn(String.valueOf(memberId));
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         Member result = authService.findMemberByToken(token);
 
@@ -66,7 +69,7 @@ class AuthServiceTest {
     @DisplayName("비밀번호가 일치하지 않으면 예외가 발생한다")
     void createToken_wrongPassword() {
         TokenRequest request = new TokenRequest("email@test.com", "wrong");
-        Member member = new Member("email@test.com", "password", "멍구");
+        Member member = new Member(1L, "email@test.com", "password", "멍구");
 
         given(memberRepository.findByEmail("email@test.com")).willReturn(Optional.of(member));
 
