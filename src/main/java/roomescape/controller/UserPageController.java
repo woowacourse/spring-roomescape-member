@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserPageController {
 
     @GetMapping
-    public String displayThemeRank() {
+    public String displayUserMain() {
         return "index";
     }
 
