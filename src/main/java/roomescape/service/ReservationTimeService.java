@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.reservationtime.AvailableReservationTimeResponseDto;
 import roomescape.dto.reservationtime.ReservationTimeRequestDto;
@@ -17,9 +18,11 @@ import roomescape.model.ReservationTime;
 public class ReservationTimeService {
 
     private final ReservationTimeDao reservationTimeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
+        this.reservationDao = reservationDao;
     }
 
     public List<ReservationTimeResponseDto> getAllTimes() {
@@ -39,11 +42,11 @@ public class ReservationTimeService {
     }
 
     public void deleteTime(final Long id) {
-        try {
-            reservationTimeDao.deleteTimeById(id);
-        } catch (DataIntegrityViolationException e) {
+        boolean isReserved = reservationDao.existsByReservationTimeId(id);
+        if (isReserved) {
             throw new ResourceInUseException("삭제하고자 하는 시각에 예약된 정보가 있습니다.");
         }
+        reservationTimeDao.deleteTimeById(id);
     }
 
     public List<AvailableReservationTimeResponseDto> getAvailableTimes(String date, Long themeId) {

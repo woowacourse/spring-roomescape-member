@@ -58,6 +58,14 @@ public class ReservationDao {
         return jdbcTemplate.query(SELECT_RESERVATION, actorRowMapper);
     }
 
+    public Optional<Reservation> findByDateAndTime(Reservation reservation) {
+        String sql = SELECT_RESERVATION + " WHERE r.date = ? AND rt.id = ?";
+
+        return jdbcTemplate.query(sql, actorRowMapper, reservation.getDate(), reservation.getTime().getId())
+                .stream()
+                .findFirst();
+    }
+
     public Long saveReservation(Reservation reservation) {
         String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -78,10 +86,13 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public Optional<Reservation> findByDateAndTime(Reservation reservation) {
-        String sql = SELECT_RESERVATION + " WHERE r.date = ? AND rt.id = ?";
+    public boolean existsByThemeId(Long id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE theme_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
 
-        return jdbcTemplate.query(sql, actorRowMapper, reservation.getDate(), reservation.getTime().getId()).stream()
-                .findFirst();
+    public boolean existsByReservationTimeId(Long id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 }
