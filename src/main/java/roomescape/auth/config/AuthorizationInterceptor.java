@@ -3,9 +3,12 @@ package roomescape.auth.config;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.Authorization;
+
+import java.util.Arrays;
 
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
@@ -17,6 +20,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
+        if (!requireAuthorization(handler)) {
+            return true;
+        }
+
         String token = extractTokenFromCookies(request);
 
         if (token != null && jwtUtil.validateToken(token)) {
@@ -26,6 +33,15 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         return false;
+    }
+
+    private static boolean requireAuthorization(final Object handler) {
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return false;
+        }
+
+        return Arrays.stream(handlerMethod.getMethodParameters())
+                .anyMatch(param -> param.getParameterType().equals(Authorization.class));
     }
 
     private String extractTokenFromCookies(HttpServletRequest request) {
