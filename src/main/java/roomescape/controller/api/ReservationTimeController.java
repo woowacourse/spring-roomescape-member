@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import roomescape.controller.api.dto.request.CreateReservationTimeRequest;
+import roomescape.controller.api.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
@@ -28,21 +29,21 @@ public class ReservationTimeController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public roomescape.controller.api.dto.response.ReservationTimeResponse create(
+    public ReservationTimeResponse create(
             @RequestBody CreateReservationTimeRequest request) {
         ReservationTimeServiceResponse response = reservationTimeService.create(request.toServiceRequest());
-        return roomescape.controller.api.dto.response.ReservationTimeResponse.from(response);
+        return ReservationTimeResponse.from(response);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<roomescape.controller.api.dto.response.ReservationTimeResponse> getAllByThemeIdAndDate(
+    public List<ReservationTimeResponse> getAllByThemeIdAndDate(
             @RequestParam(value = "themeId", required = false) Long themeId,
             @RequestParam(value = "date", required = false) LocalDate date
     ) {
         List<ReservationTimeServiceResponse> reservationTimes = getAllReservationTimeResponse(themeId, date);
         return reservationTimes.stream()
-                .map(roomescape.controller.api.dto.response.ReservationTimeResponse::from)
+                .map(ReservationTimeResponse::from)
                 .toList();
     }
 
