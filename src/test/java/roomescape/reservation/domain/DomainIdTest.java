@@ -21,7 +21,7 @@ class DomainIdTest {
     @DisplayName("unassigned된 DomainId에서 getValue를 호출하면 예외가 발생한다")
     void getValueWhenUnassignedThrowsException() {
         // given
-        final DomainId id = ReservationId.unassigned();
+        final DomainId id = DomainId.unassigned();
 
         // when
         // then
@@ -34,8 +34,8 @@ class DomainIdTest {
     @DisplayName("unassigned된 DomainId끼리 비교할 수 없다")
     void unassignedDomainIdsAreNotEqual() {
         // given
-        final DomainId id1 = ReservationId.unassigned();
-        final DomainId id2 = ReservationId.unassigned();
+        final DomainId id1 = DomainId.unassigned();
+        final DomainId id2 = DomainId.unassigned();
 
         // when
         // then

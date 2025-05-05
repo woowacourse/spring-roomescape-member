@@ -1,20 +1,26 @@
 package roomescape.time.domain;
 
+import lombok.EqualsAndHashCode;
 import roomescape.common.domain.DomainId;
 
-import java.util.UUID;
+@EqualsAndHashCode
+public class ReservationTimeId {
 
-public class ReservationTimeId extends DomainId {
+   private final DomainId domainId;
 
-    private ReservationTimeId(final Long value, final boolean assigned) {
-        super(value, assigned);
+    private ReservationTimeId(final DomainId domainId) {
+        this.domainId = domainId;
     }
 
     public static ReservationTimeId unassigned() {
-        return new ReservationTimeId(UUID.randomUUID().getMostSignificantBits(), false);
+        return new ReservationTimeId(DomainId.unassigned());
     }
 
     public static ReservationTimeId from(final Long id) {
-        return new ReservationTimeId(id, true);
+        return new ReservationTimeId(DomainId.assigned(id));
+    }
+
+    public Long getValue() {
+        return domainId.getValue();
     }
 }

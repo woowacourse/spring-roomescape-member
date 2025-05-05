@@ -1,20 +1,26 @@
 package roomescape.theme.domain;
 
+import lombok.EqualsAndHashCode;
 import roomescape.common.domain.DomainId;
 
-import java.util.UUID;
+@EqualsAndHashCode
+public class ThemeId {
 
-public class ThemeId extends DomainId {
+    private final DomainId domainId;
 
-    private ThemeId(final Long value, final boolean assigned) {
-        super(value, assigned);
+    private ThemeId(final DomainId domainId) {
+        this.domainId = domainId;
     }
 
     public static ThemeId unassigned() {
-        return new ThemeId(UUID.randomUUID().getMostSignificantBits(), false);
+        return new ThemeId(DomainId.unassigned());
     }
 
     public static ThemeId from(final Long id) {
-        return new ThemeId(id, true);
+        return new ThemeId(DomainId.assigned(id));
+    }
+
+    public Long getValue() {
+        return domainId.getValue();
     }
 }
