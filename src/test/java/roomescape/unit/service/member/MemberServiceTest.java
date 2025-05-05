@@ -33,6 +33,7 @@ class MemberServiceTest {
     @Test
     void 로그인시_유저가_존재하면_토큰을_생성한다() {
         memberService.signup(new SignupRequestDto("praisebak", "password"));
+
         String token = memberService.login(new LoginRequestDto("praisebak", "password"));
 
         assertThat(token).isNotNull();

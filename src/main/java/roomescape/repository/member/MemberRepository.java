@@ -10,4 +10,6 @@ public interface MemberRepository {
     boolean existsByEmailAndPassword(Member member);
 
     Optional<Member> findById(long id);
+
+    Optional<Member> findByEmailAndPassword(Member requestMember);
 }

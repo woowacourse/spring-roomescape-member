@@ -31,4 +31,11 @@ public class FakeMemberRepository implements MemberRepository {
                 .filter((member) -> member.getId().equals(id))
                 .findAny();
     }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(Member requestMember) {
+        return members.stream()
+                .filter((member) -> member.isSameUserInfo(requestMember))
+                .findAny();
+    }
 }

@@ -21,4 +21,9 @@ public class JdbcMemberRepository implements MemberRepository {
     public Optional<Member> findById(long id) {
         return Optional.empty();
     }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(Member requestMember) {
+        return Optional.empty();
+    }
 }

@@ -23,12 +23,14 @@ public class MemberService {
     }
 
     public String login(LoginRequestDto loginRequestDto) {
-        Member member = loginRequestDto.toEntity();
+        Member requestMember = loginRequestDto.toEntity();
 
-        if (!memberRepository.existsByEmailAndPassword(member)) {
+        if (!memberRepository.existsByEmailAndPassword(requestMember)) {
             throw new InvalidMemberException("존재하지 않는 유저입니다");
         }
 
+        Member member = memberRepository.findByEmailAndPassword(requestMember)
+                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다"));
         return jwtTokenProvider.createToken(member);
     }
 
