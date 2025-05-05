@@ -59,8 +59,8 @@ public class ReservationServiceTest {
         // then
         var reservations = service.findAll();
         assertAll(
-            () -> assertThat(isRemoved).isTrue(),
-            () -> assertThat(reservations).doesNotContain(response)
+                () -> assertThat(isRemoved).isTrue(),
+                () -> assertThat(reservations).doesNotContain(response)
         );
     }
 
@@ -72,7 +72,7 @@ public class ReservationServiceTest {
 
         // when & then
         assertThatCode(() -> service.add(request))
-            .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -86,6 +86,6 @@ public class ReservationServiceTest {
 
         // then
         assertThatThrownBy(() -> service.add(request))
-            .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 }

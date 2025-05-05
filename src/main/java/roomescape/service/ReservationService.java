@@ -38,7 +38,8 @@ public class ReservationService {
         validateDuplicateReservation(reservation);
 
         var id = reservationRepository.save(reservation);
-        var savedReservation = new Reservation(id, reservation.name(), reservation.date(), reservation.timeSlot(), reservation.theme());
+        var savedReservation = new Reservation(id, reservation.name(), reservation.date(), reservation.timeSlot(),
+                reservation.theme());
         return ReservationResponse.from(savedReservation);
     }
 

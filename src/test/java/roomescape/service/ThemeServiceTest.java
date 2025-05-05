@@ -46,8 +46,8 @@ class ThemeServiceTest {
         // then
         var themes = service.findAll();
         assertAll(
-            () -> assertThat(isRemoved).isTrue(),
-            () -> assertThat(themes).doesNotContain(response)
+                () -> assertThat(isRemoved).isTrue(),
+                () -> assertThat(themes).doesNotContain(response)
         );
     }
 

@@ -1,7 +1,6 @@
 package roomescape.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -19,7 +18,8 @@ public class Reservation {
     private final TimeSlot timeSlot;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate date, final TimeSlot timeSlot,
+                       final Theme theme) {
         this.id = id;
         this.name = name;
         this.date = date;

@@ -10,7 +10,7 @@ public record AddTimeSlotRequest(
         LocalTime startAt
 ) {
 
-        public TimeSlot toEntity() {
-                return new TimeSlot(startAt);
-        }
+    public TimeSlot toEntity() {
+        return new TimeSlot(startAt);
+    }
 }

@@ -62,7 +62,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 WHERE T.ID = ?
                 """;
 
-        return jdbcTemplate.query(sql, createReservationRowMapper(), id);    }
+        return jdbcTemplate.query(sql, createReservationRowMapper(), id);
+    }
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {

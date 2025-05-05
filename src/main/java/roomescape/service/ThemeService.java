@@ -44,7 +44,8 @@ public class ThemeService {
         return themeRepository.removeById(id);
     }
 
-    public List<ThemeResponse> findPopularThemes(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
+    public List<ThemeResponse> findPopularThemes(final LocalDate startDate, final LocalDate endDate,
+                                                 final Integer limit) {
         var themes = reservationRepository.findPopularThemesByPeriod(startDate, endDate, limit);
         return ThemeResponse.from(themes);
     }

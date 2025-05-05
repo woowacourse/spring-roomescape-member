@@ -18,7 +18,7 @@ public record AddThemeRequest(
         String thumbnail
 ) {
 
-        public Theme toEntity() {
-                return new Theme(name, description, thumbnail);
-        }
+    public Theme toEntity() {
+        return new Theme(name, description, thumbnail);
+    }
 }

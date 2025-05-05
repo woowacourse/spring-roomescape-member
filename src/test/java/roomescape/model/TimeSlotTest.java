@@ -1,7 +1,6 @@
 package roomescape.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;

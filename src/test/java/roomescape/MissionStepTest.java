@@ -35,25 +35,25 @@ public class MissionStepTest {
     @Test
     void 일단계() {
         RestAssured.given().log().all()
-            .when().get("/admin")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+                .when().get("/admin")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 
     @Test
     void 이단계() {
         RestAssured.given().log().all()
-            .when().get("/admin/reservation")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+                .when().get("/admin/reservation")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .contentType("application/json")
-            .body("size()",
-                is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .contentType("application/json")
+                .body("size()",
+                        is(0)); // 아직 생성 요청이 없으니 Controller에서 임의로 넣어준 Reservation 갯수 만큼 검증하거나 0개임을 확인하세요.
     }
 
     @Test
@@ -68,39 +68,39 @@ public class MissionStepTest {
         insertSingleReservationTheme();
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value())
-            .body("id", is(1));
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .body("id", is(1));
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .body("size()", is(1));
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
-            .when().delete("/reservations/1")
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .body("size()", is(0));
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(0));
     }
 
     @Test
     void 사단계() {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
             assertAll(
-                () -> assertThat(connection).isNotNull(),
-                () -> assertThat(connection.getCatalog()).isEqualTo("DATABASE-TEST"),
-                () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
-                    .next()).isTrue()
+                    () -> assertThat(connection).isNotNull(),
+                    () -> assertThat(connection.getCatalog()).isEqualTo("DATABASE-TEST"),
+                    () -> assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null)
+                            .next()).isTrue()
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -112,16 +112,16 @@ public class MissionStepTest {
         insertSingleReservationTimeSlot();
         insertSingleReservationTheme();
         jdbcTemplate.update("INSERT INTO reservation (NAME, DATE, TIME_ID, THEME_ID) VALUES (?, ?, ?, ?)", "브라운",
-            Fixtures.getDateOfTomorrow().toString(), 1, 1);
+                Fixtures.getDateOfTomorrow().toString(), 1, 1);
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value()).extract()
-            .jsonPath().getList(".", ReservationResponse.class);
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value()).extract()
+                .jsonPath().getList(".", ReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
-            Integer.class);
+                Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
     }
@@ -138,23 +138,23 @@ public class MissionStepTest {
         insertSingleReservationTheme();
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value());
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
-            Integer.class);
+                Integer.class);
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
-            .when().delete("/reservations/1")
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation",
-            Integer.class);
+                Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);
     }
 
@@ -164,22 +164,22 @@ public class MissionStepTest {
         params.put("startAt", "10:00");
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/times")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value());
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
-            .when().get("/times")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .body("size()", is(1));
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1));
 
         RestAssured.given().log().all()
-            .when().delete("/times/1")
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+                .when().delete("/times/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
@@ -193,19 +193,19 @@ public class MissionStepTest {
         params.put("themeId", "1");
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(params)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value());
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .body("size()", is(1));
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("size()", is(1));
     }
-    
+
     @Test
     void 구단계() {
         boolean isJdbcTemplateInjected = false;
@@ -225,6 +225,7 @@ public class MissionStepTest {
     }
 
     private void insertSingleReservationTheme() {
-        jdbcTemplate.update("INSERT INTO THEME (NAME, DESCRIPTION, THUMBNAIL) VALUES (?, ?, ?)", "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        jdbcTemplate.update("INSERT INTO THEME (NAME, DESCRIPTION, THUMBNAIL) VALUES (?, ?, ?)", "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
     }
 }

@@ -26,7 +26,7 @@ public record AddReservationRequest(
         Long themeId
 ) {
 
-        public Reservation toEntity(final TimeSlot timeSlot, final Theme theme) {
-                return new Reservation(name, date, timeSlot, theme);
-        }
+    public Reservation toEntity(final TimeSlot timeSlot, final Theme theme) {
+        return new Reservation(name, date, timeSlot, theme);
+    }
 }

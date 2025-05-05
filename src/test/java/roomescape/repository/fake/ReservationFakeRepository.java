@@ -28,11 +28,11 @@ public class ReservationFakeRepository implements ReservationRepository {
     public Long save(final Reservation reservation) {
         var id = index.getAndIncrement();
         var created = new Reservation(
-            id,
-            reservation.name(),
-            reservation.date(),
-            reservation.timeSlot(),
-            reservation.theme()
+                id,
+                reservation.name(),
+                reservation.date(),
+                reservation.timeSlot(),
+                reservation.theme()
         );
         reservations.put(id, created);
         return id;
@@ -52,39 +52,40 @@ public class ReservationFakeRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByTimeSlotId(final Long id) {
         return reservations.values().stream()
-            .filter(reservation -> Objects.equals(reservation.timeSlot().id(), id))
-            .toList();
+                .filter(reservation -> Objects.equals(reservation.timeSlot().id(), id))
+                .toList();
     }
 
     @Override
     public List<Reservation> findAllByThemeId(final Long id) {
         return reservations.values().stream()
-            .filter(reservation -> Objects.equals(reservation.theme().id(), id))
-            .toList();
+                .filter(reservation -> Objects.equals(reservation.theme().id(), id))
+                .toList();
     }
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         return reservations.values().stream()
-            .filter(r -> r.date().equals(date) && Objects.equals(r.theme().id(), themeId))
-            .toList();
+                .filter(r -> r.date().equals(date) && Objects.equals(r.theme().id(), themeId))
+                .toList();
     }
 
     @Override
     public List<Theme> findPopularThemesByPeriod(final LocalDate startDate, final LocalDate endDate,
                                                  final Integer limit) {
         var themeCounts = reservations.values().stream()
-            .filter(r -> isBetween(r.date(), startDate, endDate))
-            .collect(Collectors.groupingBy(Reservation::theme, Collectors.counting()));
+                .filter(r -> isBetween(r.date(), startDate, endDate))
+                .collect(Collectors.groupingBy(Reservation::theme, Collectors.counting()));
 
         return themeCounts.keySet()
-            .stream()
-            .sorted(Comparator.comparingLong(themeCounts::get))
-            .limit(limit)
-            .toList();
+                .stream()
+                .sorted(Comparator.comparingLong(themeCounts::get))
+                .limit(limit)
+                .toList();
     }
 
     private boolean isBetween(LocalDate date, LocalDate startDate, LocalDate endDate) {
-        return (date.isAfter(startDate) || date.isEqual(startDate)) && (date.isEqual(endDate) || date.isBefore(endDate));
+        return (date.isAfter(startDate) || date.isEqual(startDate)) && (date.isEqual(endDate) || date.isBefore(
+                endDate));
     }
 }

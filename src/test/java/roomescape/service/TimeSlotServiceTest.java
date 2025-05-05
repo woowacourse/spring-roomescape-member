@@ -21,7 +21,7 @@ class TimeSlotServiceTest {
     @BeforeEach
     void setUp() {
         service = new TimeSlotService(new ReservationFakeRepository(),
-            new TimeSlotFakeRepository());
+                new TimeSlotFakeRepository());
     }
 
     @Test
@@ -47,8 +47,8 @@ class TimeSlotServiceTest {
         // then
         var timeSlots = service.findAll();
         assertAll(
-            () -> assertThat(isRemoved).isTrue(),
-            () -> assertThat(timeSlots).doesNotContain(response)
+                () -> assertThat(isRemoved).isTrue(),
+                () -> assertThat(timeSlots).doesNotContain(response)
         );
     }
 
@@ -66,6 +66,6 @@ class TimeSlotServiceTest {
 
         // when & then
         assertThatThrownBy(() -> timeSlotService.removeById(timeSlotResponse.id()))
-            .isInstanceOf(RoomescapeException.class);
+                .isInstanceOf(RoomescapeException.class);
     }
 }

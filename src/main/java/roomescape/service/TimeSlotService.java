@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.controller.timeslot.dto.AddTimeSlotRequest;
+import roomescape.controller.timeslot.dto.AvailabilityTimeSlotResponse;
 import roomescape.controller.timeslot.dto.TimeSlotResponse;
 import roomescape.exception.RoomescapeException;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
-import roomescape.controller.timeslot.dto.AvailabilityTimeSlotResponse;
 
 @Service
 public class TimeSlotService {
