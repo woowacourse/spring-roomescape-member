@@ -91,12 +91,10 @@ function fetchAvailableTimes(date, themeId) {
     TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
           요청 포맷에 맞게 설정
     */
-    fetch('/reservations/available-times', { // 예약 가능 시간 조회 API endpoint
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({date, themeId})
+    const query = new URLSearchParams({date, themeId}).toString();
+
+    fetch(`/reservations/available-times?${query}`, {
+        method: 'GET'
     }).then(response => {
         if (response.status === 200) return response.json();
         throw new Error('Read failed');

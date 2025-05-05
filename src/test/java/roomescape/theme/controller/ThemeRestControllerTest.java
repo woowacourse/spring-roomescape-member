@@ -1,11 +1,10 @@
 package roomescape.theme.controller;
 
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +40,13 @@ class ThemeRestControllerTest {
         params.put("description", "우가우가 설명");
         params.put("thumbnail", "따봉우가.jpg");
 
+        final int sizeBeforeCreate = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().path("size()");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -48,12 +54,16 @@ class ThemeRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        RestAssured.given().log().all()
+        final int sizeAfterCreate = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(1));
+                .extract()
+                .path("size()");
+
+        Assertions.assertThat(sizeAfterCreate)
+                .isEqualTo(sizeBeforeCreate + 1);
     }
 
     @Test
@@ -97,7 +107,7 @@ class ThemeRestControllerTest {
                 .body(params)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test
