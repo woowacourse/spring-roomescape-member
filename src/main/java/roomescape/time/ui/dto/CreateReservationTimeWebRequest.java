@@ -2,8 +2,8 @@ package roomescape.time.ui.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
-import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalTime;
 
@@ -16,6 +16,6 @@ public record CreateReservationTimeWebRequest(LocalTime startAt) {
 
     private void validate(final LocalTime startAt) {
         Validator.of(CreateReservationTimeWebRequest.class)
-                .validateNotNull(Fields.startAt, startAt, ReservationTime.domainName);
+                .validateNotNull(Fields.startAt, startAt, DomainTerm.RESERVATION_TIME.label());
     }
 }

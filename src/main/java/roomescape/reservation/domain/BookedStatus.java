@@ -10,8 +10,6 @@ import lombok.ToString;
 @ToString
 public final class BookedStatus {
 
-    public static final String domainName = "예약 여부";
-
     private final boolean value;
 
     public static BookedStatus from(final boolean value) {

@@ -40,7 +40,7 @@ public class Validator {
     }
 
     public Validator validateUriFormat(final String fieldName,
-                                       final String  target,
+                                       final String target,
                                        final String fieldDescription) {
         try {
             validateNotBlank(fieldName, target, fieldDescription);

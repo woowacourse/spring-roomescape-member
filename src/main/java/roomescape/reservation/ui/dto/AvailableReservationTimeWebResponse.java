@@ -2,11 +2,9 @@ package roomescape.reservation.ui.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceResponse;
-import roomescape.reservation.domain.BookedStatus;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationTimeId;
 
 import java.time.LocalTime;
 
@@ -31,8 +29,8 @@ public record AvailableReservationTimeWebResponse(
 
     private void validate(final LocalTime startAt, final Long timeId, final Boolean isBooked) {
         Validator.of(AvailableReservationTimeWebResponse.class)
-                .validateNotNull(Fields.startAt, startAt, ReservationTime.domainName)
-                .validateNotNull(Fields.timeId, timeId, ReservationTimeId.domainName)
-                .validateNotNull(Fields.isBooked, isBooked, BookedStatus.domainName);
+                .validateNotNull(Fields.startAt, startAt, DomainTerm.RESERVATION_TIME.label())
+                .validateNotNull(Fields.timeId, timeId, DomainTerm.RESERVATION_TIME_ID.label())
+                .validateNotNull(Fields.isBooked, isBooked, DomainTerm.BOOKED_STATUS.label());
     }
 }

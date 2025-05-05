@@ -1,12 +1,9 @@
 package roomescape.theme.ui.dto;
 
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeDescription;
-import roomescape.theme.domain.ThemeId;
-import roomescape.theme.domain.ThemeName;
-import roomescape.theme.domain.ThemeThumbnail;
 
 import java.util.List;
 
@@ -41,9 +38,9 @@ public record ThemeResponse(
                                  final String description,
                                  final String thumbnail) {
         Validator.of(ThemeResponse.class)
-                .validateNotNull(Fields.id, id, ThemeId.domainName)
-                .validateNotNull(Fields.name, name, ThemeName.domainName)
-                .validateNotNull(Fields.description, description, ThemeDescription.domainName)
-                .validateNotNull(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
+                .validateNotNull(Fields.id, id, DomainTerm.THEME_ID.label())
+                .validateNotNull(Fields.name, name, DomainTerm.THEME_NAME.label())
+                .validateNotNull(Fields.description, description, DomainTerm.THEME_DESCRIPTION.label())
+                .validateNotNull(Fields.thumbnail, thumbnail, DomainTerm.THEME_THUMBNAIL.label());
     }
 }

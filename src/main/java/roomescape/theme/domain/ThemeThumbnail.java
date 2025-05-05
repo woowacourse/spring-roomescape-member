@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 
 import java.net.URI;
@@ -15,8 +16,6 @@ import java.net.URI;
 @EqualsAndHashCode
 public class ThemeThumbnail {
 
-    public static final String domainName = "예약 썸네일";
-
     private final URI value;
 
     public static ThemeThumbnail from(final String uri) {
@@ -26,6 +25,6 @@ public class ThemeThumbnail {
 
     private static void validate(final String value) {
         Validator.of(ThemeThumbnail.class)
-                .validateUriFormat(Fields.value, value, domainName);
+                .validateUriFormat(Fields.value, value, DomainTerm.THEME_THUMBNAIL.label());
     }
 }

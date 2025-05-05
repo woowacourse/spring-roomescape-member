@@ -12,8 +12,6 @@ import lombok.ToString;
 @ToString
 public class BookedCount {
 
-    public static final String domainName = "예약 수";
-
     private final int value;
 
     public static BookedCount from(final int value) {

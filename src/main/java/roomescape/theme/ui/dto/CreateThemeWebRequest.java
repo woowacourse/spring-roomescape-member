@@ -2,6 +2,7 @@ package roomescape.theme.ui.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.theme.application.dto.CreateThemeServiceRequest;
 import roomescape.theme.domain.ThemeDescription;
@@ -28,8 +29,8 @@ public record CreateThemeWebRequest(
 
     private void validate(final String name, final String description, final String thumbnail) {
         Validator.of(CreateThemeWebRequest.class)
-                .validateNotNull(Fields.name, name, ThemeName.domainName)
-                .validateNotNull(Fields.description, description, ThemeDescription.domainName)
-                .validateNotNull(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
+                .validateNotNull(Fields.name, name, DomainTerm.THEME_NAME.label())
+                .validateNotNull(Fields.description, description, DomainTerm.THEME_DESCRIPTION.label())
+                .validateNotNull(Fields.thumbnail, thumbnail, DomainTerm.THEME_THUMBNAIL.label());
     }
 }

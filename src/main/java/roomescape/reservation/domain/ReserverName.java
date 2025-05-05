@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 
 @Getter
@@ -14,8 +15,6 @@ import roomescape.common.validate.Validator;
 @EqualsAndHashCode
 @ToString
 public class ReserverName {
-
-    public static final String domainName = "예약자 이름";
 
     private final String value;
 
@@ -26,6 +25,6 @@ public class ReserverName {
 
     private static void validate(final String value) {
         Validator.of(ReserverName.class)
-                .validateNotBlank(Fields.value, value, domainName);
+                .validateNotBlank(Fields.value, value, DomainTerm.RESERVER_NAME.label());
     }
 }

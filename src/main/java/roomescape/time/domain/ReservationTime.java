@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 
 import java.time.LocalTime;
@@ -16,8 +17,6 @@ import java.time.LocalTime;
 @EqualsAndHashCode(of = "id")
 @ToString
 public class ReservationTime {
-
-    public static final String domainName = "예약 시간";
 
     private final ReservationTimeId id;
     private final LocalTime startAt;
@@ -38,8 +37,8 @@ public class ReservationTime {
 
     private static void validate(final ReservationTimeId id, final LocalTime value) {
         Validator.of(ReservationTime.class)
-                .validateNotNull(Fields.id, id, ReservationTimeId.domainName)
-                .validateNotNull(Fields.startAt, value, domainName);
+                .validateNotNull(Fields.id, id, DomainTerm.RESERVATION_TIME_ID.label())
+                .validateNotNull(Fields.startAt, value, DomainTerm.RESERVATION_TIME.label());
     }
 
     public boolean isBefore(final LocalTime time) {

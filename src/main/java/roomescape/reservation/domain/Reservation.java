@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.reservation.exception.PastDateReservationException;
 import roomescape.reservation.exception.PastTimeReservationException;
@@ -20,8 +21,6 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id")
 @ToString
 public class Reservation {
-
-    public static final String domainName = "예약";
 
     private final ReservationId id;
     private final ReserverName name;
@@ -63,11 +62,11 @@ public class Reservation {
                                  final Theme theme) {
 
         Validator.of(Reservation.class)
-                .validateNotNull(Fields.id, id, ReservationId.domainName)
-                .validateNotNull(Fields.name, name, ReserverName.domainName)
-                .validateNotNull(Fields.date, date, ReservationDate.domainName)
-                .validateNotNull(Fields.time, time, ReservationTime.domainName)
-                .validateNotNull(Fields.theme, theme, Theme.domainName);
+                .validateNotNull(Fields.id, id, DomainTerm.RESERVATION_ID.label())
+                .validateNotNull(Fields.name, name, DomainTerm.RESERVER_NAME.label())
+                .validateNotNull(Fields.date, date, DomainTerm.RESERVATION_DATE.label())
+                .validateNotNull(Fields.time, time, DomainTerm.RESERVATION_TIME.label())
+                .validateNotNull(Fields.theme, theme, DomainTerm.THEME.label());
     }
 
     public static void validatePast(final ReservationDate date, final ReservationTime time) {

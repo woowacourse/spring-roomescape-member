@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 
 @Getter
@@ -12,8 +13,6 @@ import roomescape.common.validate.Validator;
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
 public class Theme {
-
-    public static final String domainName = "테마";
 
     private final ThemeId id;
     private final ThemeName name;
@@ -47,9 +46,9 @@ public class Theme {
                                  final ThemeDescription description,
                                  final ThemeThumbnail thumbnail) {
         Validator.of(Theme.class)
-                .validateNotNull(Fields.id, id, ThemeId.domainName)
-                .validateNotNull(Fields.name, name, ThemeName.domainName)
-                .validateNotNull(Fields.description, description, ThemeDescription.domainName)
-                .validateNotNull(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
+                .validateNotNull(Fields.id, id, DomainTerm.THEME_ID.label())
+                .validateNotNull(Fields.name, name, DomainTerm.THEME_NAME.label())
+                .validateNotNull(Fields.description, description, DomainTerm.THEME_DESCRIPTION.label())
+                .validateNotNull(Fields.thumbnail, thumbnail, DomainTerm.THEME_THUMBNAIL.label());
     }
 }

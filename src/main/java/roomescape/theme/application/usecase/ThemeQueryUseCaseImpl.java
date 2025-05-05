@@ -8,6 +8,7 @@ import roomescape.reservation.application.usecase.ReservationQueryUseCase;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
+import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeRepository;
 
 import java.util.List;
@@ -19,6 +20,16 @@ public class ThemeQueryUseCaseImpl implements ThemeQueryUseCase {
 
     private final ThemeRepository themeRepository;
     private final ReservationQueryUseCase reservationQueryUseCase;
+
+    @Override
+    public boolean existsById(final ThemeId id) {
+        return themeRepository.existsById(id);
+    }
+
+    @Override
+    public boolean existsByName(final ThemeName name) {
+        return themeRepository.existsByName(name);
+    }
 
     @Override
     public List<Theme> getAll() {

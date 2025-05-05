@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.common.jdbc.JdbcUtils;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
+import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.infrastructure.entity.ThemeDBEntity;
 
@@ -30,6 +31,28 @@ public class H2ThemeRepository implements ThemeRepository {
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail")
             );
+
+    @Override
+    public boolean existsById(final ThemeId id) {
+        final String sql = """
+                select exists
+                    (select 1 from theme where id = ?)
+                """;
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, id.getValue()));
+    }
+
+    @Override
+    public boolean existsByName(final ThemeName name) {
+        final String sql = """
+                select exists
+                    (select 1 from theme where name = ?)
+                """;
+
+        return Boolean.TRUE.equals(
+                jdbcTemplate.queryForObject(sql, Boolean.class, name.getValue()));
+    }
 
     @Override
     public List<Theme> findAll() {

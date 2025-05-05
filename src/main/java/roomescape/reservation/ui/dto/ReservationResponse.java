@@ -2,14 +2,10 @@ package roomescape.reservation.ui.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationDate;
-import roomescape.reservation.domain.ReservationId;
-import roomescape.reservation.domain.ReserverName;
-import roomescape.theme.domain.Theme;
 import roomescape.theme.ui.dto.ThemeResponse;
-import roomescape.time.domain.ReservationTime;
 import roomescape.time.ui.dto.ReservationTimeResponse;
 
 import java.time.LocalDate;
@@ -47,10 +43,10 @@ public record ReservationResponse(Long id,
                           final ReservationTimeResponse time,
                           final ThemeResponse theme) {
         Validator.of(ReservationResponse.class)
-                .validateNotNull(Fields.id, id, ReservationId.domainName)
-                .validateNotBlank(Fields.name, name, ReserverName.domainName)
-                .validateNotNull(Fields.date, date, ReservationDate.domainName)
-                .validateNotNull(Fields.time, time, ReservationTime.domainName)
-                .validateNotNull(Fields.theme, theme, Theme.domainName);
+                .validateNotNull(Fields.id, id, DomainTerm.RESERVATION_ID.label())
+                .validateNotBlank(Fields.name, name, DomainTerm.RESERVER_NAME.label())
+                .validateNotNull(Fields.date, date, DomainTerm.RESERVATION_DATE.label())
+                .validateNotNull(Fields.time, time, DomainTerm.RESERVATION_TIME.label())
+                .validateNotNull(Fields.theme, theme, DomainTerm.THEME_ID.label());
     }
 }

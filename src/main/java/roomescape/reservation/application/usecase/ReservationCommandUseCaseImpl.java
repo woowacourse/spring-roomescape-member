@@ -3,12 +3,13 @@ package roomescape.reservation.application.usecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.domain.DomainTerm;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.exception.DuplicateReservationException;
-import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.application.usecase.ThemeQueryUseCase;
 import roomescape.theme.domain.Theme;
 import roomescape.time.application.usecase.ReservationTimeQueryUseCase;
@@ -31,7 +32,8 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
                 request.timeId(),
                 request.themeId())
         ) {
-            throw new DuplicateReservationException(
+            throw new DuplicateException(
+                    DomainTerm.RESERVATION,
                     request.date(),
                     request.timeId(),
                     request.themeId());
@@ -54,6 +56,6 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
             return;
         }
 
-        throw new ReservationNotFoundException(id);
+        throw new NotFoundException(DomainTerm.RESERVATION, id);
     }
 }

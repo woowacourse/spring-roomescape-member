@@ -38,8 +38,7 @@ class ThemeCommandUseCaseImplTest {
         final CreateThemeServiceRequest request = new CreateThemeServiceRequest(
                 ThemeName.from(name),
                 ThemeDescription.from(description),
-                ThemeThumbnail.from(url
-                ));
+                ThemeThumbnail.from(url));
 
         // when
         final Theme theme = themeCommandUseCase.create(request);
@@ -52,7 +51,7 @@ class ThemeCommandUseCaseImplTest {
                     .isEqualTo(name);
             assertThat(foundTheme.getDescription().getValue())
                     .isEqualTo(description);
-            assertThat(foundTheme.getThumbnail().getValue())
+            assertThat(foundTheme.getThumbnail().getValue().toString())
                     .isEqualTo(url);
         });
     }

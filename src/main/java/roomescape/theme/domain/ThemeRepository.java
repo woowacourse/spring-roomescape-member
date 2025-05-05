@@ -5,6 +5,10 @@ import java.util.Optional;
 
 public interface ThemeRepository {
 
+    boolean existsById(ThemeId id);
+
+    boolean existsByName(ThemeName name);
+
     List<Theme> findAll();
 
     Optional<Theme> findById(ThemeId id);

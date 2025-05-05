@@ -2,9 +2,9 @@ package roomescape.time.ui.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.domain.ReservationTimeId;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -31,7 +31,7 @@ public record ReservationTimeResponse(Long id,
 
     private void validate(final Long id, final LocalTime startAt) {
         Validator.of(ReservationTimeResponse.class)
-                .validateNotNull(ReservationTimeResponse.Fields.id, id, ReservationTimeId.domainName)
-                .validateNotNull(ReservationTimeResponse.Fields.startAt, startAt, ReservationTime.domainName);
+                .validateNotNull(ReservationTimeResponse.Fields.id, id, DomainTerm.RESERVATION_TIME_ID.label())
+                .validateNotNull(ReservationTimeResponse.Fields.startAt, startAt, DomainTerm.RESERVATION_TIME.label());
     }
 }

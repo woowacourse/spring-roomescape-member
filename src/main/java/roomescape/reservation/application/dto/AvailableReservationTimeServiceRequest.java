@@ -2,6 +2,7 @@ package roomescape.reservation.application.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.ThemeId;
@@ -18,7 +19,7 @@ public record AvailableReservationTimeServiceRequest(
 
     private void validate(final ReservationDate date, final ThemeId themeId) {
         Validator.of(AvailableReservationTimeServiceRequest.class)
-                .validateNotNull(Fields.date, date, ReservationDate.domainName)
-                .validateNotNull(Fields.themeId, themeId, ThemeId.domainName);
+                .validateNotNull(Fields.date, date, DomainTerm.RESERVATION_DATE.label())
+                .validateNotNull(Fields.themeId, themeId, DomainTerm.THEME_ID.label());
     }
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
 
 @Getter
@@ -12,8 +13,6 @@ import roomescape.common.validate.Validator;
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class ThemeName {
-
-    public static final String domainName = "테마 이름";
 
     private final String value;
 
@@ -24,6 +23,6 @@ public class ThemeName {
 
     private static void validate(final String value) {
         Validator.of(ThemeName.class)
-                .validateNotBlank(Fields.value, value, domainName);
+                .validateNotBlank(Fields.value, value, DomainTerm.THEME_NAME.label());
     }
 }

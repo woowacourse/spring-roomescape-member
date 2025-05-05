@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
-import roomescape.reservation.exception.DuplicateReservationException;
-import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -107,9 +107,9 @@ class ReservationCommandUseCaseImplTest {
                         ReservationDate.from(LocalDate.of(2025, 8, 5)),
                         reservationTime.getId(),
                         theme.getId())))
-                .isInstanceOf(DuplicateReservationException.class);
+                .isInstanceOf(DuplicateException.class)
+                .hasMessage("RESERVATION already exists. params={ReservationDate=ReservationDate(value=2025-08-05), ReservationTimeId=ReservationTimeId(3), ThemeId=ThemeId(3)}");
     }
-
 
     @Test
     @DisplayName("예약을 삭제할 수 있다")
@@ -147,6 +147,7 @@ class ReservationCommandUseCaseImplTest {
         // when
         // then
         assertThatThrownBy(() -> reservationCommandUseCase.delete(id))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Tried to delete [RESERVATION] that does not exist. params={ReservationId=ReservationId(-1)}");
     }
 }

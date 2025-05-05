@@ -121,7 +121,7 @@ class ReservationQueryUseCaseImplTest {
                     .hasSize(2);
 
             softAssertions.assertThat(timesWithAvailability.stream()
-                    .filter(a -> a.bookedStatus().isBooked()))
+                            .filter(a -> a.bookedStatus().isBooked()))
                     .hasSize(1);
 
             softAssertions.assertThat(timesWithAvailability.stream()
