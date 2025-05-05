@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +127,13 @@ class ReservationRestControllerTest {
         final Map<String, String> params
                 = createReservationRequestJsonMap("헤일러", "2023-08-05", "1", "1");
 
+        final int sizeBeforeCreate = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().path("size()");
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
@@ -133,11 +141,16 @@ class ReservationRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        RestAssured.given().log().all()
+        final int sizeAfterCreate = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", is(1));
+                .extract()
+                .path("size()");
+
+        Assertions.assertThat(sizeAfterCreate)
+                .isEqualTo(sizeBeforeCreate + 1);
     }
 
     @Test
@@ -152,14 +165,12 @@ class ReservationRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value());
 
-        final Map<String, String> availableParams = new HashMap<>();
-        availableParams.put("date", "2023-08-05");
-        availableParams.put("themeId", "1");
+        final Map<String, String> availableTimesRequestParams = new HashMap<>();
 
         final List<AvailableReservationTimeResponse> availableReservationTimeResponses = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(availableParams)
-                .when().post("/reservations/available-times")
+                .queryParam("date", "2023-08-05")
+                .queryParam("themeId", "1")
+                .when().get("/reservations/available-times")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().jsonPath()
