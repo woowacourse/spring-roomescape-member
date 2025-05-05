@@ -43,14 +43,12 @@ public class Theme {
             return false;
         }
         final Theme theme = (Theme) o;
-        return Objects.equals(id, theme.id) && Objects.equals(name, theme.name)
-                && Objects.equals(description, theme.description) && Objects.equals(thumbnail,
-                theme.thumbnail);
+        return Objects.equals(id, theme.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, thumbnail);
+        return Objects.hashCode(id);
     }
 
     private void validate(Long id, String name, String description, String thumbnail) {

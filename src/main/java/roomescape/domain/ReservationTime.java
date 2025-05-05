@@ -30,17 +30,17 @@ public class ReservationTime {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ReservationTime that = (ReservationTime) o;
-        return Objects.equals(id, that.id) && Objects.equals(startAt, that.startAt);
+        final ReservationTime that = (ReservationTime) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startAt);
+        return Objects.hashCode(id);
     }
 
     private void validateNullId(Long id) {
