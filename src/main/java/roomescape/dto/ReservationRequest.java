@@ -1,10 +1,10 @@
-package roomescape.controller.dto;
+package roomescape.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.service.reservation.Reservation;
-import roomescape.service.reservation.ReservationTime;
-import roomescape.service.reservation.Theme;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 
 public record ReservationRequest(
         @NotNull(message = "이름을 입력해주세요.") String name,

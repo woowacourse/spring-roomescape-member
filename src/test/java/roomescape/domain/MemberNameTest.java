@@ -1,4 +1,4 @@
-package roomescape.service.reservation;
+package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -7,17 +7,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class ThemeNameTest {
+class MemberNameTest {
 
-    @DisplayName("테마 이름은 최소 1글자, 최대 20글자가 아니면 예외가 발생한다.")
+    @DisplayName("예약자명은 최소 1글자, 최대 5글자가 아니면 예외가 발생한다.")
     @ParameterizedTest
-    @ValueSource(strings = {" ", "   ", "123456789012345678901"})
+    @ValueSource(strings = {"aaaaaa", " ", "   "})
     @NullAndEmptySource
     void testValidateName(String name) {
         // when
         // then
-        assertThatThrownBy(() -> new ThemeName(name))
+        assertThatThrownBy(() -> new MemberName(name))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("테마 이름은 최소 1글자, 최대 20글자여야합니다.");
+                .hasMessage("예약자명은 최소 1글자, 최대 5글자여야합니다.");
     }
 }

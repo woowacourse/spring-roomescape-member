@@ -1,7 +1,7 @@
-package roomescape.controller.dto;
+package roomescape.dto;
 
 import jakarta.validation.constraints.NotNull;
-import roomescape.service.reservation.Theme;
+import roomescape.domain.Theme;
 
 public record ThemeRequest(
         @NotNull(message = "테마명을 입력해주세요.") String name,

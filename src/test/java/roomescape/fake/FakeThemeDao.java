@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import roomescape.repository.ThemeDao;
-import roomescape.service.reservation.Theme;
-import roomescape.service.reservation.ThemeName;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 
 public class FakeThemeDao implements ThemeDao {
 

@@ -2,8 +2,8 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import roomescape.service.reservation.ReservationAvailability;
-import roomescape.service.reservation.Theme;
+import roomescape.domain.ReservationAvailability;
+import roomescape.domain.Theme;
 
 public interface ReservationAvailabilityDao {
 

@@ -3,8 +3,8 @@ package roomescape.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import roomescape.service.reservation.Theme;
-import roomescape.service.reservation.ThemeName;
+import roomescape.domain.Theme;
+import roomescape.domain.ThemeName;
 
 public interface ThemeDao {
 

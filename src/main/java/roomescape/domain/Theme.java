@@ -1,4 +1,4 @@
-package roomescape.service.reservation;
+package roomescape.domain;
 
 public final class Theme {
 
