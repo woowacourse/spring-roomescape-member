@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,7 +91,7 @@ public class ReservationService {
 
         return allTimes.entrySet()
                 .stream()
-                .map(this::bookedReservationTimeResponseOf)
+                .map(entry -> bookedReservationTimeResponseOf(entry.getKey(), entry.getValue()))
                 .toList();
     }
 
@@ -109,9 +108,10 @@ public class ReservationService {
         return allTimes;
     }
 
-    private BookedReservationTimeResponse bookedReservationTimeResponseOf(final Entry<ReservationTime, Boolean> entry) {
-        return new BookedReservationTimeResponse(
-                ReservationTimeResponse.from(entry.getKey()), entry.getValue()
-        );
+    private BookedReservationTimeResponse bookedReservationTimeResponseOf(
+            final ReservationTime reservationTime,
+            final boolean isAlreadyBooked
+    ) {
+        return new BookedReservationTimeResponse(ReservationTimeResponse.from(reservationTime), isAlreadyBooked);
     }
 }
