@@ -2,9 +2,8 @@ package roomescape.auth.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import javax.crypto.SecretKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,15 +11,14 @@ import org.junit.jupiter.api.Test;
 class JwtTokenProviderTest {
     private JwtTokenProvider jwtTokenProvider;
 
+    private final String rawSecretKey = Base64.getEncoder().encodeToString(
+            "thisIsASecretKeyForHS256ThatIsAtLeast32ByteLong!".getBytes(StandardCharsets.UTF_8)
+    );
+
     @BeforeEach
     void setUp() {
-        jwtTokenProvider = new JwtTokenProvider();
-
-        SecretKey key = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256);
-        String encodedKey = Base64.getEncoder().encodeToString(key.getEncoded());
-
-        injectPrivateField(jwtTokenProvider, "secretKey", encodedKey);
-        injectPrivateField(jwtTokenProvider, "validityInMilliseconds", 60 * 60);
+        long validityInMilliseconds = 60 * 60;
+        jwtTokenProvider = new JwtTokenProvider(rawSecretKey, validityInMilliseconds);
     }
 
     @DisplayName("JWT를 생성하고 다시 파싱하면 payload가 동일하다")

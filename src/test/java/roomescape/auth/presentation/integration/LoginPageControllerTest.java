@@ -15,6 +15,8 @@ class LoginPageControllerTest {
     @DisplayName("/login 페이지 접속 시 200 OK")
     @Test
     void loginPage_viewReturn() {
+        RestAssured.port = this.port;
+
         RestAssured.given().log().all()
                 .redirects().follow(false)
                 .when().get("/login")
