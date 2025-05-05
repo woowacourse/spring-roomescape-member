@@ -10,25 +10,9 @@ public class Reservation {
     private final ReservationTime time;
     private final ReservationTheme theme;
 
-    private Reservation(final long id, final String name, final LocalDate date, final ReservationTime time,
-                        final ReservationTheme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation(final long id, final String name, final String date, final ReservationTime time,
-                       final ReservationTheme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = LocalDate.parse(date);
-        this.time = time;
-        this.theme = theme;
-    }
-
-    public Reservation(final String name, final LocalDate date, final ReservationTime time,
+    public Reservation(final String name,
+                       final LocalDate date,
+                       final ReservationTime time,
                        final ReservationTheme theme) {
         this.name = name;
         this.date = date;
@@ -36,8 +20,9 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation toEntity(long id) {
-        return new Reservation(id, name, date, time, theme);
+    public Reservation assignId(final Long id) {
+        this.id = id;
+        return this;
     }
 
     public boolean isDuplicateReservation(Reservation reservation) {

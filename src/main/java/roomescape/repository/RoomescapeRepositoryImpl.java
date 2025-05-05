@@ -1,5 +1,7 @@
 package roomescape.repository;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +65,8 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Number key = insert.executeAndReturnKey(param);
-        return reservation.toEntity(key.longValue());
+        reservation.assignId(key.longValue());
+        return reservation;
     }
 
     @Override
@@ -88,7 +91,6 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
                     rs.getLong("time_id"),
                     rs.getString("time_value")
             );
-
             ReservationTheme reservationTheme = new ReservationTheme(
                     rs.getLong("theme_id"),
                     rs.getString("theme_name"),
@@ -96,12 +98,11 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
                     rs.getString("theme_thumbnail")
             );
             return new Reservation(
-                    rs.getLong("reservation_id"),
                     rs.getString("name"),
-                    rs.getString("date"),
+                    rs.getDate("date").toLocalDate(),
                     reservationTime,
                     reservationTheme
-            );
+            ).assignId(rs.getLong("reservation_id"));
         };
     }
 
