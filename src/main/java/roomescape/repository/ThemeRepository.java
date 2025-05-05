@@ -11,4 +11,6 @@ public interface ThemeRepository {
     void deleteTheme(Long id);
 
     Theme findById(Long id);
+
+    List<Theme> findAllByIdIn(List<Long> ids);
 }

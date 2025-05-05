@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -42,12 +43,8 @@ public class ThemeService {
     }
 
     public List<Theme> getWeeklyBestThemes() {
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
         List<Long> bestThemesIds = reservedThemeChecker.getBestThemesIdInDays(now.minusDays(8), now.minusDays(1));
-        List<Theme> bestThemes = new ArrayList<>();
-        for (Long themeId : bestThemesIds) {
-            bestThemes.add(themeRepository.findById(themeId));
-        }
-        return bestThemes;
+        return themeRepository.findAllByIdIn(bestThemesIds);
     }
 }

@@ -1,8 +1,10 @@
 package roomescape.repository;
 
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -57,6 +59,15 @@ public class JdbcThemeRepository implements ThemeRepository {
     public Theme findById(Long id) {
         String sql = "select * from theme where id = ?";
         return jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+    }
+
+    public List<Theme> findAllByIdIn(List<Long> ids) {
+        String placeholders = ids.stream()
+                .map(id -> "?")
+                .collect(Collectors.joining(", "));
+
+        String sql = "SELECT * FROM theme WHERE id IN (" + placeholders + ")";
+        return jdbcTemplate.query(sql, themeRowMapper, ids.toArray());
     }
 
 }
