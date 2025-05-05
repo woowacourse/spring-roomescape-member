@@ -12,7 +12,7 @@ public interface ThemeRepository {
 
     List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate);
 
-    Theme save(Theme Theme);
+    Theme save(Theme theme);
 
     void deleteById(Long id);
 

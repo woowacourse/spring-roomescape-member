@@ -28,7 +28,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> readAllReservationTimes() {
+    public ResponseEntity<List<ThemeResponse>> readAllThemes() {
         List<ThemeResponse> responses = themeService.getAll();
 
         return ResponseEntity.ok(responses);
