@@ -1,0 +1,37 @@
+package roomescape.member;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class FakeMemberRepository implements MemberRepository {
+
+    private final List<Member> members = new ArrayList<>();
+    private final List<String> invokeSaveMemberEmail = new ArrayList<>();
+    private Long nextId = 1L;
+
+    @Override
+    public void saveMember(final Member member) {
+        final Member saveMember = new Member(nextId++, member.getEmail(), member.getPassword(), member.getName());
+        members.add(saveMember);
+        invokeSaveMemberEmail.add(member.getEmail());
+    }
+
+    @Override
+    public Boolean existsByEmail(final String email) {
+        return members.stream()
+                .anyMatch(member -> Objects.equals(member.getEmail(), email));
+    }
+
+    public void clear() {
+        members.clear();
+        invokeSaveMemberEmail.clear();
+        nextId = 1L;
+    }
+
+    public boolean isInvokeSaveMemberEmail(final String invokeEmail) {
+        return invokeSaveMemberEmail.stream()
+                .anyMatch(email -> Objects.equals(email, invokeEmail));
+    }
+}
