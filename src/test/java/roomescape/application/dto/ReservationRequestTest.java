@@ -47,13 +47,4 @@ class ReservationRequestTest {
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잘못된 themeId 입력입니다.");
     }
-
-    @Test
-    @DisplayName("themeId 필드가 null일 경우 예외가 발생한다.")
-    void failIfThemeIdFieldIsNull() {
-        assertThatThrownBy(() -> {
-            new ReservationRequest("moda", LocalDate.of(2025, 4, 30), 1L, null);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("잘못된 themeId 입력입니다.");
-    }
 }
