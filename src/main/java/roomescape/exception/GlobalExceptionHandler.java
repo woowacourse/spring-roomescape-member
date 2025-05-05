@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.exception;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,9 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.DuplicateContentException;
-import roomescape.exception.InvalidRequestException;
-import roomescape.exception.NotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
