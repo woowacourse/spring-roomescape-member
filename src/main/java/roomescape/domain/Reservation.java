@@ -1,5 +1,6 @@
 package roomescape.domain;
 
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,6 +11,7 @@ public class Reservation {
 
     @EqualsAndHashCode.Include
     private Long id;
+    @Size(max = 5, message = "이름은 다섯글자 이내로 입력해 주세요.")
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
