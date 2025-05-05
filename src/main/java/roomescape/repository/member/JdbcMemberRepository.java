@@ -37,7 +37,7 @@ public class JdbcMemberRepository implements MemberRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, member.getEmail());
+            ps.setString(1, member.getUsername());
             ps.setString(2, member.getPassword());
             ps.setString(3, member.getName());
             ps.setString(4, member.getRole().name());
@@ -64,7 +64,7 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmailAndPassword(String username, String password) {
+    public Optional<Member> findByUsernameAndPassword(String username, String password) {
         try {
             String sql = "select id,username,password,name,role from member where username=? and password=?";
             return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper, username, password));
@@ -74,7 +74,7 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existByEmail(String username) {
+    public boolean existByUsername(String username) {
         String sql = "select exists (select 1 from member where username = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, username);
     }

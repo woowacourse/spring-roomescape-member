@@ -9,9 +9,9 @@ public interface MemberRepository {
 
     Optional<Member> findById(long id);
 
-    Optional<Member> findByEmailAndPassword(String email, String password);
+    Optional<Member> findByUsernameAndPassword(String username, String password);
 
-    boolean existByEmail(String email);
-
-    boolean existsByUsernameAndPassword(String email, String password);
+    boolean existByUsername(String username);
+    
+    boolean existsByUsernameAndPassword(String username, String password);
 }

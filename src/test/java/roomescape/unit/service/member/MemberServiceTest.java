@@ -49,7 +49,7 @@ class MemberServiceTest {
         long id = memberService.signup(signupRequestDto);
         Member memberById = memberService.getMemberById(id);
 
-        assertThat(memberById.getEmail().equals(signupRequestDto.email()));
+        assertThat(memberById.getUsername().equals(signupRequestDto.email()));
     }
 
     @Test
@@ -61,7 +61,7 @@ class MemberServiceTest {
         String token = jwtTokenProvider.createToken(memberById);
 
         Member memberByToken = memberService.getMemberByToken(token);
-        assertThat(memberByToken.getEmail()).isEqualTo(memberById.getEmail());
+        assertThat(memberByToken.getUsername()).isEqualTo(memberById.getUsername());
     }
 
     @Test

@@ -25,21 +25,22 @@ public class MemberService {
     public String login(LoginRequestDto loginRequestDto) {
         Member requestMember = loginRequestDto.toEntity();
 
-        if (!memberRepository.existsByUsernameAndPassword(requestMember.getEmail(), requestMember.getPassword())) {
+        if (!memberRepository.existsByUsernameAndPassword(requestMember.getUsername(), requestMember.getPassword())) {
             throw new InvalidMemberException("존재하지 않는 유저입니다");
         }
 
-        Member member = memberRepository.findByEmailAndPassword(requestMember.getEmail(), requestMember.getPassword())
+        Member member = memberRepository.findByUsernameAndPassword(requestMember.getUsername(),
+                        requestMember.getPassword())
                 .orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다"));
         return jwtTokenProvider.createToken(member);
     }
 
     public long signup(SignupRequestDto signupRequestDto) {
-        boolean isDuplicateUserExist = memberRepository.existByEmail(signupRequestDto.email());
+        boolean isDuplicateUserExist = memberRepository.existByUsername(signupRequestDto.email());
         if (isDuplicateUserExist) {
             throw new InvalidMemberException("이미 존재하는 유저입니다.");
         }
-        
+
         Member member = signupRequestDto.toEntity();
         return memberRepository.add(member);
     }

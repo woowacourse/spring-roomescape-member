@@ -34,14 +34,14 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
+    public Optional<Member> findByUsernameAndPassword(String email, String password) {
         return members.stream()
                 .filter(((member) -> member.isSamePassword(password) && member.isSameUsername(email)))
                 .findAny();
     }
 
     @Override
-    public boolean existByEmail(String email) {
+    public boolean existByUsername(String email) {
         return members.stream()
                 .anyMatch(((member) -> member.isSameUsername(email)));
     }

@@ -4,21 +4,21 @@ package roomescape.domain.member;
 public class Member {
 
     private final Long id;
-    private final String email;
+    private final String username;
     private final String password;
     private final Role role;
     private final String name;
 
-    public Member(Long id, String email, String password, String name, Role role) {
+    public Member(Long id, String username, String password, String name, Role role) {
         this.id = id;
-        this.email = email;
+        this.username = username;
         this.password = password;
         this.role = role;
         this.name = name;
     }
 
     public static Member of(long id, Member member) {
-        return new Member(id, member.email, member.password, member.name, member.role);
+        return new Member(id, member.username, member.password, member.name, member.role);
     }
 
     public boolean isSamePassword(String password) {
@@ -26,11 +26,11 @@ public class Member {
     }
 
     public boolean isSameUsername(String username) {
-        return this.email.equals(username);
+        return this.username.equals(username);
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     public Long getId() {
