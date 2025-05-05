@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationTimeRequest;
 import roomescape.reservation.controller.dto.ReservationTimeResponse;
 import roomescape.fake.FakeReservationDao;
@@ -26,9 +26,9 @@ class ReservationTimeServiceTest {
     ReservationDao reservationDao = new FakeReservationDao();
     ReservationTimeService reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao);
 
-    @DisplayName("이미 존재하는 시간을 저장할 경우 예외가 발생한다.")
+    @DisplayName("이미 존재하는 시간을 저장할 경우 예외가 발생한다")
     @Test
-    void testValidateDuplication() {
+    void should_ThrowException_WhenCreateDuplicateTime() {
         // given
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(11, 0));
         reservationTimeService.createReservationTime(request);
@@ -39,9 +39,9 @@ class ReservationTimeServiceTest {
                 .hasMessage("이미 존재하는 시간입니다.");
     }
 
-    @DisplayName("예약 시간을 저장할 수 있다.")
+    @DisplayName("예약 시간을 저장할 수 있다")
     @Test
-    void testCreate() {
+    void create() {
         // given
         LocalTime time = LocalTime.of(11, 0);
         ReservationTimeRequest request = new ReservationTimeRequest(time);
@@ -57,9 +57,9 @@ class ReservationTimeServiceTest {
         );
     }
 
-    @DisplayName("예약 시간 목록을 조회할 수 있다.")
+    @DisplayName("예약 시간 목록을 조회할 수 있다")
     @Test
-    void testFindAll() {
+    void findAll() {
         // given
         ReservationTimeRequest request1 = new ReservationTimeRequest(LocalTime.of(11, 0));
         ReservationTimeRequest request2 = new ReservationTimeRequest(LocalTime.of(12, 0));
@@ -71,7 +71,7 @@ class ReservationTimeServiceTest {
         assertThat(result).hasSize(2);
     }
 
-    @DisplayName("예약 시간을 삭제할 수 있다.")
+    @DisplayName("예약 시간을 삭제할 수 있다")
     @Test
     void testDelete() {
         // given
@@ -83,9 +83,9 @@ class ReservationTimeServiceTest {
         assertThat(reservationTimeDao.isNotExistsById(1L)).isTrue();
     }
 
-    @DisplayName("예약이 존재하는 시간은 삭제할 경우 예외가 발생한다.")
+    @DisplayName("예약이 존재하는 시간은 삭제할 경우 예외가 발생한다")
     @Test
-    void testIllegalDelete() {
+    void should_ThrowException_WhenDeleteTimeWithinReservation() {
         // given
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(11, 0));
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
@@ -99,13 +99,24 @@ class ReservationTimeServiceTest {
                 .hasMessage("예약이 존재하는 시간은 삭제할 수 없습니다.");
     }
 
-    //TODO
-    @Disabled
     @DisplayName("예약 가능 시간을 조회할 수 있다.")
     @Test
-    void test() {
+    void findAvailableTimes() {
         // given
+        ReservationTime savedTime1 = reservationTimeDao.save(new ReservationTime(LocalTime.of(10, 0)));
+        ReservationTime savedTime2 = reservationTimeDao.save(new ReservationTime(LocalTime.of(15, 0)));
+        Theme theme = new Theme(1L, "우테코 탈출", "우테코 방탈출", "wwwwww");
+        LocalDate date = LocalDate.of(2025, 5, 1);
+        reservationDao.save(new Reservation(1L, "leo", date, savedTime1, theme));
         // when
+        List<AvailableTimeResponse> result = reservationTimeService.findAvailableTimes(date, theme.getId());
         // then
+        assertAll(
+                () -> assertThat(result).hasSize(2),
+                () -> assertThat(result).contains(
+                        new AvailableTimeResponse(savedTime1.getId(), savedTime1.getStartAt(), true),
+                        new AvailableTimeResponse(savedTime2.getId(), savedTime2.getStartAt(), false)
+                )
+        );
     }
 }

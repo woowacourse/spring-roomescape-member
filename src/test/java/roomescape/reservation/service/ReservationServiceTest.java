@@ -31,6 +31,10 @@ class ReservationServiceTest {
             currentDateTime);
     LocalDate tomorrow = currentDateTime.getDate().plusDays(1);
 
+    /**
+     * TODO
+     * 테마 중복까지 고려해서 테스트 리팩터링
+     */
     @DisplayName("중복 예약일 경우 예외가 발생한다.")
     @Test
     void testValidateDuplication() {

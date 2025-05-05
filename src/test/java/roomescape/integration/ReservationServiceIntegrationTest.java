@@ -67,6 +67,11 @@ public class ReservationServiceIntegrationTest {
         );
     }
 
+    /**
+     * TODO
+     * 이미 존재하는 날짜 시간 테마
+     */
+
     @DisplayName("현재 혹은 과거 시간에 새로운 예약을 추가할 경우 예외가 발생한다")
     @Test
     void should_ThrowException_WhenNotFuture() {
