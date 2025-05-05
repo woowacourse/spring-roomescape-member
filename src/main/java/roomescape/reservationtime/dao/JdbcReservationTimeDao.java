@@ -77,11 +77,4 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             return Optional.empty();
         }
     }
-//
-//    @Override
-//    public List<ReservationTime> findTimesByThemeId(LocalDate date, Long themeId) {
-//        String sql = """
-//
-//                """
-//    }
 }

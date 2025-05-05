@@ -1,11 +1,7 @@
 package roomescape.theme.service;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ExistedThemeException;
 import roomescape.reservation.dao.ReservationDao;
@@ -54,18 +50,15 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getTop10Themes() {
-        LocalDate startDate = LocalDate.now().minusDays(8);
-        Map<Theme, Long> themeCounts = reservationDao.findAll().stream()
-                .filter(reservation -> reservation.getDate().isBefore(LocalDate.now()))
-                .filter(reservation -> reservation.getDate().isAfter(startDate))
-                .collect(Collectors.groupingBy(reservation -> reservation.getTheme(), Collectors.counting()));
+        List<Theme> top10Themes = reservationDao.findTop10Themes();
 
-        return themeCounts.keySet().stream().sorted(new Comparator<Theme>() {
-                    @Override
-                    public int compare(Theme o1, Theme o2) {
-                        return (int) (themeCounts.get(o1) - themeCounts.get(o2));
-                    }
-                }).map(theme -> new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(), theme.getThumbnail()))
+        return top10Themes.stream()
+                .map(theme -> new ThemeResponse(
+                        theme.getId(),
+                        theme.getName(),
+                        theme.getDescription(),
+                        theme.getThumbnail()
+                ))
                 .toList();
     }
 }

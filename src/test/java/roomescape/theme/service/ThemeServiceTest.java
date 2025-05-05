@@ -76,10 +76,8 @@ public class ThemeServiceTest {
                 new ReservationTime(1L, LocalTime.of(9, 0)), theme1);
         Reservation reservation2 = Reservation.of(2L, "짱구", LocalDate.now().minusDays(3),
                 new ReservationTime(1L, LocalTime.of(9, 0)), theme2);
-        Reservation reservation3 = Reservation.of(3L, "포비", LocalDate.of(2025, 4, 1),
+        Reservation reservation3 = Reservation.of(3L, "포비", LocalDate.now().minusDays(5),
                 new ReservationTime(1L, LocalTime.of(9, 0)), theme1);
-        Reservation reservation4 = Reservation.of(4L, "리사", LocalDate.now().minusDays(4),
-                new ReservationTime(1L, LocalTime.of(9, 0)), theme2);
         reservationDao.create(reservation1);
         reservationDao.create(reservation2);
         reservationDao.create(reservation3);

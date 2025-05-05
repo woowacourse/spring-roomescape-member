@@ -183,7 +183,10 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Optional<Reservation> findByDateTime(LocalDate date, LocalTime time) {
         String sql = """
-                SELECT * FROM reservation as r 
+                SELECT r.id as reservation_id, r.name, r.date,
+                      rt.id as time_id, rt.start_at,
+                      t.id as theme_id, t.name as theme_name, t.description as theme_des, t.thumbnail as theme_thumb
+                FROM reservation as r 
                 INNER JOIN reservation_time as rt ON rt.id = r.time_id 
                 INNER JOIN theme as t ON r.theme_id = t.id
                 WHERE r.date = ? and rt.start_at = ?""";
@@ -199,10 +202,10 @@ public class JdbcReservationDao implements ReservationDao {
                         );
 
                         return Reservation.of(
-                                rs.getLong("id"),
+                                rs.getLong("reservation_id"),
                                 rs.getString("name"),
                                 rs.getDate("date").toLocalDate(),
-                                new ReservationTime(rs.getLong("id"), rs.getTime("start_at").toLocalTime()),
+                                new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()),
                                 theme
                         );
                     },
@@ -237,5 +240,28 @@ public class JdbcReservationDao implements ReservationDao {
                 date,
                 themeId
         );
+    }
+
+    @Override
+    public List<Theme> findTop10Themes() {
+        String sql = """
+                SELECT t.*, COUNT(r.theme_id) as reservation_count
+                FROM theme AS t
+                JOIN reservation AS r ON r.theme_id = t.id
+                WHERE r.date > CURRENT_DATE - INTERVAL '8' DAY AND r.date < CURRENT_DATE
+                GROUP BY t.id, t.name, t.description, t.thumbnail
+                ORDER BY COUNT(r.theme_id) DESC;
+                """;
+
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) ->
+                        new Theme(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("description"),
+                                rs.getString("thumbnail")
+                        )
+        );
+
     }
 }

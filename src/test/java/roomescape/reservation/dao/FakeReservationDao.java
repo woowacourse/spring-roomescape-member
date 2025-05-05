@@ -4,11 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import roomescape.reservation.Reservation;
 import roomescape.reservationtime.ReservationTime;
+import roomescape.theme.Theme;
 
 public class FakeReservationDao implements ReservationDao {
 
@@ -74,6 +78,23 @@ public class FakeReservationDao implements ReservationDao {
 
         return allTimes.stream()
                 .filter(t -> !nonAvailableReservations.contains(t))
+                .toList();
+    }
+
+    @Override
+    public List<Theme> findTop10Themes() {
+        LocalDate startDate = LocalDate.now().minusDays(8);
+        Map<Theme, Long> themeCounts = fakeReservations.stream()
+                .filter(reservation -> reservation.getDate().isBefore(LocalDate.now()))
+                .filter(reservation -> reservation.getDate().isAfter(startDate))
+                .collect(Collectors.groupingBy(reservation -> reservation.getTheme(), Collectors.counting()));
+
+        return themeCounts.keySet().stream().sorted(new Comparator<Theme>() {
+                    @Override
+                    public int compare(Theme o1, Theme o2) {
+                        return (int) (themeCounts.get(o1) - themeCounts.get(o2));
+                    }
+                })
                 .toList();
     }
 }
