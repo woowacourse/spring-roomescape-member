@@ -37,8 +37,8 @@ public class ReservationTimeController {
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @RequestBody final ReservationTimeRequest request) {
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
-        return ResponseEntity.created(URI.create(RESERVATION_TIME_BASE_URL + SLASH + response.id()
-        )).body(response);
+        URI locationUri = URI.create(RESERVATION_TIME_BASE_URL + SLASH + response.id());
+        return ResponseEntity.created(locationUri).body(response);
     }
 
     @GetMapping

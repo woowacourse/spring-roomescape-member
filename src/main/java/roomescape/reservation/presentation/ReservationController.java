@@ -40,7 +40,8 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody final ReservationRequest request) {
         ReservationResponse response = reservationService.createReservation(request);
-        return ResponseEntity.created(URI.create(RESERVATION_BASE_URL+SLASH+response.id())).body(response);
+        URI locationUri = URI.create(RESERVATION_BASE_URL + SLASH + response.id());
+        return ResponseEntity.created(locationUri).body(response);
     }
 
     @DeleteMapping("/{id}")
