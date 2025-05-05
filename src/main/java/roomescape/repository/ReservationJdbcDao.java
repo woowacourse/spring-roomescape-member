@@ -48,8 +48,14 @@ public class ReservationJdbcDao implements ReservationRepository {
         namedJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
         Long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        return Reservation.builder()
+                .id(id)
+                .name(reservation.getName())
+                .date(reservation.getDate())
+                .time(reservation.getTime())
+                .theme(reservation.getTheme())
+                .build();
+
     }
 
     @Override
@@ -92,20 +98,20 @@ public class ReservationJdbcDao implements ReservationRepository {
     }
 
     private RowMapper<Reservation> getReservationRowMapper() {
-        return (resultSet, rowNum) -> new Reservation(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date").toLocalDate(),
-                new ReservationTime(
+        return (resultSet, rowNum) -> Reservation.builder()
+                .id(resultSet.getLong("reservation_id"))
+                .name(resultSet.getString("name"))
+                .date(resultSet.getDate("date").toLocalDate())
+                .time(new ReservationTime(
                         resultSet.getLong("time_id"),
                         resultSet.getTime("start_at").toLocalTime()
-                ),
-                new Theme(
+                ))
+                .theme(new Theme(
                         resultSet.getLong("theme_id"),
                         resultSet.getString("theme_name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
-                )
-        );
+                ))
+                .build();
     }
 }

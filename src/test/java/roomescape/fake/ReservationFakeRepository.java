@@ -32,12 +32,13 @@ public class ReservationFakeRepository implements ReservationRepository {
         themes.put(1L, defaultTheme);
 
         long reservationId = idGenerator.getAndIncrement();
-        Reservation defaultReservation = new Reservation(
-                reservationId,
-                "브라운",
-                LocalDate.MAX,
-                defaultTime,
-                defaultTheme);
+        Reservation defaultReservation = Reservation.builder()
+                .id(reservationId)
+                .name("브라운")
+                .date(LocalDate.MAX)
+                .time(defaultTime)
+                .theme(defaultTheme)
+                .build();
         reservations.put(reservationId, defaultReservation);
     }
 
@@ -63,13 +64,14 @@ public class ReservationFakeRepository implements ReservationRepository {
 
         long newId = idGenerator.getAndIncrement();
 
-        Reservation savedReservation = new Reservation(
-                newId,
-                reservation.getName(),
-                reservation.getDate(),
-                time,
-                theme);
-
+        Reservation savedReservation = Reservation.builder()
+                .id(newId)
+                .name(reservation.getName())
+                .date(reservation.getDate())
+                .time(time)
+                .theme(theme)
+                .build();
+        
         reservations.put(newId, savedReservation);
 
         return savedReservation;

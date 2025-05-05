@@ -14,14 +14,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 class ReservationTest {
 
     @DisplayName("유효한 값을 입력할 경우, 성공적으로 ReservationTime을 생성한다.")
-    void generateReservation() {
+    void buildReservation() {
         // given
         String name = "테스트";
         Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
         LocalDate date = LocalDate.now();
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
         // when & then
-        assertThatCode(() -> new Reservation(1L, name, date, time, theme)).doesNotThrowAnyException();
+        assertThatCode(() -> Reservation.builder()
+                .id(1L)
+                .name(name)
+                .date(date)
+                .time(time)
+                .theme(theme)
+                .build()).doesNotThrowAnyException();
     }
 
     @ParameterizedTest
@@ -35,7 +41,13 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> Reservation.builder()
+                .id(1L)
+                .name(name)
+                .date(date)
+                .time(time)
+                .theme(theme)
+                .build())
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약자명입니다.");
     }
@@ -50,7 +62,13 @@ class ReservationTest {
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> Reservation.builder()
+                .id(1L)
+                .name(name)
+                .date(date)
+                .time(time)
+                .theme(theme)
+                .build())
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 예약자명의 길이가 10자를 초과할 수 없습니다.");
     }
@@ -64,7 +82,13 @@ class ReservationTest {
         String name = "브라운";
         ReservationTime time = new ReservationTime(1L, LocalTime.of(15, 0));
         //when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> Reservation.builder()
+                .id(1L)
+                .name(name)
+                .date(date)
+                .time(time)
+                .theme(theme)
+                .build())
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약 날짜입니다.");
     }
@@ -78,8 +102,29 @@ class ReservationTest {
         String name = "브라운";
         LocalDate date = LocalDate.now();
         //when & then
-        assertThatThrownBy(() -> new Reservation(1L, name, date, time, theme))
+        assertThatThrownBy(() -> Reservation.builder()
+                .id(1L)
+                .name(name)
+                .date(date)
+                .time(time)
+                .theme(theme)
+                .build())
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 유효하지 않은 예약 시간입니다.");
     }
+
+    @Test
+    @DisplayName("DateTime 값이 과거일 경우, 예외가 발생한다.")
+    void createIfDateTimeValid() {
+        //given
+        LocalDate date = LocalDate.MIN;
+        String name = "브라운";
+        ReservationTime time = new ReservationTime(1L, LocalTime.MIN);
+        Theme theme = new Theme(1L, "테스트", "테스트", "테스트");
+        //when & then
+        assertThatThrownBy(() -> Reservation.createIfDateTimeValid(name, date, time, theme))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[ERROR] 예약이 불가능한 시간입니다: ");
+    }
+
 }
