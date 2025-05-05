@@ -4,6 +4,7 @@ package roomescape.member;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 public class FakeMemberRepository implements MemberRepository {
 
@@ -16,6 +17,14 @@ public class FakeMemberRepository implements MemberRepository {
         final Member saveMember = new Member(nextId++, member.getEmail(), member.getPassword(), member.getName());
         members.add(saveMember);
         invokeSaveMemberEmail.add(member.getEmail());
+    }
+
+    @Override
+    public Member findByEmail(final String email) {
+        return members.stream()
+                .filter(member -> Objects.equals(member.getEmail(), email))
+                .findAny()
+                .orElseThrow(() -> new EmptyResultDataAccessException(1));
     }
 
     @Override
