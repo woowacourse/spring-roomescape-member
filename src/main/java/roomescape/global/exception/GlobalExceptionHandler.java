@@ -1,6 +1,7 @@
 package roomescape.global.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+//TODO : 구체적인 예외 추상화 시켜 핸들링하기
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -77,5 +79,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ExceptionResponse handleResourceNotFoundException(ResourceNotFoundException e) {
         return new ExceptionResponse(NOT_FOUND.value(), e.getMessage(), LocalDateTime.now());
+    }
+
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(ResourceInUseException.class)
+    public ExceptionResponse handleResourceInUseException(ResourceInUseException e) {
+        return new ExceptionResponse(CONFLICT.value(), e.getMessage(), LocalDateTime.now());
     }
 }

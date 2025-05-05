@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.entity.ReservationTime;
+import roomescape.global.exception.ResourceInUseException;
 
 @Repository
 @RequiredArgsConstructor
@@ -65,7 +66,6 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         }
     }
 
-    // TODO: FK 제약 위배에 대한 예외처리 필요
     @Override
     public void deleteById(Long id) {
         String deleteQuery = "DELETE FROM reservation_time WHERE id = ?";
@@ -73,7 +73,7 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         try {
             jdbcTemplate.update(deleteQuery, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("삭제하려는 시간을 사용중인 예약이 있습니다.");
+            throw new ResourceInUseException("삭제하려는 시간을 가진 예약이 존재합니다.", e);
         }
     }
 

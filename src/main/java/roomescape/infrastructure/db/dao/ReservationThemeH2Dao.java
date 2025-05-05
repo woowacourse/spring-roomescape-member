@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.entity.ReservationTheme;
+import roomescape.global.exception.ResourceInUseException;
 
 @Repository
 @RequiredArgsConstructor
@@ -76,8 +77,7 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
         try {
             jdbcTemplate.update(deleteQuery, id);
         } catch (DataIntegrityViolationException e) {
-            // TODO: 커스텀 익셉션을 만들어서 서비스에서 DBFKException 캐치하도록 수정
-            throw new IllegalArgumentException("삭제하려는 테마에 예약이 존재합니다.");
+            throw new ResourceInUseException("삭제하려는 테마를 가진 예약이 존재합니다.", e);
         }
     }
 

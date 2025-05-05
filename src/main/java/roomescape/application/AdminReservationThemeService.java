@@ -19,7 +19,6 @@ public class AdminReservationThemeService {
     }
 
     public void delete(Long id) {
-        // TODO: noContent vs IllegalArgumentException
         ReservationTheme reservationTheme = reservationThemeRepository.getById(id);
         reservationThemeRepository.remove(reservationTheme);
     }
