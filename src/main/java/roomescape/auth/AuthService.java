@@ -3,8 +3,10 @@ package roomescape.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.auth.dto.LoginRequest;
+import roomescape.auth.dto.LoginResponse;
 import roomescape.exception.custom.reason.auth.AuthNotExistsEmailException;
 import roomescape.exception.custom.reason.auth.AuthNotValidPasswordException;
+import roomescape.exception.custom.reason.auth.AuthNotValidTokenException;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 
@@ -24,7 +26,7 @@ public class AuthService {
     }
 
     public String generateToken(final LoginRequest loginRequest) {
-        validateExistsMemberByEmail(loginRequest);
+        validateExistsMemberByEmail(loginRequest.email());
 
         final Member memberByEmail = memberRepository.findByEmail(loginRequest.email());
         validatePassword(loginRequest, memberByEmail);
@@ -32,13 +34,29 @@ public class AuthService {
         return jwtProvider.provideToken(loginRequest.email());
     }
 
-    private void validateExistsMemberByEmail(final LoginRequest loginRequest) {
-        if (!memberRepository.existsByEmail(loginRequest.email())) {
+    public LoginResponse checkMemberInfoByToken(final String token){
+        validateToken(token);
+        final String email = jwtProvider.extractPayload(token);
+
+        validateExistsMemberByEmail(email);
+        final Member memberByEmail = memberRepository.findByEmail(email);
+
+        return new LoginResponse(memberByEmail.getName());
+    }
+
+    private void validateToken(final String token) {
+        if(!jwtProvider.isValidToken(token)){
+            throw new AuthNotValidTokenException();
+        }
+    }
+
+    private void validateExistsMemberByEmail(final String email) {
+        if (!memberRepository.existsByEmail(email)) {
             throw new AuthNotExistsEmailException();
         }
     }
 
-    private static void validatePassword(final LoginRequest loginRequest, final Member memberByEmail) {
+    private void validatePassword(final LoginRequest loginRequest, final Member memberByEmail) {
         if (!memberByEmail.matchesPassword(loginRequest.password())) {
             throw new AuthNotValidPasswordException();
         }
