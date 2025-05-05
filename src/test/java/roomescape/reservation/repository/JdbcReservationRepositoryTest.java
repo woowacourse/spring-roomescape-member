@@ -34,8 +34,8 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (?, ?)", 1, "10:00");
         jdbcTemplate.update("INSERT INTO theme(id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1, "hello", "hi", "thumbnail");
 
-        ReservationTimeEntity time = new ReservationTimeEntity(1L, LocalTime.of(10, 0));
-        ReservationEntity reservation = new ReservationEntity(1L, "test", LocalDate.of(2025, 1, 2), time, 1L);
+        ReservationTimeEntity time = ReservationTimeEntity.of(1L, LocalTime.of(10, 0));
+        ReservationEntity reservation = ReservationEntity.of(1L, "test", LocalDate.of(2025, 1, 2), time, 1L);
 
         // when
         reservationRepository.save(reservation);

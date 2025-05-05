@@ -67,8 +67,8 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         LocalDate date = now.plusDays(1);
 
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, LocalTime.of(12, 0));
-        ReservationEntity reservationEntity = new ReservationEntity(1L, "test", date, timeEntity, 1L);
+        ReservationTimeEntity timeEntity = ReservationTimeEntity.of(1L, LocalTime.of(12, 0));
+        ReservationEntity reservationEntity = ReservationEntity.of(1L, "test", date, timeEntity, 1L);
         timeRepository.save(timeEntity);
         reservationRepository.save(reservationEntity);
 

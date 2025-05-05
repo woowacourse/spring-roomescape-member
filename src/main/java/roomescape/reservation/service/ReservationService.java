@@ -1,19 +1,17 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.entity.ThemeEntity;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.reservation.service.dto.request.ReservationRequest;
-import roomescape.reservation.service.dto.response.ReservationResponse;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
-import roomescape.exception.BadRequestException;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
+import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.reservation.service.dto.request.ReservationRequest;
+import roomescape.reservation.service.dto.response.ReservationResponse;
+import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.repository.ReservationTimeRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -53,18 +51,10 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", request.themeId())));
 
         ReservationEntity newReservation = request.toEntity(timeEntity);
-        validateDateTime(newReservation);
         validateDuplicated(newReservation);
 
         ReservationEntity saved = reservationRepository.save(newReservation);
         return ReservationResponse.from(saved, themeEntity);
-    }
-
-    private void validateDateTime(ReservationEntity reservation) {
-        LocalDateTime now = LocalDateTime.now();
-        if (reservation.isBefore(now)) {
-            throw new BadRequestException("과거 날짜/시간의 예약은 생성할 수 없습니다.");
-        }
     }
 
     private void validateDuplicated(ReservationEntity newReservation) {

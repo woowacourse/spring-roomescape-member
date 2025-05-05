@@ -24,9 +24,9 @@ public class JdbcReservationRepository implements ReservationRepository {
         LocalDate date = resultSet.getObject("date", LocalDate.class);
         final long timeId = resultSet.getLong("time_id");
         LocalTime timeValue = resultSet.getObject("start_at", LocalTime.class);
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(timeId, timeValue);
+        ReservationTimeEntity timeEntity = ReservationTimeEntity.of(timeId, timeValue);
         final long themeId = resultSet.getLong("theme_id");
-        return new ReservationEntity(
+        return ReservationEntity.of(
                 id,
                 name,
                 date,
@@ -50,7 +50,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return new ReservationEntity(
+        return ReservationEntity.of(
                 id,
                 newReservation.getName(),
                 newReservation.getDate(),

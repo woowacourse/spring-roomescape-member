@@ -10,6 +10,6 @@ public record ReservationTimeRequest(
         LocalTime startAt
 ) {
     public ReservationTimeEntity toEntity() {
-        return new ReservationTimeEntity(0L, startAt);
+        return ReservationTimeEntity.create(startAt);
     }
 }

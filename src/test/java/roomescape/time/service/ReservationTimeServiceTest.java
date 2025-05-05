@@ -70,10 +70,10 @@ class ReservationTimeServiceTest {
     void deleteExistReservationTime() {
         // given
         LocalTime time = LocalTime.of(12, 0);
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(1L, time);
+        ReservationTimeEntity timeEntity = ReservationTimeEntity.of(1L, time);
         timeRepository.save(timeEntity);
         LocalDate date = LocalDate.of(2025, 1, 2);
-        reservationRepository.save(new ReservationEntity(1L, "test1", date, timeEntity, 1L));
+        reservationRepository.save(ReservationEntity.of(1L, "test1", date, timeEntity, 1L));
 
         // when & then
         assertThatThrownBy(() -> {

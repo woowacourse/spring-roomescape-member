@@ -18,6 +18,6 @@ public record ReservationRequest(
         Long themeId
 ) {
     public ReservationEntity toEntity(ReservationTimeEntity timeEntity) {
-        return new ReservationEntity(0L, name, date, timeEntity, themeId);
+        return ReservationEntity.create(name, date, timeEntity, themeId);
     }
 }

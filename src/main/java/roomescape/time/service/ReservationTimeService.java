@@ -30,16 +30,9 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(ReservationTimeRequest requestDto) {
         ReservationTimeEntity entity = requestDto.toEntity();
-        validateOperatingTime(entity);
         validateDuplicated(entity);
         ReservationTimeEntity saved = timeRepository.save(entity);
         return ReservationTimeResponse.from(saved);
-    }
-
-    private void validateOperatingTime(ReservationTimeEntity entity) {
-        if (!entity.isAvailable()) {
-            throw new BadRequestException("운영 시간 이외의 날짜는 예약할 수 없습니다.");
-        }
     }
 
     private void validateDuplicated(ReservationTimeEntity entity) {

@@ -31,7 +31,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void createTest() {
         // given
-        ReservationTimeEntity time = new ReservationTimeEntity(1L, LocalTime.of(10, 0));
+        ReservationTimeEntity time = ReservationTimeEntity.of(1L, LocalTime.of(10, 0));
 
         // when
         timeRepository.save(time);

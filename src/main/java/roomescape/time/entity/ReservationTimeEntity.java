@@ -11,16 +11,27 @@ public class ReservationTimeEntity {
     private final Long id;
     private LocalTime startAt;
 
-    public ReservationTimeEntity(Long id, LocalTime startAt) {
-        if (id == null || startAt == null) {
-            throw new BadRequestException("필요한 시간 정보가 모두 입력되지 않았습니다.");
-        }
+    private ReservationTimeEntity(Long id, LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
     }
 
-    public boolean isAvailable() {
-        return !(startAt.isBefore(OPERATING_START) || startAt.isAfter(OPERATING_END));
+    public static ReservationTimeEntity create(LocalTime startAt) {
+        if (startAt.isAfter(OPERATING_END) || startAt.isBefore(OPERATING_START)) {
+            throw new BadRequestException("운영 시간 이외의 시간이 입력되었습니다.");
+        }
+        return ReservationTimeEntity.of(0L, startAt);
+    }
+
+    public static ReservationTimeEntity of(final Long id, LocalTime startAt) {
+        validateFields(id, startAt);
+        return new ReservationTimeEntity(id, startAt);
+    }
+
+    private static void validateFields(Long id, LocalTime startAt) {
+        if (id == null || startAt == null) {
+            throw new BadRequestException("필요한 시간 정보가 모두 입력되지 않았습니다.");
+        }
     }
 
     public String getFormattedTime() {
