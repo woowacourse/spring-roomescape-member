@@ -13,7 +13,7 @@ public interface ThemeRepository {
 
     void deleteById(Long id);
 
-    List<Theme> findPopularThemesThisWeek();
+    List<Theme> findPopularThemes(int period, int maxResults);
 
     boolean existsByName(String name);
 }

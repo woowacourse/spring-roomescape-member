@@ -3,7 +3,6 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.dto.PopularThemeResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.entity.Theme;
@@ -40,9 +39,9 @@ public class ThemeService {
         repository.deleteById(id);
     }
 
-    public List<PopularThemeResponse> readRecentPopularThemes() {
-        return repository.findPopularThemesThisWeek().stream()
-                .map(PopularThemeResponse::from)
+    public List<ThemeResponse> readPopularThemesByPeriod(int period, int maxResults) {
+        return repository.findPopularThemes(period, maxResults).stream()
+                .map(ThemeResponse::from)
                 .toList();
     }
 }

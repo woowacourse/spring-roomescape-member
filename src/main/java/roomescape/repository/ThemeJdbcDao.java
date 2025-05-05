@@ -61,19 +61,22 @@ public class ThemeJdbcDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findPopularThemesThisWeek() {
+    public List<Theme> findPopularThemes(int period, int maxResults) {
         String sql = """
                 select th.id, th.name, th.description, th.thumbnail, count(*) as reservation_count
                 from theme as th
                 inner join reservation as r
                 on th.id = r.theme_id
-                where r.date >= CURRENT_DATE() -7
-                AND r.date <= CURRENT_DATE()
+                where r.date >= DATEADD('DAY', -:period, CURRENT_DATE())
+                AND r.date < CURRENT_DATE()
                 group by th.id
                 order by reservation_count desc
-                limit 10
+                limit :maxResults
                 """;
-        return namedJdbcTemplate.query(sql, getThemeRowMapper());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("period", period)
+                .addValue("maxResults", maxResults);
+        return namedJdbcTemplate.query(sql, params, getThemeRowMapper());
     }
 
     @Override

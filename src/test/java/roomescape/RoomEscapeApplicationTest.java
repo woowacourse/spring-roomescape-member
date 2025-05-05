@@ -28,7 +28,7 @@ class RoomEscapeApplicationTest {
     @DisplayName("테마 목록을 조회한다.")
     void readAllThemes() {
         RestAssured.given().log().all()
-                .when().get("/themes/popular")
+                .when().get("/themes/rankings")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(10))
