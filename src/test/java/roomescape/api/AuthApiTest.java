@@ -5,11 +5,14 @@ import static org.hamcrest.Matchers.nullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
+import io.restassured.http.Cookie.Builder;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,45 +54,81 @@ public class AuthApiTest {
         jdbcTemplate.update("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
     }
 
-    @DisplayName("로그인에 성공하면 200을 응답하고, Set-Cookie 헤더에 토큰이 담긴다.")
-    @Test
-    void post() {
-        // given
-        givenCreateMember(AUTH_BODY.get("password").toString());
+    @Nested
+    @DisplayName("로그인")
+    class Login {
+        @DisplayName("로그인에 성공하면 200을 응답하고, Set-Cookie 헤더에 토큰이 담긴다.")
+        @Test
+        void post() {
+            // given
+            givenCreateMember(AUTH_BODY.get("password").toString());
 
-        // when & then
-        RestAssured.given().port(port).log().all()
-                .contentType(ContentType.JSON)
-                .body(AUTH_BODY)
-                .when().post("/login")
-                .then().log().all().statusCode(200)
-                .header(HttpHeaders.SET_COOKIE.toString(), notNullValue());
+            // when & then
+            RestAssured.given().port(port).log().all()
+                    .contentType(ContentType.JSON)
+                    .body(AUTH_BODY)
+                    .when().post("/login")
+                    .then().log().all().statusCode(200)
+                    .header(HttpHeaders.SET_COOKIE.toString(), notNullValue());
+        }
+
+        @DisplayName("존재하지 않는 이메일이라면, 400을 응답한다.")
+        @Test
+        void post1() {
+            // given & when & then
+            RestAssured.given().port(port).log().all()
+                    .contentType(ContentType.JSON)
+                    .body(AUTH_BODY)
+                    .when().post("/login")
+                    .then().log().all().statusCode(400)
+                    .header(HttpHeaders.SET_COOKIE.toString(), nullValue());
+        }
+
+        @DisplayName("비밀번호가 일치하지 않는다면, 400을 응답한다.")
+        @Test
+        void post2() {
+            givenCreateMember("another password");
+
+            // given & when & then
+            RestAssured.given().port(port).log().all()
+                    .contentType(ContentType.JSON)
+                    .body(AUTH_BODY)
+                    .when().post("/login")
+                    .then().log().all().statusCode(400)
+                    .header(HttpHeaders.SET_COOKIE.toString(), nullValue());
+        }
     }
 
-    @DisplayName("존재하지 않는 이메일이라면, 400을 응답한다.")
-    @Test
-    void post1() {
-        // given & when & then
-        RestAssured.given().port(port).log().all()
-                .contentType(ContentType.JSON)
-                .body(AUTH_BODY)
-                .when().post("/login")
-                .then().log().all().statusCode(400)
-                .header(HttpHeaders.SET_COOKIE.toString(), nullValue());
-    }
+    @Nested
+    @DisplayName("토큰기반 유저 정보 조회")
+    class Check {
+        @DisplayName("check에 성공하면, 200OK를 응답한다.")
+        @Test
+        void check() {
+            // given
+            givenCreateMember(AUTH_BODY.get("password").toString());
+            final Cookie cookie = givenAuthCookie();
 
-    @DisplayName("비밀번호가 일치하지 않는다면, 400을 응답한다.")
-    @Test
-    void post2() {
-        givenCreateMember("another password");
+            // when & then
+            RestAssured.given().log().all().port(port)
+                    .cookie(cookie)
+                    .when().get("/login/check")
+                    .then().log().all().statusCode(200);
+        }
 
-        // given & when & then
-        RestAssured.given().port(port).log().all()
-                .contentType(ContentType.JSON)
-                .body(AUTH_BODY)
-                .when().post("/login")
-                .then().log().all().statusCode(400)
-                .header(HttpHeaders.SET_COOKIE.toString(), nullValue());
+        @DisplayName("유효하지 않은 토큰으로 요청하면, 401을 응답한다.")
+        @Test
+        void check1() {
+            // given
+            final Cookie token = new Builder("token",
+                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3RGb3VuZEVtYWlsQGVtYWlsLmNvbSIsImlhdCI6MTc0NjQ0NDI4MywiZXhwIjoxNzQ2NDQ0MzQzfQ.yLtLrHkOiYsh0ZIG1g4RcQWoqe9STMvQxZtAsU9U4WU").build();
+
+            // when & then
+            RestAssured.given().log().all().port(port)
+                    .cookie(token)
+                    .when().get("/login/check")
+                    .then().log().all().statusCode(401);
+        }
     }
 
     private void givenCreateMember(final String password) {
@@ -103,4 +142,12 @@ public class AuthApiTest {
                 .then().statusCode(201);
     }
 
+    private Cookie givenAuthCookie() {
+        return RestAssured.given().port(port)
+                .contentType(ContentType.JSON)
+                .body(AUTH_BODY)
+                .when().post("/login")
+                .then()
+                .extract().detailedCookie("token");
+    }
 }
