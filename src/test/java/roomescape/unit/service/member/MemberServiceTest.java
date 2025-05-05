@@ -3,6 +3,8 @@ package roomescape.unit.service.member;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.domain.member.Member;
@@ -11,6 +13,7 @@ import roomescape.dto.member.SignupRequestDto;
 import roomescape.service.member.MemberService;
 import roomescape.unit.repository.member.FakeMemberRepository;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class MemberServiceTest {
 
     private MemberService memberService;
