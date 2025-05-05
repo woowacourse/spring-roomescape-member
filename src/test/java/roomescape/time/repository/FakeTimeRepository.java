@@ -1,6 +1,6 @@
 package roomescape.time.repository;
 
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.entity.ReservationTime;
 import roomescape.time.repository.dto.ReservationTimeWithBookedDataResponse;
 
 import java.time.LocalDate;
@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.Optional;
 
 public class FakeTimeRepository implements ReservationTimeRepository {
-    private final List<ReservationTimeEntity> entities = new ArrayList<>();
+    private final List<ReservationTime> entities = new ArrayList<>();
 
     @Override
-    public ReservationTimeEntity save(ReservationTimeEntity entity) {
+    public ReservationTime save(ReservationTime entity) {
         entities.add(entity);
         return entity;
     }
 
     @Override
-    public List<ReservationTimeEntity> findAll() {
+    public List<ReservationTime> findAll() {
         return Collections.unmodifiableList(entities);
     }
 
@@ -30,7 +30,7 @@ public class FakeTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTimeEntity> findById(Long id) {
+    public Optional<ReservationTime> findById(Long id) {
         return entities.stream()
                 .filter(entity -> entity.getId().equals(id))
                 .findFirst();
@@ -43,7 +43,7 @@ public class FakeTimeRepository implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTimeEntity> findByStartAt(LocalTime startAt) {
+    public Optional<ReservationTime> findByStartAt(LocalTime startAt) {
         return entities.stream()
                 .filter(entity -> entity.getStartAt().equals(startAt))
                 .findFirst();

@@ -8,7 +8,7 @@ import roomescape.exception.BadRequestException;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 
@@ -24,7 +24,7 @@ class ThemeServiceTest {
     void duplicateByName() {
         // given
         String name = "밍곰 테마";
-        themeRepository.save(new ThemeEntity(
+        themeRepository.save(new Theme(
                 1L,
                 name,
                 "진격의 밍곰",

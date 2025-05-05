@@ -1,6 +1,6 @@
 package roomescape.theme.repository;
 
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,16 +10,16 @@ import java.util.Optional;
 
 public class FakeThemeRepository implements ThemeRepository {
 
-    private final List<ThemeEntity> entities = new ArrayList<>();
+    private final List<Theme> entities = new ArrayList<>();
 
     @Override
-    public ThemeEntity save(ThemeEntity entity) {
+    public Theme save(Theme entity) {
         entities.add(entity);
         return entity;
     }
 
     @Override
-    public List<ThemeEntity> findAll() {
+    public List<Theme> findAll() {
         return Collections.unmodifiableList(entities);
     }
 
@@ -29,21 +29,21 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<ThemeEntity> findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         return entities.stream()
                 .filter(entity -> entity.getId().equals(id))
                 .findFirst();
     }
 
     @Override
-    public Optional<ThemeEntity> findByName(String name) {
+    public Optional<Theme> findByName(String name) {
         return entities.stream()
                 .filter(entity -> entity.getName().equals(name))
                 .findFirst();
     }
 
     @Override
-    public List<ThemeEntity> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, final int limit) {
+    public List<Theme> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, final int limit) {
         // TODO: 테스트 로직 작성하기
         return null;
     }

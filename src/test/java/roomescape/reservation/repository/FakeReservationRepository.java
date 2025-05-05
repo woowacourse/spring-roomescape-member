@@ -1,6 +1,6 @@
 package roomescape.reservation.repository;
 
-import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.entity.Reservation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class FakeReservationRepository implements ReservationRepository {
-    private final List<ReservationEntity> entities = new ArrayList<>();
+    private final List<Reservation> entities = new ArrayList<>();
 
     @Override
-    public ReservationEntity save(ReservationEntity entity) {
+    public Reservation save(Reservation entity) {
         entities.add(entity);
         return entity;
     }
@@ -22,19 +22,19 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationEntity> findAll() {
+    public List<Reservation> findAll() {
         return Collections.unmodifiableList(entities);
     }
 
     @Override
-    public List<ReservationEntity> findAllByTimeId(Long id) {
+    public List<Reservation> findAllByTimeId(Long id) {
         return entities.stream()
                 .filter(reservation -> reservation.getTimeId().equals(id))
                 .toList();
     }
 
     @Override
-    public Optional<ReservationEntity> findDuplicatedWith(ReservationEntity other) {
+    public Optional<Reservation> findDuplicatedWith(Reservation other) {
         return entities.stream()
                 .filter(entity -> entity.getDate().isEqual(other.getDate())
                         && entity.getStartAt().equals(other.getStartAt()))

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.entity.ReservationTime;
 import roomescape.time.repository.dto.ReservationTimeWithBookedDataResponse;
 
 import java.time.LocalDate;
@@ -31,7 +31,7 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void createTest() {
         // given
-        ReservationTimeEntity time = ReservationTimeEntity.of(1L, LocalTime.of(10, 0));
+        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
 
         // when
         timeRepository.save(time);
@@ -60,7 +60,7 @@ class JdbcReservationTimeRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time (id, start_at) VALUES (?, ?)", 1, "10:00");
 
         // when
-        Optional<ReservationTimeEntity> entity = timeRepository.findById(1L);
+        Optional<ReservationTime> entity = timeRepository.findById(1L);
 
         // then
         assertThat(entity).isNotEmpty();

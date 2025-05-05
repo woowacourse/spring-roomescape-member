@@ -3,13 +3,13 @@ package roomescape.reservation.service;
 import org.springframework.stereotype.Service;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
-import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.request.ReservationRequest;
 import roomescape.reservation.service.dto.response.ReservationResponse;
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.entity.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 
 import java.util.List;
@@ -37,33 +37,33 @@ public class ReservationService {
                 .toList();
     }
 
-    private ReservationResponse convertToResponse(ReservationEntity reservation) {
+    private ReservationResponse convertToResponse(Reservation reservation) {
         final Long themeId = reservation.getThemeId();
-        ThemeEntity themeEntity = themeRepository.findById(themeId)
+        Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", themeId)));
-        return ReservationResponse.from(reservation, themeEntity);
+        return ReservationResponse.from(reservation, theme);
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
-        ReservationTimeEntity timeEntity = timeRepository.findById(request.timeId())
+        ReservationTime timeEntity = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 예약 시간은 존재하지 않습니다.", request.timeId())));
-        ThemeEntity themeEntity = themeRepository.findById(request.themeId())
+        Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", request.themeId())));
 
-        ReservationEntity newReservation = request.toEntity(timeEntity);
+        Reservation newReservation = request.toEntity(timeEntity);
         validateDuplicated(newReservation);
 
-        ReservationEntity saved = reservationRepository.save(newReservation);
-        return ReservationResponse.from(saved, themeEntity);
+        Reservation saved = reservationRepository.save(newReservation);
+        return ReservationResponse.from(saved, theme);
     }
 
-    private void validateDuplicated(ReservationEntity newReservation) {
+    private void validateDuplicated(Reservation newReservation) {
         if (isExistDuplicatedWith(newReservation)) {
             throw new ConflictException("해당 날짜에는 이미 예약이 존재합니다.");
         }
     }
 
-    private boolean isExistDuplicatedWith(ReservationEntity target) {
+    private boolean isExistDuplicatedWith(Reservation target) {
         return reservationRepository.findDuplicatedWith(target).isPresent();
     }
 

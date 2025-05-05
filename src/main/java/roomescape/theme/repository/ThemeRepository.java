@@ -1,21 +1,21 @@
 package roomescape.theme.repository;
 
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface ThemeRepository {
-    ThemeEntity save(ThemeEntity entity);
+    Theme save(Theme entity);
 
-    List<ThemeEntity> findAll();
+    List<Theme> findAll();
 
     boolean deleteById(Long id);
 
-    Optional<ThemeEntity> findById(Long id);
+    Optional<Theme> findById(Long id);
 
-    Optional<ThemeEntity> findByName(String name);
+    Optional<Theme> findByName(String name);
 
-    List<ThemeEntity> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, int limit);
+    List<Theme> findPopularThemesByDateRangeAndLimit(LocalDate startDate, LocalDate endDate, int limit);
 }

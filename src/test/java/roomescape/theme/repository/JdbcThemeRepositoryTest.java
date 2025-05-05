@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,11 +30,11 @@ class JdbcThemeRepositoryTest {
     @Test
     void create() {
         // given
-        ThemeEntity entity = new ThemeEntity(1L, "test", "hello", "hi");
+        Theme entity = new Theme(1L, "test", "hello", "hi");
 
         // when
         themeRepository.save(entity);
-        List<ThemeEntity> actual = themeRepository.findAll();
+        List<Theme> actual = themeRepository.findAll();
 
         // then
         assertThat(actual).hasSize(1);
@@ -48,7 +48,7 @@ class JdbcThemeRepositoryTest {
 
         // when
         final boolean deleted = themeRepository.deleteById(1L);
-        List<ThemeEntity> all = themeRepository.findAll();
+        List<Theme> all = themeRepository.findAll();
 
         // then
         assertSoftly(softly -> {
@@ -65,7 +65,7 @@ class JdbcThemeRepositoryTest {
         jdbcTemplate.update("INSERT INTO theme (id, name, description, thumbnail) VALUES ( ?, ?, ?, ? )", 2, "test2", "hello", "hi");
 
         // when
-        Optional<ThemeEntity> actual = themeRepository.findByName("test");
+        Optional<Theme> actual = themeRepository.findByName("test");
 
         // then
         assertSoftly(softly -> {
@@ -90,13 +90,13 @@ class JdbcThemeRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 3, "third", "2025-01-03", 1, 2);
         jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 4, "fourth", "2025-01-04", 1, 1);
 
-        List<ThemeEntity> expected = List.of(
-                new ThemeEntity(1L, "test", "hello", "hi"),
-                new ThemeEntity(2L, "test2", "hello", "hi")
+        List<Theme> expected = List.of(
+                new Theme(1L, "test", "hello", "hi"),
+                new Theme(2L, "test2", "hello", "hi")
         );
 
         // when
-        List<ThemeEntity> actual = themeRepository.findPopularThemesByDateRangeAndLimit(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 4), 2);
+        List<Theme> actual = themeRepository.findPopularThemesByDateRangeAndLimit(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 4), 2);
 
         // then
         assertSoftly(softly -> {

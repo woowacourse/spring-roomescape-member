@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.reservation.entity.Reservation;
+import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,8 +34,8 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation_time(id, start_at) VALUES (?, ?)", 1, "10:00");
         jdbcTemplate.update("INSERT INTO theme(id, name, description, thumbnail) VALUES (?, ?, ?, ?)", 1, "hello", "hi", "thumbnail");
 
-        ReservationTimeEntity time = ReservationTimeEntity.of(1L, LocalTime.of(10, 0));
-        ReservationEntity reservation = ReservationEntity.of(1L, "test", LocalDate.of(2025, 1, 2), time, 1L);
+        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
+        Reservation reservation = Reservation.of(1L, "test", LocalDate.of(2025, 1, 2), time, 1L);
 
         // when
         reservationRepository.save(reservation);
@@ -72,8 +72,8 @@ class JdbcReservationRepositoryTest {
         jdbcTemplate.update("INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES ( ?, ?, ?, ?, ? )", 2, "second", "2025-01-01", 2, 1);
 
         // when
-        List<ReservationEntity> firstTimeReservations = reservationRepository.findAllByTimeId(1L);
-        List<ReservationEntity> secondTimeReservations = reservationRepository.findAllByTimeId(2L);
+        List<Reservation> firstTimeReservations = reservationRepository.findAllByTimeId(1L);
+        List<Reservation> secondTimeReservations = reservationRepository.findAllByTimeId(2L);
 
         // then
         assertSoftly((softly) -> {

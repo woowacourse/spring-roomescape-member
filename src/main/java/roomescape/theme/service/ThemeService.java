@@ -5,7 +5,7 @@ import roomescape.exception.BadRequestException;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;
 import roomescape.theme.service.dto.response.ThemeResponse;
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 import roomescape.exception.ConflictException;
 import roomescape.exception.NotFoundException;
 
@@ -21,12 +21,12 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(ThemeRequest request) {
-        ThemeEntity newTheme = request.toEntity();
+        Theme newTheme = request.toEntity();
         themeRepository.findByName(newTheme.getName())
                 .ifPresent((theme) -> {
                     throw new ConflictException("중복되는 이름의 테마가 존재합니다.");
                 });
-        ThemeEntity saved = themeRepository.save(newTheme);
+        Theme saved = themeRepository.save(newTheme);
         return ThemeResponse.from(saved);
     }
 

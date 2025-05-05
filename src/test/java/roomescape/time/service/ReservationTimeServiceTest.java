@@ -6,10 +6,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.exception.BadRequestException;
-import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.time.entity.ReservationTime;
 import roomescape.time.repository.FakeTimeRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.time.service.dto.request.ReservationTimeRequest;
@@ -70,10 +70,10 @@ class ReservationTimeServiceTest {
     void deleteExistReservationTime() {
         // given
         LocalTime time = LocalTime.of(12, 0);
-        ReservationTimeEntity timeEntity = ReservationTimeEntity.of(1L, time);
+        ReservationTime timeEntity = ReservationTime.of(1L, time);
         timeRepository.save(timeEntity);
         LocalDate date = LocalDate.of(2025, 1, 2);
-        reservationRepository.save(ReservationEntity.of(1L, "test1", date, timeEntity, 1L));
+        reservationRepository.save(Reservation.of(1L, "test1", date, timeEntity, 1L));
 
         // when & then
         assertThatThrownBy(() -> {

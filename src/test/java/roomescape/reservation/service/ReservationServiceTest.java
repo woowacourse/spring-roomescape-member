@@ -4,15 +4,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.repository.FakeReservationRepository;
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.repository.FakeTimeRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.reservation.service.dto.request.ReservationRequest;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.reservation.entity.Reservation;
+import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,7 +31,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setupTheme() {
-        themeRepository.save(new ThemeEntity(1L, "theme", "hello", "hi"));
+        themeRepository.save(new Theme(1L, "theme", "hello", "hi"));
     }
 
     @DisplayName("존재하지 않는 timeId로 생성할 수 없다.")
@@ -67,10 +67,10 @@ class ReservationServiceTest {
         LocalDate now = LocalDate.now();
         LocalDate date = now.plusDays(1);
 
-        ReservationTimeEntity timeEntity = ReservationTimeEntity.of(1L, LocalTime.of(12, 0));
-        ReservationEntity reservationEntity = ReservationEntity.of(1L, "test", date, timeEntity, 1L);
+        ReservationTime timeEntity = ReservationTime.of(1L, LocalTime.of(12, 0));
+        Reservation reservation = Reservation.of(1L, "test", date, timeEntity, 1L);
         timeRepository.save(timeEntity);
-        reservationRepository.save(reservationEntity);
+        reservationRepository.save(reservation);
 
         ReservationRequest requestDto = new ReservationRequest(date, "test", timeEntity.getId(), 1L);
 

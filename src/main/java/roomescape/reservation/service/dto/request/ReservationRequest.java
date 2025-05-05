@@ -2,8 +2,8 @@ package roomescape.reservation.service.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.reservation.entity.Reservation;
+import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;
 
@@ -17,7 +17,7 @@ public record ReservationRequest(
         @NotNull(message = "테마가 선택되지 않았습니다.")
         Long themeId
 ) {
-    public ReservationEntity toEntity(ReservationTimeEntity timeEntity) {
-        return ReservationEntity.create(name, date, timeEntity, themeId);
+    public Reservation toEntity(ReservationTime timeEntity) {
+        return Reservation.create(name, date, timeEntity, themeId);
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.entity.ReservationEntity;
-import roomescape.time.entity.ReservationTimeEntity;
+import roomescape.reservation.entity.Reservation;
+import roomescape.time.entity.ReservationTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,15 +18,15 @@ import java.util.Optional;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
-    private final RowMapper<ReservationEntity> ROW_MAPPER = (resultSet, rowNum) -> {
+    private final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> {
         final long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
         LocalDate date = resultSet.getObject("date", LocalDate.class);
         final long timeId = resultSet.getLong("time_id");
         LocalTime timeValue = resultSet.getObject("start_at", LocalTime.class);
-        ReservationTimeEntity timeEntity = ReservationTimeEntity.of(timeId, timeValue);
+        ReservationTime timeEntity = ReservationTime.of(timeId, timeValue);
         final long themeId = resultSet.getLong("theme_id");
-        return ReservationEntity.of(
+        return Reservation.of(
                 id,
                 name,
                 date,
@@ -40,7 +40,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
-    public ReservationEntity save(ReservationEntity newReservation) {
+    public Reservation save(Reservation newReservation) {
         String query = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", newReservation.getName())
@@ -50,7 +50,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return ReservationEntity.of(
+        return Reservation.of(
                 id,
                 newReservation.getName(),
                 newReservation.getDate(),
@@ -67,7 +67,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         return updated > 0;
     }
 
-    public List<ReservationEntity> findAll() {
+    public List<Reservation> findAll() {
         String query = """
                 SELECT 
                     r.id, 
@@ -84,7 +84,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationEntity> findAllByTimeId(Long id) {
+    public List<Reservation> findAllByTimeId(Long id) {
         String query = """
                 SELECT 
                     r.id, 
@@ -104,7 +104,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<ReservationEntity> findDuplicatedWith(ReservationEntity entity) {
+    public Optional<Reservation> findDuplicatedWith(Reservation entity) {
         String query = """
                 SELECT
                     r.id,
@@ -122,8 +122,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 .addValue("date", entity.getDate())
                 .addValue("startTime", entity.getStartAt());
         try {
-            ReservationEntity reservationEntity = jdbcTemplate.queryForObject(query, params, ROW_MAPPER);
-            return Optional.of(reservationEntity);
+            Reservation reservation = jdbcTemplate.queryForObject(query, params, ROW_MAPPER);
+            return Optional.of(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

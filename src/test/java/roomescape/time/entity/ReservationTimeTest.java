@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
-class ReservationTimeEntityTest {
+class ReservationTimeTest {
     @DisplayName("운영 시간 이외에는 새로운 예약 시간을 생성할 수 없다.")
     @ParameterizedTest
     @MethodSource
@@ -21,7 +21,7 @@ class ReservationTimeEntityTest {
 
         // when & then
         assertThatThrownBy(() -> {
-            ReservationTimeEntity.create(startAt);
+            ReservationTime.create(startAt);
         }).isInstanceOf(BadRequestException.class);
     }
 
@@ -39,7 +39,7 @@ class ReservationTimeEntityTest {
         // given
 
         // when & then
-        assertThatCode(() -> ReservationTimeEntity.create(startAt)).doesNotThrowAnyException();
+        assertThatCode(() -> ReservationTime.create(startAt)).doesNotThrowAnyException();
     }
 
     private static Stream<Arguments> checkIsNotAvailable() {
@@ -57,6 +57,6 @@ class ReservationTimeEntityTest {
         LocalTime startAt = LocalTime.of(8, 0);
 
         // when & then
-        assertThatCode(() -> ReservationTimeEntity.of(1L, startAt)).doesNotThrowAnyException();
+        assertThatCode(() -> ReservationTime.of(1L, startAt)).doesNotThrowAnyException();
     }
 }

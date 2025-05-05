@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.entity.ThemeEntity;
+import roomescape.theme.entity.Theme;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,12 +16,12 @@ import java.util.Optional;
 
 @Repository
 public class JdbcThemeRepository implements ThemeRepository {
-    private final RowMapper<ThemeEntity> ROW_MAPPER = (resultSet, rowNum) -> {
+    private final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> {
         final long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
         String thumbnail = resultSet.getString("thumbnail");
-        return new ThemeEntity(
+        return new Theme(
                 id,
                 name,
                 description,
@@ -35,7 +35,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public ThemeEntity save(ThemeEntity entity) {
+    public Theme save(Theme entity) {
         String query = "INSERT INTO theme (name, description, thumbnail) VALUES (:name, :description, :thumbnail)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", entity.getName())
@@ -44,7 +44,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(query, params, keyHolder);
         final long id = keyHolder.getKey().longValue();
-        return new ThemeEntity(
+        return new Theme(
                 id,
                 entity.getName(),
                 entity.getDescription(),
@@ -53,7 +53,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<ThemeEntity> findAll() {
+    public List<Theme> findAll() {
         String query = "SELECT * FROM theme";
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
@@ -68,33 +68,33 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<ThemeEntity> findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String query = "SELECT * FROM theme WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id);
         try {
-            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, params, ROW_MAPPER);
-            return Optional.of(themeEntity);
+            Theme theme = jdbcTemplate.queryForObject(query, params, ROW_MAPPER);
+            return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Optional<ThemeEntity> findByName(String name) {
+    public Optional<Theme> findByName(String name) {
         String query = "SELECT * FROM theme WHERE name = :name";
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("name", name);
         try {
-            ThemeEntity themeEntity = jdbcTemplate.queryForObject(query, param, ROW_MAPPER);
-            return Optional.of(themeEntity);
+            Theme theme = jdbcTemplate.queryForObject(query, param, ROW_MAPPER);
+            return Optional.of(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public List<ThemeEntity> findPopularThemesByDateRangeAndLimit(
+    public List<Theme> findPopularThemesByDateRangeAndLimit(
             LocalDate startDate,
             LocalDate endDate,
             final int limit
