@@ -5,11 +5,12 @@ import roomescape.business.model.entity.User;
 import java.util.List;
 
 public record UserResponse(
+        long id,
         String name,
         String email
 ) {
     public static UserResponse from(final User user) {
-        return new UserResponse(user.name(), user.email());
+        return new UserResponse(user.id(), user.name(), user.email());
     }
 
     public static List<UserResponse> from(final List<User> users) {

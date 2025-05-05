@@ -22,7 +22,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.afterSave(
             resultSet.getLong("reservation_id"),
-            User.beforeSave(
+            User.afterSave(
+                    resultSet.getLong("user_id"),
                     resultSet.getString("user_name"),
                     resultSet.getString("user_email"),
                     resultSet.getString("user_password")
@@ -80,13 +81,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                  t.name as theme_name,
                  t.description as theme_description,
                  t.thumbnail as theme_thumbnail,
+                 u.id as user_id,
                  u.name as user_name,
                  u.email as user_email,
                  u.password as user_password
                 FROM reservation as r
                 INNER JOIN reservation_time as rt ON r.time_id = rt.id
                 INNER JOIN theme as t ON r.theme_id = t.id
-                INNER JOIN users as u ON r.email = u.email
+                INNER JOIN users as u ON r.user_id = u.id
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -104,13 +106,14 @@ public class JdbcReservationRepository implements ReservationRepository {
                      t.name as theme_name,
                      t.description as theme_description,
                      t.thumbnail as theme_thumbnail,
+                     u.id as user_id,
                      u.name as user_name,
                      u.email as user_email,
                      u.password as user_password
                     FROM reservation as r
                     INNER JOIN reservation_time as rt ON r.time_id = rt.id
                     INNER JOIN theme as t ON r.theme_id = t.id
-                    INNER JOIN users as u ON r.email = u.email
+                    INNER JOIN users as u ON r.user_id = u.id
                     WHERE r.id = ?
                     """;
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));

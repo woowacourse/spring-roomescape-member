@@ -13,11 +13,11 @@ VALUES ('dompoo', 'dompoo@gmail.com', '1234'),
 
 -- 예약 추가
 -- theme_id 1에 예약 1건
-INSERT INTO reservation (email, date, time_id, theme_id)
-VALUES ('lemon@gmail.com', '2025-04-27', 1, 1);
+INSERT INTO reservation (date, time_id, theme_id, user_id)
+VALUES ('2025-04-27', 1, 1, 2);
 
 -- theme_id 2에 예약 3건 (각 날짜 다르게)
-INSERT INTO reservation (email, date, time_id, theme_id)
-VALUES ('dompoo@gmail.com', '2025-04-24', 1, 2),
-       ('dompoo@gmail.com', '2025-04-25', 1, 2),
-       ('lemon@gmail.com', '2025-04-26', 1, 2);
+INSERT INTO reservation (date, time_id, theme_id, user_id)
+VALUES ('2025-04-24', 1, 2, 1),
+       ('2025-04-25', 1, 2, 1),
+       ('2025-04-26', 1, 2, 2);

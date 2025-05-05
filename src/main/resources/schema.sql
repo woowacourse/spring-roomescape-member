@@ -7,10 +7,11 @@ DROP TABLE IF EXISTS users;
 -- 유저 테이블
 CREATE TABLE users
 (
+    id       BIGINT       NOT NULL AUTO_INCREMENT,
     email    VARCHAR(255) NOT NULL,
     name     VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    PRIMARY KEY (email)
+    PRIMARY KEY (id)
 );
 
 -- 테마 테이블
@@ -34,13 +35,13 @@ CREATE TABLE reservation_time
 -- 예약 테이블
 CREATE TABLE reservation
 (
-    id       BIGINT       NOT NULL AUTO_INCREMENT,
-    email    VARCHAR(255) NOT NULL,
-    date     DATE         NOT NULL,
-    time_id  BIGINT       NOT NULL,
-    theme_id BIGINT       NOT NULL,
+    id       BIGINT NOT NULL AUTO_INCREMENT,
+    date     DATE   NOT NULL,
+    time_id  BIGINT NOT NULL,
+    theme_id BIGINT NOT NULL,
+    user_id  BIGINT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id),
-    FOREIGN KEY (email) REFERENCES users (email)
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );

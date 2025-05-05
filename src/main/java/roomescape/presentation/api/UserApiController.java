@@ -31,7 +31,6 @@ public class UserApiController {
     }
 
     @PostMapping("/members")
-    @AuthRequired
     public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
         userService.register(request.name(), request.email(), request.password());
 

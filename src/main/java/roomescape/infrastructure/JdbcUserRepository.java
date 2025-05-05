@@ -16,10 +16,11 @@ import java.util.Optional;
 public class JdbcUserRepository implements UserRepository {
 
     private static final RowMapper<User> ROW_MAPPER = (resultSet, rowNum) -> {
+        long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
         String email = resultSet.getString("email");
         String password = resultSet.getString("password");
-        return User.afterSave(name, email, password);
+        return User.afterSave(id, name, email, password);
     };
 
     private final JdbcTemplate jdbcTemplate;
@@ -28,16 +29,19 @@ public class JdbcUserRepository implements UserRepository {
     public JdbcUserRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("users");
+                .withTableName("users")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public void save(final User user) {
-        insert.execute(Map.of(
+    public User saveAndGet(final User user) {
+        final Number id = insert.executeAndReturnKey(Map.of(
                 "email", user.email(),
                 "name", user.name(),
                 "password", user.password()
         ));
+
+        return User.afterSave(id.longValue(), user.name(), user.email(), user.password());
     }
 
     @Override
