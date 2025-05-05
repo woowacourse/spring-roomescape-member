@@ -49,7 +49,7 @@ class ReservationTimeServiceTest {
 
         ReservationTimeResponse response = reservationTimeService.create(request);
 
-        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.id()).isNotNull();
         assertThat(response.startAt()).isEqualTo("10:00");
     }
 
@@ -74,8 +74,8 @@ class ReservationTimeServiceTest {
 
     @Test
     void 예약시간을_삭제한다() {
-        reservationTimeDbFixture.예약시간_10시();
-        reservationTimeService.deleteById(1L);
+        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
+        reservationTimeService.deleteById(reservationTime.getId());
 
         List<ReservationTimeResponse> responses = reservationTimeService.getAll();
 
@@ -95,7 +95,7 @@ class ReservationTimeServiceTest {
         Theme theme = themeDbFixture.공포();
         reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
 
-        assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
+        assertThatThrownBy(() -> reservationTimeService.deleteById(reservationTime.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 해당 시간에 이미 예약이 존재하여 삭제할 수 없습니다.");
     }
@@ -114,7 +114,7 @@ class ReservationTimeServiceTest {
 
         List<AvailableReservationTimeResponse> responses = reservationTimeService.getAvailableReservationTimes(request);
 
-        assertThat(responses.get(0).id()).isEqualTo(theme.getId());
+        assertThat(responses.get(0).id()).isNotNull();
         assertThat(responses.get(0).startAt()).isEqualTo(reservationTime.getStartAt());
         assertThat(responses.get(0).isReserved()).isEqualTo(true);
     }

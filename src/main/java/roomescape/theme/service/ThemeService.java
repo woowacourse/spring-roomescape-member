@@ -57,4 +57,12 @@ public class ThemeService {
                 .map(ThemeResponse::from)
                 .toList();
     }
+
+    public List<ThemeResponse> getPopularThemesBulk() {
+        int limit = 10;
+        LocalDate now = LocalDate.now();
+        
+        List<Theme> popularThemes = themeRepository.findPopularThemeDuringAWeek(limit, now);
+        return ThemeResponse.from(popularThemes);
+    }
 }

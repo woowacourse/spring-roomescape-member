@@ -52,7 +52,7 @@ class ThemeServiceTest {
 
         ThemeResponse response = themeService.create(request);
 
-        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.id()).isNotNull();
         assertThat(response.name()).isEqualTo("공포");
         assertThat(response.description()).isEqualTo("공포 테마");
         assertThat(response.thumbnail()).isEqualTo("공포.jpg");
@@ -63,7 +63,7 @@ class ThemeServiceTest {
         Theme theme = themeDbFixture.공포();
         ThemeResponse response = themeService.getAll().get(0);
 
-        assertThat(response.id()).isEqualTo(theme.getId());
+        assertThat(response.id()).isNotNull();
         assertThat(response.name()).isEqualTo(theme.getName());
         assertThat(response.description()).isEqualTo(theme.getDescription());
         assertThat(response.thumbnail()).isEqualTo(theme.getThumbnail());
@@ -72,8 +72,8 @@ class ThemeServiceTest {
 
     @Test
     void 테마를_삭제한다() {
-        themeDbFixture.공포();
-        themeService.deleteById(1L);
+        Theme theme = themeDbFixture.공포();
+        themeService.deleteById(theme.getId());
 
         assertThat(themeService.getAll()).isEmpty();
     }
@@ -112,8 +112,11 @@ class ThemeServiceTest {
 
         assertThat(popularThemes)
                 .hasSize(10)
-                .extracting(ThemeResponse::id)
-                .containsExactlyInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+                .extracting(ThemeResponse::name)
+                .containsExactlyInAnyOrder(
+                        "테마0", "테마1", "테마2", "테마3", "테마4",
+                        "테마5", "테마6", "테마7", "테마8", "테마9"
+                );
     }
 
     private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {

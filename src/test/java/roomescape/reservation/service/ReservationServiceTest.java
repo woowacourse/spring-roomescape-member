@@ -14,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
 import roomescape.reservation.controller.request.ReservationCreateRequest;
 import roomescape.reservation.controller.response.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationDateFixture;
+import roomescape.reservation.fixture.ReservationDbFixture;
 import roomescape.reservation.fixture.ReservationTimeDbFixture;
 import roomescape.reservation.fixture.ReserverNameFixture;
 import roomescape.reservation.fixture.ThemeDbFixture;
@@ -36,6 +38,8 @@ class ReservationServiceTest {
 
     @Autowired
     private CleanUp cleanUp;
+    @Autowired
+    private ReservationDbFixture reservationDbFixture;
 
     @BeforeEach
     void setUp() {
@@ -57,8 +61,9 @@ class ReservationServiceTest {
         );
 
         ReservationResponse response = reservationService.create(request);
+        System.out.println(response.id());
 
-        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.id()).isNotNull();
         assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
         assertThat(response.date()).isEqualTo(now.plusDays(1));
         assertThat(response.time()).isEqualTo(
@@ -93,19 +98,14 @@ class ReservationServiceTest {
     void 예약을_모두_조회한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
+        Reservation reservation = reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
 
-        reservationService.create(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_내일.getDate(),
-                reservationTime.getId(),
-                theme.getId()
-        ));
         List<ReservationResponse> responses = reservationService.getAll();
         ReservationResponse response = responses.get(0);
 
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
-        assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_내일.getDate());
+        assertThat(response.id()).isNotNull();
+        assertThat(response.name()).isEqualTo(reservation.getReserverName());
+        assertThat(response.date()).isEqualTo(reservation.getDate());
         assertThat(response.time()).isEqualTo(
                 new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
     }
@@ -114,14 +114,9 @@ class ReservationServiceTest {
     void 예약을_삭제한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
+        Reservation reservation = reservationDbFixture.예약_한스_내일_10시_공포(reservationTime, theme);
 
-        reservationService.create(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_내일.getDate(),
-                reservationTime.getId(),
-                theme.getId()
-        ));
-        reservationService.deleteById(1L);
+        reservationService.deleteById(reservation.getId());
 
         List<ReservationResponse> responses = reservationService.getAll();
 
