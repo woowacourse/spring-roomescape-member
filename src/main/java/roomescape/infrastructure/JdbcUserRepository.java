@@ -54,6 +54,19 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(final long userId) {
+        final String sql = """
+                SELECT * FROM users
+                WHERE id = ?
+                """;
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, userId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<User> findByEmail(final String email) {
         final String sql = """
                 SELECT * FROM users

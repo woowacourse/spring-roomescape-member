@@ -54,10 +54,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(final Reservation reservation) {
         final Number id = insert.executeAndReturnKey(Map.of(
-                "email", reservation.getUserEmail(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
-                "theme_id", reservation.getTheme().getId()
+                "theme_id", reservation.getTheme().getId(),
+                "user_id", reservation.getUser().id()
         ));
 
         return Reservation.afterSave(

@@ -40,13 +40,13 @@ public class ReservationService {
             final LocalDate date,
             final long timeId,
             final long themeId,
-            final String email
+            final long userId
     ) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationNotFoundException::new);
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(ThemeNotFoundException::new);
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
         if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.getStartAt(), theme)) {
