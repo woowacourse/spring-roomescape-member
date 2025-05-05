@@ -56,11 +56,13 @@ public class ReservationTimeService {
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         return times.stream()
-                .map(time -> {
-                    boolean hasTime = reservations.stream()
-                            .anyMatch(reservation -> reservation.isSameTime(time));
-                    return new TimeConditionResponse(time.getId(), time.getStartAt(), hasTime);
-                })
+                .map(time -> toTimeConditionResponse(time,reservations))
                 .toList();
+    }
+
+    private TimeConditionResponse toTimeConditionResponse(ReservationTime time, List<Reservation> reservations) {
+        boolean hasTime = reservations.stream()
+                .anyMatch(reservation -> reservation.isSameTime(time));
+        return new TimeConditionResponse(time.getId(), time.getStartAt(), hasTime);
     }
 }
