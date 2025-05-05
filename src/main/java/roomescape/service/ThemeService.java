@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
@@ -15,7 +14,6 @@ public class ThemeService {
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
-    @Autowired
     public ThemeService(
         final ReservationRepository reservationRepository,
         final ThemeRepository themeRepository

@@ -4,19 +4,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
-import roomescape.model.Theme;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
     public ReservationJdbcRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

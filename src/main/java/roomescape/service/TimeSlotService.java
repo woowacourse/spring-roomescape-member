@@ -3,7 +3,6 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
@@ -16,7 +15,6 @@ public class TimeSlotService {
     private final ReservationRepository reservationRepository;
     private final TimeSlotRepository timeSlotRepository;
 
-    @Autowired
     public TimeSlotService(
         final ReservationRepository reservationRepository,
         final TimeSlotRepository timeSlotRepository
