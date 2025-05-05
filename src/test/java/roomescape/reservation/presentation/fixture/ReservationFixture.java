@@ -2,55 +2,49 @@ package roomescape.reservation.presentation.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.ReservationTimeRequest;
+import roomescape.reservation.presentation.dto.ThemeRequest;
 
 public class ReservationFixture {
 
-    public Map<String, String> createReservationRequest(String name, String date, String themeId, String timeId) {
-        Map<String, String> reservationParams = new HashMap<>();
-        reservationParams.put("name", name);
-        reservationParams.put("date", date);
-        reservationParams.put("themeId", themeId);
-        reservationParams.put("timeId", timeId);
-        return reservationParams;
+    public ReservationRequest createReservationRequest(String name, LocalDate date, Long themeId, Long timeId) {
+        return new ReservationRequest(date, name, themeId, timeId);
     }
 
-    public Map<String, String> createReservationTimeRequest(String startAt) {
-        Map<String, String> reservationTimeParams = new HashMap<>();
-        reservationTimeParams.put("startAt", startAt);
-        return reservationTimeParams;
+    public ReservationTimeRequest createReservationTimeRequest(LocalTime startAt) {
+        return new ReservationTimeRequest(startAt);
     }
 
-    public Map<String, String> createThemeRequest(String name, String description, String thumbnail) {
-        Map<String, String> themeParams = new HashMap<>();
-        themeParams.put("name", name);
-        themeParams.put("description", description);
-        themeParams.put("thumbnail", thumbnail);
-        return themeParams;
+    public ThemeRequest createThemeRequest(String name, String description, String thumbnail) {
+        return new ThemeRequest(name, description, thumbnail);
     }
 
-    public void createReservation(String name, String date, String themeId, String timeId){
-        Map<String, String> reservation = createReservationRequest(name, date, themeId, timeId);
+    public void createReservation(String name, LocalDate date, Long themeId, Long timeId){
+        final ReservationRequest reservationRequest = createReservationRequest(name, date, themeId, timeId);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
+                .body(reservationRequest)
                 .when().post("/reservations");
     }
 
-    public void createReservationTime(String startAt){
-        Map<String, String> reservationTime = createReservationTimeRequest(startAt);
+    public void createReservationTime(LocalTime startAt){
+        final ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest(startAt);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservationTime)
+                .body(reservationTimeRequest)
                 .when().post("/times");
     }
 
     public void createTheme(String name, String description, String thumbnail){
-        Map<String, String> theme = createThemeRequest(name, description, thumbnail);
+        final ThemeRequest themeRequest = createThemeRequest(name, description, thumbnail);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(theme)
+                .body(themeRequest)
                 .when().post("/themes");
     }
 }

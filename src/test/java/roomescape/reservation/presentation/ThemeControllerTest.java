@@ -4,11 +4,14 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.fixture.ReservationFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -20,7 +23,7 @@ public class ThemeControllerTest {
     @DisplayName("테마 추가 테스트")
     void createThemeTest() {
         // given
-        Map<String, String> theme = reservationFixture.createThemeRequest(
+        final ThemeRequest theme = reservationFixture.createThemeRequest(
                 "레벨2 탈출",
                 "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
@@ -76,7 +79,7 @@ public class ThemeControllerTest {
     @DisplayName("예약이 이미 존재하는 테마는 삭제할 수 없다.")
     void deleteThemeExceptionTest() {
         // given
-        reservationFixture.createReservationTime("10:30");
+        reservationFixture.createReservationTime(LocalTime.of(10, 30));
 
         reservationFixture.createTheme(
                 "레벨2 탈출",
@@ -84,7 +87,7 @@ public class ThemeControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
-        reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        reservationFixture.createReservation("브라운", LocalDate.of(2025,8,5), 1L, 1L);
 
         // when - then
         RestAssured.given().log().all()
