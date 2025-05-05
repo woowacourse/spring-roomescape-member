@@ -58,7 +58,7 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> getPopularThemes() {
-        ReservationPeriod period = new ReservationPeriod(dateTime.now().toLocalDate(), START_OFFSET_DAYS, END_OFFSET_DAYS);
+        ReservationPeriod period = new ReservationPeriod(dateTime.nowDate(), START_OFFSET_DAYS, END_OFFSET_DAYS);
 
         return themeRepository.findPopularThemes(period, POPULAR_THEME_COUNT).stream()
                 .map(theme -> new PopularThemeResponse(theme.getName(), theme.getThumbnail(), theme.getDescription()))

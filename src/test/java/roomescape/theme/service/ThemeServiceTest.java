@@ -45,6 +45,11 @@ class ThemeServiceTest {
             public LocalDateTime now() {
                 return LocalDateTime.of(2025, 12, 7, 10, 0);
             }
+
+            @Override
+            public LocalDate nowDate() {
+                return LocalDate.of(2025,12,7);
+            }
         };
 
         themeService = new ThemeService(dateTime, themeRepository, reservationRepository);

@@ -33,6 +33,11 @@ class ReservationServiceTest {
             public LocalDateTime now() {
                 return LocalDateTime.of(2025, 10, 5, 10, 0);
             }
+
+            @Override
+            public LocalDate nowDate() {
+                return LocalDate.of(2025,10,5);
+            }
         };
 
         List<Reservation> reservations = new ArrayList<>();
