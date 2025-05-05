@@ -32,7 +32,7 @@ public class ReservationTimeController {
     @GetMapping("/themes/{themeId}/times")
     public List<BookedReservationTimeResponseDto> readBookedReservationTimes(
         @RequestParam String date, @PathVariable Long themeId) {
-        return reservationTimeService.getAllBookedReservationTimes(date, themeId);
+        return reservationTimeService.getTimesContainsReservationInfoBy(date, themeId);
     }
 
     @PostMapping("/times")

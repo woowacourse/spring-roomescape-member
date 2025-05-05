@@ -43,7 +43,7 @@ public class ReservationTimeService {
         reservationTimeDao.deleteReservationTime(id);
     }
 
-    public List<BookedReservationTimeResponseDto> getAllBookedReservationTimes(String date,
+    public List<BookedReservationTimeResponseDto> getTimesContainsReservationInfoBy(String date,
         Long themeId) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
 

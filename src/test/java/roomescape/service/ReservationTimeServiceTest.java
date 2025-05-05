@@ -71,7 +71,7 @@ class ReservationTimeServiceTest {
             reservationTime3);
         when(reservationTimeDao.findAllReservationTimes()).thenReturn(reservationTimes);
         List<BookedReservationTimeResponseDto> allBookedReservationTimes =
-            reservationTimeService.getAllBookedReservationTimes("2025-05-02", 1L);
+            reservationTimeService.getTimesContainsReservationInfoBy("2025-05-02", 1L);
 
         assertThat(allBookedReservationTimes.get(0).alreadyBooked()).isFalse();
         assertThat(allBookedReservationTimes.get(1).alreadyBooked()).isFalse();
@@ -89,7 +89,7 @@ class ReservationTimeServiceTest {
         when(reservationDao.calculateAlreadyExistReservationBy(date, 1L, 1L)).thenReturn(1);
 
         List<BookedReservationTimeResponseDto> allBookedReservationTimes =
-            reservationTimeService.getAllBookedReservationTimes("2025-05-02", 1L);
+            reservationTimeService.getTimesContainsReservationInfoBy("2025-05-02", 1L);
         assertThat(allBookedReservationTimes.get(0).alreadyBooked()).isTrue();
     }
 }
