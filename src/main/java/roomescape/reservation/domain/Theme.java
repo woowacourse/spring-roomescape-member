@@ -8,10 +8,17 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
+        validateThemeField(name);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    private void validateThemeField(String name) {
+        if(name == null || name.trim().isEmpty()){
+            throw new IllegalArgumentException("테마 이름은 필수입니다.");
+        }
     }
 
     public Long getId() {
