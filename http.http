@@ -1,0 +1,24 @@
+### 회원가입
+
+POST localhost:8080/members
+Content-Type: application/json
+
+{
+  "name": "dompoo",
+  "email": "dlckdrms0517@gmail.com",
+  "password": "1234"
+}
+
+### 로그인
+
+POST localhost:8080/login
+Content-Type: application/json
+
+{
+  "email": "dlckdrms0517@gmail.com",
+  "password": "1234"
+}
+
+### 로그인 체크
+
+GET localhost:8080/login/check

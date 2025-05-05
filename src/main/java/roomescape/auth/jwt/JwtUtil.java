@@ -1,4 +1,4 @@
-package roomescape.jwt;
+package roomescape.auth.jwt;
 
 import roomescape.business.model.entity.User;
 import roomescape.business.model.vo.Authentication;

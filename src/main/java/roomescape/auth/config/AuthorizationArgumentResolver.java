@@ -1,4 +1,4 @@
-package roomescape.config;
+package roomescape.auth.config;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
