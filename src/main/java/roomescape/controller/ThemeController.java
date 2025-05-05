@@ -13,42 +13,42 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.BookedReservationTimeResponseDto;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
-import roomescape.service.ThemeServiceImpl;
+import roomescape.service.ThemeService;
 
 @RestController
 public class ThemeController {
 
-    private final ThemeServiceImpl themeServiceImpl;
+    private final ThemeService themeService;
 
-    public ThemeController(ThemeServiceImpl themeServiceImpl) {
-        this.themeServiceImpl = themeServiceImpl;
+    public ThemeController(ThemeService themeService) {
+        this.themeService = themeService;
     }
 
     @GetMapping("/themes/ranks")
     public List<ThemeResponseDto> readThemeRanks() {
-        return themeServiceImpl.getAllThemeOfRanks();
+        return themeService.getAllThemeOfRanks();
     }
 
     @GetMapping("/themes/{themeId}/times")
     public List<BookedReservationTimeResponseDto> readBookedReservationTimes(
         @RequestParam String date, @PathVariable Long themeId) {
-        return themeServiceImpl.getAllBookedReservationTimes(date, themeId);
+        return themeService.getAllBookedReservationTimes(date, themeId);
     }
 
     @GetMapping("/themes")
     public List<ThemeResponseDto> readThemes() {
-        return themeServiceImpl.getAllThemes();
+        return themeService.getAllThemes();
     }
 
     @PostMapping("/themes")
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponseDto saveTheme(@RequestBody ThemeRequestDto request) {
-        return themeServiceImpl.saveTheme(request);
+        return themeService.saveTheme(request);
     }
 
     @DeleteMapping("/themes/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTheme(@PathVariable Long id) {
-        themeServiceImpl.deleteTheme(id);
+        themeService.deleteTheme(id);
     }
 }

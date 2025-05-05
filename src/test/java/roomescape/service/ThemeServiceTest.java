@@ -21,16 +21,17 @@ import roomescape.dto.ThemeResponseDto;
 
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest
-public class ThemeServiceImplTest {
+public class ThemeServiceTest {
 
     @Autowired
-    private ThemeServiceImpl themeServiceImpl;
+    private ThemeService themeService;
 
     @MockitoBean
     private ReservationTimeDao reservationTimeDao;
 
     @MockitoBean
     private ReservationDao reservationDao;
+
     @Autowired
     private ReservationService reservationService;
 
@@ -40,7 +41,7 @@ public class ThemeServiceImplTest {
     void given_theme_dto_then_set_id_and_save() {
         ThemeRequestDto themeRequestDto = new ThemeRequestDto(
             "테마1", "공포테마입니다", "http://aaa");
-        ThemeResponseDto themeResponseDto = themeServiceImpl.saveTheme(themeRequestDto);
+        ThemeResponseDto themeResponseDto = themeService.saveTheme(themeRequestDto);
         assertThat(themeResponseDto.id()).isNotNull();
         assertThat(themeResponseDto.name()).isEqualTo("테마1");
         assertThat(themeResponseDto.description()).isEqualTo("공포테마입니다");
@@ -50,7 +51,7 @@ public class ThemeServiceImplTest {
     @DisplayName("존재하지 않는 테마를 삭제할 경우, 예외가 발생해야 한다.")
     @Test
     void when_delete_invalid_theme_then_throw_exception() {
-        assertThatThrownBy(() -> themeServiceImpl.deleteTheme(9999999999999L))
+        assertThatThrownBy(() -> themeService.deleteTheme(9999999999999L))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -65,7 +66,7 @@ public class ThemeServiceImplTest {
             reservationTime3);
         when(reservationTimeDao.findAllReservationTimes()).thenReturn(reservationTimes);
         List<BookedReservationTimeResponseDto> allBookedReservationTimes =
-            themeServiceImpl.getAllBookedReservationTimes("2025-05-02", 1L);
+            themeService.getAllBookedReservationTimes("2025-05-02", 1L);
 
         assertThat(allBookedReservationTimes.get(0).alreadyBooked()).isFalse();
         assertThat(allBookedReservationTimes.get(1).alreadyBooked()).isFalse();
@@ -83,7 +84,7 @@ public class ThemeServiceImplTest {
         when(reservationDao.calculateAlreadyExistReservationBy(date, 1L, 1L)).thenReturn(1);
 
         List<BookedReservationTimeResponseDto> allBookedReservationTimes =
-            themeServiceImpl.getAllBookedReservationTimes("2025-05-02", 1L);
+            themeService.getAllBookedReservationTimes("2025-05-02", 1L);
         assertThat(allBookedReservationTimes.get(0).alreadyBooked()).isTrue();
     }
 
