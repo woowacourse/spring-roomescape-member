@@ -14,7 +14,7 @@ import roomescape.business.model.vo.Authorization;
 import roomescape.business.service.AuthService;
 import roomescape.business.service.UserService;
 import roomescape.presentation.dto.request.LoginRequest;
-import roomescape.presentation.dto.response.UserNameResponse;
+import roomescape.presentation.dto.response.UserResponse;
 
 @RestController
 public class AuthApiController {
@@ -37,8 +37,8 @@ public class AuthApiController {
 
     @GetMapping("/login/check")
     @AuthRequired
-    public ResponseEntity<UserNameResponse> check(Authorization authorization) {
-        User user = userService.findByEmail(authorization.email());
-        return ResponseEntity.ok(new UserNameResponse(user.name()));
+    public ResponseEntity<UserResponse> check(Authorization authorization) {
+        User user = userService.getByEmail(authorization.email());
+        return ResponseEntity.ok(UserResponse.from(user));
     }
 }

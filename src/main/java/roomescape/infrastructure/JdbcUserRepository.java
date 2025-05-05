@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,6 +38,15 @@ public class JdbcUserRepository implements UserRepository {
                 "name", user.name(),
                 "password", user.password()
         ));
+    }
+
+    @Override
+    public List<User> findAll() {
+        final String sql = """
+                SELECT * FROM users
+                """;
+
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override

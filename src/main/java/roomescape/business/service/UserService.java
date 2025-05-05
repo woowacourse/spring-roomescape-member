@@ -6,6 +6,8 @@ import roomescape.business.model.repository.UserRepository;
 import roomescape.exception.impl.DuplicatedEmailException;
 import roomescape.exception.impl.UserNotFoundException;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -23,8 +25,12 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User findByEmail(final String email) {
+    public User getByEmail(final String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 }
