@@ -9,7 +9,7 @@ public interface ReservationThemeDao {
 
     List<ReservationTheme> selectAll();
 
-    ReservationTheme insertAndGet(ReservationTheme reservationTime);
+    ReservationTheme insertAndGet(ReservationTheme reservationTheme);
 
     Optional<ReservationTheme> selectById(Long id);
 

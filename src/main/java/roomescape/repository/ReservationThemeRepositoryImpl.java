@@ -21,8 +21,8 @@ public class ReservationThemeRepositoryImpl implements ReservationThemeRepositor
     }
 
     @Override
-    public ReservationTheme save(ReservationTheme reservationTime) {
-        return reservationThemeDao.insertAndGet(reservationTime);
+    public ReservationTheme save(ReservationTheme reservationTheme) {
+        return reservationThemeDao.insertAndGet(reservationTheme);
     }
 
     @Override
@@ -36,8 +36,8 @@ public class ReservationThemeRepositoryImpl implements ReservationThemeRepositor
     }
 
     @Override
-    public void remove(ReservationTheme reservationTime) {
-        reservationThemeDao.deleteById(reservationTime.id());
+    public void remove(ReservationTheme reservationTheme) {
+        reservationThemeDao.deleteById(reservationTheme.id());
     }
 
     @Override
