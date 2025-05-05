@@ -128,6 +128,17 @@ public class ReservationTimeApiTest {
                 .statusCode(204);
     }
 
+    @DisplayName("존재하지 않는 시간을 삭제할 수 없다.")
+    @Test
+    void cannotDeleteReservationTimeWhenNotExist() {
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+
+        RestAssured.given().log().all()
+                .when().delete("/times/2")
+                .then().log().all()
+                .statusCode(404);
+    }
+
     @DisplayName("이미 해당 시간에 대해 예약 데이터가 존재한다면 삭제가 불가능하다")
     @Test
     void cannotDeleteReservationTimeWhenExistReservation() {

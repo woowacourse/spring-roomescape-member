@@ -154,6 +154,18 @@ public class ThemeApiTest {
                 .statusCode(204);
     }
 
+    @DisplayName("존재하지 않는 테마를 삭제할 수 없다")
+    @Test
+    void cannotDeleteThemeByIdWhenNotExist() {
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명",
+                "썸네일");
+
+        RestAssured.given().log().all()
+                .when().delete("/themes/2")
+                .then().log().all()
+                .statusCode(404);
+    }
+
     @DisplayName("이미 테마에 대한 예약이 존재한다면 해당 테마의 삭제가 불가능하다.")
     @Test
     void cannotDeleteThemeByIdWhenReservationExist() {

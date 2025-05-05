@@ -156,4 +156,19 @@ public class ReservationApiTest {
                 .then().log().all()
                 .statusCode(204);
     }
+
+    @DisplayName("존재하지 않는 예약을 삭제할 수 없다.")
+    @Test
+    void cannotDeleteReservationByIdWhenNotExist() {
+        jdbcTemplate.update("insert into theme (name, description, thumbnail) values (?, ?, ?)", "이름1", "설명1",
+                "썸네일1");
+        jdbcTemplate.update("insert into reservation_time (start_at) values (?)", LocalTime.of(10, 0));
+        jdbcTemplate.update("insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)", "랜디",
+                "2025-5-5", "1", "1");
+
+        RestAssured.given().log().all()
+                .when().delete("/reservations/2")
+                .then().log().all()
+                .statusCode(404);
+    }
 }
