@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.globalException.BadRequestException;
+import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
@@ -32,8 +32,8 @@ class ReservationTest {
 
             // when & then
             Assertions.assertThatThrownBy(
-                () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime, theme)
-            ).isInstanceOf(BadRequestException.class);
+                    () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime, theme)
+            ).isInstanceOf(InvalidReservationTimeException.class);
         }
 
         @DisplayName("예약 시점이 미래이면 예외를 발생하지 않는다.")
@@ -50,7 +50,7 @@ class ReservationTest {
 
             // when & then
             Assertions.assertThatCode(
-                () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime, theme)
+                    () -> ReservationFixture.create(dummyName, dummyPastDate, reservationTime, theme)
             ).doesNotThrowAnyException();
         }
 
@@ -65,12 +65,12 @@ class ReservationTest {
             Theme theme = new Theme("name1", "dd", "tt");
 
             Reservation reservation1 = ReservationFixture.create(dummyName1, dummyDateTime1.toLocalDate(),
-                duplicateReservationTime, theme);
+                    duplicateReservationTime, theme);
 
             String dummyName2 = "pobi";
             LocalDateTime dummyDateTime2 = LocalDateTime.now().plusDays(2);
             Reservation reservation2 = ReservationFixture.create(dummyName2, dummyDateTime2.toLocalDate(),
-                duplicateReservationTime, theme);
+                    duplicateReservationTime, theme);
 
             // when
             Assertions.assertThat(reservation1.isSameDateTime(reservation2)).isFalse();

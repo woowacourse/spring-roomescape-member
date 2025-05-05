@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.globalException.BadRequestException;
-import roomescape.globalException.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationTime.ReservationTimeMapper;
@@ -14,8 +12,11 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.AvailableReservationTimeResponseDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
+import roomescape.reservationTime.exception.AlreadyReservedTimeException;
+import roomescape.reservationTime.exception.DuplicateReservationException;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.exception.InvalidThemeException;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -45,7 +46,7 @@ public class ReservationTimeService {
     public List<AvailableReservationTimeResponseDto> findAllAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마입니다."));
         Set<ReservationTime> reservationTimesByThemeAndDate = reservationRepository.findByThemeAndDate(theme, date)
                 .stream()
                 .map(Reservation::getReservationTime)
@@ -64,7 +65,7 @@ public class ReservationTimeService {
     public void delete(Long id) {
         ReservationTime reservationTime = repository.findByIdOrThrow(id);
         if (reservationRepository.existsByReservationTime(reservationTime)) {
-            throw new BadRequestException("예약에서 사용 중인 시간입니다.");
+            throw new AlreadyReservedTimeException("예약에서 사용 중인 시간입니다.");
         }
         repository.delete(id);
     }
@@ -80,7 +81,7 @@ public class ReservationTimeService {
         boolean exists = repository.existsByReservationTime(inputReservationTime.getStartAt());
 
         if (exists) {
-            throw new ConflictException("이미 등록되어 있는 예약 시간입니다.");
+            throw new DuplicateReservationException("이미 등록되어 있는 예약 시간입니다.");
         }
     }
 

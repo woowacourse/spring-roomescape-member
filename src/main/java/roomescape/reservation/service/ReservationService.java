@@ -3,20 +3,21 @@ package roomescape.reservation.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.globalException.BadRequestException;
-import roomescape.globalException.ConflictException;
 import roomescape.reservation.ReservationMapper;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.domain.dto.ReservationResponseDto;
+import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
+import roomescape.reservationTime.exception.DuplicateReservationException;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
 import roomescape.theme.ThemeMapper;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.ThemeResponseDto;
+import roomescape.theme.exception.InvalidThemeException;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -58,15 +59,15 @@ public class ReservationService {
                 inputReservation.getReservationTime()
         );
         if (exists) {
-            throw new ConflictException("이미 예약되어 있는 시간입니다.");
+            throw new DuplicateReservationException("이미 예약되어 있는 시간입니다.");
         }
     }
 
     private Reservation convertReservation(ReservationRequestDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-                .orElseThrow(() -> new BadRequestException("존재하지 않는 예약 시간입니다."));
+                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간입니다."));
         Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마입니다."));
 
         return ReservationMapper.toEntity(dto, reservationTime, theme);
     }

@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.globalException.BadRequestException;
-import roomescape.globalException.ConflictException;
 import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.repository.ReservationRepositoryImpl;
@@ -23,6 +21,8 @@ import roomescape.reservation.service.ReservationService;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
+import roomescape.reservationTime.exception.AlreadyReservedTimeException;
+import roomescape.reservationTime.exception.DuplicateReservationException;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
 import roomescape.theme.domain.Theme;
@@ -136,7 +136,7 @@ class ReservationTimeServiceTest {
             // then
             Assertions.assertThatThrownBy(
                     () -> service.add(ReservationTimeFixture.createRequestDto(dummyTime1))
-            ).isInstanceOf(ConflictException.class);
+            ).isInstanceOf(DuplicateReservationException.class);
         }
     }
 
@@ -185,7 +185,7 @@ class ReservationTimeServiceTest {
             // when, then
             Assertions.assertThatCode(
                     () -> service.delete(testDataConfig.getDefaultDummyTimeId())
-            ).isInstanceOf(BadRequestException.class);
+            ).isInstanceOf(AlreadyReservedTimeException.class);
         }
     }
 }

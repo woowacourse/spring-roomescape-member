@@ -11,9 +11,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.globalException.NotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.PopularThemeRequestDto;
+import roomescape.theme.exception.NotFoundThemeException;
 
 @Repository
 public class ThemeRepositoryImpl implements ThemeRepository {
@@ -55,7 +55,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     @Override
     public Theme findByIdOrThrow(Long id) {
         return findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 테마 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundThemeException("해당 테마 id가 존재하지 않습니다."));
     }
 
     @Override

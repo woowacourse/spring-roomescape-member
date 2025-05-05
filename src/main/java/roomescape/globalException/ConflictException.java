@@ -1,10 +1,8 @@
 package roomescape.globalException;
 
-import org.springframework.http.HttpStatus;
-
-public class ConflictException extends CustomException {
+public class ConflictException extends RuntimeException {
 
     public ConflictException(String message) {
-        super(HttpStatus.CONFLICT, message);
+        super(message);
     }
 }

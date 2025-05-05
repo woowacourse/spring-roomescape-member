@@ -2,7 +2,7 @@ package roomescape.reservation.domain;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import roomescape.globalException.BadRequestException;
+import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -30,7 +30,7 @@ public class Reservation {
 
     private static void validateTense(LocalDateTime dateTime) {
         if (isPastTense(dateTime)) {
-            throw new BadRequestException("과거시점으로 예약을 진행할 수 없습니다.");
+            throw new InvalidReservationTimeException("과거시점으로 예약을 진행할 수 없습니다.");
         }
     }
 

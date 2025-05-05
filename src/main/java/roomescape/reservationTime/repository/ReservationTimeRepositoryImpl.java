@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.globalException.NotFoundException;
 import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.exception.NotFoundReservationTimeException;
 
 @Repository
 public class ReservationTimeRepositoryImpl implements ReservationTimeRepository {
@@ -37,7 +37,7 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     @Override
     public ReservationTime findByIdOrThrow(Long id) {
         return findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 예약시간 id가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundReservationTimeException("해당 예약시간 id가 존재하지 않습니다."));
     }
 
     @Override
