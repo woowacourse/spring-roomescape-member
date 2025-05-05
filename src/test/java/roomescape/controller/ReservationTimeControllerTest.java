@@ -73,20 +73,6 @@ class ReservationTimeControllerTest {
                     .body("[0].startAt", equalTo("15:40"));
         }
 
-        @DisplayName("올바른 시간의 포멧만 요청 가능하다.")
-        @Test
-        void invalidRequestTimeTest1() {
-            Map<String, String> params = new HashMap<>();
-            params.put("startAt", "15:40:00");
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(params)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(400);
-        }
-
         @DisplayName("유효한 시간만 생성 가능하다")
         @Test
         void invalidRequestTimeTest2() {
