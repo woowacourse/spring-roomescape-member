@@ -32,7 +32,7 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "select * from reservation_time";
+        String sql = "select * from reservation_time order by id;";
         return namedJdbcTemplate.query(sql, getReservationTimeRowMapper());
     }
 

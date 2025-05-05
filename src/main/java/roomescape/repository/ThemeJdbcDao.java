@@ -30,7 +30,7 @@ public class ThemeJdbcDao implements ThemeRepository {
 
     @Override
     public List<Theme> findAll() {
-        String sql = "select * from theme";
+        String sql = "select * from theme order by id;";
         return namedJdbcTemplate.query(sql, getThemeRowMapper());
     }
 

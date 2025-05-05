@@ -34,6 +34,7 @@ public class ReservationJdbcDao implements ReservationRepository {
                 on r.time_id = t.id
                 inner join theme as th
                 on r.theme_id = th.id
+                order by r.id;
                 """;
         return namedJdbcTemplate.query(sql, getReservationRowMapper());
     }
