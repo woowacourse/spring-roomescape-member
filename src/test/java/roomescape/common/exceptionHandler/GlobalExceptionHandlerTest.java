@@ -47,6 +47,11 @@ class GlobalExceptionHandlerTest {
                     throw new HttpMessageNotReadableException(e.getMessage(), e);
                 }
             }
+
+            @GetMapping("/unknown")
+            public void unknownException() {
+                throw new IllegalStateException("예상치 못한 오류");
+            }
         }
     }
 
@@ -116,6 +121,23 @@ class GlobalExceptionHandlerTest {
                 .when().get("/httpMessageNotReadableException2")
                 .then().log().all()
                 .statusCode(400)
+                .extract()
+                .response();
+
+        ExceptionResponse actual = response.as(ExceptionResponse.class);
+        Assertions.assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("예상치 못한 오류 처리 테스트")
+    void Exception_Handler_Test() {
+        ExceptionResponse expected = new ExceptionResponse(500, "[ERROR] 예상치 못한 서버 오류입니다. 서버에 문의해주세요.",
+                "/unknown");
+
+        Response response = RestAssured.given().log().all()
+                .when().get("/unknown")
+                .then().log().all()
+                .statusCode(500)
                 .extract()
                 .response();
 
