@@ -54,11 +54,7 @@ public class ReservationTimeService {
     }
 
     private boolean isAlreadyBooked(final ReservationTime reservationTime, final List<Reservation> reservations) {
-        for (final Reservation reservation : reservations) {
-            if (reservation.isSameTime(reservationTime)) {
-                return true;
-            }
-        }
-        return false;
+        return reservations.stream()
+                .anyMatch(reservation -> reservation.isSameTime(reservationTime));
     }
 }
