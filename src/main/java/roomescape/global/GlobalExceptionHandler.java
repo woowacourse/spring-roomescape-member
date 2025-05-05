@@ -1,6 +1,7 @@
 package roomescape.global;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -15,6 +16,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ExceptionResponse handleException(Exception e) {
+        return new ExceptionResponse(INTERNAL_SERVER_ERROR.value(), "서버 에러입니다", LocalDateTime.now());
+    }
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
