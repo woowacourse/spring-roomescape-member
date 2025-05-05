@@ -14,14 +14,13 @@ import roomescape.dto.member.MemberResponseDto;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 class AuthenticationControllerTest {
 
-
     @Test
     void 회원가입_테스트() {
         Map<String, String> signupParam = Map.of("name", "투다", "email", "signup@email.com", "password", "password");
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(signupParam)
-                .when().post("/members")
+                .when().post("/auth/signup")
                 .then()
                 .statusCode(201);
     }
@@ -33,7 +32,7 @@ class AuthenticationControllerTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(signupParam)
-                .when().post("/members")
+                .when().post("/auth/signup")
                 .then()
                 .statusCode(201);
 
@@ -41,7 +40,7 @@ class AuthenticationControllerTest {
         String header = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(loginParam)
-                .when().post("/login")
+                .when().post("/auth/login")
                 .then().log().all()
                 .extract().header("Set-Cookie");
 
@@ -50,7 +49,7 @@ class AuthenticationControllerTest {
         MemberResponseDto memberResponseDto = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
-                .when().get("/login/check")
+                .when().get("/auth/login/check")
                 .then().log().all()
                 .extract().body().as(MemberResponseDto.class);
 
@@ -64,7 +63,7 @@ class AuthenticationControllerTest {
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(signupParam)
-                .when().post("/members")
+                .when().post("/auth/signup")
                 .then()
                 .statusCode(201);
 
@@ -72,7 +71,7 @@ class AuthenticationControllerTest {
         String header = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(loginParam)
-                .when().post("/login")
+                .when().post("/auth/login")
                 .then().log().all()
                 .extract().header("Set-Cookie");
 
