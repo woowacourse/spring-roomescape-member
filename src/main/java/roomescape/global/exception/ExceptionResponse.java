@@ -1,4 +1,4 @@
-package roomescape.global;
+package roomescape.global.exception;
 
 import java.time.LocalDateTime;
 

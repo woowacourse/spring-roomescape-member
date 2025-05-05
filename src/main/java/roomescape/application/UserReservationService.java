@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.application.dto.request.CreateReservationServiceRequest;
 import roomescape.application.dto.response.ReservationServiceResponse;
+import roomescape.global.exception.BusinessRuleViolationException;
 import roomescape.domain.entity.Reservation;
 import roomescape.domain.entity.ReservationTheme;
 import roomescape.domain.entity.ReservationTime;
+import roomescape.domain.exception.ReservationException;
 import roomescape.domain.service.ReservationValidationService;
 import roomescape.domain.vo.ReservationDetails;
 import roomescape.domain.repository.ReservationRepository;
@@ -24,12 +26,14 @@ public class UserReservationService {
 
     public ReservationServiceResponse create(CreateReservationServiceRequest request) {
         ReservationDetails reservationDetails = createReservationDetails(request);
-
-        reservationValidationService.validateNoDuplication(request.date(), request.timeId(), request.themeId());
-        Reservation reservation = Reservation.create(reservationDetails);
-
-        Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationServiceResponse.from(savedReservation);
+        try {
+            reservationValidationService.validateNoDuplication(request.date(), request.timeId(), request.themeId());
+            Reservation reservation = Reservation.create(reservationDetails);
+            Reservation savedReservation = reservationRepository.save(reservation);
+            return ReservationServiceResponse.from(savedReservation);
+        } catch (ReservationException e) {
+            throw new BusinessRuleViolationException(e.getMessage(), e);
+        }
     }
 
     private ReservationDetails createReservationDetails(CreateReservationServiceRequest request) {

@@ -1,4 +1,4 @@
-package roomescape.global;
+package roomescape.global.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -64,4 +64,6 @@ public class GlobalExceptionHandler {
     public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException e) {
         return new ExceptionResponse(BAD_REQUEST.value(), e.getMessage(), LocalDateTime.now());
     }
+
+
 }

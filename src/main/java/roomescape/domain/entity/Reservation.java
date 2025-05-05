@@ -2,6 +2,7 @@ package roomescape.domain.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import roomescape.domain.exception.ReservationException.InvalidReservationTimeException;
 import roomescape.domain.vo.ReservationDetails;
 
 public record Reservation(
@@ -28,7 +29,7 @@ public record Reservation(
 
     private static void validateFutureTime(LocalDateTime requestedDateTime) {
         if (requestedDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("예약시간이 과거시간이 될 수 없습니다. 미래시간으로 입력해주세요.");
+            throw new InvalidReservationTimeException("예약시간이 과거시간이 될 수 없습니다. 미래시간으로 입력해주세요.");
         }
     }
 

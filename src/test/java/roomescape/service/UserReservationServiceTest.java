@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.application.UserReservationService;
+import roomescape.global.exception.BusinessRuleViolationException;
 import roomescape.domain.entity.Reservation;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.application.dto.request.CreateReservationServiceRequest;
@@ -67,7 +68,7 @@ class UserReservationServiceTest extends IntegrationTestSupport {
 
         // when & then
         Assertions.assertThatThrownBy(() -> userReservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessRuleViolationException.class);
     }
 
     @DisplayName("예약 요청한 테마, 예약 시간에 이미 예약이 있다면 예외를 발생시킨다")
@@ -85,6 +86,6 @@ class UserReservationServiceTest extends IntegrationTestSupport {
 
         // when & then
         Assertions.assertThatThrownBy(() -> userReservationService.create(request))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessRuleViolationException.class);
     }
 }

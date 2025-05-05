@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.entity.Reservation;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.infrastructure.db.dao.ReservationDao;
 
 @Repository
@@ -35,7 +36,7 @@ public class ReservationDbRepository implements ReservationRepository {
     @Override
     public Reservation getById(Long id) {
         return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 예약이 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("id에 해당하는 예약이 존재하지 않습니다."));
     }
 
     @Override
