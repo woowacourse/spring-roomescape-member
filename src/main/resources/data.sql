@@ -1,3 +1,8 @@
+INSERT INTO member (name, password, email, role)
+VALUES ('이름', '1234', 'test@test.com', 'MEMBER');
+INSERT INTO member (name, password, email, role)
+VALUES ('관리자', '1234', 'admin@admin.com', 'ADMIN');
+
 INSERT INTO reservation_time (start_at)
 VALUES ('10:00');
 INSERT INTO reservation_time (start_at)
