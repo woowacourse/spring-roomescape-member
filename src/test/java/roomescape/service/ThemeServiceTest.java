@@ -46,9 +46,9 @@ class ThemeServiceTest {
     @DisplayName("모든 테마를 조회할 수 있다.")
     @Test
     void canFindAllTheme() {
-        themeRepository.addTheme(Theme.createWithoutId("theme1", "설명", "섬네일"));
-        themeRepository.addTheme(Theme.createWithoutId("theme2", "설명", "섬네일"));
-        themeRepository.addTheme(Theme.createWithoutId("theme3", "설명", "섬네일"));
+        themeRepository.add(Theme.createWithoutId("theme1", "설명", "섬네일"));
+        themeRepository.add(Theme.createWithoutId("theme2", "설명", "섬네일"));
+        themeRepository.add(Theme.createWithoutId("theme3", "설명", "섬네일"));
 
         List<ThemeResponse> themes = themeService.findAllTheme();
         assertThat(themes).hasSize(3);
@@ -57,7 +57,7 @@ class ThemeServiceTest {
     @DisplayName("ID를 통해 테마를 조회할 수 있다.")
     @Test
     void canFindThemeById() {
-        long id = themeRepository.addTheme(Theme.createWithoutId("theme", "description", "url"));
+        long id = themeRepository.add(Theme.createWithoutId("theme", "description", "url"));
 
         ThemeResponse response = themeService.findThemeById(id);
         Theme actualTheme = new Theme(response.id(), response.name(), response.description(), response.thumbnail());
@@ -68,7 +68,7 @@ class ThemeServiceTest {
     @DisplayName("ID를 통해 테마를 삭제할 수 있다.")
     @Test
     void canDeleteThemeById() {
-        long id = themeRepository.addTheme(Theme.createWithoutId("이름", "설명", "썸네일"));
+        long id = themeRepository.add(Theme.createWithoutId("이름", "설명", "썸네일"));
 
         themeService.deleteThemeById(id);
         List<ThemeResponse> themes = themeService.findAllTheme();

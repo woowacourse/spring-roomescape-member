@@ -48,7 +48,7 @@ public class H2ThemeRepository implements ThemeRepository {
         }
     }
 
-    public long addTheme(Theme theme) {
+    public long add(Theme theme) {
         insertTheme = initializeSimpleJdbcInsert();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());

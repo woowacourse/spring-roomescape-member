@@ -7,7 +7,7 @@ public class ThemeFixture {
     public static Theme addThemeInRepository(ThemeRepository repository, String name, String description,
                                              String thumbnail) {
         Theme theme = Theme.createWithoutId(name, description, thumbnail);
-        long themeId = repository.addTheme(theme);
+        long themeId = repository.add(theme);
         return repository.findById(themeId).get();
     }
 }
