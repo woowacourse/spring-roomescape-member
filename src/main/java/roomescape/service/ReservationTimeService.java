@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.BookedReservationTimeResponseDto;
 import roomescape.dto.ReservationTimeRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
 import roomescape.exception.InvalidReservationException;
@@ -40,5 +41,30 @@ public class ReservationTimeService {
             throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteReservationTime(id);
+    }
+
+    public List<BookedReservationTimeResponseDto> getAllBookedReservationTimes(String date,
+        Long themeId) {
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
+
+        return reservationTimes.stream()
+            .map(reservationTime -> createBookedReservationTimeResponseDto(date, themeId,
+                reservationTime))
+            .toList();
+    }
+
+    private BookedReservationTimeResponseDto createBookedReservationTimeResponseDto(
+        String date, Long themeId, ReservationTime reservationTime) {
+        if (isAlreadyBookedTime(date, themeId, reservationTime)) {
+            return BookedReservationTimeResponseDto.from(reservationTime, true);
+        }
+        return BookedReservationTimeResponseDto.from(reservationTime, false);
+    }
+
+    private boolean isAlreadyBookedTime(String date, Long themeId,
+        ReservationTime reservationTime) {
+        int alreadyExistReservationCount = reservationDao.calculateAlreadyExistReservationBy(
+            date, themeId, reservationTime.getId());
+        return alreadyExistReservationCount != 0;
     }
 }
