@@ -10,7 +10,6 @@ public record ReservationDetails(
         String name,
         LocalDate date,
         ReservationTime reservationTime,
-        ReservationTheme reservationTheme,
-        boolean existDuplicatedDateTime
+        ReservationTheme reservationTheme
 ) {
 }
