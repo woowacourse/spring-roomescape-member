@@ -1,11 +1,11 @@
 package roomescape.dto.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record ThemeRequest(
-        @NotNull String name,
-        @NotNull String description,
-        @NotNull String thumbnail
+        @NotBlank String name,
+        @NotBlank String description,
+        @NotBlank String thumbnail
 ) {
 
 }

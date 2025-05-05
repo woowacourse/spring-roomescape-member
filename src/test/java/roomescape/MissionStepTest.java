@@ -72,7 +72,7 @@ public class MissionStepTest {
     void 육단계() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
-        params.put("date", LocalDate.now().plusDays(1));
+        params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
 
