@@ -7,17 +7,18 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.ReservationTimeDuplicateException;
-import roomescape.fake.ReservationTimeFakeRepository;
-import roomescape.repository.ReservationTimeRepository;
 
+@SpringBootTest
 class ReservationTimeServiceTest {
 
-    private final ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
-    private final ReservationTimeService reservationService = new ReservationTimeService(reservationTimeRepository);
+    @Autowired
+    private ReservationTimeService reservationService;
 
     @Test
     @DisplayName("조회된 엔티티를 DTO로 매핑해 반환한다.")
@@ -25,8 +26,8 @@ class ReservationTimeServiceTest {
         //given & when
         List<ReservationTimeResponse> actual = reservationService.readAllReservationTime();
         //then
-        assertThat(actual.size()).isEqualTo(2);
-        assertThat(actual.getFirst().startAt()).isEqualTo(LocalTime.MAX);
+        assertThat(actual.size()).isEqualTo(16);
+        assertThat(actual.getFirst().startAt()).isEqualTo(LocalTime.of(9, 0));
     }
 
     @Test
@@ -45,7 +46,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 성공적으로 삭제한다.")
     void successfulDeleteReservationTime() {
         // given
-        Long existingId = 1L;
+        Long existingId = 16L;
 
         // when
         reservationService.deleteReservationTime(existingId);
@@ -66,7 +67,7 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간 생성 시, 중복된 시간일 경우 예외가 발생한다.")
     void postReservationTimeIfDuplicationDatetime() {
         //given
-        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.MAX);
+        ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(14, 0));
         //when&then
         assertThatThrownBy(() -> reservationService.postReservationTime(request))
                 .isInstanceOf(ReservationTimeDuplicateException.class)

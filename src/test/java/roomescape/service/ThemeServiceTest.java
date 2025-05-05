@@ -7,17 +7,18 @@ import java.util.List;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
 import roomescape.exceptions.EntityNotFoundException;
 import roomescape.exceptions.ThemeDuplicateException;
-import roomescape.fake.ThemeFakeRepository;
-import roomescape.repository.ThemeRepository;
 
+@SpringBootTest
 class ThemeServiceTest {
 
-    private final ThemeRepository themeRepository = new ThemeFakeRepository();
-    private final ThemeService themeService = new ThemeService(themeRepository);
+    @Autowired
+    private ThemeService themeService;
 
     @Test
     @DisplayName("조회된 테마 엔티티를 DTO에 매핑해 반환한다.")
@@ -26,8 +27,8 @@ class ThemeServiceTest {
         List<ThemeResponse> themeResponses = themeService.readAllTheme();
 
         // then
-        assertThat(themeResponses.size()).isEqualTo(1);
-        assertThat(themeResponses.getFirst().name()).isEqualTo("레벨2 탈출");
+        assertThat(themeResponses.size()).isEqualTo(11);
+        assertThat(themeResponses.getFirst().name()).isEqualTo("우테코 레벨1 탈출");
     }
 
     @Test
@@ -53,7 +54,7 @@ class ThemeServiceTest {
     @DisplayName("예약 시간 생성 시, 중복된 테마명일 경우 예외가 발생한다.")
     void postThemeIfDuplicationThemeName() {
         //given
-        ThemeRequest request = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        ThemeRequest request = new ThemeRequest("우테코 레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         //when&then
         assertThatThrownBy(() -> themeService.postTheme(request))
