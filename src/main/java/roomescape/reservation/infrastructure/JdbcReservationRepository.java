@@ -127,8 +127,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                     WHERE r.date = ? and t.start_at = ? and th.id = ?
                 )
                 """;
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, Date.valueOf(date), Time.valueOf(time), themeId);
-        return count != 0;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, Date.valueOf(date), Time.valueOf(time), themeId);
     }
 
     @Override
