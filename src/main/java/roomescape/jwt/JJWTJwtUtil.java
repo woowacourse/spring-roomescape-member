@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.vo.Authentication;
+import roomescape.business.model.vo.Authorization;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -27,5 +28,16 @@ public class JJWTJwtUtil implements JwtUtil {
                 .compact();
 
         return new Authentication(tokenValue);
+    }
+
+    @Override
+    public Authorization getAuthorization(final String tokenValue) {
+        final String email = Jwts.parser()
+                .verifyWith(key).build()
+                .parseSignedClaims(tokenValue)
+                .getPayload()
+                .getSubject();
+
+        return new Authorization(email);
     }
 }

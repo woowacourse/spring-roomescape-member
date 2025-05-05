@@ -1,4 +1,6 @@
-package roomescape.exception;
+package roomescape.exception.impl;
+
+import roomescape.exception.RootException;
 
 public class LoginFailException extends RootException {
 

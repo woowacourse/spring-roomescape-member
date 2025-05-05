@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
 import roomescape.business.model.vo.Authentication;
-import roomescape.exception.LoginFailException;
+import roomescape.exception.impl.LoginFailException;
 import roomescape.jwt.JwtUtil;
 
 @Service

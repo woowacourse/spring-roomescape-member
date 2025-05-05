@@ -23,7 +23,7 @@ public class LoginApiController {
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request) {
         Authentication authentication = authService.authenticate(request.email(), request.password());
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, authentication.token());
+        headers.add(HttpHeaders.SET_COOKIE, "authToken=" + authentication.token());
         return ResponseEntity.noContent().headers(headers).build();
     }
 }
