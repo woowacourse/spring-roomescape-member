@@ -25,12 +25,12 @@ public class ReservationController {
         this.service = service;
     }
 
-    @GetMapping("")
+    @GetMapping
     public List<ReservationResponse> readReservation() {
         return service.readReservation();
     }
 
-    @PostMapping("")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationResponse postReservation(@RequestBody ReservationRequest request,
                                                HttpServletResponse response) {

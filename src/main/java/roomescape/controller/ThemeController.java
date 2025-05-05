@@ -26,12 +26,12 @@ public class ThemeController {
         this.service = service;
     }
 
-    @GetMapping("")
+    @GetMapping
     public List<ThemeResponse> readAllTheme() {
         return service.readAllTheme();
     }
 
-    @PostMapping("")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ThemeResponse postTheme(@RequestBody ThemeRequest request,
                                    HttpServletResponse response) {

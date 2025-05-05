@@ -25,12 +25,12 @@ public class ReservationTimeController {
         this.service = service;
     }
 
-    @GetMapping("")
+    @GetMapping
     public List<ReservationTimeResponse> readAllReservationTime() {
         return service.readAllReservationTime();
     }
 
-    @PostMapping("")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationTimeResponse postReservationTime(@RequestBody ReservationTimeRequest request,
                                                        HttpServletResponse response) {
