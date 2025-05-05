@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import roomescape.reservation.domain.exception.PastReservationException;
-import roomescape.reservation.domain.exception.ReservationDateNullException;
-import roomescape.reservation.domain.exception.ReservationTimeNullException;
 import roomescape.time.domain.ReservationTime;
 
 public class ReservationDateTime {
