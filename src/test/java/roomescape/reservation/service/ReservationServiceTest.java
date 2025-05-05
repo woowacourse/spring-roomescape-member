@@ -25,13 +25,14 @@ import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservationTime.dao.ReservationTimeDao;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.dao.ThemeDaoImpl;
 import roomescape.theme.domain.Theme;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
     private Dao<ReservationTime> reservationTimeDao;
-    private Dao<Theme> themeDao;
+    private ThemeDao themeDao;
     private Dao<Reservation> reservationDao;
 
     private ReservationService reservationService;
@@ -40,7 +41,7 @@ class ReservationServiceTest {
     void setUp() {
         reservationTimeDao = mock(ReservationTimeDao.class);
         reservationDao = mock(ReservationDao.class);
-        themeDao = mock(ThemeDao.class);
+        themeDao = mock(ThemeDaoImpl.class);
 
         reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     }
@@ -61,14 +62,14 @@ class ReservationServiceTest {
     @DisplayName("예약 추가 시 동일 일자와 시간에 예약이 존재하는 경우 예외를 발생시킨다")
     @Test
     void exception_not_available() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(1));
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
 
         Theme theme = new Theme(1L, "theme1", "description1", "picture1");
-        Reservation reservation = new Reservation(1L, "kim", LocalDate.of(2025, 5, 5), reservationTime, theme);
+        Reservation reservation = new Reservation(1L, "kim", LocalDate.now(), reservationTime, theme);
         when(reservationDao.findAll()).thenReturn(List.of(reservation));
 
-        ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.of(2025, 5, 5), 1L, 1L);
+        ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.now(), 1L, 1L);
         assertThatThrownBy(() -> reservationService.add(reservationRequest))
                 .isInstanceOf(DuplicateException.class);
 
@@ -91,11 +92,11 @@ class ReservationServiceTest {
     @DisplayName("예약 추가 시 존재하지 않는 테마 아이디를 조회하려고 할 때 예외를 발생시킨다")
     @Test
     void exception_invalid_theme_id() {
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(1));
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
         when(themeDao.findById(2L)).thenReturn(Optional.empty());
 
-        ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.of(2025, 5, 5), 1L, 2L);
+        ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.now(), 1L, 2L);
         assertThatThrownBy(() -> reservationService.add(reservationRequest))
                 .isInstanceOf(InvalidIdException.class);
 

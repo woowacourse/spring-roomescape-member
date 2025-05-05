@@ -14,6 +14,7 @@ import roomescape.reservationTime.dto.admin.ReservationTimeRequest;
 import roomescape.reservationTime.dto.admin.ReservationTimeResponse;
 import roomescape.reservationTime.dto.user.AvailableReservationTimeRequest;
 import roomescape.reservationTime.dto.user.AvailableReservationTimeResponse;
+import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.domain.Theme;
 
 @Service
@@ -30,7 +31,7 @@ public class ReservationTimeService {
     public ReservationTimeService(
             Dao<ReservationTime> reservationTimeDao,
             Dao<Reservation> reservationDao,
-            Dao<Theme> themeDao
+            ThemeDao themeDao
     ) {
         this.reservationTimeDao = reservationTimeDao;
         this.reservationDao = reservationDao;

@@ -24,6 +24,7 @@ import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.dao.ThemeDaoImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.dto.ThemeRequest;
 
@@ -37,7 +38,7 @@ class ThemeServiceTest {
 
     @BeforeEach
     void setUp() {
-        themeDao = mock(ThemeDao.class);
+        themeDao = mock(ThemeDaoImpl.class);
         reservationDao = mock(ReservationDao.class);
 
         themeService = new ThemeService(themeDao, reservationDao);

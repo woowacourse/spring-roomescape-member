@@ -17,11 +17,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDao;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.dao.ThemeDaoImpl;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
-@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDaoImpl.class})
 class ReservationDaoTest {
 
     @Autowired
@@ -31,7 +31,7 @@ class ReservationDaoTest {
     @Autowired
     private ReservationTimeDao reservationTimeDao;
     @Autowired
-    private ThemeDao themeDao;
+    private ThemeDaoImpl themeDaoImpl;
 
     @BeforeEach
     void setUp() {

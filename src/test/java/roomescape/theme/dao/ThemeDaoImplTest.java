@@ -18,13 +18,13 @@ import roomescape.reservationTime.dao.ReservationTimeDao;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
-@Import({ThemeDao.class, ReservationTimeDao.class, ReservationDao.class})
-class ThemeDaoTest {
+@Import({ThemeDaoImpl.class, ReservationTimeDao.class, ReservationDao.class})
+class ThemeDaoImplTest {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Autowired
-    private ThemeDao themeDao;
+    private ThemeDaoImpl themeDaoImpl;
     @Autowired
     private ReservationTimeDao reservationTimeDao;
     @Autowired
@@ -110,7 +110,7 @@ class ThemeDaoTest {
     @DisplayName("테마 내역을 조회하는 기능을 구현한다")
     @Test
     void findAll() {
-        List<Theme> themes = themeDao.findAll();
+        List<Theme> themes = themeDaoImpl.findAll();
 
         assertThat(themes).hasSize(2);
     }
@@ -118,7 +118,7 @@ class ThemeDaoTest {
     @DisplayName("테마 내역을 아이디로 조회하는 기능을 구현한다")
     @Test
     void findById() {
-        Theme theme = themeDao.findById(1L).get();
+        Theme theme = themeDaoImpl.findById(1L).get();
 
         assertThat(theme.getId()).isEqualTo(1L);
     }
@@ -129,7 +129,7 @@ class ThemeDaoTest {
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now().minusDays(1);
 
-        List<Theme> rankedThemes = themeDao.findRankedByPeriod(startDate, endDate);
+        List<Theme> rankedThemes = themeDaoImpl.findRankedByPeriod(startDate, endDate);
 
         assertThat(rankedThemes).hasSize(1);
     }
@@ -139,16 +139,16 @@ class ThemeDaoTest {
     void add() {
         Theme theme = new Theme(1L, "name1", "description1", "thumbnail1");
 
-        themeDao.add(theme);
+        themeDaoImpl.add(theme);
 
-        assertThat(themeDao.findAll()).hasSize(3);
+        assertThat(themeDaoImpl.findAll()).hasSize(3);
     }
 
     @DisplayName("기존의 테마 내역을 삭제하는 기능을 구현한다")
     @Test
     void deleteById() {
-        themeDao.deleteById(2L);
+        themeDaoImpl.deleteById(2L);
 
-        assertThat(themeDao.findAll()).hasSize(1);
+        assertThat(themeDaoImpl.findAll()).hasSize(1);
     }
 }

@@ -27,13 +27,14 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.dto.admin.ReservationTimeRequest;
 import roomescape.reservationTime.dto.user.AvailableReservationTimeRequest;
 import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.dao.ThemeDaoImpl;
 import roomescape.theme.domain.Theme;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationTimeServiceTest {
 
     private Dao<ReservationTime> reservationTimeDao;
-    private Dao<Theme> themeDao;
+    private ThemeDao themeDao;
     private Dao<Reservation> reservationDao;
 
     private ReservationTimeService reservationTimeService;
@@ -41,7 +42,7 @@ class ReservationTimeServiceTest {
     @BeforeEach
     void setUp() {
         reservationTimeDao = mock(ReservationTimeDao.class);
-        themeDao = mock(ThemeDao.class);
+        themeDao = mock(ThemeDaoImpl.class);
         reservationDao = mock(ReservationDao.class);
 
         reservationTimeService = new ReservationTimeService(reservationTimeDao, reservationDao, themeDao);
