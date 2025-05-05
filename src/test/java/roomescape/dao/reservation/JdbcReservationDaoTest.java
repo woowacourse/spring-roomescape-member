@@ -68,7 +68,6 @@ class JdbcReservationDaoTest {
 
         // when
         final List<Reservation> reservations = jdbcReservationDao.findAll();
-        System.out.println(reservations.getFirst().getName());
 
         // then
         assertThat(reservations.size()).isEqualTo(2);
@@ -133,7 +132,7 @@ class JdbcReservationDaoTest {
                 Reservation.create("체체", date, savedReservationTime, savedTheme));
 
         // when & then
-        assertThat(jdbcReservationTimeDao.existsById(savedReservation.getId())).isTrue();
+        assertThat(jdbcReservationDao.existsById(savedReservation.getId())).isTrue();
     }
 
     @DisplayName("데이터베이스에 존재하지 않을 경우 false를 반환한다.")
