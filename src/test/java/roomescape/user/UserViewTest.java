@@ -1,4 +1,4 @@
-package roomescape;
+package roomescape.user;
 
 
 import io.restassured.RestAssured;
@@ -9,11 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class WelcomeTest {
+public class UserViewTest {
 
     private final int port;
 
-    public WelcomeTest(
+    public UserViewTest(
             @LocalServerPort final int port
     ) {
         this.port = port;
@@ -24,6 +24,24 @@ public class WelcomeTest {
     void welcome() {
         RestAssured.given().port(port).log().all()
                 .when().get("/")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("/reservation로 요청이 들어오면 예약 페이지를 응답한다.")
+    @Test
+    void reservation() {
+        RestAssured.given().port(port).log().all()
+                .when().get("/reservation")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @DisplayName("/login으로 요청이 들어오면 로그인 페이지를 응답한다.")
+    @Test
+    void login() {
+        RestAssured.given().port(port).log().all()
+                .when().get("/login")
                 .then().log().all()
                 .statusCode(200);
     }
