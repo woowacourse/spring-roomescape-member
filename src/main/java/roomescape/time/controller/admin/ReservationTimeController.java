@@ -22,7 +22,7 @@ public class ReservationTimeController {
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> create(@RequestBody @Valid ReservationTimeRequest requestDto) {
         ReservationTimeResponse responseDto = service.create(requestDto);
-        return ResponseEntity.ok().body(responseDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping

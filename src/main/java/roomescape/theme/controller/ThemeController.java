@@ -23,7 +23,7 @@ public class ThemeController {
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> getAllThemes() {
         List<ThemeResponse> themes = themeService.getAllThemes();
-        return ResponseEntity.ok().body(themes);
+        return ResponseEntity.ok(themes);
     }
 
     @PostMapping
@@ -41,6 +41,6 @@ public class ThemeController {
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("limit") final int limit) {
         List<ThemeResponse> response = themeService.getPopularThemes(limit);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
 }

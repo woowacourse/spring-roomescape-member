@@ -27,7 +27,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest requestDto) {
         ReservationResponse responseDto = service.createReservation(requestDto);
-        return ResponseEntity.ok().body(responseDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
