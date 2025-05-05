@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.ConstraintConflictException;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
@@ -21,7 +24,6 @@ import roomescape.time.domain.ReservationTimeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -82,7 +84,8 @@ class ReservationTimeCommandUseCaseImplTest {
         // when
         // then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(id))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Tried to delete [RESERVATION_TIME] that does not exist. params={ReservationTimeId=ReservationTimeId(-1)}");
     }
 
     @Test
@@ -108,8 +111,9 @@ class ReservationTimeCommandUseCaseImplTest {
         // when
         // then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(savedTime.getId()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("예약에서 참조 중인 시간은 삭제할 수 없습니다.");
+                .isInstanceOf(ConstraintConflictException.class)
+                .hasMessage("[RESERVATION_TIME] is referenced by another entity. " +
+                        "params={ReservationTimeId=ReservationTimeId(%s)}".formatted(reservation.getTime().getId().getValue()));
     }
 
     @Test
@@ -126,8 +130,8 @@ class ReservationTimeCommandUseCaseImplTest {
         // when
         // then
         assertThatThrownBy(() -> reservationTimeCommandUseCase.create(sameTimeRequest))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("추가하려는 시간이 이미 존재합니다.");
+                .isInstanceOf(DuplicateException.class)
+                .hasMessage("RESERVATION_TIME already exists. params={LocalTime=14:00}");
     }
 
 }
