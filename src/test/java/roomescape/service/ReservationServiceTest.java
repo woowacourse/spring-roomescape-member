@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.BookedReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.exception.InvalidReservationException;
 import roomescape.service.nowdate.CurrentDateTime;
@@ -85,37 +83,4 @@ public class ReservationServiceTest {
             .hasMessage("중복된 날짜와 시간을 예약할 수 없습니다.");
     }
 
-    // TODO : 예약 여부를 포함한 예약 시간을 가져올 수 있어야 한다.
-    @DisplayName("예약 여부를 포함한 예약 시간을 가져올 수 있어야 한다")
-    @Test
-    void get_all_reservation_contains_book_info() {
-        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-        ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
-        ReservationTime reservationTime3 = new ReservationTime(3L, LocalTime.of(12, 0));
-
-        List<ReservationTime> reservationTimes = List.of(reservationTime1, reservationTime2,
-            reservationTime3);
-        when(reservationTimeDao.findAllReservationTimes()).thenReturn(reservationTimes);
-        List<BookedReservationTimeResponseDto> allBookedReservationTimes =
-            reservationService.getAllBookedReservationTimes("2025-05-02", 1L);
-
-        assertThat(allBookedReservationTimes.get(0).alreadyBooked()).isFalse();
-        assertThat(allBookedReservationTimes.get(1).alreadyBooked()).isFalse();
-        assertThat(allBookedReservationTimes.get(2).alreadyBooked()).isFalse();
-    }
-
-    @DisplayName("예약이 존재한 시간이라면 true를 반환해야 한다.")
-    @Test
-    void get_all_reservation_contains_book_info_already_exist_case() {
-        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-
-        String date = "2025-05-02";
-        List<ReservationTime> reservationTimes = List.of(reservationTime1);
-        when(reservationTimeDao.findAllReservationTimes()).thenReturn(reservationTimes);
-        when(reservationDao.calculateAlreadyExistReservationBy(date, 1L, 1L)).thenReturn(1);
-
-        List<BookedReservationTimeResponseDto> allBookedReservationTimes =
-            reservationService.getAllBookedReservationTimes("2025-05-02", 1L);
-        assertThat(allBookedReservationTimes.get(0).alreadyBooked()).isTrue();
-    }
 }

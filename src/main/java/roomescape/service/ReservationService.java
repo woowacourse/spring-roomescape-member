@@ -12,7 +12,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.BookedReservationTimeResponseDto;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
@@ -78,30 +77,5 @@ public class ReservationService {
     private void validateIsExistReservationBy(Long id) {
         reservationDao.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약을 찾을 수 없습니다."));
-    }
-
-    public List<BookedReservationTimeResponseDto> getAllBookedReservationTimes(String date,
-        Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
-
-        return reservationTimes.stream()
-            .map(reservationTime -> createBookedReservationTimeResponseDto(date, themeId,
-                reservationTime))
-            .toList();
-    }
-
-    private BookedReservationTimeResponseDto createBookedReservationTimeResponseDto(
-        String date, Long themeId, ReservationTime reservationTime) {
-        if (isAlreadyBookedTime(date, themeId, reservationTime)) {
-            return BookedReservationTimeResponseDto.from(reservationTime, true);
-        }
-        return BookedReservationTimeResponseDto.from(reservationTime, false);
-    }
-
-    private boolean isAlreadyBookedTime(String date, Long themeId,
-        ReservationTime reservationTime) {
-        int alreadyExistReservationCount = reservationDao.calculateAlreadyExistReservationBy(
-            date, themeId, reservationTime.getId());
-        return alreadyExistReservationCount != 0;
     }
 }

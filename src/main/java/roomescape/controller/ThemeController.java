@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.BookedReservationTimeResponseDto;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.dto.ThemeResponseDto;
 import roomescape.service.ThemeServiceImpl;
@@ -25,6 +27,12 @@ public class ThemeController {
     @GetMapping("/themes/ranks")
     public List<ThemeResponseDto> readThemeRanks() {
         return themeServiceImpl.getAllThemeOfRanks();
+    }
+
+    @GetMapping("/themes/{themeId}/times")
+    public List<BookedReservationTimeResponseDto> readBookedReservationTimes(
+        @RequestParam String date, @PathVariable Long themeId) {
+        return themeServiceImpl.getAllBookedReservationTimes(date, themeId);
     }
 
     @GetMapping("/themes")
