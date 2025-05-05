@@ -68,8 +68,7 @@ public class JdbcThemeDao implements ThemeDao {
                   INNER JOIN theme as t
                   ON r.theme_id = t.id
                 WHERE
-                  PARSEDATETIME(r.date, 'yyyy-MM-dd') >= ?
-                    AND PARSEDATETIME(r.date, 'yyyy-MM-dd') < ?
+                   r.date >= ? AND r.date < ?
                 GROUP BY
                   theme_id
                 ORDER BY
