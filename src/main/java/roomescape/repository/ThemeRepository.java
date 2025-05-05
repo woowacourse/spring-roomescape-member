@@ -6,7 +6,7 @@ import roomescape.model.Theme;
 public interface ThemeRepository {
     Theme addTheme(Theme theme);
 
-    List<Theme> getAllTheme();
+    List<Theme> getAllThemes();
 
     int deleteTheme(Long id);
 

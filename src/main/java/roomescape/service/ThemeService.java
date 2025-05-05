@@ -2,7 +2,6 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ThemeRequestDto;
@@ -28,7 +27,7 @@ public class ThemeService {
     }
 
     public List<Theme> getAllThemes() {
-        return themeRepository.getAllTheme();
+        return themeRepository.getAllThemes();
     }
 
     public void deleteTheme(Long id) {
