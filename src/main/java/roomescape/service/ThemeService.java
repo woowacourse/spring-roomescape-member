@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreationRequest;
+import roomescape.dto.ThemeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -27,17 +28,24 @@ public class ThemeService {
         return themeRepository.addTheme(theme);
     }
 
-    public List<Theme> findAllTheme() {
-        return themeRepository.findAll();
+    public List<ThemeResponse> findAllTheme() {
+        List<Theme> themes = themeRepository.findAll();
+        return themes.stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
-    public Theme findThemeById(long themeId) {
-        return loadThemeById(themeId);
+    public ThemeResponse findThemeById(long themeId) {
+        Theme theme = loadThemeById(themeId);
+        return ThemeResponse.from(theme);
     }
 
-    public List<Theme> findTopThemes() {
+    public List<ThemeResponse> findTopThemes() {
         LocalDate endDate = LocalDate.now();
-        return themeRepository.getTopThemesByCount(endDate.minusDays(7L), endDate);
+        List<Theme> topThemes = themeRepository.getTopThemesByCount(endDate.minusDays(7L), endDate);
+        return topThemes.stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
     public void deleteThemeById(long themeId) {

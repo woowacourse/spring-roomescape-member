@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreationRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -44,7 +45,7 @@ class ReservationServiceTest {
         reservationRepository.add(Reservation.createWithoutId("reservation2", NEXT_DATE, time, theme));
         reservationRepository.add(Reservation.createWithoutId("reservation3", NEXT_DATE, time, theme));
 
-        List<Reservation> allReservations = reservationService.getAllReservations();
+        List<ReservationResponse> allReservations = reservationService.getAllReservations();
 
         assertThat(allReservations).hasSize(3);
     }

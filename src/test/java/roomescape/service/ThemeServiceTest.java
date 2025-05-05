@@ -14,6 +14,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ThemeCreationRequest;
+import roomescape.dto.ThemeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -49,7 +50,7 @@ class ThemeServiceTest {
         themeRepository.addTheme(Theme.createWithoutId("theme2", "설명", "섬네일"));
         themeRepository.addTheme(Theme.createWithoutId("theme3", "설명", "섬네일"));
 
-        List<Theme> themes = themeService.findAllTheme();
+        List<ThemeResponse> themes = themeService.findAllTheme();
         assertThat(themes).hasSize(3);
     }
 
@@ -58,8 +59,8 @@ class ThemeServiceTest {
     void canFindThemeById() {
         long id = themeRepository.addTheme(Theme.createWithoutId("theme", "description", "url"));
 
-        Theme actualTheme = themeService.findThemeById(id);
-
+        ThemeResponse response = themeService.findThemeById(id);
+        Theme actualTheme = new Theme(response.id(), response.name(), response.description(), response.thumbnail());
         Theme expectedTheme = new Theme(id, "theme", "description", "url");
         assertThat(actualTheme).isEqualTo(expectedTheme);
     }
@@ -70,7 +71,7 @@ class ThemeServiceTest {
         long id = themeRepository.addTheme(Theme.createWithoutId("이름", "설명", "썸네일"));
 
         themeService.deleteThemeById(id);
-        List<Theme> themes = themeService.findAllTheme();
+        List<ThemeResponse> themes = themeService.findAllTheme();
         assertThat(themes).hasSize(0);
     }
 

@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationTimeCreationRequest;
+import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -39,7 +40,7 @@ class ReservationTimeServiceTest {
         addReservationTimeInRepository(timeRepository, LocalTime.of(11, 0));
         addReservationTimeInRepository(timeRepository, LocalTime.of(12, 0));
 
-        List<ReservationTime> reservationTimes = reservationTimeService.getAllReservationTime();
+        List<ReservationTimeResponse> reservationTimes = reservationTimeService.getAllReservationTime();
 
         assertThat(reservationTimes).hasSize(3);
     }
@@ -49,8 +50,8 @@ class ReservationTimeServiceTest {
     void canGetReservationTimeById() {
         ReservationTime expectedTime = addReservationTimeInRepository(timeRepository, LocalTime.of(10, 0));
 
-        ReservationTime actualTime = reservationTimeService.getReservationTimeById(1L);
-
+        ReservationTimeResponse actualTimeResponse = reservationTimeService.getReservationTimeById(1L);
+        ReservationTime actualTime = new ReservationTime(actualTimeResponse.id(), actualTimeResponse.startAt());
         assertThat(actualTime).isEqualTo(expectedTime);
     }
 

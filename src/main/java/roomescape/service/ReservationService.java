@@ -7,6 +7,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreationRequest;
+import roomescape.dto.ReservationResponse;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -28,12 +29,14 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
+    public List<ReservationResponse> getAllReservations() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        return reservations.stream().map(ReservationResponse::from).toList();
     }
 
-    public Reservation getReservationById(long id) {
-        return loadReservationById(id);
+    public ReservationResponse getReservationById(long id) {
+        Reservation reservation = loadReservationById(id);
+        return ReservationResponse.from(reservation);
     }
 
     public long saveReservation(ReservationCreationRequest request) {
@@ -43,7 +46,6 @@ public class ReservationService {
                 request.name(), request.date(), reservationTime, theme);
 
         reservation.validatePastDateTime();
-        //TODO: 이미 존재하는 예약인지 체크할때 테마 조건도 추가
         validateAlreadyReserved(reservation);
 
         return reservationRepository.add(reservation);
