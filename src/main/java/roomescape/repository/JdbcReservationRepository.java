@@ -30,7 +30,6 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                 FROM reservation as r inner join reservation_time as t on r.time_id = t.id 
                 inner join theme as th on r.theme_id = th.id""";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            System.out.println(rs.getString("name"));
             UserName userName = new UserName(rs.getString("name"));
             ReservationDateTime dateTime = new ReservationDateTime(LocalDate.parse(rs.getString("date")),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()));
