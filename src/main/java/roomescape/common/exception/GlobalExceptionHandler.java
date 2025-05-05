@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.format.DateTimeParseException;
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -14,23 +15,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body("잘못된 날짜/시간 형식입니다.");
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(final IllegalArgumentException e) {
-        String message = getMessage(e);
-        return ResponseEntity.badRequest().body(message);
-    }
-
-    @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(final IllegalStateException e) {
-        String message = getMessage(e);
-        return ResponseEntity.badRequest().body(message);
-    }
-
-    private static String getMessage(Exception e) {
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class, NoSuchElementException.class})
+    public ResponseEntity<String> handleIllegalException(final Exception e) {
         String message = e.getMessage();
-        if (message == null) {
-            message = "잘못된 입력입니다.";
-        }
-        return message;
+        return ResponseEntity.badRequest().body(message);
     }
 }
