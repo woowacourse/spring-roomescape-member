@@ -19,7 +19,7 @@ public class ReservationTimeQueryUseCaseImpl implements ReservationTimeQueryUseC
     @Override
     public ReservationTime get(final ReservationTimeId id) {
         return reservationTimeRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoSuchElementException("조회할 시간이 없습니다."));
     }
 
     @Override
