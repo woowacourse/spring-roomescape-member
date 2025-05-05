@@ -56,7 +56,7 @@ public class ReservationService {
     private List<AvailableTimeResponse> convertTimeToResponses(List<Reservation> reservations,
                                                                   List<ReservationTime> times) {
         return times.stream()
-                .map(time -> AvailableTimeResponse.from(time.getStartAt(), time.getId(), isAlreadyBooked(time, reservations)))
+                .map(time -> AvailableTimeResponse.from(time.getStartAt(), time.getId(), isAlreadyBooked(time.getId(), reservations)))
                 .toList();
     }
 
@@ -73,9 +73,9 @@ public class ReservationService {
         return request.toReservationWithoutId(findTime, findTheme);
     }
 
-    private Boolean isAlreadyBooked(ReservationTime time, List<Reservation> reservations) {
+    private Boolean isAlreadyBooked(Long timeId, List<Reservation> reservations) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getTimeId().equals(time.getId()));
+                .anyMatch(reservation -> reservation.isSameId(timeId));
     }
 
     private void validateDateAndTime(LocalDate date, LocalTime time){

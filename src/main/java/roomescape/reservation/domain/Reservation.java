@@ -48,4 +48,8 @@ public class Reservation {
         return time.getId();
     }
 
+    public boolean isSameId(Long id){
+        return this.id.equals(id);
+    }
+
 }
