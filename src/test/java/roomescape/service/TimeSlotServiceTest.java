@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.Fixtures;
 import roomescape.controller.timeslot.dto.TimeSlotResponse;
+import roomescape.exception.RoomescapeException;
 import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.TimeSlotFakeRepository;
 
@@ -65,6 +66,6 @@ class TimeSlotServiceTest {
 
         // when & then
         assertThatThrownBy(() -> timeSlotService.removeById(timeSlotResponse.id()))
-            .isInstanceOf(IllegalStateException.class);
+            .isInstanceOf(RoomescapeException.class);
     }
 }
