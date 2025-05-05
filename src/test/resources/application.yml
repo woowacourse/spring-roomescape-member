@@ -9,7 +9,7 @@ spring:
 
   sql:
     init:
-      data-locations: classpath:data-test.sql
+      data-locations: [ ]
 
 logging:
   level:

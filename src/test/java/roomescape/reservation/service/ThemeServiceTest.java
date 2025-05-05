@@ -9,8 +9,9 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import roomescape.common.CleanUp;
-import roomescape.common.RoomescapeTestSupport;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.fixture.ReservationDateFixture;
 import roomescape.reservation.fixture.ReservationDbFixture;
@@ -22,7 +23,8 @@ import roomescape.theme.domain.Theme;
 import roomescape.theme.service.ThemeService;
 import roomescape.time.domain.ReservationTime;
 
-class ThemeServiceTest extends RoomescapeTestSupport {
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+class ThemeServiceTest {
 
     @Autowired
     private ReservationDbFixture reservationDbFixture;
