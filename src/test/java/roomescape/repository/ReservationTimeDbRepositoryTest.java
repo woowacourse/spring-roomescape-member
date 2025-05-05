@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.entity.ReservationTime;
+import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.infrastructure.db.ReservationTimeDbRepository;
 import roomescape.infrastructure.db.dao.ReservationTimeH2Dao;
 import roomescape.support.JdbcTestSupport;
@@ -31,7 +32,7 @@ class ReservationTimeDbRepositoryTest extends JdbcTestSupport {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeDbRepository.getById(2L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @DisplayName("존재하는 id를 조회하면 조회된 예약 객체를 반환한다")
