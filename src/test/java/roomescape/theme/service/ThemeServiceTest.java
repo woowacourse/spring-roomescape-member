@@ -4,13 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.badRequest.BadRequestException;
+import roomescape.exception.conflict.ThemeNameConflictException;
+import roomescape.exception.notFound.ThemeNotFoundException;
+import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;
-import roomescape.theme.entity.Theme;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -39,7 +39,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> service.createTheme(request))
-                .isInstanceOf(ConflictException.class);
+                .isInstanceOf(ThemeNameConflictException.class);
     }
 
     @DisplayName("id가 존재하지 않을 경우 삭제할 수 없다.")
@@ -49,7 +49,7 @@ class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> service.deleteTheme(1L))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(ThemeNotFoundException.class);
     }
 
     @DisplayName("인기 테마 조회는 1개 이상 100개 이하까지만 가능하며 그 이외의 범위가 주어지면 예외가 발생한다.")

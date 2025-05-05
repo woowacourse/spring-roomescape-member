@@ -1,13 +1,13 @@
 package roomescape.theme.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.BadRequestException;
+import roomescape.exception.badRequest.BadRequestException;
+import roomescape.exception.conflict.ThemeNameConflictException;
+import roomescape.exception.notFound.ThemeNotFoundException;
+import roomescape.theme.entity.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.dto.request.ThemeRequest;
 import roomescape.theme.service.dto.response.ThemeResponse;
-import roomescape.theme.entity.Theme;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ThemeService {
         Theme newTheme = request.toEntity();
         themeRepository.findByName(newTheme.getName())
                 .ifPresent((theme) -> {
-                    throw new ConflictException("중복되는 이름의 테마가 존재합니다.");
+                    throw new ThemeNameConflictException();
                 });
         Theme saved = themeRepository.save(newTheme);
         return ThemeResponse.from(saved);
@@ -40,7 +40,7 @@ public class ThemeService {
     public void deleteTheme(final Long id) {
         final boolean deleted = themeRepository.deleteById(id);
         if (!deleted) {
-            throw new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", id));
+            throw new ThemeNotFoundException(id);
         }
     }
 

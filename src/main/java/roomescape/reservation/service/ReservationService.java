@@ -1,8 +1,10 @@
 package roomescape.reservation.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
+import roomescape.exception.conflict.ReservationConflictException;
+import roomescape.exception.notFound.ReservationNotFoundException;
+import roomescape.exception.notFound.ReservationTimeNotFoundException;
+import roomescape.exception.notFound.ThemeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.service.dto.request.ReservationRequest;
@@ -40,15 +42,15 @@ public class ReservationService {
     private ReservationResponse convertToResponse(Reservation reservation) {
         final Long themeId = reservation.getThemeId();
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", themeId)));
+                .orElseThrow(() -> new ThemeNotFoundException(themeId));
         return ReservationResponse.from(reservation, theme);
     }
 
     public ReservationResponse createReservation(ReservationRequest request) {
         ReservationTime timeEntity = timeRepository.findById(request.timeId())
-                .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 예약 시간은 존재하지 않습니다.", request.timeId())));
+                .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
         Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new NotFoundException(String.format("%d 식별자의 테마는 존재하지 않습니다.", request.themeId())));
+                .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
 
         Reservation newReservation = request.toEntity(timeEntity);
         validateDuplicated(newReservation);
@@ -59,7 +61,7 @@ public class ReservationService {
 
     private void validateDuplicated(Reservation newReservation) {
         if (isExistDuplicatedWith(newReservation)) {
-            throw new ConflictException("해당 날짜에는 이미 예약이 존재합니다.");
+            throw new ReservationConflictException();
         }
     }
 
@@ -70,7 +72,7 @@ public class ReservationService {
     public void deleteReservation(final Long id) {
         final boolean deleted = reservationRepository.deleteById(id);
         if (!deleted) {
-            throw new NotFoundException(String.format("%d는 존재하지 않는 예약 식별자입니다.", id));
+            throw new ReservationNotFoundException(id);
         }
     }
 }

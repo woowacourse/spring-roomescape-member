@@ -7,9 +7,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import roomescape.exception.BadRequestException;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
+import roomescape.exception.badRequest.BadRequestException;
+import roomescape.exception.conflict.ConflictException;
+import roomescape.exception.notFound.NotFoundException;
 
 import java.util.List;
 

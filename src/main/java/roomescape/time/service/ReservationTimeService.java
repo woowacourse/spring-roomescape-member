@@ -1,16 +1,16 @@
 package roomescape.time.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.exception.BadRequestException;
-import roomescape.exception.ConflictException;
-import roomescape.exception.NotFoundException;
+import roomescape.exception.badRequest.BadRequestException;
+import roomescape.exception.conflict.ReservationTimeConflictException;
+import roomescape.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.service.dto.response.ReservationTimeWithBookedResponse;
-import roomescape.time.service.dto.request.ReservationTimeRequest;
-import roomescape.time.service.dto.response.ReservationTimeResponse;
 import roomescape.time.entity.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.time.service.dto.request.ReservationTimeRequest;
+import roomescape.time.service.dto.response.ReservationTimeResponse;
+import roomescape.time.service.dto.response.ReservationTimeWithBookedResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,7 +37,7 @@ public class ReservationTimeService {
 
     private void validateDuplicated(ReservationTime entity) {
         if (isExistDuplicatedWith(entity)) {
-            throw new ConflictException("겹치는 시간이 존재합니다.");
+            throw new ReservationTimeConflictException();
         }
     }
 
@@ -58,7 +58,7 @@ public class ReservationTimeService {
         }
         final boolean deleted = timeRepository.deleteById(id);
         if (!deleted) {
-            throw new NotFoundException(String.format("%d 식별자의 예약 시간은 존재하지 않습니다.", id));
+            throw new ReservationTimeNotFoundException(id);
         }
     }
 
