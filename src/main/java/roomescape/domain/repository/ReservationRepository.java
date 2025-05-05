@@ -18,4 +18,8 @@ public interface ReservationRepository {
     void remove(Reservation reservation);
 
     boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId);
+
+    boolean existsByThemeId(Long reservationThemeId);
+
+    boolean existsByTimeId(Long reservationTimeId);
 }

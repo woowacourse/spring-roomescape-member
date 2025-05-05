@@ -36,14 +36,16 @@
 ---
 
 ### TODO (첫 번째 리뷰 이후)
-- [ ] 테스트 작성
+- [X] 테스트 작성
   - [x] DAO Test
   - [x] Repository Test
   - [x] Service Test
-  - [ ] Domain Test
-  - [ ] 입력 검증 테스트(requestDTO)
-- [ ] 예외 처리 리팩토링
-  - [ ] 커스텀 예외 생성
-    - [ ] 예외 처리 기준 및 위치 명확하게 하기
-  - [ ] 응답 에러 메시지 생성
-- [ ] null 체크 기준 정하기
+  - [X] Domain Test
+  - [X] 입력 검증 테스트(requestDTO)
+- [X] 예외 처리 리팩토링
+  - [X] 커스텀 예외 생성
+    - [X] 예외 처리 기준 및 위치 명확하게 하기
+  - [X] 응답 에러 메시지 생성
+- [X] null 체크 기준 정하기
+- [X] 외래키 제약 삭제 로직, 데이터베이스에 의존하지 않고 코드로 구현하기
+- [X] jdbcTemplate -> named

@@ -3,10 +3,8 @@ package roomescape.infrastructure.db;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.entity.Reservation;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.global.exception.ResourceNotFoundException;
@@ -47,5 +45,15 @@ public class ReservationDbRepository implements ReservationRepository {
     @Override
     public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
         return reservationDao.existDuplicatedDateTime(date, timeId, themeId);
+    }
+
+    @Override
+    public boolean existsByThemeId(Long reservationThemeId) {
+        return reservationDao.existsByThemeId(reservationThemeId);
+    }
+
+    @Override
+    public boolean existsByTimeId(Long reservationTimeId) {
+        return reservationDao.existsByTimeId(reservationTimeId);
     }
 }
