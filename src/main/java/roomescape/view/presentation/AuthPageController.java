@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AuthPageController {
 
     @GetMapping("/login")
-    public String authDashBoard() {
+    public String LoginDashBoard() {
         return "login";
+    }
+
+    @GetMapping("/signup")
+    public String signUpDashBoard() {
+        return "signup";
     }
 }
