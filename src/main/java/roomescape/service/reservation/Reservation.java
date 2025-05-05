@@ -25,6 +25,11 @@ public final class Reservation {
         this(id, new MemberName(name), new ReservationDateTime(date, time), theme);
     }
 
+    public Reservation(final String name, final LocalDate date,
+                       final ReservationTime time, final Theme theme) {
+        this(null, new MemberName(name), new ReservationDateTime(date, time), theme);
+    }
+
     public Reservation(final long id, final Reservation reservation) {
         this(id, reservation.name, reservation.dateTime, reservation.theme);
     }

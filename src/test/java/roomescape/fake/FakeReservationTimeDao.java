@@ -38,7 +38,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public boolean isExistsByTime(final LocalTime reservationTime) {
+    public boolean existsByTime(final LocalTime reservationTime) {
         return times.stream()
                 .anyMatch(time -> time.getStartAt().equals(reservationTime));
     }

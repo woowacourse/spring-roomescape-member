@@ -102,7 +102,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean isExistsByDateAndTimeId(final LocalDate date, final long timeId) {
+    public boolean existsByDateAndTimeId(final LocalDate date, final long timeId) {
         final String sql = "SELECT 1 FROM reservation WHERE date = ? AND time_id = ? LIMIT 1";
         final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), date,
                 timeId);
@@ -110,14 +110,14 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean isExistsByTimeId(final long timeId) {
+    public boolean existsByTimeId(final long timeId) {
         final String sql = "SELECT 1 FROM reservation WHERE time_id = ? LIMIT 1";
         final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), timeId);
         return !result.isEmpty();
     }
 
     @Override
-    public boolean isExistsByThemeId(Long themeId) {
+    public boolean existsByThemeId(Long themeId) {
         final String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
         final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), themeId);
         return !result.isEmpty();

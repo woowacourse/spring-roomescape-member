@@ -23,7 +23,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
-        if (reservationTimeDao.isExistsByTime(reservationTimeRequest.startAt())) {
+        if (reservationTimeDao.existsByTime(reservationTimeRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
         final ReservationTime reservationTime = reservationTimeRequest.converToReservationTime();
@@ -38,7 +38,7 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTimeById(final long id) {
-        if (reservationDao.isExistsByTimeId(id)) {
+        if (reservationDao.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteById(id);

@@ -15,5 +15,5 @@ public interface ReservationTimeDao {
 
     void deleteById(long id);
 
-    boolean isExistsByTime(LocalTime reservationTime);
+    boolean existsByTime(LocalTime reservationTime);
 }

@@ -55,7 +55,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public boolean isExistsByTime(final LocalTime reservationTime) {
+    public boolean existsByTime(final LocalTime reservationTime) {
         final String sql = "SELECT 1 FROM reservation_time WHERE start_at = ? LIMIT 1";
         final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1),
                 reservationTime);

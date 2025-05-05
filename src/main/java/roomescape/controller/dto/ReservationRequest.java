@@ -14,6 +14,6 @@ public record ReservationRequest(
 ) {
 
     public Reservation convertToReservation(final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(null, name, date, reservationTime, theme);
+        return new Reservation(name, date, reservationTime, theme);
     }
 }

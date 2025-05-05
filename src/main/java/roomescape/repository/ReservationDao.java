@@ -14,9 +14,9 @@ public interface ReservationDao {
 
     void deleteById(long id);
 
-    boolean isExistsByDateAndTimeId(LocalDate date, long timeId);
+    boolean existsByDateAndTimeId(LocalDate date, long timeId);
 
-    boolean isExistsByTimeId(long timeId);
+    boolean existsByTimeId(long timeId);
 
-    boolean isExistsByThemeId(Long id);
+    boolean existsByThemeId(Long id);
 }

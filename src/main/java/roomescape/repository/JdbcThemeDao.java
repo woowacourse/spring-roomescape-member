@@ -76,9 +76,10 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public boolean isExistsByName(final ThemeName name) {
+    public boolean existsByName(final ThemeName name) {
         final String sql = "SELECT 1 FROM theme WHERE name = ? LIMIT 1";
-        final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), name);
+        final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1),
+                name.getName());
         return !result.isEmpty();
     }
 }

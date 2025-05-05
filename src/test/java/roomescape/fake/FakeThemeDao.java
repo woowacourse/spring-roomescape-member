@@ -14,7 +14,7 @@ public class FakeThemeDao implements ThemeDao {
     Long index = 1L;
 
     @Override
-    public boolean isExistsByName(final ThemeName name) {
+    public boolean existsByName(final ThemeName name) {
         return themes.stream()
                 .anyMatch(theme -> theme.getName().equals(name.getName()));
     }
