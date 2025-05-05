@@ -25,6 +25,14 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getDate().equals(date))
+                .filter(reservation -> reservation.getTheme().getId() == themeId)
+                .toList();
+    }
+
+    @Override
     public void deleteById(final long id) {
         Reservation reservation = findById(id);
         reservations.remove(reservation);
@@ -46,14 +54,6 @@ public class FakeReservationDao implements ReservationDao {
     public boolean isExistsByThemeId(Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.getTheme().getId() == themeId);
-    }
-
-    @Override
-    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
-        return reservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date))
-                .filter(reservation -> reservation.getTheme().getId() == themeId)
-                .toList();
     }
 
     public Reservation findById(final long id) {

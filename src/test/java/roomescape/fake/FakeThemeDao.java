@@ -14,7 +14,7 @@ public class FakeThemeDao implements ThemeDao {
     Long index = 1L;
 
     @Override
-    public boolean isExists(final ThemeName name) {
+    public boolean isExistsByName(final ThemeName name) {
         return themes.stream()
                 .anyMatch(theme -> theme.getName().equals(name.getName()));
     }
@@ -38,12 +38,6 @@ public class FakeThemeDao implements ThemeDao {
                 .findAny();
     }
 
-    @Override
-    public void deleteById(long id) {
-        Theme theme = findById(id).orElseThrow(); // TODO 이거 맞나?
-        themes.remove(theme);
-    }
-
     /**
      * TODO
      * JOIN을 구현할 방법 찾기
@@ -51,5 +45,11 @@ public class FakeThemeDao implements ThemeDao {
     @Override
     public List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count) {
         return null;
+    }
+
+    @Override
+    public void deleteById(long id) {
+        Theme theme = findById(id).orElseThrow(); // TODO 이거 맞나?
+        themes.remove(theme);
     }
 }

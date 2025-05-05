@@ -22,7 +22,7 @@ public class ThemeService {
 
     public ThemeResponse createTheme(final ThemeRequest themeRequest) {
         Theme theme = themeRequest.convertToTheme();
-        if (themeDao.isExists(theme.getThemeName())) {
+        if (themeDao.isExistsByName(theme.getThemeName())) {
             throw new IllegalArgumentException("해당 이름의 테마는 이미 존재합니다.");
         }
         final Theme savedTheme = themeDao.save(theme);

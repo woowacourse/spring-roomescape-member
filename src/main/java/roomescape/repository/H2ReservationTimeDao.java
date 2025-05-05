@@ -52,15 +52,15 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
+    public void deleteById(final long id) {
+        final String sql = "DELETE FROM reservation_time WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public boolean isExistsByTime(final LocalTime reservationTime) {
         final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, reservationTime);
         return count > 0;
-    }
-
-    @Override
-    public void deleteById(final long id) {
-        final String sql = "DELETE FROM reservation_time WHERE id = ?";
-        jdbcTemplate.update(sql, id);
     }
 }

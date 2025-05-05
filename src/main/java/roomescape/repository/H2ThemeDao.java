@@ -33,13 +33,6 @@ public class H2ThemeDao implements ThemeDao {
     }
 
     @Override
-    public boolean isExists(final ThemeName name) {
-        final String sql = "SELECT COUNT(*) FROM theme WHERE name = ?";
-        long count = jdbcTemplate.queryForObject(sql, Long.class, name.getName());
-        return count > 0;
-    }
-
-    @Override
     public Theme save(final Theme theme) {
         final Map<String, Object> parameters = Map.of(
                 "name", theme.getName(),
@@ -63,12 +56,6 @@ public class H2ThemeDao implements ThemeDao {
     }
 
     @Override
-    public void deleteById(final long id) {
-        final String sql = "DELETE FROM theme WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
-
-    @Override
     public List<Theme> findPopularThemes(final LocalDate from, final LocalDate to, final int count) {
         final String sql = """
                      SELECT t.id, t.name, t.description, t.thumbnail
@@ -80,5 +67,18 @@ public class H2ThemeDao implements ThemeDao {
                      LIMIT ?
                 """;
         return jdbcTemplate.query(sql, themeMapper, from, to, count);
+    }
+
+    @Override
+    public void deleteById(final long id) {
+        final String sql = "DELETE FROM theme WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public boolean isExistsByName(final ThemeName name) {
+        final String sql = "SELECT COUNT(*) FROM theme WHERE name = ?";
+        long count = jdbcTemplate.queryForObject(sql, Long.class, name.getName());
+        return count > 0;
     }
 }

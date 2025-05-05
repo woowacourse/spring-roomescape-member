@@ -6,9 +6,11 @@ import roomescape.service.reservation.Reservation;
 
 public interface ReservationDao {
 
+    Reservation save(Reservation reservation);
+
     List<Reservation> findAll();
 
-    Reservation save(Reservation reservation);
+    List<Reservation> findAllByDateAndThemeId(LocalDate date, long themeId);
 
     void deleteById(long id);
 
@@ -17,6 +19,4 @@ public interface ReservationDao {
     boolean isExistsByTimeId(long timeId);
 
     boolean isExistsByThemeId(Long id);
-
-    List<Reservation> findAllByDateAndThemeId(LocalDate date, long themeId);
 }

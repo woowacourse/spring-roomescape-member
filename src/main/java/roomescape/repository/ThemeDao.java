@@ -8,15 +8,15 @@ import roomescape.service.reservation.ThemeName;
 
 public interface ThemeDao {
 
-    boolean isExists(ThemeName name);
-
     Theme save(Theme theme);
 
     List<Theme> findAll();
 
     Optional<Theme> findById(long id);
 
+    List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count);
+
     void deleteById(long id);
 
-    List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count);
+    boolean isExistsByName(ThemeName name);
 }

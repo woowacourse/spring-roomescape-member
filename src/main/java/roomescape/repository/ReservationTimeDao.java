@@ -13,7 +13,7 @@ public interface ReservationTimeDao {
 
     Optional<ReservationTime> findById(long id);
 
-    boolean isExistsByTime(LocalTime reservationTime);
-
     void deleteById(long id);
+
+    boolean isExistsByTime(LocalTime reservationTime);
 }

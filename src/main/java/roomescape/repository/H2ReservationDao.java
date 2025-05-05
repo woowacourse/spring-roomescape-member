@@ -46,6 +46,18 @@ public class H2ReservationDao implements ReservationDao {
     }
 
     @Override
+    public Reservation save(final Reservation reservation) {
+        final Map<String, Object> parameters = Map.of(
+                "name", reservation.getName(),
+                "date", Date.valueOf(reservation.getDate()),
+                "time_id", reservation.getTimeId(),
+                "theme_id", reservation.getTheme().getId()
+        );
+        final long id = reservationInserter.executeAndReturnKey(parameters).longValue();
+        return new Reservation(id, reservation);
+    }
+
+    @Override
     public List<Reservation> findAll() {
         final String sql = """
                 SELECT
@@ -66,15 +78,24 @@ public class H2ReservationDao implements ReservationDao {
     }
 
     @Override
-    public Reservation save(final Reservation reservation) {
-        final Map<String, Object> parameters = Map.of(
-                "name", reservation.getName(),
-                "date", Date.valueOf(reservation.getDate()),
-                "time_id", reservation.getTimeId(),
-                "theme_id", reservation.getTheme().getId()
-        );
-        final long id = reservationInserter.executeAndReturnKey(parameters).longValue();
-        return new Reservation(id, reservation);
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        final String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
     @Override
@@ -102,36 +123,5 @@ public class H2ReservationDao implements ReservationDao {
         final String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
         return count > 0;
-    }
-
-    @Override
-    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
-        final String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.date = ? AND r.theme_id = ?
-                """;
-        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
-    }
-
-    private long insertReservationAndRetrieveKey(final Reservation reservation) {
-        final Map<String, Object> parameters = Map.of(
-                "name", reservation.getName(),
-                "date", Date.valueOf(reservation.getDate()),
-                "time_id", reservation.getTimeId(),
-                "theme_id", reservation.getTheme().getId()
-        );
-        return reservationInserter.executeAndReturnKey(parameters).longValue();
     }
 }
