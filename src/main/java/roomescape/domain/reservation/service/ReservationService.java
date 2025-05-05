@@ -1,6 +1,5 @@
 package roomescape.domain.reservation.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -28,14 +27,15 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
-    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(Clock clock, ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
-        this.clock = clock;
+    public ReservationService(
+            final ReservationRepository reservationRepository,
+            final ReservationTimeRepository reservationTimeRepository,
+            final ThemeRepository themeRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
@@ -49,20 +49,21 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse create(ReservationRequest request) {
+    public ReservationResponse create(final ReservationRequest request) {
         if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
             throw new AlreadyInUseException("reservation is already in use");
         }
 
         Reservation reservation = getReservation(request);
-        validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStratTime());
+        LocalDateTime now = LocalDateTime.now();
+        validateDateTime(now, reservation.getReservationDate(), reservation.getReservationStratTime());
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
     }
 
-    private Reservation getReservation(ReservationRequest request) {
+    private Reservation getReservation(final ReservationRequest request) {
         Long timeId = request.timeId();
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
@@ -74,7 +75,7 @@ public class ReservationService {
         return Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
     }
 
-    private void validateDateTime(LocalDateTime now, LocalDate date, LocalTime time) {
+    private void validateDateTime(final LocalDateTime now, final LocalDate date, final LocalTime time) {
         LocalDateTime dateTime = LocalDateTime.of(date, time);
 
         if (now.isAfter(dateTime)) {
@@ -82,17 +83,12 @@ public class ReservationService {
         }
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         reservationRepository.deleteById(id);
     }
 
-    private LocalDateTime now() {
-        return LocalDateTime.now(clock);
-    }
-
-    public List<BookedReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        Map<ReservationTime, Boolean> allTimes = processAlreadyBookedTimesMap(
-                date, themeId);
+    public List<BookedReservationTimeResponse> getAvailableTimes(final LocalDate date, final Long themeId) {
+        Map<ReservationTime, Boolean> allTimes = processAlreadyBookedTimesMap(date, themeId);
 
         return allTimes.entrySet()
                 .stream()
@@ -100,7 +96,7 @@ public class ReservationService {
                 .toList();
     }
 
-    private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(LocalDate date, Long themeId) {
+    private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(final LocalDate date, final Long themeId) {
         Map<ReservationTime, Boolean> allTimes = reservationTimeRepository.findAll()
                 .stream()
                 .collect(Collectors.toMap(Function.identity(), t -> false));
@@ -113,9 +109,9 @@ public class ReservationService {
         return allTimes;
     }
 
-    private BookedReservationTimeResponse bookedReservationTimeResponseOf(
-            Entry<ReservationTime, Boolean> entry) {
+    private BookedReservationTimeResponse bookedReservationTimeResponseOf(final Entry<ReservationTime, Boolean> entry) {
         return new BookedReservationTimeResponse(
-                ReservationTimeResponse.from(entry.getKey()), entry.getValue());
+                ReservationTimeResponse.from(entry.getKey()), entry.getValue()
+        );
     }
 }

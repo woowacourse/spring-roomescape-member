@@ -4,14 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,39 +33,22 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
-import roomescape.domain.reservation.utils.FixedClock;
 
 @ActiveProfiles("test")
 @JdbcTest
-@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
+@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, ReservationService.class})
 class ReservationServiceIntegrationTest {
 
-    private static LocalDateTime now;
+    private final LocalDateTime now = LocalDateTime.now();
 
     @Autowired
     private ReservationRepository reservationRepository;
-
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
     @Autowired
     private ThemeRepository themeRepository;
-
+    @Autowired
     private ReservationService reservationService;
-
-    private static LocalDate nextDay() {
-        return now.toLocalDate().plusDays(1);
-    }
-
-    @BeforeEach
-    void setUp() {
-        now = LocalDateTime.of(2025, 4, 30, 12, 0);
-        Clock clock = FixedClock.from(now);
-
-        reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository,
-                themeRepository);
-
-    }
 
     @DisplayName("모든 예약 정보를 가져온다")
     @Test
@@ -237,26 +218,25 @@ class ReservationServiceIntegrationTest {
     void test9() {
         // given
         LocalDate date = nextDay();
-
         LocalTime time1 = LocalTime.of(8, 0);
         LocalTime time2 = LocalTime.of(9, 0);
-
         ReservationTime reservationTime1 = reservationTimeRepository.save(ReservationTime.withoutId(time1));
         ReservationTime reservationTime2 = reservationTimeRepository.save(ReservationTime.withoutId(time2));
-
         Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
-
         reservationRepository.save(Reservation.withoutId("꾹", date, reservationTime1, savedTheme));
 
         // when
         List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
 
         // then
-        assertThat(responses).hasSize(2);
-
-        List<Boolean> booleans = responses.stream().map(BookedReservationTimeResponse::alreadyBooked).toList();
+        List<Boolean> booleans = responses.stream()
+                .map(BookedReservationTimeResponse::alreadyBooked)
+                .toList();
         assertThat(booleans).containsExactlyInAnyOrder(true, false);
     }
 
+    private LocalDate nextDay() {
+        return LocalDate.now().plusDays(1);
+    }
 }

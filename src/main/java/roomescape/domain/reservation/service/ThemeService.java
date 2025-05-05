@@ -1,6 +1,5 @@
 package roomescape.domain.reservation.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,12 +18,10 @@ public class ThemeService {
     private static final int START_DATE_OFFSET = 8;
     private static final int END_DATE_OFFSET = 1;
 
-    private final Clock clock;
     private final ThemeRepository themeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ThemeService(Clock clock, ThemeRepository themeRepository, ReservationRepository reservationRepository) {
-        this.clock = clock;
+    public ThemeService(final ThemeRepository themeRepository, final ReservationRepository reservationRepository) {
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -36,12 +33,12 @@ public class ThemeService {
                 .toList();
     }
 
-    public ThemeResponse create(ThemeRequest request) {
+    public ThemeResponse create(final ThemeRequest request) {
         Theme theme = themeRepository.save(Theme.withoutId(request.name(), request.description(), request.thumbnail()));
         return ThemeResponse.from(theme);
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         if (reservationRepository.existsByThemeId(id)) {
             throw new AlreadyInUseException("Theme with id " + id + " not found");
         }
@@ -50,7 +47,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        LocalDate now = getNow();
+        LocalDate now = LocalDate.now();
 
         LocalDate startDate = now.minusDays(START_DATE_OFFSET);
         LocalDate endDate = now.minusDays(END_DATE_OFFSET);
@@ -59,9 +56,5 @@ public class ThemeService {
                 .stream()
                 .map(ThemeResponse::from)
                 .toList();
-    }
-
-    private LocalDate getNow() {
-        return LocalDate.now(clock);
     }
 }

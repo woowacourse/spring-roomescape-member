@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -27,7 +25,6 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
 import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
 import roomescape.domain.reservation.repository.fake.FakeThemeRepository;
-import roomescape.domain.reservation.utils.FixedClock;
 
 class ReservationServiceTest {
 
@@ -50,10 +47,7 @@ class ReservationServiceTest {
         reservationTimeRepository.deleteAll();
         themeRepository.deleteAll();
 
-        Clock clock = FixedClock.from(LocalDateTime.of(2024, 12, 18, 8, 0));
-
-        reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository,
-                themeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
 
         ReservationTime savedReservationTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
         reservationTimeId = savedReservationTime.getId();
@@ -71,7 +65,7 @@ class ReservationServiceTest {
     void test1() {
         // given
         List<String> names = List.of("꾹", "헤일러", "라젤");
-        LocalDate date = LocalDate.of(2020, 1, 1);
+        LocalDate date = LocalDate.now().plusDays(1L);
 
         for (String name : names) {
             Reservation reservation = Reservation.withoutId(name, date, reservationTime, theme);
@@ -98,7 +92,7 @@ class ReservationServiceTest {
     void test3() {
         // given
         String name = "꾹";
-        LocalDate date = LocalDate.of(2025, 1, 1);
+        LocalDate date = LocalDate.now().plusDays(1L);
 
         ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId, themeId);
 
@@ -122,7 +116,7 @@ class ReservationServiceTest {
     void test4() {
         // given
         String name = "꾹";
-        LocalDate date = LocalDate.of(2025, 1, 1);
+        LocalDate date = LocalDate.now().plusDays(1L);
 
         ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId, themeId);
         reservationService.create(requestDto);
@@ -137,7 +131,7 @@ class ReservationServiceTest {
     void test5() {
         // given
         String name = "꾹";
-        LocalDate date = LocalDate.of(2024, 12, 18);
+        LocalDate date = LocalDate.now().minusDays(1L);
         ReservationTime pastTime = new ReservationTime(2L, LocalTime.of(7, 59));
         reservationTimeRepository.add(pastTime);
 
@@ -151,7 +145,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
     @Test
     void test6() {
-        LocalDate date = LocalDate.of(2025, 4, 29);
+        LocalDate date = LocalDate.now().plusDays(1L);
 
         Long notExistId = 1000L;
         ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId, themeId);
@@ -163,7 +157,7 @@ class ReservationServiceTest {
     @DisplayName("존재하지 않는 테마 ID로 저장하면 예외를 반환한다.")
     @Test
     void notExistThemeId() {
-        LocalDate date = LocalDate.of(2025, 4, 29);
+        LocalDate date = LocalDate.now().plusDays(1L);
 
         Long notExistId = 1000L;
         ReservationRequest requestDto = new ReservationRequest("꾹", date, reservationTimeId, notExistId);
