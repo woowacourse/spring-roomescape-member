@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,7 +28,11 @@ public class ReservationTimeJdbcDao implements ReservationTimeRepository {
     public ReservationTime findById(Long id) {
         String sql = "select * from reservation_time where id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-        return namedJdbcTemplate.queryForObject(sql, params, getReservationTimeRowMapper());
+        try {
+            return namedJdbcTemplate.queryForObject(sql, params, getReservationTimeRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("예약 시간 데이터를 찾을 수 없습니다: " + id);
+        }
     }
 
     @Override

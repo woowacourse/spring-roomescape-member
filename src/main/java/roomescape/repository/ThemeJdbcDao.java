@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.util.List;
 import java.util.Objects;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -25,7 +26,11 @@ public class ThemeJdbcDao implements ThemeRepository {
     public Theme findById(Long id) {
         String sql = "select * from theme where id = :id";
         SqlParameterSource params = new MapSqlParameterSource("id", id);
-        return namedJdbcTemplate.queryForObject(sql, params, getThemeRowMapper());
+        try {
+            return namedJdbcTemplate.queryForObject(sql, params, getThemeRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("테마 데이터를 찾을 수 없습니다: " + id);
+        }
     }
 
     @Override
