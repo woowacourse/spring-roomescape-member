@@ -2,6 +2,8 @@ package roomescape.global.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -60,10 +62,20 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException e) {
         return new ExceptionResponse(BAD_REQUEST.value(), e.getMessage(), LocalDateTime.now());
     }
 
+    @ResponseStatus(UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(BusinessRuleViolationException.class)
+    public ExceptionResponse handleBusinessRuleViolationException(BusinessRuleViolationException e) {
+        return new ExceptionResponse(UNPROCESSABLE_ENTITY.value(), e.getMessage(), LocalDateTime.now());
+    }
 
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ExceptionResponse handleResourceNotFoundException(ResourceNotFoundException e) {
+        return new ExceptionResponse(NOT_FOUND.value(), e.getMessage(), LocalDateTime.now());
+    }
 }
