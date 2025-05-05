@@ -32,7 +32,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse create(ReservationTimeRequest request) {
-        ReservationTime reservationTime = ReservationTime.withoutId(request.startAt());
+        ReservationTime reservationTime = request.toEntity();
 
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
 

@@ -12,10 +12,10 @@ public record ReservationResponse(
         ThemeResponse theme
 ) {
 
-    public static ReservationResponse from(Reservation reservation) {
+    public static ReservationResponse from(final Reservation reservation) {
         ReservationTimeResponse reservationTimeResponse = ReservationTimeResponse.from(
-                reservation.getReservationTime());
-
+                reservation.getReservationTime()
+        );
         ThemeResponse themeResponse = ThemeResponse.from(reservation.getTheme());
 
         return new ReservationResponse(reservation.getId(),
