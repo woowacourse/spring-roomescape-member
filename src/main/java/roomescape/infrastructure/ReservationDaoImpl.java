@@ -37,7 +37,6 @@ public class ReservationDaoImpl implements ReservationDao {
                 theme);
     };
 
-
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
