@@ -61,4 +61,28 @@ class ThemeServiceTest {
                 .isInstanceOf(ThemeDuplicateException.class)
                 .hasMessageContaining("중복된 테마명이 존재합니다.");
     }
+
+    @Test
+    @DisplayName("인기 테마 목록을 조회한다.")
+    void readPopularThemesByPeriod() {
+        // given
+        int period = 7;
+        int maxResults = 10;
+
+        // when
+        List<ThemeResponse> popularThemes = themeService.readPopularThemesByPeriod(period, maxResults);
+
+        // then
+        assertThat(popularThemes).hasSize(10);
+        assertThat(popularThemes.get(0).name()).isEqualTo("우테코 레벨1 탈출");
+        assertThat(popularThemes.get(1).name()).isEqualTo("우테코 레벨2 탈출");
+        assertThat(popularThemes.get(2).name()).isEqualTo("우테코 레벨3 탈출");
+        assertThat(popularThemes.get(3).name()).isEqualTo("우테코 레벨4 탈출");
+        assertThat(popularThemes.get(4).name()).isEqualTo("우테코 레벨5 탈출");
+        assertThat(popularThemes.get(5).name()).isEqualTo("우테코 레벨6 탈출");
+        assertThat(popularThemes.get(6).name()).isEqualTo("우테코 레벨7 탈출");
+        assertThat(popularThemes.get(7).name()).isEqualTo("우테코 레벨8 탈출");
+        assertThat(popularThemes.get(8).name()).isEqualTo("우테코 레벨9 탈출");
+        assertThat(popularThemes.get(9).name()).isEqualTo("우테코 레벨10 탈출");
+    }
 }

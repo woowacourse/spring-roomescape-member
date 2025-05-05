@@ -25,7 +25,7 @@ class RoomEscapeApplicationTest {
     }
 
     @Test
-    @DisplayName("테마 목록을 조회한다.")
+    @DisplayName("인기 테마 목록을 조회한다.")
     void readAllThemes() {
         RestAssured.given().log().all()
                 .when().get("/themes/rankings")
