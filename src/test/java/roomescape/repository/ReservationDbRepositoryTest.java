@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Reservation;
-import roomescape.repository.dao.ReservationH2Dao;
+import roomescape.domain.entity.Reservation;
+import roomescape.infrastructure.db.ReservationDbRepository;
+import roomescape.infrastructure.db.dao.ReservationH2Dao;
 import roomescape.support.JdbcTestSupport;
 
 @Import({ReservationDbRepository.class, ReservationH2Dao.class})

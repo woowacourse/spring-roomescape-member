@@ -8,7 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.service.dto.response.ReservationTimeServiceResponse;
+import roomescape.application.UserReservationTimeService;
+import roomescape.application.dto.response.ReservationTimeServiceResponse;
 import roomescape.support.IntegrationTestSupport;
 
 class UserReservationTimeServiceTest extends IntegrationTestSupport {

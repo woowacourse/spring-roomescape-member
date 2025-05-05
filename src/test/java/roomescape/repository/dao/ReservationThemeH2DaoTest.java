@@ -14,7 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.ReservationTheme;
+import roomescape.domain.entity.ReservationTheme;
+import roomescape.infrastructure.db.dao.ReservationThemeH2Dao;
 import roomescape.support.JdbcTestSupport;
 
 @Import(ReservationThemeH2Dao.class)

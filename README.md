@@ -32,3 +32,18 @@
 
 # 리팩토링
 - 사용자, 관리자가 사용하는 API에 따라 Controller, Service 분리
+
+---
+
+### TODO (첫 번째 리뷰 이후)
+- [ ] 테스트 작성
+  - [x] DAO Test
+  - [x] Repository Test
+  - [x] Service Test
+  - [ ] Domain Test
+  - [ ] 입력 검증 테스트(requestDTO)
+- [ ] 예외 처리 리팩토링
+  - [ ] 커스텀 예외 생성
+    - [ ] 예외 처리 기준 및 위치 명확하게 하기
+  - [ ] 응답 에러 메시지 생성
+- [ ] null 체크 기준 정하기

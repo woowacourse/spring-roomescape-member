@@ -20,8 +20,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import roomescape.controller.api.UserReservationController;
-import roomescape.controller.api.dto.response.ReservationResponse;
+import roomescape.presentation.api.UserReservationController;
+import roomescape.presentation.api.dto.response.ReservationResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 class MissionStepJdbcTest {
