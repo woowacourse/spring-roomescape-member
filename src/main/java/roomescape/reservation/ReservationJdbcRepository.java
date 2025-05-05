@@ -78,7 +78,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                 WHERE
                     r.theme_id=? AND r.date=?
                 """;
-        return jdbcTemplate.query(sql, getRowMapper());
+        return jdbcTemplate.query(sql, getRowMapper(), themeId, date);
     }
 
     @Override
