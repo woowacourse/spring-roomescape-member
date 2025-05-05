@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.theme.domain.LastWeekRange;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 
 @Repository
 public class ThemeRepository {
@@ -19,15 +22,15 @@ public class ThemeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Theme save(String name, String description, String thumbnail) {
+    public Theme save(ThemeName name, ThemeDescription description, ThemeThumbnail thumbnail) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("description", description)
-                .addValue("thumbnail", thumbnail);
+                .addValue("name", name.name())
+                .addValue("description", description.description())
+                .addValue("thumbnail", thumbnail.thumbnail());
 
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
@@ -43,9 +46,9 @@ public class ThemeRepository {
         String sql = "select * from theme";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
+                new ThemeName(resultSet.getString("name")),
+                new ThemeDescription(resultSet.getString("description")),
+                new ThemeThumbnail(resultSet.getString("thumbnail"))
         ));
     }
 
@@ -53,9 +56,9 @@ public class ThemeRepository {
         String sql = "select * from theme where id = ?";
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
                         resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
+                        new ThemeName(resultSet.getString("name")),
+                        new ThemeDescription(resultSet.getString("description")),
+                        new ThemeThumbnail(resultSet.getString("thumbnail"))
                 ), id)
                 .stream()
                 .findFirst();
@@ -85,9 +88,9 @@ public class ThemeRepository {
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> new Theme(
                 resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
+                new ThemeName(resultSet.getString("name")),
+                new ThemeDescription(resultSet.getString("description")),
+                new ThemeThumbnail(resultSet.getString("thumbnail"))
         ), lastWeekRange.getStart(), lastWeekRange.getEnd(), limit);
     }
 }

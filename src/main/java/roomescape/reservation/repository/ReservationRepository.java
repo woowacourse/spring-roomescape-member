@@ -14,6 +14,9 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationDateTime;
 import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 
 @Repository
@@ -52,9 +55,9 @@ public class ReservationRepository {
                         ),
                         new Theme(
                                 resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("theme_description"),
-                                resultSet.getString("theme_thumbnail")
+                                new ThemeName(resultSet.getString("theme_name")),
+                                new ThemeDescription(resultSet.getString("theme_description")),
+                                new ThemeThumbnail(resultSet.getString("theme_thumbnail"))
                         )));
     }
 
@@ -104,9 +107,9 @@ public class ReservationRepository {
                                 ),
                                 new Theme(
                                         resultSet.getLong("theme_id"),
-                                        resultSet.getString("theme_name"),
-                                        resultSet.getString("theme_description"),
-                                        resultSet.getString("theme_thumbnail")
+                                        new ThemeName(resultSet.getString("theme_name")),
+                                        new ThemeDescription(resultSet.getString("theme_description")),
+                                        new ThemeThumbnail(resultSet.getString("theme_thumbnail"))
                                 )), id)
                 .stream()
                 .findFirst();

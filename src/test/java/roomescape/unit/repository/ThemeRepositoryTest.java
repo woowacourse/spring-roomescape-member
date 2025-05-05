@@ -17,6 +17,9 @@ import roomescape.common.RepositoryBaseTest;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.LastWeekRange;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.domain.ReservationTime;
 import roomescape.unit.fixture.ReservationDateFixture;
@@ -44,7 +47,11 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
     @Test
     void 테마를_저장한다() {
         // given
-        Theme saved = themeRepository.save("공포", "무섭다", "thumb.jpg");
+        Theme saved = themeRepository.save(
+                new ThemeName("공포"),
+                new ThemeDescription("무섭다"),
+                new ThemeThumbnail("thumb.jpg")
+        );
 
         // when
         Map<String, Object> row = jdbcTemplate.queryForMap(SELECT_THEME_BY_ID, saved.getId());
@@ -104,8 +111,11 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
     @Test
     void 테마를_삭제할_수_있다() {
         // given
-        Theme saved = themeRepository.save("공포", "무섭다", "thumb.jpg");
-
+        Theme saved = themeRepository.save(
+                new ThemeName("공포"),
+                new ThemeDescription("무섭다"),
+                new ThemeThumbnail("thumb.jpg")
+        );
         // when
         themeRepository.deleteById(saved.getId());
 

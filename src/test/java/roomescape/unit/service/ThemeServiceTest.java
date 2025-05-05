@@ -21,6 +21,9 @@ import roomescape.theme.controller.request.CreateThemeRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.LastWeekRange;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
 
@@ -41,9 +44,17 @@ public class ThemeServiceTest {
     void 테마를_생성할_수_있다() {
         // given
         CreateThemeRequest request = new CreateThemeRequest("공포", "무섭다", "thumb.jpg");
-        Theme theme = new Theme(1L, "공포", "무섭다", "thumb.jpg");
-        Mockito.when(themeRepository.save(request.name(), request.description(), request.thumbnail()))
-                .thenReturn(theme);
+        Theme theme = new Theme(
+                1L,
+                new ThemeName("공포"),
+                new ThemeDescription("무섭다"),
+                new ThemeThumbnail("thumb.jpg")
+        );
+        Mockito.when(themeRepository.save(
+                new ThemeName(request.name()),
+                new ThemeDescription(request.description()),
+                new ThemeThumbnail(request.thumbnail())
+        )).thenReturn(theme);
 
         // when
         ThemeResponse response = themeService.createTheme(request);
@@ -58,8 +69,18 @@ public class ThemeServiceTest {
     void 모든_테마를_조회할_수_있다() {
         // given
         List<Theme> themes = List.of(
-                new Theme(1L, "공포", "무섭다", "thumb.jpg"),
-                new Theme(2L, "로맨스", "달달하다", "love.jpg")
+                new Theme(
+                        1L,
+                        new ThemeName("공포"),
+                        new ThemeDescription("무섭다"),
+                        new ThemeThumbnail("thumb.jpg")
+                ),
+                new Theme(
+                        2L,
+                        new ThemeName("로맨스"),
+                        new ThemeDescription("달달하다"),
+                        new ThemeThumbnail("love.jpg")
+                )
         );
         Mockito.when(themeRepository.findAll()).thenReturn(themes);
 
@@ -74,8 +95,12 @@ public class ThemeServiceTest {
     void 예약이_없는_테마는_삭제할_수_있다() {
         // given
         Long id = 1L;
-        Theme theme = new Theme(id, "공포", "무섭다", "thumb.jpg");
-        Mockito.when(reservationRepository.existReservationByThemeId(id)).thenReturn(false);
+        Theme theme = new Theme(
+                1L,
+                new ThemeName("공포"),
+                new ThemeDescription("무섭다"),
+                new ThemeThumbnail("thumb.jpg")
+        );        Mockito.when(reservationRepository.existReservationByThemeId(id)).thenReturn(false);
         Mockito.when(themeRepository.findById(id)).thenReturn(Optional.of(theme));
 
         // when & then
@@ -111,8 +136,18 @@ public class ThemeServiceTest {
     void 최근_일주일_인기_테마를_조회할_수_있다() {
         // given
         List<Theme> themes = List.of(
-                new Theme(1L, "공포", "무섭다", "thumb.jpg"),
-                new Theme(2L, "로맨스", "달달하다", "love.jpg")
+                new Theme(
+                        1L,
+                        new ThemeName("공포"),
+                        new ThemeDescription("무섭다"),
+                        new ThemeThumbnail("thumb.jpg")
+                ),
+                new Theme(
+                        2L,
+                        new ThemeName("로맨스"),
+                        new ThemeDescription("달달하다"),
+                        new ThemeThumbnail("love.jpg")
+                )
         );
         LastWeekRange lastWeekRange = new LastWeekRange(LocalDate.now(FIXED_CLOCK));
         Mockito.when(themeRepository.findPopularThemeDuringAWeek(eq(10L), any(LastWeekRange.class)))

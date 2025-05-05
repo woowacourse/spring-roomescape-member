@@ -5,14 +5,13 @@ import static org.hamcrest.Matchers.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.BaseTest;
 
 class ThemeApiTest extends BaseTest {
 
     private Map<String, String> createThemeRequest = Map.of(
-            "name", "공포의 방탈출",
+            "name", "공포방탈출",
             "description", "무서운 분위기 속에서 탈출",
             "thumbnail", "https://example.com/horror.jpg"
     );
@@ -26,7 +25,7 @@ class ThemeApiTest extends BaseTest {
                 .then().log().all()
                 .statusCode(201)
                 .body("id", is(1))
-                .body("name", is("공포의 방탈출"))
+                .body("name", is("공포방탈출"))
                 .body("description", is("무서운 분위기 속에서 탈출"))
                 .body("thumbnail", is("https://example.com/horror.jpg"));
     }
@@ -39,7 +38,7 @@ class ThemeApiTest extends BaseTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("[0].id", is(1))
-                .body("[0].name", is("공포의 방탈출"))
+                .body("[0].name", is("공포방탈출"))
                 .body("[0].description", is("무서운 분위기 속에서 탈출"))
                 .body("[0].thumbnail", is("https://example.com/horror.jpg"));
     }

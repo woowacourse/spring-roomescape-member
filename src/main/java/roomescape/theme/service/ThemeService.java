@@ -9,6 +9,9 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.request.CreateThemeRequest;
 import roomescape.theme.controller.response.ThemeResponse;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.domain.LastWeekRange;
 
@@ -38,7 +41,11 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(final CreateThemeRequest request) {
-        Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
+        Theme theme = themeRepository.save(
+                new ThemeName(request.name()),
+                new ThemeDescription(request.description()),
+                new ThemeThumbnail(request.thumbnail())
+        );
         return ThemeResponse.from(theme);
     }
 

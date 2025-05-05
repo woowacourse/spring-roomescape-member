@@ -5,13 +5,21 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.domain.Reservation;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
 public class ReservationTest {
 
     private final ReservationTime time = new ReservationTime(1L, LocalTime.of(10, 0));
-    private final Theme theme = new Theme(1L, "공포", "무서운 테마", "thumbnail");
+    private final Theme theme = new Theme(
+            1L,
+            new ThemeName("공포"),
+            new ThemeDescription("무섭다"),
+            new ThemeThumbnail("thumb.jpg")
+    );
 
     @Test
     void reserverName은_null일_수_없다() {

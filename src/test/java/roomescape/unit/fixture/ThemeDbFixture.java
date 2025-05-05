@@ -5,6 +5,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
+import roomescape.theme.domain.ThemeName;
+import roomescape.theme.domain.ThemeThumbnail;
 
 @Component
 public class ThemeDbFixture {
@@ -30,7 +33,12 @@ public class ThemeDbFixture {
                 .addValue("thumbnail", thumbnail)
         ).longValue();
 
-        return new Theme(id, name, description, thumbnail);
+        return new Theme(
+                id,
+                new ThemeName(name),
+                new ThemeDescription(description),
+                new ThemeThumbnail(thumbnail)
+        );
     }
 
     public Theme 로맨스() {
@@ -48,8 +56,12 @@ public class ThemeDbFixture {
                 .addValue("thumbnail", thumbnail)
         ).longValue();
 
-        return new Theme(id, name, description, thumbnail);
-    }
+        return new Theme(
+                id,
+                new ThemeName(name),
+                new ThemeDescription(description),
+                new ThemeThumbnail(thumbnail)
+        );    }
 
     public Theme 커스텀_테마(String customName) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -66,6 +78,10 @@ public class ThemeDbFixture {
                 .addValue("thumbnail", thumbnail)
         ).longValue();
 
-        return new Theme(id, name, description, thumbnail);
-    }
+        return new Theme(
+                id,
+                new ThemeName(name),
+                new ThemeDescription(description),
+                new ThemeThumbnail(thumbnail)
+        );    }
 }
