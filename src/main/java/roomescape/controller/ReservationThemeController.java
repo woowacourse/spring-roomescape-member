@@ -25,7 +25,7 @@ public class ReservationThemeController {
         this.roomescapeService = roomescapeService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationThemeResponse>> reservationThemeList() {
         return ResponseEntity.ok(roomescapeService.findReservationThemes());
     }
@@ -35,7 +35,7 @@ public class ReservationThemeController {
         return ResponseEntity.ok(roomescapeService.findPopularReservations());
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationThemeResponse> reservationThemeAdd(
             @RequestBody ReservationThemeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomescapeService.addReservationTheme(request));

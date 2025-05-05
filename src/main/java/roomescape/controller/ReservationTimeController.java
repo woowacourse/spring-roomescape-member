@@ -26,12 +26,12 @@ public class ReservationTimeController {
         this.roomescapeService = roomescapeService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> reservationTimeList() {
         return ResponseEntity.ok(roomescapeService.findReservationTimes());
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationTimeResponse> reservationTimeAdd(
             @RequestBody @Valid ReservationTimeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomescapeService.addReservationTime(request));

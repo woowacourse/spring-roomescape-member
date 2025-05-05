@@ -25,12 +25,12 @@ public class ReservationController {
         this.roomescapeService = roomescapeService;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ReservationResponse>> reservationList() {
         return ResponseEntity.ok(roomescapeService.findReservations());
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ReservationResponse> reservationAdd(@RequestBody ReservationRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomescapeService.addReservation(request));
     }
