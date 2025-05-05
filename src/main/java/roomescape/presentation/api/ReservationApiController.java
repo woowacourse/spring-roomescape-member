@@ -3,6 +3,7 @@ package roomescape.presentation.api;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.AuthRequired;
 import roomescape.business.model.entity.Reservation;
 import roomescape.business.service.ReservationService;
 import roomescape.presentation.dto.request.ReservationRequest;
@@ -21,6 +22,7 @@ public class ReservationApiController {
     }
 
     @PostMapping("/reservations")
+    @AuthRequired
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request) {
         Reservation reservation = reservationService.addAndGet(request.name(), request.date(), request.timeId(), request.themeId());
         ReservationResponse response = ReservationResponse.from(reservation);
@@ -28,6 +30,7 @@ public class ReservationApiController {
     }
 
     @GetMapping("/reservations")
+    @AuthRequired
     public ResponseEntity<List<ReservationResponse>> getReservations() {
         List<Reservation> reservations = reservationService.getAll();
         List<ReservationResponse> responses = ReservationResponse.from(reservations);
@@ -35,6 +38,7 @@ public class ReservationApiController {
     }
 
     @DeleteMapping("/reservations/{id}")
+    @AuthRequired
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();

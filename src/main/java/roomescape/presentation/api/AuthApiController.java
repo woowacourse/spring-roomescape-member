@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AuthRequired;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.vo.Authentication;
 import roomescape.business.model.vo.Authorization;
@@ -35,6 +36,7 @@ public class AuthApiController {
     }
 
     @GetMapping("/login/check")
+    @AuthRequired
     public ResponseEntity<UserNameResponse> check(Authorization authorization) {
         User user = userService.findByEmail(authorization.email());
         return ResponseEntity.ok(new UserNameResponse(user.name()));

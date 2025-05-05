@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.AuthRequired;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.Authorization;
-
-import java.util.Arrays;
+import roomescape.exception.impl.NotAuthenticatedException;
 
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
@@ -32,7 +32,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        return false;
+        throw new NotAuthenticatedException();
     }
 
     private static boolean requireAuthorization(final Object handler) {
@@ -40,8 +40,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        return Arrays.stream(handlerMethod.getMethodParameters())
-                .anyMatch(param -> param.getParameterType().equals(Authorization.class));
+        return handlerMethod.hasMethodAnnotation(AuthRequired.class);
     }
 
     private String extractTokenFromCookies(HttpServletRequest request) {

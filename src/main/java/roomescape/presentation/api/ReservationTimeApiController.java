@@ -3,6 +3,7 @@ package roomescape.presentation.api;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.AuthRequired;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.service.ReservationTimeService;
 import roomescape.presentation.dto.request.ReservationTimeRequest;
@@ -22,6 +23,7 @@ public class ReservationTimeApiController {
     }
 
     @PostMapping("/times")
+    @AuthRequired
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody @Valid ReservationTimeRequest request) {
         ReservationTime reservationTime = reservationTimeService.addAndGet(request.startAtToLocalTime());
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
@@ -29,6 +31,7 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping("/times")
+    @AuthRequired
     public ResponseEntity<List<ReservationTimeResponse>> getAllReservationTime() {
         List<ReservationTime> reservationTimes = reservationTimeService.getAll();
         List<ReservationTimeResponse> responses = ReservationTimeResponse.from(reservationTimes);
@@ -36,6 +39,7 @@ public class ReservationTimeApiController {
     }
 
     @GetMapping("/times/possible")
+    @AuthRequired
     public ResponseEntity<List<ReservationTimeResponse>> getAvailableReservationTimes(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") long themeId
@@ -46,6 +50,7 @@ public class ReservationTimeApiController {
     }
 
     @DeleteMapping("/times/{id}")
+    @AuthRequired
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();

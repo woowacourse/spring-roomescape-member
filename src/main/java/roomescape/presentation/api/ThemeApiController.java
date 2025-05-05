@@ -3,6 +3,7 @@ package roomescape.presentation.api;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.AuthRequired;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.service.ThemeService;
 import roomescape.presentation.dto.request.ThemeCreateRequest;
@@ -21,12 +22,14 @@ public class ThemeApiController {
     }
 
     @PostMapping("/themes")
+    @AuthRequired
     public ResponseEntity<ThemeResponse> add(@RequestBody @Valid ThemeCreateRequest request) {
         Theme theme = themeService.addAndGet(request.name(), request.description(), request.thumbnail());
         return ResponseEntity.created(URI.create("/themes")).body(ThemeResponse.from(theme));
     }
 
     @GetMapping("/themes")
+    @AuthRequired
     public ResponseEntity<List<ThemeResponse>> getThemes() {
         List<Theme> themes = themeService.getAll();
         List<ThemeResponse> responses = ThemeResponse.from(themes);
@@ -34,6 +37,7 @@ public class ThemeApiController {
     }
 
     @GetMapping("/themes/popular")
+    @AuthRequired
     public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam(value = "size", defaultValue = "10") int size) {
         List<Theme> popularThemes = themeService.getPopular(size);
         List<ThemeResponse> responses = ThemeResponse.from(popularThemes);
@@ -41,6 +45,7 @@ public class ThemeApiController {
     }
 
     @DeleteMapping("/themes/{id}")
+    @AuthRequired
     public ResponseEntity<Void> delete(@PathVariable long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
