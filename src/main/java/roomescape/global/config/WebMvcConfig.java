@@ -3,21 +3,19 @@ package roomescape.global.config;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.global.auth.interceptor.AdminInterceptor;
 import roomescape.global.auth.resolver.MemberIdResolver;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     private final MemberIdResolver memberIdResolver;
-//    private final AdminInterceptor adminInterceptor;
+    private final AdminInterceptor adminInterceptor;
 
-//    public WebMvcConfig(final MemberIdResolver memberIdResolver, final AdminInterceptor adminInterceptor) {
-//        this.memberIdResolver = memberIdResolver;
-//        this.adminInterceptor = adminInterceptor;
-//    }
-
-    public WebMvcConfig(final MemberIdResolver memberIdResolver) {
+    public WebMvcConfig(final MemberIdResolver memberIdResolver, final AdminInterceptor adminInterceptor) {
         this.memberIdResolver = memberIdResolver;
+        this.adminInterceptor = adminInterceptor;
     }
 
     @Override
@@ -25,8 +23,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.add(memberIdResolver);
     }
 
-//    @Override
-//    public void addInterceptors(final InterceptorRegistry registry) {
-//        registry.addInterceptor(adminInterceptor);
-//    }
+    @Override
+    public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(adminInterceptor);
+    }
 }

@@ -14,22 +14,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.global.auth.annotation.Admin;
 import roomescape.global.auth.annotation.MemberId;
 import roomescape.reservation.business.service.ReservationService;
-import roomescape.reservation.presentation.request.ReservationRequest;
+import roomescape.reservation.presentation.request.UserReservationRequest;
 import roomescape.reservation.presentation.response.AvailableReservationTimeResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 
 @RestController
 @RequestMapping("/reservations")
-public class ReservationController {
+public class UserReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public UserReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
+    @Admin
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
         return ResponseEntity.ok(reservationService.findAll());
@@ -37,7 +39,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> add(
-            @Valid @RequestBody ReservationRequest requestDto,
+            @Valid @RequestBody UserReservationRequest requestDto,
             @MemberId Long memberId,
             HttpServletResponse response
     ) {

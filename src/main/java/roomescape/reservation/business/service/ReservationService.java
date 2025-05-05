@@ -15,7 +15,8 @@ import roomescape.reservation.business.model.entity.Reservation;
 import roomescape.reservation.business.model.entity.ReservationTime;
 import roomescape.reservation.business.model.repository.ReservationDao;
 import roomescape.reservation.business.model.repository.ReservationTimeDao;
-import roomescape.reservation.presentation.request.ReservationRequest;
+import roomescape.reservation.presentation.request.AdminReservationRequest;
+import roomescape.reservation.presentation.request.UserReservationRequest;
 import roomescape.reservation.presentation.response.AvailableReservationTimeResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 import roomescape.theme.business.model.entity.Theme;
@@ -45,18 +46,18 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(ReservationRequest requestDto, Long memberId) {
-        ReservationTime reservationTime = getReservationTime(requestDto.timeId());
-        Theme theme = getTheme(requestDto.themeId());
+    public ReservationResponse add(UserReservationRequest request, Long memberId) {
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
         Member member = getMember(memberId);
 
-        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(requestDto.date(),
-                requestDto.themeId());
+        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(request.date(),
+                request.themeId());
 
         validateIsBooked(sameTimeReservations, reservationTime, theme);
-        validatePastDateTime(requestDto.date(), reservationTime.getStartAt());
+        validatePastDateTime(request.date(), reservationTime.getStartAt());
 
-        Reservation reservation = new Reservation(requestDto.date(), reservationTime, theme, member);
+        Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
         Reservation saved = reservationDao.save(reservation);
         return ReservationResponse.of(saved);
     }
@@ -119,5 +120,21 @@ public class ReservationService {
             responses.add(response);
         }
         return responses;
+    }
+
+    public ReservationResponse addAdminReservation(AdminReservationRequest request) {
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+        Member member = getMember(request.memberId());
+
+        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(request.date(),
+                request.themeId());
+
+        validateIsBooked(sameTimeReservations, reservationTime, theme);
+        validatePastDateTime(request.date(), reservationTime.getStartAt());
+
+        Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
+        Reservation saved = reservationDao.save(reservation);
+        return ReservationResponse.of(saved);
     }
 }
