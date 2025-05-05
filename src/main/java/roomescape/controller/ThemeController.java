@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.dto.ThemeRequestDto;
 import roomescape.model.Theme;
 import roomescape.service.ThemeService;
@@ -34,11 +35,16 @@ public class ThemeController {
         return ResponseEntity.status(HttpStatus.OK).body(themeService.getAllThemes());
     }
 
-    @GetMapping("/best/weekly")
-    public ResponseEntity<List<Theme>> getBestWeeklyThemes() {
-        return ResponseEntity.ok(themeService.getWeeklyBestThemes());
+    @GetMapping("/themes")
+    public ResponseEntity<List<Theme>> getThemes(
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "period", required = false) String period
+    ) {
+        if ("best".equalsIgnoreCase(sort) && "weekly".equalsIgnoreCase(period)) {
+            return ResponseEntity.ok(themeService.getWeeklyBestThemes());
+        }
+        return ResponseEntity.badRequest().build();
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
         themeService.deleteTheme(id);
