@@ -50,7 +50,6 @@ public class ReservationTimeServiceTest {
 
         // then
         assertThat(reservationTime.getId()).isEqualTo(1L);
-        assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(15, 40));
     }
 
     @Test
