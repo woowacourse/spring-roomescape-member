@@ -6,7 +6,7 @@ import roomescape.theme.domain.Theme;
 
 public record Reservation(Long id, String name, LocalDate date, Time time, Theme theme) {
 
-    private static Long NOT_SAVED_ID = 0L;
+    private static final Long NOT_SAVED_ID = 0L;
 
     public static Reservation createBeforeSaved(String name, LocalDate date, Time time, Theme theme) {
         return new Reservation(NOT_SAVED_ID, name, date, time, theme);

@@ -2,7 +2,7 @@ package roomescape.theme.domain;
 
 public record Theme(Long id, String name, String description, String thumbnail) {
 
-    private static Long NOT_SAVED_ID = 0L;
+    private static final Long NOT_SAVED_ID = 0L;
 
     public static Theme createBeforeSaved(String name, String description, String thumbnail) {
         return new Theme(NOT_SAVED_ID, name, description, thumbnail);

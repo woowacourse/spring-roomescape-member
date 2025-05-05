@@ -4,7 +4,7 @@ import java.time.LocalTime;
 
 public record Time(Long id, LocalTime startAt) {
 
-    private static Long NOT_SAVED_ID = 0L;
+    private static final Long NOT_SAVED_ID = 0L;
 
     public static Time createBeforeSaved(LocalTime startAt) {
         return new Time(NOT_SAVED_ID, startAt);
