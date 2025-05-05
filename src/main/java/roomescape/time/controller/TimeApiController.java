@@ -41,7 +41,7 @@ public class TimeApiController {
     @GetMapping("/available")
     public ResponseEntity<List<AvailableTimeResponse>> findByDateAndTheme(
             @ModelAttribute AvailableTimeRequest availableTimeRequest) {
-        return ResponseEntity.ok(timeService.findByDateAndTheme(availableTimeRequest));
+        return ResponseEntity.ok(timeService.findByDateAndThemeId(availableTimeRequest));
     }
 
     @DeleteMapping("/{id}")

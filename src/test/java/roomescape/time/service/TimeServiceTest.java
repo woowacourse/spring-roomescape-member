@@ -94,15 +94,17 @@ class TimeServiceTest {
         AvailableTimeRequest availableTimeRequest = new AvailableTimeRequest(LocalDate.now(), 1L);
         Time reservedTime = new Time(1L, LocalTime.of(10, 0));
         Time notReservedTime = new Time(2L, LocalTime.of(12, 0));
-        List<Long> occupiedTimeIds = List.of(1L);
+        List<AvailableTimeResponse> occupiedTimeIds = List.of(
+                new AvailableTimeResponse(reservedTime.id(), reservedTime.startAt(), true),
+                new AvailableTimeResponse(notReservedTime.id(), notReservedTime.startAt(), false)
+        );
 
-        when(timeRepository.findAll()).thenReturn(List.of(reservedTime, notReservedTime));
-        when(reservationRepository.findTimeIdByDateAndThemeId(any(LocalDate.class), eq(1L))).thenReturn(
+        when(timeRepository.findByDateAndThemeId(any(LocalDate.class), eq(1L))).thenReturn(
                 occupiedTimeIds);
         when(themeRepository.findById(any(Long.class))).thenReturn(Optional.of(mock(Theme.class)));
 
         // when
-        List<AvailableTimeResponse> result = timeService.findByDateAndTheme(availableTimeRequest);
+        List<AvailableTimeResponse> result = timeService.findByDateAndThemeId(availableTimeRequest);
 
         // then
         assertThat(result).hasSize(2);

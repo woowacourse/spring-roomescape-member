@@ -41,18 +41,10 @@ public class TimeService {
                 .toList();
     }
 
-    public List<AvailableTimeResponse> findByDateAndTheme(AvailableTimeRequest request) {
+    public List<AvailableTimeResponse> findByDateAndThemeId(AvailableTimeRequest request) {
         ensureThemeExists(request.themeId());
 
-        List<Long> occupiedTimeIds = reservationRepository.findTimeIdByDateAndThemeId(request.date(),
-                request.themeId());
-
-        return timeRepository.findAll().stream()
-                .map(time -> new AvailableTimeResponse(
-                        time.id(),
-                        time.startAt(),
-                        occupiedTimeIds.contains(time.id())))
-                .toList();
+        return timeRepository.findByDateAndThemeId(request.date(), request.themeId());
     }
 
     private void ensureThemeExists(Long themeId) {

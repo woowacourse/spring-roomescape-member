@@ -2,7 +2,9 @@ package roomescape.time.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.time.domain.Time;
+import roomescape.time.dto.AvailableTimeResponse;
 
 @Repository
 public class TimeRepository {
@@ -42,6 +45,26 @@ public class TimeRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<AvailableTimeResponse> findByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = "SELECT t.id, t.start_at, (r.id IS NOT NULL) AS already_booked "
+                + "FROM reservation_time AS t "
+                + "LEFT JOIN reservation AS r "
+                + "ON t.id = r.time_id "
+                + "AND r.date = :date "
+                + "AND r.theme_id = :themeId";
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("date", date);
+        parameters.put("themeId", themeId);
+
+        return namedParameterJdbcTemplate.query(sql, parameters,
+                (resultSet, rowNum) -> new AvailableTimeResponse(
+                        resultSet.getLong("id"),
+                        resultSet.getTime("start_at").toLocalTime(),
+                        resultSet.getBoolean("already_booked")
+        ));
     }
 
     public List<Time> findAll() {

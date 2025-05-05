@@ -86,17 +86,6 @@ public class ReservationRepository {
         return namedParameterJdbcTemplate.query(sql, (resultSet, rowNum) -> createReservation(resultSet));
     }
 
-    public List<Long> findTimeIdByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = "SELECT time_id FROM reservation WHERE date = :date AND theme_id = :themeId";
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("date", date);
-        parameters.put("themeId", themeId);
-
-        return namedParameterJdbcTemplate.query(sql, parameters,
-                (resultSet, rowNum) -> resultSet.getLong("time_id"));
-    }
-
     public boolean existsByThemeId(Long themeId) {
         String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = :themeId)";
 
