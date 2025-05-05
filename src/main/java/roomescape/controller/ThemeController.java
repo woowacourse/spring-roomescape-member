@@ -31,11 +31,6 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> getAllThemes() {
-        return ResponseEntity.status(HttpStatus.OK).body(themeService.getAllThemes());
-    }
-
-    @GetMapping("/themes")
     public ResponseEntity<List<Theme>> getThemes(
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "period", required = false) String period
@@ -43,7 +38,7 @@ public class ThemeController {
         if ("best".equalsIgnoreCase(sort) && "weekly".equalsIgnoreCase(period)) {
             return ResponseEntity.ok(themeService.getWeeklyBestThemes());
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.OK).body(themeService.getAllThemes());
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
