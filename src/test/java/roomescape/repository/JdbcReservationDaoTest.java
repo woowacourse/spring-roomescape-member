@@ -55,17 +55,20 @@ class JdbcReservationDaoTest {
         assertThat(actual).hasSize(3);
     }
 
-    @DisplayName("날짜와 시간으로 필터링하여 예약 목록을 조회할 수 있다.")
+    @DisplayName("날짜와 테마로 필터링하여 예약 목록을 조회할 수 있다.")
     @Test
     @Sql({"/test-schema.sql", "/test-filtering-reservation-data.sql"})
     void testFindAllByDateAndThemeId() {
         // given
         LocalDate date = LocalDate.of(2025, 5, 1);
-        long timeId = 1L;
+        long themeId = 1L;
         // when
-        List<Reservation> actual = jdbcReservationDao.findAllByDateAndThemeId(date, timeId);
+        List<Reservation> actual = jdbcReservationDao.findAllByDateAndThemeId(date, themeId);
         // then
-        assertThat(actual).hasSize(2);
+        assertAll(
+                () -> assertThat(actual).hasSize(2),
+                () -> assertThat(actual.stream().map(Reservation::getName)).containsOnly("필터링")
+        );
     }
 
     @DisplayName("ID로 특정 예약을 삭제할 수 있다.")

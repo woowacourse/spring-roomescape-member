@@ -118,7 +118,7 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public boolean existsByThemeId(Long themeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
+        final String sql = "SELECT 1 FROM reservation WHERE theme_id = ? LIMIT 1";
         final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), themeId);
         return !result.isEmpty();
     }
