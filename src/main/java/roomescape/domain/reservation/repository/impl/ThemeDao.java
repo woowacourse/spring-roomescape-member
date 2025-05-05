@@ -97,12 +97,12 @@ public class ThemeDao implements ThemeRepository {
     }
 
     private Theme themeOf(ResultSet resultSet) throws SQLException {
-        return new Theme(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        );
+        return Theme.builder()
+                .id(resultSet.getLong("id"))
+                .name(resultSet.getString("name"))
+                .description(resultSet.getString("description"))
+                .thumbnail(resultSet.getString("thumbnail"))
+                .build();
     }
 
     private Theme update(Theme theme) {
@@ -135,6 +135,11 @@ public class ThemeDao implements ThemeRepository {
 
         long id = jdbcInsert.executeAndReturnKey(params).longValue();
 
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return Theme.builder()
+                .id(id)
+                .name(theme.getName())
+                .description(theme.getDescription())
+                .thumbnail(theme.getThumbnail())
+                .build();
     }
 }

@@ -175,12 +175,12 @@ public class ReservationDao implements ReservationRepository {
     }
 
     private Theme themeOf(ResultSet resultSet) throws SQLException {
-        return new Theme(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
-        );
+        return Theme.builder()
+                .id(resultSet.getLong("theme_id"))
+                .name(resultSet.getString("theme_name"))
+                .description(resultSet.getString("description"))
+                .thumbnail(resultSet.getString("thumbnail"))
+                .build();
     }
 
     private Reservation create(Reservation reservation) {

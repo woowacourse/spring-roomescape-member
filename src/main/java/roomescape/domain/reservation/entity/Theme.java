@@ -21,6 +21,14 @@ public class Theme {
         return new Theme(EMPTY_ID, name, description, thumbnail);
     }
 
+    private Theme(Builder builder) {
+        this(builder.id, builder.name, builder.description, builder.thumbnail);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public void validateTheme() {
         if (name == null || description == null || thumbnail == null) {
             throw new IllegalArgumentException("Theme field cannot be null");
@@ -45,5 +53,37 @@ public class Theme {
 
     public String getThumbnail() {
         return thumbnail;
+    }
+
+    public static class Builder {
+
+        private Long id = EMPTY_ID;
+        private String name;
+        private String description;
+        private String thumbnail;
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder thumbnail(String thumbnail) {
+            this.thumbnail = thumbnail;
+            return this;
+        }
+
+        public Theme build() {
+            return new Theme(this);
+        }
     }
 }
