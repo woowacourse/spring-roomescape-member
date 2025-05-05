@@ -25,21 +25,23 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = "SELECT \n"
-                + "    r.id as reservation_id, \n"
-                + "    r.name, \n"
-                + "    r.date, \n"
-                + "    rt.id as time_id, \n"
-                + "    rt.start_at as time_value, \n"
-                + "    t.id as theme_id,\n"
-                + "    t.name as theme_name,\n"
-                + "    t.description as theme_des,\n"
-                + "    t.thumbnail as theme_thumb\n"
-                + "FROM reservation as r \n"
-                + "inner join reservation_time as rt \n"
-                + "on r.time_id = rt.id\n"
-                + "inner join theme as t\n"
-                + "on t.id = r.theme_id";
+        String sql = """
+                    SELECT 
+                        r.id as reservation_id, 
+                        r.name, 
+                        r.date, 
+                        rt.id as time_id, 
+                        rt.start_at as time_value, 
+                        t.id as theme_id,
+                        t.name as theme_name,
+                        t.description as theme_des,
+                        t.thumbnail as theme_thumb
+                    FROM reservation as r 
+                    inner join reservation_time as rt 
+                    on r.time_id = rt.id
+                    inner join theme as t
+                    on t.id = r.theme_id
+                """;
 
         return this.jdbcTemplate.query(sql,
                 (resultSet, rowNum) -> {
@@ -148,9 +150,9 @@ public class JdbcReservationDao implements ReservationDao {
                        t.description as theme_des,
                        t.thumbnail as theme_thumb
                     FROM reservation as r 
-                    INNER JOIN reservation_time as rt ON rt.id = r.id
+                    INNER JOIN reservation_time as rt ON rt.id = r.timd_id
                     INNER JOIN theme as t ON t.id = r.theme_id
-                    WHERE r.id= ?
+                    WHERE r.id = ?
                 """;
         try {
             Reservation reservation = jdbcTemplate.queryForObject(

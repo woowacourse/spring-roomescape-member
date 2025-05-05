@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class ExistedReservationException extends CustomException {
 
-    private static final String message = "예약이 존재합니다.";
+    private static final String message = "예약이 이미 존재합니다.";
     private static final HttpStatus status = HttpStatus.BAD_REQUEST;
 
     public ExistedReservationException() {
