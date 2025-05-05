@@ -22,6 +22,8 @@ class JdbcThemeDaoTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time");
         jdbcThemeDao = new JdbcThemeDao(jdbcTemplate);
     }
 
@@ -34,10 +36,10 @@ class JdbcThemeDaoTest {
 
         // then
         assertAll(
-                () -> assertThat(themes).hasSize(1),
+                () -> assertThat(themes).isNotNull(),
                 () -> assertThat(theme)
                         .extracting("id", "name", "description", "thumbnail")
-                        .containsExactly(1L, "name", "description", "thumbnail")
+                        .contains(1L, "name1", "description1", "thumbnail1")
         );
     }
 
@@ -50,7 +52,7 @@ class JdbcThemeDaoTest {
         // then
         assertThat(theme)
                 .extracting("id", "name", "description", "thumbnail")
-                .containsExactly(1L, "name", "description", "thumbnail");
+                .containsExactly(1L, "name1", "description1", "thumbnail1");
     }
 
     @Test

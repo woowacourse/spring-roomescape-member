@@ -23,6 +23,7 @@ class JdbcReservationTimeDaoTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
         jdbcReservationTimeDao = new JdbcReservationTimeDao(jdbcTemplate);
     }
 
