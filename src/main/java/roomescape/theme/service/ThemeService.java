@@ -45,8 +45,8 @@ public class ThemeService {
 
     public List<ThemeResponse> getPopularThemes() {
         int limit = 10;
-        LocalDate from = LocalDate.now();
-        LocalDate to = from.plusDays(7);
+        LocalDate to = LocalDate.now();
+        LocalDate from = to.minusDays(7);
 
         return themeRepository.findAll().stream()
                 .sorted((t1, t2) -> Integer.compare(

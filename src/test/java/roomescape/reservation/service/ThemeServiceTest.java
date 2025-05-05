@@ -104,8 +104,8 @@ class ThemeServiceTest {
         }
 
         for (int i = 0; i < 20; i++) {
-            addReservation(i, ReservationDateFixture.예약날짜_오늘, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
-            addReservation(19 - i, ReservationDateFixture.예약날짜_7일전, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
+            addReservation(19 - i, ReservationDateFixture.예약날짜_오늘, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
+            addReservation(i, ReservationDateFixture.예약날짜_7일전, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
         }
 
         List<ThemeResponse> popularThemes = themeService.getPopularThemes();
