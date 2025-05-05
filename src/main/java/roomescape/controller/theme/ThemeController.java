@@ -34,13 +34,13 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> add(@RequestBody @Valid AddThemeRequest request) {
+    public ResponseEntity<ThemeResponse> add(@RequestBody @Valid final AddThemeRequest request) {
         var theme = service.add(request);
         return ResponseEntity.created(URI.create("/themes/" + theme.id())).body(theme);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();

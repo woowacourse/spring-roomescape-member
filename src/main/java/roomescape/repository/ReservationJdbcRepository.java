@@ -2,11 +2,12 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
@@ -16,131 +17,138 @@ import roomescape.model.TimeSlot;
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {
 
-    static final RowMapper<Reservation> RESERVATION_ROW_MAPPER =
-            (rs, rowNum) -> {
-                var id = rs.getLong("id");
-                var name = rs.getString("name");
-                var date = rs.getDate("date").toLocalDate();
-                var timeSlotId = rs.getLong("time_id");
-                var time = rs.getTime("start_at").toLocalTime();
-                var themeId = rs.getLong("theme_id");
-                var themeName = rs.getString("theme_name");
-                var themeDescription = rs.getString("theme_description");
-                var themeThumbnail = rs.getString("theme_thumbnail");
-
-                var timeSlot = new TimeSlot(timeSlotId, time);
-                var theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
-                return new Reservation(id, name, date, timeSlot, theme);
-            };
-
-    private static final RowMapper<Theme> THEME_ROW_MAPPER =
-            (rs, rowNum) -> {
-                var id = rs.getLong("id");
-                var name = rs.getString("name");
-                var description = rs.getString("description");
-                var thumbnail = rs.getString("thumbnail");
-                return new Theme(id, name, description, thumbnail);
-            };
-
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    @Autowired
-    public ReservationJdbcRepository(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public Optional<Reservation> findById(final Long id) {
-        var sql = """
-                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-                left join RESERVATION_TIME RT on R.time_id = RT.id 
-                left join THEME T on T.id = R.theme_id                                                                                                                              
-                where R.id = ?
-                """;
-
-        var reservationList = jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
-        return reservationList.stream().findAny();
-    }
-
-    @Override
-    public Long save(Reservation reservation) {
-        var insert = new SimpleJdbcInsert(jdbcTemplate);
-        var generatedId = insert.withTableName("RESERVATION")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(Map.of(
-                        "name", reservation.name(),
-                        "date", reservation.date(),
-                        "time_id", reservation.timeSlot().id(),
-                        "theme_id", reservation.theme().id()
-                ));
-        return generatedId.longValue();
-    }
-
-    @Override
-    public boolean removeById(final Long id) {
-        var sql = "delete from RESERVATION where id = ?";
-
-        var removedRowsCount = jdbcTemplate.update(sql, id);
-        return removedRowsCount > 0;
+    public ReservationJdbcRepository(final DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("RESERVATION")
+                .usingGeneratedKeyColumns("ID");
     }
 
     @Override
     public List<Reservation> findAll() {
-        var sql = """
-                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-                left join RESERVATION_TIME RT on R.time_id = RT.id 
-                left join THEME T on T.id = R.theme_id
+        final String sql = """
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL
+                FROM RESERVATION AS R
+                LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                LEFT JOIN THEME T ON T.ID = R.THEME_ID
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER);
+        return jdbcTemplate.query(sql, createReservationRowMapper());
     }
 
     @Override
     public List<Reservation> findAllByTimeSlotId(final Long id) {
-        var sql = """
-                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-                left join RESERVATION_TIME RT on R.time_id = RT.id
-                left join THEME T on T.id = R.theme_id
-                WHERE R.time_id = ?
+        final String sql = """
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL
+                FROM RESERVATION AS R
+                LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                LEFT JOIN THEME T ON T.ID = R.THEME_ID
+                WHERE RT.ID = ?
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+        return jdbcTemplate.query(sql, createReservationRowMapper(), id);
     }
 
     @Override
     public List<Reservation> findAllByThemeId(final Long id) {
-        var sql = """
-                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-                left join RESERVATION_TIME RT on R.time_id = RT.id 
-                left join THEME T on T.id = R.theme_id
-                WHERE R.theme_id = ?
+        final String sql = """
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL
+                FROM RESERVATION AS R
+                LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                LEFT JOIN THEME T ON T.ID = R.THEME_ID
+                WHERE T.ID = ?
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
-    }
+        return jdbcTemplate.query(sql, createReservationRowMapper(), id);    }
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
-        var sql = """
-                select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
-                left join RESERVATION_TIME RT on R.time_id = RT.id 
-                left join THEME T on T.id = R.theme_id
-                WHERE R.date = ? AND R.theme_id = ?
+        final String sql = """
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.DESCRIPTION, T.THUMBNAIL FROM RESERVATION AS R
+                JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                JOIN THEME T ON T.ID = R.THEME_ID
+                WHERE R.DATE = ? AND T.ID = ?
                 """;
 
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, date, themeId);
+        return jdbcTemplate.query(sql, createReservationRowMapper(), date, themeId);
     }
 
     @Override
-    public List<Theme> findPopularThemesByPeriod(final LocalDate startDate, final LocalDate endDate, final Integer limit) {
-        var sql = """
-                select T.id, T.name, T.description, T.thumbnail from THEME T
-                join RESERVATION R on T.id = R.theme_id
-                where R.date >= ? and R.date <= ?
-                group by T.id
-                order by count(R.id) desc
-                limit ?
+    public List<Theme> findPopularThemesByPeriod(final LocalDate startDate, final LocalDate endDate,
+                                                 final Integer limit) {
+        final String sql = """
+                SELECT R.THEME_ID, T.NAME, T.THUMBNAIL, T.DESCRIPTION, COUNT(T.ID) AS COUNT FROM RESERVATION AS R
+                JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
+                JOIN THEME T ON T.ID = R.THEME_ID
+                WHERE R.DATE BETWEEN  ? AND ?
+                GROUP BY R.THEME_ID
+                ORDER BY COUNT DESC
+                LIMIT ?
                 """;
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, limit);
+
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Theme(
+                rs.getLong("THEME_ID"),
+                rs.getString("THEME.NAME"),
+                rs.getString("THEME.DESCRIPTION"),
+                rs.getString("THEME.THUMBNAIL")
+        )), startDate, endDate, limit);
+    }
+
+    @Override
+    public Long save(final Reservation reservation) {
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("NAME", reservation.name())
+                .addValue("DATE", reservation.date())
+                .addValue("TIME_ID", reservation.timeSlot().id())
+                .addValue("THEME_ID", reservation.theme().id());
+
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    @Override
+    public Optional<Reservation> findById(final Long id) {
+        final String sql = "SELECT * FROM RESERVATION WHERE ID = ?";
+
+        return jdbcTemplate.query(sql, createSimpleReservationRowMapper(), id)
+                .stream()
+                .findAny();
+    }
+
+    @Override
+    public Boolean removeById(final Long id) {
+        final String sql = "DELETE FROM RESERVATION WHERE ID = ?";
+
+        int removedRowsCount = jdbcTemplate.update(sql, id);
+        return removedRowsCount > 0;
+    }
+
+    private RowMapper<Reservation> createReservationRowMapper() {
+        return (rs, rowNum) -> new Reservation(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getDate("DATE").toLocalDate(),
+                new TimeSlot(
+                        rs.getLong("RESERVATION.TIME_ID"),
+                        rs.getTime("RESERVATION_TIME.START_AT").toLocalTime()
+                ),
+                new Theme(
+                        rs.getLong("RESERVATION.THEME_ID"),
+                        rs.getString("THEME.NAME"),
+                        rs.getString("THEME.DESCRIPTION"),
+                        rs.getString("THEME.THUMBNAIL")
+                ));
+    }
+
+    private RowMapper<Reservation> createSimpleReservationRowMapper() {
+        return (rs, rowNum) -> new Reservation(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getDate("DATE").toLocalDate(),
+                new TimeSlot(rs.getLong("RESERVATION.TIME_ID"), null),
+                new Theme(rs.getLong("RESERVATION.THEME_ID"), null, null, null)
+        );
     }
 }

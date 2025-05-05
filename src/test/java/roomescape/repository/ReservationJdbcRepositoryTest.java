@@ -1,144 +1,159 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.Fixtures.JUNK_RESERVATION;
+import static roomescape.Fixtures.JUNK_RESERVATION_1;
+import static roomescape.Fixtures.JUNK_RESERVATION_2;
+import static roomescape.Fixtures.JUNK_RESERVATION_3;
+import static roomescape.Fixtures.JUNK_RESERVATION_4;
+import static roomescape.Fixtures.JUNK_RESERVATION_5;
+import static roomescape.Fixtures.JUNK_RESERVATION_6;
+import static roomescape.Fixtures.JUNK_THEME_1;
+import static roomescape.Fixtures.JUNK_THEME_2;
 
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.Fixtures;
 import roomescape.model.Reservation;
+import roomescape.model.Theme;
 
-@Sql(scripts = {"/test-schema.sql"})
+@Sql(scripts = {"/test-schema.sql", "/test-data.sql"})
 @JdbcTest
-public class ReservationJdbcRepositoryTest {
+class ReservationJdbcRepositoryTest {
+
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    private ReservationRepository repository;
-
-    @DisplayName("타임 슬롯과 테마를 미리 세팅")
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.update("insert into RESERVATION_TIME (id, start_at) values (?, ?)", 1, "10:00");
-        jdbcTemplate.update("insert into THEME (id, name, description, thumbnail) values (?, ?, ?, ?)",
-            1,
-            "레벨2 탈출",
-            "우테코 레벨2를 탈출하는 내용입니다.",
-            "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-
-        repository = new ReservationJdbcRepository(jdbcTemplate);
+    public ReservationJdbcRepositoryTest(DataSource dataSource) {
+        this.reservationRepository = new ReservationJdbcRepository(dataSource);
     }
 
     @Test
-    @DisplayName("예약을 아이디로 조회한다.")
-    void findById() {
+    @DisplayName("모든 예약 목록을 조회한다.")
+    void findAll() {
         // given
-        var reservation = readyReservation();
-        var savedId = repository.save(reservation);
+        var reservations = List.of(
+                JUNK_RESERVATION_1, JUNK_RESERVATION_2, JUNK_RESERVATION_3,
+                JUNK_RESERVATION_4, JUNK_RESERVATION_5, JUNK_RESERVATION_6
+        );
 
         // when
-        Optional<Reservation> found = repository.findById(savedId);
+        final List<Reservation> found = reservationRepository.findAll();
 
         // then
-        assertThat(found).isPresent();
+        assertThat(found).containsExactlyInAnyOrderElementsOf(reservations);
+    }
+
+    @Test
+    @DisplayName("타임 슬롯 ID에 해당하는 모든 예약 목록을 조회한다.")
+    void findAllByTimeSlotId() {
+        // given
+        var timeSlotId = JUNK_RESERVATION_1.timeSlot().id();
+        var reservations = List.of(
+                JUNK_RESERVATION_1, JUNK_RESERVATION_4
+        );
+
+        // when
+        final List<Reservation> found = reservationRepository.findAllByTimeSlotId(timeSlotId);
+
+        // then
+        assertThat(found).containsExactlyInAnyOrderElementsOf(reservations);
+    }
+
+    @Test
+    @DisplayName("테마 ID에 해당하는 모든 예약 목록을 조회한다.")
+    void findAllByThemeId() {
+        // given
+        var themeId = JUNK_RESERVATION_6.theme().id();
+        var reservations = List.of(
+                JUNK_RESERVATION_5, JUNK_RESERVATION_6
+        );
+
+        // when
+        final List<Reservation> found = reservationRepository.findAllByThemeId(themeId);
+
+        // then
+        assertThat(found).containsExactlyInAnyOrderElementsOf(reservations);
+    }
+
+    @Test
+    @DisplayName("날짜와 테마 ID에 해당하는 모든 예약 목록을 조회한다.")
+    void findAllByDateAndThemeId() {
+        // given
+        var date = JUNK_RESERVATION_1.date();
+        var themeId = JUNK_RESERVATION_1.theme().id();
+        var reservations = List.of(
+                JUNK_RESERVATION_1, JUNK_RESERVATION_2, JUNK_RESERVATION_3
+        );
+
+        // when
+        final List<Reservation> found = reservationRepository.findAllByDateAndThemeId(date, themeId);
+
+        // then
+        assertThat(found).containsExactlyInAnyOrderElementsOf(reservations);
+    }
+
+    @Test
+    @DisplayName("기간에 해당하는 인기 테마 목록을 조회한다.")
+    void findPopularThemesByPeriod() {
+        // given
+        var endDate = JUNK_RESERVATION_1.date();
+        var startDate = endDate.minusDays(1);
+        var limit = 10;
+        var popularThemes = List.of(
+                JUNK_THEME_2, JUNK_THEME_1
+        );
+
+        // when
+        final List<Theme> found = reservationRepository.findPopularThemesByPeriod(startDate, endDate, limit);
+
+        // then
+        assertThat(found).containsExactlyInAnyOrderElementsOf(popularThemes);
     }
 
     @Test
     @DisplayName("예약을 저장한다.")
     void save() {
         // given
-        var reservation = readyReservation();
+        var reservation = JUNK_RESERVATION;
 
         // when
-        repository.save(reservation);
+        final Long saved = reservationRepository.save(reservation);
 
         // then
-        assertThat(repository.findAll()).hasSize(1);
+        assertThat(saved).isEqualTo(reservation.id());
     }
 
     @Test
-    @DisplayName("예약을 삭제한다.")
+    @DisplayName("예약 ID에 해당하는 예약을 조회한다.")
+    void findById() {
+        // given
+        var reservation = JUNK_RESERVATION_1;
+        var reservationId = reservation.id();
+
+        // when
+        final Optional<Reservation> found = reservationRepository.findById(reservationId);
+
+        // then
+        assertThat(found).isPresent()
+                .isEqualTo(Optional.of(reservation));
+    }
+
+    @Test
+    @DisplayName("예약 ID에 해당하는 예약을 삭제한다.")
     void removeById() {
         // given
-        var reservation = readyReservation();
-        var savedId = repository.save(reservation);
+        var reservationId = JUNK_RESERVATION_1.id();
 
         // when
-        repository.removeById(savedId);
+        final Boolean removed = reservationRepository.removeById(reservationId);
 
         // then
-        assertThat(repository.findAll()).isEmpty();
-    }
-
-    @Test
-    @DisplayName("모든 예약을 조회한다.")
-    void findAll() {
-        // given
-        var reservation1 = readyReservation();
-        var reservation2 = readyReservation();
-        repository.save(reservation1);
-        repository.save(reservation2);
-
-        // when & then
-        assertThat(repository.findAll()).hasSize(2);
-    }
-
-    @Test
-    @DisplayName("타임 슬롯 아이디에 해당하는 예약을 조회한다.")
-    void findAllByTimeSlotId() {
-        // given
-        var reservation = readyReservation();
-        repository.save(reservation);
-
-        // when
-        var found = repository.findAllByTimeSlotId(reservation.timeSlot().id());
-
-        // then
-        assertThat(found).contains(reservation);
-    }
-
-    @Test
-    @DisplayName("테마 아이디에 해당하는 예약을 조회한다.")
-    void findAllByThemeId() {
-        // given
-        var reservation = readyReservation();
-        repository.save(reservation);
-
-        // when
-        var found = repository.findAllByThemeId(reservation.theme().id());
-
-        // then
-        assertThat(found).contains(reservation);
-    }
-
-    @Test
-    @DisplayName("날짜와 테마 아이디에 해당하는 예약을 조회한다.")
-    void findAllByDateAndThemeId() {
-        // given
-        var reservation = readyReservation();
-        repository.save(reservation);
-
-        // when
-        var found = repository.findAllByDateAndThemeId(reservation.date(), reservation.theme().id());
-
-        // then
-        assertThat(found).contains(reservation);
-    }
-
-    private Reservation readyReservation() {
-        return new Reservation(
-            1L,
-            "브라운",
-            LocalDate.of(2023, 12, 1),
-            Fixtures.JUNK_TIME_SLOT,
-            Fixtures.JUNK_THEME
-        );
+        assertThat(removed).isTrue();
     }
 }

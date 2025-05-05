@@ -1,85 +1,88 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.Fixtures.JUNK_THEME;
+import static roomescape.Fixtures.JUNK_THEME_1;
+import static roomescape.Fixtures.JUNK_THEME_2;
+import static roomescape.Fixtures.JUNK_THEME_3;
 
+import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.model.Theme;
 
-@Sql(scripts = {"/test-schema.sql"})
+@Sql(scripts = {"/test-schema.sql", "/test-data.sql"})
 @JdbcTest
-public class ThemeJdbcRepositoryTest {
+class ThemeJdbcRepositoryTest {
 
-    private ThemeRepository repository;
+    private final ThemeRepository themeRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        repository = new ThemeJdbcRepository(jdbcTemplate);
+    public ThemeJdbcRepositoryTest(DataSource dataSource) {
+        this.themeRepository = new ThemeJdbcRepository(dataSource);
     }
+
     @Test
-    @DisplayName("테마를 아이디로 조회한다.")
-    void findById() {
+    @DisplayName("모든 테마 목록을 조회한다.")
+    void findAll() {
         // given
-        var theme = readyTheme();
-        var savedId = repository.save(theme);
+        var themes = List.of(
+                JUNK_THEME_1, JUNK_THEME_2, JUNK_THEME_3
+        );
 
         // when
-        Optional<Theme> found = repository.findById(savedId);
+        final List<Theme> found = themeRepository.findAll();
 
         // then
-        assertThat(found).isPresent();
+        assertThat(found).containsExactlyInAnyOrderElementsOf(themes);
+
     }
 
     @Test
     @DisplayName("테마를 저장한다.")
     void save() {
         // given
-        var theme = readyTheme();
+        var theme = JUNK_THEME;
 
         // when
-        repository.save(theme);
+        final Long saved = themeRepository.save(theme);
 
         // then
-        assertThat(repository.findAll()).hasSize(1);
+        assertThat(saved).isEqualTo(theme.id());
     }
 
     @Test
-    @DisplayName("테마를 삭제한다.")
+    @DisplayName("테마 ID에 해당하는 테마를 조회한다.")
+    void findById() {
+        // given
+        var theme = JUNK_THEME_1;
+        var themeId = theme.id();
+
+        // when
+        final Optional<Theme> found = themeRepository.findById(themeId);
+
+        // then
+        assertThat(found).isPresent()
+                .isEqualTo(Optional.of(theme));
+    }
+
+    @Test
+    @DisplayName("테마 ID에 해당하는 테마를 삭제한다.")
     void removeById() {
         // given
-        var theme = readyTheme();
-        var savedId = repository.save(theme);
+        var theme = JUNK_THEME;
+        themeRepository.save(theme);
+        var themeId = theme.id();
 
         // when
-        repository.removeById(savedId);
+        final Boolean removed = themeRepository.removeById(themeId);
 
         // then
-        assertThat(repository.findAll()).isEmpty();
-    }
-
-    @Test
-    @DisplayName("모든 테마를 조회한다.")
-    void findAll() {
-        // given
-        var theme1 = new Theme(1L, "테마1", "설명", "썸네일");
-        var theme2 = new Theme(2L, "테마2", "설명", "썸네일");
-        repository.save(theme1);
-        repository.save(theme2);
-
-        // when & then
-        assertThat(repository.findAll()).hasSize(2);
-    }
-
-    private Theme readyTheme() {
-        return new Theme(1L, "테마", "설명", "썸네일");
+        assertThat(removed).isTrue();
     }
 }

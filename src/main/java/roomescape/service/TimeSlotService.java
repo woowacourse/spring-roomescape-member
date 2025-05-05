@@ -19,8 +19,8 @@ public class TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    public TimeSlotService(ReservationRepository reservationRepository,
-                           TimeSlotRepository timeSlotRepository) {
+    public TimeSlotService(final ReservationRepository reservationRepository,
+                           final TimeSlotRepository timeSlotRepository) {
         this.reservationRepository = reservationRepository;
         this.timeSlotRepository = timeSlotRepository;
     }

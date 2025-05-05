@@ -35,13 +35,13 @@ public class TimeSlotController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeSlotResponse> add(@RequestBody @Valid AddTimeSlotRequest request) {
+    public ResponseEntity<TimeSlotResponse> add(@RequestBody @Valid final AddTimeSlotRequest request) {
         var timeSlot = service.add(request);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(timeSlot);
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();

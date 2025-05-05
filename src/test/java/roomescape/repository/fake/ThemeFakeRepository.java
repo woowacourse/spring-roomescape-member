@@ -14,12 +14,12 @@ public class ThemeFakeRepository implements ThemeRepository {
     private final AtomicLong index = new AtomicLong(1L);
 
     @Override
-    public Optional<Theme> findById(final long id) {
-        return Optional.ofNullable(themes.get(id));
+    public List<Theme> findAll() {
+        return List.copyOf(themes.values());
     }
 
     @Override
-    public long save(final Theme theme) {
+    public Long save(final Theme theme) {
         var id = index.getAndIncrement();
         var created = new Theme(id, theme.name(), theme.description(), theme.thumbnail());
         themes.put(id, created);
@@ -27,13 +27,13 @@ public class ThemeFakeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean removeById(final long id) {
-        Theme removed = themes.remove(id);
-        return removed != null;
+    public Optional<Theme> findById(final Long id) {
+        return Optional.ofNullable(themes.get(id));
     }
 
     @Override
-    public List<Theme> findAll() {
-        return List.copyOf(themes.values());
+    public Boolean removeById(final Long id) {
+        Theme removed = themes.remove(id);
+        return removed != null;
     }
 }

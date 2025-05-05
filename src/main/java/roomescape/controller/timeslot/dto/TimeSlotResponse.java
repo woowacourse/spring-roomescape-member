@@ -9,14 +9,14 @@ public record TimeSlotResponse(
         LocalTime startAt
 ) {
 
-    public static TimeSlotResponse from(TimeSlot timeSlot) {
+    public static TimeSlotResponse from(final TimeSlot timeSlot) {
         return new TimeSlotResponse(
                 timeSlot.id(),
                 timeSlot.startAt()
         );
     }
 
-    public static List<TimeSlotResponse> from(List<TimeSlot> timeSlots) {
+    public static List<TimeSlotResponse> from(final List<TimeSlot> timeSlots) {
         return timeSlots.stream()
                 .map(TimeSlotResponse::from)
                 .toList();

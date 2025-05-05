@@ -6,13 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.Fixtures.JUNK_THEME;
 import static roomescape.Fixtures.JUNK_TIME_SLOT;
-import static roomescape.Fixtures.getReservationOfYesterday;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.Fixtures;
-import roomescape.controller.reservation.dto.AddReservationRequest;
 import roomescape.controller.reservation.dto.ReservationResponse;
 import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.ThemeFakeRepository;
@@ -49,7 +47,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("예약을 삭제할 수 있다.")
-    void deleteReservation() {
+    void removeById() {
         // given
         var request = Fixtures.getAddReservationRequestOfTomorrow();
         var response = service.add(request);
@@ -67,7 +65,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("지나가지 않은 날짜와 시간에 대한 예약 생성은 가능하다.")
-    void canAddFutureDateTime() {
+    void addFutureReservation() {
         // given
         var request = Fixtures.getAddReservationRequestOfTomorrow();
 
@@ -78,7 +76,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("이미 예약된 날짜와 시간에 대한 예약 생성은 불가능하다.")
-    void cannotAddIdenticalDateTimeMultipleTimes() {
+    void addIdenticalReservationException() {
         // given
         var request = Fixtures.getAddReservationRequestOfTomorrow();
 

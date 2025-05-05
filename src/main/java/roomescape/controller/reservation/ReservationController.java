@@ -32,13 +32,13 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> reserve(@RequestBody @Valid AddReservationRequest request) {
+    public ResponseEntity<ReservationResponse> reserve(@RequestBody @Valid final AddReservationRequest request) {
         var reservation = service.add(request);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();

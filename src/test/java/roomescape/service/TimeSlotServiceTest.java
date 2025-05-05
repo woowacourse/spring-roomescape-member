@@ -25,7 +25,7 @@ class TimeSlotServiceTest {
 
     @Test
     @DisplayName("예약 시간을 추가할 수 있다.")
-    void addTimeSlot() {
+    void addT() {
         // given & when
         TimeSlotResponse response = service.add(JUNK_TIME_SLOT_REQUEST);
 
@@ -36,7 +36,7 @@ class TimeSlotServiceTest {
 
     @Test
     @DisplayName("예약 시간을 삭제할 수 있다.")
-    void deleteTimeSlot() {
+    void removeById() {
         // given
         var response = service.add(JUNK_TIME_SLOT_REQUEST);
 
@@ -53,7 +53,7 @@ class TimeSlotServiceTest {
 
     @Test
     @DisplayName("예약 시간을 삭제할 때 해당 시간에 대한 예약이 존재하면 예외 발생")
-    void deleteTimeSlotWithReservation() {
+    void removeTimeSlotWithReservationException() {
         // given
         var reservationRepository = new ReservationFakeRepository();
         var timeSlotService = new TimeSlotService(reservationRepository,

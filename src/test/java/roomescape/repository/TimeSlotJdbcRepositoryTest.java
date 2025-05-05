@@ -1,88 +1,87 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.Fixtures.JUNK_TIME_SLOT;
+import static roomescape.Fixtures.JUNK_TIME_SLOT_1;
+import static roomescape.Fixtures.JUNK_TIME_SLOT_2;
+import static roomescape.Fixtures.JUNK_TIME_SLOT_3;
 
-import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.model.TimeSlot;
-import roomescape.repository.fake.TimeSlotFakeRepository;
 
-@Sql(scripts = {"/test-schema.sql"})
+@Sql(scripts = {"/test-schema.sql", "/test-data.sql"})
 @JdbcTest
-public class TimeSlotJdbcRepositoryTest {
+class TimeSlotJdbcRepositoryTest {
 
-    private TimeSlotRepository repository;
+    private final TimeSlotRepository timeSlotRepository;
 
-     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @BeforeEach
-    void setUp() {
-        repository = new TimeSlotJdbcRepository(jdbcTemplate);
+    @Autowired
+    public TimeSlotJdbcRepositoryTest(DataSource dataSource) {
+        this.timeSlotRepository = new TimeSlotJdbcRepository(dataSource);
     }
 
     @Test
-    @DisplayName("타임 슬롯을 아이디로 조회한다.")
-    void findById() {
+    @DisplayName("모든 타임 슬롯 목록을 조회한다.")
+    void findAll() {
         // given
-        var timeSlot = readyTimeSlot();
-        var savedId = repository.save(timeSlot);
+        var timeSlots = List.of(
+                JUNK_TIME_SLOT_1, JUNK_TIME_SLOT_2, JUNK_TIME_SLOT_3
+        );
 
         // when
-        Optional<TimeSlot> found = repository.findById(savedId);
+        final List<TimeSlot> found = timeSlotRepository.findAll();
 
         // then
-        assertThat(found).isPresent();
+        assertThat(found).containsExactlyInAnyOrderElementsOf(timeSlots);
     }
 
     @Test
     @DisplayName("타임 슬롯을 저장한다.")
     void save() {
         // given
-        var timeSlot = readyTimeSlot();
+        var timeSlot = JUNK_TIME_SLOT;
 
         // when
-        repository.save(timeSlot);
+        final Long saved = timeSlotRepository.save(timeSlot);
 
         // then
-        assertThat(repository.findAll()).hasSize(1);
+        assertThat(saved).isEqualTo(timeSlot.id());
     }
 
     @Test
-    @DisplayName("타임 슬롯을 삭제한다.")
+    @DisplayName("타임 슬롯 ID에 해당하는 타임 슬롯을 조회한다.")
+    void findById() {
+        // given
+        var timeSlot = JUNK_TIME_SLOT_1;
+        var timeSlotId = timeSlot.id();
+
+        // when
+        final Optional<TimeSlot> found = timeSlotRepository.findById(timeSlotId);
+
+        // then
+        assertThat(found).isPresent()
+                .isEqualTo(Optional.of(timeSlot));
+    }
+
+    @Test
+    @DisplayName("타임 슬롯 ID에 해당하는 타임 슬롯을 삭제한다.")
     void removeById() {
         // given
-        var timeSlot = readyTimeSlot();
-        var savedId = repository.save(timeSlot);
+        var timeSlot = JUNK_TIME_SLOT;
+        timeSlotRepository.save(timeSlot);
+        var timeSlotId = timeSlot.id();
 
         // when
-        repository.removeById(savedId);
+        final Boolean removed = timeSlotRepository.removeById(timeSlotId);
 
         // then
-        assertThat(repository.findAll()).isEmpty();
-    }
-
-    @Test
-    @DisplayName("모든 타임 슬롯을 조회한다.")
-    void findAll() {
-        // given
-        var timeSlot1 = readyTimeSlot();
-        var timeSlot2 = readyTimeSlot();
-        repository.save(timeSlot1);
-        repository.save(timeSlot2);
-
-        // when & then
-        assertThat(repository.findAll()).hasSize(2);
-    }
-
-    private TimeSlot readyTimeSlot() {
-        return new TimeSlot(LocalTime.of(10, 0));
+        assertThat(removed).isTrue();
     }
 }

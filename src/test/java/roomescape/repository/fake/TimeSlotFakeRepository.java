@@ -14,12 +14,12 @@ public class TimeSlotFakeRepository implements TimeSlotRepository {
     private final AtomicLong index = new AtomicLong(1L);
 
     @Override
-    public Optional<TimeSlot> findById(final long id) {
-        return Optional.ofNullable(timeSlots.get(id));
+    public List<TimeSlot> findAll() {
+        return List.copyOf(timeSlots.values());
     }
 
     @Override
-    public long save(final TimeSlot timeSlot) {
+    public Long save(final TimeSlot timeSlot) {
         var id = index.getAndIncrement();
         var created = new TimeSlot(id, timeSlot.startAt());
         timeSlots.put(id, created);
@@ -27,13 +27,13 @@ public class TimeSlotFakeRepository implements TimeSlotRepository {
     }
 
     @Override
-    public boolean removeById(final long id) {
-        TimeSlot removed = timeSlots.remove(id);
-        return removed != null;
+    public Optional<TimeSlot> findById(final Long id) {
+        return Optional.ofNullable(timeSlots.get(id));
     }
 
     @Override
-    public List<TimeSlot> findAll() {
-        return List.copyOf(timeSlots.values());
+    public Boolean removeById(final Long id) {
+        TimeSlot removed = timeSlots.remove(id);
+        return removed != null;
     }
 }

@@ -6,11 +6,11 @@ import roomescape.model.Theme;
 
 public interface ThemeRepository {
 
-    Optional<Theme> findById(long id);
-
-    long save(Theme theme);
-
-    boolean removeById(long id);
-
     List<Theme> findAll();
+
+    Long save(final Theme theme);
+
+    Optional<Theme> findById(final Long id);
+
+    Boolean removeById(final Long id);
 }

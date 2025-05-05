@@ -31,13 +31,6 @@ public class Reservation {
         this(null, name, date, timeSlot, theme);
     }
 
-    public boolean isBefore(final LocalDateTime dateTime) {
-        var date = dateTime.toLocalDate();
-        var time = dateTime.toLocalTime();
-        return this.date.isBefore(date)
-                || (this.date.isEqual(date) && this.timeSlot.isBefore(time));
-    }
-
     public boolean isSameDateTime(final Reservation reservation) {
         return this.date.isEqual(reservation.date()) && this.timeSlot.isSameTimeSlot(reservation.timeSlot());
     }

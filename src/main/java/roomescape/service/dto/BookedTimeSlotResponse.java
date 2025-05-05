@@ -9,7 +9,7 @@ public record BookedTimeSlotResponse(
         Boolean alreadyBooked
 ) {
 
-    public static BookedTimeSlotResponse from(TimeSlot timeSlot, Boolean alreadyBooked) {
+    public static BookedTimeSlotResponse from(final TimeSlot timeSlot, final Boolean alreadyBooked) {
         return new BookedTimeSlotResponse(
                 timeSlot.id(),
                 timeSlot.startAt(),

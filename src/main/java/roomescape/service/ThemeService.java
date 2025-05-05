@@ -18,7 +18,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     @Autowired
-    public ThemeService(ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+    public ThemeService(final ReservationRepository reservationRepository, final ThemeRepository themeRepository) {
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
     }

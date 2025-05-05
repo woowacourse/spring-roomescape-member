@@ -7,7 +7,6 @@ import static roomescape.Fixtures.JUNK_THEME_REQUEST;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.controller.theme.dto.AddThemeRequest;
 import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.ThemeFakeRepository;

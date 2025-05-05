@@ -1,12 +1,14 @@
 package roomescape.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.TimeSlot;
@@ -14,48 +16,53 @@ import roomescape.model.TimeSlot;
 @Repository
 public class TimeSlotJdbcRepository implements TimeSlotRepository {
 
-    static final RowMapper<TimeSlot> TIME_SLOT_ROW_MAPPER = (rs, rowNum) -> {
-        var id = rs.getLong("id");
-        var startAt = rs.getString("start_at");
-        return new TimeSlot(id, LocalTime.parse(startAt));
-    };
-
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    @Autowired
-    public TimeSlotJdbcRepository(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public Optional<TimeSlot> findById(final long id) {
-        var sql = "SELECT * FROM RESERVATION_TIME WHERE id = ?";
-        var timeSlotList = jdbcTemplate.query(sql, TIME_SLOT_ROW_MAPPER, id);
-
-        return timeSlotList.stream().findAny();
-    }
-
-    @Override
-    public long save(final TimeSlot timeSlot) {
-        var insert = new SimpleJdbcInsert(jdbcTemplate);
-
-        var generatedId = insert.withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(Map.of(
-                        "start_at", timeSlot.startAt()
-                ));
-        return generatedId.longValue();
-    }
-
-    @Override
-    public boolean removeById(final long id) {
-        var removedRowsCount = jdbcTemplate.update("delete from RESERVATION_TIME where id = ?", id);
-        return removedRowsCount > 0;
+    public TimeSlotJdbcRepository(final DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("RESERVATION_TIME")
+                .usingGeneratedKeyColumns("ID");
     }
 
     @Override
     public List<TimeSlot> findAll() {
-        var sql = "SELECT * FROM RESERVATION_TIME";
-        return jdbcTemplate.query(sql, TIME_SLOT_ROW_MAPPER);
+        final String sql = "SELECT * FROM RESERVATION_TIME ORDER BY START_AT";
+
+        return jdbcTemplate.query(sql, this::mapToTimeSlot);
+    }
+
+    @Override
+    public Long save(final TimeSlot timeSlot) {
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("ID", timeSlot.id())
+                .addValue("START_AT", timeSlot.startAt());
+
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    @Override
+    public Optional<TimeSlot> findById(final Long id) {
+        final String sql = "SELECT * FROM RESERVATION_TIME WHERE ID = ?";
+
+        return jdbcTemplate.query(sql, this::mapToTimeSlot, id)
+                .stream()
+                .findAny();
+    }
+
+    @Override
+    public Boolean removeById(final Long id) {
+        final String sql = "DELETE FROM RESERVATION_TIME WHERE ID = ?";
+
+        int removedRowsCount = jdbcTemplate.update(sql, id);
+        return removedRowsCount > 0;
+    }
+
+    private TimeSlot mapToTimeSlot(final ResultSet rs, final int rowNum) throws SQLException {
+        return new TimeSlot(
+                rs.getLong("ID"),
+                LocalTime.parse(rs.getString("START_AT"))
+        );
     }
 }

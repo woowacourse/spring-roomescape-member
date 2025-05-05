@@ -1,11 +1,13 @@
 package roomescape.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
@@ -13,56 +15,57 @@ import roomescape.model.Theme;
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
 
-    static final RowMapper<Theme> THEME_ROW_MAPPER =
-            (rs, rowNum) -> {
-                var id = rs.getLong("id");
-                var name = rs.getString("name");
-                var description = rs.getString("description");
-                var thumbnail = rs.getString("thumbnail");
-                return new Theme(id, name, description, thumbnail);
-            };
-
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    @Autowired
-    public ThemeJdbcRepository(final JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ThemeJdbcRepository(final DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withTableName("THEME")
+                .usingGeneratedKeyColumns("ID");
     }
 
-    public Optional<Theme> findById(final long id) {
-        var sql = """
-                select T.id, T.name, T.description, T.thumbnail from THEME T
-                where T.id = ?
-                """;
+    @Override
+    public List<Theme> findAll() {
+        final String sql = "SELECT * FROM THEME";
 
-        var themeList = jdbcTemplate.query(sql, THEME_ROW_MAPPER, id);
-        return themeList.stream().findAny();
+        return jdbcTemplate.query(sql, this::mapToTheme);
     }
 
-    public long save(Theme theme) {
-        var insert = new SimpleJdbcInsert(jdbcTemplate);
-        var generatedId = insert.withTableName("THEME")
-                .usingGeneratedKeyColumns("id")
-                .executeAndReturnKey(Map.of(
-                        "name", theme.name(),
-                        "description", theme.description(),
-                        "thumbnail", theme.thumbnail()
-                ));
-        return generatedId.longValue();
+    @Override
+    public Long save(final Theme theme) {
+        final SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("ID", theme.id())
+                .addValue("NAME", theme.id())
+                .addValue("DESCRIPTION", theme.description())
+                .addValue("THUMBNAIL", theme.thumbnail());
+
+        return simpleJdbcInsert.executeAndReturnKey(params).longValue();
     }
 
-    public boolean removeById(long id) {
-        var sql = "delete from THEME where id = ?";
+    @Override
+    public Optional<Theme> findById(final Long id) {
+        final String sql = "SELECT * FROM THEME WHERE ID = ?";
 
-        var removedRowsCount = jdbcTemplate.update(sql, id);
+        return jdbcTemplate.query(sql, this::mapToTheme, id)
+                .stream()
+                .findAny();
+    }
+
+    @Override
+    public Boolean removeById(final Long id) {
+        final String sql = "DELETE FROM THEME WHERE ID = ?";
+
+        int removedRowsCount = jdbcTemplate.update(sql, id);
         return removedRowsCount > 0;
     }
 
-    public List<Theme> findAll() {
-        var sql = """
-                select T.id, T.name, T.description, T.thumbnail from THEME T
-                """;
-
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
+    private Theme mapToTheme(ResultSet rs, int rowNum) throws SQLException {
+        return new Theme(
+                rs.getLong("ID"),
+                rs.getString("NAME"),
+                rs.getString("DESCRIPTION"),
+                rs.getString("THUMBNAIL")
+        );
     }
 }

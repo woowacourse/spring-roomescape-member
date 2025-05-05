@@ -10,29 +10,30 @@ import org.junit.jupiter.api.Test;
 public class TimeSlotTest {
 
     @Test
-    @DisplayName("타임 슬롯이 주어진 시간보다 이전인지 확인한다")
+    @DisplayName("타임 슬롯이 주어진 시간보다 이전인지 확인한다.")
     void isBefore() {
         // given
-        TimeSlot timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
+        var timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
+        var compareTime = LocalTime.of(11, 0);
 
         // when
-        boolean isBefore = timeSlot.isBefore(LocalTime.of(11, 0));
+        boolean isBefore = timeSlot.isBefore(compareTime);
 
         // then
         assertThat(isBefore).isTrue();
     }
 
     @Test
-    @DisplayName("타임 슬롯이 주어진 타임 슬롯과 같은 시간인지 확인한다")
+    @DisplayName("타임 슬롯이 주어진 타임 슬롯과 같은 시간인지 확인한다.")
     void isSameDateTime() {
         // given
-        TimeSlot timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
-        TimeSlot otherTimeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
+        var timeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
+        var otherTimeSlot = new TimeSlot(1L, LocalTime.of(10, 0));
 
         // when
-        boolean isSameDateTime = timeSlot.isSameTimeSlot(otherTimeSlot);
+        boolean isSameTimeSlot = timeSlot.isSameTimeSlot(otherTimeSlot);
 
         // then
-        assertThat(isSameDateTime).isTrue();
+        assertThat(isSameTimeSlot).isTrue();
     }
 }
