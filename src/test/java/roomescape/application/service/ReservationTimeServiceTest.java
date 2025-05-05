@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,11 +9,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import roomescape.application.dto.ReservationTimeRequest;
 import roomescape.application.dto.ReservationTimeResponse;
-import roomescape.application.service.ReservationTimeService;
+import roomescape.application.service.fake_dao.FakeReservationDao;
+import roomescape.application.service.fake_dao.FakeReservationTimeDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.service.fake_dao.FakeReservationDao;
-import roomescape.service.fake_dao.FakeReservationTimeDao;
 
 class ReservationTimeServiceTest {
 

@@ -1,4 +1,4 @@
-package roomescape.integrated;
+package roomescape.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 
