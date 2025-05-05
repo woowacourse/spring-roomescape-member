@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,15 @@ public class ThemeService {
 
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final Clock clock;
 
     public ThemeService(ThemeRepository themeRepository,
-                        ReservationRepository reservationRepository) {
+                        ReservationRepository reservationRepository,
+                        Clock clock) {
 
         this.themeRepository = themeRepository;
         this.reservationRepository = reservationRepository;
+        this.clock = clock;
     }
 
     public ThemeResponse add(ThemeRequest themeRequest) {
@@ -39,8 +43,9 @@ public class ThemeService {
     }
 
     public List<PopularThemeResponse> findTop10MostReservedLastWeek() {
-        LocalDate startDate = LocalDate.now().minusDays(7);
-        LocalDate endDate = LocalDate.now().minusDays(1);
+        LocalDate today = LocalDate.now(clock);
+        LocalDate startDate = today.minusDays(7);
+        LocalDate endDate = today.minusDays(1);
 
         List<Theme> themes = themeRepository.findTop10MostReservedLastWeek(startDate, endDate);
 

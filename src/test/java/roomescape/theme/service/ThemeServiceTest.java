@@ -1,6 +1,8 @@
 package roomescape.theme.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,13 +23,19 @@ class ThemeServiceTest {
 
     private ThemeRepository themeRepository;
     private ReservationRepository reservationRepository;
+    private Clock fixedClock;
     private ThemeService themeService;
 
     @BeforeEach
     void setUp() {
         themeRepository = mock(ThemeRepository.class);
         reservationRepository = mock(ReservationRepository.class);
-        themeService = new ThemeService(themeRepository, reservationRepository);
+        fixedClock = Clock.fixed(
+                LocalDate.of(2025, 4, 30).atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                ZoneId.systemDefault()
+        );
+
+        themeService = new ThemeService(themeRepository, reservationRepository, fixedClock);
     }
 
     @Test
@@ -125,7 +133,9 @@ class ThemeServiceTest {
         Theme theme2 = new Theme(2L, "추리", "짱 재밌는 테마", "img2.jpg");
         List<Theme> themes = List.of(theme1, theme2);
 
-        given(themeRepository.findTop10MostReservedLastWeek(any(LocalDate.class), any(LocalDate.class)))
+        given(themeRepository.findTop10MostReservedLastWeek(
+                LocalDate.now(fixedClock).minusDays(7),
+                LocalDate.now(fixedClock).minusDays(1)))
                 .willReturn(themes);
 
         // when
