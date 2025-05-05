@@ -10,23 +10,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.AvailableTimeResponse;
 import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
+import roomescape.controller.dto.TimeAvailabilityResponse;
+import roomescape.service.ReservationAvailabilityService;
 import roomescape.service.ReservationTimeService;
 
 @RestController
+@RequestMapping("/times")
 public class ReservationTimeController {
 
     private final ReservationTimeService reservationTimeService;
+    private final ReservationAvailabilityService reservationAvailabilityService;
 
-    public ReservationTimeController(final ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(final ReservationTimeService reservationTimeService,
+                                     final ReservationAvailabilityService reservationAvailabilityService) {
         this.reservationTimeService = reservationTimeService;
+        this.reservationAvailabilityService = reservationAvailabilityService;
     }
 
-    @PostMapping("/times")
+    @PostMapping
     public ResponseEntity<ReservationTimeResponse> create(
             @RequestBody @Valid final ReservationTimeRequest reservationTimeRequest
     ) {
@@ -34,24 +40,25 @@ public class ReservationTimeController {
         return ResponseEntity.created(URI.create("/times/" + response.id())).body(response);
     }
 
-    @GetMapping("/times")
+    @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> findAll() {
         final List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
         return ResponseEntity.ok().body(responses);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         reservationTimeService.deleteReservationTimeById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableTimeResponse>> findAvailableTimes(
+    @GetMapping("/availability")
+    public ResponseEntity<List<TimeAvailabilityResponse>> findAllTimeAvailability(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") long themeId
     ) {
-        final List<AvailableTimeResponse> responses = reservationTimeService.findAvailableTimes(date, themeId);
+        final List<TimeAvailabilityResponse> responses = reservationAvailabilityService
+                .getAllTimeAvailability(date, themeId);
         return ResponseEntity.ok().body(responses);
     }
 }

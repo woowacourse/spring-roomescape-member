@@ -10,8 +10,6 @@ public interface ReservationDao {
 
     List<Reservation> findAll();
 
-    List<Reservation> findAllByDateAndThemeId(LocalDate date, long themeId);
-
     void deleteById(long id);
 
     boolean existsByTimeId(long timeId);

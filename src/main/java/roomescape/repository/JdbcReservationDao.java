@@ -75,27 +75,6 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
-        final String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.date = ? AND r.theme_id = ?
-                """;
-        return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
-    }
-
-    @Override
     public void deleteById(final long id) {
         final String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);

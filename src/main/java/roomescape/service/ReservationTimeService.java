@@ -1,14 +1,11 @@
 package roomescape.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.controller.dto.AvailableTimeResponse;
 import roomescape.controller.dto.ReservationTimeRequest;
 import roomescape.controller.dto.ReservationTimeResponse;
 import roomescape.repository.ReservationDao;
 import roomescape.repository.ReservationTimeDao;
-import roomescape.service.reservation.Reservation;
 import roomescape.service.reservation.ReservationTime;
 
 @Service
@@ -42,19 +39,5 @@ public class ReservationTimeService {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeDao.deleteById(id);
-    }
-
-    public List<AvailableTimeResponse> findAvailableTimes(final LocalDate date, final long themeId) {
-        final List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        final List<Reservation> reservations = reservationDao.findAllByDateAndThemeId(date, themeId);
-        return reservationTimes.stream()
-                .map(time -> new AvailableTimeResponse(time.getId(), time.getStartAt(),
-                        isAlreadyBooked(time, reservations)))
-                .toList();
-    }
-
-    private boolean isAlreadyBooked(final ReservationTime reservationTime, final List<Reservation> reservations) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.isSameTime(reservationTime));
     }
 }
