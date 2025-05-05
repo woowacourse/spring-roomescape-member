@@ -1,15 +1,14 @@
 package roomescape.reservation.dao;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.Reservation;
 import roomescape.reservationtime.ReservationTime;
@@ -18,7 +17,7 @@ import roomescape.theme.Theme;
 @Repository
 public class JdbcReservationDao implements ReservationDao {
 
-    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
                 resultSet.getLong("time_id"),
                 resultSet.getObject("start_at", LocalTime.class)
@@ -39,9 +38,13 @@ public class JdbcReservationDao implements ReservationDao {
     };
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -65,28 +68,19 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
 
         return this.jdbcTemplate.query(sql,
-                reservationRowMapper);
+                RESERVATION_ROW_MAPPER);
     }
 
     @Override
     public Reservation create(Reservation reservation) {
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        this.jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    sql,
-                    new String[]{"id"}
-            );
-            ps.setString(1, reservation.getName());
-            ps.setString(2, reservation.getDate().toString());
-            ps.setLong(3, reservation.getReservationTime().getId());
-            ps.setLong(4, reservation.getTheme().getId());
-            return ps;
-        }, keyHolder);
-
-        long id = keyHolder.getKey().longValue();
-        return reservation.withId(id);
+        Map<String, Object> parameter = Map.of(
+                "name", reservation.getName(),
+                "date", reservation.getDate(),
+                "time_id", reservation.getReservationTime().getId(),
+                "theme_id", reservation.getTheme().getId()
+        );
+        Long newId = simpleJdbcInsert.executeAndReturnKey(parameter).longValue();
+        return reservation.withId(newId);
     }
 
     @Override
@@ -115,12 +109,7 @@ public class JdbcReservationDao implements ReservationDao {
                 ON r.theme_id = t.id
                 WHERE r.time_id = ?
                 """;
-        try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
-            return Optional.ofNullable(reservation);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
     }
 
     @Override
@@ -144,7 +133,7 @@ public class JdbcReservationDao implements ReservationDao {
                 WHERE r.id= ?
                 """;
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
+            Reservation reservation = jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -172,7 +161,7 @@ public class JdbcReservationDao implements ReservationDao {
                 WHERE r.date = ? AND rt.start_at = ?
                 """;
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, reservationRowMapper, date, time);
+            Reservation reservation = jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, date, time);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
