@@ -20,8 +20,8 @@ import roomescape.reservationTime.domain.ReservationTimeRepository;
 class JdbcReservationTimeRepositoryTest {
 
     @Autowired
-    DataSource dataSource;
-    ReservationTimeRepository repository;
+    private DataSource dataSource;
+    private ReservationTimeRepository repository;
 
     @BeforeEach
     void beforeEach() {

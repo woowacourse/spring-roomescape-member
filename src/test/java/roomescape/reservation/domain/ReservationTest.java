@@ -2,6 +2,7 @@ package roomescape.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,12 +38,15 @@ class ReservationTest {
     void assignId_Test() {
         ReservationTime reservationTime1 = ReservationTime.createWithId(1L, LocalTime.of(20, 10));
         Theme theme = Theme.createWithId(1L, "a", "a", "a");
-        Reservation withoutId = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime1, theme);
+        Reservation withoutId = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+                LocalDate.of(2000, 11, 2), reservationTime1, theme);
 
         Reservation reservation = withoutId.assignId(1L);
 
-        assertThat(reservation.getId()).isEqualTo(1L);
-        assertThat(reservation.getName()).isEqualTo("a");
+        assertAll(
+                () -> assertThat(reservation.getId()).isEqualTo(1L),
+                () -> assertThat(reservation.getName()).isEqualTo("a")
+        );
     }
 
     @ParameterizedTest

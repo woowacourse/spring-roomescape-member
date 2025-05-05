@@ -28,10 +28,10 @@ import roomescape.theme.infrastructure.JdbcThemeRepository;
 class JdbcReservationRepositoryTest {
 
     @Autowired
-    DataSource dataSource;
-    ReservationRepository reservationRepository;
-    Long themeId;
-    Long timeId;
+    private DataSource dataSource;
+    private ReservationRepository reservationRepository;
+    private Long themeId;
+    private Long timeId;
 
     @BeforeEach
     void beforeEach() {

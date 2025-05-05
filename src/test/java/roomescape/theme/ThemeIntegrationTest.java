@@ -25,10 +25,10 @@ import roomescape.theme.dto.ThemeResponse;
 public class ThemeIntegrationTest {
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         RestAssured.port = this.port;
     }
 

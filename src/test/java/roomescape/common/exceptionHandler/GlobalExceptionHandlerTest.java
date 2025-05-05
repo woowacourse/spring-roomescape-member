@@ -18,7 +18,7 @@ import roomescape.common.exceptionHandler.dto.ExceptionResponse;
 class GlobalExceptionHandlerTest {
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @TestConfiguration
     static class TestControllerConfig {

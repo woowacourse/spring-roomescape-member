@@ -23,10 +23,10 @@ import roomescape.common.exceptionHandler.dto.ExceptionResponse;
 public class ReservationIntegrationTest {
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         RestAssured.port = this.port;
     }
 

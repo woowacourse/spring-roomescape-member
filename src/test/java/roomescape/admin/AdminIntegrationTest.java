@@ -15,10 +15,10 @@ import org.springframework.test.annotation.DirtiesContext;
 public class AdminIntegrationTest {
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
-    void beforeEach(){
+    void beforeEach() {
         RestAssured.port = this.port;
     }
 
