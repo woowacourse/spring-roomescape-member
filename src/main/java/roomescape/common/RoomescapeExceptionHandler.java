@@ -2,6 +2,8 @@ package roomescape.common;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.zip.DataFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,6 +18,8 @@ import roomescape.common.exception.ResourceInUseException;
 
 @ControllerAdvice
 public class RoomescapeExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(RoomescapeExceptionHandler.class);
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleException(IllegalStateException ex) {
@@ -78,6 +82,7 @@ public class RoomescapeExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        logger.error(ex.getMessage());
+        return new ResponseEntity<>("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
