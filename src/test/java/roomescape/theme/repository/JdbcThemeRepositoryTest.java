@@ -12,23 +12,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.reservation.fixture.ReservationFixture;
-import roomescape.reservation.repository.ReservationRepositoryImpl;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
-import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.PopularThemeRequestDto;
 
 @JdbcTest
-@Import({ThemeRepositoryImpl.class, ReservationRepositoryImpl.class, ReservationTimeRepositoryImpl.class})
-class ThemeRepositoryImplTest {
+@Import({JdbcThemeRepository.class, JdbcReservationRepository.class, JdbcReservationTimeRepository.class})
+class JdbcThemeRepositoryTest {
 
     @Autowired
-    private ThemeRepositoryImpl repository;
+    private JdbcThemeRepository repository;
     @Autowired
-    private ReservationTimeRepositoryImpl reservationTimeRepository;
+    private JdbcReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private ReservationRepositoryImpl reservationRepository;
+    private JdbcReservationRepository reservationRepository;
 
     @BeforeEach
     public void beforeEach() {

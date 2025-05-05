@@ -13,11 +13,11 @@ import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.exception.NotFoundReservationTimeException;
 
 @Repository
-public class ReservationTimeRepositoryImpl implements ReservationTimeRepository {
+public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationTimeRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

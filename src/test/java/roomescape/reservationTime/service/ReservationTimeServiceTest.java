@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
-import roomescape.reservation.repository.ReservationRepositoryImpl;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -24,18 +24,18 @@ import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 import roomescape.reservationTime.exception.AlreadyReservedTimeException;
 import roomescape.reservationTime.exception.DuplicateReservationException;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
-import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.repository.ThemeRepositoryImpl;
 
 @JdbcTest
 @Import({
-        ReservationTimeRepositoryImpl.class,
+        JdbcReservationTimeRepository.class,
         ReservationTimeService.class,
-        ReservationRepositoryImpl.class,
+        JdbcReservationRepository.class,
         ReservationService.class,
-        ThemeRepositoryImpl.class,
+        JdbcThemeRepository.class,
         ReservationTimeTestDataConfig.class
 })
 class ReservationTimeServiceTest {

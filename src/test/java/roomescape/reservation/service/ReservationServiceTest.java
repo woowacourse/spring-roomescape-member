@@ -13,10 +13,10 @@ import roomescape.globalException.ConflictException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.fixture.ReservationFixture;
-import roomescape.reservation.repository.ReservationRepositoryImpl;
+import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
-import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 
@@ -27,9 +27,9 @@ class ReservationServiceTest {
     @Autowired
     private ReservationService service;
     @Autowired
-    private ReservationRepositoryImpl reservationRepository;
+    private JdbcReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeRepositoryImpl reservationTimeRepository;
+    private JdbcReservationTimeRepository reservationTimeRepository;
     @Autowired
     private ThemeRepository themeRepository;
 

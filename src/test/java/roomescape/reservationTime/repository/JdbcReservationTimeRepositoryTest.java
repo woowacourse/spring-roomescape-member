@@ -13,11 +13,11 @@ import roomescape.reservationTime.exception.NotFoundReservationTimeException;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 
 @JdbcTest
-@Import({ReservationTimeRepositoryImpl.class})
-class ReservationTimeRepositoryImplTest {
+@Import({JdbcReservationTimeRepository.class})
+class JdbcReservationTimeRepositoryTest {
 
     @Autowired
-    private ReservationTimeRepositoryImpl repository;
+    private JdbcReservationTimeRepository repository;
 
     @DisplayName("존재하지 않는 예약 시간 ID로 조회하면 예외가 발생한다.")
     @Test

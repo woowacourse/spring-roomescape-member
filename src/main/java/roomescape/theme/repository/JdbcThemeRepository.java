@@ -16,7 +16,7 @@ import roomescape.theme.domain.dto.PopularThemeRequestDto;
 import roomescape.theme.exception.NotFoundThemeException;
 
 @Repository
-public class ThemeRepositoryImpl implements ThemeRepository {
+public class JdbcThemeRepository implements ThemeRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

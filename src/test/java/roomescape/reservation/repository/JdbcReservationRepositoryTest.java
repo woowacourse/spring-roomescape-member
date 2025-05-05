@@ -12,20 +12,20 @@ import org.springframework.context.annotation.Import;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
+import roomescape.reservationTime.repository.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.ThemeRepositoryImpl;
+import roomescape.theme.repository.JdbcThemeRepository;
 
 @JdbcTest
-@Import({ReservationRepositoryImpl.class, ReservationTimeRepositoryImpl.class, ThemeRepositoryImpl.class})
-class ReservationRepositoryImplTest {
+@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+class JdbcReservationRepositoryTest {
 
     @Autowired
-    private ReservationRepositoryImpl reservationRepository;
+    private JdbcReservationRepository reservationRepository;
     @Autowired
-    private ReservationTimeRepositoryImpl reservationTimeRepository;
+    private JdbcReservationTimeRepository reservationTimeRepository;
     @Autowired
-    private ThemeRepositoryImpl themeRepository;
+    private JdbcThemeRepository themeRepository;
 
     @DisplayName("예약 시간에 해당하는 예약의 존재 여부를 알 수 있다.")
     @Test
