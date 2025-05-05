@@ -65,7 +65,7 @@ public class ReservationH2Dao implements ReservationDao {
         }, keyHolder);
         Long id = keyHolder.getKey().longValue();
 
-        return reservation.withId(id);
+        return reservation.assignId(id);
     }
 
     @Override

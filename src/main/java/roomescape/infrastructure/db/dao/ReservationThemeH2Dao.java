@@ -51,7 +51,7 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
         }, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
-        return reservationTheme.withId(id);
+        return reservationTheme.assignId(id);
     }
 
     @Override

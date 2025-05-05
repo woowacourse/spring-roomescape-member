@@ -13,7 +13,7 @@ public record Reservation(
 ) {
 
     public Reservation {
-        validate(name, date);
+        validateNotBlank(name, date);
     }
 
     public Reservation(String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
@@ -28,23 +28,26 @@ public record Reservation(
 
     private static void validateFutureTime(LocalDateTime requestedDateTime) {
         if (requestedDateTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("이미 지나간 시간으로 예약할 수 없습니다.");
+            throw new IllegalArgumentException("예약시간이 과거시간이 될 수 없습니다. 미래시간으로 입력해주세요.");
         }
     }
 
-    private void validate(String name, LocalDate date) {
+    public Reservation assignId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("할당할 id는 null이 될 수 없습니다.");
+        }
+        return new Reservation(id, name, date, time, theme);
+    }
+
+    private void validateNotBlank(String name, LocalDate date) {
         if (name == null) {
-            throw new IllegalArgumentException("이름은 null이 될 수 없습니다.");
+            throw new IllegalArgumentException("예약자명은 null이 될 수 없습니다.");
         }
         if (name.isBlank()) {
-            throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
+            throw new IllegalArgumentException("예약자명은 비어 있을 수 없습니다.");
         }
         if (date == null) {
             throw new IllegalArgumentException("날짜는 null이 될 수 없습니다.");
         }
-    }
-
-    public Reservation withId(Long id) {
-        return new Reservation(id, name, date, time, theme);
     }
 }

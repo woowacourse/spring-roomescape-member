@@ -17,7 +17,7 @@ public record ReservationTime(
 
     private void validateNotNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new IllegalArgumentException("시간은 null이 될 수 없습니다.");
+            throw new IllegalArgumentException("예약 시작시간은 null이 될 수 없습니다.");
         }
     }
 }
