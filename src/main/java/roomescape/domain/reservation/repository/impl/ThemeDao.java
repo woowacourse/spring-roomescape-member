@@ -43,7 +43,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate) {
+    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate, int rowCount) {
         String sql = """
                 select T.*, count(R.id) as reservation_count
                 from theme T
@@ -51,10 +51,10 @@ public class ThemeDao implements ThemeRepository {
                 ON T.id = R.theme_id AND R.date between :start_date and :end_date
                 group by T.id
                 order by reservation_count desc
-                limit 10
+                limit :row_count
                 """;
 
-        Map<String, LocalDate> params = Map.of("start_date", startDate, "end_date", endDate);
+        Map<String, Object> params = Map.of("start_date", startDate, "end_date", endDate, "row_count", rowCount);
 
         return jdbcTemplate.query(sql,
                 params,
