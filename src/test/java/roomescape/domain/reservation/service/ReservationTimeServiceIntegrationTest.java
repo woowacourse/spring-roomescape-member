@@ -32,18 +32,16 @@ import roomescape.domain.reservation.repository.impl.ThemeDAO;
 
 @ActiveProfiles("test")
 @JdbcTest
-@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
+@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, ReservationTimeService.class})
 class ReservationTimeServiceIntegrationTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
-
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
     @Autowired
     private ThemeRepository themeRepository;
-
+    @Autowired
     private ReservationTimeService reservationTimeService;
 
     @BeforeEach
