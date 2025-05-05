@@ -10,7 +10,7 @@ public final class JdbcTemplateUtils {
 
     public static void deleteAllTables(JdbcTemplate jdbcTemplate) {
         try {
-            jdbcTemplate.update("truncate TABLE reservation");
+            jdbcTemplate.update("delete from reservation");
             jdbcTemplate.update("delete from reservation_time");
             jdbcTemplate.update("delete from theme");
         } catch (DataAccessException e) {

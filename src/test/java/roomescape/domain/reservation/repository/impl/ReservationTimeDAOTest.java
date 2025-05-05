@@ -37,6 +37,11 @@ class ReservationTimeDAOTest {
         reservationTimeRepository = new ReservationTimeDAO(namedParameterJdbcTemplate, TestConfig.getDataSource());
     }
 
+    @AfterEach
+    void tearDown() {
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
+    }
+
     @DisplayName("id에 따라 예약 시간을 반환한다.")
     @Test
     void test1() {
@@ -66,11 +71,6 @@ class ReservationTimeDAOTest {
     void test7() {
         assertThatThrownBy(() -> reservationTimeRepository.deleteById(1L))
                 .isInstanceOf(EntityNotFoundException.class);
-    }
-
-    @AfterEach
-    void cleanUp() {
-        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
     private void saveReservationTime(Long id, LocalTime startAt) {

@@ -46,6 +46,11 @@ class ReservationDAOTest {
         reservationRepository = new ReservationDAO(namedParameterJdbcTemplate, TestConfig.getDataSource());
     }
 
+    @AfterEach
+    void tearDown() {
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
+    }
+
     @DisplayName("예약 정보를 저장한다.")
     @Test
     void test1() {
@@ -239,10 +244,5 @@ class ReservationDAOTest {
     private void saveReservation(Long id, String name, LocalDate date, Long timeId, Long themeId) {
         String sql = "insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, id, name, date, timeId, themeId);
-    }
-
-    @AfterEach
-    void cleanUp() {
-        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 }
