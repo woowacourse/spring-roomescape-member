@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -21,9 +22,12 @@ import roomescape.time.domain.ReservationTime;
 public class ReservationJdbcRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationJdbcRepository(JdbcTemplate jdbcTemplate) {
+    public ReservationJdbcRepository(JdbcTemplate jdbcTemplate,
+                                     @Qualifier("reservationJdbcInsert") SimpleJdbcInsert simpleJdbcInsert) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = simpleJdbcInsert;
     }
 
     public List<Reservation> findAll() {
@@ -61,16 +65,13 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", reserverName.getName())
                 .addValue("date", reservationDateTime.getReservationDate().getDate())
                 .addValue("time_id", reservationDateTime.getReservationTime().getId())
                 .addValue("theme_id", theme.getId());
-        Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
         return new Reservation(id, reserverName.getName(), reservationDateTime.getReservationDate().getDate(),
                 new ReservationTime(reservationDateTime.getReservationTime().getId(),

@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,19 +20,18 @@ import roomescape.time.service.ReservationTimeRepository;
 public class ReservationTimeJdbcRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate) {
+    public ReservationTimeJdbcRepository(JdbcTemplate jdbcTemplate,
+                                         @Qualifier("reservationTimeJdbcInsert") SimpleJdbcInsert simpleJdbcInsert) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = simpleJdbcInsert;
     }
 
     public ReservationTime save(ReservationTime reservationTime) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
-
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
-        Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
     }

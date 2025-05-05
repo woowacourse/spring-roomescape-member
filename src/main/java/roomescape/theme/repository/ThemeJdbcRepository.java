@@ -3,6 +3,7 @@ package roomescape.theme.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -15,23 +16,23 @@ import roomescape.theme.service.ThemeRepository;
 public class ThemeJdbcRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate) {
+    public ThemeJdbcRepository(JdbcTemplate jdbcTemplate,
+                               @Qualifier("themeJdbcInsert") SimpleJdbcInsert simpleJdbcInsert) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = simpleJdbcInsert;
     }
 
     @Override
     public Theme save(String name, String description, String thumbnail) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)
                 .addValue("thumbnail", thumbnail);
 
-        Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
+        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
         return new Theme(id, name, description, thumbnail);
     }
