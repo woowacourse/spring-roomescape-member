@@ -3,7 +3,10 @@ const THEME_API_ENDPOINT = '/themes';
 document.addEventListener('DOMContentLoaded', () => {
     requestRead(THEME_API_ENDPOINT)
         .then(renderTheme)
-        .catch(error => console.error('Error fetching times:', error));
+        .catch(error => {
+            alert(error)
+            console.error('Error fetching times:', error)
+        });
 
     flatpickr("#datepicker", {
         inline: true,
@@ -73,7 +76,10 @@ function checkDate() {
 
         requestRead(THEME_API_ENDPOINT)
             .then(renderTheme)
-            .catch(error => console.error('Error fetching times:', error));
+            .catch(error => {
+                alert(error)
+                console.error('Error fetching times:', error)
+            });
     }
 }
 
@@ -100,7 +106,10 @@ function fetchAvailableTimes(date, themeId) {
         if (response.status === 200) return response.json();
         throw new Error('Read failed');
     }).then(renderAvailableTimes)
-        .catch(error => console.error("Error fetching available times:", error));
+        .catch(error => {
+            alert(error)
+            console.error("Error fetching available times:", error)
+        });
 }
 
 function renderAvailableTimes(times) {
@@ -186,6 +195,7 @@ function onReservationButtonClick() {
             })
             .catch(error => {
                 alert("An error occurred while making the reservation.");
+                alert(error)
                 console.error(error);
             });
     } else {
