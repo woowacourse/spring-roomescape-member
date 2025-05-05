@@ -11,9 +11,9 @@ class ReservationTimeTest {
     @Test
     void isSameTime() {
         //given
-        ReservationTime time = ReservationTime.parse("10:30");
-        ReservationTime sameTime = ReservationTime.parse("10:30");
-        ReservationTime anotherTime = ReservationTime.parse("10:31");
+        ReservationTime time = new ReservationTime("10:30");
+        ReservationTime sameTime = new ReservationTime("10:30");
+        ReservationTime anotherTime = new ReservationTime("10:31");
 
         //when
         boolean isSameTime = time.isSameTime(sameTime);

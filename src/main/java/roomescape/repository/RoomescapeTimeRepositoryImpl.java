@@ -51,7 +51,7 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
     public ReservationTime save(final ReservationTime reservationTime) {
         SqlParameterSource param = new MapSqlParameterSource("start_at", reservationTime.getStartAt());
         Number key = insert.executeAndReturnKey(param);
-        return reservationTime.toEntity(key.longValue());
+        return reservationTime.assignId(key.longValue());
     }
 
     @Override
@@ -68,9 +68,8 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (rs, rowNum) -> {
             return new ReservationTime(
-                    rs.getLong("id"),
-                    rs.getString("start_at")
-            );
+                    rs.getTime("start_at").toLocalTime()
+            ).assignId(rs.getLong("id"));
         };
     }
 }

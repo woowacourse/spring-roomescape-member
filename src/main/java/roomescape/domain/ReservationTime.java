@@ -7,26 +7,17 @@ public class ReservationTime {
     private Long id;
     private final LocalTime startAt;
 
-    private ReservationTime(final long id, final LocalTime startAt) {
-        this.id = id;
-        this.startAt = startAt;
-    }
-
-    public ReservationTime(final long id, final String input) {
-        this.id = id;
-        this.startAt = LocalTime.parse(input);
-    }
-
     public ReservationTime(final LocalTime startAt) {
         this.startAt = startAt;
     }
 
-    public static ReservationTime parse(final String input) {
-        return new ReservationTime(LocalTime.parse(input));
+    public ReservationTime(final String input) {
+        this(LocalTime.parse(input));
     }
 
-    public ReservationTime toEntity(long id) {
-        return new ReservationTime(id, this.startAt);
+    public ReservationTime assignId(final Long id) {
+        this.id = id;
+        return this;
     }
 
     public boolean isSameTime(final ReservationTime other) {

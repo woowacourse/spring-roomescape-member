@@ -76,7 +76,7 @@ class RoomescapeRepositoryTest {
     void save() {
         //given
         Reservation reservation = new Reservation("네오", LocalDate.parse("2023-08-05"),
-                ReservationTime.parse("15:40").toEntity(1L), new ReservationTheme("테마", "테마", "테마").assignId(1L));
+                new ReservationTime("15:40").assignId(1L), new ReservationTheme("테마", "테마", "테마").assignId(1L));
 
         //when
         Reservation saved = repository.save(reservation);
@@ -105,8 +105,8 @@ class RoomescapeRepositoryTest {
         //given
         LocalDate date = LocalDate.parse("2023-08-05");
         LocalDate anotherDate = LocalDate.parse("2023-08-06");
-        ReservationTime time = ReservationTime.parse("15:40");
-        ReservationTime anotherTime = ReservationTime.parse("15:41");
+        ReservationTime time = new ReservationTime("15:40");
+        ReservationTime anotherTime = new ReservationTime("15:41");
 
         //when
         boolean found = repository.existsByDateAndTime(date, time);

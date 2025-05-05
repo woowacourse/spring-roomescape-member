@@ -59,7 +59,7 @@ class RoomescapeTimeRepositoryTest {
     @Test
     void save() {
         //given
-        ReservationTime reservationTime = ReservationTime.parse("16:30");
+        ReservationTime reservationTime = new ReservationTime("16:30");
 
         //when
         ReservationTime saved = timeRepository.save(reservationTime);

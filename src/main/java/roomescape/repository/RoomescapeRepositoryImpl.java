@@ -86,9 +86,8 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
     private RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> {
             ReservationTime reservationTime = new ReservationTime(
-                    rs.getLong("time_id"),
-                    rs.getString("time_value")
-            );
+                    rs.getTime("time_value").toLocalTime()
+            ).assignId(rs.getLong("time_id"));
             ReservationTheme reservationTheme = new ReservationTheme(
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
