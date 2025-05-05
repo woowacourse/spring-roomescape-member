@@ -1,6 +1,7 @@
-package roomescape.exception;
+package roomescape.reservation.exception;
 
 import org.springframework.http.HttpStatus;
+import roomescape.exception.ErrorCode;
 
 public enum ReservationErrorCode implements ErrorCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약을 찾을 수 없습니다"),

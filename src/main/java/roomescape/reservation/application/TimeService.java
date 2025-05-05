@@ -1,6 +1,6 @@
 package roomescape.reservation.application;
 
-import static roomescape.exception.TimeErrorCode.TIME_DELETE_CONFLICT;
+import static roomescape.reservation.exception.TimeErrorCode.TIME_DELETE_CONFLICT;
 
 import java.time.LocalDate;
 import java.util.List;

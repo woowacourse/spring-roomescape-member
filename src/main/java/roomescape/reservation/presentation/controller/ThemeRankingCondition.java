@@ -1,6 +1,6 @@
 package roomescape.reservation.presentation.controller;
 
-import static roomescape.exception.InputErrorCode.INVALID_DATE_RANGE;
+import static roomescape.reservation.exception.InputErrorCode.INVALID_DATE_RANGE;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

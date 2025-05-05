@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static roomescape.exception.ThemeErrorCode.THEME_DELETE_CONFLICT;
+import static roomescape.reservation.exception.ThemeErrorCode.THEME_DELETE_CONFLICT;
 import static roomescape.testFixture.Fixture.THEME_1;
 import static roomescape.testFixture.Fixture.THEME_2;
 

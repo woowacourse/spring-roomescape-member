@@ -2,7 +2,7 @@ package roomescape.reservation.domain;
 
 import org.springframework.stereotype.Component;
 import roomescape.reservation.domain.exception.ImpossibleReservationException;
-import roomescape.exception.ReservationErrorCode;
+import roomescape.reservation.exception.ReservationErrorCode;
 
 @Component
 public class ReservationRegistrationPolicy {

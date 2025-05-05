@@ -1,6 +1,6 @@
 package roomescape.reservation.application;
 
-import static roomescape.exception.ThemeErrorCode.THEME_DELETE_CONFLICT;
+import static roomescape.reservation.exception.ThemeErrorCode.THEME_DELETE_CONFLICT;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,6 @@ import roomescape.reservation.presentation.dto.request.ThemeRequest;
 @Service
 public class ThemeService {
 
-    public static final int RANKING_LIMIT_COUNT = 10;
     private final ThemeRepository themeRepository;
 
     public ThemeService(ThemeRepository themeRepository) {

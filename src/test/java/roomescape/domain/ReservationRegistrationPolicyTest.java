@@ -1,7 +1,7 @@
 package roomescape.domain;
 
-import static roomescape.exception.ReservationErrorCode.ALREADY_RESERVED;
-import static roomescape.exception.ReservationErrorCode.PAST_RESERVATION;
+import static roomescape.reservation.exception.ReservationErrorCode.ALREADY_RESERVED;
+import static roomescape.reservation.exception.ReservationErrorCode.PAST_RESERVATION;
 import static roomescape.testFixture.Fixture.RESERVATION_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.THEME_1;

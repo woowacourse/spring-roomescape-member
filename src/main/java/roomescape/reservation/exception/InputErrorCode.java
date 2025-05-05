@@ -1,6 +1,7 @@
-package roomescape.exception;
+package roomescape.reservation.exception;
 
 import org.springframework.http.HttpStatus;
+import roomescape.exception.ErrorCode;
 
 public enum InputErrorCode implements ErrorCode {
     INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "시작일은 종료일보다 늦을 수 없습니다."),

@@ -1,8 +1,9 @@
-package roomescape.exception;
+package roomescape.reservation.exception;
 
 import org.springframework.http.HttpStatus;
+import roomescape.exception.ErrorCode;
 
-public enum TimeErrorCode implements ErrorCode{
+public enum TimeErrorCode implements ErrorCode {
     TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "시간 정보를 찾을 수 없습니다"),
     TIME_DELETE_CONFLICT(HttpStatus.BAD_REQUEST, "예약이 존재하는 시간은 삭제할 수 없습니다"),
     ;
