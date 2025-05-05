@@ -83,18 +83,6 @@ class JdbcReservationDaoTest {
         assertThat(actualThemes).doNotHave(idIs2L);
     }
 
-    @DisplayName("특정 날짜와 시간 값을 가지는 예약이 존재하는지 확인할 수 있다.")
-    @Test
-    void testExistByDateAndTimeId() {
-        // given
-        LocalDate date = LocalDate.of(2025, 5, 1);
-        long timeId = 1L;
-        // when
-        boolean actual = jdbcReservationDao.existsByDateAndTimeId(date, timeId);
-        // then
-        assertThat(actual).isTrue();
-    }
-
     @DisplayName("특정 시간을 가지는 예약이 존재하는지 확인할 수 있다.")
     @Test
     void testExistsByTimeId() {
@@ -113,6 +101,19 @@ class JdbcReservationDaoTest {
         long themeId = 1L;
         // when
         boolean actual = jdbcReservationDao.existsByThemeId(themeId);
+        // then
+        assertThat(actual).isTrue();
+    }
+
+    @DisplayName("날짜, 시간, 테마가 중복되는 예약이 존재하는지 확인할 수 있다.")
+    @Test
+    void testExistsByDateAndTimeEndTheme() {
+        // given
+        LocalDate date = LocalDate.of(2025, 5, 1);
+        long timeId = 1;
+        long themeId = 1;
+        // when
+        boolean actual = jdbcReservationDao.existsByDateAndTimeAndTheme(date, timeId, themeId);
         // then
         assertThat(actual).isTrue();
     }

@@ -69,7 +69,11 @@ public final class Reservation {
     }
 
     public Theme getTheme() {
-        return this.theme;
+        return theme;
+    }
+
+    public long getThemeId() {
+        return theme.getId();
     }
 
     @Override
