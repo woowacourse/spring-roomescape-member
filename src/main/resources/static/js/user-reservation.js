@@ -87,20 +87,17 @@ function checkDateAndTheme() {
 }
 
 function fetchAvailableTimes(date, themeId) {
+    const params = new URLSearchParams({date, themeId});
     /*
     TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
           요청 포맷에 맞게 설정
     */
-    fetch('/reservations/available-times', { // 예약 가능 시간 조회 API endpoint
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({date, themeId})
-    }).then(response => {
-        if (response.status === 200) return response.json();
-        throw new Error('Read failed');
-    }).then(renderAvailableTimes)
+    fetch(`/reservations/available-times?${params.toString()}`) //예약 가능 시간 조회 API endPoint
+        .then(response => {
+            if (response.status === 200) return response.json();
+            throw new Error('Read failed');
+        })
+        .then(renderAvailableTimes)
         .catch(error => console.error("Error fetching available times:", error));
 }
 

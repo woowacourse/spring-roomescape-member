@@ -1,8 +1,5 @@
 package roomescape.reservation.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.lang.reflect.Field;
@@ -18,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.controller.dto.AvailableReservationTimeResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -58,7 +58,7 @@ class ReservationRestControllerTest {
     @Test
     void 요청_형식이_맞지_않아_예약_정보_저장에_실패하는_경우_bad_request를_반환한다() {
         final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2025 04 15", "10 00", "1");
+                = createReservationRequestJsonMap("헤일러", "2025 04 15", "1", "10 00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -71,7 +71,7 @@ class ReservationRestControllerTest {
     @Test
     void 예약_정보를_저장한다() {
         final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2023-08-05", "1", "1");
+                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -84,7 +84,7 @@ class ReservationRestControllerTest {
     @Test
     void 예약_정보를_삭제한다() {
         final Map<String, String> params
-                = createReservationRequestJsonMap("포스티", "2023-08-05", "1", "1");
+                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -124,7 +124,7 @@ class ReservationRestControllerTest {
     @Test
     void 예약_정보_목록을_조회한다() {
         final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2023-08-05", "1", "1");
+                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -143,7 +143,7 @@ class ReservationRestControllerTest {
     @Test
     void 예약_가능한_시간_목록을_조회한다() {
         final Map<String, String> params
-                = createReservationRequestJsonMap("헤일러", "2023-08-05", "1", "1");
+                = createReservationRequestJsonMap("헤일러", "2026-04-15", "1", "1");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -153,13 +153,13 @@ class ReservationRestControllerTest {
                 .statusCode(HttpStatus.CREATED.value());
 
         final Map<String, String> availableParams = new HashMap<>();
-        availableParams.put("date", "2023-08-05");
+        availableParams.put("date", "2026-04-15");
         availableParams.put("themeId", "1");
 
         final List<AvailableReservationTimeResponse> availableReservationTimeResponses = RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(availableParams)
-                .when().post("/reservations/available-times")
+                .queryParam("date", "2026-04-15")
+                .queryParam("themeId", "1")
+                .when().get("/reservations/available-times")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().jsonPath()
@@ -186,13 +186,13 @@ class ReservationRestControllerTest {
         assertThat(isJdbcTemplateInjected).isFalse();
     }
 
-    private Map<String, String> createReservationRequestJsonMap(String name, String date, String timeId,
-                                                                String themeId) {
+    private Map<String, String> createReservationRequestJsonMap(String name, String date, String themeId,
+                                                                String timeId) {
         return Map.ofEntries(
                 Map.entry("name", name),
                 Map.entry("date", date),
-                Map.entry("timeId", timeId),
-                Map.entry("themeId", themeId)
+                Map.entry("themeId", themeId),
+                Map.entry("timeId", timeId)
         );
     }
 }
