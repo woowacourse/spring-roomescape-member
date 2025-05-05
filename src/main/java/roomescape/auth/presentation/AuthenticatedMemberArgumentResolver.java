@@ -11,7 +11,7 @@ import roomescape.auth.application.AuthService;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.AuthorizationExtractor;
-import roomescape.reservation.domain.Member;
+import roomescape.member.domain.Member;
 
 @Component
 public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {

@@ -2,15 +2,18 @@ package roomescape.reservation.application;
 
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.application.dto.info.MemberDto;
+import roomescape.member.application.MemberService;
+import roomescape.member.application.dto.info.MemberDto;
 import roomescape.reservation.application.dto.info.ReservationDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.presentation.dto.request.AdminReservationRequest;
 import roomescape.reservation.presentation.dto.request.ReservationRequest;
+import roomescape.theme.application.ThemeService;
+import roomescape.time.application.TimeService;
 
 @Service
 public class ReservationService {

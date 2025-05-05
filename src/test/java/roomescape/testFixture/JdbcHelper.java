@@ -10,10 +10,10 @@ import static roomescape.testFixture.Fixture.THEME_3;
 
 import java.util.Arrays;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.reservation.domain.Member;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.domain.Theme;
+import roomescape.time.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
 
 public class JdbcHelper {
     public static void insertTheme(JdbcTemplate template, Theme theme) {

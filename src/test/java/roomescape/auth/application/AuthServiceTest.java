@@ -18,8 +18,8 @@ import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.JwtTokenProvider;
-import roomescape.reservation.domain.Member;
-import roomescape.reservation.domain.repository.MemberRepository;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
