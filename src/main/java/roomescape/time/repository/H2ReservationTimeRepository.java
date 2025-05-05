@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.utils.ExecuteResult;
 import roomescape.common.utils.JdbcUtils;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -84,6 +86,10 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
     @Override
     public void deleteById(final ReservationTimeId id) {
         final String sql = "delete from reservation_time where id = ?";
-        jdbcTemplate.update(sql, id.getValue());
+        ExecuteResult result = ExecuteResult.of(jdbcTemplate.update(sql, id.getValue()));
+
+        if (result == ExecuteResult.FAIL) {
+            throw new NoSuchElementException("삭제할 시간을 찾을 수 없습니다.");
+        }
     }
 }

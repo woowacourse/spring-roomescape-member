@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.common.utils.ExecuteResult;
 import roomescape.common.utils.JdbcUtils;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -15,6 +16,7 @@ import roomescape.theme.domain.ThemeId;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -80,6 +82,10 @@ public class H2ThemeRepository implements ThemeRepository {
     public void deleteById(final ThemeId id) {
         final String sql = "delete from theme where id = ?";
 
-        jdbcTemplate.update(sql, id.getValue());
+        ExecuteResult result = ExecuteResult.of(jdbcTemplate.update(sql, id.getValue()));
+
+        if (result == ExecuteResult.FAIL) {
+            throw new NoSuchElementException("삭제할 테마를 찾을 수 없습니다.");
+        }
     }
 }

@@ -48,11 +48,6 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
 
     @Override
     public void delete(final ReservationId id) {
-        if (reservationRepository.existsByParams(id)) {
-            reservationRepository.deleteById(id);
-            return;
-        }
-
-        throw new NoSuchElementException();
+        reservationRepository.deleteById(id);
     }
 }
