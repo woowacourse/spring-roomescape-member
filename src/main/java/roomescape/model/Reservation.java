@@ -46,7 +46,7 @@ public class Reservation {
         return this.timeSlot.isSameAs(timeSlot);
     }
 
-    public static Reservation of(final long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+    public static Reservation ofExisting(final long id, final String name, final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
         return new Reservation(id, name, date, timeSlot, theme);
     }
 

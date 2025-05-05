@@ -2,15 +2,12 @@ package roomescape.repository.fake;
 
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import roomescape.model.Reservation;
-import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
 
 public class ReservationFakeRepository implements ReservationRepository {
@@ -26,7 +23,7 @@ public class ReservationFakeRepository implements ReservationRepository {
     @Override
     public long save(final Reservation reservation) {
         var id = index.getAndIncrement();
-        var created = Reservation.of(
+        var created = Reservation.ofExisting(
             id,
             reservation.name(),
             reservation.date(),
