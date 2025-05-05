@@ -10,11 +10,11 @@ VALUES ('12:00');
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('레벨2 탈출',
         '우테코 레벨2를 탈출하는 내용입니다.',
-        'https://example.com/image.jpg');
+        'https://techblog.woowahan.com/wp-content/uploads/img/2020-04-10/pobi.png');
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('지하 감옥',
         '깊은 감옥에서 탈출하라!',
-        'https://example.com/jail.jpg');
+        'https://truthfoundation.or.kr/media/images/68.width-1200.jpg');
 
 -- reservation: 오래된 데이터 (10~19일 전)
 -- 날짜는 예시로 2025-04-11 ~ 2025-04-20 (today = 2025-04-30 가정)
