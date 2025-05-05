@@ -109,7 +109,20 @@ public class ThemeController {
         return ResponseEntity.noContent().build();
     }
 
+
     @GetMapping("rank")
+    @Operation(
+            summary = "인기 테마 조회",
+            description = "최근 7일 간의 인기 테마를 조회합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "인기 테마 조회 성공",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ThemeResponse.class))
+                    )
+            }
+    )
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
         return themeService.findPopularThemesInRecentSevenDays();
     }
