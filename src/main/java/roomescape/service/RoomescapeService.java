@@ -22,6 +22,8 @@ import roomescape.repository.RoomescapeTimeRepository;
 @Service
 public class RoomescapeService {
 
+    private static final int POPULAR_RESERVATION_DAYS_CRITERIA = 7;
+
     private final RoomescapeRepository roomescapeRepository;
     private final RoomescapeTimeRepository roomescapeTimeRepository;
     private final RoomescapeThemeRepository roomescapeThemeRepository;
@@ -50,7 +52,8 @@ public class RoomescapeService {
     }
 
     public List<ReservationThemeResponse> findPopularReservations() {
-        List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository.findWeeklyThemeOrderByCountDesc();
+        List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository
+                .findTopThemeOrderByCountWithinDaysDesc(POPULAR_RESERVATION_DAYS_CRITERIA);
         return popularReservationThemes.stream().map(ReservationThemeResponse::of).toList();
     }
 

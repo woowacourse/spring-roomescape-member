@@ -48,17 +48,18 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
     }
 
     @Override
-    public List<ReservationTheme> findWeeklyThemeOrderByCountDesc() {
+    public List<ReservationTheme> findTopThemeOrderByCountWithinDaysDesc(int days) {
         String sql = """
                 SELECT th.id, th.name, th.description, th.thumbnail, COUNT(*) AS reservation_count
                 FROM reservation r
                 JOIN reservation_theme th ON r.theme_id = th.id
-                WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN DATEADD('DAY', -7, CURRENT_DATE) AND DATEADD('DAY', -1, CURRENT_DATE)
+                WHERE r.date BETWEEN DATEADD('DAY', :days, CURRENT_DATE) AND DATEADD('DAY', -1, CURRENT_DATE)
                 GROUP BY th.id, th.name, th.description, th.thumbnail
                 ORDER BY reservation_count DESC
-                LIMIT 10; 
+                LIMIT 10;
                 """;
-        return template.query(sql, reservationThemeRowMapper());
+        SqlParameterSource param = new MapSqlParameterSource("days", -days);
+        return template.query(sql, param, reservationThemeRowMapper());
     }
 
     @Override

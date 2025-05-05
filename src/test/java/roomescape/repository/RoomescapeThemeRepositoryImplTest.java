@@ -53,9 +53,10 @@ class RoomescapeThemeRepositoryImplTest {
 
     @DisplayName("주간 인기테마를 성공적으로 가져온다.")
     @Test
-    void findWeeklyThemeOrderByCountDesc() {
+    void findTopThemeOrderByCountWithinDaysDesc() {
         //given & when
-        final List<ReservationTheme> weeklyThemeOrderByCountDesc = repository.findWeeklyThemeOrderByCountDesc();
+        int popular_count_days = 7;
+        final List<ReservationTheme> weeklyThemeOrderByCountDesc = repository.findTopThemeOrderByCountWithinDaysDesc(popular_count_days);
 
         //then
         assertThat(weeklyThemeOrderByCountDesc).hasSizeLessThanOrEqualTo(10);
