@@ -34,6 +34,8 @@ public class TokenLoginController {
         TokenResponse tokenResponse = authService.createToken(tokenRequest);
 
         Cookie cookie = new Cookie("token", tokenResponse.accessToken());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         return ResponseEntity.status(HttpStatus.OK)
