@@ -1,6 +1,5 @@
 package roomescape.time.service;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -58,20 +57,17 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(
             AvailableReservationTimeRequest request) {
-        return reservationTimeRepository.findAll()
-                .stream()
-                .map(time -> addIfAvailableTime(time, request.date(), request.themeId()))
+        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
+
+        List<Long> reservedTimeIds = reservationRepository.findReservedTimeIdsByDateAndTheme(
+                request.date(), request.themeId());
+
+        return allTimes.stream()
+                .map(time -> new AvailableReservationTimeResponse(
+                        time.getId(),
+                        time.getStartAt(),
+                        reservedTimeIds.contains(time.getId())
+                ))
                 .toList();
-    }
-
-    private AvailableReservationTimeResponse addIfAvailableTime(
-            ReservationTime time,
-            LocalDate date,
-            Long themeId
-    ) {
-        boolean isReserved = reservationRepository.existsByTimeIdAndDateAndThemeId(
-                time.getId(), date, themeId);
-
-        return new AvailableReservationTimeResponse(time.getId(), time.getStartAt(), isReserved);
     }
 }
