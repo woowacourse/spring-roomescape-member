@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static roomescape.constant.TestConstants.DEFAULT_THEME;
+import static roomescape.fixture.TestFixture.DEFAULT_THEME;
 
 @JdbcTest
 public class ThemeDaoTest {

@@ -13,8 +13,8 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.constant.TestConstants.DEFAULT_THEME;
-import static roomescape.constant.TestConstants.DEFAULT_TIME;
+import static roomescape.fixture.TestFixture.DEFAULT_THEME;
+import static roomescape.fixture.TestFixture.DEFAULT_TIME;
 
 @JdbcTest
 class ReservationDaoTest {

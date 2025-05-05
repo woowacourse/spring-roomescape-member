@@ -11,7 +11,7 @@ import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.constant.TestConstants.DEFAULT_TIME;
+import static roomescape.fixture.TestFixture.DEFAULT_TIME;
 
 @JdbcTest
 class ReservationTimeDaoTest {
