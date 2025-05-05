@@ -17,14 +17,8 @@ public class GlobalExceptionHandler {
     public static final String ERROR_MESSAGE_PREFIX = "[ERROR] ";
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = DBFKException.class)
-    public String handleDBFKException(DBFKException e) {
-        return ERROR_MESSAGE_PREFIX + e.getMessage();
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public String handleIllegalArgumentException(IllegalArgumentException e) {
+    @ExceptionHandler(value = {IllegalArgumentException.class, DBFKException.class})
+    public String handleBadRequestException(RuntimeException e) {
         return ERROR_MESSAGE_PREFIX + e.getMessage();
     }
 
