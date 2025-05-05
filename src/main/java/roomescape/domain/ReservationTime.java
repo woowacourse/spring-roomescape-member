@@ -1,9 +1,12 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ReservationTime {
 
+    @EqualsAndHashCode.Include
     private Long id;
     private final LocalTime startAt;
 

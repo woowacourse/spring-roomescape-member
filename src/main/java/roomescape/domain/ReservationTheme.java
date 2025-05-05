@@ -1,7 +1,11 @@
 package roomescape.domain;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ReservationTheme {
 
+    @EqualsAndHashCode.Include
     private Long id;
     private final String name;
     private final String description;
