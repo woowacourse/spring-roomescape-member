@@ -3,7 +3,6 @@ package roomescape.reservation.infrastructure;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +52,8 @@ public class JdbcReservationRepository implements ReservationRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", reservation.getName());
         parameters.put("date", Date.valueOf(reservation.getDate()));
-        parameters.put("time_id", reservation.getTime().getId());
-        parameters.put("theme_id", reservation.getTheme().getId());
+        parameters.put("time_id", reservation.getTimeId());
+        parameters.put("theme_id", reservation.getThemeId());
 
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
@@ -117,7 +116,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existBy(final Long themeId, final LocalDate date, final LocalTime time) {
+    public boolean hasSameReservation(Reservation reservation) {
         String sql = """
                 SELECT EXISTS(            
                     SELECT 1
@@ -127,7 +126,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                     WHERE r.date = ? and t.start_at = ? and th.id = ?
                 )
                 """;
-        return jdbcTemplate.queryForObject(sql, Boolean.class, Date.valueOf(date), Time.valueOf(time), themeId);
+        return jdbcTemplate.queryForObject(sql, Boolean.class,
+                Date.valueOf(reservation.getDate()),
+                Time.valueOf(reservation.getReservationTime()),
+                reservation.getThemeId());
     }
 
     @Override

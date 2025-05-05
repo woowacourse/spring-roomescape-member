@@ -1,8 +1,6 @@
 package roomescape.reservation.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -29,22 +27,22 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean existByReservationTimeId(Long timeId) {
         return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), timeId));
+                .anyMatch(reservation -> Objects.equals(reservation.getTimeId(), timeId));
     }
 
     @Override
-    public boolean existBy(Long themeId, LocalDate date, LocalTime time) {
+    public boolean hasSameReservation(Reservation reservation) {
         return reservations.stream()
-                .anyMatch(reservation ->
-                        reservation.getTime().getStartAt().equals(time)
-                                && reservation.getDate().equals(date)
-                                && reservation.getTheme().getId().equals(themeId));
+                .anyMatch(nextReservation ->
+                        nextReservation.getReservationTime().equals(reservation.getReservationTime())
+                                && nextReservation.getDate().equals(reservation.getDate())
+                                && nextReservation.getThemeId().equals(reservation.getThemeId()));
     }
 
     @Override
     public boolean existByThemeId(Long themeId) {
         return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getTheme().getId(), themeId));
+                .anyMatch(reservation -> Objects.equals(reservation.getThemeId(), themeId));
     }
 
     @Override
@@ -73,7 +71,7 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findBy(LocalDate date, Long themeId) {
         return reservations.stream()
-                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId().equals(themeId))
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getThemeId().equals(themeId))
                 .toList();
     }
 }

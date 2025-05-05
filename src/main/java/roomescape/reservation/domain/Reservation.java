@@ -72,12 +72,28 @@ public class Reservation {
         return date;
     }
 
-    public ReservationTime getTime() {
-        return time;
+    public Long getTimeId() {
+        return time.getId();
     }
 
-    public Theme getTheme() {
-        return theme;
+    public LocalTime getReservationTime() {
+        return time.getStartAt();
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    public String getThemeDescription() {
+        return theme.getDescription();
+    }
+
+    public String getThemeName() {
+        return theme.getName();
+    }
+
+    public String getThemeThumbnail() {
+        return theme.getThumbnail();
     }
 
     @Override

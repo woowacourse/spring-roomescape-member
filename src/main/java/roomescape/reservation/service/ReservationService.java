@@ -39,7 +39,7 @@ public class ReservationService {
         Reservation reservation = Reservation.createWithoutId(dateTime.now(), request.name(), request.date(), time,
                 theme);
 
-        if (reservationRepository.existBy(request.themeId(), request.date(), time.getStartAt())) {
+        if (reservationRepository.hasSameReservation(reservation)) {
             throw new IllegalArgumentException("이미 예약이 존재합니다.");
         }
 

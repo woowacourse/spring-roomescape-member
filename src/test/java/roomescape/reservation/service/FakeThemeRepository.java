@@ -40,7 +40,9 @@ public class FakeThemeRepository implements ThemeRepository {
 
         Map<Theme, Long> themes = new HashMap<>();
         for (Reservation filterReservation : filterReservations) {
-            themes.put(filterReservation.getTheme(), themes.getOrDefault(filterReservation.getTheme(), 0L) + 1);
+            Theme theme = Theme.createWithId(filterReservation.getThemeId(), filterReservation.getThemeName(),
+                    filterReservation.getThemeDescription(), filterReservation.getThemeThumbnail());
+            themes.put(theme, themes.getOrDefault(theme, 0L) + 1);
         }
 
         return themes.entrySet().stream()

@@ -51,7 +51,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
         Reservation reservation = Reservation.createWithoutId(
-                LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime, theme);
+                LocalDateTime.of(1999, 11, 2, 20, 10), "a", LocalDate.of(2000, 11, 2), reservationTime, theme);
 
         Long save = reservationRepository.save(reservation);
 
@@ -63,9 +63,12 @@ class JdbcReservationRepositoryTest {
     void find_by_themeId_and_date() {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime, theme);
-        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"b", LocalDate.of(2000, 10, 2), reservationTime, theme);
-        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"c", LocalDate.of(2000, 11, 2), reservationTime, theme);
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "b",
+                LocalDate.of(2000, 10, 2), reservationTime, theme);
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
         reservationRepository.save(reservation3);
@@ -87,7 +90,8 @@ class JdbcReservationRepositoryTest {
     void delete_test(Long plus, boolean expected) {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime, theme);
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
         boolean isDeleted = reservationRepository.deleteBy(themeId + plus);
@@ -100,9 +104,12 @@ class JdbcReservationRepositoryTest {
     void find_all_test() {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime, theme);
-        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"b", LocalDate.of(2000, 10, 2), reservationTime, theme);
-        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"c", LocalDate.of(2000, 11, 2), reservationTime, theme);
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "b",
+                LocalDate.of(2000, 10, 2), reservationTime, theme);
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "c",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
         reservationRepository.save(reservation3);
@@ -124,7 +131,8 @@ class JdbcReservationRepositoryTest {
     void exist_by_time(Long plus, boolean expected) {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime, theme);
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
         boolean existed = reservationRepository.existByReservationTimeId(themeId + plus);
@@ -137,20 +145,30 @@ class JdbcReservationRepositoryTest {
     void exist_by_test() {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(timeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime, theme);
-        System.out.println(reservation.getTheme().getId());
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
         assertAll(
-                () -> assertThat(reservationRepository.existBy(themeId, LocalDate.of(2000, 11, 3),
-                        LocalTime.of(10, 10))).isFalse(),
-                () -> assertThat(reservationRepository.existBy(themeId, LocalDate.of(2000, 11, 2),
-                        LocalTime.of(10, 11))).isFalse(),
-                () -> assertThat(reservationRepository.existBy(themeId + 1, LocalDate.of(2000, 11, 2),
-                        LocalTime.of(10, 10))).isFalse(),
-                () -> assertThat(reservationRepository.existBy(themeId, LocalDate.of(2000, 11, 2),
-                        LocalTime.of(10, 10))).isTrue()
+                () -> assertThat(reservationRepository.hasSameReservation(
+                        createReservationForTestBy(themeId, LocalDate.of(2000, 11, 3),
+                                LocalTime.of(10, 10)))).isFalse(),
+                () -> assertThat(reservationRepository.hasSameReservation(
+                        createReservationForTestBy(themeId, LocalDate.of(2000, 11, 2),
+                                LocalTime.of(10, 11)))).isFalse(),
+                () -> assertThat(reservationRepository.hasSameReservation(
+                        createReservationForTestBy(themeId + 1, LocalDate.of(2000, 11, 2),
+                                LocalTime.of(10, 10)))).isFalse(),
+                () -> assertThat(reservationRepository.hasSameReservation(
+                        createReservationForTestBy(themeId, LocalDate.of(2000, 11, 2),
+                                LocalTime.of(10, 10)))).isTrue()
         );
+    }
+
+    private Reservation createReservationForTestBy(Long themeId, LocalDate localDate, LocalTime localTime) {
+        ReservationTime reservationTime = ReservationTime.createWithId(1L, localTime);
+        Theme theme = Theme.createWithId(themeId, "a", "a", "a");
+        return Reservation.createWithId(1L, "a", localDate, reservationTime, theme);
     }
 
 
@@ -160,7 +178,8 @@ class JdbcReservationRepositoryTest {
     void exist_by_theme(Long plus, boolean expected) {
         ReservationTime reservationTime = ReservationTime.createWithId(timeId, LocalTime.of(10, 10));
         Theme theme = Theme.createWithId(themeId, "a", "a", "a");
-        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2), reservationTime, theme);
+        Reservation reservation = Reservation.createWithoutId(LocalDateTime.of(1999, 11, 2, 20, 10), "a",
+                LocalDate.of(2000, 11, 2), reservationTime, theme);
         reservationRepository.save(reservation);
 
         boolean existed = reservationRepository.existByThemeId(themeId + plus);
