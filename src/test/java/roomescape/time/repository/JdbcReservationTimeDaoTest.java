@@ -1,6 +1,5 @@
 package roomescape.time.repository;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.JdbcReservationTimeDao;
 import roomescape.util.TestDataSourceFactory;
 
 class JdbcReservationTimeDaoTest {
@@ -29,7 +27,7 @@ class JdbcReservationTimeDaoTest {
     }
 
     @AfterEach
-    void dropTable(){
+    void dropTable() {
         String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
         jdbcTemplate.execute(dropSql);
     }

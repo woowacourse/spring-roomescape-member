@@ -2,18 +2,17 @@ package roomescape.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.time.controller.dto.AvailableTimeResponse;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.controller.dto.AvailableTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationService {
@@ -47,16 +46,16 @@ public class ReservationService {
     }
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date,
-                themeId);
+        List<Reservation> reservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         List<ReservationTime> times = reservationTimeRepository.findAll();
         return convertTimeToResponses(reservations, times);
     }
 
     private List<AvailableTimeResponse> convertTimeToResponses(List<Reservation> reservations,
-                                                                  List<ReservationTime> times) {
+                                                               List<ReservationTime> times) {
         return times.stream()
-                .map(time -> AvailableTimeResponse.from(time.getStartAt(), time.getId(), isAlreadyBooked(time.getId(), reservations)))
+                .map(time -> AvailableTimeResponse.from(time.getStartAt(), time.getId(),
+                        isAlreadyBooked(time.getId(), reservations)))
                 .toList();
     }
 
@@ -78,7 +77,7 @@ public class ReservationService {
                 .anyMatch(reservation -> reservation.isSameId(timeId));
     }
 
-    private void validateDateAndTime(LocalDate date, LocalTime time){
+    private void validateDateAndTime(LocalDate date, LocalTime time) {
         LocalDate now = LocalDate.now();
         if (date.isBefore(now)) {
             throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");

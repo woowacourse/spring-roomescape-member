@@ -1,6 +1,5 @@
 package roomescape;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -122,7 +121,8 @@ class MissionStepTest {
     @DisplayName("전체 Reservation 객체를 조회한다")
     @Test
     void get_reservations_test() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운", "2023-08-05",
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+                "2023-08-05",
                 "1", "1");
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()

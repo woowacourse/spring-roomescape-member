@@ -1,6 +1,5 @@
 package roomescape.theme.controller.dto;
 
-
 import roomescape.theme.domain.Theme;
 
 public record ThemeRankingResponse(String name, String description, String thumbnail) {

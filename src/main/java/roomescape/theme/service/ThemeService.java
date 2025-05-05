@@ -3,11 +3,11 @@ package roomescape.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRankingResponse;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -47,7 +47,7 @@ public class ThemeService {
 
     public List<ThemeRankingResponse> getThemeRankings() {
         LocalDate startDate = LocalDate.now().minusDays(DAYS_BEFORE_START);
-        LocalDate endDate =  LocalDate.now().minusDays(DAYS_BEFORE_END);
+        LocalDate endDate = LocalDate.now().minusDays(DAYS_BEFORE_END);
         List<Theme> themeRankings = themeRepository.findByPeriodAndLimit(startDate, endDate, RANKING_LIMIT);
         return themeRankings.stream()
                 .map(ThemeRankingResponse::from)

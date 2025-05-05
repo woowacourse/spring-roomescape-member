@@ -11,19 +11,18 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.util.repository.ReservationFakeRepository;
-import roomescape.util.repository.ReservationTimeFakeRepository;
-import roomescape.util.repository.ThemeFakeRepository;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.controller.dto.ThemeRankingResponse;
 import roomescape.theme.controller.dto.ThemeRequest;
 import roomescape.theme.controller.dto.ThemeResponse;
-import roomescape.reservation.domain.Reservation;
-import roomescape.theme.service.ThemeService;
-import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.util.repository.ReservationFakeRepository;
+import roomescape.util.repository.ReservationTimeFakeRepository;
+import roomescape.util.repository.ThemeFakeRepository;
 
 class ThemeServiceTest {
 

@@ -12,8 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 import roomescape.util.TestDataSourceFactory;
 
 class JdbcReservationDaoTest {
@@ -29,7 +29,7 @@ class JdbcReservationDaoTest {
     }
 
     @AfterEach
-    void dropTable(){
+    void dropTable() {
         String dropSql = "DROP TABLE IF EXISTS reservation, reservation_time, theme";
         jdbcTemplate.execute(dropSql);
     }
@@ -92,7 +92,8 @@ class JdbcReservationDaoTest {
     @Test
     void same_time_id_and_date_test() {
         // when
-        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L, 1L);
+        Boolean actual = jdbcReservationDao.existReservationByDateAndTimeIdAndThemeId(LocalDate.of(2025, 4, 24), 1L,
+                1L);
 
         // then
         assertThat(actual).isTrue();

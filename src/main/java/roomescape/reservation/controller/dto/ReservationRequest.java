@@ -3,8 +3,8 @@ package roomescape.reservation.controller.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
+import roomescape.time.domain.ReservationTime;
 
 public record ReservationRequest(
         String name,
@@ -43,7 +43,7 @@ public record ReservationRequest(
     }
 
     private void validateThemeId(Long themeId) {
-        if(themeId == null){
+        if (themeId == null) {
             throw new IllegalArgumentException("테마 ID는 필수입니다.");
         }
     }

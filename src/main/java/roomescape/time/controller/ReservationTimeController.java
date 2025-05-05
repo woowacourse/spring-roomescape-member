@@ -25,19 +25,19 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public List<ReservationTimeResponse> getTimes(){
+    public List<ReservationTimeResponse> getTimes() {
         return reservationTimeService.getTimes();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationTimeResponse addTime(@RequestBody ReservationTimeRequest request){
+    public ReservationTimeResponse addTime(@RequestBody ReservationTimeRequest request) {
         return reservationTimeService.add(request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{timeId}")
-    public void deleteTime(@PathVariable("timeId") Long timeId){
+    public void deleteTime(@PathVariable("timeId") Long timeId) {
         reservationTimeService.remove(timeId);
     }
 

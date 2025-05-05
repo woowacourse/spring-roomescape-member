@@ -1,12 +1,11 @@
 package roomescape.time.service;
 
-
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.controller.dto.ReservationTimeRequest;
 import roomescape.time.controller.dto.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
-import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.repository.ReservationTimeRepository;
 
 @Service
@@ -22,7 +21,7 @@ public class ReservationTimeService {
     }
 
     public void remove(Long id) {
-        if (reservationRepository.existReservationByTimeId(id)){
+        if (reservationRepository.existReservationByTimeId(id)) {
             throw new IllegalStateException("해당 시간에 대한 예약이 존재합니다.");
         }
         reservationTimeRepository.deleteById(id);

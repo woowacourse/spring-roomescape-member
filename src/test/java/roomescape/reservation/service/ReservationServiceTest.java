@@ -11,20 +11,20 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
+import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
+import roomescape.time.controller.dto.AvailableTimeResponse;
+import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.util.repository.ReservationFakeRepository;
 import roomescape.util.repository.ReservationTimeFakeRepository;
 import roomescape.util.repository.ThemeFakeRepository;
-import roomescape.time.controller.dto.AvailableTimeResponse;
-import roomescape.reservation.controller.dto.ReservationRequest;
-import roomescape.reservation.controller.dto.ReservationResponse;
-import roomescape.time.controller.dto.ReservationTimeResponse;
-import roomescape.theme.controller.dto.ThemeResponse;
-import roomescape.reservation.domain.Reservation;
-import roomescape.time.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.theme.repository.ThemeRepository;
 
 class ReservationServiceTest {
 
@@ -60,9 +60,12 @@ class ReservationServiceTest {
         }
 
         List<Reservation> reservations = List.of(
-                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get()),
-                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(), themeRepository.findById(2L).get()),
-                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(), themeRepository.findById(3L).get())
+                new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
+                        themeRepository.findById(1L).get()),
+                new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(),
+                        themeRepository.findById(2L).get()),
+                new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
+                        themeRepository.findById(3L).get())
         );
 
         for (Reservation reservation : reservations) {
@@ -96,7 +99,8 @@ class ReservationServiceTest {
         ThemeResponse expectedThemeResponse = new ThemeResponse(3L, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
-        ReservationResponse expected = new ReservationResponse(4L, "루키", LocalDate.of(2025, 5, 3),expectedTimeResponse, expectedThemeResponse);
+        ReservationResponse expected = new ReservationResponse(4L, "루키", LocalDate.of(2025, 5, 3), expectedTimeResponse,
+                expectedThemeResponse);
         assertThat(response).isEqualTo(expected);
     }
 
