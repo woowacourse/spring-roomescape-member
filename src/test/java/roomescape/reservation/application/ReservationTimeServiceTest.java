@@ -33,7 +33,8 @@ public class ReservationTimeServiceTest {
     void init() {
         ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeDao();
         ReservationRepository reservationRepository = new FakeReservationDao();
-        ThemeRepository themeRepository = new FakeThemeDao();
+        ThemeRepository themeRepository = new FakeThemeDao(reservationRepository);
+
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
         themeService = new ThemeService(reservationRepository, themeRepository);

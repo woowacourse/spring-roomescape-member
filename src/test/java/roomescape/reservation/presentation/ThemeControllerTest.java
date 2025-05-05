@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.fixture.ReservationFixture;
 
@@ -95,5 +96,33 @@ public class ThemeControllerTest {
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("인기 테마 조회 테스트")
+    void getPopularThemesTest(){
+        // given
+        reservationFixture.createReservationTime(LocalTime.of(10, 30));
+
+        reservationFixture.createTheme(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        );
+        reservationFixture.createTheme(
+                "레벨3 탈출",
+                "우테코 레벨3를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        );
+
+        reservationFixture.createReservation("브라운",
+                LocalDate.of(2025, 8, 5), 1L, 1L);
+
+        // when - then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().get("/themes/popular")
+                .then().log().all()
+                .statusCode(200);
     }
 }

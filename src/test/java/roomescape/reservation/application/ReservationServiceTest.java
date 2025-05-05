@@ -29,8 +29,9 @@ public class ReservationServiceTest {
     @BeforeEach
     void init() {
         ReservationRepository reservationRepository = new FakeReservationDao();
+
         reservationTimeRepository = new FakeReservationTimeDao();
-        themeRepository = new FakeThemeDao();
+        themeRepository = new FakeThemeDao(new FakeReservationDao());
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
