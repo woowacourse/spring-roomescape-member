@@ -99,4 +99,17 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, RowMappers.RESERVATION, date, themeId);
     }
+
+    @Override
+    public Optional<Reservation> findByDateAndTimeSlotAndThemeId(final LocalDate date, final long timeSlotId, final long themeId) {
+        var sql = """
+            select R.id, R.name, R.date, R.time_id, RT.start_at, R.theme_id, T.name as theme_name, T.description as theme_description, T.thumbnail as theme_thumbnail from RESERVATION R
+            left join RESERVATION_TIME RT on R.time_id = RT.id 
+            left join THEME T on T.id = R.theme_id                                                                                                                              
+            where R.date = ? AND R.time_id = ? AND R.theme_id = ?                                                                                                      
+            """;
+
+        var reservationList = jdbcTemplate.query(sql, RowMappers.RESERVATION, date, timeSlotId, themeId);
+        return reservationList.stream().findAny();
+    }
 }

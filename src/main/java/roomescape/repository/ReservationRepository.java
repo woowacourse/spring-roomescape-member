@@ -20,4 +20,6 @@ public interface ReservationRepository {
     List<Reservation> findByThemeId(final long id);
 
     List<Reservation> findByDateAndThemeId(final LocalDate date, final long themeId);
+
+    Optional<Reservation> findByDateAndTimeSlotAndThemeId(LocalDate date, long timeSlotId, long themeId);
 }

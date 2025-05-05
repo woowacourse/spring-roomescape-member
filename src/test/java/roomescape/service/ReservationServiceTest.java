@@ -115,4 +115,21 @@ class ReservationServiceTest {
             () -> service.reserve(name, date, timeSlotId, themeId)
         ).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("이미 해당 날짜, 시간, 테마에 대한 예약이 존재하는 경우 중복된 예약은 불가능하다.")
+    void cannotReserveDuplicate() {
+        // given
+        var name = "포포";
+        var date = DateUtils.tomorrow();
+        var timeSlotId = JUNK_TIME_SLOT.id();
+        var themeId = JUNK_THEME.id();
+
+        service.reserve(name, date, timeSlotId, themeId);
+
+        // when & then
+        assertThatThrownBy(
+            () -> service.reserve(name, date, timeSlotId, themeId)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
 }

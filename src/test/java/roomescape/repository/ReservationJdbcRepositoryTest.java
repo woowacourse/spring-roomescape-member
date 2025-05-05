@@ -139,6 +139,23 @@ class ReservationJdbcRepositoryTest {
         assertThat(found).contains(reservation);
     }
 
+    @Test
+    @DisplayName("날짜와 타임 슬롯, 테마 아이디에 해당하는 예약을 조회한다.")
+    void findByDateAndTimeSlotAndThemeId() {
+        // given
+        var reservation = readyReservation();
+        repository.save(reservation);
+
+        // when
+        var date = reservation.date();
+        var timeSlotId = reservation.timeSlot().id();
+        var themeId = reservation.theme().id();
+        var found = repository.findByDateAndTimeSlotAndThemeId(date, timeSlotId, themeId);
+
+        // then
+        assertThat(found).contains(reservation);
+    }
+
     private Reservation readyReservation() {
         return Reservation.ofExisting(
             1L,

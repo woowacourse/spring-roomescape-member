@@ -30,20 +30,19 @@ public class ReservationService {
     public Reservation reserve(final String name, final LocalDate date, final long timeId, final long themeId) {
         var timeSlot = findTimeSlot(timeId);
         var theme = findTheme(themeId);
-        validateDuplicateReservation(date, timeSlot);
+        validateDuplicateReservation(date, timeSlot, theme);
 
         var reservation = Reservation.reserveNewly(name, date, timeSlot, theme);
         var id = reservationRepository.save(reservation);
         return reservation.withId(id);
     }
 
-    private void validateDuplicateReservation(final LocalDate date, final TimeSlot timeSlot) {
-        var reservations = findAllReservations();
-        var isDuplicated = reservations.stream()
-            .anyMatch(r -> r.isDateEquals(date) && r.isTimeSlotEquals(timeSlot));
-        if (isDuplicated) {
-            throw new IllegalArgumentException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다.");
-        }
+    public List<Reservation> findAllReservations() {
+        return reservationRepository.findAll();
+    }
+
+    public boolean removeById(final long id) {
+        return reservationRepository.removeById(id);
     }
 
     private TimeSlot findTimeSlot(final long timeId) {
@@ -54,14 +53,12 @@ public class ReservationService {
     private Theme findTheme(final long themeId) {
         return themeRepository.findById(themeId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
-
     }
 
-    public List<Reservation> findAllReservations() {
-        return reservationRepository.findAll();
-    }
-
-    public boolean removeById(final long id) {
-        return reservationRepository.removeById(id);
+    private void validateDuplicateReservation(final LocalDate date, final TimeSlot timeSlot, final Theme theme) {
+        var reservation = reservationRepository.findByDateAndTimeSlotAndThemeId(date, timeSlot.id(), theme.id());
+        if (reservation.isPresent()) {
+            throw new IllegalArgumentException("이미 예약된 날짜, 시간, 테마에 대한 예약은 불가능합니다.");
+        }
     }
 }
