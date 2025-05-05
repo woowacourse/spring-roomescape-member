@@ -24,7 +24,7 @@ public abstract class DomainId {
 
     private void validate(final Long value) {
         Validator.of(DomainId.class)
-                .notNullField(Fields.value, value, domainName);
+                .validateNotNull(Fields.value, value, domainName);
     }
 
     public Long getValue() {

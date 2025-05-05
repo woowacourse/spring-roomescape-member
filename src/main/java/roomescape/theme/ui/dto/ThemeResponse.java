@@ -27,7 +27,7 @@ public record ThemeResponse(
                 domain.getId().getValue(),
                 domain.getName().getValue(),
                 domain.getDescription().getValue(),
-                domain.getThumbnail().getValue());
+                String.valueOf(domain.getThumbnail().getValue()));
     }
 
     public static List<ThemeResponse> from(final List<Theme> domains) {
@@ -41,9 +41,9 @@ public record ThemeResponse(
                                  final String description,
                                  final String thumbnail) {
         Validator.of(ThemeResponse.class)
-                .notNullField(Fields.id, id, ThemeId.domainName)
-                .notNullField(Fields.name, name, ThemeName.domainName)
-                .notNullField(Fields.description, description, ThemeDescription.domainName)
-                .notNullField(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
+                .validateNotNull(Fields.id, id, ThemeId.domainName)
+                .validateNotNull(Fields.name, name, ThemeName.domainName)
+                .validateNotNull(Fields.description, description, ThemeDescription.domainName)
+                .validateNotNull(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
     }
 }

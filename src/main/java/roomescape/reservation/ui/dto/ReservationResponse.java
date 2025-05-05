@@ -47,10 +47,10 @@ public record ReservationResponse(Long id,
                           final ReservationTimeResponse time,
                           final ThemeResponse theme) {
         Validator.of(ReservationResponse.class)
-                .notNullField(Fields.id, id, ReservationId.domainName)
-                .notBlankField(Fields.name, name, ReserverName.domainName)
-                .notNullField(Fields.date, date, ReservationDate.domainName)
-                .notNullField(Fields.time, time, ReservationTime.domainName)
-                .notNullField(Fields.theme, theme, Theme.domainName);
+                .validateNotNull(Fields.id, id, ReservationId.domainName)
+                .validateNotBlank(Fields.name, name, ReserverName.domainName)
+                .validateNotNull(Fields.date, date, ReservationDate.domainName)
+                .validateNotNull(Fields.time, time, ReservationTime.domainName)
+                .validateNotNull(Fields.theme, theme, Theme.domainName);
     }
 }

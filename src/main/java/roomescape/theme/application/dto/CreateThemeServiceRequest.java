@@ -29,8 +29,8 @@ public record CreateThemeServiceRequest(
 
     private void validate(final ThemeName name, final ThemeDescription description, final ThemeThumbnail thumbnail) {
         Validator.of(CreateThemeServiceRequest.class)
-                .notNullField(CreateThemeServiceRequest.Fields.name, name, ThemeName.domainName)
-                .notNullField(CreateThemeServiceRequest.Fields.description, description, ThemeDescription.domainName)
-                .notNullField(CreateThemeServiceRequest.Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
+                .validateNotNull(CreateThemeServiceRequest.Fields.name, name, ThemeName.domainName)
+                .validateNotNull(CreateThemeServiceRequest.Fields.description, description, ThemeDescription.domainName)
+                .validateNotNull(CreateThemeServiceRequest.Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
     }
 }

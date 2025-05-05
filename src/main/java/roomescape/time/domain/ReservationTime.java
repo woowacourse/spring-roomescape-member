@@ -38,8 +38,8 @@ public class ReservationTime {
 
     private static void validate(final ReservationTimeId id, final LocalTime value) {
         Validator.of(ReservationTime.class)
-                .notNullField(Fields.id, id, ReservationTimeId.domainName)
-                .notNullField(Fields.startAt, value, domainName);
+                .validateNotNull(Fields.id, id, ReservationTimeId.domainName)
+                .validateNotNull(Fields.startAt, value, domainName);
     }
 
     public boolean isBefore(final LocalTime time) {

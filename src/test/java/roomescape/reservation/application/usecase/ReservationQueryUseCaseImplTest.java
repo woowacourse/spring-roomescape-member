@@ -117,15 +117,15 @@ class ReservationQueryUseCaseImplTest {
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
 
-            assertThat(timesWithAvailability)
+            softAssertions.assertThat(timesWithAvailability)
                     .hasSize(2);
 
-            assertThat(timesWithAvailability.stream()
-                    .filter(a -> a.isBooked().isBooked()))
+            softAssertions.assertThat(timesWithAvailability.stream()
+                    .filter(a -> a.bookedStatus().isBooked()))
                     .hasSize(1);
 
-            assertThat(timesWithAvailability.stream()
-                    .filter(a -> a.isBooked().isBooked())
+            softAssertions.assertThat(timesWithAvailability.stream()
+                    .filter(a -> a.bookedStatus().isBooked())
                     .map(AvailableReservationTimeServiceResponse::time)
                     .findFirst()
                     .orElseThrow()

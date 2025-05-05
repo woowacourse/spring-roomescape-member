@@ -28,8 +28,8 @@ public record CreateThemeWebRequest(
 
     private void validate(final String name, final String description, final String thumbnail) {
         Validator.of(CreateThemeWebRequest.class)
-                .notNullField(Fields.name, name, ThemeName.domainName)
-                .notNullField(Fields.description, description, ThemeDescription.domainName)
-                .notNullField(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
+                .validateNotNull(Fields.name, name, ThemeName.domainName)
+                .validateNotNull(Fields.description, description, ThemeDescription.domainName)
+                .validateNotNull(Fields.thumbnail, thumbnail, ThemeThumbnail.domainName);
     }
 }

@@ -26,6 +26,6 @@ public class ReserverName {
 
     private static void validate(final String value) {
         Validator.of(ReserverName.class)
-                .notBlankField(Fields.value, value, domainName);
+                .validateNotBlank(Fields.value, value, domainName);
     }
 }

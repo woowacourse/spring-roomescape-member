@@ -63,7 +63,7 @@ public class H2ThemeRepository implements ThemeRepository {
             final PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, theme.getName().getValue());
             preparedStatement.setString(2, theme.getDescription().getValue());
-            preparedStatement.setString(3, theme.getThumbnail().getValue());
+            preparedStatement.setString(3, String.valueOf(theme.getThumbnail().getValue()));
 
             return preparedStatement;
         }, keyHolder);

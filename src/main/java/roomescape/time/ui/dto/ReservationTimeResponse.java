@@ -31,7 +31,7 @@ public record ReservationTimeResponse(Long id,
 
     private void validate(final Long id, final LocalTime startAt) {
         Validator.of(ReservationTimeResponse.class)
-                .notNullField(ReservationTimeResponse.Fields.id, id, ReservationTimeId.domainName)
-                .notNullField(ReservationTimeResponse.Fields.startAt, startAt, ReservationTime.domainName);
+                .validateNotNull(ReservationTimeResponse.Fields.id, id, ReservationTimeId.domainName)
+                .validateNotNull(ReservationTimeResponse.Fields.startAt, startAt, ReservationTime.domainName);
     }
 }

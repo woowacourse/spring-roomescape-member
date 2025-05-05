@@ -16,6 +16,6 @@ public record CreateReservationTimeWebRequest(LocalTime startAt) {
 
     private void validate(final LocalTime startAt) {
         Validator.of(CreateReservationTimeWebRequest.class)
-                .notNullField(Fields.startAt, startAt, ReservationTime.domainName);
+                .validateNotNull(Fields.startAt, startAt, ReservationTime.domainName);
     }
 }

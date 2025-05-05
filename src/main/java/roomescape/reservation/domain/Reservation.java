@@ -63,11 +63,11 @@ public class Reservation {
                                  final Theme theme) {
 
         Validator.of(Reservation.class)
-                .notNullField(Fields.id, id, ReservationId.domainName)
-                .notNullField(Fields.name, name, ReserverName.domainName)
-                .notNullField(Fields.date, date, ReservationDate.domainName)
-                .notNullField(Fields.time, time, ReservationTime.domainName)
-                .notNullField(Fields.theme, theme, Theme.domainName);
+                .validateNotNull(Fields.id, id, ReservationId.domainName)
+                .validateNotNull(Fields.name, name, ReserverName.domainName)
+                .validateNotNull(Fields.date, date, ReservationDate.domainName)
+                .validateNotNull(Fields.time, time, ReservationTime.domainName)
+                .validateNotNull(Fields.theme, theme, Theme.domainName);
     }
 
     public static void validatePast(final ReservationDate date, final ReservationTime time) {

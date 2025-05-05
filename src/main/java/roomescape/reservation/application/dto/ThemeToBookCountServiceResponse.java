@@ -18,7 +18,7 @@ public record ThemeToBookCountServiceResponse(
 
     private void validate(final Theme theme, final BookedCount bookedCount) {
         Validator.of(ThemeToBookCountServiceResponse.class)
-                .notNullField(Fields.theme, theme, Theme.domainName)
-                .notNullField(Fields.bookedCount, bookedCount, BookedCount.domainName);
+                .validateNotNull(Fields.theme, theme, Theme.domainName)
+                .validateNotNull(Fields.bookedCount, bookedCount, BookedCount.domainName);
     }
 }

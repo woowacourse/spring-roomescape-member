@@ -31,8 +31,8 @@ public record AvailableReservationTimeWebResponse(
 
     private void validate(final LocalTime startAt, final Long timeId, final Boolean isBooked) {
         Validator.of(AvailableReservationTimeWebResponse.class)
-                .notNullField(Fields.startAt, startAt, ReservationTime.domainName)
-                .notNullField(Fields.timeId, timeId, ReservationTimeId.domainName)
-                .notNullField(Fields.isBooked, isBooked, BookedStatus.domainName);
+                .validateNotNull(Fields.startAt, startAt, ReservationTime.domainName)
+                .validateNotNull(Fields.timeId, timeId, ReservationTimeId.domainName)
+                .validateNotNull(Fields.isBooked, isBooked, BookedStatus.domainName);
     }
 }

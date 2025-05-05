@@ -24,6 +24,6 @@ public class ThemeName {
 
     private static void validate(final String value) {
         Validator.of(ThemeName.class)
-                .notBlankField(Fields.value, value, domainName);
+                .validateNotBlank(Fields.value, value, domainName);
     }
 }

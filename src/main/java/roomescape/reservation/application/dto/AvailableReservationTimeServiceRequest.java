@@ -18,7 +18,7 @@ public record AvailableReservationTimeServiceRequest(
 
     private void validate(final ReservationDate date, final ThemeId themeId) {
         Validator.of(AvailableReservationTimeServiceRequest.class)
-                .notNullField(Fields.date, date, ReservationDate.domainName)
-                .notNullField(Fields.themeId, themeId, ThemeId.domainName);
+                .validateNotNull(Fields.date, date, ReservationDate.domainName)
+                .validateNotNull(Fields.themeId, themeId, ThemeId.domainName);
     }
 }

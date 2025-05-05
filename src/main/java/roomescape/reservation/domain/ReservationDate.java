@@ -28,7 +28,7 @@ public final class ReservationDate {
 
     private static void validate(final LocalDate value) {
         Validator.of(ReservationDate.class)
-                .notNullField(Fields.value, value, domainName);
+                .validateNotNull(Fields.value, value, domainName);
     }
 
     public boolean isBefore(final LocalDate date) {

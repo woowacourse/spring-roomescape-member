@@ -31,9 +31,9 @@ public record CreateReservationWebRequest(String name,
 
     private void validate(final String name, final LocalDate date, final Long timeId, final Long themeId) {
         Validator.of(CreateReservationWebRequest.class)
-                .notBlankField(Fields.name, name, ReserverName.domainName)
-                .notNullField(Fields.date, date, ReservationDate.domainName)
-                .notNullField(Fields.timeId, timeId, ReservationTimeId.domainName)
-                .notNullField(Fields.themeId, themeId, ThemeId.domainName);
+                .validateNotBlank(Fields.name, name, ReserverName.domainName)
+                .validateNotNull(Fields.date, date, ReservationDate.domainName)
+                .validateNotNull(Fields.timeId, timeId, ReservationTimeId.domainName)
+                .validateNotNull(Fields.themeId, themeId, ThemeId.domainName);
     }
 }

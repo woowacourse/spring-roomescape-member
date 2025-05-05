@@ -34,9 +34,9 @@ public record CreateReservationServiceRequest(ReserverName name,
                           final ReservationTimeId timeId,
                           final ThemeId themeId) {
         Validator.of(CreateReservationServiceRequest.class)
-                .notNullField(Fields.name, name, ReserverName.domainName)
-                .notNullField(Fields.date, date, ReservationDate.domainName)
-                .notNullField(Fields.timeId, timeId, ReservationTimeId.domainName)
-                .notNullField(Fields.themeId, themeId, ThemeId.domainName);
+                .validateNotNull(Fields.name, name, ReserverName.domainName)
+                .validateNotNull(Fields.date, date, ReservationDate.domainName)
+                .validateNotNull(Fields.timeId, timeId, ReservationTimeId.domainName)
+                .validateNotNull(Fields.themeId, themeId, ThemeId.domainName);
     }
 }
