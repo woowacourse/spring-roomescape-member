@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.validate.Validator;
@@ -14,6 +15,7 @@ import java.net.URI;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldNameConstants(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
+@ToString
 public class ThemeThumbnail {
 
     private final URI value;

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.common.exception.DuplicateException;
 import roomescape.theme.application.dto.CreateThemeServiceRequest;
 import roomescape.theme.application.usecase.ThemeCommandUseCaseImpl;
 import roomescape.theme.domain.Theme;
@@ -54,6 +55,30 @@ class ThemeCommandUseCaseImplTest {
             assertThat(foundTheme.getThumbnail().getValue().toString())
                     .isEqualTo(url);
         });
+    }
+
+    @Test
+    @DisplayName("존재하는 테마 이름으로 테마를 저장할 수 없다")
+    void cannotCreateWithSameThemeName() {
+        // given
+        final String name = "이름이같다";
+        final CreateThemeServiceRequest request1 = new CreateThemeServiceRequest(
+                ThemeName.from(name),
+                ThemeDescription.from("des"),
+                ThemeThumbnail.from("uri"));
+
+        final Theme theme = themeCommandUseCase.create(request1);
+
+        final CreateThemeServiceRequest request2 = new CreateThemeServiceRequest(
+                ThemeName.from(name),
+                ThemeDescription.from("des는 같아도 되고 달라도 되는 것"),
+                ThemeThumbnail.from("uricansametoo"));
+
+        // when
+        // then
+        assertThatThrownBy(() -> themeCommandUseCase.create(request2))
+                .isInstanceOf(DuplicateException.class)
+                .hasMessage("THEME already exists. params={ThemeName=ThemeName(value=이름이같다)}");
     }
 
     @Test
