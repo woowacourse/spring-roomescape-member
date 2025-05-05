@@ -1,33 +1,16 @@
 package roomescape.presentation.api.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import roomescape.application.dto.request.CreateReservationThemeServiceRequest;
 
 public record CreateReservationThemeRequest(
+        @NotBlank(message = "테마 이름을 빈 문자열이 아닌 값으로 입력해주세요.")
         String name,
+        @NotBlank(message = "테마에 대한 설명을 빈 문자열이 아닌 값으로 입력해주세요.")
         String description,
+        @NotBlank(message = "테마의 썸네일을 빈 문자열이 아닌 값으로 입력해주세요.")
         String thumbnail
 ) {
-
-    public CreateReservationThemeRequest {
-        if (name == null) {
-            throw new IllegalArgumentException("테마 이름은 필수로 입력해야 합니다.");
-        }
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("테마 이름은 비어 있을 수 없습니다.");
-        }
-        if (description == null) {
-            throw new IllegalArgumentException("테마 설명은 필수로 입력해야 합니다.");
-        }
-        if (description.isBlank()) {
-            throw new IllegalArgumentException("테마 설명은 비어 있을 수 없습니다.");
-        }
-        if (thumbnail == null) {
-            throw new IllegalArgumentException("썸네일은 필수로 입력해야 합니다.");
-        }
-        if (thumbnail.isBlank()) {
-            throw new IllegalArgumentException("썸네일은 비어 있을 수 없습니다.");
-        }
-    }
 
     public CreateReservationThemeServiceRequest toServiceRequest() {
         return new CreateReservationThemeServiceRequest(name, description, thumbnail);

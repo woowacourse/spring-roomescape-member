@@ -1,18 +1,14 @@
 package roomescape.presentation.api.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 import roomescape.application.dto.request.CreateReservationTimeServiceRequest;
 
 public record CreateReservationTimeRequest(
+        @NotNull(message = "시간을 필수로 입력해야 합니다.")
         LocalTime startAt
 ) {
-
-    public CreateReservationTimeRequest {
-        if (startAt == null) {
-            throw new IllegalArgumentException("시간은 비어있을 수 없습니다.");
-        }
-    }
 
     public CreateReservationTimeServiceRequest toServiceRequest() {
         return new CreateReservationTimeServiceRequest(startAt);

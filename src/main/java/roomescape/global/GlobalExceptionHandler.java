@@ -1,9 +1,12 @@
 package roomescape.global;
 
-import java.time.DateTimeException;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-import org.springframework.http.HttpStatus;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,28 +15,36 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public String handleIllegalArgumentException(IllegalArgumentException e) {
-        return "[ERROR] " + e.getMessage();
-    }
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ExceptionResponse handleValidationException(MethodArgumentNotValidException e) {
+        String exceptionMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining("\n"));
 
-    // TODO: 코드 개선점 고민해보기(근본 예외 타입에 따른 구체적인 조치가 필요할지?)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+        return new ExceptionResponse(BAD_REQUEST.value(), exceptionMessage, LocalDateTime.now());
+    }
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public String handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        if (e.getRootCause() instanceof DateTimeException) {
-            return "[ERROR] 잘못된 날짜 또는 시간 형식입니다.";
+    public ExceptionResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        Throwable rootCause = e.getRootCause();
+        String exceptionMessage = "잘못된 형식의 값이 입력되었습니다.";
+        if (rootCause instanceof DateTimeException) {
+            exceptionMessage = "잘못된 날짜 또는 시간 형식입니다.";
         }
-        if (e.getRootCause() instanceof IllegalArgumentException) {
-            return "[ERROR] " + e.getMostSpecificCause().getMessage();
-        }
-        return "[ERROR] 잘못된 값이 입력되었습니다.";
+        return new ExceptionResponse(BAD_REQUEST.value(), exceptionMessage, LocalDateTime.now());
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public String handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        return "[ERROR] 필수 정보가 누락되었습니다.";
+    public ExceptionResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        String exceptionMessage = "필수 정보(파라미터)가 누락되었습니다";
+        return new ExceptionResponse(BAD_REQUEST.value(), exceptionMessage, LocalDateTime.now());
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException e) {
+        return new ExceptionResponse(BAD_REQUEST.value(), e.getMessage(), LocalDateTime.now());
     }
 }
