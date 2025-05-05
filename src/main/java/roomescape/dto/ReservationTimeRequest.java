@@ -5,6 +5,5 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public record ReservationTimeRequest(
         @DateTimeFormat(pattern = "HH:mm")
-        LocalTime startAt
-) {
+        LocalTime startAt) {
 }
