@@ -101,7 +101,7 @@ public final class Reservation {
         }
 
         public Reservation buildWithDateTimeValidation() {
-            validateBasic();
+            validateAll();
             validateDateTime();
             return new Reservation(id, name, date, time, theme);
         }
