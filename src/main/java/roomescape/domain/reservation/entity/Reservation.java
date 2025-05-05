@@ -1,6 +1,7 @@
 package roomescape.domain.reservation.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 import lombok.Builder;
@@ -43,6 +44,17 @@ public class Reservation {
         if (name.isBlank() || name.length() > MAX_NAME_LENGTH) {
             throw new InvalidArgumentException("invalid reservation name");
         }
+    }
+
+    public void validateNotPastReservation(LocalDateTime now) {
+        if (isPast(now)) {
+            throw new InvalidArgumentException("이미 지난 예약 시간입니다.");
+        }
+    }
+
+    private boolean isPast(LocalDateTime now) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, getReservationStartTime());
+        return reservationDateTime.isBefore(now);
     }
 
     public boolean existId() {

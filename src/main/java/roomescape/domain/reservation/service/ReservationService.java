@@ -3,7 +3,6 @@ package roomescape.domain.reservation.service;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.common.exception.InvalidArgumentException;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -57,7 +55,7 @@ public class ReservationService {
         }
 
         Reservation reservation = getReservation(request);
-        validateDateTime(now(), reservation.getReservationDate(), reservation.getReservationStartTime());
+        reservation.validateNotPastReservation(now());
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -82,14 +80,6 @@ public class ReservationService {
 
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
-    }
-
-    private void validateDateTime(LocalDateTime now, LocalDate date, LocalTime time) {
-        LocalDateTime dateTime = LocalDateTime.of(date, time);
-
-        if (now.isAfter(dateTime)) {
-            throw new InvalidArgumentException("이미 지난 예약 시간입니다.");
-        }
     }
 
     @Transactional

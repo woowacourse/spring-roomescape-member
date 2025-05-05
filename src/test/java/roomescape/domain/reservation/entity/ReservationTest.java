@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import roomescape.common.exception.InvalidArgumentException;
 
 class ReservationTest {
 
@@ -56,6 +58,40 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() ->
                 new Reservation(1L, name, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), theme)
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(InvalidArgumentException.class);
+    }
+
+    @DisplayName("예약 날짜는 현재보다 미래여야 한다.")
+    @Test
+    void test4() {
+        // given
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime future = now.plusDays(1);
+
+        Theme theme = new Theme(1L, "공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        ReservationTime reservationTime = new ReservationTime(1L, future.toLocalTime());
+        Reservation reservation = new Reservation(1L, "예약", future.toLocalDate(), reservationTime, theme);
+
+        // when & then
+        assertThatCode(() -> reservation.validateNotPastReservation(now))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("예약 날짜가 과거라면 예외를 반환한다.")
+    @Test
+    void notPastReservation_throwsException() {
+        // given
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime pastDay = now.minusDays(1);
+
+        Theme theme = new Theme(1L, "공포", "우테코 공포",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        ReservationTime reservationTime = new ReservationTime(1L, pastDay.toLocalTime());
+        Reservation reservation = new Reservation(1L, "예약", pastDay.toLocalDate(), reservationTime, theme);
+
+        // when & then
+        assertThatThrownBy(() -> reservation.validateNotPastReservation(now))
+                .isInstanceOf(InvalidArgumentException.class);
     }
 }
