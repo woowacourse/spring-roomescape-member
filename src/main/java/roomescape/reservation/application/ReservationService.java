@@ -26,10 +26,10 @@ public class ReservationService {
         this.reservationRegistrationPolicy = reservationRegistrationPolicy;
     }
 
-    public ReservationDto registerReservation(ReservationRequest request) {
+    public ReservationDto registerReservation(ReservationRequest request, String userName) {
         Theme theme = themeService.getThemeById(request.themeId());
         ReservationTime reservationTime = timeService.getTimeById(request.timeId());
-        Reservation reservation = Reservation.createNew(request.name(), theme, request.date(), reservationTime);
+        Reservation reservation = Reservation.createNew(userName, theme, request.date(), reservationTime);
         validateCanRegister(request, reservation);
         Long id = reservationRepository.save(reservation);
 

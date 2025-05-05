@@ -22,6 +22,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.reservation.application.ReservationService;
+import roomescape.reservation.application.ThemeService;
+import roomescape.reservation.application.TimeService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;
 import roomescape.reservation.domain.ReservationTime;
@@ -29,9 +32,6 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.domain.exception.ImpossibleReservationException;
 import roomescape.reservation.domain.repository.ReservationRepository;
 import roomescape.reservation.presentation.dto.request.ReservationRequest;
-import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.application.ThemeService;
-import roomescape.reservation.application.TimeService;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -61,11 +61,12 @@ class ReservationServiceTest {
     @Test
     void registerReservation() {
         // given
-        ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 5, 2), "멍구", 1L);
+        ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 5, 2), 1L);
 
         Theme theme = Theme.of(1L, "호러 테마", "완전 호러입니다.", "thumbnail.url");
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Reservation reservation = Reservation.createNew("멍구", theme, request.date(), time);
+        String userName = "멍구";
+        Reservation reservation = Reservation.createNew(userName, theme, request.date(), time);
 
         given(themeService.getThemeById(1L)).willReturn(theme);
         given(timeService.getTimeById(1L)).willReturn(time);
@@ -73,7 +74,7 @@ class ReservationServiceTest {
         given(reservationRepository.save(reservation)).willReturn(reservationId);
 
         // when
-        reservationService.registerReservation(request);
+        reservationService.registerReservation(request, userName);
 
         // then
         verify(themeService).getThemeById(1L);
@@ -87,7 +88,8 @@ class ReservationServiceTest {
     @Test
     void throwSameExceptionWithDomain_when_duplicatedReservation() {
         // given
-        ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 1, 1), "멍구", 1L);
+        ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 1, 1), 1L);
+        String userName = "멍구";
 
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
@@ -100,7 +102,7 @@ class ReservationServiceTest {
                 .validate(any(Reservation.class), eq(true));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.registerReservation(request))
+        assertThatThrownBy(() -> reservationService.registerReservation(request, userName))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessage(ALREADY_RESERVED.getMessage());
 
@@ -112,7 +114,8 @@ class ReservationServiceTest {
     void throwSameExceptionWithDomain_when_pastDate() {
         // given
         LocalDate pastDate = LocalDate.now().minusDays(1);
-        ReservationRequest request = new ReservationRequest(1L, pastDate, "멍구", 1L);
+        ReservationRequest request = new ReservationRequest(1L, pastDate, 1L);
+        String userName = "멍구";
 
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
@@ -126,7 +129,7 @@ class ReservationServiceTest {
                 .validate(any(Reservation.class), eq(true));
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(request))
+        assertThatThrownBy(() -> reservationService.registerReservation(request, userName))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessageContaining(PAST_RESERVATION.getMessage());
 

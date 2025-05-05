@@ -9,7 +9,6 @@ import static roomescape.testFixture.Fixture.createReservationById;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.auth.domain.User;
+import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.presentation.dto.response.ReservationResponse;
 import roomescape.testFixture.JdbcHelper;
@@ -33,6 +34,9 @@ class ReservationControllerTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
@@ -44,6 +48,7 @@ class ReservationControllerTest {
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE theme");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.execute("TRUNCATE TABLE users");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -53,8 +58,15 @@ class ReservationControllerTest {
         JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
 
+        String email = "test@email.com";
+        String password = "password";
+        String name = "멍구";
+        JdbcHelper.insertUser(jdbcTemplate, new User(email, password, name));
+        String token = jwtTokenProvider.createToken(email);
+
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(RESERVATION_BODY)
                 .when().post("/reservations")
                 .then().log().all()
@@ -101,24 +113,59 @@ class ReservationControllerTest {
     @Test
     void error_when_duplicateReservation() {
         // given
+        String email = "test@email.com";
+        String password = "password";
+        String name = "멍구";
+        JdbcHelper.insertUser(jdbcTemplate, new User(email, password, name));
+
         JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
         JdbcHelper.insertReservation(jdbcTemplate, RESERVATION_1);
 
-        // when
-        Map<String, Object> reservationBody = new HashMap<>();
-        reservationBody.put("name", "브라운");
-        reservationBody.put("date", RESERVATION_1.getReservationDate());
-        reservationBody.put("timeId", RESERVATION_TIME_1.getId());
-        reservationBody.put("themeId", THEME_1.getId());
+        String token = jwtTokenProvider.createToken(email);
 
-        // then
+        Map<String, Object> reservationBody = Map.of(
+                "date", RESERVATION_1.getReservationDate(),
+                "timeId", RESERVATION_TIME_1.getId(),
+                "themeId", THEME_1.getId()
+        );
+
+        // when & then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .cookie("token", token)
+                .body(reservationBody)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @DisplayName("토큰 정보가 없으면 로그인 필요 예외 발생")
+    @Test
+    void error_when_noLogin() {
+        // given
+        String email = "test@email.com";
+        String password = "password";
+        String name = "멍구";
+        JdbcHelper.insertUser(jdbcTemplate, new User(email, password, name));
+
+        JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
+        JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
+        JdbcHelper.insertReservation(jdbcTemplate, RESERVATION_1);
+
+        Map<String, Object> reservationBody = Map.of(
+                "date", RESERVATION_1.getReservationDate(),
+                "timeId", RESERVATION_TIME_1.getId(),
+                "themeId", THEME_1.getId()
+        );
+
+        // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationBody)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(400);
+                .statusCode(401);
     }
 
     private int getReservationsCount() {

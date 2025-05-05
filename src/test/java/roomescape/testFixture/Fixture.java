@@ -48,7 +48,6 @@ public class Fixture {
     public static Map<String, Object> createReservationBody() {
         Map<String, Object> params = new HashMap<>();
 
-        params.put("name", "브라운");
         String date = LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         params.put("date", date);
         params.put("timeId", 1);

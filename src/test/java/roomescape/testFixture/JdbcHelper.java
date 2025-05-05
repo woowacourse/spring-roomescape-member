@@ -2,6 +2,7 @@ package roomescape.testFixture;
 
 import java.util.Arrays;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.auth.domain.User;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.Theme;
@@ -36,5 +37,10 @@ public class JdbcHelper {
     public static void insertReservations(JdbcTemplate template, Reservation... reservations) {
         Arrays.stream(reservations)
                 .forEach(reservation -> insertReservation(template, reservation));
+    }
+
+    public static void insertUser(JdbcTemplate jdbcTemplate, User user) {
+        jdbcTemplate.update("INSERT INTO users (email, password, name) VALUES (?, ?, ?)",
+                user.getEmail(), user.getPassword(), user.getName());
     }
 }
