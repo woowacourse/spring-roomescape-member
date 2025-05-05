@@ -23,7 +23,7 @@ public class ReservationTimeService {
         if (reservationTimeDao.existsByTime(reservationTimeRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
-        final ReservationTime reservationTime = reservationTimeRequest.converToReservationTime();
+        final ReservationTime reservationTime = reservationTimeRequest.convertToReservationTime();
         final ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
         return new ReservationTimeResponse(savedReservationTime);
     }

@@ -48,7 +48,7 @@ public class FakeReservationDao implements ReservationDao {
                 .anyMatch(reservation ->
                         reservation.getTheme().getId() == themeId
                                 && reservation.getDate().isEqual(date)
-                                && reservation.getTime().getId() == themeId);
+                                && reservation.getTime().getId() == timeId);
     }
 
     public Reservation findById(final long id) {

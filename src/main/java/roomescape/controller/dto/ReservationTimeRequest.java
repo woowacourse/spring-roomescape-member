@@ -6,7 +6,7 @@ import roomescape.service.reservation.ReservationTime;
 
 public record ReservationTimeRequest(@NotNull(message = "시간을 입력해주세요.") LocalTime startAt) {
 
-    public ReservationTime converToReservationTime() {
+    public ReservationTime convertToReservationTime() {
         return new ReservationTime(this.startAt);
     }
 }
