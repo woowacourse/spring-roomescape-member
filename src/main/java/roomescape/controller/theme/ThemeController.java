@@ -48,7 +48,7 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> findPopularThemes(@RequestBody @Valid final PopularThemeRequest request) {
+    public ResponseEntity<List<ThemeResponse>> findPopularThemes(@Valid final PopularThemeRequest request) {
         var themes = service.findPopularThemes(request.startDate(), request.endDate(), request.limit());
         return ResponseEntity.ok(themes);
     }
