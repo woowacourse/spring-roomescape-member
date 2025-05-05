@@ -1,8 +1,8 @@
 package roomescape.reservation.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.CurrentDateTime;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.repository.ReservationDao;
@@ -18,17 +18,23 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final CurrentDateTime currentDateTime;
 
     public ReservationService(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao,
-                              final ThemeDao themeDao) {
+                              final ThemeDao themeDao, final CurrentDateTime dateTimeGenerator) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.currentDateTime = dateTimeGenerator;
     }
 
+    /**
+     * TODO
+     * 테마 구분
+     */
     public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
         final Reservation reservation = makeReservation(reservationRequest);
-        if (reservation.isBefore(LocalDateTime.now())) {
+        if (reservation.isBefore(currentDateTime.getDateTime())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }
         if (reservationDao.isExistsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
@@ -36,12 +42,6 @@ public class ReservationService {
         }
         final Reservation savedReservation = reservationDao.save(reservation);
         return new ReservationResponse(savedReservation);
-    }
-
-    private Reservation makeReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
-        final Theme theme = findTheme(reservationRequest.themeId());
-        return reservationRequest.convertToReservation(reservationTime, theme);
     }
 
     public List<ReservationResponse> getReservations() {
@@ -52,6 +52,12 @@ public class ReservationService {
 
     public void cancelReservationById(final long id) {
         reservationDao.deleteById(id);
+    }
+
+    private Reservation makeReservation(final ReservationRequest reservationRequest) {
+        final ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
+        final Theme theme = findTheme(reservationRequest.themeId());
+        return reservationRequest.convertToReservation(reservationTime, theme);
     }
 
     private ReservationTime findReservationTime(final long timeId) {

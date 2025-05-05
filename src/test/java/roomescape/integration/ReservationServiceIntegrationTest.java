@@ -1,0 +1,101 @@
+package roomescape.integration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
+import roomescape.fake.TestCurrentDateTime;
+import roomescape.reservation.controller.dto.ReservationRequest;
+import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationDao;
+import roomescape.reservation.repository.ReservationTimeDao;
+import roomescape.reservation.repository.ThemeDao;
+import roomescape.reservation.service.ReservationService;
+
+@SpringBootTest
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql({"/schema.sql", "/test-data.sql"})
+public class ReservationServiceIntegrationTest {
+
+    @Autowired
+    ReservationDao reservationDao;
+
+    @Autowired
+    ThemeDao themeDao;
+
+    @Autowired
+    ReservationTimeDao reservationTimeDao;
+
+    ReservationService reservationService;
+    TestCurrentDateTime currentDateTime;
+
+    @BeforeEach
+    void init() {
+        LocalDateTime now = LocalDateTime.of(2025, 5, 1, 10, 00);
+        currentDateTime = new TestCurrentDateTime(now);
+        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao, currentDateTime);
+    }
+
+    @DisplayName("새로운 예약을 추가할 수 있다")
+    @Test
+    void createReservation() {
+        // given
+        LocalDate date = currentDateTime.getDate().plusDays(1);
+        ReservationRequest request = new ReservationRequest("leo", date, 1L, 1L);
+        // when
+        ReservationResponse result = reservationService.createReservation(request);
+        // then
+        assertAll(
+                () -> assertThat(result.id()).isEqualTo(14L),
+                () -> assertThat(result.name()).isEqualTo("leo"),
+                () -> assertThat(result.date()).isEqualTo(date),
+                () -> assertThat(result.time().id()).isEqualTo(1L),
+                () -> assertThat(result.time().startAt()).isEqualTo(LocalTime.of(10, 0))
+        );
+    }
+
+    @DisplayName("현재 혹은 과거 시간에 새로운 예약을 추가할 경우 예외가 발생한다")
+    @Test
+    void should_ThrowException_WhenNotFuture() {
+        // given
+        LocalDate date = currentDateTime.getDate().minusDays(1);
+        ReservationRequest request = new ReservationRequest("leo", date, 1L, 3L);
+        // when
+        // then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지나간 날짜와 시간은 예약 불가합니다.");
+    }
+
+    @DisplayName("모든 예약을 조회할 수 있다")
+    @Test
+    void getReservations() {
+        // when
+        List<ReservationResponse> result = reservationService.getReservations();
+        // then
+        assertThat(result).hasSize(13);
+    }
+
+    @DisplayName("id를 기반으로 예약을 취소할 수 있다")
+    @Test
+    void cancelReservationById() {
+        // when
+        reservationService.cancelReservationById(1L);
+        // then
+        List<Reservation> reservations = reservationDao.findAll();
+        assertThat(reservations).hasSize(12);
+    }
+}

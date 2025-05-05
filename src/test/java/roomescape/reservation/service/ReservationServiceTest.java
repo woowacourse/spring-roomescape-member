@@ -5,9 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.CurrentDateTime;
+import roomescape.fake.TestCurrentDateTime;
 import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.fake.FakeReservationDao;
@@ -23,8 +26,10 @@ class ReservationServiceTest {
     ReservationTimeDao reservationTimeDao = new FakeReservationTimeDao();
     FakeReservationDao reservationDao = new FakeReservationDao();
     FakeThemeDao themeDao = new FakeThemeDao();
-    ReservationService reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
-    LocalDate tomorrow = LocalDate.now().plusDays(1);
+    CurrentDateTime currentDateTime = new TestCurrentDateTime(LocalDateTime.of(2025, 4, 2, 11, 0));
+    ReservationService reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao,
+            currentDateTime);
+    LocalDate tomorrow = currentDateTime.getDate().plusDays(1);
 
     @DisplayName("중복 예약일 경우 예외가 발생한다.")
     @Test
@@ -77,7 +82,7 @@ class ReservationServiceTest {
         reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
         Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
         Theme savedTheme = themeDao.save(theme);
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate yesterday = currentDateTime.getDate().minusDays(1);
         ReservationRequest request = new ReservationRequest("leo", yesterday, 1L, savedTheme.getId());
         // when
         // then

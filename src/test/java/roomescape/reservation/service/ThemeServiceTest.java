@@ -5,10 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.CurrentDateTime;
+import roomescape.fake.TestCurrentDateTime;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.fake.FakeReservationDao;
@@ -26,7 +29,8 @@ class ThemeServiceTest {
     ThemeDao fakeThemeDao = new FakeThemeDao();
     ReservationDao fakeReservationDao = new FakeReservationDao();
     ReservationTimeDao fakeReservationTimeDao = new FakeReservationTimeDao();
-    ThemeService themeService = new ThemeService(fakeThemeDao, fakeReservationDao);
+    CurrentDateTime currentDateTime = new TestCurrentDateTime(LocalDateTime.of(2025, 4, 30, 10, 00));
+    ThemeService themeService = new ThemeService(fakeThemeDao, fakeReservationDao, currentDateTime);
 
     @DisplayName("저장할 테마 이름이 중복될 경우 예외가 발생한다.")
     @Test

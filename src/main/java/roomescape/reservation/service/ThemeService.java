@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.CurrentDateTime;
 import roomescape.reservation.controller.dto.ThemeRequest;
 import roomescape.reservation.controller.dto.ThemeResponse;
 import roomescape.reservation.repository.ReservationDao;
@@ -17,10 +18,13 @@ public class ThemeService {
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
+    private final CurrentDateTime currentDateTime;
 
-    public ThemeService(final ThemeDao themeDao, final ReservationDao reservationDao) {
+    public ThemeService(final ThemeDao themeDao, final ReservationDao reservationDao,
+                        final CurrentDateTime currentDateTime) {
         this.themeDao = themeDao;
         this.reservationDao = reservationDao;
+        this.currentDateTime = currentDateTime;
     }
 
     public ThemeResponse createTheme(final ThemeRequest themeRequest) {
@@ -47,8 +51,9 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> findPopularThemes() {
-        final LocalDate from = LocalDate.now().minusDays(POPULAR_THEME_FROM_DAYS_AGO);
-        final LocalDate to = LocalDate.now().minusDays(POPULAR_THEME_TO_DAYS_AGO);
+        LocalDate today = currentDateTime.getDate();
+        final LocalDate from = today.minusDays(POPULAR_THEME_FROM_DAYS_AGO);
+        final LocalDate to = today.minusDays(POPULAR_THEME_TO_DAYS_AGO);
         final List<Theme> popularThemes = themeDao.findPopularThemes(from, to, POPULAR_THEME_MAX_COUNT);
         return popularThemes.stream()
                 .map(ThemeResponse::new)
