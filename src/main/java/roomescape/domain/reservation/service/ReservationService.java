@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,9 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
+
+    private static final boolean IS_ALREADY_BOOKED = true;
+    private static final boolean IS_UNBOOKED = false;
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -63,15 +67,22 @@ public class ReservationService {
     }
 
     private Reservation getReservation(final ReservationRequest request) {
-        Long timeId = request.timeId();
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
-
-        Long themeId = request.themeId();
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+        ReservationTime reservationTime = gerReservationTime(request);
+        Theme theme = getTheme(request);
 
         return Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
+    }
+
+    private Theme getTheme(final ReservationRequest request) {
+        Long themeId = request.themeId();
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+    }
+
+    private ReservationTime gerReservationTime(final ReservationRequest request) {
+        Long timeId = request.timeId();
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
     }
 
     private void validateDateTime(final LocalDateTime now, final LocalDate date, final LocalTime time) {
@@ -96,16 +107,18 @@ public class ReservationService {
     }
 
     private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(final LocalDate date, final Long themeId) {
-        Map<ReservationTime, Boolean> allTimes = reservationTimeRepository.findAll()
-                .stream()
-                .collect(Collectors.toMap(Function.identity(), t -> false));
+        Set<ReservationTime> alreadyBookedTimes = getAlreadyBookedTimes(date, themeId);
 
-        reservationRepository.findByDateAndThemeId(date, themeId)
+        return reservationTimeRepository.findAll()
                 .stream()
-                .map(Reservation::getReservationTime)
-                .forEach(bookedTime -> allTimes.put(bookedTime, true));
+                .collect(Collectors.toMap(Function.identity(), time -> isAlreadyBookedTime(time, alreadyBookedTimes)));
+    }
 
-        return allTimes;
+    private Boolean isAlreadyBookedTime(final ReservationTime time, final Set<ReservationTime> alreadyBookedTimes) {
+        if (alreadyBookedTimes.contains(time)) {
+            return IS_ALREADY_BOOKED;
+        }
+        return IS_UNBOOKED;
     }
 
     private BookedReservationTimeResponse bookedReservationTimeResponseOf(
@@ -113,5 +126,12 @@ public class ReservationService {
             final boolean isAlreadyBooked
     ) {
         return new BookedReservationTimeResponse(ReservationTimeResponse.from(reservationTime), isAlreadyBooked);
+    }
+
+    private Set<ReservationTime> getAlreadyBookedTimes(final LocalDate date, final Long themeId) {
+        return reservationRepository.findByDateAndThemeId(date, themeId)
+                .stream()
+                .map(Reservation::getReservationTime)
+                .collect(Collectors.toSet());
     }
 }
