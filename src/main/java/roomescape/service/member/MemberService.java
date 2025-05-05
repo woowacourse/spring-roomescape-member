@@ -1,7 +1,6 @@
 package roomescape.service.member;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.domain.member.Member;
@@ -13,11 +12,13 @@ import roomescape.repository.member.MemberRepository;
 @Service
 public class MemberService {
 
-    private static final Logger log = LoggerFactory.getLogger(MemberService.class);
+    private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(PasswordEncoder passwordEncoder, MemberRepository memberRepository,
+                         JwtTokenProvider jwtTokenProvider) {
+        this.passwordEncoder = passwordEncoder;
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -25,13 +26,13 @@ public class MemberService {
     public String login(LoginRequestDto loginRequestDto) {
         Member requestMember = loginRequestDto.toEntity();
 
-        if (!memberRepository.existsByUsernameAndPassword(requestMember.getUsername(), requestMember.getPassword())) {
-            throw new InvalidMemberException("존재하지 않는 유저입니다");
+        Member member = memberRepository.findByUsername(requestMember.getUsername())
+                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다"));
+
+        if (!passwordEncoder.matches(loginRequestDto.password(), member.getPassword())) {
+            throw new InvalidMemberException("유효하지 않은 인증입니다");
         }
 
-        Member member = memberRepository.findByUsernameAndPassword(requestMember.getUsername(),
-                        requestMember.getPassword())
-                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다"));
         return jwtTokenProvider.createToken(member);
     }
 
@@ -42,7 +43,9 @@ public class MemberService {
         }
 
         Member member = signupRequestDto.toEntity();
-        return memberRepository.add(member);
+        String encodedPassword = passwordEncoder.encode(member.getPassword());
+        Member newMember = new Member(null, member.getUsername(), encodedPassword, member.getName(), member.getRole());
+        return memberRepository.add(newMember);
     }
 
     public Member getMemberById(long id) {

@@ -82,5 +82,31 @@ class AuthenticationControllerTest {
                 () -> assertThat(token).isNotEmpty()
         );
     }
+
+    @Test
+    void 회원가입_이메일_형식이_아니면_예외발생() {
+        Map<String, String> signupParam = Map.of("name", "투다", "email", "token-login3", "password",
+                "password");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(signupParam)
+                .when().post("/auth/signup")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    void 회원가입_패스워드_크기가_유효하지_않으면_예외_발생() {
+        Map<String, String> signupParam = Map.of("name", "투다", "email", "token-login@naver.com", "password",
+                "as");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(signupParam)
+                .when().post("/auth/signup")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
 

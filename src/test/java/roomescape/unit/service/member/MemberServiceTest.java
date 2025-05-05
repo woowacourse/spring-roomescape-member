@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import roomescape.auth.JwtTokenProvider;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequestDto;
@@ -24,7 +25,7 @@ class MemberServiceTest {
     @BeforeEach
     void setUp() {
         jwtTokenProvider = new JwtTokenProvider(TEST_SECRET_KEY);
-        memberService = new MemberService(new FakeMemberRepository(), jwtTokenProvider);
+        memberService = new MemberService(new BCryptPasswordEncoder(), new FakeMemberRepository(), jwtTokenProvider);
     }
 
     @Test
