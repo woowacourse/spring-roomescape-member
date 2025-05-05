@@ -19,40 +19,35 @@ import roomescape.theme.dto.PopularThemeResponse;
 
 class ThemeServiceTest {
 
-    private ThemeService themeService;
+
+    private DateTime dateTime = new DateTime() {
+        @Override
+        public LocalDateTime now() {
+            return LocalDateTime.of(2025, 12, 7, 10, 0);
+        }
+
+        @Override
+        public LocalDate nowDate() {
+            return LocalDate.of(2025,12,7);
+        }
+    };
+    private List<Reservation> reservations = new ArrayList<>();
+    private List<Theme> themes = new ArrayList<>();
+    private ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
+    private ThemeRepository themeRepository = new FakeThemeRepository(themes,reservations);
+    private ThemeService themeService = new ThemeService(dateTime, themeRepository, reservationRepository);
 
     @BeforeEach
     void beforeEach() {
         Theme theme1 = Theme.createWithId(1L, "테스트1", "설명", "썸네일");
         Theme theme2 = Theme.createWithId(2L, "테스트2", "설명", "썸네일");
         Theme theme3 = Theme.createWithId(3L, "테스트3", "설명", "썸네일");
-
-        List<Reservation> reservations = new ArrayList<>();
-        List<Theme> themes = new ArrayList<>();
-
-        ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
         reservationRepository.save(Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"홍길동1", LocalDate.of(2025, 12, 5), null, theme1));
         reservationRepository.save(Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"홍길동2", LocalDate.of(2025, 12, 6), null, theme1));
         reservationRepository.save(Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"홍길동3", LocalDate.of(2025, 12, 4), null, theme3));
-
-        ThemeRepository themeRepository = new FakeThemeRepository(themes,reservations);
         themeRepository.save(theme1);
         themeRepository.save(theme2);
         themeRepository.save(theme3);
-
-        DateTime dateTime = new DateTime() {
-            @Override
-            public LocalDateTime now() {
-                return LocalDateTime.of(2025, 12, 7, 10, 0);
-            }
-
-            @Override
-            public LocalDate nowDate() {
-                return LocalDate.of(2025,12,7);
-            }
-        };
-
-        themeService = new ThemeService(dateTime, themeRepository, reservationRepository);
     }
 
     @DisplayName("존재하는 예약의 테마는 삭제할 수 없다.")
