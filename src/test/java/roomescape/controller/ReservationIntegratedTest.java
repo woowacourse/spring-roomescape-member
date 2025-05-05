@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.application.dto.ReservationTimeRequest;
-import roomescape.application.service.ReservationTimeService;
+import roomescape.application.service.ReservationTimeServiceImpl;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.Reservation;
@@ -36,7 +36,7 @@ public class ReservationIntegratedTest {
     @Autowired
     private ReservationTimeDao timeDao;
     @Autowired
-    private ReservationTimeService reservationTimeService;
+    private ReservationTimeServiceImpl reservationTimeService;
 
     @Test
     @DisplayName("예약 관리 메인 페이지를 렌더링한다.")

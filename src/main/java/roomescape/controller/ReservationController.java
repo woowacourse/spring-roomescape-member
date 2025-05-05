@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.dto.ReservationRequest;
 import roomescape.application.dto.ReservationResponse;
 import roomescape.application.service.ReservationService;
+import roomescape.application.service.ReservationServiceImpl;
 
 @RestController
 @RequestMapping("reservations")
@@ -20,7 +21,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationServiceImpl reservationService) {
         this.reservationService = reservationService;
     }
 
