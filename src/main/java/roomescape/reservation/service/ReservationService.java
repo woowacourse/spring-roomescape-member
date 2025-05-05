@@ -1,0 +1,120 @@
+package roomescape.reservation.service;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import roomescape.common.exception.DuplicateException;
+import roomescape.common.exception.InvalidIdException;
+import roomescape.common.exception.InvalidTimeException;
+import roomescape.reservation.dao.ReservationDao;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dto.ReservationRequest;
+import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservationTime.dao.ReservationTimeDao;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservationTime.dto.admin.ReservationTimeResponse;
+import roomescape.theme.dao.ThemeDao;
+import roomescape.theme.domain.Theme;
+
+@Service
+public class ReservationService {
+    private static final String INVALID_TIME_EXCEPTION_MESSAGE = "당일의 과거 시간대로는 예약할 수 없습니다.";
+    private static final String DUPLICATE_RESERVATION_EXCEPTION_MESSAGE = "이미 동일한 예약이 존재합니다.";
+    private static final String INVALID_TIME_ID_EXCEPTION_MESSAGE = "해당 시간 아이디는 존재하지 않습니다.";
+    private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "해당 테마 아이디는 존재하지 않습니다.";
+    private static final String INVALID_ID_EXCEPTION_MESSAGE = "해당 예약 아이디는 존재하지 않습니다";
+
+    private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
+
+    public ReservationService(
+            ReservationDao reservationDao,
+            ReservationTimeDao reservationTimeDao,
+            ThemeDao themeDao
+    ) {
+        this.reservationDao = reservationDao;
+        this.reservationTimeDao = reservationTimeDao;
+        this.themeDao = themeDao;
+    }
+
+    public List<ReservationResponse> findAll() {
+        return reservationDao.findAll().stream()
+                .map(reservation -> new ReservationResponse(
+                        reservation.getId(),
+                        reservation.getName(),
+                        reservation.getTheme(),
+                        reservation.getDate(),
+                        ReservationTimeResponse.from(reservation.getTime()))
+                )
+                .toList();
+    }
+
+    public ReservationResponse add(final ReservationRequest reservationRequest) {
+        ReservationTime reservationTimeResult = searchReservationTime(reservationRequest);
+        validateTime(reservationRequest, reservationTimeResult);
+        validateAvailability(reservationRequest, reservationTimeResult);
+        Theme themeResult = searchTheme(reservationRequest);
+
+        Reservation newReservation = new Reservation(
+                reservationRequest.name(),
+                reservationRequest.date(),
+                reservationTimeResult,
+                themeResult
+        );
+        Reservation savedReservation = reservationDao.add(newReservation);
+
+        return new ReservationResponse(
+                savedReservation.getId(),
+                savedReservation.getName(),
+                savedReservation.getTheme(),
+                savedReservation.getDate(),
+                ReservationTimeResponse.from(savedReservation.getTime())
+        );
+    }
+
+    private void validateTime(
+            final ReservationRequest reservationRequest,
+            final ReservationTime reservationTimeResult
+    ) {
+        if (reservationRequest.date().isEqual(LocalDate.now())
+                && reservationTimeResult.getStartAt().isBefore(LocalTime.now())) {
+            throw new InvalidTimeException(INVALID_TIME_EXCEPTION_MESSAGE);
+        }
+    }
+
+    private void validateAvailability(
+            final ReservationRequest reservationRequest,
+            final ReservationTime reservationTimeResult
+    ) {
+        boolean isDuplicate = reservationDao.existsByDateAndTimeId(
+                reservationRequest.date(),
+                reservationTimeResult.getId()
+        );
+
+        if (isDuplicate) {
+            throw new DuplicateException(DUPLICATE_RESERVATION_EXCEPTION_MESSAGE);
+        }
+    }
+
+    public void deleteById(final Long id) {
+        searchReservation(id);
+        reservationDao.deleteById(id);
+    }
+
+    private Reservation searchReservation(final Long id) {
+        return reservationDao.findById(id)
+                .orElseThrow(() -> new InvalidIdException(INVALID_ID_EXCEPTION_MESSAGE));
+    }
+
+    private ReservationTime searchReservationTime(final ReservationRequest reservationRequest) {
+        return reservationTimeDao.findById(reservationRequest.timeId())
+                .orElseThrow(() -> new InvalidIdException(INVALID_TIME_ID_EXCEPTION_MESSAGE));
+    }
+
+    private Theme searchTheme(final ReservationRequest reservationRequest) {
+        return themeDao.findById(reservationRequest.themeId())
+                .orElseThrow(() -> new InvalidIdException(INVALID_THEME_ID_EXCEPTION_MESSAGE));
+    }
+}

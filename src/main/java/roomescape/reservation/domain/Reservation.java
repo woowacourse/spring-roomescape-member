@@ -1,0 +1,82 @@
+package roomescape.reservation.domain;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Objects;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.domain.Theme;
+
+public class Reservation {
+    private static final String NULL_VALUE_EXCEPTION_MESSAGE = "널 값은 저장될 수 없습니다.";
+
+    private final Long id;
+    private final String name;
+    private final LocalDate date;
+    private final ReservationTime time;
+    private final Theme theme;
+
+    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
+        this.id = null;
+        this.name = Objects.requireNonNull(name, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.date = Objects.requireNonNull(date, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.time = Objects.requireNonNull(time, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.theme = Objects.requireNonNull(theme, NULL_VALUE_EXCEPTION_MESSAGE);
+    }
+
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        this.id = Objects.requireNonNull(id, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.name = Objects.requireNonNull(name, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.date = Objects.requireNonNull(date, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.time = Objects.requireNonNull(time, NULL_VALUE_EXCEPTION_MESSAGE);
+        this.theme = Objects.requireNonNull(theme, NULL_VALUE_EXCEPTION_MESSAGE);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public ReservationTime getTime() {
+        return time;
+    }
+
+    public Long getTimeId() {
+        return time.getId();
+    }
+
+    public LocalTime getTimeStartAt() {
+        return time.getStartAt();
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public Long getThemeId() {
+        return theme.getId();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        Reservation that = (Reservation) other;
+        return Objects.equals(id, that.id)
+                && Objects.equals(date, that.date)
+                && Objects.equals(time, that.time)
+                && Objects.equals(theme, that.theme);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, date, time, theme);
+    }
+}
