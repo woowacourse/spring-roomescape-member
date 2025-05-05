@@ -6,12 +6,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.fixture.ReservationFixture;
 
@@ -100,7 +98,7 @@ public class ThemeControllerTest {
 
     @Test
     @DisplayName("인기 테마 조회 테스트")
-    void getPopularThemesTest(){
+    void getPopularThemesTest() {
         // given
         reservationFixture.createReservationTime(LocalTime.of(10, 30));
 

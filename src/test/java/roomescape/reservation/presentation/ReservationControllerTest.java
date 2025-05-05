@@ -6,7 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -181,7 +180,7 @@ class ReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
-        reservationFixture.createReservation("브라운", LocalDate.of(2025,8,5), 1L, 1L);
+        reservationFixture.createReservation("브라운", LocalDate.of(2025, 8, 5), 1L, 1L);
 
         // when
         RestAssured.given().log().all()
@@ -209,7 +208,7 @@ class ReservationControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
-        reservationFixture.createReservation("브라운", LocalDate.of(2025,8,5), 1L, 1L);
+        reservationFixture.createReservation("브라운", LocalDate.of(2025, 8, 5), 1L, 1L);
 
         // when-then
         RestAssured.given().log().all()

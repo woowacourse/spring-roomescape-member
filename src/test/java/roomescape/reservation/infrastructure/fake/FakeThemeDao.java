@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import roomescape.reservation.application.repository.ReservationRepository;
 import roomescape.reservation.application.repository.ThemeRepository;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 
@@ -38,7 +37,7 @@ public class FakeThemeDao implements ThemeRepository {
 
     @Override
     public int delete(Long themeId) {
-        if(!store.containsKey(themeId)){
+        if (!store.containsKey(themeId)) {
             return 0;
         }
         store.remove(themeId);

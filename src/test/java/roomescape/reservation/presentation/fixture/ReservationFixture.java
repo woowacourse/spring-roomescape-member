@@ -4,8 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
@@ -24,7 +22,7 @@ public class ReservationFixture {
         return new ThemeRequest(name, description, thumbnail);
     }
 
-    public void createReservation(String name, LocalDate date, Long themeId, Long timeId){
+    public void createReservation(String name, LocalDate date, Long themeId, Long timeId) {
         final ReservationRequest reservationRequest = createReservationRequest(name, date, themeId, timeId);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -32,7 +30,7 @@ public class ReservationFixture {
                 .when().post("/reservations");
     }
 
-    public void createReservationTime(LocalTime startAt){
+    public void createReservationTime(LocalTime startAt) {
         final ReservationTimeRequest reservationTimeRequest = createReservationTimeRequest(startAt);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -40,7 +38,7 @@ public class ReservationFixture {
                 .when().post("/times");
     }
 
-    public void createTheme(String name, String description, String thumbnail){
+    public void createTheme(String name, String description, String thumbnail) {
         final ThemeRequest themeRequest = createThemeRequest(name, description, thumbnail);
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

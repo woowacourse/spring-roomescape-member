@@ -1,13 +1,9 @@
 package roomescape.reservation.infrastructure.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +17,6 @@ import roomescape.reservation.domain.ReservationName;
 import roomescape.reservation.domain.Theme;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
-import roomescape.reservation.presentation.dto.ThemeResponse;
 
 @JdbcTest
 public class ThemeDaoTest {
@@ -92,7 +87,7 @@ public class ThemeDaoTest {
 
     @Test
     @DisplayName("인기 테마 조회 테스트")
-    void findPopularThemesTest(){
+    void findPopularThemesTest() {
         // given
         ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
         ThemeRequest themeRequest1 = new ThemeRequest(

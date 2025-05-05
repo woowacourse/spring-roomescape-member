@@ -36,7 +36,7 @@ public class FakeReservationDao implements ReservationRepository {
 
     @Override
     public int delete(Long reservationId) {
-        if(!store.containsKey(reservationId)){
+        if (!store.containsKey(reservationId)) {
             return 0;
         }
 

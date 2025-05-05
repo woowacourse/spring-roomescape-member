@@ -16,13 +16,11 @@ import roomescape.reservation.application.repository.ThemeRepository;
 import roomescape.reservation.application.service.ReservationService;
 import roomescape.reservation.application.service.ReservationTimeService;
 import roomescape.reservation.application.service.ThemeService;
-import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.infrastructure.fake.FakeReservationDao;
 import roomescape.reservation.infrastructure.fake.FakeReservationTimeDao;
 import roomescape.reservation.infrastructure.fake.FakeThemeDao;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
-import roomescape.reservation.presentation.dto.ReservationTimeResponse;
 import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.dto.ThemeResponse;
 
@@ -105,7 +103,7 @@ public class ThemeServiceTest {
 
     @Test
     @DisplayName("인기 테마 조회 테스트")
-    void getPopularThemesTest(){
+    void getPopularThemesTest() {
         // given
         ThemeRequest themeRequest = new ThemeRequest(
                 "레벨2 탈출",
@@ -139,6 +137,6 @@ public class ThemeServiceTest {
         assertThat(popularThemes.stream()
                 .map(ThemeResponse::getId)
                 .toList()
-        ).isEqualTo(List.of(2L,1L));
+        ).isEqualTo(List.of(2L, 1L));
     }
 }
