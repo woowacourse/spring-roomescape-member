@@ -77,4 +77,37 @@ class ThemeRestControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
+
+    @Test
+    void 중복된_이름으로_테마를_생성하면_예외가_발생한다() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", "헤일러의 디버깅 교실");
+        params.put("description", "디버깅 재밌어요");
+        params.put("thumbnail", "debug.jpg");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void 존재하지_않는_테마를_삭제하면_예외가_발생한다() {
+        final Integer id = Integer.MAX_VALUE;
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .when().delete("/themes/{id}", id)
+                .then().log().all()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
 }
