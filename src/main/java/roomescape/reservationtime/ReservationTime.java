@@ -21,7 +21,7 @@ public class ReservationTime {
 
     private void validateNull(LocalTime startAt) {
         if (startAt == null) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("startAt");
         }
     }
 

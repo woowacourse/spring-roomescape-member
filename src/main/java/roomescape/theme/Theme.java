@@ -19,13 +19,13 @@ public class Theme {
 
     private void validateNull(String name, String description, String thumbnail) {
         if (name == null || name.isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("name");
         }
         if (description == null || description.isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("description");
         }
         if (thumbnail == null || thumbnail.isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("thumbnail");
         }
     }
 

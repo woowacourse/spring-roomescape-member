@@ -39,16 +39,16 @@ public class Reservation {
 
     private static void validateNull(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         if (name == null || name.isBlank()) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("name");
         }
         if (date == null) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("date");
         }
         if (reservationTime == null) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("reservationTime");
         }
         if (theme == null) {
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("theme");
         }
     }
 
