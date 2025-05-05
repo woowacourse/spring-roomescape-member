@@ -37,7 +37,7 @@ public class ReservationTimeService {
     }
 
     public Long create(@Valid @RequestBody ReservationTimeRequest reservationTimeRequest) {
-        ReservationTime reservationTime = reservationTimeRequest.toTime();
+        ReservationTime reservationTime = ReservationTime.createWithoutId(reservationTimeRequest.startAt());
         return reservationTimeDao.create(reservationTime);
     }
 
