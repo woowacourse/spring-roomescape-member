@@ -1,4 +1,4 @@
-package roomescape.exception;
+package roomescape.exception.exception;
 
 public class DeletionNotAllowedException extends RuntimeException {
 
