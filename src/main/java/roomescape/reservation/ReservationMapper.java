@@ -1,30 +1,30 @@
 package roomescape.reservation;
 
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.dto.ReservationReqDto;
-import roomescape.reservation.domain.dto.ReservationResDto;
+import roomescape.reservation.domain.dto.ReservationRequestDto;
+import roomescape.reservation.domain.dto.ReservationResponseDto;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.dto.ThemeResDto;
+import roomescape.theme.domain.dto.ThemeResponseDto;
 
 public class ReservationMapper {
 
-    public static Reservation toEntity(ReservationReqDto reqDto, ReservationTime reservationTime, Theme theme) {
-        return Reservation.of(reqDto.name(), reqDto.date(), reservationTime, theme);
+    public static Reservation toEntity(ReservationRequestDto requestDto, ReservationTime reservationTime, Theme theme) {
+        return Reservation.of(requestDto.name(), requestDto.date(), reservationTime, theme);
     }
 
-    public static ReservationResDto toResDto(
-        Reservation reservation,
-        ReservationTimeResDto reservationTimeResDto,
-        ThemeResDto themeResDto
+    public static ReservationResponseDto toResponseDto(
+            Reservation reservation,
+            ReservationTimeResponseDto reservationTimeResponseDto,
+            ThemeResponseDto themeResponseDto
     ) {
-        return new ReservationResDto(
-            reservation.getId(),
-            reservation.getName(),
-            reservation.getDate(),
-            reservationTimeResDto,
-            themeResDto
+        return new ReservationResponseDto(
+                reservation.getId(),
+                reservation.getName(),
+                reservation.getDate(),
+                reservationTimeResponseDto,
+                themeResponseDto
         );
     }
 }

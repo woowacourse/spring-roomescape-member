@@ -1,16 +1,16 @@
 package roomescape.reservationTime;
 
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
-import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 
 public class ReservationTimeMapper {
 
-    public static ReservationTime toEntity(ReservationTimeReqDto reqDto) {
-        return new ReservationTime(reqDto.startAt());
+    public static ReservationTime toEntity(ReservationTimeRequestDto requestDto) {
+        return new ReservationTime(requestDto.startAt());
     }
 
-    public static ReservationTimeResDto toResDto(ReservationTime reservationTime) {
-        return new ReservationTimeResDto(reservationTime.getId(), reservationTime.getStartAt());
+    public static ReservationTimeResponseDto toResponseDto(ReservationTime reservationTime) {
+        return new ReservationTimeResponseDto(reservationTime.getId(), reservationTime.getStartAt());
     }
 }

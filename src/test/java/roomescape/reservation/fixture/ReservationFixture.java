@@ -2,7 +2,7 @@ package roomescape.reservation.fixture;
 
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.dto.ReservationReqDto;
+import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -12,7 +12,7 @@ public class ReservationFixture {
         return Reservation.of(name, date, reservationTime, theme);
     }
 
-    public static ReservationReqDto createReqDto(String name, LocalDate date, Long timeId, Long themeId) {
-        return new ReservationReqDto(name, date, timeId, themeId);
+    public static ReservationRequestDto createRequestDto(String name, LocalDate date, Long timeId, Long themeId) {
+        return new ReservationRequestDto(name, date, timeId, themeId);
     }
 }

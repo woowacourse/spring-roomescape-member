@@ -17,12 +17,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.globalException.BadRequestException;
 import roomescape.globalException.ConflictException;
 import roomescape.globalException.NotFoundException;
-import roomescape.reservation.domain.dto.ReservationReqDto;
+import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.repository.ReservationRepositoryImpl;
 import roomescape.reservation.service.ReservationService;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 import roomescape.reservationTime.fixture.ReservationTimeFixture;
 import roomescape.reservationTime.repository.ReservationTimeRepositoryImpl;
 import roomescape.theme.domain.Theme;
@@ -51,14 +51,14 @@ class ReservationTimeServiceTest {
     @Autowired
     private ReservationTimeTestDataConfig testDataConfig;
 
-    @DisplayName("ReservationTime 객체를 ReservationTimeResDto로 변환할 수 있다")
+    @DisplayName("ReservationTime 객체를 ReservationTimeResponseDto로 변환할 수 있다")
     @Test
-    void convertToReservationTimeResDto() {
+    void convertToReservationTimeResponseDto() {
         // given
         ReservationTime reservationTime = ReservationTimeFixture.create(DEFAULT_DUMMY_TIME);
 
         // when
-        ReservationTimeResDto resDto = service.convertToReservationTimeResDto(reservationTime);
+        ReservationTimeResponseDto resDto = service.convertToReservationTimeResponseDto(reservationTime);
 
         // then
         Assertions.assertThat(resDto.startAt()).isEqualTo(DEFAULT_DUMMY_TIME);
@@ -77,13 +77,13 @@ class ReservationTimeServiceTest {
         void findAll_success_whenDataExists() {
             // given
             // when
-            List<ReservationTimeResDto> resDtos = service.findAll();
+            List<ReservationTimeResponseDto> resDtos = service.findAll();
 
             // then
             assertSoftly(s -> {
                         s.assertThat(resDtos).hasSize(1);
                         s.assertThat(resDtos)
-                                .extracting(ReservationTimeResDto::startAt)
+                                .extracting(ReservationTimeResponseDto::startAt)
                                 .contains(DEFAULT_DUMMY_TIME);
                         resDtos.forEach(resDto ->
                                 s.assertThat(resDto.id()).isNotNull());
@@ -98,7 +98,7 @@ class ReservationTimeServiceTest {
             deleteAll();
 
             // when
-            List<ReservationTimeResDto> resDtos = service.findAll();
+            List<ReservationTimeResponseDto> resDtos = service.findAll();
 
             // then
             Assertions.assertThat(resDtos).hasSize(0);
@@ -116,12 +116,12 @@ class ReservationTimeServiceTest {
             LocalTime dummyTime1 = LocalTime.of(12, 33);
 
             // when
-            service.add(ReservationTimeFixture.createReqDto(dummyTime1));
+            service.add(ReservationTimeFixture.createRequestDto(dummyTime1));
 
             // then
-            List<ReservationTimeResDto> resDtos = service.findAll();
+            List<ReservationTimeResponseDto> resDtos = service.findAll();
             Assertions.assertThat(resDtos)
-                    .extracting(ReservationTimeResDto::startAt)
+                    .extracting(ReservationTimeResponseDto::startAt)
                     .contains(dummyTime1);
         }
 
@@ -130,12 +130,12 @@ class ReservationTimeServiceTest {
         void add_throwException_byDuplicationReservationTime() {
             // given
             LocalTime dummyTime1 = LocalTime.of(12, 33);
-            service.add(ReservationTimeFixture.createReqDto(dummyTime1));
+            service.add(ReservationTimeFixture.createRequestDto(dummyTime1));
 
             // when
             // then
             Assertions.assertThatThrownBy(
-                    () -> service.add(ReservationTimeFixture.createReqDto(dummyTime1))
+                    () -> service.add(ReservationTimeFixture.createRequestDto(dummyTime1))
             ).isInstanceOf(ConflictException.class);
         }
     }
@@ -151,7 +151,7 @@ class ReservationTimeServiceTest {
             service.delete(testDataConfig.getDefaultDummyTimeId());
 
             // when
-            List<ReservationTimeResDto> resDtos = service.findAll();
+            List<ReservationTimeResponseDto> resDtos = service.findAll();
 
             // then
             Assertions.assertThat(resDtos).hasSize(0);
@@ -175,7 +175,7 @@ class ReservationTimeServiceTest {
 
             Theme theme = themeRepository.add(new Theme("name1", "dd", "tt"));
             reservationService.add(
-                    new ReservationReqDto(
+                    new ReservationRequestDto(
                             "r1",
                             LocalDate.now().plusMonths(3),
                             testDataConfig.getDefaultDummyTimeId(),

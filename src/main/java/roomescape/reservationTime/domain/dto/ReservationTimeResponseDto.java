@@ -2,5 +2,5 @@ package roomescape.reservationTime.domain.dto;
 
 import java.time.LocalTime;
 
-public record ReservationTimeReqDto(LocalTime startAt) {
+public record ReservationTimeResponseDto(Long id, LocalTime startAt) {
 }

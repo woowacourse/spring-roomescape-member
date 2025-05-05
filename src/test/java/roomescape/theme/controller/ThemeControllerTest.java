@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.theme.domain.dto.ThemeReqDto;
+import roomescape.theme.domain.dto.ThemeRequestDto;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -28,22 +28,22 @@ class ThemeControllerTest {
     @DisplayName("theme를 생성하면, 201 응답이 도착한다.")
     @Test
     public void add() {
-        ThemeReqDto dto = new ThemeReqDto("a", "b", "c");
+        ThemeRequestDto dto = new ThemeRequestDto("a", "b", "c");
 
         RestAssured.given().port(port).log().all()
-            .contentType(ContentType.JSON).body(dto)
-            .when().post("/themes")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value());
+                .contentType(ContentType.JSON).body(dto)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @DisplayName("전체 Theme를 조회한다.")
     @Test
     public void findAll() {
         RestAssured.given().port(port).log().all()
-            .when().get("/themes")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value());
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value());
     }
 
     @DisplayName("Theme를 삭제한다.")
@@ -52,9 +52,9 @@ class ThemeControllerTest {
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "a", "b", "c");
 
         RestAssured.given().port(port).log().all()
-            .when().delete("/themes/1")
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+                .when().delete("/themes/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Long.class);
         assertThat(count).isZero();

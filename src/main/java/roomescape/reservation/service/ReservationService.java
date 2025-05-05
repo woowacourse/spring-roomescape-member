@@ -7,16 +7,16 @@ import roomescape.globalException.BadRequestException;
 import roomescape.globalException.ConflictException;
 import roomescape.reservation.ReservationMapper;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.dto.ReservationReqDto;
-import roomescape.reservation.domain.dto.ReservationResDto;
+import roomescape.reservation.domain.dto.ReservationRequestDto;
+import roomescape.reservation.domain.dto.ReservationResponseDto;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
 import roomescape.theme.ThemeMapper;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.dto.ThemeResDto;
+import roomescape.theme.domain.dto.ThemeResponseDto;
 import roomescape.theme.repository.ThemeRepository;
 
 @Service
@@ -33,18 +33,18 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationResDto> findAll() {
+    public List<ReservationResponseDto> findAll() {
         List<Reservation> reservations = repository.findAll();
         return reservations.stream()
-                .map(this::convertReservationResDto)
+                .map(this::convertReservationResponseDto)
                 .collect(Collectors.toList());
     }
 
-    public ReservationResDto add(ReservationReqDto reqDto) {
-        Reservation reservation = convertReservation(reqDto);
+    public ReservationResponseDto add(ReservationRequestDto requestDto) {
+        Reservation reservation = convertReservation(requestDto);
         validateDuplicateDateTime(reservation);
         Reservation savedReservation = repository.add(reservation);
-        return convertReservationResDto(savedReservation);
+        return convertReservationResponseDto(savedReservation);
     }
 
     public void delete(Long id) {
@@ -62,7 +62,7 @@ public class ReservationService {
         }
     }
 
-    private Reservation convertReservation(ReservationReqDto dto) {
+    private Reservation convertReservation(ReservationRequestDto dto) {
         ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 예약 시간입니다."));
         Theme theme = themeRepository.findById(dto.themeId())
@@ -71,9 +71,10 @@ public class ReservationService {
         return ReservationMapper.toEntity(dto, reservationTime, theme);
     }
 
-    private ReservationResDto convertReservationResDto(Reservation reservation) {
-        ReservationTimeResDto reservationTimeResDto = ReservationTimeMapper.toResDto(reservation.getReservationTime());
-        ThemeResDto themeResDto = ThemeMapper.toResDto(reservation.getTheme());
-        return ReservationMapper.toResDto(reservation, reservationTimeResDto, themeResDto);
+    private ReservationResponseDto convertReservationResponseDto(Reservation reservation) {
+        ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeMapper.toResponseDto(
+                reservation.getReservationTime());
+        ThemeResponseDto themeResponseDto = ThemeMapper.toResponseDto(reservation.getTheme());
+        return ReservationMapper.toResponseDto(reservation, reservationTimeResponseDto, themeResponseDto);
     }
 }

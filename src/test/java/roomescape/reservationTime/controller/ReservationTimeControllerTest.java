@@ -1,7 +1,11 @@
 package roomescape.reservationTime.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,16 +19,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
-import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
-import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
-
-import java.time.LocalTime;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
-    ReservationTimeTestDataConfig.class})
+        ReservationTimeTestDataConfig.class})
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ExtendWith({SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -44,11 +43,11 @@ public class ReservationTimeControllerTest {
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
 
             // when & then
-            List<ReservationTimeResDto> resDtos = RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract()
-                .jsonPath().getList(".", ReservationTimeResDto.class);
+            List<ReservationTimeResponseDto> resDtos = RestAssured.given().log().all()
+                    .when().get("/times")
+                    .then().log().all()
+                    .statusCode(HttpStatus.OK.value()).extract()
+                    .jsonPath().getList(".", ReservationTimeResponseDto.class);
 
             Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
             assertThat(resDtos.size()).isEqualTo(count);
@@ -58,11 +57,11 @@ public class ReservationTimeControllerTest {
         @Test
         void findAll_success_whenNoData() {
             // when & then
-            List<ReservationTimeResDto> resDtos = RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value()).extract()
-                .jsonPath().getList(".", ReservationTimeResDto.class);
+            List<ReservationTimeResponseDto> resDtos = RestAssured.given().log().all()
+                    .when().get("/times")
+                    .then().log().all()
+                    .statusCode(HttpStatus.OK.value()).extract()
+                    .jsonPath().getList(".", ReservationTimeResponseDto.class);
 
             Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
             assertThat(resDtos.size()).isEqualTo(count);
@@ -80,15 +79,15 @@ public class ReservationTimeControllerTest {
             LocalTime dummyTime = LocalTime.of(11, 22);
 
             // when
-            ReservationTimeReqDto dto = new ReservationTimeReqDto(dummyTime);
+            ReservationTimeRequestDto dto = new ReservationTimeRequestDto(dummyTime);
 
             // then
             RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value());
+                    .contentType(ContentType.JSON)
+                    .body(dto)
+                    .when().post("/times")
+                    .then().log().all()
+                    .statusCode(HttpStatus.CREATED.value());
         }
 
         @DisplayName("중복된 예약 시간 입력 시 409 Conflict를 반환한다")
@@ -99,15 +98,15 @@ public class ReservationTimeControllerTest {
             jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", dummyTime.toString());
 
             // when
-            ReservationTimeReqDto dto = new ReservationTimeReqDto(dummyTime);
+            ReservationTimeRequestDto dto = new ReservationTimeRequestDto(dummyTime);
 
             // then
             RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(dto)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(HttpStatus.CONFLICT.value());
+                    .contentType(ContentType.JSON)
+                    .body(dto)
+                    .when().post("/times")
+                    .then().log().all()
+                    .statusCode(HttpStatus.CONFLICT.value());
         }
     }
 
@@ -119,11 +118,12 @@ public class ReservationTimeControllerTest {
         @Test
         void delete_success_withExistId() {
             RestAssured.given().log().all()
-                .when().delete("/times/1")
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+                    .when().delete("/times/1")
+                    .then().log().all()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-            Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time WHERE id = 1", Integer.class);
+            Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time WHERE id = 1",
+                    Integer.class);
             assertThat(countAfterDelete).isEqualTo(0);
         }
 
@@ -132,9 +132,9 @@ public class ReservationTimeControllerTest {
         void delete_failure_byNonExistenceId() {
             Long maxValue = Long.MAX_VALUE;
             RestAssured.given().log().all()
-                .when().delete("/times/" + maxValue)
-                .then().log().all()
-                .statusCode(HttpStatus.NOT_FOUND.value());
+                    .when().delete("/times/" + maxValue)
+                    .then().log().all()
+                    .statusCode(HttpStatus.NOT_FOUND.value());
         }
     }
 }

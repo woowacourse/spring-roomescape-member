@@ -11,9 +11,9 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.domain.ReservationTime;
-import roomescape.reservationTime.domain.dto.AvailableReservationTimeResDto;
-import roomescape.reservationTime.domain.dto.ReservationTimeReqDto;
-import roomescape.reservationTime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationTime.domain.dto.AvailableReservationTimeResponseDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
+import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -35,14 +35,14 @@ public class ReservationTimeService {
         this.themeRepository = themeRepository;
     }
 
-    public List<ReservationTimeResDto> findAll() {
+    public List<ReservationTimeResponseDto> findAll() {
         List<ReservationTime> reservationTimes = repository.findAll();
         return reservationTimes.stream()
-                .map(this::convertToReservationTimeResDto)
+                .map(this::convertToReservationTimeResponseDto)
                 .toList();
     }
 
-    public List<AvailableReservationTimeResDto> findAllAvailableTimes(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeResponseDto> findAllAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
@@ -53,7 +53,7 @@ public class ReservationTimeService {
 
         return allTime.stream()
                 .map(reservationTime ->
-                        AvailableReservationTimeResDto.from(
+                        AvailableReservationTimeResponseDto.from(
                                 reservationTime,
                                 reservationTimesByThemeAndDate.contains(reservationTime)
                         )
@@ -69,11 +69,11 @@ public class ReservationTimeService {
         repository.delete(id);
     }
 
-    public ReservationTimeResDto add(ReservationTimeReqDto reqDto) {
-        ReservationTime reservationTime = convertToReservationTimeReqDto(reqDto);
+    public ReservationTimeResponseDto add(ReservationTimeRequestDto requestDto) {
+        ReservationTime reservationTime = convertToReservationTimeRequestDto(requestDto);
         validateDuplicateTime(reservationTime);
         ReservationTime savedReservationTime = repository.add(reservationTime);
-        return convertToReservationTimeResDto(savedReservationTime);
+        return convertToReservationTimeResponseDto(savedReservationTime);
     }
 
     private void validateDuplicateTime(ReservationTime inputReservationTime) {
@@ -84,11 +84,11 @@ public class ReservationTimeService {
         }
     }
 
-    private ReservationTime convertToReservationTimeReqDto(ReservationTimeReqDto reqDto) {
-        return ReservationTimeMapper.toEntity(reqDto);
+    private ReservationTime convertToReservationTimeRequestDto(ReservationTimeRequestDto requestDto) {
+        return ReservationTimeMapper.toEntity(requestDto);
     }
 
-    public ReservationTimeResDto convertToReservationTimeResDto(ReservationTime reservationTime) {
-        return ReservationTimeMapper.toResDto(reservationTime);
+    public ReservationTimeResponseDto convertToReservationTimeResponseDto(ReservationTime reservationTime) {
+        return ReservationTimeMapper.toResponseDto(reservationTime);
     }
 }

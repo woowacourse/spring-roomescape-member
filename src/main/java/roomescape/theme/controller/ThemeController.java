@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.theme.domain.dto.PopularThemeRequestDto;
-import roomescape.theme.domain.dto.ThemeReqDto;
-import roomescape.theme.domain.dto.ThemeResDto;
+import roomescape.theme.domain.dto.ThemeRequestDto;
+import roomescape.theme.domain.dto.ThemeResponseDto;
 import roomescape.theme.service.ThemeService;
 
 @RestController
@@ -28,26 +28,26 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ThemeResDto>> findAll() {
+    public ResponseEntity<List<ThemeResponseDto>> findAll() {
         return ResponseEntity.ok(themeService.findAll());
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResDto>> findThemesOrderByReservationCount2(
+    public ResponseEntity<List<ThemeResponseDto>> findThemesOrderByReservationCount2(
             @ModelAttribute PopularThemeRequestDto popularThemeRequestDto) {
         LocalDate now = LocalDate.now();
         LocalDate from = now.minusDays(7);
         LocalDate to = now.minusDays(1);
-        List<ThemeResDto> topRankThemes = themeService.findThemesOrderByReservationCount(from, to,
+        List<ThemeResponseDto> topRankThemes = themeService.findThemesOrderByReservationCount(from, to,
                 popularThemeRequestDto);
         return ResponseEntity.ok(topRankThemes);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResDto> add(
-            @RequestBody ThemeReqDto reqDto
+    public ResponseEntity<ThemeResponseDto> add(
+            @RequestBody ThemeRequestDto requestDto
     ) {
-        ThemeResDto resDto = themeService.add(reqDto);
+        ThemeResponseDto resDto = themeService.add(requestDto);
         return ResponseEntity.created(URI.create("/themes/" + resDto.id())).body(resDto);
     }
 

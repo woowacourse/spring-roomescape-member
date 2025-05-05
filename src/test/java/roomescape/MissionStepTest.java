@@ -20,8 +20,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import roomescape.reservation.domain.dto.ReservationReqDto;
-import roomescape.reservation.domain.dto.ReservationResDto;
+import roomescape.reservation.domain.dto.ReservationRequestDto;
+import roomescape.reservation.domain.dto.ReservationResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
@@ -48,13 +48,13 @@ public class MissionStepTest {
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "name1", "dd", "hh");
         jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
-            "2023-08-05", "1", "1");
+                "2023-08-05", "1", "1");
 
-        List<ReservationResDto> resDtos = RestAssured.given().log().all()
-            .when().get("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.OK.value()).extract()
-            .jsonPath().getList(".", ReservationResDto.class);
+        List<ReservationResponseDto> resDtos = RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value()).extract()
+                .jsonPath().getList(".", ReservationResponseDto.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
@@ -71,14 +71,14 @@ public class MissionStepTest {
         String dummyName = "브라운";
         LocalDate dummyDate = localDateTime.toLocalDate();
 
-        ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L, 1L);
+        ReservationRequestDto dto = new ReservationRequestDto(dummyName, dummyDate, 1L, 1L);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(dto)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value());
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
@@ -91,19 +91,19 @@ public class MissionStepTest {
         String dummyName = "브라운";
         LocalDate dummyDate = localDateTime.toLocalDate();
 
-        ReservationReqDto dto = new ReservationReqDto(dummyName, dummyDate, 1L, 1L);
+        ReservationRequestDto dto = new ReservationRequestDto(dummyName, dummyDate, 1L, 1L);
 
         RestAssured.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(dto)
-            .when().post("/reservations")
-            .then().log().all()
-            .statusCode(HttpStatus.CREATED.value());
+                .contentType(ContentType.JSON)
+                .body(dto)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value());
 
         RestAssured.given().log().all()
-            .when().delete("/reservations/1")
-            .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value());
+                .when().delete("/reservations/1")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
         assertThat(countAfterDelete).isEqualTo(0);

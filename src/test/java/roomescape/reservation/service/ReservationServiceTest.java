@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.globalException.ConflictException;
 import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.dto.ReservationReqDto;
+import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.fixture.ReservationFixture;
 import roomescape.reservation.repository.ReservationRepositoryImpl;
 import roomescape.reservationTime.domain.ReservationTime;
@@ -43,10 +43,10 @@ class ReservationServiceTest {
         return Reservation.of(name, date, time, theme);
     }
 
-    private ReservationReqDto createReqDto(String name, int plusDays, Long timeId, Long themeId) {
+    private ReservationRequestDto createRequestDto(String name, int plusDays, Long timeId, Long themeId) {
         LocalDate date = LocalDate.now().plusDays(plusDays);
 
-        return ReservationFixture.createReqDto(name, date, timeId, themeId);
+        return ReservationFixture.createRequestDto(name, date, timeId, themeId);
     }
 
     @Nested
@@ -72,11 +72,11 @@ class ReservationServiceTest {
             // when & then
             LocalDate duplicateDate = reservation1.getDate();
             Long duplicateReservationTimeId = reservationTime1.getId();
-            ReservationReqDto reqDto = ReservationFixture.createReqDto("jason", duplicateDate,
-                duplicateReservationTimeId, savedTheme.getId());
+            ReservationRequestDto requestDto = ReservationFixture.createRequestDto("jason", duplicateDate,
+                    duplicateReservationTimeId, savedTheme.getId());
 
             Assertions.assertThatThrownBy(
-                () -> service.add(reqDto)
+                    () -> service.add(requestDto)
             ).isInstanceOf(ConflictException.class);
         }
 
@@ -98,10 +98,11 @@ class ReservationServiceTest {
 
             // when & then
             Long duplicateReservationTimeId = reservationTime1.getId();
-            ReservationReqDto reqDto = createReqDto("jason", 3, duplicateReservationTimeId, savedTheme.getId());
+            ReservationRequestDto requestDto = createRequestDto("jason", 3, duplicateReservationTimeId,
+                    savedTheme.getId());
 
             Assertions.assertThatCode(
-                () -> service.add(reqDto)
+                    () -> service.add(requestDto)
             ).doesNotThrowAnyException();
         }
     }
