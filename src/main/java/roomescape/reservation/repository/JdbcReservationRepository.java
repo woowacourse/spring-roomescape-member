@@ -33,7 +33,7 @@ import static java.util.Map.entry;
 
 @Repository
 @RequiredArgsConstructor
-public class H2ReservationRepository implements ReservationRepository {
+public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
