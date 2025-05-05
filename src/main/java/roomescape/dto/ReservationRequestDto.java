@@ -20,8 +20,8 @@ public record ReservationRequestDto(@JsonProperty(value = "name", defaultValue =
                 new ReservationDateTime(date(), reservationTime), theme);
     }
 
-    public ReservationRequestDto(String name, java.time.LocalDate date, Long timeId, Long themeId){
-        if (name == null || date == null || timeId == null || themeId == null) throw new IllegalArgumentException();
+    public ReservationRequestDto(String name, LocalDate date, Long timeId, Long themeId){
+        if (name == null || date == null || timeId == null || themeId == null) throw new IllegalArgumentException("이름,날짜,시간id,테마id는 필수입니다");
         this.name = name;
         this.date = date;
         this.timeId = timeId;
