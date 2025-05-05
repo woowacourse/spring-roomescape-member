@@ -41,4 +41,13 @@ class MemberServiceTest {
 
         assertThat(token).isNotNull();
     }
+
+    @Test
+    void id로_유저를_가져올_수_있다() {
+        SignupRequestDto signupRequestDto = new SignupRequestDto("praisebak", "password");
+        long id = memberService.signup(signupRequestDto);
+        Member memberById = memberService.getMemberById(id);
+
+        assertThat(memberById.getEmail().equals(signupRequestDto.email()));
+    }
 }
