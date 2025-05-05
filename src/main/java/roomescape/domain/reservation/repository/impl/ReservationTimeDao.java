@@ -21,7 +21,7 @@ import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 
 @Repository
-public class ReservationTimeDAO implements ReservationTimeRepository {
+public class ReservationTimeDao implements ReservationTimeRepository {
 
     private static final String TABLE_NAME = "reservation_time";
 
@@ -29,7 +29,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public ReservationTimeDAO(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationTimeDao(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(TABLE_NAME)

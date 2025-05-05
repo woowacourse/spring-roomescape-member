@@ -21,14 +21,14 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ThemeRepository;
 
 @Repository
-public class ThemeDAO implements ThemeRepository {
+public class ThemeDao implements ThemeRepository {
 
     private static final String TABLE_NAME = "theme";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeDAO(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ThemeDao(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(TABLE_NAME)

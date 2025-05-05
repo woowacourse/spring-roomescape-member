@@ -27,7 +27,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @Disabled
-class ReservationDAOTest {
+class ReservationDaoTest {
 
     private static final Long RESERVATION_TIME_ID = 1L;
     private static final LocalTime RESERVATION_TIME_START_TIME = LocalTime.of(8, 0);
@@ -43,7 +43,7 @@ class ReservationDAOTest {
     void init() {
         jdbcTemplate = TestConfig.getJdbcTemplate();
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = TestConfig.getNamedParameterJdbcTemplate();
-        reservationRepository = new ReservationDAO(namedParameterJdbcTemplate, TestConfig.getDataSource());
+        reservationRepository = new ReservationDao(namedParameterJdbcTemplate, TestConfig.getDataSource());
     }
 
     @AfterEach

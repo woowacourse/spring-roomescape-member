@@ -26,13 +26,13 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
-import roomescape.domain.reservation.repository.impl.ReservationDAO;
-import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
-import roomescape.domain.reservation.repository.impl.ThemeDAO;
+import roomescape.domain.reservation.repository.impl.ReservationDao;
+import roomescape.domain.reservation.repository.impl.ReservationTimeDao;
+import roomescape.domain.reservation.repository.impl.ThemeDao;
 
 @ActiveProfiles("test")
 @JdbcTest
-@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, ReservationTimeService.class})
+@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDao.class, ReservationTimeService.class})
 class ReservationTimeServiceIntegrationTest {
 
     @Autowired

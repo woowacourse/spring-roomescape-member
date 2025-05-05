@@ -25,7 +25,7 @@ import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @Disabled
-class ReservationTimeDAOTest {
+class ReservationTimeDaoTest {
 
     private JdbcTemplate jdbcTemplate;
     private ReservationTimeRepository reservationTimeRepository;
@@ -34,7 +34,7 @@ class ReservationTimeDAOTest {
     void init() {
         jdbcTemplate = TestConfig.getJdbcTemplate();
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        reservationTimeRepository = new ReservationTimeDAO(namedParameterJdbcTemplate, TestConfig.getDataSource());
+        reservationTimeRepository = new ReservationTimeDao(namedParameterJdbcTemplate, TestConfig.getDataSource());
     }
 
     @AfterEach
