@@ -59,12 +59,13 @@ public class ReservationTimeService {
 
     public List<ReservationAvailableTimeResponse> findAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> times = reservationTimeDao.findAll();
-
+        List<Long> bookedTimeIds = reservationDao.findTimeIdsByThemeIdAndDate(themeId, date);
         return times.stream()
             .map(time -> {
                 Long timeId = time.getId();
-                boolean isBooked = reservationDao.existsByTimeIdAndThemeIdAndDate(timeId, themeId, date);
+                boolean isBooked = bookedTimeIds.contains(timeId);
                 return ReservationAvailableTimeResponse.from(time, isBooked);
             }).toList();
     }
+
 }

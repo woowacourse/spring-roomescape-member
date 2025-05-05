@@ -103,4 +103,9 @@ public class ReservationDao {
         String query = "SELECT EXISTS(SELECT 1 FROM reservation WHERE time_id = ? and theme_id = ? and date = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, timeId, themeId, date);
     }
+
+    public List<Long> findTimeIdsByThemeIdAndDate(Long themeId, LocalDate date) {
+        String query = "SELECT time_id FROM reservation where theme_id = ? and date = ?";
+        return jdbcTemplate.query(query, (resultSet, rowNum) -> resultSet.getLong("time_id"), themeId, date);
+    }
 }
