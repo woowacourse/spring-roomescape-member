@@ -27,12 +27,10 @@ public class ThemeService {
         this.clock = clock;
     }
 
-    public ThemeResponse add(ThemeRequest themeRequest) {
-        validateNoDuplicateTheme(themeRequest.name());
+    public ThemeResponse add(ThemeRequest request) {
+        validateNoDuplicateTheme(request.name());
 
-        Theme theme = new Theme(null, themeRequest.name(),
-                themeRequest.description(), themeRequest.thumbnail());
-
+        Theme theme = Theme.createBeforeSaved(request.name(), request.description(), request.thumbnail());
         return ThemeResponse.from(themeRepository.add(theme));
     }
 

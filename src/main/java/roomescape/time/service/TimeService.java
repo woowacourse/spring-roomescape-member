@@ -30,9 +30,9 @@ public class TimeService {
 
     public TimeResponse add(TimeRequest request) {
         validateNoDuplicateTime(request.startAt());
-        Time newTime = new Time(null, request.startAt());
 
-        return TimeResponse.from(timeRepository.add(newTime));
+        Time time = Time.createBeforeSaved(request.startAt());
+        return TimeResponse.from(timeRepository.add(time));
     }
 
     public List<TimeResponse> findAll() {

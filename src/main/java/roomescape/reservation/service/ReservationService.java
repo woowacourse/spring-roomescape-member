@@ -37,8 +37,8 @@ public class ReservationService {
         validateNoDuplicateReservation(date, request.timeId(), request.themeId());
 
         Theme theme = findThemeOrThrow(request.themeId());
-        Reservation reservation = new Reservation(null, request.name(), date, time, theme);
 
+        Reservation reservation = Reservation.createBeforeSaved(request.name(), date, time, theme);
         return ReservationResponse.from(reservationRepository.add(reservation));
     }
 
