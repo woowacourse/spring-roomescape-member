@@ -24,7 +24,7 @@ public class AdminPageController {
     }
 
     @GetMapping("/theme")
-    public String manageTheme() {
+    public String manageThemes() {
         return "admin/theme";
     }
 }

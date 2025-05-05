@@ -26,19 +26,19 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> allReservations() {
+    public ResponseEntity<List<ReservationResponse>> findAllReservations() {
         var reservations = service.findAll();
         return ResponseEntity.ok(reservations);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> reserve(@RequestBody @Valid final AddReservationRequest request) {
+    public ResponseEntity<ReservationResponse> addReservation(@RequestBody @Valid final AddReservationRequest request) {
         var reservation = service.add(request);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(reservation);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable("id") final Long id) {
         boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();
