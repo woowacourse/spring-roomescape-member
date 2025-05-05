@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.theme.service.dto.CreateThemeServiceRequest;
-import roomescape.theme.service.usecase.ThemeCommandUseCaseImpl;
+import roomescape.theme.service.usecase.ThemeCommandUseCase;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
-class ThemeCommandUseCaseImplTest {
+class ThemeCommandUseCaseTest {
 
     @Autowired
-    private ThemeCommandUseCaseImpl themeCommandUseCase;
+    private ThemeCommandUseCase themeCommandUseCase;
 
     @Autowired
     private ThemeRepository themeRepository;

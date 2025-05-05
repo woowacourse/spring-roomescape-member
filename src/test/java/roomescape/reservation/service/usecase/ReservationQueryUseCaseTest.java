@@ -29,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
-class ReservationQueryUseCaseImplTest {
+class ReservationQueryUseCaseTest {
 
     @Autowired
-    private ReservationQueryUseCaseImpl reservationQueryUseCase;
+    private ReservationQueryUseCase reservationQueryUseCase;
 
     @Autowired
     private ReservationRepository reservationRepository;

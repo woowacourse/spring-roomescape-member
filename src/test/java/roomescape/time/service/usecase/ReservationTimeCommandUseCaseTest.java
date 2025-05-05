@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class ReservationTimeCommandUseCaseImplTest {
+class ReservationTimeCommandUseCaseTest {
 
     @Autowired
-    private ReservationTimeCommandUseCaseImpl reservationTimeCommandUseCase;
+    private ReservationTimeCommandUseCase reservationTimeCommandUseCase;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
