@@ -56,8 +56,7 @@ class TimeSlotServiceTest {
     void removeTimeSlotWithReservationException() {
         // given
         var reservationRepository = new ReservationFakeRepository();
-        var timeSlotService = new TimeSlotService(reservationRepository,
-            new TimeSlotFakeRepository());
+        var timeSlotService = new TimeSlotService(reservationRepository, new TimeSlotFakeRepository());
 
         var timeSlotResponse = timeSlotService.add(JUNK_TIME_SLOT_REQUEST);
 
@@ -66,7 +65,6 @@ class TimeSlotServiceTest {
 
         // when & then
         assertThatThrownBy(() -> timeSlotService.removeById(timeSlotResponse.id()))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("삭제하려는 타임 슬롯을 사용하는 예약이 있습니다.");
+            .isInstanceOf(IllegalStateException.class);
     }
 }

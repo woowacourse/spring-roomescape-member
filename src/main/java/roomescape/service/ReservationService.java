@@ -55,17 +55,17 @@ public class ReservationService {
         var hasDuplicate = reservations.stream()
                 .anyMatch(r -> r.isSameDateTime(reservation));
         if (hasDuplicate) {
-            throw new IllegalArgumentException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다.");
+            throw new IllegalArgumentException("이미 예약된 날짜와 시간에 대한 예약은 불가능합니다. 예약 날짜: " + reservation.date());
         }
     }
 
     private TimeSlot findTimeSlot(final AddReservationRequest request) {
         return timeSlotRepository.findById(request.timeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타임 슬롯입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타임 슬롯입니다. 타임 슬롯 ID: " + request.timeId()));
     }
 
     private Theme findTheme(final AddReservationRequest request) {
         return themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다. 테마 ID: " + request.themeId()));
     }
 }
