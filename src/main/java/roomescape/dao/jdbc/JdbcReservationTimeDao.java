@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
-import roomescape.exception.TimeDoesNotExistException;
+import roomescape.exception.AssociatedReservationExistsException;
+import roomescape.exception.TimeNotExistException;
 
 @Repository
 public class JdbcReservationTimeDao implements ReservationTimeDao {
@@ -60,7 +62,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         try {
             return jdbcTemplate.queryForObject(sql, mapResultsToReservationTime(), id);
         } catch (DataAccessException e) {
-            throw new TimeDoesNotExistException();
+            throw new TimeNotExistException();
         }
     }
 
@@ -78,8 +80,12 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        try {
+            String sql = "DELETE FROM reservation_time WHERE id = ?";
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AssociatedReservationExistsException("해당 시간에 이미 저장된 예약이 있으므로 삭제할 수 없다.");
+        }
     }
 
     private RowMapper<ReservationTime> mapResultsToReservationTime() {

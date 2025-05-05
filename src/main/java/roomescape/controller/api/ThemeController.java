@@ -1,9 +1,9 @@
 package roomescape.controller.api;
 
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
-import roomescape.exception.DuplicateThemeException;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -46,11 +45,5 @@ public class ThemeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteThemeById(@PathVariable("id") Long id) {
         themeService.deleteThemeById(id);
-    }
-
-    @ExceptionHandler(value = DuplicateThemeException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleDuplicateException(DuplicateThemeException exception) {
-        return exception.getMessage();
     }
 }

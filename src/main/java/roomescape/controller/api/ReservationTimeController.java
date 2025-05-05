@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.ReservationTimeGetResponse;
 import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
-import roomescape.exception.DuplicateTimeException;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -51,11 +49,5 @@ public class ReservationTimeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservationTimeById(@PathVariable("id") Long id) {
         reservationTimeService.deleteReservationTimeById(id);
-    }
-
-    @ExceptionHandler(value = DuplicateTimeException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleDuplicateException(DuplicateTimeException exception) {
-        return exception.getMessage();
     }
 }

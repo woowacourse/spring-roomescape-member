@@ -5,13 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
-import roomescape.exception.ThemeDoesNotExistException;
+import roomescape.exception.AssociatedReservationExistsException;
+import roomescape.exception.ThemeNotExistException;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
@@ -42,8 +44,12 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     public int deleteById(Long id) {
-        String sql = "DELETE FROM theme WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        try {
+            String sql = "DELETE FROM theme WHERE id = ?";
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AssociatedReservationExistsException("해당 테마에 이미 저장된 예약이 있으므로 삭제할 수 없다.");
+        }
     }
 
     public Theme findById(Long id) {
@@ -51,7 +57,7 @@ public class JdbcThemeDao implements ThemeDao {
         try {
             return jdbcTemplate.queryForObject(sql, mapResultsToTheme(), id);
         } catch (DataAccessException exception) {
-            throw new ThemeDoesNotExistException();
+            throw new ThemeNotExistException();
         }
     }
 

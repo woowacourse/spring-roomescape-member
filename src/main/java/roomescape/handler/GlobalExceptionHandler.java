@@ -1,10 +1,12 @@
 package roomescape.handler;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.AssociatedReservationExistsException;
+import roomescape.exception.DuplicateEntityException;
+import roomescape.exception.EntityNotExistException;
 import roomescape.exception.InvalidInputException;
 
 @RestControllerAdvice
@@ -18,13 +20,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = InvalidInputException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidInput(InvalidInputException ex) {
-        return ex.getMessage();
+    public String handleInvalidInput(InvalidInputException exception) {
+        return exception.getMessage();
     }
 
-    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    @ExceptionHandler(value = EntityNotExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleSQLException(DataIntegrityViolationException ex) {
-        return "예약이 존재하여 제거할 수 없다.";
+    public String handleEntityNotExist(EntityNotExistException exception) {
+        return exception.getMessage();
+    }
+
+    @ExceptionHandler(value = AssociatedReservationExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleAssociateReservationExists(AssociatedReservationExistsException exception) {
+        return exception.getMessage();
+    }
+
+    @ExceptionHandler(value = DuplicateEntityException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleDuplicateEntity(DuplicateEntityException exception) {
+        return exception.getMessage();
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
-import roomescape.exception.ThemeDoesNotExistException;
+import roomescape.exception.ThemeNotExistException;
 
 @JdbcTest
 @Import(JdbcThemeDao.class)
@@ -52,7 +52,7 @@ class JdbcThemeDaoTest {
     @DisplayName("ID로 테마가 존재하지 않는다면 예외가 발생한다.")
     void findThemeByNotId() {
         assertThatThrownBy(() -> jdbcThemeDao.findById(100L))
-            .isInstanceOf(ThemeDoesNotExistException.class)
+            .isInstanceOf(ThemeNotExistException.class)
             .hasMessage("테마를 찾을 수 없다.");
     }
 
@@ -75,7 +75,7 @@ class JdbcThemeDaoTest {
         jdbcThemeDao.deleteById(id);
 
         assertThatThrownBy(() -> jdbcThemeDao.findById(id))
-            .isInstanceOf(ThemeDoesNotExistException.class);
+            .isInstanceOf(ThemeNotExistException.class);
     }
 
     @Test
