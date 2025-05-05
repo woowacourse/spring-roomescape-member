@@ -41,8 +41,8 @@ class ReservationThemeControllerTest {
     @Test
     void reservationThemeList() {
         //given
-        final ReservationTheme reservationTheme1 = new ReservationTheme(1L, "테마1", "디스크립션1", "썸네일1");
-        final ReservationTheme reservationTheme2 = new ReservationTheme(2L, "테마2", "디스크립션2", "썸네일2");
+        final ReservationTheme reservationTheme1 = new ReservationTheme("테마1", "디스크립션1", "썸네일1").assignId(1L);
+        final ReservationTheme reservationTheme2 = new ReservationTheme("테마2", "디스크립션2", "썸네일2").assignId(2L);
         final List<ReservationThemeResponse> reservationThemeResponses = List.of(
                 ReservationThemeResponse.of(reservationTheme1), ReservationThemeResponse.of(reservationTheme2));
         given(roomescapeService.findReservationThemes()).willReturn(reservationThemeResponses);
@@ -60,8 +60,8 @@ class ReservationThemeControllerTest {
     @Test
     void reservationThemeRankingList() {
         //given
-        final ReservationTheme reservationTheme1 = new ReservationTheme(1L, "테마1", "디스크립션1", "썸네일1");
-        final ReservationTheme reservationTheme2 = new ReservationTheme(2L, "테마2", "디스크립션2", "썸네일2");
+        final ReservationTheme reservationTheme1 = new ReservationTheme("테마1", "디스크립션1", "썸네일1").assignId(1L);
+        final ReservationTheme reservationTheme2 = new ReservationTheme("테마2", "디스크립션2", "썸네일2").assignId(2L);
         final List<ReservationThemeResponse> reservationThemeResponses = List.of(
                 ReservationThemeResponse.of(reservationTheme1), ReservationThemeResponse.of(reservationTheme2));
         given(roomescapeService.findPopularReservations()).willReturn(reservationThemeResponses);
@@ -79,11 +79,12 @@ class ReservationThemeControllerTest {
     @Test
     void reservationThemeAdd() {
         //given
-        final ReservationTheme reservationTheme1 = new ReservationTheme(1L, "테마1", "디스크립션1", "썸네일1");
+        final ReservationTheme reservationTheme1 = new ReservationTheme("테마1", "디스크립션1", "썸네일1").assignId(1L);
         final ReservationThemeResponse reservationThemeResponse = ReservationThemeResponse.of(reservationTheme1);
         final ReservationThemeRequest reservationThemeRequest = new ReservationThemeRequest("테마1", "디스크립션1", "썸네일1");
 
-        given(roomescapeService.addReservationTheme(any(ReservationThemeRequest.class))).willReturn(reservationThemeResponse);
+        given(roomescapeService.addReservationTheme(any(ReservationThemeRequest.class))).willReturn(
+                reservationThemeResponse);
 
         // when & then
         RestAssuredMockMvc.given().log().all()
@@ -91,7 +92,7 @@ class ReservationThemeControllerTest {
                 .body(reservationThemeRequest)
                 .when().post("/themes")
                 .then().log().all()
-                .body("themeId",is(1))
+                .body("themeId", is(1))
                 .statusCode(HttpStatus.CREATED.value());
     }
 

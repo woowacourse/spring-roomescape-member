@@ -1,7 +1,5 @@
 package roomescape.repository;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -92,11 +90,10 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
                     rs.getString("time_value")
             );
             ReservationTheme reservationTheme = new ReservationTheme(
-                    rs.getLong("theme_id"),
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
                     rs.getString("theme_thumbnail")
-            );
+            ).assignId(rs.getLong("theme_id"));
             return new Reservation(
                     rs.getString("name"),
                     rs.getDate("date").toLocalDate(),

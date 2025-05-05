@@ -76,7 +76,7 @@ class RoomescapeRepositoryTest {
     void save() {
         //given
         Reservation reservation = new Reservation("네오", LocalDate.parse("2023-08-05"),
-                ReservationTime.parse("15:40").toEntity(1L), new ReservationTheme(1L, "테마", "테마", "테마"));
+                ReservationTime.parse("15:40").toEntity(1L), new ReservationTheme("테마", "테마", "테마").assignId(1L));
 
         //when
         Reservation saved = repository.save(reservation);

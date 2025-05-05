@@ -68,7 +68,7 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
                 .addValue("description", reservationTheme.getDescription())
                 .addValue("thumbnail", reservationTheme.getThumbnail());
         Number key = insert.executeAndReturnKey(param);
-        return reservationTheme.toEntity(key.longValue());
+        return reservationTheme.assignId(key.longValue());
     }
 
     @Override
@@ -85,11 +85,10 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
     private RowMapper<ReservationTheme> reservationThemeRowMapper() {
         return (rs, rowNum) -> {
             return new ReservationTheme(
-                    rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
                     rs.getString("thumbnail")
-            );
+            ).assignId(rs.getLong("id"));
         };
     }
 }
