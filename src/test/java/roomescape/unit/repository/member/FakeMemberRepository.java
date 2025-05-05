@@ -39,4 +39,10 @@ public class FakeMemberRepository implements MemberRepository {
                 .filter(((member) -> member.isSamePassword(password) && member.isSameUsername(email)))
                 .findAny();
     }
+
+    @Override
+    public boolean existByEmail(String email) {
+        return members.stream()
+                .anyMatch(((member) -> member.isSameUsername(email)));
+    }
 }

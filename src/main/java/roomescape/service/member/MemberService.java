@@ -35,6 +35,11 @@ public class MemberService {
     }
 
     public long signup(SignupRequestDto signupRequestDto) {
+        boolean isDuplicateUserExist = memberRepository.existByEmail(signupRequestDto.email());
+        if (isDuplicateUserExist) {
+            throw new InvalidMemberException("이미 존재하는 유저입니다.");
+        }
+        
         Member member = signupRequestDto.toEntity();
         return memberRepository.add(member);
     }

@@ -1,6 +1,7 @@
 package roomescape.unit.service.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -49,5 +50,26 @@ class MemberServiceTest {
         Member memberById = memberService.getMemberById(id);
 
         assertThat(memberById.getEmail().equals(signupRequestDto.email()));
+    }
+
+    @Test
+    void 토큰으로_유저를_가져올_수_있다() {
+        SignupRequestDto signupRequestDto = new SignupRequestDto("praisebak", "password", "투다");
+        long id = memberService.signup(signupRequestDto);
+        Member memberById = memberService.getMemberById(id);
+
+        String token = jwtTokenProvider.createToken(memberById);
+
+        Member memberByToken = memberService.getMemberByToken(token);
+        assertThat(memberByToken.getEmail()).isEqualTo(memberById.getEmail());
+    }
+
+    @Test
+    void 회원가입에_중복_email을_가진_유저는_허용하지_않는다() {
+        SignupRequestDto signupRequestDto = new SignupRequestDto("praisebak", "password", "투다");
+        SignupRequestDto duplicateSignupRequestDto = new SignupRequestDto("praisebak", "password", "투다");
+        memberService.signup(signupRequestDto);
+        assertThatThrownBy(() -> memberService.signup(duplicateSignupRequestDto)).isInstanceOf(
+                IllegalArgumentException.class);
     }
 }
