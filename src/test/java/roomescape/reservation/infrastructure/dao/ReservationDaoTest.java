@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +29,6 @@ public class ReservationDaoTest {
         this.reservationDao = new ReservationDao(jdbcTemplate);
         this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         this.themeDao = new ThemeDao(jdbcTemplate);
-    }
-
-    @BeforeEach
-    public void resetAutoIncrement() {
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -65,23 +58,8 @@ public class ReservationDaoTest {
     @Test
     @DisplayName("예약 삭제 확인 테스트")
     void deleteTest() {
-        // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
-        ThemeRequest themeRequest = new ThemeRequest(
-                "레벨2 탈출",
-                "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
-                new ReservationName("브라운"),
-                themeDao.insert(themeRequest),
-                new ReservationDate(LocalDate.of(2023, 8, 5)),
-                reservationTimeDao.insert(reservationTimeRequest.getStartAt())
-        );
-        reservationDao.insert(createReservationRequest);
-
         // when
-        reservationDao.delete(1L);
+        reservationDao.delete(0L);
 
         // then
         assertThat(count()).isEqualTo(0);

@@ -3,7 +3,6 @@ package roomescape.reservation.infrastructure.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +21,6 @@ public class ThemeDaoTest {
     public ThemeDaoTest(JdbcTemplate jdbcTemplate) {
         this.themeDao = new ThemeDao(jdbcTemplate);
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @BeforeEach
-    void resetAutoIncrement() {
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -56,7 +50,7 @@ public class ThemeDaoTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
         );
 
-        themeDao.insert(themeRequest); // todo: sql로 데이터 직접 세팅
+        themeDao.insert(themeRequest);
 
         // when
         List<Theme> allThemes = themeDao.findAllThemes();
@@ -68,17 +62,8 @@ public class ThemeDaoTest {
     @Test
     @DisplayName("테마 삭제 확인 테스트")
     void deleteTest() {
-        // given
-        ThemeRequest themeRequest = new ThemeRequest(
-                "레벨2 탈출",
-                "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-        );
-
-        themeDao.insert(themeRequest); // todo: sql로 데이터 직접 세팅
-
         // when
-        themeDao.delete(1L);
+        themeDao.delete(0L);
 
         // then
         assertThat(count()).isEqualTo(0);

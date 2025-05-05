@@ -3,7 +3,6 @@ package roomescape.reservation.infrastructure.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,6 @@ public class ReservationTimeDaoTest {
     public ReservationTimeDaoTest(JdbcTemplate jdbcTemplate) {
         this.reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @BeforeEach
-    public void resetAutoIncrement() {
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
     }
 
     @Test
@@ -55,12 +49,8 @@ public class ReservationTimeDaoTest {
     @Test
     @DisplayName("시간 삭제 확인 테스트")
     void deleteTest() {
-        // given
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
-        reservationTimeDao.insert(reservationTimeRequest.getStartAt());
-
         // when
-        reservationTimeDao.delete(1L);
+        reservationTimeDao.delete(0L);
 
         // then
         assertThat(count()).isEqualTo(0);
