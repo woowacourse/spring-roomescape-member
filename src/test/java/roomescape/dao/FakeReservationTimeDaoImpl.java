@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.BookedReservationTimeResponseDto;
 
 public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
 
@@ -36,5 +37,11 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
         return reservationTimes.stream()
             .filter(reservationTime -> reservationTime.getId().equals(id))
             .findFirst();
+    }
+
+    @Override
+    public List<BookedReservationTimeResponseDto> findBookedReservationTime(String date,
+        Long themeId) {
+        return List.of();
     }
 }

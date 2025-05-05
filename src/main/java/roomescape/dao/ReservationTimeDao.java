@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.BookedReservationTimeResponseDto;
 
 public interface ReservationTimeDao {
 
@@ -13,4 +14,6 @@ public interface ReservationTimeDao {
     void deleteReservationTime(Long id);
 
     Optional<ReservationTime> findById(Long id);
+
+    List<BookedReservationTimeResponseDto> findBookedReservationTime(String date, Long themeId);
 }

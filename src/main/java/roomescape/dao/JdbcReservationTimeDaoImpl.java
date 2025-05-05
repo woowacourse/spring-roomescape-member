@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.BookedReservationTimeResponseDto;
 
 @Repository
 public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
@@ -63,5 +64,34 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<BookedReservationTimeResponseDto> findBookedReservationTime(String date,
+        Long themeId) {
+        String query = """
+            SELECT
+                rt.START_AT,
+                rt.id AS TIME_ID,
+                CASE
+                    WHEN r.id IS NULL THEN false
+                    ELSE true
+                END AS already_booked
+            FROM 
+                reservation_time rt
+            LEFT JOIN 
+                reservation r 
+                ON r.time_id = rt.id
+                AND r.date = ?
+                AND r.theme_id = ?;
+            """;
+        return jdbcTemplate.query(query,
+            (resultSet, rowNum) -> {
+                return new BookedReservationTimeResponseDto(
+                    resultSet.getString("start_at"),
+                    resultSet.getLong("time_id"),
+                    resultSet.getBoolean("already_booked")
+                );
+            }, date, themeId);
     }
 }

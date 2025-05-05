@@ -45,26 +45,6 @@ public class ReservationTimeService {
 
     public List<BookedReservationTimeResponseDto> getTimesContainsReservationInfoBy(String date,
         Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeDao.findAllReservationTimes();
-
-        return reservationTimes.stream()
-            .map(reservationTime -> createBookedReservationTimeResponseDto(date, themeId,
-                reservationTime))
-            .toList();
-    }
-
-    private BookedReservationTimeResponseDto createBookedReservationTimeResponseDto(
-        String date, Long themeId, ReservationTime reservationTime) {
-        if (isAlreadyBookedTime(date, themeId, reservationTime)) {
-            return BookedReservationTimeResponseDto.from(reservationTime, true);
-        }
-        return BookedReservationTimeResponseDto.from(reservationTime, false);
-    }
-
-    private boolean isAlreadyBookedTime(String date, Long themeId,
-        ReservationTime reservationTime) {
-        int alreadyExistReservationCount = reservationDao.calculateAlreadyExistReservationBy(
-            date, themeId, reservationTime.getId());
-        return alreadyExistReservationCount != 0;
+        return reservationTimeDao.findBookedReservationTime(date, themeId);
     }
 }
