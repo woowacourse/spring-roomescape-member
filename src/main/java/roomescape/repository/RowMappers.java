@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalTime;
 import org.springframework.jdbc.core.RowMapper;
 import roomescape.model.Reservation;
 import roomescape.model.Theme;
@@ -36,8 +35,8 @@ public final class RowMappers {
 
     public static final RowMapper<TimeSlot> TIME_SLOT = (rs, rowNum) -> {
         var id = rs.getLong("id");
-        var startAt = rs.getString("start_at");
-        return new TimeSlot(id, LocalTime.parse(startAt));
+        var startAt = rs.getTime("start_at").toLocalTime();
+        return new TimeSlot(id, startAt);
     };
 
     private RowMappers() {
