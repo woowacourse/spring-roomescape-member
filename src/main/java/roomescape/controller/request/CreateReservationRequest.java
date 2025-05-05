@@ -1,7 +1,6 @@
 package roomescape.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -17,7 +16,7 @@ public record CreateReservationRequest(
     @NotNull
     Long timeId,
 
-    @JsonProperty("themeId")
+    @NotNull
     Long themeId
 ) {
 
