@@ -18,8 +18,8 @@ class ReservationTest {
 
     @DisplayName("아이디 존재 여부")
     @ParameterizedTest
-    @CsvSource(value = {"1,true", "null,false"}, delimiter = ',', nullValues = "null")
-    void test1(Long id, boolean expected) {
+    @CsvSource(value = {"1,true", "0,false"})
+    void test1(long id, boolean expected) {
         // given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
         Theme theme = new Theme(1L, "공포", "우테코 공포",

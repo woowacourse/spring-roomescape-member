@@ -2,6 +2,8 @@ package roomescape.domain.reservation.entity;
 
 public class Theme {
 
+    private static final long EMPTY_ID = 0L;
+
     private final Long id;
     private final String name;
     private final String description;
@@ -16,7 +18,7 @@ public class Theme {
     }
 
     public static Theme withoutId(String name, String description, String thumbnail) {
-        return new Theme(null, name, description, thumbnail);
+        return new Theme(EMPTY_ID, name, description, thumbnail);
     }
 
     public void validateTheme() {
@@ -26,7 +28,7 @@ public class Theme {
     }
 
     public boolean existId() {
-        return id != null;
+        return id != EMPTY_ID;
     }
 
     public Long getId() {

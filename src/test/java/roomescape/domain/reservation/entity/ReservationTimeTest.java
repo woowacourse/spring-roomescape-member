@@ -14,8 +14,8 @@ class ReservationTimeTest {
 
     @DisplayName("id 존재를 확인할 수 있다.")
     @ParameterizedTest
-    @CsvSource(value = {"1,true", "null,false"}, nullValues = "null", delimiter = ',')
-    void test1(Long id, Boolean expect) {
+    @CsvSource(value = {"1,true", "0,false"})
+    void test1(long id, boolean expect) {
         LocalTime now = LocalTime.now();
 
         ReservationTime reservationTime = new ReservationTime(id, now);

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class ReservationTime {
 
+    private static final long EMPTY_ID = 0L;
     private final Long id;
     private final LocalTime startAt;
 
@@ -15,7 +16,7 @@ public class ReservationTime {
     }
 
     public static ReservationTime withoutId(LocalTime startAt) {
-        return new ReservationTime(null, startAt);
+        return new ReservationTime(EMPTY_ID, startAt);
     }
 
     public void validateReservationTime() {
@@ -25,7 +26,7 @@ public class ReservationTime {
     }
 
     public boolean existId() {
-        return id != null;
+        return id != EMPTY_ID;
     }
 
     public Long getId() {

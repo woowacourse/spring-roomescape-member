@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class Reservation {
 
+    private static final long EMPTY_ID = 0L;
     private static final int MAX_NAME_LENGTH = 25;
 
     private final Long id;
@@ -25,7 +26,7 @@ public class Reservation {
 
     public static Reservation withoutId(String name, LocalDate reservationDate, ReservationTime reservationTime,
                                         Theme theme) {
-        return new Reservation(null, name, reservationDate, reservationTime, theme);
+        return new Reservation(EMPTY_ID, name, reservationDate, reservationTime, theme);
     }
 
     private void validateReservation() {
@@ -42,7 +43,7 @@ public class Reservation {
     }
 
     public boolean existId() {
-        return id != null;
+        return id != EMPTY_ID;
     }
 
     public Long getId() {
