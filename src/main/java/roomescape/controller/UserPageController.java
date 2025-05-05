@@ -13,6 +13,6 @@ public class UserPageController {
 
     @GetMapping
     public String bestThemes() {
-        return "index";
+        return "best-themes";
     }
 }
