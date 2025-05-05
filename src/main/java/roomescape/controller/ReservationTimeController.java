@@ -43,8 +43,4 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.badRequest().build();
-    }
 }

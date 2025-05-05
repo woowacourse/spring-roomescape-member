@@ -32,7 +32,7 @@ class ReservationControllerTest {
                     .statusCode(404);
         }
 
-        @DisplayName("이전 시각으로 예약을 요청하는 경우 404 Not Found를 던진다")
+        @DisplayName("이전 시각으로 예약을 요청하는 경우 400 Bad Request를 던진다")
         @Test
         void reservationAddBeforeCurrentDateTime() {
             Map<String, String> timeParams = Map.of(
@@ -59,10 +59,10 @@ class ReservationControllerTest {
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(400);
         }
 
-        @DisplayName("같은 날짜 및 시간 예약이 존재하면 404 Not Found를 던진다")
+        @DisplayName("같은 날짜 및 시간 예약이 존재하면 400 Bad Request를 던진다")
         @Test
         void reservationAddDuplicatedTest() {
             //given
@@ -104,7 +104,7 @@ class ReservationControllerTest {
                     .body(duplicated)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(400);
         }
     }
 }

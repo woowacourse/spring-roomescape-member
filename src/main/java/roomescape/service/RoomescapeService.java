@@ -12,6 +12,9 @@ import roomescape.dto.ReservationThemeRequest;
 import roomescape.dto.ReservationThemeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.exception.DataNotFoundException;
+import roomescape.exception.exception.DuplicateReservationException;
+import roomescape.exception.exception.PastReservationTimeException;
 import roomescape.repository.RoomescapeRepository;
 import roomescape.repository.RoomescapeThemeRepository;
 import roomescape.repository.RoomescapeTimeRepository;
@@ -84,33 +87,33 @@ public class RoomescapeService {
     public void removeReservation(final long id) {
         boolean result = roomescapeRepository.deleteById(id);
         if (!result) {
-            throw new IllegalArgumentException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
+            throw new DataNotFoundException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTime(final long id) {
         boolean result = roomescapeTimeRepository.deleteById(id);
         if (!result) {
-            throw new IllegalArgumentException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", id));
+            throw new DataNotFoundException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTheme(final long id) {
         boolean result = roomescapeThemeRepository.deleteById(id);
         if (!result) {
-            throw new IllegalArgumentException(String.format("[ERROR] 예약테마 %d번은 존재하지 않습니다.", id));
+            throw new DataNotFoundException(String.format("[ERROR] 예약테마 %d번은 존재하지 않습니다.", id));
         }
     }
 
     private void validateFutureDateTime(final LocalDateTime requestDateTime, final LocalDateTime now) {
         if (requestDateTime.isBefore(now) || requestDateTime.isEqual(now)) {
-            throw new IllegalArgumentException("[ERROR] 이전 시각으로 예약할 수 없습니다.");
+            throw new PastReservationTimeException("[ERROR] 이전 시각으로 예약할 수 없습니다.");
         }
     }
 
     private void validateUniqueReservation(final Reservation reservation) {
         if (existsSameReservation(reservation)) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
+            throw new DuplicateReservationException("[ERROR] 이미 존재하는 예약시간입니다.");
         }
     }
 

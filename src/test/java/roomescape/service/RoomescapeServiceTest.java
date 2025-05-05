@@ -12,6 +12,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.exception.exception.DataNotFoundException;
+import roomescape.exception.exception.DuplicateReservationException;
+import roomescape.exception.exception.PastReservationTimeException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -34,7 +37,7 @@ class RoomescapeServiceTest {
         //when & then
         ReservationRequest duplicated = new ReservationRequest("test2", date, 1L, response.timeId());
         assertThatThrownBy(() -> service.addReservation(duplicated))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DuplicateReservationException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약시간입니다.");
 
     }
@@ -49,7 +52,7 @@ class RoomescapeServiceTest {
 
         // then & when
         assertThatThrownBy(() -> service.addReservation(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(PastReservationTimeException.class)
                 .hasMessage("[ERROR] 이전 시각으로 예약할 수 없습니다.");
     }
 
@@ -61,7 +64,7 @@ class RoomescapeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> service.removeReservation(notExistId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("[ERROR] 예약번호 999번은 존재하지 않습니다.");
     }
 

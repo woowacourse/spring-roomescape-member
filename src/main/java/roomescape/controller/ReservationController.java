@@ -41,8 +41,4 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.notFound().build();
-    }
 }

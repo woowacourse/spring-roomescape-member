@@ -47,8 +47,4 @@ public class ReservationThemeController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.badRequest().build();
-    }
 }
