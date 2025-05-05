@@ -9,3 +9,4 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
+      data-locations: []
