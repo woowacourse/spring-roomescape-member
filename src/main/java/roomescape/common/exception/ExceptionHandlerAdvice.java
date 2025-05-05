@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<Void> handleIllegalArgumentException() {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Void> handleEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<Void> handleEntityNotFoundException() {
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(AlreadyInUseException.class)
-    public ResponseEntity<Void> handleAlreadyUseException(AlreadyInUseException e) {
+    public ResponseEntity<Void> handleAlreadyUseException() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }
