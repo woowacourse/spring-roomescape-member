@@ -1,26 +1,38 @@
 package roomescape.global;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static roomescape.global.response.GlobalErrorCode.NO_ELEMENTS;
+import static roomescape.global.response.GlobalErrorCode.WRONG_ARGUMENT;
+
 import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.global.response.ApiResponse;
 
 @RestControllerAdvice
 public class RoomescapeExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Void> handleNoSuchElementException(NoSuchElementException e) {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ApiResponse<Void>> handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity
+                .status(NOT_FOUND)
+                .body(ApiResponse.fail(NO_ELEMENTS, e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(ApiResponse.fail(WRONG_ARGUMENT, e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(ApiResponse.fail(WRONG_ARGUMENT, e.getMessage()));
     }
 }

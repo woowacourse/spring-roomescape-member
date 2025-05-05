@@ -29,7 +29,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select r.id as reservation_id, 
+                select r.id as id, 
                        r.name,
                        r.date, 
                        t.id as time_id, 
@@ -99,7 +99,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(Long id) {
         String sql = """
-                select r.id as reservation_id, 
+                select r.id as id, 
                        r.name,
                        r.date, 
                        t.id as time_id, 
