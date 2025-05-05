@@ -34,7 +34,7 @@ public class ThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public Optional<Theme> findById(Long id) {
+    public Optional<Theme> findById(final Long id) {
         String sql = "SELECT id, name, description, thumbnail from theme where id = :id";
         Map<String, Object> parameter = Map.of("id", id);
 
@@ -64,7 +64,30 @@ public class ThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public Theme add(Theme theme) {
+    public Boolean existsByName(final String name) {
+        String sql = "SELECT COUNT(*) FROM theme WHERE name = :name";
+        Map<String, Object> parameters = Map.of("name", name);
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameters, Integer.class);
+        return count != 0;
+    }
+
+    @Override
+    public Boolean existsByReservationThemeId(final Long themeId) {
+        String sql = """
+                SELECT COUNT(*) FROM theme AS e 
+                INNER JOIN reservation AS r 
+                ON e.id = r.theme_id
+                WHERE r.theme_id = :themeId
+                """;
+        Map<String, Object> parameter = Map.of("themeId", themeId);
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, parameter, Integer.class);
+        return count != 0;
+    }
+    
+    @Override
+    public Theme add(final Theme theme) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
@@ -74,13 +97,13 @@ public class ThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String sql = "DELETE FROM theme WHERE id = :id";
         Map<String, Object> parameter = Map.of("id", id);
         namedParameterJdbcTemplate.update(sql, parameter);
     }
 
-    private Theme createTheme(ResultSet resultSet) throws SQLException {
+    private Theme createTheme(final ResultSet resultSet) throws SQLException {
         return new Theme(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),

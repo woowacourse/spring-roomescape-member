@@ -7,4 +7,8 @@ import roomescape.theme.domain.Theme;
 
 public interface ThemeDao extends Dao<Theme> {
     List<Theme> findRankedByPeriod(LocalDate startDate, LocalDate endDate);
+
+    Boolean existsByName(String name);
+
+    Boolean existsByReservationThemeId(Long themeId);
 }

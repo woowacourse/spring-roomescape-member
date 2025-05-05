@@ -8,39 +8,37 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.common.Dao;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.InvalidIdException;
 import roomescape.common.exception.InvalidTimeException;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.dao.ReservationDaoImpl;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservationTime.dao.ReservationTimeDao;
+import roomescape.reservationTime.dao.ReservationTimeDaoImpl;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.dao.ThemeDaoImpl;
-import roomescape.theme.domain.Theme;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
-    private Dao<ReservationTime> reservationTimeDao;
+    private ReservationTimeDao reservationTimeDao;
     private ThemeDao themeDao;
-    private Dao<Reservation> reservationDao;
+    private ReservationDao reservationDao;
 
     private ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
-        reservationTimeDao = mock(ReservationTimeDao.class);
-        reservationDao = mock(ReservationDao.class);
+        reservationTimeDao = mock(ReservationTimeDaoImpl.class);
+        reservationDao = mock(ReservationDaoImpl.class);
         themeDao = mock(ThemeDaoImpl.class);
 
         reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
@@ -64,17 +62,14 @@ class ReservationServiceTest {
     void exception_not_available() {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now().plusHours(1));
         when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
-
-        Theme theme = new Theme(1L, "theme1", "description1", "picture1");
-        Reservation reservation = new Reservation(1L, "kim", LocalDate.now(), reservationTime, theme);
-        when(reservationDao.findAll()).thenReturn(List.of(reservation));
+        when(reservationDao.existsByDateAndTimeId(LocalDate.now(), 1L)).thenReturn(true);
 
         ReservationRequest reservationRequest = new ReservationRequest("lee", LocalDate.now(), 1L, 1L);
         assertThatThrownBy(() -> reservationService.add(reservationRequest))
                 .isInstanceOf(DuplicateException.class);
 
         verify(reservationTimeDao, times(1)).findById(1L);
-        verify(reservationDao, times(1)).findAll();
+        verify(reservationDao, times(1)).existsByDateAndTimeId(LocalDate.now(), 1L);
     }
 
     @DisplayName("예약 추가 시 존재하지 않는 시간 아이디를 조회하려고 할 때 예외를 발생시킨다")

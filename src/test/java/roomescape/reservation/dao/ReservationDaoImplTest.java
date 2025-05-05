@@ -1,8 +1,9 @@
-package roomescape.theme.dao;
+package roomescape.reservation.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,22 +14,24 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.reservation.dao.ReservationDaoImpl;
+import roomescape.reservation.domain.Reservation;
 import roomescape.reservationTime.dao.ReservationTimeDaoImpl;
+import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.theme.dao.ThemeDaoImpl;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
-@Import({ThemeDaoImpl.class, ReservationTimeDaoImpl.class, ReservationDaoImpl.class})
-class ThemeDaoImplTest {
+@Import({ReservationDaoImpl.class, ReservationTimeDaoImpl.class, ThemeDaoImpl.class})
+class ReservationDaoImplTest {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Autowired
-    private ThemeDaoImpl themeDaoImpl;
+    private ReservationDaoImpl reservationDaoImpl;
     @Autowired
     private ReservationTimeDaoImpl reservationTimeDaoImpl;
     @Autowired
-    private ReservationDaoImpl reservationDaoImpl;
+    private ThemeDaoImpl themeDaoImpl;
 
     @BeforeEach
     void setUp() {
@@ -76,6 +79,12 @@ class ThemeDaoImplTest {
                         "start_at", "10:00"
                 )
         );
+        namedParameterJdbcTemplate.update(
+                insertSqlReservationTime,
+                Map.of(
+                        "start_at", "11:00"
+                )
+        );
 
         String insertSqlTheme = "INSERT INTO theme(name, description, thumbnail) VALUES (:name, :description, :thumbnail)";
         namedParameterJdbcTemplate.update(
@@ -86,81 +95,62 @@ class ThemeDaoImplTest {
                         "thumbnail", "horror.jpg"
                 )
         );
-        namedParameterJdbcTemplate.update(
-                insertSqlTheme,
-                Map.of(
-                        "name", "방 탈출2",
-                        "description", "동화 테마",
-                        "thumbnail", "fairytale.jpg"
-                )
-        );
 
         String insertSqlReservation = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";
         namedParameterJdbcTemplate.update(
                 insertSqlReservation,
                 Map.of(
                         "name", "홍길동",
-                        "date", LocalDate.now().minusDays(2).toString(),
+                        "date", "2025-05-01",
                         "time_id", 1L,
                         "theme_id", 1L
                 )
         );
     }
 
-    @DisplayName("테마 내역을 조회하는 기능을 구현한다")
+    @DisplayName("예약 내역을 조회하는 기능을 구현한다")
     @Test
     void findAll() {
-        List<Theme> themes = themeDaoImpl.findAll();
+        List<Reservation> reservations = reservationDaoImpl.findAll();
 
-        assertThat(themes).hasSize(2);
+        assertThat(reservations).hasSize(1);
     }
 
-    @DisplayName("테마 내역을 아이디로 조회하는 기능을 구현한다")
+    @DisplayName("예약 내역을 아이디로 조회하는 기능을 구현한다")
     @Test
     void findById() {
-        Theme theme = themeDaoImpl.findById(1L).get();
+        Reservation reservation = reservationDaoImpl.findById(1L).get();
 
-        assertThat(theme.getId()).isEqualTo(1L);
+        assertThat(reservation.getId()).isEqualTo(1L);
     }
 
-    @DisplayName("일정 기간 동안 순위권 내의 테마 내역을 조회하는 기능을 구현한다")
+    @DisplayName("날짜와 시간 아이디로 예약 내역이 존재하는지 확인하는 기능을 구현한다")
     @Test
-    void findRankedByPeriod() {
-        LocalDate startDate = LocalDate.now().minusDays(7);
-        LocalDate endDate = LocalDate.now().minusDays(1);
-
-        List<Theme> rankedThemes = themeDaoImpl.findRankedByPeriod(startDate, endDate);
-
-        assertThat(rankedThemes).hasSize(1);
+    void existsByDateAndTimeId() {
+        assertThat(reservationDaoImpl.existsByDateAndTimeId(LocalDate.of(2025, 5, 1), 1L)).isTrue();
     }
 
-    @DisplayName("테마 이름으로 테마 내역이 존재하는지 확인하는 기능을 구현한다")
-    @Test
-    void existsByName() {
-        assertThat(themeDaoImpl.existsByName("방 탈출1")).isTrue();
-    }
-
-    @DisplayName("해당 테마 아이디로 예약 내역이 존재하는지 확인하는 기능을 구현한다")
-    @Test
-    void existsByReservationThemeId() {
-        assertThat(themeDaoImpl.existsByReservationThemeId(1L)).isTrue();
-    }
-
-    @DisplayName("새로운 테마 내역을 추가하는 기능을 구현한다")
+    @DisplayName("예약 내역을 추가하는 기능을 구현한다")
     @Test
     void add() {
-        Theme theme = new Theme(1L, "name1", "description1", "thumbnail1");
+        Reservation reservation = new Reservation(
+                2L,
+                "곰돌이",
+                LocalDate.parse("2025-05-01"),
+                new ReservationTime(2L, LocalTime.parse("11:00")),
+                new Theme(1L, "방 탈출1", "공포 테마", "horror.jpg")
+        );
 
-        themeDaoImpl.add(theme);
+        reservationDaoImpl.add(reservation);
 
-        assertThat(themeDaoImpl.findAll()).hasSize(3);
+        assertThat(reservationDaoImpl.findAll()).hasSize(2);
     }
 
-    @DisplayName("기존의 테마 내역을 삭제하는 기능을 구현한다")
+    @DisplayName("예약 내역을 삭제하는 기능을 구현한다")
     @Test
     void deleteById() {
-        themeDaoImpl.deleteById(2L);
+        reservationDaoImpl.deleteById(1L);
 
-        assertThat(themeDaoImpl.findAll()).hasSize(1);
+        assertThat(reservationDaoImpl.findAll()).hasSize(0);
     }
 }

@@ -1,10 +1,8 @@
-package roomescape.reservation.dao;
+package roomescape.reservationTime.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,22 +12,20 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservationTime.dao.ReservationTimeDao;
+import roomescape.reservation.dao.ReservationDaoImpl;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.dao.ThemeDaoImpl;
-import roomescape.theme.domain.Theme;
 
 @JdbcTest(properties = "spring.sql.init.mode=never")
-@Import({ReservationDao.class, ReservationTimeDao.class, ThemeDaoImpl.class})
-class ReservationDaoTest {
+@Import({ReservationTimeDaoImpl.class, ReservationDaoImpl.class, ThemeDaoImpl.class})
+class ReservationTimeDaoImplTest {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Autowired
-    private ReservationDao reservationDao;
+    private ReservationTimeDaoImpl reservationTimeDaoImpl;
     @Autowired
-    private ReservationTimeDao reservationTimeDao;
+    private ReservationDaoImpl reservationDaoImpl;
     @Autowired
     private ThemeDaoImpl themeDaoImpl;
 
@@ -108,43 +104,47 @@ class ReservationDaoTest {
         );
     }
 
-    @DisplayName("예약 내역을 조회하는 기능을 구현한다")
+    @DisplayName("시간 내역을 조회하는 기능을 구현한다")
     @Test
     void findAll() {
-        List<Reservation> reservations = reservationDao.findAll();
-
-        assertThat(reservations).hasSize(1);
+        assertThat(reservationTimeDaoImpl.findAll()).hasSize(2);
     }
 
-    @DisplayName("예약 내역을 아이디로 조회하는 기능을 구현한다")
+    @DisplayName("시간 내역을 아이디로 조회하는 기능을 구현한다")
     @Test
     void findById() {
-        Reservation reservation = reservationDao.findById(1L).get();
+        ReservationTime reservationTime = reservationTimeDaoImpl.findById(1L).get();
 
-        assertThat(reservation.getId()).isEqualTo(1L);
+        assertThat(reservationTime.getId()).isEqualTo(1L);
     }
 
-    @DisplayName("예약 내역을 추가하는 기능을 구현한다")
+    @DisplayName("시작 시간으로 시간 내역이 존재하는지 확인하는 기능을 구현한다")
+    @Test
+    void existsByStartAt() {
+        assertThat(reservationTimeDaoImpl.existsByStartAt(LocalTime.of(10, 0))).isTrue();
+    }
+
+    @DisplayName("해당 시간 아이디로 예약 내역이 존재하는지 확인하는 기능을 구현한다")
+    @Test
+    void existsByReservationTimeId() {
+        assertThat(reservationTimeDaoImpl.existsByReservationTimeId(1L)).isTrue();
+    }
+
+    @DisplayName("시간 내역을 추가하는 기능을 구현한다")
     @Test
     void add() {
-        Reservation reservation = new Reservation(
-                2L,
-                "곰돌이",
-                LocalDate.parse("2025-05-01"),
-                new ReservationTime(2L, LocalTime.parse("11:00")),
-                new Theme(1L, "방 탈출1", "공포 테마", "horror.jpg")
-        );
+        ReservationTime reservationTime = new ReservationTime(3L, LocalTime.of(12, 0));
 
-        reservationDao.add(reservation);
+        reservationTimeDaoImpl.add(reservationTime);
 
-        assertThat(reservationDao.findAll()).hasSize(2);
+        assertThat(reservationTimeDaoImpl.findAll()).hasSize(3);
     }
 
-    @DisplayName("예약 내역을 삭제하는 기능을 구현한다")
+    @DisplayName("시간 내역을 삭제하는 기능을 구현한다")
     @Test
     void deleteById() {
-        reservationDao.deleteById(1L);
+        reservationTimeDaoImpl.deleteById(2L);
 
-        assertThat(reservationDao.findAll()).hasSize(0);
+        assertThat(reservationTimeDaoImpl.findAll()).hasSize(1);
     }
 }

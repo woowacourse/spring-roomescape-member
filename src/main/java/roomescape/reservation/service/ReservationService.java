@@ -4,13 +4,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.common.Dao;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.InvalidIdException;
 import roomescape.common.exception.InvalidTimeException;
+import roomescape.reservation.dao.ReservationDao;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
+import roomescape.reservationTime.dao.ReservationTimeDao;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.dto.admin.ReservationTimeResponse;
 import roomescape.theme.dao.ThemeDao;
@@ -24,13 +25,13 @@ public class ReservationService {
     private static final String INVALID_THEME_ID_EXCEPTION_MESSAGE = "해당 테마 아이디는 존재하지 않습니다.";
     private static final String INVALID_ID_EXCEPTION_MESSAGE = "해당 예약 아이디는 존재하지 않습니다";
 
-    private final Dao<Reservation> reservationDao;
-    private final Dao<ReservationTime> reservationTimeDao;
-    private final Dao<Theme> themeDao;
+    private final ReservationDao reservationDao;
+    private final ReservationTimeDao reservationTimeDao;
+    private final ThemeDao themeDao;
 
     public ReservationService(
-            Dao<Reservation> reservationDao,
-            Dao<ReservationTime> reservationTimeDao,
+            ReservationDao reservationDao,
+            ReservationTimeDao reservationTimeDao,
             ThemeDao themeDao
     ) {
         this.reservationDao = reservationDao;
@@ -87,20 +88,18 @@ public class ReservationService {
             final ReservationRequest reservationRequest,
             final ReservationTime reservationTimeResult
     ) {
-        List<Reservation> reservations = reservationDao.findAll();
+        boolean isDuplicate = reservationDao.existsByDateAndTimeId(
+                reservationRequest.date(),
+                reservationTimeResult.getId()
+        );
 
-        boolean isNotAvailable = reservations.stream()
-                .anyMatch(reservation -> reservation.getDate().equals(reservationRequest.date())
-                        && reservation.getTime().equals(reservationTimeResult));
-
-        if (isNotAvailable) {
+        if (isDuplicate) {
             throw new DuplicateException(DUPLICATE_RESERVATION_EXCEPTION_MESSAGE);
         }
     }
 
     public void deleteById(final Long id) {
         searchReservation(id);
-
         reservationDao.deleteById(id);
     }
 

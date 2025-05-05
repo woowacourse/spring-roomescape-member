@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +15,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import roomescape.common.Dao;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.ForeignKeyException;
 import roomescape.common.exception.InvalidIdException;
 import roomescape.reservation.dao.ReservationDao;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservationTime.domain.ReservationTime;
+import roomescape.reservation.dao.ReservationDaoImpl;
 import roomescape.theme.dao.ThemeDao;
 import roomescape.theme.dao.ThemeDaoImpl;
 import roomescape.theme.domain.Theme;
@@ -32,14 +29,14 @@ import roomescape.theme.dto.ThemeRequest;
 class ThemeServiceTest {
 
     private ThemeDao themeDao;
-    private Dao<Reservation> reservationDao;
+    private ReservationDao reservationDao;
 
     private ThemeService themeService;
 
     @BeforeEach
     void setUp() {
         themeDao = mock(ThemeDaoImpl.class);
-        reservationDao = mock(ReservationDao.class);
+        reservationDao = mock(ReservationDaoImpl.class);
 
         themeService = new ThemeService(themeDao, reservationDao);
     }
@@ -69,8 +66,7 @@ class ThemeServiceTest {
     @DisplayName("이미 존재하는 테마를 다시 추가하려는 경우 예외를 발생시킨다")
     @Test
     void exception_add_duplicate_theme() {
-        Theme theme = new Theme(1L, "name1", "description1", "thumbnail1");
-        when(themeDao.findAll()).thenReturn(List.of(theme));
+        when(themeDao.existsByName("name1")).thenReturn(true);
 
         ThemeRequest themeRequest = new ThemeRequest("name1", "description2", "thumbnail2");
         assertThatThrownBy(() -> themeService.add(themeRequest))
@@ -91,10 +87,7 @@ class ThemeServiceTest {
     void exception_delete_reserved_themeId() {
         Theme theme = new Theme(1L, "name1", "description1", "thumbnail1");
         when(themeDao.findById(1L)).thenReturn(Optional.of(theme));
-
-        Reservation reservation = new Reservation(1L, "teddy", LocalDate.now(),
-                new ReservationTime(1L, LocalTime.of(10, 0)), theme);
-        when(reservationDao.findAll()).thenReturn(List.of(reservation));
+        when(themeDao.existsByReservationThemeId(1L)).thenReturn(true);
 
         assertThatThrownBy(() -> themeService.deleteById(1L))
                 .isInstanceOf(ForeignKeyException.class);
