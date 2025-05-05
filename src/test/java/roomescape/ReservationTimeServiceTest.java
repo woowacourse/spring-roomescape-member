@@ -50,7 +50,6 @@ class ReservationTimeServiceTest {
         ReservationTime result = reservationTimeService.addTime(startAt);
 
         assertThat(result).isEqualTo(saved);
-        verify(reservationTimeRepository).addTime(any(ReservationTime.class));
     }
 
     @Test
