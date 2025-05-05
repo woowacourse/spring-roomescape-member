@@ -1,4 +1,4 @@
-package roomescape.reservationtime.dao;
+package roomescape.dao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import roomescape.reservationtime.ReservationTime;
-import roomescape.reservationtime.dto.response.AvailableTimeResponse;
+import roomescape.domain.ReservationTime;
+import roomescape.dto.response.AvailableTimeResponse;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
 

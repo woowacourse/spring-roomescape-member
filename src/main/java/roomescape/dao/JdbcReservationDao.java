@@ -8,6 +8,9 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
@@ -37,11 +40,11 @@ public class JdbcReservationDao implements ReservationDao {
         );
     };
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
@@ -85,12 +88,14 @@ public class JdbcReservationDao implements ReservationDao {
 
     @Override
     public void delete(Long id) {
-        String sql = "delete from reservation where id = ?";
-        jdbcTemplate.update(sql, id);
+        String sql = "delete from reservation where id = :id";
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("id", id);
+        jdbcTemplate.update(sql, parameter);
     }
 
     @Override
-    public List<Reservation> findByTimeId(Long id) {
+    public List<Reservation> findByTimeId(Long timeId) {
         String sql = """
                 SELECT
                     r.id,
@@ -107,9 +112,11 @@ public class JdbcReservationDao implements ReservationDao {
                 ON r.time_id = rt.id
                 JOIN theme AS t
                 ON r.theme_id = t.id
-                WHERE r.time_id = ?
+                WHERE r.time_id = :timeId
                 """;
-        return jdbcTemplate.query(sql, RESERVATION_ROW_MAPPER, id);
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("timeId", timeId);
+        return jdbcTemplate.query(sql, parameter, RESERVATION_ROW_MAPPER);
     }
 
     @Override
@@ -130,10 +137,13 @@ public class JdbcReservationDao implements ReservationDao {
                 ON r.time_id = rt.id
                 JOIN theme AS t
                 ON r.theme_id = t.id
-                WHERE r.id= ?
+                WHERE r.id = :id
                 """;
+
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("id", id);
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, id);
+            Reservation reservation = jdbcTemplate.queryForObject(sql, parameter, RESERVATION_ROW_MAPPER);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -158,10 +168,13 @@ public class JdbcReservationDao implements ReservationDao {
                 ON r.time_id = rt.id
                 JOIN theme AS t
                 ON r.theme_id = t.id
-                WHERE r.date = ? AND rt.start_at = ?
+                WHERE r.date = :date AND rt.start_at = :startAt
                 """;
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("startAt", time);
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(sql, RESERVATION_ROW_MAPPER, date, time);
+            Reservation reservation = jdbcTemplate.queryForObject(sql, parameter, RESERVATION_ROW_MAPPER);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

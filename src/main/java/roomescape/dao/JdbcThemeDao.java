@@ -7,6 +7,9 @@ import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
@@ -22,11 +25,11 @@ public class JdbcThemeDao implements ThemeDao {
                     rs.getString("thumbnail")
             );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
                 .usingGeneratedKeyColumns("id");
@@ -51,16 +54,19 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public int delete(long id) {
-        String sql = "delete from theme where id = ?";
-        return jdbcTemplate.update(sql, id);
+        String sql = "delete from theme where id = :id";
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("id", id);
+        return jdbcTemplate.update(sql, parameter);
     }
 
     @Override
     public Optional<Theme> findByName(String name) {
-        String sql = "select name from theme where name = ?";
-
+        String sql = "select name from theme where name = :name";
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("name", name);
         try {
-            Theme theme = this.jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, name);
+            Theme theme = this.jdbcTemplate.queryForObject(sql, parameter, THEME_ROW_MAPPER);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -69,10 +75,11 @@ public class JdbcThemeDao implements ThemeDao {
 
     @Override
     public Optional<Theme> findById(Long id) {
-        String sql = "select * from theme where id = ?";
-
+        String sql = "select * from theme where id = :id";
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("id", id);
         try {
-            Theme theme = this.jdbcTemplate.queryForObject(sql, THEME_ROW_MAPPER, id);
+            Theme theme = this.jdbcTemplate.queryForObject(sql, parameter, THEME_ROW_MAPPER);
             return Optional.ofNullable(theme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -85,13 +92,17 @@ public class JdbcThemeDao implements ThemeDao {
                 SELECT *
                 FROM (SELECT theme_id, COUNT(*) AS count
                 FROM reservation
-                WHERE date BETWEEN ? AND ?
+                WHERE date BETWEEN :startDate AND :endDate
                 GROUP BY theme_id
                 ) AS r
                 RIGHT JOIN theme AS t ON r.theme_id = t.id
                 ORDER BY count DESC, name
-                LIMIT ?
+                LIMIT :count
                 """;
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, startDate, endDate, count);
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("startDate", startDate)
+                .addValue("endDate", endDate)
+                .addValue("count", count);
+        return jdbcTemplate.query(sql, parameter, THEME_ROW_MAPPER);
     }
 }
