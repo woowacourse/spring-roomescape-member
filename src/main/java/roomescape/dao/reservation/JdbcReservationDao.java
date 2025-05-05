@@ -113,6 +113,52 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public Optional<Reservation> findByTimeId(final Long timeId) {
+        final String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
+                FROM reservation as r 
+                inner join reservation_time as t
+                on r.time_id = t.id
+                inner join theme as th
+                on r.theme_id = th.id
+                WHERE r.time_id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationMapper, timeId).stream().findFirst();
+    }
+
+    @Override
+    public Optional<Reservation> findByThemeId(Long themeId) {
+        final String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name,
+                    r.date,
+                    t.id as time_id,
+                    t.start_at as time_value,
+                    th.id as theme_id,
+                    th.name as theme_name,
+                    th.description as theme_description,
+                    th.thumbnail as theme_thumbnail
+                FROM reservation as r 
+                inner join reservation_time as t
+                on r.time_id = t.id
+                inner join theme as th
+                on r.theme_id = th.id
+                WHERE r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationMapper, themeId).stream().findFirst();
+    }
+
+    @Override
     public boolean existById(Long id) {
         final String sql = """
                 SELECT EXISTS (

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.dao.reservation.ReservationDao;
 import roomescape.dao.theme.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.exception.ReservationExistException;
@@ -21,6 +22,9 @@ class ThemeServiceTest {
 
     @Mock
     ThemeDao themeDao;
+
+    @Mock
+    ReservationDao reservationDao;
 
     @InjectMocks
     ThemeService themeService;
@@ -44,7 +48,7 @@ class ThemeServiceTest {
 
         // given
         when(themeDao.findById(1L)).thenReturn(Optional.of(Theme.load(1L, "test", "test", "test")));
-        when(themeDao.deleteIfNoReservation(1L)).thenReturn(true);
+        when(reservationDao.findByThemeId(1L)).thenReturn(Optional.empty());
 
         // when & then
         assertThatCode(() -> themeService.deleteIfNoReservation(1L))
@@ -57,7 +61,7 @@ class ThemeServiceTest {
 
         // given
         when(themeDao.findById(1L)).thenReturn(Optional.of(Theme.load(1L, "test", "test", "test")));
-        when(themeDao.deleteIfNoReservation(1L)).thenReturn(false);
+        when(reservationDao.findByThemeId(1L)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteIfNoReservation(1L))

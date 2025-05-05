@@ -122,4 +122,74 @@ class JdbcReservationDaoTest {
                 () -> assertThat(optionalReservation.get()).isEqualTo(savedReservation)
         );
     }
+
+    @DisplayName("타임 아이디에 해당하는 예약이 있으면 찾는다")
+    @Test
+    void findByTimeId_True() {
+
+        // given
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.now().plusHours(1));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        Theme theme = Theme.create("test", "test", "test");
+        Theme savedTheme = jdbcThemeDao.create(theme);
+        Reservation reservation = Reservation.create("체체", LocalDate.now(),
+                savedReservationTime, savedTheme);
+        jdbcReservationDao.create(reservation);
+
+        // when
+        Optional<Reservation> reservationOptional = jdbcReservationDao.findByTimeId(savedReservationTime.getId());
+
+        // then
+        assertThat(reservationOptional.isPresent()).isTrue();
+    }
+
+    @DisplayName("타임 아이디에 해당하는 예약이 존재하지 않으면 빈 Optinal을 반환한다")
+    @Test
+    void findByTimeId_False() {
+
+        // given
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.now().plusHours(1));
+        jdbcReservationTimeDao.create(reservationTime);
+
+        // when
+        Optional<Reservation> reservationOptional = jdbcReservationDao.findByTimeId(100L);
+
+        // then
+        assertThat(reservationOptional.isPresent()).isFalse();
+    }
+
+    @DisplayName("테마 아이디에 해당하는 예약이 있으면 찾는다")
+    @Test
+    void findByThemeId_True() {
+
+        // given
+        ReservationTime reservationTime = ReservationTime.create(LocalTime.now().plusHours(1));
+        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        Theme theme = Theme.create("test", "test", "test");
+        Theme savedTheme = jdbcThemeDao.create(theme);
+        Reservation reservation = Reservation.create("체체", LocalDate.now(),
+                savedReservationTime, savedTheme);
+        jdbcReservationDao.create(reservation);
+
+        // when
+        Optional<Reservation> reservationOptional = jdbcReservationDao.findByThemeId(savedTheme.getId());
+
+        // then
+        assertThat(reservationOptional.isPresent()).isTrue();
+    }
+
+    @DisplayName("테마 아이디에 해당하는 예약이 존재하지 않으면 빈 Optinal을 반환한다")
+    @Test
+    void findByThemeId_False() {
+
+        // given
+        Theme theme = Theme.create("test", "test", "test");
+        jdbcThemeDao.create(theme);
+
+        // when
+        Optional<Reservation> reservationOptional = jdbcReservationDao.findByThemeId(100L);
+
+        // then
+        assertThat(reservationOptional.isPresent()).isFalse();
+    }
 }

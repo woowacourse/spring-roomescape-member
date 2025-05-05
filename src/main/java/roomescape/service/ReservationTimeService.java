@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.dao.reservation.ReservationDao;
 import roomescape.dao.reservationTime.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
@@ -18,9 +19,11 @@ import roomescape.exception.ReservationExistException;
 public class ReservationTimeService {
 
     private final ReservationTimeDao reservationTimeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(final ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
+        this.reservationDao = reservationDao;
     }
 
     public ReservationTimeCreateResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
@@ -39,12 +42,12 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public void deleteIfNoReservation(final long id) {
+    public void deleteIfNoReservation(final Long id) {
         ReservationTime reservationTime = findById(id);
-        if (reservationTimeDao.deleteIfNoReservation(reservationTime.getId())) {
-            return;
+        if (reservationDao.findByTimeId(id).isPresent()) {
+            throw new ReservationExistException(ExceptionCause.RESERVATION_EXIST_TIME);
         }
-        throw new ReservationExistException(ExceptionCause.RESERVATION_EXIST_TIME);
+        reservationTimeDao.delete(reservationTime);
     }
 
     public ReservationTime findById(final Long id) {

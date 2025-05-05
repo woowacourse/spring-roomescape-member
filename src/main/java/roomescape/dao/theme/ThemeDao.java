@@ -13,7 +13,7 @@ public interface ThemeDao {
 
     Theme create(Theme theme);
 
-    boolean deleteIfNoReservation(Long id);
+    void delete(Theme theme);
 
     List<Theme> findPopularThemesInRecentSevenDays(LocalDate startDate, LocalDate endDate);
 }

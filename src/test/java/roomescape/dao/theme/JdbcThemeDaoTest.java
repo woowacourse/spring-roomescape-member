@@ -1,6 +1,7 @@
 package roomescape.dao.theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -18,7 +19,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import roomescape.dao.reservation.JdbcReservationDao;
 import roomescape.dao.reservationTime.JdbcReservationTimeDao;
-import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -30,10 +30,10 @@ class JdbcThemeDaoTest {
 
     @Autowired
     private JdbcReservationTimeDao jdbcReservationTimeDao;
-    @Autowired
-    private JdbcReservationDao jdbcReservationDao;
+
     @Autowired
     private JdbcThemeDao jdbcThemeDao;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -81,24 +81,8 @@ class JdbcThemeDaoTest {
         Theme savedTheme = jdbcThemeDao.create(theme);
 
         // when & then
-        assertThat(jdbcThemeDao.deleteIfNoReservation(savedTheme.getId())).isTrue();
-    }
-
-    @DisplayName("데이터베이스에 특정 테마가 예약에 사용되는 경우 삭제하지 않는다.")
-    @Test
-    void deleteIfReservationExist() {
-
-        // given
-        LocalTime time = LocalTime.of(10, 10);
-        LocalDate date = LocalDate.now().plusDays(1);
-        Theme theme = Theme.create("test", "test", "test");
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(time));
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
-        Reservation savedReservation = jdbcReservationDao.create(reservation);
-
-        // when & then
-        assertThat(jdbcThemeDao.deleteIfNoReservation(savedTheme.getId())).isFalse();
+        assertThatCode(() -> jdbcThemeDao.delete(savedTheme))
+                .doesNotThrowAnyException();
     }
 
     @DisplayName("id로 테마를 찾는다.")
@@ -119,7 +103,7 @@ class JdbcThemeDaoTest {
         );
     }
 
-    @DisplayName("")
+    @DisplayName("최근 7일간 가장 인기있었던 테마 상위 10개를 검색한다.")
     @Test
     void findPopularThemesInRecentSevenDaysTest() {
 

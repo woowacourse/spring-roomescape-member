@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import roomescape.dao.reservation.ReservationDao;
 import roomescape.dao.theme.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
@@ -17,9 +18,11 @@ import roomescape.exception.ReservationExistException;
 public class ThemeService {
 
     private final ThemeDao themeDao;
+    private final ReservationDao reservationDao;
 
-    public ThemeService(final ThemeDao themeDao) {
+    public ThemeService(final ThemeDao themeDao, ReservationDao reservationDao) {
         this.themeDao = themeDao;
+        this.reservationDao = reservationDao;
     }
 
     public List<ThemeResponse> findAll() {
@@ -46,10 +49,10 @@ public class ThemeService {
 
     public void deleteIfNoReservation(final long id) {
         Theme theme = findById(id);
-        if (themeDao.deleteIfNoReservation(theme.getId())) {
-            return;
+        if (reservationDao.findByThemeId(id).isPresent()) {
+            throw new ReservationExistException(ExceptionCause.RESERVATION_EXIST_THEME);
         }
-        throw new ReservationExistException(ExceptionCause.RESERVATION_EXIST_THEME);
+        themeDao.delete(theme);
     }
 
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {

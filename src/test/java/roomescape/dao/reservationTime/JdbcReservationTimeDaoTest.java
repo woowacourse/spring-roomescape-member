@@ -1,6 +1,7 @@
 package roomescape.dao.reservationTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
@@ -29,8 +30,10 @@ class JdbcReservationTimeDaoTest {
 
     @Autowired
     private JdbcReservationTimeDao jdbcReservationTimeDao;
+
     @Autowired
     private JdbcReservationDao jdbcReservationDao;
+
     @Autowired
     private JdbcThemeDao jdbcThemeDao;
 
@@ -73,30 +76,9 @@ class JdbcReservationTimeDaoTest {
         ReservationTime reservationTime = ReservationTime.create(LocalTime.of(10, 10));
         ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
 
-        // when
-        boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
-
-        // then
-        assertThat(result).isTrue();
-    }
-
-    @DisplayName("데이터베이스에서 예약이 존재하여 예약 시간이 삭제되지 않을 경우 false를 반환한다.")
-    @Test
-    void deleteIfExistReservationReturnFalseTest() {
-
-        // given
-        ReservationTime reservationTime = ReservationTime.create(LocalTime.now().plusHours(1));
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
-        Theme theme = Theme.create("test", "test", "test");
-        Theme savedTheme = jdbcThemeDao.create(theme);
-        jdbcReservationDao.create(
-                Reservation.create("test", LocalDate.now(), savedReservationTime, savedTheme));
-
-        // when
-        boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
-
-        // then
-        assertThat(result).isFalse();
+        // when & then
+        assertThatCode(() -> jdbcReservationTimeDao.delete(savedReservationTime))
+                .doesNotThrowAnyException();
     }
 
     @DisplayName("데이터베이스에서 id, 테마, 날짜로 시간을 찾는다.")

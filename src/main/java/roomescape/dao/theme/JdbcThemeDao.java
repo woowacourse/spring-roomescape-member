@@ -54,17 +54,9 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public boolean deleteIfNoReservation(Long id) {
-        final String sql = """
-                DELETE FROM theme t 
-                WHERE t.id = ? 
-                AND NOT EXISTS (
-                    SELECT 1 
-                    FROM reservation r 
-                    WHERE r.theme_id = t.id
-                )
-                """;
-        return jdbcTemplate.update(sql, id) == 1;
+    public void delete(Theme theme) {
+        final String sql = "DELETE FROM theme t WHERE t.id = ?";
+        jdbcTemplate.update(sql, theme.getId());
     }
 
     @Override

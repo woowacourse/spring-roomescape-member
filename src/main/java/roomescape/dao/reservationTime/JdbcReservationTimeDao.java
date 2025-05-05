@@ -45,17 +45,9 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public boolean deleteIfNoReservation(Long id) {
-        String sql = """
-                DELETE FROM reservation_time rt 
-                WHERE rt.id = ? 
-                AND NOT EXISTS (
-                    SELECT 1 
-                    FROM reservation r 
-                    WHERE r.time_id = rt.id
-                )
-                """;
-        return jdbcTemplate.update(sql, id) == 1;
+    public void delete(ReservationTime reservationTime) {
+        final String sql = "DELETE FROM reservation_time rt WHERE rt.id = ?";
+        jdbcTemplate.update(sql, reservationTime.getId());
     }
 
     @Override

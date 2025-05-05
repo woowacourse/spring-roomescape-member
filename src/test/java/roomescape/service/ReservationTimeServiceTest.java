@@ -16,8 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.dao.reservation.ReservationDao;
 import roomescape.dao.reservationTime.ReservationTimeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.response.ReservationTimeUserResponse;
 import roomescape.exception.ReservationExistException;
 
@@ -27,8 +30,12 @@ class ReservationTimeServiceTest {
     @Mock
     ReservationTimeDao reservationTimeDao;
 
+    @Mock
+    ReservationDao reservationDao;
+
     @InjectMocks
     ReservationTimeService reservationTimeService;
+
 
     @DisplayName("존재하지 않는 id로 예약 시간을 찾을 경우 예외가 발생한다.")
     @Test
@@ -67,8 +74,9 @@ class ReservationTimeServiceTest {
     void deleteIfNoReservationTest() {
 
         // given
-        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(ReservationTime.load(1L, LocalTime.of(10, 10))));
-        when(reservationTimeDao.deleteIfNoReservation(1L)).thenReturn(true);
+        ReservationTime reservationTime = ReservationTime.load(1L, LocalTime.of(10, 10));
+        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
+        when(reservationDao.findByTimeId(1L)).thenReturn(Optional.empty());
 
         // when & then
         assertThatCode(() -> reservationTimeService.deleteIfNoReservation(1L))
@@ -80,9 +88,11 @@ class ReservationTimeServiceTest {
     void deleteIfNoReservationThrowExceptionTest() {
 
         // given
-        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(ReservationTime.load(1L, LocalTime.of(10, 10))));
-        when(reservationTimeDao.deleteIfNoReservation(1L)).thenReturn(false);
-
+        ReservationTime reservationTime = ReservationTime.load(1L, LocalTime.of(10, 10));
+        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
+        when(reservationDao.findByTimeId(1L)).thenReturn(Optional.of(
+                Reservation.load(1L, "test", LocalDate.now(), reservationTime,
+                        Theme.load(1L, "test", "test", "test"))));
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteIfNoReservation(1L))
                 .isInstanceOf(ReservationExistException.class)
