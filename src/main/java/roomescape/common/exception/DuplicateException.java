@@ -1,5 +1,6 @@
 package roomescape.common.exception;
 
+import org.springframework.http.HttpStatus;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.exception.util.ExceptionMessageFormatter;
 
@@ -18,5 +19,10 @@ public class DuplicateException extends BusinessException {
 
     private static String buildUserMessage(final DomainTerm term) {
         return "이미 %s이(가) 존재합니다.".formatted(term.label());
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.CONFLICT;
     }
 }

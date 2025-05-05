@@ -1,5 +1,6 @@
 package roomescape.reservation.exception;
 
+import org.springframework.http.HttpStatus;
 import roomescape.common.exception.BusinessException;
 import roomescape.time.domain.ReservationTime;
 
@@ -17,5 +18,10 @@ public class PastTimeReservationException extends BusinessException {
 
     private static String buildUserMessage() {
         return "이미 지난 시간에는 예약할 수 없습니다.";
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.BAD_REQUEST;
     }
 }

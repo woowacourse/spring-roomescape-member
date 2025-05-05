@@ -1,5 +1,7 @@
 package roomescape.common.exception;
 
+import org.springframework.http.HttpStatus;
+
 import java.util.Optional;
 
 public abstract class BusinessException extends RuntimeException {
@@ -26,4 +28,6 @@ public abstract class BusinessException extends RuntimeException {
         }
         return Optional.empty();
     }
+
+    public abstract HttpStatus getHttpStatus();
 }

@@ -1,5 +1,6 @@
 package roomescape.common.validate;
 
+import org.springframework.http.HttpStatus;
 import roomescape.common.exception.BusinessException;
 import roomescape.common.validate.Validator.ValidationType;
 
@@ -23,5 +24,10 @@ public class InvalidInputException extends BusinessException {
 
     private static String buildUserMessage(final String fieldDescription) {
         return fieldDescription + "을(를) 올바르게 입력해주세요.";
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.BAD_REQUEST;
     }
 }

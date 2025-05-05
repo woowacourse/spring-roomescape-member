@@ -1,5 +1,6 @@
 package roomescape.common.exception;
 
+import org.springframework.http.HttpStatus;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.exception.util.ExceptionMessageFormatter;
 
@@ -18,5 +19,10 @@ public class NotFoundException extends BusinessException {
 
     private static String buildUserMessage(final DomainTerm term) {
         return "삭제할 %s이(가) 존재하지 않습니다.".formatted(term.label());
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.NOT_FOUND;
     }
 }

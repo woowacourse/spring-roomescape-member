@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleBusinessException(final BusinessException ex, final WebRequest request) {
         log.warn("BusinessException ({}): {} at {}", ex.getClass().getSimpleName(), ex.getMessage(), getPath(request));
         return createProblemDetail(
-                HttpStatus.BAD_REQUEST,
+                ex.getHttpStatus(),
                 "비즈니스 로직 오류",
                 ex.getUserMessage().orElse("요청을 처리할 수 없습니다."), request);
     }
