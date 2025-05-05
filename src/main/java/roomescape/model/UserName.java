@@ -6,8 +6,15 @@ public class UserName {
     private final String name;
 
     public UserName(String name) {
+        validateNotNull(name);
         validateNameFormat(name);
         this.name = name;
+    }
+
+    private void validateNotNull(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("이름은 null이 될 수 없습니다.");
+        }
     }
 
     public String getName() {
