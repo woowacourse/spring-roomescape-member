@@ -34,7 +34,7 @@ public class ReservationService {
 
         var reservation = Reservation.reserveNewly(name, date, timeSlot, theme);
         var id = reservationRepository.save(reservation);
-        return Reservation.of(id, name, date, timeSlot, theme);
+        return reservation.withId(id);
     }
 
     private void validateDuplicateReservation(final LocalDate date, final TimeSlot timeSlot) {

@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @ToString
 public class TimeSlot {
 
-    private final Long id;
+    private Long id;
     private final LocalTime startAt;
 
     public TimeSlot(final LocalTime startAt) {
@@ -22,6 +22,14 @@ public class TimeSlot {
     public TimeSlot(final Long id, final LocalTime startAt) {
         this.id = id;
         this.startAt = startAt;
+    }
+
+    public TimeSlot withId(final long id) {
+        if (this.id == null) {
+            this.id = id;
+            return this;
+        }
+        throw new IllegalStateException("타임 슬롯 ID는 재할당할 수 없습니다. 현재 ID: " + this.id);
     }
 
     public boolean isTimeBefore(final LocalTime time) {

@@ -14,7 +14,7 @@ public class Theme {
     private static final int NAME_MAX_LENGTH = 10;
     private static final int DESCRIPTION_MAX_LENGTH = 50;
 
-    private final Long id;
+    private Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
@@ -30,6 +30,14 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme withId(final long id) {
+        if (this.id == null) {
+            this.id = id;
+            return this;
+        }
+        throw new IllegalStateException("테마 ID는 재할당할 수 없습니다. 현재 ID: " + this.id);
     }
 
     private void validateNameLength(final String name) {

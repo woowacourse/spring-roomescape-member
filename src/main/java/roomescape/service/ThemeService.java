@@ -25,7 +25,7 @@ public class ThemeService {
     public Theme register(final String name, final String description, final String thumbnail) {
         var theme = new Theme(name, description, thumbnail);
         var id = themeRepository.save(theme);
-        return new Theme(id, name, description, thumbnail);
+        return theme.withId(id);
     }
 
     public List<Theme> findAllThemes() {

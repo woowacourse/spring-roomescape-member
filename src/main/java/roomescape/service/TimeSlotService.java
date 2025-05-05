@@ -26,7 +26,7 @@ public class TimeSlotService {
     public TimeSlot register(final LocalTime startAt) {
         var timeSlot = new TimeSlot(startAt);
         var id = timeSlotRepository.save(timeSlot);
-        return new TimeSlot(id, startAt);
+        return timeSlot.withId(id);
     }
 
     public List<TimeSlot> findAllTimeSlots() {
