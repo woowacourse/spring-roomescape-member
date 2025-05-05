@@ -14,6 +14,7 @@ import roomescape.exception.NotCorrectDateTimeException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -39,7 +40,7 @@ public class ReservationService {
     }
 
     private void validateDateAndTime(LocalDate date, ReservationTime time) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         if (date.isBefore(now.toLocalDate()) ||
                 (date.isEqual(now.toLocalDate()) && time.isBefore(now.toLocalTime()))) {
             throw new NotCorrectDateTimeException("지나간 날짜와 시간에 대한 예약 생성은 불가능하다.");
