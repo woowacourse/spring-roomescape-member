@@ -61,23 +61,6 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(Reservation reservation) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
-        SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", reservation.getReserverName())
-                .addValue("date", reservation.getDate())
-                .addValue("time_id", reservation.getTimeId());
-        Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
-
-        return new Reservation(id, reservation.getReserverName(), reservation.getDate(),
-                new ReservationTime(reservation.getTimeId(), reservation.getStartAt()),
-                reservation.getTheme());
-    }
-
-    @Override
     public Reservation save(ReserverName reserverName, ReservationDateTime reservationDateTime, Theme theme) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
@@ -141,21 +124,37 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
     @Override
     public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE date = ? AND time_id = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, reservationDate.getDate(), timeId);
-        return count > 0;
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM reservation
+                    WHERE date = ? AND time_id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, reservationDate.getDate(), timeId);
     }
 
     @Override
     public boolean existReservationByTimeId(Long timeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
-        return count > 0;
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 
+                    FROM reservation 
+                    WHERE time_id = ?
+                )
+                """;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, timeId);
     }
 
     @Override
     public boolean existReservationByThemeId(Long themeId) {
-        String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1 
+                    FROM reservation 
+                    WHERE theme_id = ?
+                )
+                """;
         int count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return count > 0;
     }
