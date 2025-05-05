@@ -21,14 +21,14 @@ import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.test.fake.FakeReservationRepository;
-import roomescape.test.fake.FakeReservationTimeRepository;
+import roomescape.test.fake.FakeH2ReservationRepository;
+import roomescape.test.fake.FakeH2ReservationTimeRepository;
 import roomescape.test.fake.FakeThemeRepository;
 
 class ReservationTimeServiceTest {
 
-    private final ReservationRepository reservationRepository = new FakeReservationRepository();
-    private final ReservationTimeRepository timeRepository = new FakeReservationTimeRepository();
+    private final ReservationRepository reservationRepository = new FakeH2ReservationRepository();
+    private final ReservationTimeRepository timeRepository = new FakeH2ReservationTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository();
     private final ReservationTimeService reservationTimeService =
             new ReservationTimeService(reservationRepository, timeRepository);

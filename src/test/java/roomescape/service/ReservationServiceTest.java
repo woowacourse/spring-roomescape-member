@@ -21,8 +21,8 @@ import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.test.fake.FakeReservationRepository;
-import roomescape.test.fake.FakeReservationTimeRepository;
+import roomescape.test.fake.FakeH2ReservationRepository;
+import roomescape.test.fake.FakeH2ReservationTimeRepository;
 import roomescape.test.fake.FakeThemeRepository;
 
 class ReservationServiceTest {
@@ -30,10 +30,11 @@ class ReservationServiceTest {
     private static final LocalDate NEXT_DATE = LocalDate.now().plusDays(1);
     private static final LocalTime PAST_TIME = LocalTime.now().minusSeconds(1);
 
-    private final ReservationRepository reservationRepository = new FakeReservationRepository();
-    private final ReservationTimeRepository timeRepository = new FakeReservationTimeRepository();
+    private final ReservationRepository reservationRepository = new FakeH2ReservationRepository();
+    private final ReservationTimeRepository timeRepository = new FakeH2ReservationTimeRepository();
     private final ThemeRepository themeRepository = new FakeThemeRepository();
-    private final ReservationService reservationService = new ReservationService(reservationRepository, timeRepository,
+    private final ReservationService reservationService = new ReservationService(reservationRepository,
+            timeRepository,
             themeRepository);
 
     @DisplayName("저장된 예약들을 조회할 수 있다")

@@ -15,11 +15,11 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationRepository h2ReservationRepository;
     private final ThemeRepository themeRepository;
 
-    public ThemeService(final ReservationRepository reservationRepository, final ThemeRepository themeRepository) {
-        this.reservationRepository = reservationRepository;
+    public ThemeService(final ReservationRepository h2ReservationRepository, final ThemeRepository themeRepository) {
+        this.h2ReservationRepository = h2ReservationRepository;
         this.themeRepository = themeRepository;
     }
 
@@ -67,7 +67,7 @@ public class ThemeService {
     }
 
     private void validateReservationExistenceInTheme(long themeId) {
-        boolean isExist = reservationRepository.checkExistenceInTheme(themeId);
+        boolean isExist = h2ReservationRepository.checkExistenceInTheme(themeId);
         if (isExist) {
             throw new BadRequestException("[ERROR] 예약이 이미 존재하는 테마를 제거할 수 없습니다.");
         }
