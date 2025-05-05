@@ -31,9 +31,9 @@ class ThemeServiceTest {
         List<Theme> themes = new ArrayList<>();
 
         ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
-        reservationRepository.save(Reservation.createWithoutId("홍길동1", LocalDate.of(2025, 12, 5), null, theme1));
-        reservationRepository.save(Reservation.createWithoutId("홍길동2", LocalDate.of(2025, 12, 6), null, theme1));
-        reservationRepository.save(Reservation.createWithoutId("홍길동3", LocalDate.of(2025, 12, 4), null, theme3));
+        reservationRepository.save(Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"홍길동1", LocalDate.of(2025, 12, 5), null, theme1));
+        reservationRepository.save(Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"홍길동2", LocalDate.of(2025, 12, 6), null, theme1));
+        reservationRepository.save(Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"홍길동3", LocalDate.of(2025, 12, 4), null, theme3));
 
         ThemeRepository themeRepository = new FakeThemeRepository(themes,reservations);
         themeRepository.save(theme1);

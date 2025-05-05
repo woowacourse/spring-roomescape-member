@@ -1,6 +1,8 @@
 package roomescape.reservation.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -23,10 +25,25 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation createWithoutId(final String name, final LocalDate date,
+    public static Reservation createWithoutId(final LocalDateTime now, final String name,
+                                              final LocalDate reservationDate,
                                               final ReservationTime time, final Theme theme
     ) {
-        return new Reservation(null, name, date, time, theme);
+        validateReservationDateTime(now, reservationDate, time);
+        return new Reservation(null, name, reservationDate, time, theme);
+    }
+
+    private static void validateReservationDateTime(LocalDateTime now, LocalDate reservationDate,
+                                                    ReservationTime time) {
+        LocalDate nowDate = now.toLocalDate();
+        if (reservationDate.isBefore(nowDate)) {
+            throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
+        }
+
+        LocalTime nowTime = now.toLocalTime();
+        if (nowDate.isEqual(reservationDate) && time.isBeforeTime(nowTime)) {
+            throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
+        }
     }
 
     public static Reservation createWithId(final Long id, final String name, final LocalDate date,

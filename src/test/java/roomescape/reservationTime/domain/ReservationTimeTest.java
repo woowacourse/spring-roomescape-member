@@ -29,4 +29,15 @@ class ReservationTimeTest {
         Assertions.assertThat(reservationTime.getId()).isEqualTo(1L);
         Assertions.assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 10));
     }
+
+    @ParameterizedTest
+    @CsvSource({"09:00,false", "09:59,false", "10:01,true", "11:00,true"})
+    @DisplayName("이전 시간 확인 테스트")
+    void is_before_time_test(LocalTime time, boolean expected) {
+        ReservationTime reservationTime = ReservationTime.createWithId(1L, LocalTime.of(10, 0));
+
+        boolean beforeTime = reservationTime.isBeforeTime(time);
+
+        Assertions.assertThat(beforeTime).isEqualTo(expected);
+    }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
@@ -119,11 +120,11 @@ class JdbcReservationThemeRepositoryTest {
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
-        Reservation reservation1 = Reservation.createWithoutId("a", LocalDate.of(2000, 11, 2),
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2),
                 reservationTime1.assignId(timeId1), theme1.assignId(themeId1));
-        Reservation reservation2 = Reservation.createWithoutId("b", LocalDate.of(2000, 11, 3),
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"b", LocalDate.of(2000, 11, 3),
                 reservationTime2.assignId(timeId2), theme1.assignId(themeId1));
-        Reservation reservation3 = Reservation.createWithoutId("c", LocalDate.of(2000, 11, 3),
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"c", LocalDate.of(2000, 11, 3),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
@@ -156,13 +157,13 @@ class JdbcReservationThemeRepositoryTest {
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
-        Reservation reservation1 = Reservation.createWithoutId("a", LocalDate.of(2000, 11, 2),
+        Reservation reservation1 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2),
                 reservationTime1.assignId(timeId1), theme1.assignId(themeId1));
-        Reservation reservation2 = Reservation.createWithoutId("b", LocalDate.of(2000, 11, 3),
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"b", LocalDate.of(2000, 11, 3),
                 reservationTime2.assignId(timeId2), theme1.assignId(themeId1));
-        Reservation reservation3 = Reservation.createWithoutId("c", LocalDate.of(2000, 11, 3),
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"c", LocalDate.of(2000, 11, 3),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
-        Reservation reservation4 = Reservation.createWithoutId("c", LocalDate.of(2000, 11, 4),
+        Reservation reservation4 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"c", LocalDate.of(2000, 11, 4),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
@@ -196,13 +197,14 @@ class JdbcReservationThemeRepositoryTest {
         Long themeId2 = repository.save(theme2);
         repository.save(theme3);
 
-        Reservation reservation1 = Reservation.createWithoutId("a", LocalDate.of(2000, 11, 2),
+        Reservation reservation1 = Reservation.createWithoutId(
+                LocalDateTime.of(1999,11,2,20,10),"a", LocalDate.of(2000, 11, 2),
                 reservationTime1.assignId(timeId1), theme1.assignId(themeId1));
-        Reservation reservation2 = Reservation.createWithoutId("b", LocalDate.of(2000, 11, 3),
+        Reservation reservation2 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"b", LocalDate.of(2000, 11, 3),
                 reservationTime2.assignId(timeId2), theme1.assignId(themeId1));
-        Reservation reservation3 = Reservation.createWithoutId("c", LocalDate.of(2000, 11, 3),
+        Reservation reservation3 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"c", LocalDate.of(2000, 11, 3),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
-        Reservation reservation4 = Reservation.createWithoutId("c", LocalDate.of(2000, 11, 4),
+        Reservation reservation4 = Reservation.createWithoutId(LocalDateTime.of(1999,11,2,20,10),"c", LocalDate.of(2000, 11, 4),
                 reservationTime1.assignId(timeId1), theme2.assignId(themeId2));
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
