@@ -82,7 +82,7 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
     }
 
     @Override
-    public List<Long> getBestThemesIdInDays(LocalDate startDate, LocalDate endDate) {
+    public List<Long> getBestThemesIdsInDays(LocalDate startDate, LocalDate endDate) {
         String sql = "select theme_id from reservation where date between ? and ? group by theme_id order by count(*) desc limit 10";
 
         List<Long> longs = jdbcTemplate.queryForList(
