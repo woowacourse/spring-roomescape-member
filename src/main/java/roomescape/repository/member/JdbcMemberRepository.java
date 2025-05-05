@@ -22,23 +22,25 @@ public class JdbcMemberRepository implements MemberRepository {
 
     private final RowMapper<Member> memberRowMapper = (resultSet, rowNumber) -> {
         long id = resultSet.getLong("id");
-        String name = resultSet.getString("username");
+        String username = resultSet.getString("username");
         String password = resultSet.getString("password");
+        String name = resultSet.getString("name");
         Role role = Role.valueOf(resultSet.getString("role"));
 
-        return new Member(id, name, password, role);
+        return new Member(id, username, password, name, role);
     };
 
     @Override
     public long add(Member member) {
-        String sql = "insert into member (username,password,role) values(?,?,?)";
+        String sql = "insert into member (username,password,name,role) values(?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, member.getEmail());
             ps.setString(2, member.getPassword());
-            ps.setString(3, member.getRole().name());
+            ps.setString(3, member.getName());
+            ps.setString(4, member.getRole().name());
             return ps;
         }, keyHolder);
 
@@ -54,7 +56,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findById(long id) {
         try {
-            String sql = "select id,username,password,role from member where id=?";
+            String sql = "select id,username,password,name,role from member where id=?";
             return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -64,7 +66,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findByEmailAndPassword(String username, String password) {
         try {
-            String sql = "select id,username,password,role from member where username=? and password=?";
+            String sql = "select id,username,password,name,role from member where username=? and password=?";
             return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper, username, password));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

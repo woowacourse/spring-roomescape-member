@@ -28,14 +28,14 @@ class MemberServiceTest {
 
     @Test
     void 회원가입_테스트() {
-        long id = memberService.signup(new SignupRequestDto("praisebak", "password"));
+        long id = memberService.signup(new SignupRequestDto("praisebak", "password", "투다"));
         Member memberById = memberService.getMemberById(id);
         assertThat(id).isEqualTo(memberById.getId());
     }
 
     @Test
     void 로그인시_유저가_존재하면_토큰을_생성한다() {
-        memberService.signup(new SignupRequestDto("praisebak", "password"));
+        memberService.signup(new SignupRequestDto("praisebak", "password", "투다"));
 
         String token = memberService.login(new LoginRequestDto("praisebak", "password"));
 
@@ -44,10 +44,10 @@ class MemberServiceTest {
 
     @Test
     void id로_유저를_가져올_수_있다() {
-        SignupRequestDto signupRequestDto = new SignupRequestDto("praisebak", "password");
+        SignupRequestDto signupRequestDto = new SignupRequestDto("praisebak", "password", "투다");
         long id = memberService.signup(signupRequestDto);
         Member memberById = memberService.getMemberById(id);
 
-        assertThat(memberById.getEmail().equals(signupRequestDto.username()));
+        assertThat(memberById.getEmail().equals(signupRequestDto.email()));
     }
 }

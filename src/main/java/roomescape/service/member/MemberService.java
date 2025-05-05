@@ -42,4 +42,9 @@ public class MemberService {
     public Member getMemberById(long id) {
         return memberRepository.findById(id).orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다"));
     }
+
+    public Member getMemberByToken(String token) {
+        long id = jwtTokenProvider.resolveToken(token);
+        return getMemberById(id);
+    }
 }
