@@ -18,6 +18,7 @@ import roomescape.globalException.NotFoundException;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.repository.JdbcReservationRepository;
 import roomescape.reservation.service.ReservationService;
+import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.ReservationTimeTestDataConfig;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
@@ -58,7 +59,7 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime = ReservationTimeFixture.create(DEFAULT_DUMMY_TIME);
 
         // when
-        ReservationTimeResponseDto resDto = service.convertToReservationTimeResponseDto(reservationTime);
+        ReservationTimeResponseDto resDto = ReservationTimeMapper.toResponseDto(reservationTime);
 
         // then
         Assertions.assertThat(resDto.startAt()).isEqualTo(DEFAULT_DUMMY_TIME);

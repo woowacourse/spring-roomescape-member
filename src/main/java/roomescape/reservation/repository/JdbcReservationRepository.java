@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,29 @@ import roomescape.theme.domain.Theme;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
+        ReservationTime time = new ReservationTime(
+                resultSet.getLong("time_id"),
+                resultSet.getTime("time_value").toLocalTime()
+        );
+
+        Theme theme = new Theme(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("theme_description"),
+                resultSet.getString("theme_thumbnail")
+        );
+
+        Reservation reservation = new Reservation(
+                resultSet.getLong("id"),
+                resultSet.getString("name"),
+                resultSet.getDate("date").toLocalDate(),
+                time,
+                theme
+        );
+        return reservation;
+    };
 
     public JdbcReservationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -38,30 +62,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "    ON r.time_id = time.id\n" +
                 "    INNER JOIN theme AS theme\n" +
                 "    ON r.theme_id = theme.id";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> {
-                    ReservationTime time = new ReservationTime(
-                            resultSet.getLong("time_id"),
-                            resultSet.getTime("time_value").toLocalTime()
-                    );
-
-                    Theme theme = new Theme(
-                            resultSet.getLong("theme_id"),
-                            resultSet.getString("theme_name"),
-                            resultSet.getString("theme_description"),
-                            resultSet.getString("theme_thumbnail")
-                    );
-
-                    Reservation reservation = new Reservation(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getDate("date").toLocalDate(),
-                            time,
-                            theme
-                    );
-                    return reservation;
-                });
+        return jdbcTemplate.query(sql, reservationRowMapper);
     }
 
     @Override
@@ -89,29 +90,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "WHERE r.id = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    sql,
-                    (resultSet, rowNum) -> {
-                        ReservationTime time = new ReservationTime(
-                                resultSet.getLong("time_id"),
-                                resultSet.getTime("time_value").toLocalTime()
-                        );
-
-                        Theme theme = new Theme(
-                                resultSet.getLong("theme_id"),
-                                resultSet.getString("theme_name"),
-                                resultSet.getString("theme_description"),
-                                resultSet.getString("theme_thumbnail")
-                        );
-
-                        return new Reservation(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getDate("date").toLocalDate(),
-                                time,
-                                theme
-                        );
-                    }, id)
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationRowMapper, id)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

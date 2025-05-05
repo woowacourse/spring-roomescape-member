@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,21 +18,19 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (rs, rowNum) -> new ReservationTime(
+            rs.getLong("id"),
+            rs.getTime("start_at").toLocalTime()
+    );
+
     public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     @Override
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query(
-                "select id, start_at from reservation_time",
-                (resultSet, rowNum) -> {
-                    ReservationTime reservationTime = new ReservationTime(
-                            resultSet.getLong("id"),
-                            resultSet.getTime("start_at").toLocalTime()
-                    );
-                    return reservationTime;
-                });
+        return jdbcTemplate.query("select id, start_at from reservation_time", reservationTimeRowMapper);
     }
 
     @Override
@@ -45,12 +44,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         String sql = "select id, start_at from reservation_time where id = ?";
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql,
-                    (resultSet, rowNum) ->
-                            new ReservationTime(
-                                    resultSet.getLong("id"),
-                                    resultSet.getTime("start_at").toLocalTime()
-                            ), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, reservationTimeRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
