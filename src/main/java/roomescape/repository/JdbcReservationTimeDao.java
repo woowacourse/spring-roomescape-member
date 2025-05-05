@@ -43,7 +43,7 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
             long id = jdbcInsert.executeAndReturnKey(params).longValue();
             return findById(id);
         } catch (DuplicateKeyException e) {
-            throw new IllegalStateException("[ERROR] 이미 등록된 예약 시간 입니다.");
+            throw new IllegalStateException("[ERROR] 이미 등록된 예약 시간 입니다.", e);
         }
     }
 
@@ -70,7 +70,7 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
         try {
             return jdbcTemplate.update(sql, id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("[ERROR] 이 시간의 예약이 이미 존재합니다. id : " + id);
+            throw new IllegalStateException("[ERROR] 이 시간의 예약이 이미 존재합니다. id : " + id, e);
         }
     }
 }
