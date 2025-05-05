@@ -53,6 +53,20 @@ public class ReservationTimeServiceTest {
     }
 
     @Test
+    @DisplayName("동일한 시간으로 예약 시간을 중복 등록할 경우 예외가 발생한다.")
+    void createDuplicateReservationTimeTest() {
+        // given
+        LocalTime duplicateTime = LocalTime.of(15, 40);
+        ReservationTimeRequest request = new ReservationTimeRequest(duplicateTime);
+        reservationTimeService.createReservationTime(request);
+
+        // when - then
+        assertThatThrownBy(() -> reservationTimeService.createReservationTime(request))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("중복된 시간은 추가할 수 없습니다.");
+    }
+
+    @Test
     @DisplayName("예약 시간 전체 조회 테스트")
     void getReservationTimesTest() {
         // given
@@ -110,6 +124,34 @@ public class ReservationTimeServiceTest {
 
         // then
         assertThat(reservationTimeService.getReservationTimes().size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 시간을 삭제할 경우 예외가 발생한다.")
+    void deleteReservationTimeWithExistingReservationTest() {
+        // given
+        ReservationTimeRequest timeRequest = new ReservationTimeRequest(LocalTime.of(15, 40));
+        reservationTimeService.createReservationTime(timeRequest);
+
+        ThemeRequest themeRequest = new ThemeRequest(
+                "레벨2 탈출",
+                "우테코 레벨2를 탈출하는 내용입니다.",
+                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        );
+        themeService.createTheme(themeRequest);
+
+        ReservationRequest reservationRequest = new ReservationRequest(
+                LocalDate.of(2025, 8, 5),
+                "브라운",
+                1L,
+                1L
+        );
+        reservationService.createReservation(reservationRequest);
+
+        // when - then
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(1L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("예약이 이미 존재하는 시간입니다.");
     }
 
     @Test
