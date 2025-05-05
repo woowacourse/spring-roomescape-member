@@ -9,6 +9,8 @@ import roomescape.theme.domain.Theme;
 
 public class Reservation {
 
+    private static int MAX_NAME = 255;
+
     private final Long id;
     private final String name;
     private final LocalDate date;
@@ -29,12 +31,13 @@ public class Reservation {
                                               final LocalDate reservationDate,
                                               final ReservationTime time, final Theme theme
     ) {
+        validateName(name);
         validateReservationDateTime(now, reservationDate, time);
         return new Reservation(null, name, reservationDate, time, theme);
     }
 
-    private static void validateReservationDateTime(LocalDateTime now, LocalDate reservationDate,
-                                                    ReservationTime time) {
+    private static void validateReservationDateTime(final LocalDateTime now,final LocalDate reservationDate,
+                                                    final ReservationTime time) {
         LocalDate nowDate = now.toLocalDate();
         if (reservationDate.isBefore(nowDate)) {
             throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
@@ -43,6 +46,12 @@ public class Reservation {
         LocalTime nowTime = now.toLocalTime();
         if (nowDate.isEqual(reservationDate) && time.isBeforeTime(nowTime)) {
             throw new IllegalArgumentException("예약할 수 없는 날짜와 시간입니다.");
+        }
+    }
+
+    private static void validateName(final String name){
+        if(name == null || name.isBlank() || name.length() > MAX_NAME){
+            throw new IllegalArgumentException("이름은 1글자 이상, 255글자 이하여야합니다.");
         }
     }
 

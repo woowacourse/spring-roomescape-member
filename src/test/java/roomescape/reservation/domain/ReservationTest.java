@@ -70,4 +70,24 @@ class ReservationTest {
         );
     }
 
+    @ParameterizedTest
+    @DisplayName("이름 검증 테스트")
+    @MethodSource
+    void validate_name_test(String name) {
+        LocalDateTime now = LocalDateTime.of(2025, 5, 5, 10, 0);
+        ReservationTime reservationTime = ReservationTime.createWithId(1L, LocalTime.of(10, 0));
+        Theme theme = Theme.createWithId(1L, "a", "a", "a");
+
+        assertThatThrownBy(
+                () -> Reservation.createWithoutId(now, name, LocalDate.of(2025, 5, 6), reservationTime, theme))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private static Stream<Arguments> validate_name_test() {
+        return Stream.of(
+                Arguments.of((String) null),
+                Arguments.of(""),
+                Arguments.of("a".repeat(256))
+        );
+    }
 }
