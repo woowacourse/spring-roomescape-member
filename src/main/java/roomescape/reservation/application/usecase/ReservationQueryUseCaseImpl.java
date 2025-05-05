@@ -36,12 +36,12 @@ public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
 
     @Override
     public List<AvailableReservationTimeServiceResponse> getTimesWithAvailability(
-            final AvailableReservationTimeServiceRequest availableReservationTimeServiceRequest) {
+            final AvailableReservationTimeServiceRequest request) {
         final List<ReservationTime> allTimes = reservationTimeQueryUseCase.getAll();
 
         final Set<ReservationTimeId> bookedTimeIds = new HashSet<>(reservationRepository.findTimeIdByParams(
-                availableReservationTimeServiceRequest.date(),
-                availableReservationTimeServiceRequest.themeId())
+                request.date(),
+                request.themeId())
         );
 
         final List<AvailableReservationTimeServiceResponse> responses = new ArrayList<>();
