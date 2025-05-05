@@ -3,62 +3,28 @@ package roomescape.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
-import roomescape.exception.DuplicateContentException;
-import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationTimeRepository;
-import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
 
+    private final ReservationRequestFactory reservationRequestFactory;
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeRepository reservationTimeRepository;
-    private final ThemeRepository themeRepository;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationRequestFactory reservationRequestFactory, ReservationRepository reservationRepository) {
+        this.reservationRequestFactory = reservationRequestFactory;
         this.reservationRepository = reservationRepository;
-        this.reservationTimeRepository = reservationTimeRepository;
-        this.themeRepository = themeRepository;
     }
 
     public ReservationResponseDto createReservation(ReservationCreateRequestDto dto) {
-        Reservation requestReservation = createRequestReservation(dto);
-
-        validateRequestReservation(requestReservation);
-
-        Reservation newReservation = reservationRepository.save(requestReservation)
+        Reservation reservationRequest = reservationRequestFactory.createReservationRequest(dto, reservationRepository);
+        Reservation newReservation = reservationRepository.save(reservationRequest)
                 .orElseThrow(() -> new IllegalStateException("[ERROR] 예약을 저장할 수 없습니다. 관리자에게 문의해 주세요."));
 
         return ReservationResponseDto.from(newReservation, newReservation.getTime(), newReservation.getTheme());
-    }
-
-    private Reservation createRequestReservation(ReservationCreateRequestDto dto) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-                .orElseThrow(() -> new NotFoundException("[ERROR] 예약 시간을 찾을 수 없습니다. id : " + dto.timeId()));
-
-        Theme theme = themeRepository.findById(dto.themeId())
-                .orElseThrow(() -> new NotFoundException("[ERROR] 테마를 찾을 수 없습니다. id : " + dto.themeId()));
-
-        return dto.createWithoutId(reservationTime, theme);
-    }
-
-    private void validateRequestReservation(Reservation requestReservation) {
-        if (requestReservation.isBeforeCurrentDateTime()) {
-            throw new InvalidRequestException("[ERROR] 현 시점 이후의 날짜와 시간을 선택해주세요.");
-        }
-
-        ReservationTime time = requestReservation.getTime();
-        Theme theme = requestReservation.getTheme();
-        List<Reservation> reservations = reservationRepository.findByDateTimeTheme(requestReservation.getDate(), time.getStartAt(), theme.getId());
-        if (!reservations.isEmpty()) {
-            throw new DuplicateContentException("[ERROR] 이미 예약이 존재합니다. 다른 예약 일정을 선택해주세요.");
-        }
     }
 
     public List<ReservationResponseDto> findAllReservationResponses() {
