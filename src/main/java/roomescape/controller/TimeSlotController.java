@@ -27,7 +27,7 @@ public class TimeSlotController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeSlotResponse> register(@RequestBody @Valid CreateTimeSlotRequest request) {
+    public ResponseEntity<TimeSlotResponse> register(@RequestBody @Valid final CreateTimeSlotRequest request) {
         var timeSlot = service.register(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);
@@ -42,15 +42,15 @@ public class TimeSlotController {
 
     @GetMapping(value = "/availableTimes", params = {"date", "themeId"})
     public ResponseEntity<List<AvailableTimeSlotDto>> getAvailableTimes(
-        @RequestParam("date") LocalDate date,
-        @RequestParam("themeId") Long themeId
+        @RequestParam("date") final LocalDate date,
+        @RequestParam("themeId") final Long themeId
     ) {
         var availableTimeSlots = service.findAvailableTimeSlots(date, themeId);
         return ResponseEntity.ok(availableTimeSlots);
     }
 
     @DeleteMapping("/times/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
         boolean isRemoved = service.removeById(id);
         if (isRemoved) {
             return ResponseEntity.noContent().build();

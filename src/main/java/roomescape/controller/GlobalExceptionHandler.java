@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(code = BAD_REQUEST)
-    public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    public Map<String, String> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
         return ex.getFieldErrors()
             .stream()
             .collect(toMap(FieldError::getField, FieldError::getDefaultMessage));
@@ -27,29 +27,29 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(code = BAD_REQUEST)
-    public String handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    public String handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
         if (ex.getCause() instanceof InvalidFormatException ife) {
             return handleInvalidFormat(ife);
         }
         return "유효하지 않은 형식의 요청입니다.";
     }
 
-    private String handleInvalidFormat(final InvalidFormatException ife) {
-        String invalidFieldNames = ife.getPath().stream().map(Reference::getFieldName)
+    private String handleInvalidFormat(final InvalidFormatException ex) {
+        var invalidFieldNames = ex.getPath().stream().map(Reference::getFieldName)
             .collect(joining(", "));
-        return String.format("유효하지 않은 형식의 요청입니다.\n필드 : %s\n요청 내용 : %s", invalidFieldNames,
-            ife.getValue());
+        return String.format("유효하지 않은 형식의 요청입니다.\n필드 : %s\n요청 내용 : %s",
+            invalidFieldNames, ex.getValue());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(code = BAD_REQUEST)
-    public String handleIllegalArgument(IllegalArgumentException ex) {
+    public String handleIllegalArgument(final IllegalArgumentException ex) {
         return ex.getMessage();
     }
 
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(code = BAD_REQUEST)
-    public String handleIllegalState(IllegalStateException ex) {
+    public String handleIllegalState(final IllegalStateException ex) {
         return ex.getMessage();
     }
 }

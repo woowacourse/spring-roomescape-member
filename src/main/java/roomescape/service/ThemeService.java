@@ -32,7 +32,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public boolean removeById(long id) {
+    public boolean removeById(final long id) {
         List<Reservation> reservations = reservationRepository.findByThemeId(id);
         if (!reservations.isEmpty()) {
             throw new IllegalStateException("삭제하려는 테마를 사용하는 예약이 있습니다.");
