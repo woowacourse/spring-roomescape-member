@@ -12,6 +12,10 @@ public class CookieAuthorizationExtractor implements AuthorizationExtractor<Stri
     public String extract(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 
+        if (cookies == null) {
+            return null;
+        }
+
         return Arrays.stream(cookies)
                 .filter(cookie -> TOKEN_COOKIE_NAME.equals(cookie.getName()))
                 .findAny()

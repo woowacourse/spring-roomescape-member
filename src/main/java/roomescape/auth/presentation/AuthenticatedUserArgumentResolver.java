@@ -40,7 +40,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
 
         String token = extractor.extract(request);
         if (token == null) {
-            throw new AuthorizationException(AuthErrorCode.INVALID_TOKEN);
+            throw new AuthorizationException(AuthErrorCode.LOGIN_REQUIRED);
         }
         return authService.findUserByToken(token);
     }
