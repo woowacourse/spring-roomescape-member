@@ -30,7 +30,8 @@ public class ReservationTimeRestController {
         final Long id = reservationTimeService.save(request.startAt());
         final ReservationTime found = reservationTimeService.getById(id);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ReservationTimeResponse.from(found));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ReservationTimeResponse.from(found));
     }
 
     @GetMapping
