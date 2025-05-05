@@ -7,12 +7,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.common.time.TimeProvider;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
+import roomescape.reservation.exception.PastDateReservationException;
+import roomescape.reservation.exception.PastTimeReservationException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -22,11 +25,13 @@ import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
@@ -43,6 +48,9 @@ class ReservationCommandUseCaseImplTest {
 
     @Autowired
     private ThemeRepository themeRepository;
+
+    @Autowired
+    private TimeProvider timeProvider;
 
     @Test
     @DisplayName("예약을 생성할 수 있다")
@@ -108,7 +116,60 @@ class ReservationCommandUseCaseImplTest {
                         reservationTime.getId(),
                         theme.getId())))
                 .isInstanceOf(DuplicateException.class)
-                .hasMessage("RESERVATION already exists. params={ReservationDate=ReservationDate(value=2025-08-05), ReservationTimeId=ReservationTimeId(3), ThemeId=ThemeId(3)}");
+                .hasMessageContainingAll(
+                        "RESERVATION already exists.",
+                        "params={ReservationDate=ReservationDate(value=",
+                        "ReservationTimeId=ReservationTimeId(",
+                        "ThemeId=ThemeId("
+                );
+    }
+
+    @Test
+    @DisplayName("지나간 날짜/시간에 대한 예약을 생성할 수 없다")
+    void cannotCreatePastDateTimeReservation() {
+        // given
+        final LocalDateTime now = timeProvider.now();
+
+        final ReservationTime validReservationTime = reservationTimeRepository.save(
+                ReservationTime.withoutId(
+                        now.toLocalTime().plusHours(1)));
+
+        final ReservationTime pastReservationTime = reservationTimeRepository.save(
+                ReservationTime.withoutId(
+                        now.toLocalTime().minusHours(1)));
+
+        final Theme theme = themeRepository.save(
+                Theme.withoutId(ThemeName.from("공포"),
+                        ThemeDescription.from("지구별 방탈출 최고"),
+                        ThemeThumbnail.from("www.making.com")));
+
+        final CreateReservationServiceRequest pastDateReservationRequest =
+                new CreateReservationServiceRequest(
+                        ReserverName.from("브라운"),
+                        ReservationDate.from(now.toLocalDate().minusDays(1)),
+                        validReservationTime.getId(),
+                        theme.getId()
+                );
+
+        final CreateReservationServiceRequest pastTimeReservationRequest =
+                new CreateReservationServiceRequest(
+                        ReserverName.from("브라운"),
+                        ReservationDate.from(now.toLocalDate()),
+                        pastReservationTime.getId(),
+                        theme.getId()
+                );
+
+        // when
+        // then
+        assertAll(() -> {
+            assertThatThrownBy(() -> reservationCommandUseCase.create(pastDateReservationRequest))
+                    .isInstanceOf(PastDateReservationException.class)
+                    .hasMessageContaining("Attempted to reserve with past date.");
+
+            assertThatThrownBy(() -> reservationCommandUseCase.create(pastTimeReservationRequest))
+                    .isInstanceOf(PastTimeReservationException.class)
+                    .hasMessageContaining("Attempted to reserve with past time.");
+        });
     }
 
     @Test

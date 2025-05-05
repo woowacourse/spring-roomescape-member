@@ -1,6 +1,5 @@
 package roomescape.reservation.domain;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.exception.PastDateReservationException;
@@ -12,6 +11,7 @@ import roomescape.theme.domain.ThemeThumbnail;
 import roomescape.time.domain.ReservationTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,22 +26,30 @@ class ReservationTest {
         final Theme theme = Theme.withoutId(ThemeName.from("공포"),
                 ThemeDescription.from("지구별 방탈출 최고"),
                 ThemeThumbnail.from("www.making.com"));
-        Assertions.setMaxStackTraceElementsDisplayed(Integer.MAX_VALUE);
+
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDate nowDate = now.toLocalDate();
+        final LocalTime nowTime = now.toLocalTime();
+
+        final Reservation minusDay = Reservation.withoutId(
+                ReserverName.from("시소"),
+                ReservationDate.from(nowDate.minusDays(1L)),
+                ReservationTime.withoutId(nowTime),
+                theme);
+
+        final Reservation minusTime = Reservation.withoutId(
+                ReserverName.from("시소"),
+                ReservationDate.from(nowDate),
+                ReservationTime.withoutId(nowTime.minusMinutes(1L)),
+                theme);
+
         assertAll(() -> {
 
-            assertThatThrownBy(() -> Reservation.withoutId(
-                    ReserverName.from("시소"),
-                    ReservationDate.from(LocalDate.now().minusDays(1L)),
-                    ReservationTime.withoutId(LocalTime.now()),
-                    theme
-            )).isInstanceOf(PastDateReservationException.class);
+            assertThatThrownBy(() -> minusDay.validatePast(now))
+                    .isInstanceOf(PastDateReservationException.class);
 
-            assertThatThrownBy(() -> Reservation.withoutId(
-                    ReserverName.from("시소"),
-                    ReservationDate.from(LocalDate.now()),
-                    ReservationTime.withoutId(LocalTime.now().minusMinutes(1L)),
-                    theme
-            )).isInstanceOf(PastTimeReservationException.class);
+            assertThatThrownBy(() -> minusTime.validatePast(now))
+                    .isInstanceOf(PastTimeReservationException.class);
 
         });
     }

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.common.time.TimeProvider;
 import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
@@ -24,6 +25,7 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
     private final ReservationQueryUseCase reservationQueryUseCase;
     private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
     private final ThemeQueryUseCase themeQueryUseCase;
+    private final TimeProvider timeProvider;
 
     @Override
     public Reservation create(final CreateReservationServiceRequest request) {
@@ -45,8 +47,11 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
         final Theme theme = themeQueryUseCase.get(
                 request.themeId());
 
-        return reservationRepository.save(
-                request.toDomain(reservationTime, theme));
+        final Reservation reservation = request.toDomain(reservationTime, theme);
+        System.out.println(timeProvider.now());
+        reservation.validatePast(timeProvider.now());
+
+        return reservationRepository.save(reservation);
     }
 
     @Override

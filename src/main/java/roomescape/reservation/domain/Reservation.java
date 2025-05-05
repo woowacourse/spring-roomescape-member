@@ -50,8 +50,6 @@ public class Reservation {
                                         final ReservationDate date,
                                         final ReservationTime time,
                                         final Theme theme) {
-
-        validatePast(date, time);
         return of(ReservationId.unassigned(), name, date, time, theme);
     }
 
@@ -69,8 +67,7 @@ public class Reservation {
                 .validateNotNull(Fields.theme, theme, DomainTerm.THEME.label());
     }
 
-    public static void validatePast(final ReservationDate date, final ReservationTime time) {
-        final LocalDateTime now = LocalDateTime.now();
+    public void validatePast(final LocalDateTime now) {
         if (date.isAfter(now.toLocalDate())) {
             return;
         }
