@@ -161,3 +161,6 @@ VALUES
 ('예약89', '2025-05-01', 11, 13),
 ('예약90', '2025-05-01', 12, 13),
 ('예약91', '2025-05-01', 13, 13);
+
+INSERT INTO member(email, password, name)
+VALUES ('asd@naver.com', '1234', 'name');
