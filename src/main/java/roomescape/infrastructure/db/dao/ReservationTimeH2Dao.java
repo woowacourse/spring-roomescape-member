@@ -1,13 +1,15 @@
 package roomescape.infrastructure.db.dao;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -24,7 +26,7 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
             resultSet.getTime("start_at").toLocalTime()
     );
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public List<ReservationTime> selectAll() {
@@ -38,16 +40,15 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
 
     @Override
     public ReservationTime insertAndGet(ReservationTime reservationTime) {
-        String insertQuery = "INSERT INTO reservation_time (start_at) VALUES (?)";
-
+        String insertQuery = "INSERT INTO reservation_time (start_at) VALUES (:startAt)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
-            ps.setString(1, reservationTime.startAt().toString());
-            return ps;
-        }, keyHolder);
 
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startAt", reservationTime.startAt().toString());
+
+        jdbcTemplate.update(insertQuery, params, keyHolder);
         Long id = keyHolder.getKey().longValue();
+
         return new ReservationTime(id, reservationTime.startAt());
     }
 
@@ -56,11 +57,11 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         String selectQuery = """
                 SELECT id, start_at
                 FROM reservation_time
-                WHERE id = ?
+                WHERE id = :id
                 """;
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, DEFAULT_ROW_MAPPER, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, Map.of("id", id), DEFAULT_ROW_MAPPER));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -68,10 +69,10 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
 
     @Override
     public void deleteById(Long id) {
-        String deleteQuery = "DELETE FROM reservation_time WHERE id = ?";
+        String deleteQuery = "DELETE FROM reservation_time WHERE id = :id";
 
         try {
-            jdbcTemplate.update(deleteQuery, id);
+            jdbcTemplate.update(deleteQuery, Map.of("id", id));
         } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("삭제하려는 시간을 가진 예약이 존재합니다.", e);
         }
@@ -83,8 +84,14 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
                 SELECT rt.id, rt.start_at
                 FROM reservation r
                 INNER JOIN reservation_time rt ON r.time_id = rt.id
-                WHERE r.theme_id = ? AND r.date = ?
+                WHERE r.theme_id = :themeId AND r.date = :date
                 """;
-        return jdbcTemplate.query(query, DEFAULT_ROW_MAPPER, themeId, date);
+
+        Map<String, Object> params = Map.of(
+                "themeId", themeId,
+                "date", date
+        );
+
+        return jdbcTemplate.query(query, params, DEFAULT_ROW_MAPPER);
     }
 }

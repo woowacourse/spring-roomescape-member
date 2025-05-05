@@ -1,13 +1,14 @@
 package roomescape.infrastructure.db.dao;
 
-import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -25,8 +26,7 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
             resultSet.getString("thumbnail")
     );
 
-    // TODO: NamedParameterJdbcTemplate
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public List<ReservationTheme> selectAll() {
@@ -40,16 +40,18 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
 
     @Override
     public ReservationTheme insertAndGet(ReservationTheme reservationTheme) {
-        String insertQuery = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
+        String insertQuery = """
+                INSERT INTO theme (name, description, thumbnail)
+                VALUES (:name, :description, :thumbnail)
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservationTheme.name())
+                .addValue("description", reservationTheme.description())
+                .addValue("thumbnail", reservationTheme.thumbnail());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertQuery, new String[] {"id"});
-            ps.setString(1, reservationTheme.name());
-            ps.setString(2, reservationTheme.description());
-            ps.setString(3, reservationTheme.thumbnail());
-            return ps;
-        }, keyHolder);
+        jdbcTemplate.update(insertQuery, params, keyHolder, new String[]{"id"});
 
         Long id = keyHolder.getKey().longValue();
         return reservationTheme.assignId(id);
@@ -60,11 +62,11 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
         String selectQuery = """
                 SELECT id, name, description, thumbnail
                 FROM theme
-                WHERE id = ?
+                WHERE id = :id
                 """;
 
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, DEFAULT_ROW_MAPPER, id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(selectQuery, Map.of("id", id), DEFAULT_ROW_MAPPER));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -72,10 +74,10 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
 
     @Override
     public void deleteById(Long id) {
-        String deleteQuery = "DELETE FROM theme WHERE id = ?";
+        String deleteQuery = "DELETE FROM theme WHERE id = :id";
 
         try {
-            jdbcTemplate.update(deleteQuery, id);
+            jdbcTemplate.update(deleteQuery, Map.of("id", id));
         } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("삭제하려는 테마를 가진 예약이 존재합니다.", e);
         }
@@ -89,8 +91,9 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
                 INNER JOIN theme th ON r.theme_id = th.id
                 GROUP BY r.theme_id
                 ORDER BY count(r.theme_id) DESC
-                LIMIT ?
+                LIMIT :limit
                 """;
-        return jdbcTemplate.query(query, DEFAULT_ROW_MAPPER, limit);
+
+        return jdbcTemplate.query(query, Map.of("limit", limit), DEFAULT_ROW_MAPPER);
     }
 }
