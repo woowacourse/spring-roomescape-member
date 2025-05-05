@@ -67,7 +67,7 @@ public class ReservationService {
 
     private void ensureReservationExists(Long id) {
         reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 id의 예약이 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 해당 id의 예약이 존재하지 않습니다."));
     }
 
     private Time findReservationTimeOrThrow(Long timeId) {

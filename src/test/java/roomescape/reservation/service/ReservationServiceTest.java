@@ -146,6 +146,6 @@ class ReservationServiceTest {
         // when & then
         assertThatThrownBy(() -> reservationService.deleteById(notExistedId))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 해당 id의 예약이 존재하지 않습니다");
+                .hasMessage("[ERROR] 해당 id의 예약이 존재하지 않습니다.");
     }
 }

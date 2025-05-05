@@ -36,7 +36,7 @@ public class TimeRepository {
     }
 
     public Optional<Time> findById(Long id) {
-        String sql = "select id, start_at from reservation_time where id = :id";
+        String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
 
         Map<String, Object> parameter = Map.of("id", id);
         try {
@@ -75,7 +75,7 @@ public class TimeRepository {
     }
 
     public boolean existsByStartAt(LocalTime startAt) {
-        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = :startAt";
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = :startAt)";
 
         Map<String, Object> parameter = Map.of("startAt", startAt);
 
