@@ -95,6 +95,7 @@ public class FakeReservationDao implements ReservationDao {
                         return (int) (themeCounts.get(o1) - themeCounts.get(o2));
                     }
                 })
+                .limit(10)
                 .toList();
     }
 }

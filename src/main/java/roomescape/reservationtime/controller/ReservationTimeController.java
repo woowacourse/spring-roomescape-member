@@ -46,9 +46,9 @@ public class ReservationTimeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/available")
+    @GetMapping("/{themeId}")
     public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(@RequestParam("date") LocalDate date,
-                                                                         @RequestParam("themeId") Long themeId) {
+                                                                         @PathVariable("themeId") Long themeId) {
         return ResponseEntity.ok(reservationTimeService.findAvailableTimes(date, themeId));
     }
 }

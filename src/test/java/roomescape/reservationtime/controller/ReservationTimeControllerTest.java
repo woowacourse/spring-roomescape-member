@@ -7,10 +7,11 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+
+import org.junit.jupiter.api.Test;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -58,7 +59,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 가능한_예약시간_조회_테스트() {
         RestAssured.given().log().all()
-                .when().get("/times/available?date=2025-01-01&themeId=1")
+                .when().get("/times/1?date=2025-01-01")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(4));

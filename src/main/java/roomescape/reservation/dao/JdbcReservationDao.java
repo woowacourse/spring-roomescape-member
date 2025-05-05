@@ -141,16 +141,16 @@ public class JdbcReservationDao implements ReservationDao {
     public Optional<Reservation> findById(Long id) {
         String sql = """
                 SELECT r.id as reservation_id,
-                       r.name as reservation_name,
-                       r.date as reservation_date,
-                       rt.start_at as time_start_at,
+                       r.name,
+                       r.date,                                       
+                       rt.start_at,
                        rt.id as time_id,
                        t.id as theme_id,
                        t.name as theme_name,
                        t.description as theme_des,
                        t.thumbnail as theme_thumb
                     FROM reservation as r 
-                    INNER JOIN reservation_time as rt ON rt.id = r.timd_id
+                    INNER JOIN reservation_time as rt ON rt.id = r.time_id
                     INNER JOIN theme as t ON t.id = r.theme_id
                     WHERE r.id = ?
                 """;
@@ -167,10 +167,11 @@ public class JdbcReservationDao implements ReservationDao {
 
                         return Reservation.of(
                                 rs.getLong("reservation_id"),
-                                rs.getString("reservation_name"),
-                                rs.getDate("reservation_date").toLocalDate(),
-                                new ReservationTime(rs.getLong("time_id"),
-                                        rs.getTime("time_start_at").toLocalTime()),
+                                rs.getString("name"),
+                                rs.getDate("date").toLocalDate(),
+                                new ReservationTime(
+                                        rs.getLong("time_id"),
+                                        rs.getTime("start_at").toLocalTime()),
                                 theme
                         );
                     },
@@ -252,7 +253,8 @@ public class JdbcReservationDao implements ReservationDao {
                 JOIN reservation AS r ON r.theme_id = t.id
                 WHERE r.date > CURRENT_DATE - INTERVAL '8' DAY AND r.date < CURRENT_DATE
                 GROUP BY t.id, t.name, t.description, t.thumbnail
-                ORDER BY COUNT(r.theme_id) DESC;
+                ORDER BY COUNT(r.theme_id) DESC
+                LIMIT 10;
                 """;
 
         return jdbcTemplate.query(sql,
