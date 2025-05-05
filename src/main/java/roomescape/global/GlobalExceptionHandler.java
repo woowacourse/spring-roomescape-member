@@ -11,6 +11,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,6 +25,7 @@ public class GlobalExceptionHandler {
 
         return new ExceptionResponse(BAD_REQUEST.value(), exceptionMessage, LocalDateTime.now());
     }
+
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ExceptionResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
@@ -32,6 +34,14 @@ public class GlobalExceptionHandler {
         if (rootCause instanceof DateTimeException) {
             exceptionMessage = "잘못된 날짜 또는 시간 형식입니다.";
         }
+        return new ExceptionResponse(BAD_REQUEST.value(), exceptionMessage, LocalDateTime.now());
+    }
+
+    // TODO : 잘못 입력된 곳이 HTTP Body인지, 경로변수 혹은 쿼리파라미터 등인지 파악하고 자세하게 예외 메시지를 출력해야 할까? 고민해보기
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ExceptionResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String exceptionMessage = "잘못된 형식의 값이 입력되었습니다.";
         return new ExceptionResponse(BAD_REQUEST.value(), exceptionMessage, LocalDateTime.now());
     }
 
