@@ -16,15 +16,15 @@ import roomescape.model.Theme;
 @JdbcTest
 class ThemeJdbcRepositoryTest {
 
-    private ThemeRepository repository;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private ThemeRepository repository;
 
     @BeforeEach
     void setUp() {
         repository = new ThemeJdbcRepository(jdbcTemplate);
     }
+
     @Test
     @DisplayName("테마를 아이디로 조회한다.")
     void findById() {

@@ -17,10 +17,9 @@ import roomescape.model.TimeSlot;
 @JdbcTest
 class TimeSlotJdbcRepositoryTest {
 
-    private TimeSlotRepository repository;
-
-     @Autowired
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    private TimeSlotRepository repository;
 
     @BeforeEach
     void setUp() {

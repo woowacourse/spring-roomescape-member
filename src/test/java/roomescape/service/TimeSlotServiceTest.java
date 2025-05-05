@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.DomainFixtures.JUNK_THEME;
 
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.DateUtils;
@@ -17,13 +16,7 @@ import roomescape.repository.fake.TimeSlotFakeRepository;
 
 class TimeSlotServiceTest {
 
-    private TimeSlotService service;
-
-    @BeforeEach
-    void setUp() {
-        service = new TimeSlotService(new ReservationFakeRepository(),
-            new TimeSlotFakeRepository());
-    }
+    private TimeSlotService service = new TimeSlotService(new ReservationFakeRepository(), new TimeSlotFakeRepository());
 
     @Test
     @DisplayName("예약 시간을 추가할 수 있다.")

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.DomainFixtures.JUNK_TIME_SLOT;
 
 import java.time.LocalDate;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.model.Reservation;
@@ -15,12 +14,7 @@ import roomescape.repository.fake.ThemeFakeRepository;
 
 class ThemeServiceTest {
 
-    private ThemeService themeService;
-
-    @BeforeEach
-    void setUp() {
-        themeService = new ThemeService(new ReservationFakeRepository(), new ThemeFakeRepository());
-    }
+    private final ThemeService themeService = new ThemeService(new ReservationFakeRepository(), new ThemeFakeRepository());
 
     @Test
     @DisplayName("테마를 추가할 수 있다.")
@@ -64,7 +58,7 @@ class ThemeServiceTest {
         // given
         var reservationRepository = new ReservationFakeRepository();
         var themeRepository = new ThemeFakeRepository(reservationRepository);
-        themeService = new ThemeService(reservationRepository, themeRepository);
+        var themeService = new ThemeService(reservationRepository, themeRepository);
 
         var theme1 = themeService.register("테마1", "설명1", "썸네일1");
         var theme2 = themeService.register("테마2", "설명2", "썸네일2");
