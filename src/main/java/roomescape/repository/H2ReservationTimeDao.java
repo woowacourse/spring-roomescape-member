@@ -59,8 +59,9 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public boolean isExistsByTime(final LocalTime reservationTime) {
-        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE start_at = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, reservationTime);
-        return count > 0;
+        final String sql = "SELECT 1 FROM reservation_time WHERE start_at = ? LIMIT 1";
+        final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1),
+                reservationTime);
+        return !result.isEmpty();
     }
 }

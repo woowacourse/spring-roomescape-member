@@ -90,7 +90,7 @@ public class H2ReservationDao implements ReservationDao {
                     th.name AS theme_name,
                     th.description AS theme_description,
                     th.thumbnail AS theme_thumbnail
-                FROM reservation AS r 
+                FROM reservation AS r
                 INNER JOIN reservation_time AS t ON r.time_id = t.id
                 INNER JOIN theme AS th ON r.theme_id = th.id
                 WHERE r.date = ? AND r.theme_id = ?
@@ -106,22 +106,23 @@ public class H2ReservationDao implements ReservationDao {
 
     @Override
     public boolean isExistsByDateAndTimeId(final LocalDate date, final long timeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE date = ? AND time_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, date, timeId);
-        return count > 0;
+        final String sql = "SELECT 1 FROM reservation WHERE date = ? AND time_id = ? LIMIT 1";
+        final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), date,
+                timeId);
+        return !result.isEmpty();
     }
 
     @Override
     public boolean isExistsByTimeId(final long timeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE time_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, timeId);
-        return count > 0;
+        final String sql = "SELECT 1 FROM reservation WHERE time_id = ? LIMIT 1";
+        final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), timeId);
+        return !result.isEmpty();
     }
 
     @Override
     public boolean isExistsByThemeId(Long themeId) {
         final String sql = "SELECT count(*) FROM reservation WHERE theme_id = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, themeId);
-        return count > 0;
+        final List<Integer> result = jdbcTemplate.query(sql, (resultSet, rowNumber) -> resultSet.getInt(1), themeId);
+        return !result.isEmpty();
     }
 }
