@@ -99,23 +99,6 @@ public class ReservationRepository {
         return template.queryForObject(sql, Boolean.class, themeId);
     }
 
-//    public long add(Reservation reservation) {
-//        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
-//        KeyHolder keyHolder = new GeneratedKeyHolder();
-//        template.update(
-//                (connection) -> {
-//                    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-//                    statement.setString(1, reservation.getName());
-//                    statement.setDate(2, Date.valueOf(reservation.getDate()));
-//                    statement.setLong(3, reservation.getTime().getId());
-//                    statement.setLong(4, reservation.getTheme().getId());
-//                    return statement;
-//                },
-//                keyHolder
-//        );
-//        return keyHolder.getKey().longValue();
-//    }
-
     public long add(Reservation reservation) {
         insertReservation = initializeSimpleJdbcInsert();
         Map<String, Object> parameters = new HashMap<>();

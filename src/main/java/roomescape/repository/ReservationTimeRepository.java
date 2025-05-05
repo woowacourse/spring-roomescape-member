@@ -77,20 +77,6 @@ public class ReservationTimeRepository {
         return template.query(sql, reservationTimeWithBookStateMapper, date, themeId);
     }
 
-//    public long add(ReservationTime reservationTime) {
-//        String sql = "INSERT INTO reservation_time (start_at) values (?)";
-//        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-//        template.update(
-//                (connection) -> {
-//                    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-//                    statement.setTime(1, Time.valueOf(reservationTime.getStartAt()));
-//                    return statement;
-//                },
-//                keyHolder
-//        );
-//        return keyHolder.getKey().longValue();
-//    }
-
     public long add(ReservationTime reservationTime) {
         insertReservationTime = initializeSimpleJdbcInsert();
         Map<String, Object> parameters = new HashMap<>();
