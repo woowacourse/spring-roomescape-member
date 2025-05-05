@@ -15,17 +15,17 @@ import roomescape.reservation.presentation.dto.ThemeRequest;
 public class ThemeDao implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Theme insert(ThemeRequest themeRequest) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", themeRequest.getName())
                 .addValue("description", themeRequest.getDescription())

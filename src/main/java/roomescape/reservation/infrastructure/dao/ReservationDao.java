@@ -23,17 +23,17 @@ import roomescape.reservation.domain.Theme;
 @Repository
 public class ReservationDao implements ReservationRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Reservation insert(final CreateReservationRequest request) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
         Map<String, Object> params = new HashMap<>();
         params.put("name", request.name().getName());
         params.put("theme_id", request.theme().getId());
