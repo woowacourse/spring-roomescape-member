@@ -10,7 +10,7 @@ import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.TimeSlotRepository;
-import roomescape.service.dto.BookedTimeSlotResponse;
+import roomescape.controller.timeslot.dto.AvailabilityTimeSlotResponse;
 
 @Service
 public class TimeSlotService {
@@ -45,7 +45,7 @@ public class TimeSlotService {
         return timeSlotRepository.removeById(id);
     }
 
-    public List<BookedTimeSlotResponse> findAvailableTimeSlots(final LocalDate date, final Long themeId) {
+    public List<AvailabilityTimeSlotResponse> findAvailableTimeSlots(final LocalDate date, final Long themeId) {
         var filteredReservations = reservationRepository.findAllByDateAndThemeId(date, themeId);
         var filteredTimeSlots = filteredReservations.stream()
                 .map(Reservation::timeSlot)
@@ -53,7 +53,7 @@ public class TimeSlotService {
 
         var allTimeSlots = timeSlotRepository.findAll();
         return allTimeSlots.stream()
-                .map(ts -> BookedTimeSlotResponse.from(ts, filteredTimeSlots.contains(ts)))
+                .map(ts -> AvailabilityTimeSlotResponse.from(ts, filteredTimeSlots.contains(ts)))
                 .toList();
     }
 }
