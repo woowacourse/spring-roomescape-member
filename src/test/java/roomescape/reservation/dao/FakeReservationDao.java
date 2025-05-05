@@ -37,10 +37,10 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Optional<Reservation> findByTimeId(Long id) {
+    public List<Reservation> findByTimeId(Long id) {
         return fakeReservations.stream()
                 .filter(reservation -> reservation.getReservationTime().getId().equals(id))
-                .findFirst();
+                .toList();
     }
 
     @Override

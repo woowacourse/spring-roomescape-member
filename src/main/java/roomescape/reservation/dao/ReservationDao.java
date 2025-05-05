@@ -13,7 +13,7 @@ public interface ReservationDao {
 
     void delete(Long id);
 
-    Optional<Reservation> findByTimeId(Long id);
+    List<Reservation> findByTimeId(Long id);
 
     Optional<Reservation> findById(Long id);
 

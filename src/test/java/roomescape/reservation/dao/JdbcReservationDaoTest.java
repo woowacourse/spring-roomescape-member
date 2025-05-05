@@ -111,10 +111,9 @@ class JdbcReservationDaoTest {
                 savedTheme);
         reservationDao.create(reservation);
         // when
-        Optional<Reservation> foundReservation = reservationDao.findByTimeId(1L);
+        List<Reservation> foundReservation = reservationDao.findByTimeId(1L);
         // then
-        assertThat(foundReservation.isPresent()).isTrue();
-        assertThat(foundReservation.get().getName()).isEqualTo("포라");
+        assertThat(foundReservation.getFirst().getName()).isEqualTo("포라");
     }
 
     @Test

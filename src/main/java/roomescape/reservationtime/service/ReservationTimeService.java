@@ -44,7 +44,7 @@ public class ReservationTimeService {
         if (reservationTimeDao.findById(id).isEmpty()) {
             throw new ReservationTimeNotFoundException();
         }
-        if (reservationDao.findByTimeId(id).isPresent()) {
+        if (reservationDao.findByTimeId(id).size() > 0) {
             throw new ExistedReservationException();
         }
         reservationTimeDao.delete(id);

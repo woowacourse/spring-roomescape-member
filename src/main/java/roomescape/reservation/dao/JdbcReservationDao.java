@@ -96,7 +96,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Optional<Reservation> findByTimeId(Long id) {
+    public List<Reservation> findByTimeId(Long id) {
         String sql = """
                 SELECT
                     r.id,
