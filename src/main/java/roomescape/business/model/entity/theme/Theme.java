@@ -1,4 +1,4 @@
-package roomescape.business.model.entity;
+package roomescape.business.model.entity.theme;
 
 import java.time.Duration;
 import java.util.Objects;

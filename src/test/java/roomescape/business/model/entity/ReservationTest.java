@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
+import roomescape.business.model.entity.reservation.Reservation;
+import roomescape.business.model.entity.reservation.ReservationTime;
+import roomescape.business.model.entity.theme.Theme;
 
 class ReservationTest {
 

@@ -10,9 +10,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.business.model.entity.Reservation;
-import roomescape.business.model.entity.ReservationTime;
-import roomescape.business.model.entity.Theme;
+import roomescape.business.model.entity.reservation.Reservation;
+import roomescape.business.model.entity.reservation.ReservationTime;
+import roomescape.business.model.entity.theme.Theme;
 import roomescape.business.model.repository.ReservationDao;
 
 @Repository

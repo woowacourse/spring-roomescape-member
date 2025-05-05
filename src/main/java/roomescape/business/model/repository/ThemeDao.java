@@ -2,7 +2,7 @@ package roomescape.business.model.repository;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.model.entity.Theme;
+import roomescape.business.model.entity.theme.Theme;
 
 public interface ThemeDao {
 

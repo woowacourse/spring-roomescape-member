@@ -15,9 +15,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.business.model.entity.Reservation;
-import roomescape.business.model.entity.ReservationTime;
-import roomescape.business.model.entity.Theme;
+import roomescape.business.model.entity.reservation.Reservation;
+import roomescape.business.model.entity.reservation.ReservationTime;
+import roomescape.business.model.entity.theme.Theme;
 import roomescape.business.model.repository.ReservationDao;
 
 @JdbcTest

@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.entity.reservation.ReservationTime;
 import roomescape.business.model.repository.ReservationTimeDao;
 
 @Repository

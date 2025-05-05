@@ -1,4 +1,4 @@
-package roomescape.business.model.entity;
+package roomescape.business.model.entity.reservation;
 
 import java.time.Duration;
 import java.time.LocalTime;

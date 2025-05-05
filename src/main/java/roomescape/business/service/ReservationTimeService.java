@@ -2,7 +2,7 @@ package roomescape.business.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.entity.reservation.ReservationTime;
 import roomescape.business.model.repository.ReservationDao;
 import roomescape.business.model.repository.ReservationTimeDao;
 import roomescape.exception.impl.BadRequestException;

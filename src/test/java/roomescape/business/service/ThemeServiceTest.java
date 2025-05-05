@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.business.model.entity.Theme;
+import roomescape.business.model.entity.theme.Theme;
 import roomescape.business.model.repository.ReservationDao;
 import roomescape.business.model.repository.ThemeDao;
 import roomescape.presentation.dto.request.ThemeRequest;

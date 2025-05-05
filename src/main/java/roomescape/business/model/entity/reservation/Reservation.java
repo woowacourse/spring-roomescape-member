@@ -1,8 +1,9 @@
-package roomescape.business.model.entity;
+package roomescape.business.model.entity.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
+import roomescape.business.model.entity.theme.Theme;
 
 public class Reservation {
 

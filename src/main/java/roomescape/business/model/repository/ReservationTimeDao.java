@@ -3,7 +3,7 @@ package roomescape.business.model.repository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.entity.reservation.ReservationTime;
 
 public interface ReservationTimeDao {
 
