@@ -2,6 +2,7 @@ package roomescape.domain;
 
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -33,6 +34,10 @@ public class Reservation {
     }
 
     public boolean isDuplicateReservation(Reservation reservation) {
-        return this.date.equals(reservation.date) && this.time.isSameTime(reservation.time);
+        return this.toDateTime().equals(reservation.toDateTime());
+    }
+
+    public LocalDateTime toDateTime() {
+        return LocalDateTime.of(date, time.getStartAt());
     }
 }

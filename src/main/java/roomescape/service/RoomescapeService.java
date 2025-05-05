@@ -58,16 +58,9 @@ public class RoomescapeService {
     }
 
     public ReservationResponse addReservation(final ReservationRequest request) {
-        LocalDateTime now = LocalDateTime.now();
-        long timeId = request.timeId();
-        final long themeId = request.themeId();
+        Reservation reservation = toReservation(request);
 
-        ReservationTime time = roomescapeTimeRepository.findById(timeId).get();
-        ReservationTheme theme = roomescapeThemeRepository.findById(themeId).get();
-        Reservation reservation = new Reservation(request.name(), request.date(), time, theme);
-        LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
-
-        validateFutureDateTime(requestDateTime, now);
+        validateFutureDateTime(reservation);
         validateUniqueReservation(reservation);
 
         Reservation saved = roomescapeRepository.save(reservation);
@@ -88,28 +81,32 @@ public class RoomescapeService {
     }
 
     public void removeReservation(final long id) {
-        boolean result = roomescapeRepository.deleteById(id);
-        if (!result) {
+        if (!roomescapeRepository.deleteById(id)) {
             throw new DataNotFoundException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTime(final long id) {
-        boolean result = roomescapeTimeRepository.deleteById(id);
-        if (!result) {
+        if (!roomescapeTimeRepository.deleteById(id)) {
             throw new DataNotFoundException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTheme(final long id) {
-        boolean result = roomescapeThemeRepository.deleteById(id);
-        if (!result) {
+        if (!roomescapeThemeRepository.deleteById(id)) {
             throw new DataNotFoundException(String.format("[ERROR] 예약테마 %d번은 존재하지 않습니다.", id));
         }
     }
 
-    private void validateFutureDateTime(final LocalDateTime requestDateTime, final LocalDateTime now) {
-        if (requestDateTime.isBefore(now) || requestDateTime.isEqual(now)) {
+    private Reservation toReservation(final ReservationRequest request) {
+        ReservationTime time = findTimeById(request.timeId());
+        ReservationTheme theme = findThemeById(request.themeId());
+        return new Reservation(request.name(), request.date(), time, theme);
+    }
+
+    private void validateFutureDateTime(final Reservation reservation) {
+        LocalDateTime requestDateTime = reservation.toDateTime();
+        if (!requestDateTime.isAfter(LocalDateTime.now())) {
             throw new PastReservationTimeException("[ERROR] 이전 시각으로 예약할 수 없습니다.");
         }
     }
@@ -120,8 +117,17 @@ public class RoomescapeService {
         }
     }
 
+    private ReservationTheme findThemeById(final long themeId) {
+        return roomescapeThemeRepository.findById(themeId)
+                .orElseThrow(() -> new DataNotFoundException(String.format("[ERROR] 예약테마 %d번은 존재하지 않습니다.", themeId)));
+    }
+
+    private ReservationTime findTimeById(final long timeId) {
+        return roomescapeTimeRepository.findById(timeId)
+                .orElseThrow(() -> new DataNotFoundException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", timeId)));
+    }
+
     private boolean existsSameReservation(final Reservation reservation) {
-        List<Reservation> reservations = roomescapeRepository.findByDate(reservation.getDate());
-        return reservations.stream().anyMatch(candidate -> candidate.isDuplicateReservation(reservation));
+        return roomescapeRepository.existsByDateAndTime(reservation.getDate(), reservation.getTime());
     }
 }
