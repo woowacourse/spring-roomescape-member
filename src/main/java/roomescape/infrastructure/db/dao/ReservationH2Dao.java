@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -129,6 +128,23 @@ public class ReservationH2Dao implements ReservationDao {
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("themeId", reservationThemeId);
+
+        Boolean exists = jdbcTemplate.queryForObject(sql, params, Boolean.class);
+        return exists != null && exists;
+    }
+
+    @Override
+    public boolean existsByTimeId(Long reservationTimeId) {
+        String sql = """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM reservation
+                        WHERE time_id = :timeId
+                    )
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("timeId", reservationTimeId);
 
         Boolean exists = jdbcTemplate.queryForObject(sql, params, Boolean.class);
         return exists != null && exists;

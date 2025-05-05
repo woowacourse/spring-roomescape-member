@@ -7,6 +7,7 @@ public record ExceptionResponse(
         String message,
         LocalDateTime timestamp
 ) {
+
     public ExceptionResponse(int status, String message, LocalDateTime timestamp) {
         this.status = status;
         this.message = "[ERROR]" + message;

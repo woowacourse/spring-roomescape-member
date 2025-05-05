@@ -1,9 +1,7 @@
 package roomescape.presentation.api.dto.response;
 
-import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import java.time.LocalTime;
 import roomescape.application.dto.response.ReservationTimeServiceResponse;
 
 public record ReservationTimeResponse(

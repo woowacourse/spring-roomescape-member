@@ -1,18 +1,16 @@
 package roomescape.presentation.api;
 
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
-import roomescape.presentation.api.dto.response.ReservationThemeResponse;
 import roomescape.application.UserReservationThemeService;
 import roomescape.application.dto.response.ReservationThemeServiceResponse;
+import roomescape.presentation.api.dto.response.ReservationThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -33,7 +31,8 @@ public class UserReservationThemeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/populars")
-    public List<ReservationThemeResponse> getPopularThemes(@RequestParam(value = "limit", defaultValue = "10") int limit) {
+    public List<ReservationThemeResponse> getPopularThemes(
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
         List<ReservationThemeServiceResponse> responses = userReservationThemeService.getPopularThemes(limit);
         return responses.stream()
                 .map(ReservationThemeResponse::from)

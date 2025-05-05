@@ -2,7 +2,6 @@ package roomescape.infrastructure.db.dao;
 
 import java.util.List;
 import java.util.Optional;
-
 import roomescape.domain.entity.ReservationTheme;
 
 public interface ReservationThemeDao {

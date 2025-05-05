@@ -6,6 +6,7 @@ public record ReservationTheme(
         String description,
         String thumbnail
 ) {
+
     public ReservationTheme {
         validateNotBlank(name, description, thumbnail);
     }

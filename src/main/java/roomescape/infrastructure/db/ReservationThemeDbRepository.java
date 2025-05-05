@@ -2,10 +2,8 @@ package roomescape.infrastructure.db;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import roomescape.domain.entity.ReservationTheme;
 import roomescape.domain.repository.ReservationThemeRepository;
 import roomescape.global.exception.ResourceNotFoundException;
