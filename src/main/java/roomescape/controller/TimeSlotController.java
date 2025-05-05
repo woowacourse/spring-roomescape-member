@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.request.CreateTimeSlotRequest;
+import roomescape.controller.response.AvailableTimeSlotResponse;
 import roomescape.controller.response.TimeSlotResponse;
-import roomescape.service.AvailableTimeSlotDto;
 import roomescape.service.TimeSlotService;
 
 @Controller
@@ -41,12 +41,13 @@ public class TimeSlotController {
     }
 
     @GetMapping(value = "/availableTimes", params = {"date", "themeId"})
-    public ResponseEntity<List<AvailableTimeSlotDto>> getAvailableTimes(
+    public ResponseEntity<List<AvailableTimeSlotResponse>> getAvailableTimes(
         @RequestParam("date") final LocalDate date,
         @RequestParam("themeId") final Long themeId
     ) {
         var availableTimeSlots = service.findAvailableTimeSlots(date, themeId);
-        return ResponseEntity.ok(availableTimeSlots);
+        var response = AvailableTimeSlotResponse.from(availableTimeSlots);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/times/{id}")

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.model.AvailableTimeSlot;
 import roomescape.model.Reservation;
 import roomescape.model.TimeSlot;
 import roomescape.repository.ReservationRepository;
@@ -41,7 +42,7 @@ public class TimeSlotService {
         return timeSlotRepository.removeById(id);
     }
 
-    public List<AvailableTimeSlotDto> findAvailableTimeSlots(final LocalDate date, final long themeId) {
+    public List<AvailableTimeSlot> findAvailableTimeSlots(final LocalDate date, final long themeId) {
         var filteredReservations = reservationRepository.findByDateAndThemeId(date, themeId);
         var filteredTimeSlots = filteredReservations.stream()
             .map(Reservation::timeSlot)
@@ -49,7 +50,7 @@ public class TimeSlotService {
 
         var allTimeSlots = timeSlotRepository.findAll();
         return allTimeSlots.stream()
-            .map(ts -> AvailableTimeSlotDto.from(ts, filteredTimeSlots.contains(ts)))
+            .map(ts -> new AvailableTimeSlot(ts, filteredTimeSlots.contains(ts)))
             .toList();
     }
 }
