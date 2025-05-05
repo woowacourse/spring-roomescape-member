@@ -1,7 +1,6 @@
 package roomescape.auth.presentation;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,20 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.application.AuthService;
+import roomescape.auth.domain.User;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.dto.UserResponse;
-import roomescape.auth.infrastructure.AuthorizationExtractor;
 
 @RestController
 @RequestMapping("/login")
 public class TokenLoginController {
     private final AuthService authService;
-    private final AuthorizationExtractor<String> authorizationExtractor;
 
-    public TokenLoginController(AuthService authService, AuthorizationExtractor<String> authorizationExtractor) {
+    public TokenLoginController(AuthService authService) {
         this.authService = authService;
-        this.authorizationExtractor = authorizationExtractor;
     }
 
     @PostMapping
@@ -44,9 +41,8 @@ public class TokenLoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserResponse> checkUser(HttpServletRequest request) {
-        String token = authorizationExtractor.extract(request);
-        UserResponse userResponse = authService.findUserByToken(token);
+    public ResponseEntity<UserResponse> checkUser(@AuthenticatedUser User user) {
+        UserResponse userResponse = new UserResponse(user.getName());
         return ResponseEntity.ok(userResponse);
     }
 }

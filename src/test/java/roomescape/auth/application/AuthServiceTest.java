@@ -18,7 +18,6 @@ import roomescape.auth.domain.User;
 import roomescape.auth.domain.UserRepository;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
-import roomescape.auth.dto.UserResponse;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 
@@ -58,9 +57,9 @@ class AuthServiceTest {
         given(jwtTokenProvider.getPayload(token)).willReturn(email);
         given(userRepository.findByEmail(email)).willReturn(Optional.of(user));
 
-        UserResponse response = authService.findUserByToken(token);
+        User result = authService.findUserByToken(token);
 
-        assertThat(response.name()).isEqualTo("멍구");
+        assertThat(result.getName()).isEqualTo("멍구");
     }
 
     @Test

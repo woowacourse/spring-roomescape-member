@@ -1,11 +1,20 @@
 package roomescape.config;
 
+import java.util.List;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import roomescape.auth.presentation.AuthenticatedUserArgumentResolver;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
+
+    private final AuthenticatedUserArgumentResolver resolver;
+
+    public WebMvcConfiguration(AuthenticatedUserArgumentResolver resolver) {
+        this.resolver = resolver;
+    }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -18,5 +27,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addViewController("/admin/reservation").setViewName("admin/reservation-new");
         registry.addViewController("/admin/time").setViewName("admin/time");
         registry.addViewController("/admin/theme").setViewName("admin/theme");
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(resolver);
     }
 }

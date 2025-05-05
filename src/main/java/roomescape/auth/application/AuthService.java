@@ -7,7 +7,6 @@ import static roomescape.auth.exception.AuthErrorCode.USER_NOT_FOUND;
 import org.springframework.stereotype.Service;
 import roomescape.auth.domain.User;
 import roomescape.auth.domain.UserRepository;
-import roomescape.auth.dto.UserResponse;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthorizationException;
@@ -34,12 +33,10 @@ public class AuthService {
         return new TokenResponse(accessToken);
     }
 
-    public UserResponse findUserByToken(String token) {
+    public User findUserByToken(String token) {
         validateUserToken(token);
         String email = jwtTokenProvider.getPayload(token);
-        User user = getUser(email);
-
-        return new UserResponse(user.getName());
+        return getUser(email);
     }
 
     private User getUser(String email) {
