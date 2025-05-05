@@ -1,5 +1,7 @@
 package roomescape.reservationTime.domain;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +18,7 @@ class ReservationTimeTest {
         ReservationTime reservationTime1 = ReservationTime.createWithId(1L, LocalTime.of(20, 10));
         ReservationTime reservationTime2 = ReservationTime.createWithId(2L, localTime);
 
-        Assertions.assertThat(reservationTime1.isSameTime(reservationTime2)).isEqualTo(expected);
+        assertThat(reservationTime1.isSameTime(reservationTime2)).isEqualTo(expected);
     }
 
     @Test
@@ -26,8 +28,8 @@ class ReservationTimeTest {
 
         ReservationTime reservationTime = withoutId.assignId(1L);
 
-        Assertions.assertThat(reservationTime.getId()).isEqualTo(1L);
-        Assertions.assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 10));
+        assertThat(reservationTime.getId()).isEqualTo(1L);
+        assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 10));
     }
 
     @ParameterizedTest
@@ -38,6 +40,6 @@ class ReservationTimeTest {
 
         boolean beforeTime = reservationTime.isBeforeTime(time);
 
-        Assertions.assertThat(beforeTime).isEqualTo(expected);
+        assertThat(beforeTime).isEqualTo(expected);
     }
 }

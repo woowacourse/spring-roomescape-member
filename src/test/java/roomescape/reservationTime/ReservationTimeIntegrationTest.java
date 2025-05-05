@@ -1,5 +1,6 @@
 package roomescape.reservationTime;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.is;
 
 import io.restassured.RestAssured;
@@ -78,7 +79,7 @@ public class ReservationTimeIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("잘못된 시간으로 생성 요청 시 400 응답을 준다.")
@@ -100,6 +101,6 @@ public class ReservationTimeIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.theme.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,7 @@ class ThemeTest {
 
         Theme theme = withoutId.assignId(1L);
 
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(theme.getId()).isEqualTo(1L),
                 () -> assertThat(theme.getName()).isEqualTo("a"),
                 () -> assertThat(theme.getDescription()).isEqualTo("b"),

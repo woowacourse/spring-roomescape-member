@@ -1,5 +1,7 @@
 package roomescape.reservation;
 
+import static org.assertj.core.api.Assertions.*;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -51,7 +53,7 @@ public class ReservationIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("날짜가 null인 상태로 생성 요청 시 400 응답을 준다.")
@@ -74,7 +76,7 @@ public class ReservationIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("잘못된 날짜로 생성 요청 시 400 응답을 준다.")
@@ -98,7 +100,7 @@ public class ReservationIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("잘못된 예약 시간 번호로 생성 요청 시 400 응답을 준다.")
@@ -121,7 +123,7 @@ public class ReservationIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("예약 시간 번호가 null인 상태로 생성 요청 시 400 응답을 준다.")
@@ -144,7 +146,7 @@ public class ReservationIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("잘못된 예약 id로 삭제 요청 시 400 응답을 준다.")

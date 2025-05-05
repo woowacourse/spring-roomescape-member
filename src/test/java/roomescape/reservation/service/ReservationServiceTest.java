@@ -1,5 +1,7 @@
 package roomescape.reservation.service;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -41,7 +43,7 @@ class ReservationServiceTest {
     private List<ReservationTime> reservationTimes = new ArrayList<>();
     private ThemeRepository themeRepository = new FakeThemeRepository(themes,reservations);
     private ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(reservationTimes);
-    ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
+    private ReservationRepository reservationRepository = new FakeReservationRepository(reservations);
     private ReservationService reservationService = new ReservationService(dateTime, reservationRepository, reservationTimeRepository, themeRepository);
 
     @BeforeEach
@@ -59,7 +61,7 @@ class ReservationServiceTest {
     @ParameterizedTest
     @MethodSource
     void cant_not_reserve_before_now(final LocalDate date, final Long timeId) {
-        Assertions.assertThatThrownBy(
+        assertThatThrownBy(
                         () -> reservationService.createReservation(new ReservationRequest("홍길동", date, timeId, 1L)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -76,7 +78,7 @@ class ReservationServiceTest {
     @DisplayName("중복 예약이 불가하다.")
     @Test
     void cant_not_reserve_duplicate() {
-        Assertions.assertThatThrownBy(() -> reservationService.createReservation(
+        assertThatThrownBy(() -> reservationService.createReservation(
                         new ReservationRequest("홍길동", LocalDate.of(2024, 10, 6), 1L, 1L)))
                 .isInstanceOf(IllegalArgumentException.class);
     }

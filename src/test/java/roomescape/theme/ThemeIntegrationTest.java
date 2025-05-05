@@ -1,5 +1,6 @@
 package roomescape.theme;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.is;
 
 import io.restassured.RestAssured;
@@ -61,7 +62,7 @@ public class ThemeIntegrationTest {
 
         ThemeResponse expected = new ThemeResponse(1L, "테스트1", "테스트2", "테스트3");
         ThemeResponse actual = response.as(ThemeResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
 
         RestAssured.given().log().all()
                 .when().delete("/themes/1")
@@ -90,7 +91,7 @@ public class ThemeIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("테마 설명이 null 또는 빈 상태로 생성 요청 시 400 응답을 준다.")
@@ -113,7 +114,7 @@ public class ThemeIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @DisplayName("테마 썸네일이 null 또는 빈 상태로 생성 요청 시 400 응답을 준다.")
@@ -136,6 +137,6 @@ public class ThemeIntegrationTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 }

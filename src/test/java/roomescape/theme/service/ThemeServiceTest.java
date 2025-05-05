@@ -1,5 +1,7 @@
 package roomescape.theme.service;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,7 +55,7 @@ class ThemeServiceTest {
     @DisplayName("존재하는 예약의 테마는 삭제할 수 없다.")
     @Test
     void can_not_remove_exists_reservation() {
-        Assertions.assertThatThrownBy(() -> themeService.deleteThemeById(1L))
+        assertThatThrownBy(() -> themeService.deleteThemeById(1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -62,7 +64,7 @@ class ThemeServiceTest {
     void can_get_popular_theme() {
         List<PopularThemeResponse> popularThemes = themeService.getPopularThemes();
 
-        Assertions.assertThat(popularThemes).containsExactly(
+        assertThat(popularThemes).containsExactly(
                 new PopularThemeResponse("테스트1", "썸네일", "설명"),
                 new PopularThemeResponse("테스트3", "썸네일", "설명")
         );

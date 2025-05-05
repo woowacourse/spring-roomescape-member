@@ -1,5 +1,7 @@
 package roomescape.common.exceptionHandler;
 
+import static org.assertj.core.api.Assertions.*;
+
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
@@ -74,7 +76,7 @@ class GlobalExceptionHandlerTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -91,7 +93,7 @@ class GlobalExceptionHandlerTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -108,7 +110,7 @@ class GlobalExceptionHandlerTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -125,7 +127,7 @@ class GlobalExceptionHandlerTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -142,6 +144,6 @@ class GlobalExceptionHandlerTest {
                 .response();
 
         ExceptionResponse actual = response.as(ExceptionResponse.class);
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 }
