@@ -35,7 +35,11 @@ public class ThemeService {
         if (reservedThemeChecker.isReservedTheme(id)) {
             throw new IllegalArgumentException("Theme is already reserved.");
         }
-        themeRepository.deleteTheme(id);
+        int result = themeRepository.deleteTheme(id);
+        if (result == 0) {
+            throw new IllegalArgumentException("삭제할 테마가 존재하지 않습니다. id: " + id);
+        }
+
     }
 
     public Theme getThemeById(Long id) {

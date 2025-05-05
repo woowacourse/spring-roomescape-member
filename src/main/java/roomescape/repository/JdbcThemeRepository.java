@@ -50,9 +50,9 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteTheme(Long id) {
+    public int deleteTheme(Long id) {
         String sql = "delete from theme where id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 
     @Override

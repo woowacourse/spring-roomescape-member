@@ -26,13 +26,14 @@ public class MemoryReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteReservation(Long id) {
+    public int deleteReservation(Long id) {
         for (Reservation reservation : reservations) {
             if (reservation.getId().equals(id)) {
                 reservations.remove(reservation);
-                return;
+                return 1;
             }
         }
+        return 0;
     }
 
 }

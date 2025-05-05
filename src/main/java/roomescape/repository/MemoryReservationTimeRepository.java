@@ -26,12 +26,14 @@ public class MemoryReservationTimeRepository implements ReservationTimeRepositor
     }
 
     @Override
-    public void deleteTime(Long id) {
+    public int deleteTime(Long id) {
         for (ReservationTime reservationTime : reservationTimes) {
             if (reservationTime.getId().equals(id)) {
                 reservationTimes.remove(reservationTime);
+                return 1;
             }
         }
+        return 0;
     }
 
     @Override

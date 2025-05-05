@@ -51,7 +51,10 @@ public class ReservationService {
     }
 
     public void deleteReservation(long id) {
-        reservationRepository.deleteReservation(id);
+        int  result = reservationRepository.deleteReservation(id);
+        if (result == 0) {
+            throw new IllegalArgumentException("삭제할 예약이 존재하지 않습니다. id: " + id);
+        }
     }
 
     private void validateFutureDateTime(ReservationDateTime reservationDateTime) {

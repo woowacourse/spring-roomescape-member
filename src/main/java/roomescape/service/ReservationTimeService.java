@@ -38,7 +38,10 @@ public class ReservationTimeService {
         if (reservedTimeChecker.isReservedTime(id)) {
             throw new IllegalArgumentException("Reservation time is already reserved.");
         }
-        reservationTimeRepository.deleteTime(id);
+        int result = reservationTimeRepository.deleteTime(id);
+        if (result == 0) {
+            throw new IllegalArgumentException("삭제할 시간이 존재하지 않습니다. id: " + id);
+        }
     }
 
     public ReservationTime getReservationTimeById(Long id) {

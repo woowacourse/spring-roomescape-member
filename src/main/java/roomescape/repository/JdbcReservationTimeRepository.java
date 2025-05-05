@@ -43,8 +43,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public void deleteTime(Long id) {
-        jdbcTemplate.update("delete from reservation_time where id = ?", id);
+    public int deleteTime(Long id) {
+        return jdbcTemplate.update("delete from reservation_time where id = ?", id);
     }
 
     @Override

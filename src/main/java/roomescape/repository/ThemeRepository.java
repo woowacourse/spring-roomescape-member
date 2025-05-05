@@ -8,7 +8,7 @@ public interface ThemeRepository {
 
     List<Theme> getAllTheme();
 
-    void deleteTheme(Long id);
+    int deleteTheme(Long id);
 
     Theme findById(Long id);
 
