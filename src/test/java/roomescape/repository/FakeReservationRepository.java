@@ -20,6 +20,10 @@ public class FakeReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> save(final Reservation reservation) {
+        List<Reservation> existingReservations = findByDateTimeTheme(reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getId());
+        if (!existingReservations.isEmpty()) {
+            throw new IllegalStateException();
+        }
         Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
         reservations.add(newReservation);
         return findById(newReservation.getId());

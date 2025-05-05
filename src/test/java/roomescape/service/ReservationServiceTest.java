@@ -18,6 +18,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationCreateRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.DuplicateContentException;
+import roomescape.exception.InvalidRequestException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.FakeReservationRepository;
 import roomescape.repository.FakeReservationTimeRepository;
@@ -107,30 +109,34 @@ class ReservationServiceTest {
         @DisplayName("이미 동일한 날짜와 시간에 예약이 있으면 생성할 수 없다")
         @Test
         void createDuplicateReservationTest() {
-            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+            LocalDate date = LocalDate.now().plusDays(7);
+            LocalTime time = LocalTime.of(10, 0);
+            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>(List.of(new Reservation(1L, "가이온", date, new ReservationTime(1L, time), new Theme(1L, "우테코", "방탈출", "http://")))));
+            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, time)));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", "http://")));
-            reservationTimeRepository.addReservation(new Reservation(1L, "가이온", LocalDate.now().plusDays(7), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "우테코", "방탈출", "http://")));
+            reservationTimeRepository.addReservation(new Reservation(1L, "가이온", date, new ReservationTime(1L, time), new Theme(1L, "우테코", "방탈출", "http://")));
             ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
             reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 1L);
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", date, 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto));
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(DuplicateContentException.class);
         }
 
         @DisplayName("이미 지난 날짜의 경우 예약 생성이 불가능 하다")
         @Test
         void createInvalidDateTest() {
+            LocalDate date = LocalDate.now().minusDays(7);
+            LocalTime time = LocalTime.of(10, 0);
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
-            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
+            FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, time)));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", "http://")));
             ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
             reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
-            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.of(2025, 1, 1), 1L, 1L);
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", date, 1L, 1L);
 
-            assertThatThrownBy(() -> reservationService.createReservation(requestDto));
+            assertThatThrownBy(() -> reservationService.createReservation(requestDto)).isInstanceOf(InvalidRequestException.class);
         }
     }
 
