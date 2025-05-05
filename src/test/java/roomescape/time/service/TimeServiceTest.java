@@ -57,7 +57,7 @@ class TimeServiceTest {
         // given
         LocalTime startAt = LocalTime.of(10, 0);
         TimeRequest timeRequest = new TimeRequest(startAt);
-        Time time = new Time(null, startAt);
+        Time time = new Time(1L, startAt);
 
         when(timeRepository.existsByStartAt(startAt)).thenReturn(false);
         when(timeRepository.add(any(Time.class))).thenReturn(time);
