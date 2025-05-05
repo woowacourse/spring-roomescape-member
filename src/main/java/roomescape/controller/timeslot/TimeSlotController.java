@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import roomescape.controller.timeslot.dto.AddTimeSlotRequest;
 import roomescape.controller.timeslot.dto.TimeSlotResponse;
@@ -19,6 +20,7 @@ import roomescape.service.TimeSlotService;
 import roomescape.service.dto.BookedTimeSlotResponse;
 
 @Controller
+@RequestMapping("/times")
 public class TimeSlotController {
 
     private final TimeSlotService service;
@@ -28,19 +30,19 @@ public class TimeSlotController {
         this.service = service;
     }
 
-    @GetMapping("/times")
+    @GetMapping
     public ResponseEntity<List<TimeSlotResponse>> allTimeSlots() {
         var timeSlots = service.findAll();
         return ResponseEntity.ok(timeSlots);
     }
 
-    @PostMapping("/times")
+    @PostMapping
     public ResponseEntity<TimeSlotResponse> add(@RequestBody @Valid final AddTimeSlotRequest request) {
         var timeSlot = service.add(request);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(timeSlot);
     }
 
-    @DeleteMapping("/times/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         boolean isRemoved = service.removeById(id);
         if (isRemoved) {
@@ -49,7 +51,7 @@ public class TimeSlotController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = "/availableTimes", params = {"date", "themeId"})
+    @GetMapping(value = "/availability", params = {"date", "themeId"})
     public ResponseEntity<List<BookedTimeSlotResponse>> availableTimes(
             @RequestParam("date") LocalDate date,
             @RequestParam("themeId") Long themeId

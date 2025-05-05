@@ -307,7 +307,7 @@
   - 사용자는 날짜와 테마를 선택하면 예약 가능한 시간을 확인할 수 있습니다.
   - Request
     ```
-    GET /availableTimes?date="2025-05-01"&themeId=1 HTTP/1.1
+    GET /times/availability?date="2025-05-01"&themeId=1 HTTP/1.1
     ```
     
   - Response
