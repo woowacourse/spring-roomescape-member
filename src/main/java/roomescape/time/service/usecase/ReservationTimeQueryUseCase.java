@@ -14,5 +14,4 @@ public interface ReservationTimeQueryUseCase {
 
     boolean existsByStartAt(LocalTime time);
 
-    boolean existById(ReservationTimeId id);
 }

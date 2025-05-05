@@ -32,9 +32,4 @@ public class ReservationTimeQueryUseCaseImpl implements ReservationTimeQueryUseC
         return reservationTimeRepository.existsByStartAt(startAt);
     }
 
-    @Override
-    public boolean existById(final ReservationTimeId id) {
-        return reservationTimeRepository.existsById(id);
-    }
-
 }

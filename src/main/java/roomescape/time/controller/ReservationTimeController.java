@@ -27,9 +27,8 @@ public class ReservationTimeController {
     private final ReservationTimeService reservationTimeService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getAll() {
-        final List<ReservationTimeResponse> reservationTimeResponses = reservationTimeService.getAll();
-        return ResponseEntity.ok(reservationTimeResponses);
+    public List<ReservationTimeResponse> getAll() {
+        return reservationTimeService.getAll();
     }
 
     @PostMapping

@@ -27,8 +27,8 @@ public class ThemeController {
     private final ThemeService themeService;
 
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getAll() {
-        return ResponseEntity.ok(themeService.getAll());
+    public List<ThemeResponse> getAll() {
+        return themeService.getAll();
     }
 
     @GetMapping("/ranking")

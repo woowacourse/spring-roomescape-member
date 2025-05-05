@@ -30,17 +30,15 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getAll() {
-        final List<ReservationResponse> reservations = reservationService.getAll();
-        return ResponseEntity.ok(reservations);
+    public List<ReservationResponse> getAll() {
+        return reservationService.getAll();
     }
 
     @GetMapping("/times")
-    public ResponseEntity<List<AvailableReservationTimeWebResponse>> getAvailable(
+    public List<AvailableReservationTimeWebResponse> getAvailable(
             @RequestParam final LocalDate date,
             @RequestParam final Long themeId) {
-        final List<AvailableReservationTimeWebResponse> reservations = reservationService.getAvailable(date, themeId);
-        return ResponseEntity.ok(reservations);
+        return reservationService.getAvailable(date, themeId);
     }
 
     @PostMapping
