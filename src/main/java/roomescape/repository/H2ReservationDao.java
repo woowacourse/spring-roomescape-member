@@ -67,9 +67,14 @@ public class H2ReservationDao implements ReservationDao {
 
     @Override
     public Reservation save(final Reservation reservation) {
-        long id = insertReservationAndRetrieveKey(reservation);
-        return new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(),
-                reservation.getTheme());
+        final Map<String, Object> parameters = Map.of(
+                "name", reservation.getName(),
+                "date", Date.valueOf(reservation.getDate()),
+                "time_id", reservation.getTimeId(),
+                "theme_id", reservation.getTheme().getId()
+        );
+        final long id = reservationInserter.executeAndReturnKey(parameters).longValue();
+        return new Reservation(id, reservation);
     }
 
     @Override
@@ -118,26 +123,6 @@ public class H2ReservationDao implements ReservationDao {
                 WHERE r.date = ? AND r.theme_id = ?
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
-    }
-
-    private Reservation getReservationById(final long id) {
-        final String sql = """
-                SELECT
-                    r.id AS reservation_id,
-                    r.name,
-                    r.date,
-                    t.id AS time_id,
-                    t.start_at AS time_value,
-                    th.id AS theme_id,
-                    th.name AS theme_name,
-                    th.description AS theme_description,
-                    th.thumbnail AS theme_thumbnail
-                FROM reservation AS r 
-                INNER JOIN reservation_time AS t ON r.time_id = t.id
-                INNER JOIN theme AS th ON r.theme_id = th.id
-                WHERE r.id = ?
-                """;
-        return jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
     }
 
     private long insertReservationAndRetrieveKey(final Reservation reservation) {

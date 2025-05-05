@@ -11,13 +11,22 @@ public final class Reservation {
     private final ReservationDateTime dateTime;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
-                       final Theme theme) {
+    private Reservation(final Long id, final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
         validateTheme(theme);
         this.id = id;
-        this.name = new MemberName(name);
-        this.dateTime = new ReservationDateTime(date, time);
+        this.name = name;
+        this.dateTime = dateTime;
         this.theme = theme;
+    }
+
+    public Reservation(final Long id, final String name,
+                       final LocalDate date, final ReservationTime time,
+                       final Theme theme) {
+        this(id, new MemberName(name), new ReservationDateTime(date, time), theme);
+    }
+
+    public Reservation(final long id, final Reservation reservation) {
+        this(id, reservation.name, reservation.dateTime, reservation.theme);
     }
 
     private void validateTheme(final Theme theme) {

@@ -1,7 +1,6 @@
 package roomescape.repository;
 
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +34,8 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public ReservationTime save(final ReservationTime reservationTime) {
-        final long id = insertReservationTimeAndRetrieveKey(reservationTime);
+        final Map<String, Object> parameters = Map.of("start_at", reservationTime.getStartAt());
+        final long id = reservationTimeInserter.executeAndReturnKey(parameters).longValue();
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
@@ -62,10 +62,5 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
     public void deleteById(final long id) {
         final String sql = "DELETE FROM reservation_time WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    private long insertReservationTimeAndRetrieveKey(final ReservationTime reservationTime) {
-        final Map<String, Object> parameters = new HashMap<>(Map.of("start_at", reservationTime.getStartAt()));
-        return (long) reservationTimeInserter.executeAndReturnKey(parameters);
     }
 }
