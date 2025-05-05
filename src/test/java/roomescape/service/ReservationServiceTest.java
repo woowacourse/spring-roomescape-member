@@ -45,7 +45,8 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, startTime)));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", "http://")));
-            reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 1L);
             ReservationResponseDto responseDto = reservationService.createReservation(requestDto);
@@ -72,7 +73,8 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", "http://")));
-            reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now(), 1L, 1L);
 
@@ -86,7 +88,8 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(new ReservationTime(1L, LocalTime.now())));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", "http://")));
-            reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto(name, LocalDate.now().plusDays(7), 1L, 1L);
 
@@ -108,7 +111,8 @@ class ReservationServiceTest {
             FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", "http://")));
             reservationTimeRepository.addReservation(new Reservation(1L, "가이온", LocalDate.now().plusDays(7), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "우테코", "방탈출", "http://")));
-            reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 1L);
 
@@ -121,7 +125,8 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
             FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(new ArrayList<>());
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(new Theme(1L, "우테코", "방탈출", "http://")));
-            reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.of(2025, 1, 1), 1L, 1L);
 
@@ -146,7 +151,8 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>(List.of(reservation1, reservation2)));
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(reservationTime));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(theme));
-            ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            ReservationService reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             List<ReservationResponseDto> responses = reservationService.findAllReservationResponses();
 
@@ -170,7 +176,8 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>(List.of(reservation)));
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(reservationTime));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(theme));
-            ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            ReservationService reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             reservationService.deleteReservation(1L);
 
@@ -189,7 +196,8 @@ class ReservationServiceTest {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>(List.of(reservation)));
             ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository(List.of(reservationTime));
             ThemeRepository themeRepository = new FakeThemeRepository(List.of(theme));
-            ReservationService reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+            ReservationRequestFactory reservationRequestFactory = new ReservationRequestFactory(reservationTimeRepository, themeRepository);
+            ReservationService reservationService = new ReservationService(reservationRequestFactory, reservationRepository);
 
             assertThatThrownBy(() -> reservationService.deleteReservation(2L)).isInstanceOf(NotFoundException.class);
         }
