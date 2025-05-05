@@ -19,12 +19,12 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.ReservationTime;
 
-class ReservationServiceImplTest {
+class ReservationServiceTest {
 
     private final ReservationDao reservationDao = new FakeReservationDao();
     private final ReservationTimeDao timeDao = new FakeReservationTimeDao();
     private final ThemeDao themeDao = new FakeThemeDao();
-    private final ReservationServiceImpl reservationService = new ReservationServiceImpl(reservationDao, timeDao,
+    private final ReservationService reservationService = new ReservationService(reservationDao, timeDao,
             themeDao);
 
     @Test
