@@ -42,11 +42,11 @@ class ReservationH2DaoTest extends JdbcTestSupport {
     @Test
     void selectAll() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
                 LocalDate.now().plusDays(20), "1", "1");
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
                 LocalDate.now().plusDays(21), "1", "1");
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
                 LocalDate.now().plusDays(22), "1", "1");
 
         // when
@@ -98,9 +98,9 @@ class ReservationH2DaoTest extends JdbcTestSupport {
     @Test
     void noneSelect() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
                 LocalDate.now().plusDays(20), "1", "1");
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "2번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "2번사람",
                 LocalDate.now().plusDays(21), "1", "1");
         // when
         assertThatThrownBy(() -> reservationH2Dao.selectById(3L).get())
@@ -111,9 +111,9 @@ class ReservationH2DaoTest extends JdbcTestSupport {
     @Test
     void selectById() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
                 LocalDate.now().plusDays(20), "1", "1");
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "2번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "2번사람",
                 LocalDate.now().plusDays(21), "1", "1");
 
         // when
@@ -130,9 +130,9 @@ class ReservationH2DaoTest extends JdbcTestSupport {
     @Test
     void deleteById() {
         // given
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
                 LocalDate.now().plusDays(20), "1", "1");
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "2번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "2번사람",
                 LocalDate.now().plusDays(21), "1", "1");
 
         // when
@@ -150,7 +150,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
         LocalDate date = LocalDate.now().plusDays(20);
         Long timeId = 1L;
         Long themeId = 1L;
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
                 date, timeId, themeId);
 
         // when
@@ -167,7 +167,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
         LocalDate date = LocalDate.now().plusDays(20);
         Long timeId = 1L;
         Long themeId = 1L;
-        jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
                 date, timeId, themeId);
 
         Long anotherId = 100L;
@@ -176,5 +176,76 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
         // then
         assertThat(isExistDuplicatedDateTime).isFalse();
+    }
+
+    @DisplayName("입력한 timeId를 가진 예약이 존재하면 true를 반환한다")
+    @Test
+    void existsByTimeId() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        Long timeId = 1L;
+        LocalDate date = LocalDate.now().plusDays(20);
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+                date, timeId, 1L);
+
+        // when
+        boolean existsByTimeId = reservationH2Dao.existsByTimeId(timeId);
+
+        // then
+        assertThat(existsByTimeId).isTrue();
+    }
+
+    @DisplayName("입력한 timeId를 가진 예약이 존재하지 않으면 false를 반환한다")
+    @Test
+    void notExistsByTimeId() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        Long timeId = 1L;
+        LocalDate date = LocalDate.now().plusDays(20);
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+                date, timeId, 1L);
+
+        Long anotherTimeId = 100L;
+        // when
+        boolean existsByTimeId = reservationH2Dao.existsByTimeId(anotherTimeId);
+
+        // then
+        assertThat(existsByTimeId).isFalse();
+    }
+
+    @DisplayName("입력한 themeId를 가진 예약이 존재하면 true를 반환한다")
+    @Test
+    void existsByThemeId() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
+        Long themeId = 1L;
+        LocalDate date = LocalDate.now().plusDays(20);
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+                date, 1L, themeId);
+
+        // when
+        boolean existsByThemeId = reservationH2Dao.existsByThemeId(themeId);
+
+        // then
+        assertThat(existsByThemeId).isTrue();
+    }
+
+    @DisplayName("입력한 themeId를 가진 예약이 존재하지 않으면 false를 반환한다")
+    @Test
+    void notExistsByThemeId() {
+        // given
+        jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
+        Long themeId = 1L;
+        LocalDate date = LocalDate.now().plusDays(20);
+        jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
+                date, 1L, themeId);
+
+        Long anotherThemeId = 100L;
+
+        // when
+        boolean existsByThemeId = reservationH2Dao.existsByThemeId(anotherThemeId);
+
+        // then
+        assertThat(existsByThemeId).isFalse();
     }
 }
