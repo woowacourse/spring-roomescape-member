@@ -14,10 +14,7 @@ import roomescape.service.reservation.ReservationTime;
 import roomescape.service.reservation.Theme;
 
 @Repository
-public class H2ReservationDao implements ReservationDao {
-
-    public static final String RESERVATION_TABLE = "reservation";
-    public static final String RESERVATION_PK = "id";
+public class JdbcReservationDao implements ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationInserter;
@@ -38,11 +35,11 @@ public class H2ReservationDao implements ReservationDao {
                     )
             );
 
-    public H2ReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcReservationDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationInserter = new SimpleJdbcInsert(dataSource)
-                .withTableName(RESERVATION_TABLE)
-                .usingGeneratedKeyColumns(RESERVATION_PK);
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override

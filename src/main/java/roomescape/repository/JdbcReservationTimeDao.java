@@ -12,10 +12,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.service.reservation.ReservationTime;
 
 @Repository
-public class H2ReservationTimeDao implements ReservationTimeDao {
-
-    public static final String RESERVATION_TIME_TABLE = "reservation_time";
-    public static final String RESERVATION_TIME_PK = "id";
+public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationTimeInserter;
@@ -25,11 +22,11 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
                     LocalTime.parse(resultSet.getString("start_at"))
             );
 
-    public H2ReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
+    public JdbcReservationTimeDao(final JdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.reservationTimeInserter = new SimpleJdbcInsert(dataSource)
-                .withTableName(RESERVATION_TIME_TABLE)
-                .usingGeneratedKeyColumns(RESERVATION_TIME_PK);
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override

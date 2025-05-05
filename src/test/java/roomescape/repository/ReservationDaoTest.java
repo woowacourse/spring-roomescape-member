@@ -18,9 +18,9 @@ import roomescape.service.reservation.Theme;
 @JdbcTest
 class ReservationDaoTest {
 
-    private H2ReservationDao reservationDao;
-    private H2ReservationTimeDao reservationTimeDao;
-    private H2ThemeDao themeDao;
+    private JdbcReservationDao reservationDao;
+    private JdbcReservationTimeDao reservationTimeDao;
+    private JdbcThemeDao themeDao;
     private final LocalTime time = LocalTime.of(10, 0);
     private ReservationTime reservationTime;
     private Theme theme;
@@ -33,9 +33,9 @@ class ReservationDaoTest {
 
     @BeforeEach
     void setUp() {
-        reservationDao = new H2ReservationDao(jdbcTemplate, dataSource);
-        reservationTimeDao = new H2ReservationTimeDao(jdbcTemplate, dataSource);
-        themeDao = new H2ThemeDao(jdbcTemplate, dataSource);
+        reservationDao = new JdbcReservationDao(jdbcTemplate, dataSource);
+        reservationTimeDao = new JdbcReservationTimeDao(jdbcTemplate, dataSource);
+        themeDao = new JdbcThemeDao(jdbcTemplate, dataSource);
         jdbcTemplate.execute("DROP TABLE reservation IF EXISTS");
         jdbcTemplate.execute("DROP TABLE reservation_time IF EXISTS");
         jdbcTemplate.execute("DROP TABLE theme IF EXISTS");
