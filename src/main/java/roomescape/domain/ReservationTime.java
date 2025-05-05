@@ -2,7 +2,9 @@ package roomescape.domain;
 
 import java.time.LocalTime;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ReservationTime {
 
@@ -25,13 +27,5 @@ public class ReservationTime {
 
     public boolean isSameTime(final ReservationTime other) {
         return this.startAt.equals(other.startAt);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public LocalTime getStartAt() {
-        return startAt;
     }
 }

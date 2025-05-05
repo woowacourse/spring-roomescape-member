@@ -1,7 +1,9 @@
 package roomescape.domain;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ReservationTheme {
 
@@ -20,21 +22,5 @@ public class ReservationTheme {
     public ReservationTheme assignId(final Long id) {
         this.id = id;
         return this;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
     }
 }
