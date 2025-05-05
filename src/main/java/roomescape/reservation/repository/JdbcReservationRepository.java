@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -225,27 +226,33 @@ public class JdbcReservationRepository implements ReservationRepository {
                     ?
                 """;
 
-        return jdbcTemplate.query(
-                        sql,
-                        (rs, rowNum) -> {
-                            final Theme theme = Theme.withId(
-                                    ThemeId.from(rs.getLong("id")),
-                                    ThemeName.from(rs.getString("name")),
-                                    ThemeDescription.from(rs.getString("description")),
-                                    ThemeThumbnail.from(rs.getString("thumbnail"))
-                            );
-                            final int bookedCount = rs.getInt("booked_count");
-                            return entry(theme, bookedCount);
-                        },
-                        startDate.getValue(),
-                        endDate.getValue(),
-                        count)
-                .stream()
+        List<Entry<Theme, Integer>> resultList = jdbcTemplate.query(
+                sql,
+                getThemesToBookedCountRowMapper(),
+                startDate.getValue(),
+                endDate.getValue(),
+                count
+        );
+
+        return resultList.stream()
                 .collect(Collectors.toMap(
                         Entry::getKey,
                         Entry::getValue,
                         (v1, v2) -> v1,
                         LinkedHashMap::new
                 ));
+    }
+
+    private RowMapper<Entry<Theme, Integer>> getThemesToBookedCountRowMapper() {
+        return (rs, rowNum) -> {
+            Theme theme = Theme.withId(
+                    ThemeId.from(rs.getLong("id")),
+                    ThemeName.from(rs.getString("name")),
+                    ThemeDescription.from(rs.getString("description")),
+                    ThemeThumbnail.from(rs.getString("thumbnail"))
+            );
+            int bookedCount = rs.getInt("booked_count");
+            return entry(theme, bookedCount);
+        };
     }
 }
