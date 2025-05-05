@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,21 +52,21 @@ public class ReservationFakeRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByTimeSlotId(final Long id) {
         return reservations.values().stream()
-            .filter(reservation -> reservation.timeSlot().id() == id)
+            .filter(reservation -> Objects.equals(reservation.timeSlot().id(), id))
             .toList();
     }
 
     @Override
     public List<Reservation> findAllByThemeId(final Long id) {
         return reservations.values().stream()
-            .filter(reservation -> reservation.theme().id() == id)
+            .filter(reservation -> Objects.equals(reservation.theme().id(), id))
             .toList();
     }
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final Long themeId) {
         return reservations.values().stream()
-            .filter(r -> r.date().equals(date) && r.theme().id() == themeId)
+            .filter(r -> r.date().equals(date) && Objects.equals(r.theme().id(), themeId))
             .toList();
     }
 
