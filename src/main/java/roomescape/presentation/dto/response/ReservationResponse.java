@@ -7,7 +7,7 @@ import java.util.List;
 
 public record ReservationResponse(
         long id,
-        String name,
+        UserNameResponse user,
         LocalDate date,
         ReservationTimeResponse time,
         ThemeResponse theme
@@ -21,7 +21,7 @@ public record ReservationResponse(
     public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
+                UserNameResponse.from(reservation.getUser()),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime()),
                 ThemeResponse.from(reservation.getTheme())

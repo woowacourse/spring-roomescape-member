@@ -1,4 +1,4 @@
-package roomescape.business.service;
+package roomescape.exception.impl;
 
 import roomescape.exception.RootException;
 

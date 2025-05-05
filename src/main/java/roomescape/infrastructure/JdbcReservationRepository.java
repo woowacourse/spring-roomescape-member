@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.business.model.entity.Reservation;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.entity.Theme;
+import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.ReservationRepository;
 
 import java.time.LocalDate;
@@ -21,7 +22,11 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.afterSave(
             resultSet.getLong("reservation_id"),
-            resultSet.getString("name"),
+            User.beforeSave(
+                    resultSet.getString("user_name"),
+                    resultSet.getString("user_email"),
+                    resultSet.getString("user_password")
+            ),
             resultSet.getDate("date").toLocalDate(),
             ReservationTime.afterSave(
                     resultSet.getLong("time_id"),
@@ -48,7 +53,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Reservation save(final Reservation reservation) {
         final Number id = insert.executeAndReturnKey(Map.of(
-                "name", reservation.getName(),
+                "email", reservation.getUserEmail(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId()
@@ -56,7 +61,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return Reservation.afterSave(
                 id.longValue(),
-                reservation.getName(),
+                reservation.getUser(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()
@@ -68,17 +73,20 @@ public class JdbcReservationRepository implements ReservationRepository {
         final String sql = """
                 SELECT
                  r.id as reservation_id,
-                 r.name,
                  r.date,
                  rt.id as time_id,
                  rt.start_at as time_value,
                  t.id as theme_id,
                  t.name as theme_name,
                  t.description as theme_description,
-                 t.thumbnail as theme_thumbnail
+                 t.thumbnail as theme_thumbnail,
+                 u.name as user_name,
+                 u.email as user_email,
+                 u.password as user_password
                 FROM reservation as r
                 INNER JOIN reservation_time as rt ON r.time_id = rt.id
                 INNER JOIN theme as t ON r.theme_id = t.id
+                INNER JOIN users as u ON r.email = u.email
                 """;
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
@@ -89,17 +97,20 @@ public class JdbcReservationRepository implements ReservationRepository {
             final String sql = """
                     SELECT
                      r.id as reservation_id,
-                     r.name,
                      r.date,
                      rt.id as time_id,
                      rt.start_at as time_value,
                      t.id as theme_id,
                      t.name as theme_name,
                      t.description as theme_description,
-                     t.thumbnail as theme_thumbnail
+                     t.thumbnail as theme_thumbnail,
+                     u.name as user_name,
+                     u.email as user_email,
+                     u.password as user_password
                     FROM reservation as r
                     INNER JOIN reservation_time as rt ON r.time_id = rt.id
                     INNER JOIN theme as t ON r.theme_id = t.id
+                    INNER JOIN users as u ON r.email = u.email
                     WHERE r.id = ?
                     """;
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));

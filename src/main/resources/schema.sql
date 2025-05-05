@@ -1,7 +1,8 @@
 -- 테이블이 이미 존재할 경우를 대비해 삭제
+DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS theme;
 DROP TABLE IF EXISTS reservation_time;
-DROP TABLE IF EXISTS reservation;
+DROP TABLE IF EXISTS users;
 
 -- 유저 테이블
 CREATE TABLE users
@@ -34,11 +35,12 @@ CREATE TABLE reservation_time
 CREATE TABLE reservation
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
-    name     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255) NOT NULL,
     date     DATE         NOT NULL,
     time_id  BIGINT       NOT NULL,
     theme_id BIGINT       NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
-    FOREIGN KEY (theme_id) REFERENCES theme (id)
+    FOREIGN KEY (theme_id) REFERENCES theme (id),
+    FOREIGN KEY (email) REFERENCES users (email)
 );

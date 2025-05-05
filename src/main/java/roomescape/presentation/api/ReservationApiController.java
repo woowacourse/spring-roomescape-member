@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.AuthRequired;
 import roomescape.business.model.entity.Reservation;
+import roomescape.business.model.vo.Authorization;
 import roomescape.business.service.ReservationService;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
@@ -23,8 +24,8 @@ public class ReservationApiController {
 
     @PostMapping("/reservations")
     @AuthRequired
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request) {
-        Reservation reservation = reservationService.addAndGet(request.name(), request.date(), request.timeId(), request.themeId());
+    public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request, Authorization authorization) {
+        Reservation reservation = reservationService.addAndGet(request.date(), request.timeId(), request.themeId(), authorization.email());
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations")).body(response);
     }
@@ -40,6 +41,7 @@ public class ReservationApiController {
     @DeleteMapping("/reservations/{id}")
     @AuthRequired
     public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
+        // TODO : 해당 예약을 한 유저가 본인인지 검증
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
