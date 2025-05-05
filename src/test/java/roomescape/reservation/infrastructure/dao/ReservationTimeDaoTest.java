@@ -38,7 +38,7 @@ public class ReservationTimeDaoTest {
         reservationTimeDao.insert(reservationTimeRequest.getStartAt());
 
         // then
-        assertThat(count()).isEqualTo(count());
+        assertThat(count()).isEqualTo(1);
     }
 
     @Test
