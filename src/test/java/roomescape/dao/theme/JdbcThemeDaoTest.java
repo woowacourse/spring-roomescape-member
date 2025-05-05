@@ -102,29 +102,4 @@ class JdbcThemeDaoTest {
                 () -> assertThat(optionalTheme.get()).isEqualTo(savedTheme)
         );
     }
-
-    @DisplayName("최근 7일간 가장 인기있었던 테마 상위 10개를 검색한다.")
-    @Test
-    void findPopularThemesInRecentSevenDaysTest() {
-
-        // given
-        LocalTime time = LocalTime.of(10, 10);
-        LocalDate beforeOneDay = LocalDate.now().minusDays(1);
-        LocalDate beforeEightDay = LocalDate.now().minusDays(8);
-        Theme popularTheme = Theme.create("test", "test", "test");
-        Theme notPopularTheme = Theme.create("test2", "test", "test");
-        ReservationTime savedReservationTime = jdbcReservationTimeDao.create(ReservationTime.create(time));
-        Theme savedPopularTheme = jdbcThemeDao.create(popularTheme);
-        Theme savedNotPopularTheme = jdbcThemeDao.create(notPopularTheme);
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('test', ?, ?, ?)";
-        jdbcTemplate.update(sql, beforeOneDay.toString(), savedReservationTime.getId(), savedPopularTheme.getId());
-        jdbcTemplate.update(sql, beforeEightDay.toString(), savedReservationTime.getId(), savedNotPopularTheme.getId());
-
-        // when
-        List<Theme> themes = jdbcThemeDao.findPopularThemesInRecentSevenDays(
-                LocalDate.now().minusDays(7), beforeOneDay);
-
-        // then
-        assertThat(themes.getFirst()).isEqualTo(savedPopularTheme);
-    }
 }

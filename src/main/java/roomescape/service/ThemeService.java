@@ -2,11 +2,14 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.dao.reservation.ReservationDao;
 import roomescape.dao.theme.ThemeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeCreateRequest;
 import roomescape.dto.response.ThemeCreateResponse;
@@ -57,8 +60,26 @@ public class ThemeService {
 
     public List<ThemeResponse> findPopularThemesInRecentSevenDays() {
         LocalDate today = LocalDate.now();
-        return themeDao.findPopularThemesInRecentSevenDays(today.minusDays(7), today.minusDays(1)).stream()
-                .map(ThemeResponse::from)
+        List<Reservation> reservationsInRecentSevenDays = getBetweenStartDateToEndDate(reservationDao.findAll(), today.minusDays(7), today.minusDays(1));
+        Map<Theme, Long> themeCount = reservationsInRecentSevenDays.stream()
+                .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
+        return getPopularThemeResponses(themeCount);
+    }
+
+    private List<ThemeResponse> getPopularThemeResponses(Map<Theme, Long> themeCount) {
+        return themeCount.entrySet().stream()
+                .sorted(Map.Entry.<Theme, Long>comparingByValue().reversed())
+                .limit(10)
+                .map(entry -> {
+                    Theme t = entry.getKey();
+                    return new ThemeResponse(t.getId(), t.getName(), t.getDescription(), t.getThumbnail());
+                })
+                .toList();
+    }
+
+    private List<Reservation> getBetweenStartDateToEndDate(List<Reservation> reservations, LocalDate startDate, LocalDate endDate) {
+        return reservations.stream()
+                .filter(r -> !r.getDate().isBefore(startDate) && !r.getDate().isAfter(endDate))
                 .toList();
     }
 }

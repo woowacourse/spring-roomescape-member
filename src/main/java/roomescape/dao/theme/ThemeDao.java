@@ -14,6 +14,4 @@ public interface ThemeDao {
     Theme create(Theme theme);
 
     void delete(Theme theme);
-
-    List<Theme> findPopularThemesInRecentSevenDays(LocalDate startDate, LocalDate endDate);
 }

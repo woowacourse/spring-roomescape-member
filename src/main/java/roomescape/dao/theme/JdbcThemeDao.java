@@ -58,21 +58,4 @@ public class JdbcThemeDao implements ThemeDao {
         final String sql = "DELETE FROM theme t WHERE t.id = ?";
         jdbcTemplate.update(sql, theme.getId());
     }
-
-    @Override
-    public List<Theme> findPopularThemesInRecentSevenDays(LocalDate startDate, LocalDate endDate) {
-        final String sql = """
-                SELECT th.id, th.name, th.description, th.thumbnail
-                FROM theme th
-                INNER JOIN (
-                    SELECT theme_id, COUNT(*) AS cnt
-                    FROM reservation as rs
-                    WHERE rs.date BETWEEN ? AND ?
-                    GROUP BY theme_id
-                    ORDER BY cnt DESC
-                    LIMIT 10
-                ) r ON th.id = r.theme_id;
-                """;
-        return jdbcTemplate.query(sql, themeMapper, startDate, endDate);
-    }
 }
