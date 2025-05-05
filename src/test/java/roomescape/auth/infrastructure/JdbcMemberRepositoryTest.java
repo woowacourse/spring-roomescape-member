@@ -14,26 +14,26 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
-import roomescape.auth.domain.User;
+import roomescape.auth.domain.Member;
 
 @JdbcTest
-@Import(JdbcUserRepository.class)
+@Import(JdbcMemberRepository.class)
 @ActiveProfiles("test")
-class JdbcUserRepositoryTest {
+class JdbcMemberRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private JdbcUserRepository jdbcUserRepository;
+    private JdbcMemberRepository jdbcMemberRepository;
 
     @BeforeEach
     void cleanDatabase() {
-        jdbcTemplate.execute("TRUNCATE TABLE users");
+        jdbcTemplate.execute("TRUNCATE TABLE members");
     }
 
-    private final static RowMapper<User> USER_ROW_MAPPER =
-            (rs, rowNum) -> new User(
+    private final static RowMapper<Member> MEMBER_ROW_MAPPER =
+            (rs, rowNum) -> new Member(
                     rs.getString("email"),
                     rs.getString("password"),
                     rs.getString("name")
@@ -43,38 +43,38 @@ class JdbcUserRepositoryTest {
     @Test
     void save() {
         // given
-        User user = new User("test@example.com", "password", "멍구");
+        Member member = new Member("test@example.com", "password", "멍구");
 
         // when
-        jdbcUserRepository.save(user);
+        jdbcMemberRepository.save(member);
 
         // then
-        List<User> users = jdbcTemplate.query("SELECT email, password, name FROM users", USER_ROW_MAPPER);
+        List<Member> members = jdbcTemplate.query("SELECT email, password, name FROM members", MEMBER_ROW_MAPPER);
 
-        assertThat(users).hasSize(1);
-        assertThat(users.getFirst()).isEqualTo(user);
+        assertThat(members).hasSize(1);
+        assertThat(members.getFirst()).isEqualTo(member);
     }
 
     @DisplayName("유저를 이메일로 조회할 수 있다.")
     @Test
-    void findUserByEmail() {
+    void findMemberByEmail() {
         // given
         String email = "test@example.com";
         String password = "password";
         String name = "멍구";
-        jdbcTemplate.update("INSERT INTO users (email, password, name) VALUES (?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO members (email, password, name) VALUES (?, ?, ?)",
                 email, password, name);
 
         // when
-        Optional<User> result = jdbcUserRepository.findByEmail(email);
+        Optional<Member> result = jdbcMemberRepository.findByEmail(email);
 
         // then
         assertThat(result).isPresent();
-        User user = result.get();
+        Member member = result.get();
 
         assertAll(
-                () -> assertThat(user.getPassword()).isEqualTo(password),
-                () -> assertThat(user.getName()).isEqualTo(name)
+                () -> assertThat(member.getPassword()).isEqualTo(password),
+                () -> assertThat(member.getName()).isEqualTo(name)
         );
     }
 }

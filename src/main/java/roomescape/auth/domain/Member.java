@@ -2,12 +2,12 @@ package roomescape.auth.domain;
 
 import java.util.Objects;
 
-public class User {
+public class Member {
     private final String email;
     private final String password;
     private final String name;
 
-    public User(String email, String password, String name) {
+    public Member(String email, String password, String name) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -30,10 +30,10 @@ public class User {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof User user)) {
+        if (!(o instanceof Member member)) {
             return false;
         }
-        return Objects.equals(email, user.email);
+        return Objects.equals(email, member.email);
     }
 
     @Override

@@ -7,13 +7,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.auth.domain.User;
-import roomescape.auth.domain.UserRepository;
+import roomescape.auth.domain.Member;
+import roomescape.auth.domain.MemberRepository;
 
 @Repository
-public class JdbcUserRepository implements UserRepository {
-    private final static RowMapper<User> USER_ROW_MAPPER =
-            (rs, rowNum) -> new User(
+public class JdbcMemberRepository implements MemberRepository {
+    private final static RowMapper<Member> MEMBER_ROW_MAPPER =
+            (rs, rowNum) -> new Member(
                     rs.getString("email"),
                     rs.getString("password"),
                     rs.getString("name")
@@ -21,31 +21,31 @@ public class JdbcUserRepository implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public void save(User user) {
+    public void save(Member member) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("users");
+                .withTableName("members");
 
         Map<String, Object> parameters = Map.of(
-                "email", user.getEmail(),
-                "password", user.getPassword(),
-                "name", user.getName()
+                "email", member.getEmail(),
+                "password", member.getPassword(),
+                "name", member.getName()
         );
 
         simpleJdbcInsert.execute(parameters);
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        String selectOneSql = "SELECT email, password, name FROM users WHERE email=?";
+    public Optional<Member> findByEmail(String email) {
+        String selectOneSql = "SELECT email, password, name FROM members WHERE email=?";
         try {
-            User user = jdbcTemplate.queryForObject(selectOneSql, USER_ROW_MAPPER,
+            Member member = jdbcTemplate.queryForObject(selectOneSql, MEMBER_ROW_MAPPER,
                     email);
-            return Optional.of(user);
+            return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

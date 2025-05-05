@@ -2,11 +2,11 @@ package roomescape.auth.application;
 
 import static roomescape.auth.exception.AuthErrorCode.INVALID_PASSWORD;
 import static roomescape.auth.exception.AuthErrorCode.INVALID_TOKEN;
-import static roomescape.auth.exception.AuthErrorCode.USER_NOT_FOUND;
+import static roomescape.auth.exception.AuthErrorCode.MEMBER_NOT_FOUND;
 
 import org.springframework.stereotype.Service;
-import roomescape.auth.domain.User;
-import roomescape.auth.domain.UserRepository;
+import roomescape.auth.domain.Member;
+import roomescape.auth.domain.MemberRepository;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthorizationException;
@@ -15,17 +15,17 @@ import roomescape.auth.infrastructure.JwtTokenProvider;
 @Service
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
-    public AuthService(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.userRepository = userRepository;
+        this.memberRepository = memberRepository;
     }
 
     public TokenResponse createToken(TokenRequest tokenRequest) {
-        User user = getUser(tokenRequest.email());
+        Member member = getMember(tokenRequest.email());
 
-        if (!tokenRequest.password().equals(user.getPassword())) {
+        if (!tokenRequest.password().equals(member.getPassword())) {
             throw new AuthorizationException(INVALID_PASSWORD);
         }
 
@@ -33,18 +33,18 @@ public class AuthService {
         return new TokenResponse(accessToken);
     }
 
-    public User findUserByToken(String token) {
-        validateUserToken(token);
+    public Member findMemberByToken(String token) {
+        validateMemberToken(token);
         String email = jwtTokenProvider.getPayload(token);
-        return getUser(email);
+        return getMember(email);
     }
 
-    private User getUser(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new AuthorizationException(USER_NOT_FOUND));
+    private Member getMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthorizationException(MEMBER_NOT_FOUND));
     }
 
-    private void validateUserToken(String token) {
+    private void validateMemberToken(String token) {
         if(!jwtTokenProvider.validateToken(token)) {
             throw new AuthorizationException(INVALID_TOKEN);
         }

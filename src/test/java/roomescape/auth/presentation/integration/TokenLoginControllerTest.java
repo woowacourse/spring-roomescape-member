@@ -31,7 +31,7 @@ class TokenLoginControllerTest {
     @BeforeEach
     void cleanDatabase() {
         RestAssured.port = port;
-        jdbcTemplate.execute("TRUNCATE TABLE users");
+        jdbcTemplate.execute("TRUNCATE TABLE members");
     }
 
     @Test
@@ -41,7 +41,7 @@ class TokenLoginControllerTest {
         String email = "email@example.com";
         String password = "password";
         String name = "멍구";
-        jdbcTemplate.update("INSERT INTO users (email, password, name) VALUES (?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO members (email, password, name) VALUES (?, ?, ?)",
                 email, password, name);
         TokenRequest request = new TokenRequest(email, password);
 
@@ -57,12 +57,12 @@ class TokenLoginControllerTest {
 
     @DisplayName("쿠키 기반 JWT로 /check 호출 시 사용자 이름을 반환한다")
     @Test
-    void checkUser_withCookieToken() {
+    void checkMember_withCookieToken() {
         // given
         String email = "email@example.com";
         String password = "password";
         String name = "멍구";
-        jdbcTemplate.update("INSERT INTO users (email, password, name) VALUES (?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO members (email, password, name) VALUES (?, ?, ?)",
                 email, password, name);
 
         String token = jwtTokenProvider.createToken(email);

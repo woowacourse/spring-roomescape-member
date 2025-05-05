@@ -34,5 +34,5 @@ VALUES ('브라운', 1, '2025-04-29', 1),
        ('브리11', 11, '2025-04-23', 1),
        ('브리12', 11, '2025-04-23', 4);
 
-INSERT INTO users(email, password, name)
+INSERT INTO members(email, password, name)
 VALUES ('test@email.com', 'password', '멍구');

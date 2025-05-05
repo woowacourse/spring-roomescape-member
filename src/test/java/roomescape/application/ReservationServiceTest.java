@@ -65,8 +65,8 @@ class ReservationServiceTest {
 
         Theme theme = Theme.of(1L, "호러 테마", "완전 호러입니다.", "thumbnail.url");
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        String userName = "멍구";
-        Reservation reservation = Reservation.createNew(userName, theme, request.date(), time);
+        String memberName = "멍구";
+        Reservation reservation = Reservation.createNew(memberName, theme, request.date(), time);
 
         given(themeService.getThemeById(1L)).willReturn(theme);
         given(timeService.getTimeById(1L)).willReturn(time);
@@ -74,7 +74,7 @@ class ReservationServiceTest {
         given(reservationRepository.save(reservation)).willReturn(reservationId);
 
         // when
-        reservationService.registerReservation(request, userName);
+        reservationService.registerReservation(request, memberName);
 
         // then
         verify(themeService).getThemeById(1L);
@@ -89,7 +89,7 @@ class ReservationServiceTest {
     void throwSameExceptionWithDomain_when_duplicatedReservation() {
         // given
         ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 1, 1), 1L);
-        String userName = "멍구";
+        String memberName = "멍구";
 
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
@@ -102,7 +102,7 @@ class ReservationServiceTest {
                 .validate(any(Reservation.class), eq(true));
 
         // when & then
-        assertThatThrownBy(() -> reservationService.registerReservation(request, userName))
+        assertThatThrownBy(() -> reservationService.registerReservation(request, memberName))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessage(ALREADY_RESERVED.getMessage());
 
@@ -115,7 +115,7 @@ class ReservationServiceTest {
         // given
         LocalDate pastDate = LocalDate.now().minusDays(1);
         ReservationRequest request = new ReservationRequest(1L, pastDate, 1L);
-        String userName = "멍구";
+        String memberName = "멍구";
 
         given(themeService.getThemeById(1L)).willReturn(THEME_1);
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
@@ -129,7 +129,7 @@ class ReservationServiceTest {
                 .validate(any(Reservation.class), eq(true));
 
         // then
-        assertThatThrownBy(() -> reservationService.registerReservation(request, userName))
+        assertThatThrownBy(() -> reservationService.registerReservation(request, memberName))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessageContaining(PAST_RESERVATION.getMessage());
 

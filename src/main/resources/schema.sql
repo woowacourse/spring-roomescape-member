@@ -26,7 +26,7 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)            -- 외래키 추가
 );
 
-CREATE TABLE users
+CREATE TABLE members
 (
     email       VARCHAR(255) NOT NULL,
     password    VARCHAR(255) NOT NULL,

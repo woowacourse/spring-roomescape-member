@@ -19,7 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.auth.domain.User;
+import roomescape.auth.domain.Member;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.presentation.dto.response.ReservationResponse;
@@ -48,7 +48,7 @@ class ReservationControllerTest {
         jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE theme");
         jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE users");
+        jdbcTemplate.execute("TRUNCATE TABLE members");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
 
@@ -61,7 +61,7 @@ class ReservationControllerTest {
         String email = "test@email.com";
         String password = "password";
         String name = "멍구";
-        JdbcHelper.insertUser(jdbcTemplate, new User(email, password, name));
+        JdbcHelper.insertMember(jdbcTemplate, new Member(email, password, name));
         String token = jwtTokenProvider.createToken(email);
 
         RestAssured.given().log().all()
@@ -116,7 +116,7 @@ class ReservationControllerTest {
         String email = "test@email.com";
         String password = "password";
         String name = "멍구";
-        JdbcHelper.insertUser(jdbcTemplate, new User(email, password, name));
+        JdbcHelper.insertMember(jdbcTemplate, new Member(email, password, name));
 
         JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
@@ -147,7 +147,7 @@ class ReservationControllerTest {
         String email = "test@email.com";
         String password = "password";
         String name = "멍구";
-        JdbcHelper.insertUser(jdbcTemplate, new User(email, password, name));
+        JdbcHelper.insertMember(jdbcTemplate, new Member(email, password, name));
 
         JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);

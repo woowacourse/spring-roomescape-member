@@ -1,6 +1,6 @@
 package roomescape.auth.dto;
 
-public record UserResponse(
+public record MemberResponse(
         String name
 ) {
 }

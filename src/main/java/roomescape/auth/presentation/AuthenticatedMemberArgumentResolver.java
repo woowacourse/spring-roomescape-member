@@ -8,26 +8,26 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.auth.application.AuthService;
-import roomescape.auth.domain.User;
+import roomescape.auth.domain.Member;
 import roomescape.auth.exception.AuthErrorCode;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.AuthorizationExtractor;
 
 @Component
-public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthorizationExtractor<String> extractor;
     private final AuthService authService;
 
-    public AuthenticatedUserArgumentResolver(AuthorizationExtractor<String> extractor, AuthService authService) {
+    public AuthenticatedMemberArgumentResolver(AuthorizationExtractor<String> extractor, AuthService authService) {
         this.extractor = extractor;
         this.authService = authService;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticatedUser.class)
-                && parameter.getParameterType().equals(User.class);
+        return parameter.hasParameterAnnotation(AuthenticatedMember.class)
+                && parameter.getParameterType().equals(Member.class);
     }
 
     @Override
@@ -42,6 +42,6 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
         if (token == null) {
             throw new AuthorizationException(AuthErrorCode.LOGIN_REQUIRED);
         }
-        return authService.findUserByToken(token);
+        return authService.findMemberByToken(token);
     }
 }

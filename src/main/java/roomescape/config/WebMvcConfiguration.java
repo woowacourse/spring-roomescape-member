@@ -5,14 +5,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import roomescape.auth.presentation.AuthenticatedUserArgumentResolver;
+import roomescape.auth.presentation.AuthenticatedMemberArgumentResolver;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    private final AuthenticatedUserArgumentResolver resolver;
+    private final AuthenticatedMemberArgumentResolver resolver;
 
-    public WebMvcConfiguration(AuthenticatedUserArgumentResolver resolver) {
+    public WebMvcConfiguration(AuthenticatedMemberArgumentResolver resolver) {
         this.resolver = resolver;
     }
 
