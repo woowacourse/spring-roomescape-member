@@ -206,7 +206,7 @@ class ReservationDaoTest {
         assertThat(count).isZero();
     }
 
-    @DisplayName("날짜와 시간으로 존재하는 예약인지 확인한다.")
+    @DisplayName("날짜와 시간, 테마로 존재하는 예약인지 확인한다.")
     @CsvSource(value = {
             "29,29,true",
             "28,29,false"
@@ -223,8 +223,11 @@ class ReservationDaoTest {
         saveReservation(reservationId, name, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
         // when & then
-        assertThat(reservationRepository.existsByDateAndTimeId(LocalDate.of(2025, 4, day2), RESERVATION_TIME_ID))
-                .isEqualTo(expected);
+        assertThat(
+                reservationRepository.existsByDateAndTimeIdAndThemeId(
+                        LocalDate.of(2025, 4, day2), RESERVATION_TIME_ID, THEME_ID
+                )
+        ).isEqualTo(expected);
     }
 
     private ReservationTime saveReservationTime(Long id, LocalTime time) {

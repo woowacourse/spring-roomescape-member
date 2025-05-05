@@ -53,7 +53,7 @@ public class ReservationService {
     }
 
     public ReservationResponse create(final ReservationRequest request) {
-        if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
+        if (isAlreadyBooked(request)) {
             throw new AlreadyInUseException("reservation is already in use");
         }
 
@@ -64,6 +64,10 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
+    }
+
+    private boolean isAlreadyBooked(final ReservationRequest request) {
+        return reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId());
     }
 
     private Reservation getReservation(final ReservationRequest request) {

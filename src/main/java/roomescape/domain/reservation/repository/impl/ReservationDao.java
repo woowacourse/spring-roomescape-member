@@ -113,12 +113,16 @@ public class ReservationDao implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
-        String sql = "select count(*) from reservation where date = :date and time_id = :time_id";
-        Map<String, Object> params = Map.of("date", date, "time_id", timeId);
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId) {
+        String sql = """
+                select count(*)
+                from reservation
+                where date = :date and time_id = :time_id and theme_id = :theme_id
+                """;
+        Map<String, Object> params = Map.of("date", date, "time_id", timeId, "theme_id", themeId);
 
-        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
-        return count != 0;
+        int rowCountByDateAndTimeAndTheme = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return rowCountByDateAndTimeAndTheme == 1;
     }
 
     @Override
@@ -128,7 +132,7 @@ public class ReservationDao implements ReservationRepository {
 
         int rowCountByTimeId = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
 
-        return rowCountByTimeId == 1;
+        return rowCountByTimeId > 0;
     }
 
     @Override
