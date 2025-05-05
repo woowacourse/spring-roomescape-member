@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestRead(RESERVATION_API_ENDPOINT)
         .then(render)
-        .catch(error => console.error('Error fetching reservations:', error));
+        .catch(error => {
+            alert(error)
+            console.error('Error fetching reservations:', error)
+        });
 
     fetchTimes();
 });
@@ -35,7 +38,10 @@ function fetchTimes() {
         .then(data => {
             timesOptions.push(...data);
         })
-        .catch(error => console.error('Error fetching time:', error));
+        .catch(error => {
+            alert(error)
+            console.error('Error fetching time:', error)
+        });
 }
 
 function createSelect(options, defaultText, selectId, textProperty) {
@@ -131,7 +137,10 @@ function saveRow(event) {
         .then(() => {
             location.reload();
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            alert(error)
+            console.error('Error:', error)
+        });
 
     isEditing = false;  // isEditing 값을 false로 설정
 }
@@ -142,7 +151,10 @@ function deleteRow(event) {
 
     requestDelete(reservationId)
         .then(() => row.remove())
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            alert(error)
+            console.error('Error:', error)
+        });
 }
 
 function requestCreate(reservation) {
