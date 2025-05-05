@@ -32,12 +32,22 @@ public class JJWTJwtUtil implements JwtUtil {
 
     @Override
     public Authorization getAuthorization(final String tokenValue) {
-        final String email = Jwts.parser()
-                .verifyWith(key).build()
+        final String email = Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(tokenValue)
                 .getPayload()
                 .getSubject();
 
         return new Authorization(email);
+    }
+
+    @Override
+    public boolean validateToken(String tokenValue) {
+        try {
+            Jwts.parser().verifyWith(key).build()
+                    .parseSignedClaims(tokenValue);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

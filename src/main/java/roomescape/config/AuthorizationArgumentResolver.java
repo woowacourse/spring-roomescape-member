@@ -1,23 +1,15 @@
 package roomescape.config;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.business.model.vo.Authorization;
 import roomescape.exception.impl.NotAuthenticatedException;
-import roomescape.jwt.JwtUtil;
 
 public class AuthorizationArgumentResolver implements HandlerMethodArgumentResolver {
-
-    private final JwtUtil jwtUtil;
-
-    public AuthorizationArgumentResolver(final JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
@@ -31,17 +23,12 @@ public class AuthorizationArgumentResolver implements HandlerMethodArgumentResol
             final NativeWebRequest webRequest,
             final WebDataBinderFactory binderFactory
     ) {
-        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        final Object authorization = webRequest.getAttribute("authorization", RequestAttributes.SCOPE_REQUEST);
 
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("authToken")) {
-                    String token = cookie.getValue();
-                    return jwtUtil.getAuthorization(token);
-                }
-            }
+        if (authorization == null) {
+            throw new NotAuthenticatedException();
         }
 
-        throw new NotAuthenticatedException();
+        return authorization;
     }
 }

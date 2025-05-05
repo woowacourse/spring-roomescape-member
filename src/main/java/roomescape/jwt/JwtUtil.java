@@ -9,4 +9,6 @@ public interface JwtUtil {
     Authentication getAuthentication(User user);
 
     Authorization getAuthorization(String tokenValue);
+
+    boolean validateToken(String tokenValue);
 }
