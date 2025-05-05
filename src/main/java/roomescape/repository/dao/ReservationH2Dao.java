@@ -93,13 +93,13 @@ public class ReservationH2Dao implements ReservationDao {
     @Override
     public boolean existDuplicatedDateTime(LocalDate date, Long timeId, Long themeId) {
         String query = """
-                SELECT count(*)
-                FROM reservation
-                WHERE time_id = ? AND date = ? AND theme_id = ?
+                SELECT EXISTS (
+                        SELECT 1
+                        FROM reservation
+                        WHERE time_id = ? AND date = ? AND theme_id = ?)
                 """;
-        int duplicatedCount = Optional.ofNullable(
-                jdbcTemplate.queryForObject(query, Integer.class, timeId, date, themeId)
-        ).orElse(0);
-        return duplicatedCount > 0;
+        return Optional.ofNullable(
+                        jdbcTemplate.queryForObject(query, Boolean.class, timeId, date, themeId))
+                .orElse(false);
     }
 }
