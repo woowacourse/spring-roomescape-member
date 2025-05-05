@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.presentation.dto.request.ReservationTimeRequest;
+import roomescape.reservation.presentation.request.ReservationTimeRequest;
 
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})

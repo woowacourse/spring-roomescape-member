@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.Duration;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.business.model.entity.reservation.ReservationTime;
+import roomescape.reservation.business.model.entity.ReservationTime;
 
 class ReservationTimeTest {
 

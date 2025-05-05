@@ -15,10 +15,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.business.model.entity.reservation.Reservation;
-import roomescape.business.model.entity.reservation.ReservationTime;
-import roomescape.business.model.entity.theme.Theme;
-import roomescape.business.model.repository.ReservationDao;
+import roomescape.reservation.business.model.entity.Reservation;
+import roomescape.reservation.business.model.entity.ReservationTime;
+import roomescape.theme.business.model.entity.Theme;
+import roomescape.reservation.business.model.repository.ReservationDao;
+import roomescape.reservation.infrastructure.ReservationDaoImpl;
 
 @JdbcTest
 @ActiveProfiles("test")

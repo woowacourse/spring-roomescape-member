@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.presentation.dto.request.ThemeRequest;
+import roomescape.theme.presentation.request.ThemeRequest;
 
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})

@@ -12,8 +12,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.business.model.entity.theme.Theme;
-import roomescape.business.model.repository.ThemeDao;
+import roomescape.theme.business.model.entity.Theme;
+import roomescape.theme.business.model.repository.ThemeDao;
+import roomescape.theme.infrastructure.ThemeDaoImpl;
 
 @JdbcTest
 @ActiveProfiles("test")

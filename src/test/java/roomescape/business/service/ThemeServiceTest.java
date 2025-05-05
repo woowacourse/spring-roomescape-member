@@ -7,11 +7,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.business.model.entity.theme.Theme;
-import roomescape.business.model.repository.ReservationDao;
-import roomescape.business.model.repository.ThemeDao;
-import roomescape.presentation.dto.request.ThemeRequest;
-import roomescape.presentation.dto.response.ThemeResponse;
+import roomescape.theme.business.model.entity.Theme;
+import roomescape.reservation.business.model.repository.ReservationDao;
+import roomescape.theme.business.model.repository.ThemeDao;
+import roomescape.theme.business.service.ThemeService;
+import roomescape.theme.presentation.request.ThemeRequest;
+import roomescape.theme.presentation.response.ThemeResponse;
 
 class ThemeServiceTest {
 

@@ -8,11 +8,12 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.business.model.entity.reservation.ReservationTime;
-import roomescape.business.model.repository.ReservationDao;
-import roomescape.business.model.repository.ReservationTimeDao;
-import roomescape.presentation.dto.request.ReservationTimeRequest;
-import roomescape.presentation.dto.response.ReservationTimeResponse;
+import roomescape.reservation.business.model.entity.ReservationTime;
+import roomescape.reservation.business.model.repository.ReservationDao;
+import roomescape.reservation.business.model.repository.ReservationTimeDao;
+import roomescape.reservation.business.service.ReservationTimeService;
+import roomescape.reservation.presentation.request.ReservationTimeRequest;
+import roomescape.reservation.presentation.response.ReservationTimeResponse;
 
 class ReservationTimeServiceTest {
 
