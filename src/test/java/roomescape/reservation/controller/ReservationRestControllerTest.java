@@ -28,9 +28,9 @@ class ReservationRestControllerTest {
 
     @BeforeEach
     void setUp() {
-        final String TIME1 = "10:00";
-        final String TIME2 = "11:00";
-        final List<String> times = List.of(TIME1, TIME2);
+        final String time1 = "10:00";
+        final String time2 = "11:00";
+        final List<String> times = List.of(time1, time2);
 
         for (String time : times) {
             final Map<String, String> params = new HashMap<>();
