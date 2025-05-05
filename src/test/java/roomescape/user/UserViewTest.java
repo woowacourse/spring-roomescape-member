@@ -45,4 +45,13 @@ public class UserViewTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("/signup으로 요청이 들어오면 회원가입 페이지를 응답한다.")
+    @Test
+    void signup() {
+        RestAssured.given().port(port).log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
