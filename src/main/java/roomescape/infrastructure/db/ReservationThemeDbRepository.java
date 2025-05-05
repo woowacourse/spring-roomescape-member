@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.entity.ReservationTheme;
 import roomescape.domain.repository.ReservationThemeRepository;
+import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.infrastructure.db.dao.ReservationThemeDao;
 
 @Repository
@@ -34,7 +35,7 @@ public class ReservationThemeDbRepository implements ReservationThemeRepository 
     @Override
     public ReservationTheme getById(Long id) {
         return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 테마가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("id에 해당하는 테마가 존재하지 않습니다."));
     }
 
     @Override

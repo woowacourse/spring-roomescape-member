@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.entity.ReservationTime;
 import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.infrastructure.db.dao.ReservationTimeDao;
 
 @Repository
@@ -35,7 +36,7 @@ public class ReservationTimeDbRepository implements ReservationTimeRepository {
     @Override
     public ReservationTime getById(Long id) {
         return findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 시간이 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("id에 해당하는 시간이 존재하지 않습니다."));
     }
 
     @Override
