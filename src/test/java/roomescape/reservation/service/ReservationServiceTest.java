@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -31,13 +32,9 @@ class ReservationServiceTest {
             currentDateTime);
     LocalDate tomorrow = currentDateTime.getDate().plusDays(1);
 
-    /**
-     * TODO
-     * 테마 중복까지 고려해서 테스트 리팩터링
-     */
-    @DisplayName("중복 예약일 경우 예외가 발생한다.")
+    @DisplayName("날짜와 시간과 테마가 중복되는 예약을 할 경우 예외가 발생한다")
     @Test
-    void testValidateDuplication() {
+    void should_ThrowException_WhenDuplicateReservation() {
         // given
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
         Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
@@ -51,9 +48,25 @@ class ReservationServiceTest {
                 .hasMessage("해당 시간에 이미 예약이 존재합니다.");
     }
 
-    @DisplayName("예약 시간이 존재하지 않을 경우 예외가 발생한다.")
+    @DisplayName("날짜와 시간이 같아도 테마가 다르면 예외가 발생하지 않는다")
     @Test
-    void testValidateTime() {
+    void shouldNot_ThrowException_WhenThemeIsDifferent() {
+        // given
+        ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
+        Theme savedTheme1 = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
+        ReservationRequest request1 = new ReservationRequest("leo", tomorrow, savedTime.getId(), savedTheme1.getId());
+        reservationService.createReservation(request1);
+        Theme savedTheme2 = themeDao.save(new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa"));
+        ReservationRequest request2 = new ReservationRequest("leo", tomorrow, savedTime.getId(), savedTheme2.getId());
+        // when
+        // then
+        assertThatCode(() -> reservationService.createReservation(request2))
+                .doesNotThrowAnyException();
+    }
+
+    @DisplayName("예약 시간이 존재하지 않을 경우 예외가 발생한다")
+    @Test
+    void validateTime() {
         // given
         Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
         Theme savedTheme = themeDao.save(theme);
@@ -65,9 +78,9 @@ class ReservationServiceTest {
                 .hasMessage("예약 시간이 존재하지 않습니다.");
     }
 
-    @DisplayName("테마가 존재하지 않을 경우 예외가 발생한다.")
+    @DisplayName("테마가 존재하지 않을 경우 예외가 발생한다")
     @Test
-    void testValidateTheme() {
+    void validateTheme() {
         // given
         ReservationTime time = new ReservationTime(LocalTime.of(11, 0));
         ReservationTime savedTime = reservationTimeDao.save(time);
@@ -79,9 +92,9 @@ class ReservationServiceTest {
                 .hasMessage("테마가 존재하지 않습니다.");
     }
 
-    @DisplayName("과거 시간에 예약할 경우 예외가 발생한다.")
+    @DisplayName("과거 시간에 예약할 경우 예외가 발생한다")
     @Test
-    void testValidatePastTime() {
+    void validatePastTime() {
         // given
         reservationTimeDao.save(new ReservationTime(LocalTime.of(11, 0)));
         Theme theme = new Theme(null, "우테코탈출", "탈출탈출탈출, ", "aaaa");
@@ -95,9 +108,9 @@ class ReservationServiceTest {
                 .hasMessage("지나간 날짜와 시간은 예약 불가합니다.");
     }
 
-    @DisplayName("예약을 생성할 수 있다.")
+    @DisplayName("예약을 생성할 수 있다")
     @Test
-    void testCreate() {
+    void create() {
         // given
         LocalTime time = LocalTime.of(11, 0);
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
@@ -132,9 +145,9 @@ class ReservationServiceTest {
         );
     }
 
-    @DisplayName("예약 목록을 조회할 수 있다.")
+    @DisplayName("예약 목록을 조회할 수 있다")
     @Test
-    void testFindAll() {
+    void findAll() {
         // given
         LocalTime time = LocalTime.of(11, 0);
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));
@@ -150,9 +163,9 @@ class ReservationServiceTest {
         assertThat(reservationService.getReservations()).hasSize(2);
     }
 
-    @DisplayName("예약을 삭제할 수 있다.")
+    @DisplayName("예약을 삭제할 수 있다")
     @Test
-    void testCancelById() {
+    void cancelById() {
         // given
         LocalTime time = LocalTime.of(11, 0);
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(time));

@@ -91,11 +91,11 @@ class ReservationDaoTest {
 
     @DisplayName("예약 날짜와 시간을 기반으로 예약이 존재하는 지 여부를 반환할 수 있다")
     @Test
-    void isExistsByDateAndTimeId() {
+    void isExistsByDateAndTimeIdAndThemeId() {
         // given
         reservationDao.save(new Reservation(null, "leo", date, reservationTime, theme));
         // when
-        boolean result = reservationDao.isExistsByDateAndTimeId(date, reservationTime.getId());
+        boolean result = reservationDao.isExistsByDateAndTimeIdAndThemeId(date, reservationTime.getId(), theme.getId());
         // then
         assertThat(result).isTrue();
     }

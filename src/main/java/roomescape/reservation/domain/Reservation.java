@@ -38,6 +38,10 @@ public final class Reservation {
         return dateTime.getTimeId();
     }
 
+    public long getThemeId() {
+        return theme.getId();
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,6 +1,7 @@
 package roomescape.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -67,10 +68,32 @@ public class ReservationServiceIntegrationTest {
         );
     }
 
-    /**
-     * TODO
-     * 이미 존재하는 날짜 시간 테마
-     */
+    @DisplayName("날짜와 시간과 테마가 같은 예약이 이미 존재하면 예외가 발생한다")
+    @Test
+    void should_ThrowException_WhenDuplicateReservation() {
+        // given
+        ReservationRequest request = new ReservationRequest("leo", LocalDate.of(2025, 5, 5), 1L, 11L);
+        reservationService.createReservation(request);
+        // when
+        // then
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 시간에 이미 예약이 존재합니다.");
+    }
+
+    @DisplayName("날짜와 시간이 같아도 테마가 다르면 중복 예외가 발생하지 않는다")
+    @Test
+    void shouldNot_ThrowException_WhenThemeIsDifferent() {
+        // given
+        LocalDate date = LocalDate.of(2025, 5, 5);
+        ReservationRequest request = new ReservationRequest("leo", date, 1L, 11L);
+        reservationService.createReservation(request);
+        ReservationRequest request2 = new ReservationRequest("leo", date, 1L, 10L);
+        // when
+        // then
+        assertThatCode(() -> reservationService.createReservation(request2))
+                .doesNotThrowAnyException();
+    }
 
     @DisplayName("현재 혹은 과거 시간에 새로운 예약을 추가할 경우 예외가 발생한다")
     @Test

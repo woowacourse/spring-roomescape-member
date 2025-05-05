@@ -31,9 +31,11 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean isExistsByDateAndTimeId(final LocalDate date, final long timeId) {
+    public boolean isExistsByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
         return reservations.stream()
-                .anyMatch(reservation -> reservation.getDate().equals(date) && reservation.getTimeId() == timeId);
+                .anyMatch(reservation -> reservation.getDate().equals(date) &&
+                        reservation.getTimeId() == timeId &&
+                        reservation.getTheme().getId() == themeId);
     }
 
     @Override

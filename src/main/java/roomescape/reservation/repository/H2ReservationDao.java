@@ -81,11 +81,12 @@ public class H2ReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean isExistsByDateAndTimeId(final LocalDate date, final long timeId) {
-        final String sql = "SELECT count(*) FROM reservation WHERE date = :date AND time_id = :timeId";
+    public boolean isExistsByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
+        final String sql = "SELECT count(*) FROM reservation WHERE date = :date AND time_id = :timeId AND theme_id = :themeId";
         final SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("date", date)
-                .addValue("timeId", timeId);
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
         final Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
         return count > 0;
     }

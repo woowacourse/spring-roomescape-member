@@ -28,16 +28,12 @@ public class ReservationService {
         this.currentDateTime = dateTimeGenerator;
     }
 
-    /**
-     * TODO
-     * 테마 구분
-     */
-    public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
-        final Reservation reservation = makeReservation(reservationRequest);
+    public ReservationResponse createReservation(final ReservationRequest request) {
+        final Reservation reservation = makeReservation(request);
         if (reservation.isBefore(currentDateTime.getDateTime())) {
             throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
         }
-        if (reservationDao.isExistsByDateAndTimeId(reservation.getDate(), reservation.getTimeId())) {
+        if (reservationDao.isExistsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId())) {
             throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다.");
         }
         final Reservation savedReservation = reservationDao.save(reservation);
@@ -54,10 +50,10 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private Reservation makeReservation(final ReservationRequest reservationRequest) {
-        final ReservationTime reservationTime = findReservationTime(reservationRequest.timeId());
-        final Theme theme = findTheme(reservationRequest.themeId());
-        return reservationRequest.convertToReservation(reservationTime, theme);
+    private Reservation makeReservation(final ReservationRequest request) {
+        final ReservationTime reservationTime = findReservationTime(request.timeId());
+        final Theme theme = findTheme(request.themeId());
+        return request.convertToReservation(reservationTime, theme);
     }
 
     private ReservationTime findReservationTime(final long timeId) {
