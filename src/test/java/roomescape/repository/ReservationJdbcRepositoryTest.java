@@ -17,7 +17,7 @@ import roomescape.model.Reservation;
 
 @Sql(scripts = {"/test-schema.sql"})
 @JdbcTest
-public class ReservationJdbcRepositoryTest {
+class ReservationJdbcRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

@@ -25,7 +25,7 @@ import roomescape.controller.response.ReservationResponse;
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class MissionStepTest {
+class MissionStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

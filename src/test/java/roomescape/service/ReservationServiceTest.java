@@ -16,7 +16,7 @@ import roomescape.repository.fake.ReservationFakeRepository;
 import roomescape.repository.fake.ThemeFakeRepository;
 import roomescape.repository.fake.TimeSlotFakeRepository;
 
-public class ReservationServiceTest {
+class ReservationServiceTest {
 
     private ReservationService service;
 

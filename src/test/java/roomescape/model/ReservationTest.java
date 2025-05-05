@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.DateUtils;
 
-public class ReservationTest {
+class ReservationTest {
 
     @Test
     @DisplayName("이름이 여섯 글자 이상이면 예외가 발생한다")

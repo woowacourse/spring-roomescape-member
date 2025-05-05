@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +14,7 @@ import roomescape.model.Theme;
 
 @Sql(scripts = {"/test-schema.sql"})
 @JdbcTest
-public class ThemeJdbcRepositoryTest {
+class ThemeJdbcRepositoryTest {
 
     private ThemeRepository repository;
 

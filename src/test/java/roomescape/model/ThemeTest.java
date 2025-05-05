@@ -5,7 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class ThemeTest {
+class ThemeTest {
 
     @Test
     @DisplayName("이름이 10자 초과이면 예외가 발생한다")

@@ -3,7 +3,6 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,11 +12,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.model.TimeSlot;
-import roomescape.repository.fake.TimeSlotFakeRepository;
 
 @Sql(scripts = {"/test-schema.sql"})
 @JdbcTest
-public class TimeSlotJdbcRepositoryTest {
+class TimeSlotJdbcRepositoryTest {
 
     private TimeSlotRepository repository;
 
