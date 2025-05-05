@@ -64,6 +64,6 @@ public class ThemeControllerTest {
                 .contentType(ContentType.JSON)
                 .when().get("/themes/top10")
                 .then().statusCode(200)
-                .body("size()", is(0));
+                .body("size()", is(5));
     }
 }
