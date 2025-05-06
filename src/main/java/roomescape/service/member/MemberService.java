@@ -3,6 +3,7 @@ package roomescape.service.member;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.auth.UserInfo;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequestDto;
 import roomescape.dto.member.SignupRequestDto;
@@ -53,7 +54,7 @@ public class MemberService {
     }
 
     public Member getMemberByToken(String token) {
-        long id = jwtTokenProvider.resolveToken(token);
-        return getMemberById(id);
+        UserInfo userInfo = jwtTokenProvider.resolveToken(token);
+        return getMemberById(userInfo.id());
     }
 }
