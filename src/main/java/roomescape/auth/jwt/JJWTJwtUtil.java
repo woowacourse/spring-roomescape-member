@@ -1,14 +1,14 @@
 package roomescape.auth.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.business.model.entity.User;
-import roomescape.business.model.repository.UserRepository;
 import roomescape.business.model.vo.Authentication;
 import roomescape.business.model.vo.Authorization;
-import roomescape.exception.impl.NotAuthenticatedException;
+import roomescape.business.model.vo.UserRole;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -17,11 +17,9 @@ import java.nio.charset.StandardCharsets;
 public class JJWTJwtUtil implements JwtUtil {
 
     private final SecretKey key;
-    private final UserRepository userRepository;
 
-    public JJWTJwtUtil(@Value("${jwt.secret}") final String secret, final UserRepository userRepository) {
+    public JJWTJwtUtil(@Value("${jwt.secret}") final String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.userRepository = userRepository;
     }
 
     @Override
@@ -29,6 +27,7 @@ public class JJWTJwtUtil implements JwtUtil {
         String tokenValue = Jwts.builder()
                 .subject(user.email())
                 .signWith(key)
+                .claim("role", user.role())
                 .compact();
 
         return new Authentication(tokenValue);
@@ -36,15 +35,14 @@ public class JJWTJwtUtil implements JwtUtil {
 
     @Override
     public Authorization getAuthorization(final String tokenValue) {
-        final String email = Jwts.parser().verifyWith(key).build()
+        final Claims claims = Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(tokenValue)
-                .getPayload()
-                .getSubject();
+                .getPayload();
 
-        final User user = userRepository.findByEmail(email)
-                .orElseThrow(NotAuthenticatedException::new);
+        final String email = claims.getSubject();
+        final UserRole role = UserRole.valueOf(claims.get("role", String.class));
 
-        return new Authorization(user.id(), user.name(), user.email());
+        return new Authorization(email, role);
     }
 
     @Override
