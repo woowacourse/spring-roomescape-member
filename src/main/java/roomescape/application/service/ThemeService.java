@@ -12,6 +12,8 @@ import roomescape.domain.Theme;
 @Service
 public class ThemeService {
 
+    private static final String ERROR_RESERVATION_THEME_WITH_HAS_RESERVATION = "해당 테마에 존재하는 예약 정보가 있습니다.";
+
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
 
@@ -43,6 +45,7 @@ public class ThemeService {
     }
 
     public void deleteTheme(long id) {
+        validateNoReservationsForTheme(id);
         themeDao.deleteById(id);
     }
 
@@ -56,5 +59,12 @@ public class ThemeService {
     private Theme saveTheme(Theme themeWithoutId) {
         Long id = themeDao.save(themeWithoutId);
         return themeWithoutId.copyWithId(id);
+    }
+
+    private void validateNoReservationsForTheme(long themeId) {
+        boolean hasTheme = reservationDao.existsByTimeId(themeId);
+        if (hasTheme) {
+            throw new IllegalArgumentException(ERROR_RESERVATION_THEME_WITH_HAS_RESERVATION);
+        }
     }
 }
