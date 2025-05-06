@@ -116,9 +116,10 @@ public class JdbcReservationRepository implements ReservationRepository {
                 FROM reservation as r
                 JOIN reservation_time as rt
                 ON r.time_id = rt.id
-                WHERE r.date = :date AND rt.start_at = :startTime
+                WHERE r.theme_id = :themeId AND r.date = :date AND rt.start_at = :startTime
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("themeId", entity.getThemeId())
                 .addValue("date", entity.getDate())
                 .addValue("startTime", entity.getStartAt());
         try {
