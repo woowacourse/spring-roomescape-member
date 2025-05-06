@@ -11,6 +11,7 @@ import java.security.Key;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.member.domain.Role;
 
 @Component
 public class JwtTokenProvider {
@@ -25,8 +26,10 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    public String createToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
+    public String createToken(String payload, Role role) {
+        Claims claims = Jwts.claims()
+                .setSubject(payload);
+        claims.put("role", role.name());
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMilliseconds);
 
@@ -45,6 +48,16 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public Role getRole(String token) {
+        String rawRole = Jwts.parserBuilder()
+                .setSigningKey(secretkey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
+        return Role.valueOf(rawRole);
     }
 
     public boolean validateToken(String token) {

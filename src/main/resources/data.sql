@@ -17,9 +17,9 @@ VALUES ('테마1', '테마 1입니다', 'thumbnail.jpg'),
        ('테마10', '테마 10입니다', 'thumbnail.jpg'),
        ('테마11', '테마 11입니다', 'thumbnail.jpg');
 
-INSERT INTO members(email, password, name)
-VALUES ('test@email.com', 'password', '멍구'),
-       ('test2@email.com', 'password', '아이나');
+INSERT INTO members(email, password, name, role)
+VALUES ('test@email.com', 'password', '멍구', 'ADMIN'),
+       ('test2@email.com', 'password', '아이나', 'USER');
 
 INSERT INTO reservation (member_id, theme_id, date, time_id)
 VALUES (1, 1, '2025-04-29', 1),

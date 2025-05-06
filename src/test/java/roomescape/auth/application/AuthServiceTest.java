@@ -19,6 +19,7 @@ import roomescape.auth.dto.TokenResponse;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,10 +38,11 @@ class AuthServiceTest {
     void createToken_success() {
         TokenRequest request = new TokenRequest("email@test.com", "1234");
         long memberId = 1L;
-        Member member = new Member(memberId, "email@test.com", "1234", "멍구");
+        Member member = new Member(memberId, "email@test.com", "1234", "멍구", Role.USER);
 
         given(memberRepository.findByEmail("email@test.com")).willReturn(Optional.of(member));
-        given(jwtTokenProvider.createToken(String.valueOf(memberId))).willReturn("token-value");
+        String payload = String.valueOf(memberId);
+        given(jwtTokenProvider.createToken(payload, member.getRole())).willReturn("token-value");
 
         TokenResponse response = authService.createToken(request);
 
@@ -52,7 +54,7 @@ class AuthServiceTest {
     void findMemberByToken_success() {
         String token = "valid-token";
         String email = "email@test.com";
-        Member member = new Member(1L, email, "pass", "멍구");
+        Member member = new Member(1L, email, "pass", "멍구", Role.USER);
 
         Long memberId = 1L;
 
@@ -69,7 +71,7 @@ class AuthServiceTest {
     @DisplayName("비밀번호가 일치하지 않으면 예외가 발생한다")
     void createToken_wrongPassword() {
         TokenRequest request = new TokenRequest("email@test.com", "wrong");
-        Member member = new Member(1L, "email@test.com", "password", "멍구");
+        Member member = new Member(1L, "email@test.com", "password", "멍구", Role.USER);
 
         given(memberRepository.findByEmail("email@test.com")).willReturn(Optional.of(member));
 

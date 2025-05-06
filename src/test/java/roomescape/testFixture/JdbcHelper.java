@@ -65,7 +65,7 @@ public class JdbcHelper {
     }
 
     public static void insertMember(JdbcTemplate jdbcTemplate, Member member) {
-        jdbcTemplate.update("INSERT INTO members (email, password, name) VALUES (?, ?, ?)",
-                member.getEmail(), member.getPassword(), member.getName());
+        jdbcTemplate.update("INSERT INTO members (email, password, name, role) VALUES (?, ?, ?, ?)",
+                member.getEmail(), member.getPassword(), member.getName(), member.getRole().name());
     }
 }

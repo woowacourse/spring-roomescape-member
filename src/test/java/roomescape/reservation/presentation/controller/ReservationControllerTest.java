@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.member.domain.Role;
 import roomescape.reservation.presentation.dto.response.ReservationDetailResponse;
 import roomescape.testFixture.JdbcHelper;
 
@@ -61,7 +62,8 @@ class ReservationControllerTest {
         JdbcHelper.insertMember(jdbcTemplate,  MEMBER_1);
         long memberId = MEMBER_1.getId();
 
-        String token = jwtTokenProvider.createToken(String.valueOf(memberId));
+        String payload = String.valueOf(memberId);
+        String token = jwtTokenProvider.createToken(payload, Role.USER);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -108,7 +110,8 @@ class ReservationControllerTest {
         JdbcHelper.prepareAndInsertReservation(jdbcTemplate, RESERVATION_1);
 
         long memberId = 1L;
-        String token = jwtTokenProvider.createToken(String.valueOf(memberId));
+        String payload = String.valueOf(memberId);
+        String token = jwtTokenProvider.createToken(payload, Role.USER);
 
         Map<String, Object> reservationBody = Map.of(
                 "date", RESERVATION_1.getReservationDate(),

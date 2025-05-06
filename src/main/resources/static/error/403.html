@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>접근 권한 없음</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .error-container {
+            padding: 40px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-code {
+            font-size: 72px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .error-message {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        .home-link {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div class="error-code">403</div>
+    <div class="error-message">접근 권한이 없습니다.</div>
+    <div class="home-link">
+        <a href="/" class="btn btn-primary">홈으로 돌아가기</a>
+    </div>
+</div>
+</body>
+</html>

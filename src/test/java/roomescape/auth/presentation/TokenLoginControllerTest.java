@@ -1,7 +1,8 @@
-package roomescape.auth.presentation.integration;
+package roomescape.auth.presentation;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static roomescape.testFixture.Fixture.MEMBER_1;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -15,6 +16,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
+import roomescape.member.domain.Role;
+import roomescape.testFixture.JdbcHelper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TokenLoginControllerTest {
@@ -33,12 +36,6 @@ class TokenLoginControllerTest {
         RestAssured.port = this.port;
 
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation");
-        jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE reservation_time");
-        jdbcTemplate.execute("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
-        jdbcTemplate.execute("TRUNCATE TABLE theme");
-        jdbcTemplate.execute("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("TRUNCATE TABLE members");
         jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
@@ -48,12 +45,9 @@ class TokenLoginControllerTest {
     @DisplayName("로그인 성공시 토큰 쿠키를 발급")
     void login_success() {
         // given
-        String email = "email@example.com";
-        String password = "password";
-        String name = "멍구";
-        jdbcTemplate.update("INSERT INTO members (email, password, name) VALUES (?, ?, ?)",
-                email, password, name);
-        TokenRequest request = new TokenRequest(email, password);
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER_1);
+
+        TokenRequest request = new TokenRequest(MEMBER_1.getEmail(), MEMBER_1.getPassword());
 
         // when & then
         given().log().all()
@@ -69,13 +63,9 @@ class TokenLoginControllerTest {
     @Test
     void checkMember_withCookieToken() {
         // given
-        String email = "email@example.com";
-        String password = "password";
-        String name = "멍구";
-        Long memberId = 1L;
-        jdbcTemplate.update("INSERT INTO members (id, email, password, name) VALUES (?, ?, ?, ?)",
-                memberId, email, password, name);
-        String token = jwtTokenProvider.createToken(String.valueOf(memberId));
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER_1);
+        String payload = String.valueOf(MEMBER_1.getId());
+        String token = jwtTokenProvider.createToken(payload, Role.USER);
 
         // when & then
         RestAssured

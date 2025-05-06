@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -24,7 +25,7 @@ public class Fixture {
             2L, 1L, THEME_2, LocalDate.now().plusDays(1), RESERVATION_TIME_2);
     public static final Reservation RESERVATION_3 = Reservation.of(
             3L, 1L, THEME_3, LocalDate.now().plusDays(1), RESERVATION_TIME_3);
-    public static final Member MEMBER_1 = new Member(1L, "test@email.com", "password", "멍구");
+    public static final Member MEMBER_1 = new Member(1L, "test@email.com", "password", "멍구", Role.ADMIN);
 
     public static final Map<String, Object> RESERVATION_BODY = createReservationBody();
 

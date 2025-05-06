@@ -32,8 +32,8 @@ VALUES ('1등테마', '테마 1입니다', '썸네일1'),
        ('테마10', '테마 10입니다', '썸네일10'),
        ('테마11', '테마 11입니다', '썸네일11');
 
-INSERT INTO members(email, password, name)
-VALUES ('test@email.com', 'password', '멍구');
+INSERT INTO members(email, password, name, role)
+VALUES ('test@email.com', 'password', '멍구', 'ADMIN');
 
 INSERT INTO reservation (member_id, theme_id, date, time_id)
 VALUES (1, 1, '2025-01-01', 1),

@@ -39,13 +39,4 @@ class WebMvcConfigurationTest {
                 .statusCode(200);
     }
 
-    @DisplayName("/admin 요청 시 200 OK 응답")
-    @Test
-    void request_adminPage_then_200() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
-    }
-
 }

@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import roomescape.auth.exception.AuthorizationException;
 import roomescape.reservation.domain.exception.ImpossibleReservationException;
 
@@ -90,6 +91,11 @@ public class GlobalExceptionHandler {
         detail.setProperty("code", "JSON_NOT_READABLE");
 
         return ResponseEntity.badRequest().body(detail);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResourceFound(NoResourceFoundException ex) {
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)

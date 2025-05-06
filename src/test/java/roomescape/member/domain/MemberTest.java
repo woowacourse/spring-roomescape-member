@@ -14,8 +14,8 @@ class MemberTest {
         Long id = 1L;
 
         // when
-        Member member1 = new Member(id, "email1", "password", "멍구");
-        Member member2 = new Member(id, "email2", "password2", "멍구2");
+        Member member1 = new Member(id, "email1", "password", "멍구", Role.USER);
+        Member member2 = new Member(id, "email2", "password2", "멍구2", Role.USER);
 
         // then
         assertThat(member1).isEqualTo(member2);

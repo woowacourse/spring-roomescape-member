@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @JdbcTest
 @Import(JdbcMemberRepository.class)
@@ -46,20 +47,21 @@ class JdbcMemberRepositoryTest {
                     rs.getLong("id"),
                     rs.getString("email"),
                     rs.getString("password"),
-                    rs.getString("name")
+                    rs.getString("name"),
+                    Role.valueOf(rs.getString("role"))
             );
 
     @DisplayName("유저를 저장할 수 있다.")
     @Test
     void save() {
         // given
-        Member member = new Member( null, "test@example.com", "password", "멍구");
+        Member member = new Member( null, "test@example.com", "password", "멍구", Role.USER);
 
         // when
         jdbcMemberRepository.save(member);
 
         // then
-        List<Member> members = jdbcTemplate.query("SELECT id, email, password, name FROM members", MEMBER_ROW_MAPPER);
+        List<Member> members = jdbcTemplate.query("SELECT id, email, password, name, role FROM members", MEMBER_ROW_MAPPER);
 
         assertThat(members).hasSize(1);
         assertThat(members.getFirst().getEmail()).isEqualTo(member.getEmail());
@@ -72,8 +74,8 @@ class JdbcMemberRepositoryTest {
         String email = "test@example.com";
         String password = "password";
         String name = "멍구";
-        jdbcTemplate.update("INSERT INTO members (email, password, name) VALUES (?, ?, ?)",
-                email, password, name);
+        jdbcTemplate.update("INSERT INTO members (email, password, name, role) VALUES (?, ?, ?, ?)",
+                email, password, name, Role.USER.name());
 
         // when
         Optional<Member> result = jdbcMemberRepository.findByEmail(email);

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 import roomescape.member.domain.repository.MemberRepository;
 
 @Repository
@@ -18,7 +19,8 @@ public class JdbcMemberRepository implements MemberRepository {
                     rs.getLong("id"),
                     rs.getString("email"),
                     rs.getString("password"),
-                    rs.getString("name")
+                    rs.getString("name"),
+                    Role.valueOf(rs.getString("role"))
             );
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,7 +38,8 @@ public class JdbcMemberRepository implements MemberRepository {
         Map<String, Object> params = Map.of(
                 "email", member.getEmail(),
                 "password", member.getPassword(),
-                "name", member.getName()
+                "name", member.getName(),
+                "role", member.getRole().name()
         );
 
         Number key = simpleJdbcInsert.executeAndReturnKey(params);
@@ -45,7 +48,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        String selectOneSql = "SELECT id, email, password, name FROM members WHERE id=?";
+        String selectOneSql = "SELECT id, email, password, name, role FROM members WHERE id=?";
         try {
             Member member = jdbcTemplate.queryForObject(selectOneSql, MEMBER_ROW_MAPPER,
                     id);
@@ -57,7 +60,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmail(String email) {
-        String selectOneSql = "SELECT id, email, password, name FROM members WHERE email=?";
+        String selectOneSql = "SELECT id, email, password, name, role FROM members WHERE email=?";
         try {
             Member member = jdbcTemplate.queryForObject(selectOneSql, MEMBER_ROW_MAPPER,
                     email);
@@ -69,7 +72,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        String selectAll = "SELECT id, email, password, name FROM members";
+        String selectAll = "SELECT id, email, password, name, role FROM members";
         return jdbcTemplate.query(selectAll, MEMBER_ROW_MAPPER);
     }
 }

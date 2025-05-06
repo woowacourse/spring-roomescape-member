@@ -7,6 +7,7 @@ import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.member.domain.Role;
 
 class JwtTokenProviderTest {
     private JwtTokenProvider jwtTokenProvider;
@@ -25,7 +26,7 @@ class JwtTokenProviderTest {
     @Test
     void createAndParseToken() {
         String payload = "test@email.com";
-        String token = jwtTokenProvider.createToken(payload);
+        String token = jwtTokenProvider.createToken(payload, Role.USER);
 
         assertThat(jwtTokenProvider.getPayload(token)).isEqualTo(payload);
     }
@@ -33,7 +34,7 @@ class JwtTokenProviderTest {
     @DisplayName("JWT를 생성하면 유효하다")
     @Test
     void validateToken_true_when_valid() {
-        String token = jwtTokenProvider.createToken("test");
+        String token = jwtTokenProvider.createToken("test", Role.USER);
 
         assertThat(jwtTokenProvider.validateToken(token)).isTrue();
     }
@@ -45,15 +46,4 @@ class JwtTokenProviderTest {
 
         assertThat(jwtTokenProvider.validateToken(fakeToken)).isFalse();
     }
-
-    private void injectPrivateField(Object target, String fieldName, Object value) {
-        try {
-            var field = target.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(target, value);
-        } catch (Exception e) {
-            throw new RuntimeException("필드 주입 실패: " + fieldName, e);
-        }
-    }
-
 }
