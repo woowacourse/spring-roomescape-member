@@ -17,12 +17,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.auth.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
-import roomescape.domain.user.entity.Name;
 
 /**
  * DAO 테스트 비활성화

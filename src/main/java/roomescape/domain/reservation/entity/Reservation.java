@@ -7,7 +7,7 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
-import roomescape.domain.user.entity.Name;
+import roomescape.domain.auth.entity.Name;
 
 @Getter
 public class Reservation {

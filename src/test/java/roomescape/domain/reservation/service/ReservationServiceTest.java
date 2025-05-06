@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.auth.entity.Name;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
@@ -26,7 +27,6 @@ import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
 import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
 import roomescape.domain.reservation.repository.fake.FakeThemeRepository;
 import roomescape.domain.reservation.utils.FixedClock;
-import roomescape.domain.user.entity.Name;
 
 class ReservationServiceTest {
 
@@ -73,7 +73,7 @@ class ReservationServiceTest {
         final LocalDate date = LocalDate.of(2020, 1, 1);
 
         for (final String name : names) {
-            Name reservationName = new Name(name);
+            final Name reservationName = new Name(name);
             final Reservation reservation = Reservation.withoutId(reservationName, date, reservationTime, theme);
             reservationRepository.save(reservation);
         }

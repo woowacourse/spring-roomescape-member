@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.auth.entity.Name;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -34,7 +35,6 @@ import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
 import roomescape.domain.reservation.utils.FixedClock;
-import roomescape.domain.user.entity.Name;
 
 @ActiveProfiles("test")
 @JdbcTest

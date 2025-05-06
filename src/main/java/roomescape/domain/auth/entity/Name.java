@@ -1,4 +1,4 @@
-package roomescape.domain.user.entity;
+package roomescape.domain.auth.entity;
 
 import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;

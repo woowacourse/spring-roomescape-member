@@ -8,3 +8,7 @@ spring:
     url: jdbc:h2:mem:database
 
     username: sa
+
+token:
+  secret-key:Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
+
