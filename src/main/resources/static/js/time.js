@@ -6,6 +6,7 @@ const createCellFields = ['', createInput()];
 function createBody(inputs) {
     return {
         startAt: inputs[0].value,
+        alreadyBooked : inputs[1].value
     };
 }
 

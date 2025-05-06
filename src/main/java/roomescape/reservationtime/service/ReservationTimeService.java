@@ -86,6 +86,6 @@ public class ReservationTimeService {
 
     private boolean containsTime(final List<Reservation> reservations, final Long id) {
         return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getId(), id));
+                .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), id));
     }
 }
