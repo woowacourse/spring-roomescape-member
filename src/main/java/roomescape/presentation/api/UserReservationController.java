@@ -1,5 +1,6 @@
 package roomescape.presentation.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class UserReservationController {
     // TODO : Admin과 API를 공유하고 있다. 분리를 고민해보자.
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationResponse create(@RequestBody CreateReservationRequest request) {
+    public ReservationResponse create(@RequestBody @Valid CreateReservationRequest request) {
         ReservationServiceResponse response = userReservationService.create(request.toServiceRequest());
         return ReservationResponse.from(response);
     }

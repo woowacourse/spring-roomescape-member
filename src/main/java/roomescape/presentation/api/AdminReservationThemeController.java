@@ -1,5 +1,6 @@
 package roomescape.presentation.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +24,7 @@ public class AdminReservationThemeController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationThemeResponse create(@RequestBody CreateReservationThemeRequest request) {
+    public ReservationThemeResponse create(@RequestBody @Valid CreateReservationThemeRequest request) {
         ReservationThemeServiceResponse response = adminReservationThemeService.create(request.toServiceRequest());
         return ReservationThemeResponse.from(response);
     }
