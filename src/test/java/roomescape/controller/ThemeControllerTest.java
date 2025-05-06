@@ -27,7 +27,7 @@ public class ThemeControllerTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation");
+        jdbcTemplate.execute("DELETE FROM reservation");
     }
 
     @Test
