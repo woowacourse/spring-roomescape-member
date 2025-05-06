@@ -3,7 +3,7 @@ package roomescape.business.model.entity;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import roomescape.exception.impl.InvalidReservationTimeException;
+import roomescape.exception.business.InvalidReservationTimeException;
 
 import java.time.LocalTime;
 

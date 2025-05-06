@@ -9,10 +9,10 @@ import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.business.model.repository.ThemeRepository;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.impl.AlreadyReservedException;
-import roomescape.exception.impl.ReservationNotFoundException;
-import roomescape.exception.impl.ThemeNotFoundException;
-import roomescape.exception.impl.UserNotFoundException;
+import roomescape.exception.business.AlreadyReservedException;
+import roomescape.exception.business.ReservationNotFoundException;
+import roomescape.exception.business.ThemeNotFoundException;
+import roomescape.exception.business.UserNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;

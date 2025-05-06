@@ -1,7 +1,7 @@
 package roomescape.business.model.entity;
 
 import roomescape.business.model.vo.Id;
-import roomescape.exception.impl.InvalidReservationTimeException;
+import roomescape.exception.business.InvalidReservationTimeException;
 
 import java.time.LocalTime;
 

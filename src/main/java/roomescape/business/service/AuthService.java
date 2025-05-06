@@ -5,7 +5,7 @@ import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
 import roomescape.business.model.vo.Authentication;
-import roomescape.exception.impl.LoginFailException;
+import roomescape.exception.auth.LoginFailException;
 
 @Service
 public class AuthService {

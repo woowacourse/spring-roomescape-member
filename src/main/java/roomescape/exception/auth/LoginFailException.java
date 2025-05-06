@@ -1,8 +1,6 @@
-package roomescape.exception.impl;
+package roomescape.exception.auth;
 
-import roomescape.exception.RootException;
-
-public class LoginFailException extends RootException {
+public class LoginFailException extends RuntimeException {
 
     private static final String MESSAGE = "로그인에 실패하였습니다.";
 

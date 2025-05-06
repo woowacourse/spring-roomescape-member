@@ -7,7 +7,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.business.model.vo.Authorization;
-import roomescape.exception.impl.NotAuthenticatedException;
+import roomescape.exception.auth.NotAuthenticatedException;
 
 public class AuthorizationArgumentResolver implements HandlerMethodArgumentResolver {
 

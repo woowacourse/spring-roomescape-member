@@ -1,7 +1,7 @@
 package roomescape.business.model.entity;
 
 import roomescape.business.model.vo.Id;
-import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
+import roomescape.exception.business.ThemeNameMaxLengthExceedException;
 
 public class Theme {
 

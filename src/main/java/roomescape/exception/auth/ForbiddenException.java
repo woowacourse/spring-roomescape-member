@@ -1,8 +1,6 @@
-package roomescape.exception.impl;
+package roomescape.exception.auth;
 
-import roomescape.exception.RootException;
-
-public class ForbiddenException extends RootException {
+public class ForbiddenException extends RuntimeException {
 
     private static final String MESSAGE = "권한이 없는 요청입니다.";
 

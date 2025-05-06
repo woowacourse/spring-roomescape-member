@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
-import roomescape.exception.impl.ConnectedReservationExistException;
-import roomescape.exception.impl.HasDuplicatedTimeException;
-import roomescape.exception.impl.ReservationTimeIntervalException;
-import roomescape.exception.impl.ReservationTimeNotFoundException;
+import roomescape.exception.business.ConnectedReservationExistException;
+import roomescape.exception.business.HasDuplicatedTimeException;
+import roomescape.exception.business.ReservationTimeIntervalException;
+import roomescape.exception.business.ReservationTimeNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

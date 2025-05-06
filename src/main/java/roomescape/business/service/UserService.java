@@ -3,8 +3,8 @@ package roomescape.business.service;
 import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.exception.impl.DuplicatedEmailException;
-import roomescape.exception.impl.UserNotFoundException;
+import roomescape.exception.business.DuplicatedEmailException;
+import roomescape.exception.business.UserNotFoundException;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@ package roomescape.business.model.entity;
 
 import roomescape.business.model.vo.Id;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.impl.NameContainsNumberException;
-import roomescape.exception.impl.UserNameLengthExceedException;
+import roomescape.exception.business.NameContainsNumberException;
+import roomescape.exception.business.UserNameLengthExceedException;
 
 public class User {
 

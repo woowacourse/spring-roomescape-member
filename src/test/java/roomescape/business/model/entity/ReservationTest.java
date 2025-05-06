@@ -2,10 +2,10 @@ package roomescape.business.model.entity;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.impl.NameContainsNumberException;
-import roomescape.exception.impl.PastDateException;
-import roomescape.exception.impl.ReservationBeforeStartException;
-import roomescape.exception.impl.UserNameLengthExceedException;
+import roomescape.exception.business.NameContainsNumberException;
+import roomescape.exception.business.PastDateException;
+import roomescape.exception.business.ReservationBeforeStartException;
+import roomescape.exception.business.UserNameLengthExceedException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

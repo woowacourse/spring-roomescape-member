@@ -9,7 +9,7 @@ import roomescape.auth.Role;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.Authorization;
 import roomescape.business.model.vo.UserRole;
-import roomescape.exception.impl.ForbiddenException;
+import roomescape.exception.auth.ForbiddenException;
 
 import java.util.Arrays;
 import java.util.List;

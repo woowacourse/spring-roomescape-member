@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ThemeRepository;
-import roomescape.exception.impl.ConnectedReservationExistException;
-import roomescape.exception.impl.ThemeNotFoundException;
+import roomescape.exception.business.ConnectedReservationExistException;
+import roomescape.exception.business.ThemeNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;

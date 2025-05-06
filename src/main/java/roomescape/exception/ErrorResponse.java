@@ -10,16 +10,16 @@ public record ErrorResponse(
         String exceptionType,
         String message
 ) {
-    public static ErrorResponse badRequest(Exception e) {
+    public static ErrorResponse withDetailMessage(HttpStatus httpStatus, Exception e) {
         return new ErrorResponse(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST,
+                httpStatus,
                 e.getClass().getSimpleName(),
                 e.getMessage()
         );
     }
 
-    public static ErrorResponse internalServerError() {
+    public static ErrorResponse withoutDetailMessage() {
         return new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR,

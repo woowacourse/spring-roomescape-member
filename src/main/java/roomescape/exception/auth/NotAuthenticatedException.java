@@ -1,8 +1,6 @@
-package roomescape.exception.impl;
+package roomescape.exception.auth;
 
-import roomescape.exception.RootException;
-
-public class NotAuthenticatedException extends RootException {
+public class NotAuthenticatedException extends RuntimeException {
 
     private static final String MESSAGE = "인증되지 않은 사용자입니다.";
 

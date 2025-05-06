@@ -1,9 +1,9 @@
 package roomescape.business.model.entity;
 
 import roomescape.business.model.vo.Id;
-import roomescape.exception.impl.PastDateException;
-import roomescape.exception.impl.ReservationBeforeStartException;
-import roomescape.exception.impl.ReservationTimeNotFoundException;
+import roomescape.exception.business.PastDateException;
+import roomescape.exception.business.ReservationBeforeStartException;
+import roomescape.exception.business.ReservationTimeNotFoundException;
 
 import java.time.LocalDate;
 import java.time.Period;

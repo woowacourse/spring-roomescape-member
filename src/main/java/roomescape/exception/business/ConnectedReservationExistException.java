@@ -1,8 +1,8 @@
-package roomescape.exception.impl;
+package roomescape.exception.business;
 
-import roomescape.exception.RootException;
+import roomescape.exception.RootBusinessException;
 
-public class ConnectedReservationExistException extends RootException {
+public class ConnectedReservationExistException extends RootBusinessException {
 
     private static final String MESSAGE = "해당 정보를 사용하는 예약이 존재합니다.";
 

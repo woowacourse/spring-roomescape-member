@@ -1,8 +1,8 @@
-package roomescape.exception.impl;
+package roomescape.exception.business;
 
-import roomescape.exception.RootException;
+import roomescape.exception.RootBusinessException;
 
-public class ReservationBeforeStartException extends RootException {
+public class ReservationBeforeStartException extends RootBusinessException {
 
     private static final String MESSAGE = "일주일 전부터 예약 가능합니다.";
 

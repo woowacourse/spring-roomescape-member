@@ -2,7 +2,7 @@ package roomescape.business.model.entity;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.impl.ThemeNameMaxLengthExceedException;
+import roomescape.exception.business.ThemeNameMaxLengthExceedException;
 
 import static org.assertj.core.api.Assertions.*;
 

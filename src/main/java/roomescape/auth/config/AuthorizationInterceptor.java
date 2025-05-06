@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.AuthRequired;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.Authorization;
-import roomescape.exception.impl.NotAuthenticatedException;
+import roomescape.exception.auth.NotAuthenticatedException;
 
 public class AuthorizationInterceptor implements HandlerInterceptor {
 

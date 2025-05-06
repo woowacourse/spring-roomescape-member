@@ -1,8 +1,8 @@
-package roomescape.exception.impl;
+package roomescape.exception.business;
 
-import roomescape.exception.RootException;
+import roomescape.exception.RootBusinessException;
 
-public class InvalidReservationTimeException extends RootException {
+public class InvalidReservationTimeException extends RootBusinessException {
 
     private static final String MESSAGE = "예약은 10시~23시로만 가능합니다.";
 
