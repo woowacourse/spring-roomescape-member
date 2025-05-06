@@ -36,4 +36,15 @@ public class JdbcMemberRepository implements MemberRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Member> findById(long id) {
+        String sql = "select id, name, email, password, role from member where id = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

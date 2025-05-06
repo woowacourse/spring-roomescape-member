@@ -1,6 +1,7 @@
 package roomescape.controller;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.controller.dto.ErrorResponse;
+import roomescape.exception.InvalidAuthorizationException;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
@@ -17,6 +19,14 @@ public class GlobalControllerAdvice {
         ErrorResponse response = ErrorResponse.from(e.getMessage());
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(exception = InvalidAuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(InvalidAuthorizationException e) {
+        ErrorResponse response = ErrorResponse.from(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
     }
 
     @ExceptionHandler(exception = MethodArgumentNotValidException.class)
