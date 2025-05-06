@@ -7,17 +7,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.config.TestConfig;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -31,6 +31,8 @@ import roomescape.domain.reservation.utils.JdbcTemplateUtils;
  */
 
 @Disabled
+@JdbcTest
+@Import(ReservationDAO.class)
 class ReservationDAOTest {
 
     private static final Long RESERVATION_TIME_ID = 1L;
@@ -40,14 +42,15 @@ class ReservationDAOTest {
     private static final String THEME_DESCRIPTION = "우테코 공포";
     private static final String THEME_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private ReservationRepository reservationRepository;
 
     @BeforeEach
     void init() {
-        jdbcTemplate = TestConfig.getJdbcTemplate();
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = TestConfig.getNamedParameterJdbcTemplate();
-        reservationRepository = new ReservationDAO(namedParameterJdbcTemplate, TestConfig.getDataSource());
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
     @DisplayName("예약 정보를 저장한다.")
@@ -67,8 +70,24 @@ class ReservationDAOTest {
         // then
         assertThat(result.getName()).isEqualTo(name);
         assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
-        assertThat(result.getReservationTime().getId()).isEqualTo(RESERVATION_TIME_ID);
-        assertThat(result.getTheme().getId()).isEqualTo(THEME_ID);
+        assertThat(result.getReservationTime()
+                .getId()).isEqualTo(RESERVATION_TIME_ID);
+        assertThat(result.getTheme()
+                .getId()).isEqualTo(THEME_ID);
+    }
+
+    private ReservationTime saveReservationTime(Long id, LocalTime time) {
+        String insertTimeSql = "insert into reservation_time (id, start_at) values (?, ?)";
+        jdbcTemplate.update(insertTimeSql, id, time);
+
+        return new ReservationTime(id, time);
+    }
+
+    private Theme saveTheme(Long id, String name, String description, String thumbnail) {
+        String insertTimeSql = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
+        jdbcTemplate.update(insertTimeSql, id, name, description, thumbnail);
+
+        return new Theme(id, name, description, thumbnail);
     }
 
     @DisplayName("id가 같다면 해당 예약 정보로 변경한다.")
@@ -85,14 +104,19 @@ class ReservationDAOTest {
         saveReservation(reservationId, originalName, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
         String changedName = "드라고";
-        Reservation updateReservation =
-                new Reservation(reservationId, changedName, now.toLocalDate(), reservationTime, theme);
+        Reservation updateReservation = new Reservation(reservationId, changedName, now.toLocalDate(), reservationTime,
+                theme);
 
         // when
         Reservation result = reservationRepository.save(updateReservation);
 
         // then
         assertThat(result).isEqualTo(updateReservation);
+    }
+
+    private void saveReservation(Long id, String name, LocalDate date, Long timeId, Long themeId) {
+        String sql = "insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, id, name, date, timeId, themeId);
     }
 
     @DisplayName("존재하지 않는 id를 save한다면 예외를 반환한다.")
@@ -105,8 +129,7 @@ class ReservationDAOTest {
         Reservation reservation = new Reservation(1L, "꾹", now.toLocalDate(), reservationTime, theme);
 
         // when & then
-        assertThatThrownBy(() -> reservationRepository.save(reservation))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> reservationRepository.save(reservation)).isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("id로 예약 정보를 가져온다")
@@ -123,7 +146,8 @@ class ReservationDAOTest {
         saveReservation(id, name, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
         // when
-        Reservation result = reservationRepository.findById(id).get();
+        Reservation result = reservationRepository.findById(id)
+                .get();
 
         // then
         assertThat(result.getName()).isEqualTo(name);
@@ -207,8 +231,7 @@ class ReservationDAOTest {
 
     @DisplayName("날짜와 시간으로 존재하는 예약인지 확인한다.")
     @CsvSource(value = {
-            "29,29,true",
-            "28,29,false"
+            "29,29,true", "28,29,false"
     })
     @ParameterizedTest
     void test9(int day1, int day2, boolean expected) {
@@ -222,31 +245,8 @@ class ReservationDAOTest {
         saveReservation(reservationId, name, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
         // when & then
-        assertThat(reservationRepository.existsByDateAndTimeId(LocalDate.of(2025, 4, day2), RESERVATION_TIME_ID))
-                .isEqualTo(expected);
+        assertThat(reservationRepository.existsByDateAndTimeId(LocalDate.of(2025, 4, day2),
+                RESERVATION_TIME_ID)).isEqualTo(expected);
     }
 
-    private ReservationTime saveReservationTime(Long id, LocalTime time) {
-        String insertTimeSql = "insert into reservation_time (id, start_at) values (?, ?)";
-        jdbcTemplate.update(insertTimeSql, id, time);
-
-        return new ReservationTime(id, time);
-    }
-
-    private Theme saveTheme(Long id, String name, String description, String thumbnail) {
-        String insertTimeSql = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
-        jdbcTemplate.update(insertTimeSql, id, name, description, thumbnail);
-
-        return new Theme(id, name, description, thumbnail);
-    }
-
-    private void saveReservation(Long id, String name, LocalDate date, Long timeId, Long themeId) {
-        String sql = "insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, id, name, date, timeId, themeId);
-    }
-
-    @AfterEach
-    void cleanUp() {
-        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
-    }
 }

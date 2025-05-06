@@ -7,33 +7,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.config.TestConfig;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
 @Disabled
+@JdbcTest
+@Import(ReservationTimeDAO.class)
 class ReservationTimeDAOTest {
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
-    private ReservationTimeRepository reservationTimeRepository;
 
-    @BeforeEach
-    void init() {
-        jdbcTemplate = TestConfig.getJdbcTemplate();
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        reservationTimeRepository = new ReservationTimeDAO(namedParameterJdbcTemplate, TestConfig.getDataSource());
-    }
+    @Autowired
+    private ReservationTimeRepository reservationTimeRepository;
 
     @DisplayName("id에 따라 예약 시간을 반환한다.")
     @Test
@@ -44,29 +42,29 @@ class ReservationTimeDAOTest {
         saveReservationTime(id, now);
 
         // when
-        ReservationTime result = reservationTimeRepository.findById(id).get();
+        ReservationTime result = reservationTimeRepository.findById(id)
+                .get();
 
         // then
         assertThat(result.getId()).isEqualTo(id);
         assertThat(result.getStartAt()).isEqualTo(now);
     }
 
-    @DisplayName("해당 id가 없다면 예외를 반환한다.")
-    @Test
-    void test2() {
-        assertThatThrownBy(() -> reservationTimeRepository.deleteById(1L))
-                .isInstanceOf(EntityNotFoundException.class);
-
-    }
-
-    @AfterEach
-    void cleanUp() {
-        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
-    }
-
     private void saveReservationTime(Long id, LocalTime startAt) {
         String sql = "insert into reservation_time (id, start_at) values (?, ?)";
         jdbcTemplate.update(sql, id, startAt);
+    }
+
+    @DisplayName("해당 id가 없다면 예외를 반환한다.")
+    @Test
+    void test2() {
+        assertThatThrownBy(() -> reservationTimeRepository.deleteById(1L)).isInstanceOf(EntityNotFoundException.class);
+
+    }
+
+    @BeforeEach
+    void init() {
+        JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
     }
 
     @DisplayName("예약 시간을 삭제한다.")
@@ -83,11 +81,10 @@ class ReservationTimeDAOTest {
             jdbcTemplate.update(sql, id, now);
 
             // when
-            assertThatCode(() -> reservationTimeRepository.deleteById(id))
-                    .doesNotThrowAnyException();
+            assertThatCode(() -> reservationTimeRepository.deleteById(id)).doesNotThrowAnyException();
         }
 
-        @DisplayName("Reservation 테이블에서 사용 중이라면 AlreadyUseException 예외를 반환한다.")
+        @DisplayName("Reservation 테이블에서 사용 중이라면 DataIntegrityViolationException 예외를 반환한다.")
         @Test
         void test2() {
             // given
@@ -100,8 +97,8 @@ class ReservationTimeDAOTest {
                     id);
 
             // when
-            assertThatThrownBy(() -> reservationTimeRepository.deleteById(id))
-                    .isInstanceOf(AlreadyInUseException.class);
+            assertThatThrownBy(() -> reservationTimeRepository.deleteById(id)).isInstanceOf(
+                    DataIntegrityViolationException.class);
         }
     }
 
@@ -142,8 +139,10 @@ class ReservationTimeDAOTest {
 
             SoftAssertions softly = new SoftAssertions();
 
-            softly.assertThat(result.getId()).isEqualTo(id);
-            softly.assertThat(result.getStartAt()).isEqualTo(changeTime);
+            softly.assertThat(result.getId())
+                    .isEqualTo(id);
+            softly.assertThat(result.getStartAt())
+                    .isEqualTo(changeTime);
 
             softly.assertAll();
         }
@@ -157,8 +156,8 @@ class ReservationTimeDAOTest {
             ReservationTime reservationTime = new ReservationTime(id, now);
 
             // when & then
-            assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime))
-                    .isInstanceOf(EntityNotFoundException.class);
+            assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime)).isInstanceOf(
+                    EntityNotFoundException.class);
         }
     }
 }
