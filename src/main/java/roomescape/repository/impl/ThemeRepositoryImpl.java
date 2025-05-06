@@ -40,7 +40,8 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllOfRank(LocalDate startDate, LocalDate currentDate) {
-        return themeDao.findAllOfRanks(startDate, currentDate);
+    public List<Theme> calculateRankForReservationAmount(LocalDate startDate,
+        LocalDate currentDate) {
+        return themeDao.calculateRankForReservationAmount(startDate, currentDate);
     }
 }

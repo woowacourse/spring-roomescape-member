@@ -70,7 +70,8 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllOfRanks(LocalDate startDate, LocalDate currentDate) {
+    public List<Theme> calculateRankForReservationAmount(LocalDate startDate,
+        LocalDate currentDate) {
         String query = """
             SELECT id, name, description, thumbnail
             FROM

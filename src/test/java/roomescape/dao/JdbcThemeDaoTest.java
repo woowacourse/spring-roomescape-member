@@ -85,7 +85,8 @@ public class JdbcThemeDaoTest {
     void find_popular_rank() {
         initData();
         LocalDate startDate = LocalDate.of(2025, 5, 1);
-        List<Theme> allThemeOfRanks = themeDao.findAllOfRanks(startDate.minusDays(7),
+        List<Theme> allThemeOfRanks = themeDao.calculateRankForReservationAmount(
+            startDate.minusDays(7),
             startDate);
         assertThat(allThemeOfRanks.get(0).getId()).isEqualTo(1);
         assertThat(allThemeOfRanks.get(1).getId()).isEqualTo(2);

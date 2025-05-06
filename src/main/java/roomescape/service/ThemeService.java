@@ -37,7 +37,8 @@ public class ThemeService {
     public List<ThemeResponseDto> getAllThemeOfRanks() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(CHECK_STANDARD_OF_DATE);
-        List<Theme> themes = themeRepository.findAllOfRank(startDate, currentDate);
+        List<Theme> themes = themeRepository.calculateRankForReservationAmount(startDate,
+            currentDate);
         return themes.stream().map(ThemeResponseDto::from).toList();
     }
 }

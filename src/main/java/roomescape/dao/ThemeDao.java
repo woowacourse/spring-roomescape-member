@@ -15,5 +15,5 @@ public interface ThemeDao {
 
     Optional<Theme> findById(Long id);
 
-    List<Theme> findAllOfRanks(LocalDate startDate, LocalDate currentDate);
+    List<Theme> calculateRankForReservationAmount(LocalDate startDate, LocalDate currentDate);
 }

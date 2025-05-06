@@ -14,5 +14,5 @@ public interface ThemeRepository {
 
     Theme findById(Long id);
 
-    List<Theme> findAllOfRank(LocalDate startDate, LocalDate currentDate);
+    List<Theme> calculateRankForReservationAmount(LocalDate startDate, LocalDate currentDate);
 }
