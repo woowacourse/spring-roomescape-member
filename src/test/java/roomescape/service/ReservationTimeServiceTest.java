@@ -3,6 +3,7 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,18 +31,18 @@ class ReservationTimeServiceTest {
     @DisplayName("시간 데이터를 추가할 수 있어야 한다")
     void addReservationTime() {
         // given // when
-        final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(11, 0));
+        final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(13, 0));
         reservationTimeService.addReservationTime(creation);
 
         // then
-        assertThat(reservationTimeService.findAllReservationTimes()).hasSize(3);
+        assertThat(reservationTimeService.findAllReservationTimes()).hasSize(4);
     }
 
     @Test
     @DisplayName("이미 존재하는 시간 데이터일 경우 예외를 던진다")
     void cannotAddReservationTime() {
         // given
-        final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(12, 0));
+        final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(10, 0));
 
         // when // then
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(creation))
@@ -53,23 +54,26 @@ class ReservationTimeServiceTest {
     @DisplayName("시간 데이터를 조회할 수 있어야 한다")
     void findAllReservationTimes() {
         // given // when
-        final List<ReservationTime> actual = reservationTimeService.findAllReservationTimes();
+        final List<ReservationTime> result = reservationTimeService.findAllReservationTimes();
 
         // then
-        assertThat(actual).hasSize(2);
+        assertThat(result).hasSize(3);
     }
 
     @Test
     @DisplayName("이용가능한 예약 시간을 조회한다")
     void findAvailableTime() {
         // given // when
-        final List<AvailableReservationTime> actual = reservationTimeService.findAllAvailableTime(
+        final List<AvailableReservationTime> result = reservationTimeService.findAllAvailableTime(
                 LocalDate.of(2025, 4, 28), 1
         );
 
         // then
-        assertThat(actual.getFirst().getBookedStatus()).isTrue();
-        assertThat(actual.getLast().getBookedStatus()).isFalse();
+        assertAll(
+                () -> assertThat(result.getFirst().getBookedStatus()).isTrue(),
+                () -> assertThat(result.get(1).getBookedStatus()).isFalse(),
+                () -> assertThat(result.getLast().getBookedStatus()).isFalse()
+        );
     }
 
     @Test
