@@ -7,11 +7,13 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.exception.DataExistException;
 import roomescape.exception.SaveException;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationTime;
@@ -66,7 +68,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void deleteById(Long id) {
         final String sql = "DELETE FROM reservations WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        try {
+            jdbcTemplate.update(sql, id);
+        } catch (final DataIntegrityViolationException e) {
+            throw new DataExistException("데이터 무결성 제약으로 인해 삭제할 수 없습니다." + e);
+        }
     }
 
     @Override
