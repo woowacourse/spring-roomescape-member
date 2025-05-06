@@ -32,7 +32,7 @@ public final class ReservationTime {
         return startAt;
     }
 
-    public boolean isBefore(final LocalTime other) {
+    public boolean isBeforeOrEqual(final LocalTime other) {
         return startAt.isBefore(other) || startAt.equals(other);
     }
 

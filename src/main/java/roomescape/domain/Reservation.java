@@ -12,7 +12,7 @@ public final class Reservation {
     private final Theme theme;
 
     private Reservation(final Long id, final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
-        validateTheme(theme);
+        validateNotNull(name, dateTime, theme);
         this.id = id;
         this.name = name;
         this.dateTime = dateTime;
@@ -28,24 +28,29 @@ public final class Reservation {
     public Reservation(final String name, final LocalDate date,
                        final ReservationTime time, final Theme theme) {
         this(null, new MemberName(name), new ReservationDateTime(date, time), theme);
+        validateDateTime();
     }
 
     public Reservation(final long id, final Reservation reservation) {
         this(id, reservation.name, reservation.dateTime, reservation.theme);
     }
 
-    private void validateTheme(final Theme theme) {
+    private void validateNotNull(final MemberName name, final ReservationDateTime dateTime, final Theme theme) {
+        if (name == null) {
+            throw new IllegalArgumentException("이름을 입력해야 합니다.");
+        }
+        if (dateTime == null) {
+            throw new IllegalArgumentException("날짜와 시간을 입력해야 합니다.");
+        }
         if (theme == null) {
             throw new IllegalArgumentException("테마를 입력해야 합니다.");
         }
     }
 
-    public boolean isBefore(final LocalDateTime other) {
-        return dateTime.isBefore(other);
-    }
-
-    public boolean isSameTime(final ReservationTime reservationTime) {
-        return dateTime.isSameTime(reservationTime);
+    private void validateDateTime() {
+        if (dateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("지나간 날짜와 시간은 예약 불가합니다.");
+        }
     }
 
     public Long getTimeId() {

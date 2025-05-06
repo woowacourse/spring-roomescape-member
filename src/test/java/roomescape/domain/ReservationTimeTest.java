@@ -10,14 +10,14 @@ class ReservationTimeTest {
 
     @DisplayName("주어진 시간보다 이전 시간인지 여부를 반환한다.")
     @Test
-    void testIsBefore() {
+    void testIsBeforeOrEqual() {
         // given
         LocalTime time = LocalTime.of(10, 0);
         ReservationTime reservationTime = new ReservationTime(1L, time);
         // when
         // then
         LocalTime afterTime = time.plusMinutes(1);
-        assertThat(reservationTime.isBefore(afterTime)).isTrue();
-        assertThat(reservationTime.isBefore(time)).isTrue();
+        assertThat(reservationTime.isBeforeOrEqual(afterTime)).isTrue();
+        assertThat(reservationTime.isBeforeOrEqual(time)).isTrue();
     }
 }

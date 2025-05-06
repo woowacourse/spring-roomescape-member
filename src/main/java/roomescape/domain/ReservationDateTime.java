@@ -33,13 +33,9 @@ public final class ReservationDateTime {
             return true;
         }
         if (date.equals(other.toLocalDate())) {
-            return time.isBefore(other.toLocalTime());
+            return time.isBeforeOrEqual(other.toLocalTime());
         }
         return false;
-    }
-
-    public boolean isSameTime(final ReservationTime other) {
-        return time.equals(other);
     }
 
     public LocalDate getDate() {
