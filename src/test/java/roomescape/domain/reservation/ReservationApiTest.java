@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -86,7 +87,9 @@ class ReservationApiTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         Theme savedTheme = themeRepository.save(theme);
 
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedReservationTime, savedTheme);
+        Reservation reservation = Reservation.withoutId(
+                new Name("꾹"), LocalDate.now(), savedReservationTime, savedTheme
+        );
         reservationRepository.save(reservation);
 
         // then
@@ -178,7 +181,7 @@ class ReservationApiTest {
     @Test
     void test6() {
         // given
-        String name = "브라운";
+        Name name = new Name("브라운");
         LocalDate now = LocalDate.now();
 
         ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
@@ -216,7 +219,7 @@ class ReservationApiTest {
         reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
 
         LocalDate date = LocalDate.now();
-        reservationRepository.save(Reservation.withoutId("꾹", date, time1, theme));
+        reservationRepository.save(Reservation.withoutId(new Name("꾹"), date, time1, theme));
 
         String path = UriComponentsBuilder.fromUriString("/reservations/available")
                 .queryParam("date", formatDateTime(date))

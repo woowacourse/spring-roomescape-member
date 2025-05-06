@@ -7,15 +7,14 @@ import java.util.Objects;
 public class Reservation {
 
     private static final long EMPTY_ID = 0L;
-    private static final int MAX_NAME_LENGTH = 25;
 
     private final Long id;
-    private final String name;
+    private final Name name;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(final Long id, final String name, final LocalDate reservationDate,
+    public Reservation(final Long id, final Name name, final LocalDate reservationDate,
                        final ReservationTime reservationTime, final Theme theme
     ) {
         this.id = id;
@@ -23,11 +22,11 @@ public class Reservation {
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
         this.theme = theme;
-        validateReservation();
+        validateNull();
     }
 
     public static Reservation withoutId(
-            final String name,
+            final Name name,
             final LocalDate reservationDate,
             final ReservationTime reservationTime,
             final Theme theme
@@ -35,16 +34,9 @@ public class Reservation {
         return new Reservation(EMPTY_ID, name, reservationDate, reservationTime, theme);
     }
 
-    private void validateReservation() {
+    private void validateNull() {
         if (name == null || reservationDate == null || reservationTime == null || theme == null) {
             throw new IllegalArgumentException("Reservation field cannot be null");
-        }
-        validateName();
-    }
-
-    private void validateName() {
-        if (name.isBlank() || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("invalid reservation name");
         }
     }
 
@@ -60,7 +52,7 @@ public class Reservation {
         return reservationTime.getId();
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 

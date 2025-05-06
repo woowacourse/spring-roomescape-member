@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -129,7 +130,7 @@ class ThemeApiTest {
         Theme savedTheme = themeRepository.save(theme);
         Long savedId = savedTheme.getId();
 
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
+        Reservation reservation = Reservation.withoutId(new Name("꾹"), LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then
@@ -154,12 +155,13 @@ class ThemeApiTest {
         Theme savedTheme2 = themeRepository.save(theme2);
         Theme savedTheme3 = themeRepository.save(theme3);
 
-        reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
-        reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
-        reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
-        reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
+        Name name = new Name("꾹");
+        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
+        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
+        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 3), savedTime, savedTheme3));
+        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 4), savedTime, savedTheme1));
+        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 5), savedTime, savedTheme1));
+        reservationRepository.save(Reservation.withoutId(name, minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
 
         // when & then
         RestAssured.given().log().all()

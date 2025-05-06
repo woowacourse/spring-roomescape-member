@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -136,7 +137,7 @@ class ReservationTimeApiTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         Theme savedTheme = themeRepository.save(theme);
 
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
+        Reservation reservation = Reservation.withoutId(new Name("꾹"), LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then

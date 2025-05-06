@@ -20,6 +20,7 @@ import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.dto.ReservationTimeRequest;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -125,7 +126,7 @@ class ReservationTimeServiceIntegrationTest {
 
         ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
 
-        reservationRepository.save(Reservation.withoutId("꾹", LocalDate.now(), reservationTime, theme));
+        reservationRepository.save(Reservation.withoutId(new Name("꾹"), LocalDate.now(), reservationTime, theme));
         Long timeId = reservationTime.getId();
 
         // when & then

@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -160,7 +161,7 @@ public class ReservationDao implements ReservationRepository {
     private Reservation reservationOf(final ResultSet resultSet) throws SQLException {
         return new Reservation(
                 resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
+                new Name(resultSet.getString("name")),
                 LocalDate.parse(resultSet.getString("date")),
                 reservationTimeOf(resultSet),
                 themeOf(resultSet)
@@ -185,7 +186,7 @@ public class ReservationDao implements ReservationRepository {
 
     private Reservation create(final Reservation reservation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("name", reservation.getName().getValue())
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId());
@@ -206,7 +207,7 @@ public class ReservationDao implements ReservationRepository {
         checkReservation(reservation);
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
+                .addValue("name", reservation.getName().getValue())
                 .addValue("date", reservation.getReservationDate())
                 .addValue("time_id", reservation.getReservationTimeId())
                 .addValue("theme_id", reservation.getThemeId())

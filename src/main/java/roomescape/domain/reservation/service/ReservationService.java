@@ -17,6 +17,7 @@ import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -73,7 +74,7 @@ public class ReservationService {
         ReservationTime reservationTime = gerReservationTime(request);
         Theme theme = getTheme(request);
 
-        return Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
+        return Reservation.withoutId(new Name(request.name()), request.date(), reservationTime, theme);
     }
 
     private Theme getTheme(final ReservationRequest request) {

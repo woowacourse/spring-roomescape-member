@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -57,13 +58,13 @@ class ReservationDaoTest {
 
         LocalDateTime now = LocalDateTime.now();
         String name = "꾹";
-        Reservation reservation = Reservation.withoutId(name, now.toLocalDate(), reservationTime, theme);
+        Reservation reservation = Reservation.withoutId(new Name(name), now.toLocalDate(), reservationTime, theme);
 
         // when
         Reservation result = reservationRepository.save(reservation);
 
         // then
-        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getName()).isEqualTo(new Name(name));
         assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
         assertThat(result.getReservationTime().getId()).isEqualTo(RESERVATION_TIME_ID);
         assertThat(result.getTheme().getId()).isEqualTo(THEME_ID);
@@ -84,7 +85,7 @@ class ReservationDaoTest {
 
         String changedName = "드라고";
         Reservation updateReservation =
-                new Reservation(reservationId, changedName, now.toLocalDate(), reservationTime, theme);
+                new Reservation(reservationId, new Name(changedName), now.toLocalDate(), reservationTime, theme);
 
         // when
         Reservation result = reservationRepository.save(updateReservation);
@@ -100,7 +101,7 @@ class ReservationDaoTest {
         ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, RESERVATION_TIME_START_TIME);
         Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
         LocalDateTime now = LocalDateTime.now();
-        Reservation reservation = new Reservation(1L, "꾹", now.toLocalDate(), reservationTime, theme);
+        Reservation reservation = new Reservation(1L, new Name("꾹"), now.toLocalDate(), reservationTime, theme);
 
         // when & then
         assertThatThrownBy(() -> reservationRepository.save(reservation))
@@ -124,7 +125,7 @@ class ReservationDaoTest {
         Reservation result = reservationRepository.findById(id).get();
 
         // then
-        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getName()).isEqualTo(new Name(name));
         assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
         assertThat(result.getReservationTimeId()).isEqualTo(RESERVATION_TIME_ID);
         assertThat(result.getReservationStartTime()).isEqualTo(now.toLocalTime());
@@ -153,7 +154,7 @@ class ReservationDaoTest {
 
         // then
         List<String> resultNames = result.stream()
-                .map(Reservation::getName)
+                .map(reservation -> reservation.getName().getValue())
                 .toList();
         List<LocalDate> resultDates = result.stream()
                 .map(Reservation::getReservationDate)

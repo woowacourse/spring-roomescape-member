@@ -24,6 +24,7 @@ import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
 import roomescape.domain.reservation.dto.ThemeResponse;
+import roomescape.domain.reservation.entity.Name;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -60,7 +61,7 @@ class ReservationServiceIntegrationTest {
         ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
         LocalDate date = LocalDate.of(2024, 4, 29);
-        reservationRepository.save(Reservation.withoutId("꾹", date, savedTime, savedTheme));
+        reservationRepository.save(Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
 
         // when
         List<ReservationResponse> response = reservationService.getAll();
@@ -196,7 +197,7 @@ class ReservationServiceIntegrationTest {
 
         LocalDate date = nextDay();
         Reservation savedReservation = reservationRepository.save(
-                Reservation.withoutId("꾹", date, savedTime, savedTheme));
+                Reservation.withoutId(new Name("꾹"), date, savedTime, savedTheme));
 
         Long id = savedReservation.getId();
 
@@ -224,7 +225,7 @@ class ReservationServiceIntegrationTest {
         ReservationTime reservationTime2 = reservationTimeRepository.save(ReservationTime.withoutId(time2));
         Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
         Long themeId = savedTheme.getId();
-        reservationRepository.save(Reservation.withoutId("꾹", date, reservationTime1, savedTheme));
+        reservationRepository.save(Reservation.withoutId(new Name("꾹"), date, reservationTime1, savedTheme));
 
         // when
         List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
