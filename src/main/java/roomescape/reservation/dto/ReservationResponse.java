@@ -2,6 +2,7 @@ package roomescape.reservation.dto;
 
 import java.time.LocalDate;
 import roomescape.exception.custom.reason.ResponseInvalidException;
+import roomescape.member.dto.MemberResponse;
 import roomescape.reservation.Reservation;
 import roomescape.reservationtime.dto.ReservationTimeResponse;
 import roomescape.theme.dto.ThemeResponse;
@@ -9,7 +10,7 @@ import roomescape.theme.dto.ThemeResponse;
 public record ReservationResponse(
         Long id,
         LocalDate date,
-        String name,
+        MemberResponse member,
         ReservationTimeResponse time,
         ThemeResponse theme
 ) {
@@ -23,7 +24,7 @@ public record ReservationResponse(
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getDate(),
-                reservation.getMember().getName(),
+                MemberResponse.from(reservation.getMember()),
                 ReservationTimeResponse.from(reservation.getReservationTime()),
                 ThemeResponse.from(reservation.getTheme())
         );
