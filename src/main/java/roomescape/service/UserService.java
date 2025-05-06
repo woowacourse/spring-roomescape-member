@@ -4,9 +4,12 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.User;
 import roomescape.domain.UserRepository;
 import roomescape.global.ReservationException;
+import roomescape.persistence.query.CreateUserQuery;
 import roomescape.service.param.LoginUserParam;
+import roomescape.service.param.RegisterUserParam;
 import roomescape.service.result.CheckLoginUserResult;
 import roomescape.service.result.LoginUserResult;
+import roomescape.service.result.RegisterUserResult;
 
 @Service
 public class UserService {
@@ -27,5 +30,17 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
         return CheckLoginUserResult.from(user);
+    }
+
+    public RegisterUserResult create(final RegisterUserParam registerUserParam) {
+        Long id = userRepository.create(new CreateUserQuery(
+                registerUserParam.email(),
+                registerUserParam.password(),
+                registerUserParam.name()
+        ));
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
+        return RegisterUserResult.from(user);
     }
 }

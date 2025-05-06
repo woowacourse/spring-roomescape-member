@@ -9,11 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.controller.request.LoginUserRequest;
+import roomescape.controller.request.RegisterUserRequest;
 import roomescape.controller.response.CheckLoginUserResponse;
 import roomescape.controller.response.LoginUserResponse;
+import roomescape.controller.response.RegisterUserResponse;
 import roomescape.service.UserService;
 import roomescape.service.param.LoginUserParam;
+import roomescape.service.param.RegisterUserParam;
 import roomescape.service.result.LoginUserResult;
+import roomescape.service.result.RegisterUserResult;
 
 @Controller
 public class UserController {
@@ -24,6 +28,19 @@ public class UserController {
     public UserController(final UserService userService, final JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @GetMapping("/signup")
+    public String signupForm() {
+        return "signup";
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity<RegisterUserResponse> signup(@RequestBody final RegisterUserRequest registerUserRequest) {
+        RegisterUserParam registerUserParam = registerUserRequest.toServiceParam();
+        RegisterUserResult registerUserResult = userService.create(registerUserParam);
+
+        return ResponseEntity.ok(RegisterUserResponse.from(registerUserResult));
     }
 
     @GetMapping("/login")
