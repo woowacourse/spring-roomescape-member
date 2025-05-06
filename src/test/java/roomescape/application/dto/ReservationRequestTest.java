@@ -31,7 +31,7 @@ class ReservationRequestTest {
     @ParameterizedTest
     @DisplayName("timeId 필드가 1 미만일 경우 예외가 발생한다.")
     @ValueSource(longs = {0, -1})
-    void failIfTimeIdFieldIsNull(long timeId) {
+    void failIfTimeIdFieldIsLessThanOne(long timeId) {
         assertThatThrownBy(() -> {
             new ReservationRequest("moda", LocalDate.of(2025, 4, 30), timeId, 1L);
         }).isInstanceOf(IllegalArgumentException.class)
@@ -41,7 +41,7 @@ class ReservationRequestTest {
     @ParameterizedTest
     @DisplayName("themeId 필드가 1 미만일 경우 예외가 발생한다.")
     @ValueSource(longs = {0, -1})
-    void failIfThemeIdFieldIsInvalid(Long themeId) {
+    void failIfThemeIdFieldIsLessThanOne(Long themeId) {
         assertThatThrownBy(() -> {
             new ReservationRequest("moda", LocalDate.of(2025, 4, 30), 1L, themeId);
         }).isInstanceOf(IllegalArgumentException.class)
