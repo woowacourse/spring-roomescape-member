@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.dao.EmptyResultDataAccessException;
+import roomescape.member.Member;
 import roomescape.reservationtime.ReservationTime;
 import roomescape.theme.Theme;
 
@@ -17,11 +18,11 @@ public class FakeReservationRepository implements ReservationRepository {
     private final List<Long> invokeDeleteId = new ArrayList<>();
 
     @Override
-    public Long save(final Reservation reservation, final Long timeId, final Long themeId) {
+    public Long save(final Reservation reservation, final Long timeId, final Long themeId, final Long memberId) {
         final Reservation writedReservation = new Reservation(
                 NEXT_ID++,
-                reservation.getName(),
                 reservation.getDate(),
+                generateMemberDummy(memberId),
                 generateReservationTimeDummy(timeId),
                 generateReservationThemeDummy(themeId)
         );
@@ -37,7 +38,8 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByThemeIdAndDate(final Long themeId, final LocalDate date) {
         return reservations.stream()
-                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId) && Objects.equals(reservation.getDate(), date))
+                .filter(reservation -> Objects.equals(reservation.getTheme().getId(), themeId) && Objects.equals(
+                        reservation.getDate(), date))
                 .collect(Collectors.toList());
     }
 
@@ -110,6 +112,15 @@ public class FakeReservationRepository implements ReservationRepository {
                 "",
                 "",
                 ""
+        );
+    }
+
+    private Member generateMemberDummy(final Long id) {
+        return new Member(
+                id,
+                "email",
+                "pass",
+                "boogie"
         );
     }
 }

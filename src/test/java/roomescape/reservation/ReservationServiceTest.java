@@ -11,12 +11,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.dto.LoginMember;
 import roomescape.exception.custom.reason.reservation.ReservationConflictException;
+import roomescape.exception.custom.reason.reservation.ReservationNotExistsMemberException;
 import roomescape.exception.custom.reason.reservation.ReservationNotExistsThemeException;
 import roomescape.exception.custom.reason.reservation.ReservationNotExistsTimeException;
 import roomescape.exception.custom.reason.reservation.ReservationNotFoundException;
 import roomescape.exception.custom.reason.reservation.ReservationPastDateException;
 import roomescape.exception.custom.reason.reservation.ReservationPastTimeException;
+import roomescape.member.FakeMemberRepository;
+import roomescape.member.Member;
 import roomescape.reservation.dto.ReservationRequest;
 import roomescape.reservation.dto.ReservationResponse;
 import roomescape.reservationtime.FakeReservationTimeRepository;
@@ -30,15 +34,18 @@ public class ReservationServiceTest {
     private final FakeReservationRepository fakeReservationRepository;
     private final FakeReservationTimeRepository fakeReservationTimeRepository;
     private final FakeThemeRepository fakeThemeRepository;
+    private final FakeMemberRepository fakeMemberRepository;
 
     public ReservationServiceTest() {
         fakeReservationRepository = new FakeReservationRepository();
         fakeReservationTimeRepository = new FakeReservationTimeRepository();
         fakeThemeRepository = new FakeThemeRepository();
+        fakeMemberRepository = new FakeMemberRepository();
         reservationService = new ReservationService(
                 fakeReservationRepository,
                 fakeReservationTimeRepository,
-                fakeThemeRepository
+                fakeThemeRepository,
+                fakeMemberRepository
         );
     }
 
@@ -47,6 +54,7 @@ public class ReservationServiceTest {
         fakeReservationRepository.clear();
         fakeReservationTimeRepository.clear();
         fakeThemeRepository.clear();
+        fakeMemberRepository.clear();
     }
 
     @Nested
@@ -58,22 +66,20 @@ public class ReservationServiceTest {
         void create() {
             // given
             final ReservationRequest request = new ReservationRequest(
-                    "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
+            final LoginMember loginMember = new LoginMember(1L, "boogie", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
 
             // when
-            final ReservationResponse response = reservationService.create(request);
+            final ReservationResponse response = reservationService.create(request, loginMember);
 
             // then
             assertSoftly(s -> {
                 s.assertThat(response.id()).isNotNull();
-                s.assertThat(response.name()).isEqualTo(request.name());
                 s.assertThat(response.date()).isEqualTo(request.date());
-                s.assertThat(response.time().id()).isEqualTo(1L);
-                s.assertThat(response.theme().id()).isEqualTo(1L);
             });
         }
 
@@ -82,14 +88,15 @@ public class ReservationServiceTest {
         void create1() {
             // given
             final ReservationRequest request = new ReservationRequest(
-                    "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
+            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
 
             // when & then
             assertThatThrownBy(() -> {
-                reservationService.create(request);
+                reservationService.create(request, loginMember);
             }).isInstanceOf(ReservationNotExistsThemeException.class);
         }
 
@@ -98,15 +105,33 @@ public class ReservationServiceTest {
         void create2() {
             // given
             final ReservationRequest request = new ReservationRequest(
-                    "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
+            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeThemeRepository.save(new Theme("1", "2", "3"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
 
             // when & then
             assertThatThrownBy(() -> {
-                reservationService.create(request);
+                reservationService.create(request, loginMember);
             }).isInstanceOf(ReservationNotExistsTimeException.class);
+        }
+
+        @DisplayName("멤버가 존재하지 않으면 예외가 발생한다.")
+        @Test
+        void create6() {
+            // given
+            final ReservationRequest request = new ReservationRequest(
+                    LocalDate.now().plusDays(1),
+                    1L, 1L);
+            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
+            fakeThemeRepository.save(new Theme("1", "2", "3"));
+            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
+
+            // when & then
+            assertThatThrownBy(() -> {
+                reservationService.create(request, loginMember);
+            }).isInstanceOf(ReservationNotExistsMemberException.class);
         }
 
         @DisplayName("이미 해당 시간, 날짜에 예약이 존재한다면 예외가 발생한다.")
@@ -115,19 +140,21 @@ public class ReservationServiceTest {
             // given
             // dummy 시간이 12시 40분
             final ReservationRequest request = new ReservationRequest(
-                    "로키",
                     LocalDate.now().plusDays(1),
                     1L, 1L);
+            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
             fakeReservationRepository.save(
-                    new Reservation("", LocalDate.now().plusDays(1)),
-                    1L, 1L
+                    new Reservation(LocalDate.now().plusDays(1)),
+                    1L, 1L, 1L
             );
+
 
             // when & then
             assertThatThrownBy(() -> {
-                reservationService.create(request);
+                reservationService.create(request, loginMember);
             }).isInstanceOf(ReservationConflictException.class);
         }
 
@@ -136,19 +163,16 @@ public class ReservationServiceTest {
         void create4() {
             // given
             final ReservationRequest request = new ReservationRequest(
-                    "로키",
                     LocalDate.now().minusDays(1),
                     1L, 1L);
+            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeReservationRepository.save(
-                    new Reservation("", LocalDate.now().plusDays(1)),
-                    1L, 1L
-            );
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
 
             // when & then
             assertThatThrownBy(() -> {
-                reservationService.create(request);
+                reservationService.create(request, loginMember);
             }).isInstanceOf(ReservationPastDateException.class);
         }
 
@@ -157,19 +181,16 @@ public class ReservationServiceTest {
         void create5() {
             // given
             final ReservationRequest request = new ReservationRequest(
-                    "로키",
                     LocalDate.now(),
                     1L, 1L);
+            final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.now().minusHours(1)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeReservationRepository.save(
-                    new Reservation("", LocalDate.now().plusDays(1)),
-                    1L, 1L
-            );
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
 
             // when & then
             assertThatThrownBy(() -> {
-                reservationService.create(request);
+                reservationService.create(request, loginMember);
             }).isInstanceOf(ReservationPastTimeException.class);
         }
     }
@@ -192,11 +213,9 @@ public class ReservationServiceTest {
         @Test
         void readAll2() {
             // given
-            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
-            fakeThemeRepository.save(new Theme("1", "2", "3"));
             fakeReservationRepository.save(
-                    new Reservation("", LocalDate.of(2026, 12, 1)),
-                    1L, 1L
+                    new Reservation(LocalDate.of(2026, 12, 1)),
+                    1L, 1L, 1L
             );
 
             // when
@@ -217,9 +236,7 @@ public class ReservationServiceTest {
         void delete1() {
             // given
             final Long id = 1L;
-            fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
-            fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeReservationRepository.save(new Reservation("", LocalDate.of(2026, 12, 1)), 1L, 1L);
+            fakeReservationRepository.save(new Reservation(LocalDate.of(2026, 12, 1)), 1L, 1L, 1L);
 
             // when
             reservationService.deleteById(id);
