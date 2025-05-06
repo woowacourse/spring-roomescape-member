@@ -33,7 +33,7 @@ public class ThemeController {
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<List<ThemeResponseDto>> findThemesOrderByReservationCount2(
+    public ResponseEntity<List<ThemeResponseDto>> findThemesOrderByReservationCount(
             @ModelAttribute PopularThemeRequestDto popularThemeRequestDto) {
         LocalDate now = LocalDate.now();
         LocalDate from = now.minusDays(7);
