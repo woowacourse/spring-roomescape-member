@@ -3,6 +3,7 @@ package roomescape.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalTime;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.BookedReservationTimeResponseDto;
 
 @Sql(scripts = {"/test-schema.sql"})
 @SpringBootTest
@@ -24,8 +26,12 @@ public class JdbcReservationTimeDaoTest {
 
     @AfterEach
     void clearResource() {
-        String sql = "DELETE FROM reservation_time";
-        jdbcTemplate.update(sql);
+        String sql1 = "DELETE FROM reservation";
+        String sql2 = "DELETE FROM reservation_time";
+        String sql3 = "DELETE FROM theme";
+        jdbcTemplate.update(sql1);
+        jdbcTemplate.update(sql2);
+        jdbcTemplate.update(sql3);
     }
 
     @DisplayName("시간이 주어졌을 때, db에 저장해야하고 저장된 id를 반환해야 한다.")
@@ -79,5 +85,34 @@ public class JdbcReservationTimeDaoTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
         long savedId = reservationTimeDao.saveReservationTime(reservationTime);
         assertThat(reservationTimeDao.findById(savedId)).isNotNull();
+    }
+
+    @DisplayName("예약이 이미 되어있는 시간이라면 true, 아니라면 false를 포함해 반환해야 한다.")
+    @Test
+    void already_reservation_then_true_else_false() {
+        initData();
+        List<BookedReservationTimeResponseDto> bookedReservationTime = reservationTimeDao.findBookedReservationTime(
+            "2025-04-24", 1L);
+        assertThat(bookedReservationTime.get(0).timeId()).isEqualTo(1);
+        assertThat(bookedReservationTime.get(0).alreadyBooked()).isTrue();
+        assertThat(bookedReservationTime.get(1).timeId()).isEqualTo(2);
+        assertThat(bookedReservationTime.get(1).alreadyBooked()).isFalse();
+        assertThat(bookedReservationTime.get(2).timeId()).isEqualTo(3);
+        assertThat(bookedReservationTime.get(2).alreadyBooked()).isFalse();
+    }
+
+    private void initData() {
+        String sql1 = "INSERT INTO theme (id, name, description, thumbnail) VALUES (1, '안녕, 자두야', '자두', 'https://jado.com');";
+        String sql2 = "INSERT INTO reservation_time (id, start_at) VALUES (1, '10:00');";
+        String sql3 = "INSERT INTO reservation_time (id, start_at) VALUES (2, '11:00');";
+        String sql4 = "INSERT INTO reservation_time (id, start_at) VALUES (3, '12:00');";
+        String sql5 = "INSERT INTO reservation_time (id, start_at) VALUES (4, '13:00');";
+        String sql6 = "INSERT INTO reservation (id, name, date, time_id, theme_id) VALUES (1, '김덕배', '2025-04-24', 1, 1);";
+        jdbcTemplate.update(sql1);
+        jdbcTemplate.update(sql2);
+        jdbcTemplate.update(sql3);
+        jdbcTemplate.update(sql4);
+        jdbcTemplate.update(sql5);
+        jdbcTemplate.update(sql6);
     }
 }
