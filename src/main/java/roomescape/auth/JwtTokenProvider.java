@@ -47,7 +47,7 @@ public class JwtTokenProvider {
             Long id = Long.parseLong(claims.getSubject());
             String username = (String) claims.get("username");
             String name = (String) claims.get("name");
-            Role role = (Role) claims.get("role");
+            Role role = Role.valueOf((String) claims.get("role"));
             return new UserInfo(id, username, name, role);
         } catch (RequiredTypeException e) {
             throw new AuthenticationException("토큰 파싱에 실패하였습니다");

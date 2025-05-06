@@ -48,12 +48,6 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existsByUsernameAndPassword(String usename, String password) {
-        String sql = "select exists (select 1 from member where username = ? and password = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, usename, password);
-    }
-
-    @Override
     public Optional<Member> findById(long id) {
         try {
             String sql = "select id,username,password,name,role from member where id=?";

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.AuthenticationPrincipal;
+import roomescape.auth.UserInfo;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationSlot;
 import roomescape.domain.reservation.ReservationSlotTimes;
@@ -22,18 +24,23 @@ import roomescape.dto.reservation.AvailableTimeRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservation.ReservationTimeSlotResponseDto;
 import roomescape.dto.reservation.ThemeResponseDto;
+import roomescape.service.ReservationMemberService;
 import roomescape.service.reservation.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationService reservationService;
     private static final int THEME_RANKING_END_RANGE = 7;
     private static final int THEME_RANKING_START_RANGE = 1;
 
-    public ReservationController(ReservationService reservationService) {
+    private final ReservationService reservationService;
+    private final ReservationMemberService reservationMemberService;
+
+    public ReservationController(ReservationService reservationService,
+                                 ReservationMemberService reservationMemberService) {
         this.reservationService = reservationService;
+        this.reservationMemberService = reservationMemberService;
     }
 
     @GetMapping
@@ -48,8 +55,9 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> addReservations(
-            @RequestBody @Valid AddReservationDto newReservationDto) {
-        long addedReservationId = reservationService.addReservation(newReservationDto);
+            @RequestBody @Valid AddReservationDto newReservationDto,
+            @AuthenticationPrincipal UserInfo userInfo) {
+        long addedReservationId = reservationMemberService.addReservation(newReservationDto, userInfo);
         Reservation reservation = reservationService.getReservationById(addedReservationId);
 
         ReservationResponseDto reservationResponseDto = new ReservationResponseDto(reservation.getId(),

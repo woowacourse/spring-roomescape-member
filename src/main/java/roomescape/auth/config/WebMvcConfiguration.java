@@ -2,12 +2,14 @@ package roomescape.auth.config;
 
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.auth.AuthenticationPrincipalResolver;
 import roomescape.auth.JwtTokenProvider;
 
 @Configuration
+@Import(AuthenticationConfig.class)
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final JwtTokenProvider jwtTokenProvider;

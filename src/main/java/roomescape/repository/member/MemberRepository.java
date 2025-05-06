@@ -12,6 +12,4 @@ public interface MemberRepository {
     Optional<Member> findByUsername(String username);
 
     boolean existByUsername(String username);
-
-    boolean existsByUsernameAndPassword(String username, String password);
 }
