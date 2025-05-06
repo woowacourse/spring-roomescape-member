@@ -2,19 +2,15 @@ package roomescape.dto.request;
 
 import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import roomescape.common.exception.InvalidRequestException;
+import jakarta.validation.constraints.NotNull;
 import roomescape.domain.ReservationTime;
 
-public record ReservationTimeCreateRequest(@JsonFormat(pattern = "HH:mm") LocalTime startAt) {
-    public ReservationTimeCreateRequest {
-        validate(startAt);
-    }
+public record ReservationTimeCreateRequest(
+        @NotNull(message = "예약 시간은 빈 값일 수 없습니다")
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime startAt
+) {
     public ReservationTime toReservationTime() {
         return new ReservationTime(null, startAt);
-    }
-    private void validate(LocalTime startAt) {
-        if (startAt == null) {
-            throw new InvalidRequestException("잘못된 요청입니다.");
-        }
     }
 }
