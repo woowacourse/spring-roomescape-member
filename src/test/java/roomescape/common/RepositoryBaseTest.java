@@ -1,5 +1,6 @@
 package roomescape.common;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -13,7 +14,7 @@ public class RepositoryBaseTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
+    @AfterEach
     void truncate() {
         DBInitializer.truncate(jdbcTemplate);
     }
