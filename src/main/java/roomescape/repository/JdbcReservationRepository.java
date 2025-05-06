@@ -2,7 +2,6 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -20,8 +19,7 @@ import roomescape.domain.Theme;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) -> {
-        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        final LocalTime time = LocalTime.parse(resultSet.getString("time_value"), timeFormatter);
+        final LocalTime time = LocalTime.parse(resultSet.getString("time_value"));
         return new Reservation(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
