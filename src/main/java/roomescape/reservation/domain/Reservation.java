@@ -28,7 +28,7 @@ public class Reservation {
         this.theme = Objects.requireNonNull(theme, "테마는 null 일 수 없습니다.");
     }
 
-    private static void validateNameIsBlank(final String name) {
+    private void validateNameIsBlank(final String name) {
         if (name.isBlank()) {
             throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
         }
