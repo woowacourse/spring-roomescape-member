@@ -14,11 +14,12 @@
 
 - [x] "/reservations" get 요청 시 모든 예약 정보를 반환한다.
 - [x] "/reservations/available" get 요청으로 날짜(date) 와 테마(themeId)를 쿼리 스트링으로 요청하면 예약 가능한 시간을 가져올 수 있다.
-  - 시간 정보 (timeResponse), 예약 여부 (alreadyBooked)를 반환한다.
+    - 시간 정보 (timeResponse), 예약 여부 (alreadyBooked)를 반환한다.
 
 ### 추가
 
-- [x] "/reservations" post 요청으로 예약자명(name), 날짜(date), 시간(timeId), 테마(themeId) 을 body 로 전송하여 추가할 수 있다.
+- [x] "/reservations" post 요청으로 예약자명(name), 날짜(date), 시간(timeId), 테마(themeId) 을 body 로 전송하여 추가할 수
+  있다.
     - [x] 예약 정보를 가져올 수 있다.
     - [x] 예약자명, 날짜, 시간에 유효하지 않은 값을 입력할 경우 400 Bad Request 상태 코드가 반환된다.
         - 아래의 경우 예외가 발생된다.
@@ -59,7 +60,7 @@
 
 - [x] "/themes" get 요청 시 모든 테마 정보를 반환한다.
 - [x] "/themes/popular" get 요청 시 오늘 날짜를 기준으로 8일 전 ~ 1일 전까지의 데이터에서 예약 건수가 많은 순서대로 10개의 테마를 알 수 있다.
-    
+
 ### 추가
 
 - [x] "/themes" post 요청 시 name, description, thumbnail 을 body로 전송하여 추가할 수 있다.
@@ -69,6 +70,29 @@
 - [x] "/themes/{id}" delete 요청 시 해당 id로 설정된 테마를 삭제하고 204 NO_CONTENT 상태 코드가 반환된다.
     - [x] 만약 해당 테마가 없다면 404 NOT FOUND 상태 코드가 반환된다.
 
+## 유저
+
+### 로그인
+
+- [ ] "/login" POST 요청 시 로그인을 할 수 있다.
+    - [ ] 이메일(email), 패스워드(password)를 필요로 한다.
+    - [ ] 성공 시 상태 코드 200과 함께 토큰을 반환한다.
+    - [ ] 로그인 정보가 올바르지 않는다면 401 Unauthorized 상태 코드를 반환한다.
+
+### 인증 정보 조히
+
+- [ ] "/login/check" GET 요청 시 인증 정보를 조회할 수 있다.
+    - [ ] HTTP 헤더에 Cookie를 활용하여 토큰을 통해 정보를 조회한다.
+    - [ ] 토큰이 올바르지 않을 경우 401 Unauthorized 상태 코드를 반환한다.
+    - [ ] 성공 시 200 상태 코드와 함께 인증 정보를 반환한다.
+
+### 생성
+
+- [ ] "/members" POST 요청 시 유저를 생성할 수 있다.
+    - [ ] email, password, name이 필요로 해야 한다. 각 값들은 공백일 수 없으며 최대 25자이다.
+    - [ ] email은 중복될 수 없다. 중복될 경우 409 CONFLICT 상태 코드가 반환된다.
+    - [ ] 성공 시 201 CREATED 상태코드가 반환된다.
+
 ## 예외
 
-- 인자값이 올바르지 않을 경우 `InvalidArgumentException` 을 반환한다. 
+- 인자값이 올바르지 않을 경우 `InvalidArgumentException` 을 반환한다.
