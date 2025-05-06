@@ -12,7 +12,7 @@ content-type: application/json
 GET http://localhost:8080/themes HTTP/1.1
 
 ### 테마 삭제 API request
-DELETE http://localhost:8080/themes/6 HTTP/1.1
+DELETE http://localhost:8080/themes/3 HTTP/1.1
 
 ### 테마 랭킹 조회 API request
 GET http://localhost:8080/themes/popular HTTP/1.1
