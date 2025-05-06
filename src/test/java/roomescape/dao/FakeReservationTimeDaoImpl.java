@@ -38,6 +38,9 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
             .findFirst();
     }
 
+    /***
+     * 현 시점에서는 포워딩 역할만 하기에, 따로 테스트 코드를 작성하지 않았음
+     */
     @Override
     public List<BookedReservationTimeResponseDto> findBooked(String date,
         Long themeId) {

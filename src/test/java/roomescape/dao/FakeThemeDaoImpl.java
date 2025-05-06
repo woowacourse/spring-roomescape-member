@@ -42,6 +42,6 @@ public class FakeThemeDaoImpl implements ThemeDao {
 
     @Override
     public List<Theme> findAllOfRanks(LocalDate startDate, LocalDate currentDate) {
-        return List.of();
+        return Collections.unmodifiableList(themes);
     }
 }
