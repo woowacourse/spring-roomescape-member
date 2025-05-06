@@ -6,9 +6,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import roomescape.common.BaseTest;
+import roomescape.common.RestAssuredTestBase;
 
-class ThemeRestTest extends BaseTest {
+class ThemeRestTestBase extends RestAssuredTestBase {
 
     private Map<String, String> createThemeRequest = Map.of(
             "name", "공포방탈출",

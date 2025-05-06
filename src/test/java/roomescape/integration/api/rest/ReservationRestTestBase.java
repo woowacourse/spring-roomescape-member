@@ -9,9 +9,9 @@ import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.common.BaseTest;
+import roomescape.common.RestAssuredTestBase;
 
-class ReservationRestTest extends BaseTest {
+class ReservationRestTestBase extends RestAssuredTestBase {
 
     private Integer timeId;
     private Integer themeId;

@@ -3,9 +3,9 @@ package roomescape.integration.api.page;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import roomescape.common.BaseTest;
+import roomescape.common.RestAssuredTestBase;
 
-class AdminPageTest extends BaseTest {
+class AdminPageTestBase extends RestAssuredTestBase {
 
     @Test
     void 어드민_예약_추가_페이지_조회() {

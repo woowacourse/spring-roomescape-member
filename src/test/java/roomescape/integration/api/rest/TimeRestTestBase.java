@@ -9,9 +9,9 @@ import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import roomescape.common.BaseTest;
+import roomescape.common.RestAssuredTestBase;
 
-class TimeRestTest extends BaseTest {
+class TimeRestTestBase extends RestAssuredTestBase {
 
     private Map<String, String> reservationTime = Map.of("startAt", "10:00");
 
