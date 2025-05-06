@@ -15,5 +15,5 @@ public interface ThemeDao {
 
     Optional<Theme> findById(Long id);
 
-    List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate);
+    List<Theme> findAllThemeOfRankBy(LocalDate startDate, LocalDate currentDate, int limitCount);
 }

@@ -26,7 +26,6 @@ public class FakeThemeDaoImpl implements ThemeDao {
 
     @Override
     public void deleteTheme(final Long id) {
-
     }
 
     @Override
@@ -37,7 +36,8 @@ public class FakeThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllThemeOfRanks(final LocalDate startDate, final LocalDate currentDate) {
+    public List<Theme> findAllThemeOfRankBy(final LocalDate startDate, final LocalDate currentDate,
+                                            final int limitCount) {
         return List.of();
     }
 }

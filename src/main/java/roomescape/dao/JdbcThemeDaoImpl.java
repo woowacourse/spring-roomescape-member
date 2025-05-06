@@ -68,7 +68,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate) {
+    public List<Theme> findAllThemeOfRankBy(LocalDate startDate, LocalDate currentDate, int limitCount) {
         String query = """
                 SELECT id, name, description, thumbnail
                         FROM (
@@ -79,7 +79,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
                         ) AS sub
                         INNER JOIN theme ON sub.theme_id = theme.id
                         ORDER BY sub.reservation_count DESC
-                        LIMIT 10
+                        LIMIT ?
                 """;
 
         return jdbcTemplate.query(query,
@@ -88,6 +88,6 @@ public class JdbcThemeDaoImpl implements ThemeDao {
                         resultSet.getString("name"),
                         resultSet.getString("description"),
                         resultSet.getString("thumbnail")
-                ), startDate, currentDate);
+                ), startDate, currentDate, limitCount);
     }
 }

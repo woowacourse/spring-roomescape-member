@@ -92,7 +92,7 @@ class JdbcThemeDaoImplTest {
 
     @DisplayName("예약이 많은 테마 10개를 조회할 수 있다.")
     @Test
-    void findAllThemeOfRanks() {
+    void findAllThemeOfRankBy() {
         //given
         createTheme();
         createReservationTime();
@@ -100,9 +100,10 @@ class JdbcThemeDaoImplTest {
 
         LocalDate currentDate = LocalDate.of(2025, 4, 8);
         LocalDate startDate = LocalDate.of(2025, 4, 1);
+        int limitCount = 10;
 
         //when
-        List<Theme> actual = themeDao.findAllThemeOfRanks(startDate, currentDate);
+        List<Theme> actual = themeDao.findAllThemeOfRankBy(startDate, currentDate, limitCount);
 
         //then
         assertThat(actual).hasSize(10);

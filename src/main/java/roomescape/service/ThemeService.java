@@ -14,6 +14,9 @@ import roomescape.exception.InvalidThemeException;
 @Service
 public class ThemeService {
 
+    private static final int THEME_COUNT_TO_LIMIT = 10;
+    private static final int DAYS_TO_SUBTRACT = 7;
+
     private final ReservationDao reservationDao;
     private final ThemeDao themeDao;
 
@@ -34,8 +37,8 @@ public class ThemeService {
 
     public List<ThemeResponseDto> getAllThemeOfRanks() {
         LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = currentDate.minusDays(7);
-        List<Theme> themes = themeDao.findAllThemeOfRanks(startDate, currentDate);
+        LocalDate startDate = currentDate.minusDays(DAYS_TO_SUBTRACT);
+        List<Theme> themes = themeDao.findAllThemeOfRankBy(startDate, currentDate, THEME_COUNT_TO_LIMIT);
         return themes.stream().map(ThemeResponseDto::from).toList();
     }
 
