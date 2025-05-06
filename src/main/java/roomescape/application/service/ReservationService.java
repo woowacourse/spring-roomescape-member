@@ -2,6 +2,7 @@ package roomescape.application.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.exception.ReservationDuplicatedException;
 import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.model.ReservationTime;
@@ -77,7 +78,7 @@ public class ReservationService {
     private void validateIsDuplicate(ReservationRequest request) {
         boolean isReservationExist = reservationRepository.existByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
         if (isReservationExist) {
-            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
+            throw new ReservationDuplicatedException();
         }
     }
 

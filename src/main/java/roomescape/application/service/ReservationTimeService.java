@@ -2,6 +2,8 @@ package roomescape.application.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.exception.ReservationExistException;
+import roomescape.domain.exception.ReservationTimeDuplicatedException;
 import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.repository.ReservationRepository;
@@ -28,7 +30,7 @@ public class ReservationTimeService {
     public ReservationTimeResponse save(ReservationTimeRequest request) {
         boolean isTimeAlreadyExist = reservationTimeRepository.existByTimeValue(request.startAt());
         if (isTimeAlreadyExist) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간이 이미 존재합니다.");
+            throw new ReservationTimeDuplicatedException();
         }
         ReservationTime reservationTime = new ReservationTime(request.startAt());
 
@@ -46,7 +48,7 @@ public class ReservationTimeService {
     public void deleteReservationTime(Long id) {
         boolean isTimeInUse = reservationRepository.existByTimeId(id);
         if (isTimeInUse) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
+            throw new ReservationExistException();
         }
         int count = reservationTimeRepository.deleteById(id);
         if (count == 0) {

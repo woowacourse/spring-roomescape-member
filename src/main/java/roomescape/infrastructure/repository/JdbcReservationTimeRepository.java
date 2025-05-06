@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.exception.ReservationTimeDuplicatedException;
 import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.repository.ReservationTimeRepository;
@@ -36,7 +37,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         try {
             return reservationTimeDao.save(reservationTime);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간이 이미 존재합니다.");
+            throw new ReservationTimeDuplicatedException();
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 예약 시간 생성에 실패하였습니다");
         }
@@ -52,7 +53,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
         try {
             return reservationTimeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
+            throw new IllegalArgumentException();
         }
     }
 

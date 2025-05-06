@@ -5,7 +5,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.exception.ReservationExistException;
 import roomescape.domain.exception.ResourceNotExistException;
+import roomescape.domain.exception.ThemeDuplicatedException;
 import roomescape.domain.model.Theme;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.infrastructure.dao.ThemeDao;
@@ -26,7 +28,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             return themeDao.save(theme);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
+            throw new ThemeDuplicatedException();
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 테마 생성에 실패했습니다.");
         }
@@ -51,7 +53,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         try {
             return themeDao.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
+            throw new ReservationExistException();
         }
     }
 

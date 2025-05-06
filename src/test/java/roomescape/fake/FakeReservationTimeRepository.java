@@ -1,7 +1,5 @@
 package roomescape.fake;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.repository.ReservationTimeRepository;
 
@@ -18,11 +16,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public ReservationTime findById(final Long id) {
-        try {
-            return reservationTimeDao.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotExistException();
-        }
+        return reservationTimeDao.findById(id);
     }
 
     @Override

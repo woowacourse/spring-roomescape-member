@@ -3,13 +3,15 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.application.service.ThemeService;
+import roomescape.domain.exception.ReservationExistException;
+import roomescape.domain.exception.ThemeDuplicatedException;
 import roomescape.domain.model.Reservation;
-import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.model.Theme;
+import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ThemeRepository;
-import roomescape.presentation.dto.request.ThemeRequest;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeThemeRepository;
+import roomescape.presentation.dto.request.ThemeRequest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -49,8 +51,7 @@ public class ThemeServiceTest {
         // when & then
         assertDoesNotThrow(() -> themeService.save(theme));
         assertThatThrownBy(() -> themeService.save(theme))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 해당 테마 이름이 이미 존재합니다.");
+                .isInstanceOf(ThemeDuplicatedException.class);
     }
 
     @Test
@@ -61,7 +62,6 @@ public class ThemeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(savedTheme.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 해당 테마에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
+                .isInstanceOf(ReservationExistException.class);
     }
 }

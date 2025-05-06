@@ -3,6 +3,8 @@ package roomescape.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.application.service.ReservationTimeService;
+import roomescape.domain.exception.ReservationExistException;
+import roomescape.domain.exception.ReservationTimeDuplicatedException;
 import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.model.ReservationTime;
@@ -50,8 +52,7 @@ public class ReservationTimeServiceTest {
         // when & then
         assertDoesNotThrow(() -> reservationTimeService.save(time));
         assertThatThrownBy(() -> reservationTimeService.save(time))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 해당 시간이 이미 존재합니다.");
+                .isInstanceOf(ReservationTimeDuplicatedException.class);
     }
 
     @Test
@@ -62,8 +63,7 @@ public class ReservationTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(savedTime.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("[ERROR] 해당 시간에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
+                .isInstanceOf(ReservationExistException.class);
     }
 
     @Test

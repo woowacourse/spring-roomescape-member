@@ -3,6 +3,7 @@ package roomescape.infrastructure.repository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.exception.ReservationDuplicatedException;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.infrastructure.dao.ReservationDao;
@@ -34,7 +35,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         try {
             return reservationDao.save(reservation);
         } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
+            throw new ReservationDuplicatedException();
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
         }
