@@ -28,6 +28,11 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
+    public List<Member> findAll() {
+        return new ArrayList<>(members);
+    }
+
+    @Override
     public Boolean existsById(final Long id) {
         return members.stream()
                 .anyMatch(member -> Objects.equals(member.getId(), id));

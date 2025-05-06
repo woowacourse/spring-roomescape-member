@@ -1,5 +1,7 @@
 package roomescape.api;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
@@ -65,6 +67,30 @@ public class MemberApiTest {
                 .body(MEMBER_BODY)
                 .when().post("/members")
                 .then().log().all().statusCode(409);
+    }
+
+    @DisplayName("get 요청을 보내면 200과 member를 모두 조회하여 응답한다.")
+    @Test
+    void get() {
+        // given
+        givenCreateMember();
+
+        // when & then
+        RestAssured.given().port(port).log().all()
+                .when().get("/members")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
+
+    @DisplayName("get 요청을 보내면 200과 member가 없다면 빈 컬렉션을 응답한다.")
+    @Test
+    void get1() {
+        RestAssured.given().port(port).log().all()
+                .when().get("/members")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
     }
 
 

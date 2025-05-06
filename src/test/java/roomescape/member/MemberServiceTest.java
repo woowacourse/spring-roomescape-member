@@ -3,11 +3,13 @@ package roomescape.member;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.custom.reason.member.MemberEmailConflictException;
 import roomescape.member.dto.MemberRequest;
+import roomescape.member.dto.MemberResponse;
 
 public class MemberServiceTest {
 
@@ -48,5 +50,28 @@ public class MemberServiceTest {
         assertThatThrownBy(() -> {
             memberService.createMember(memberRequest);
         }).isInstanceOf(MemberEmailConflictException.class);
+    }
+
+    @DisplayName("존재하는 모든 member를 반환한다.")
+    @Test
+    void readAll() {
+        // given
+        fakeMemberRepository.saveMember(new Member("email", "pass", "name"));
+
+        // when
+        final List<MemberResponse> actual = memberService.readAllMember();
+
+        // then
+        assertThat(actual).hasSize(1);
+    }
+
+    @DisplayName("member가 없다면 빈 컬렉션을 반환한다.")
+    @Test
+    void readAll1() {
+        // given & when
+        final List<MemberResponse> actual = memberService.readAllMember();
+
+        // then
+        assertThat(actual).isEmpty();
     }
 }
