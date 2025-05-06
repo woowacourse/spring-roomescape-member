@@ -1,0 +1,32 @@
+package roomescape.time.service.usecase;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.domain.ReservationTimeId;
+import roomescape.time.repository.ReservationTimeRepository;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+@Service
+@RequiredArgsConstructor
+public class ReservationTimeQueryUseCase {
+
+    private final ReservationTimeRepository reservationTimeRepository;
+
+    public ReservationTime get(final ReservationTimeId id) {
+        return reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("조회할 시간이 없습니다."));
+    }
+
+    public List<ReservationTime> getAll() {
+        return reservationTimeRepository.findAll();
+    }
+
+    public boolean existsByStartAt(final LocalTime startAt) {
+        return reservationTimeRepository.existsByStartAt(startAt);
+    }
+
+}
