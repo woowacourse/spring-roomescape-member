@@ -20,10 +20,10 @@ import org.springframework.test.context.ActiveProfiles;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.AvailableReservationResponse;
-import roomescape.dto.ThemeRequest;
-import roomescape.dto.ThemeResponse;
-import roomescape.dto.ThemesWithTotalPageRequest;
+import roomescape.dto.request.ThemeRequest;
+import roomescape.dto.request.ThemesWithTotalPageRequest;
+import roomescape.dto.response.AvailableReservationResponse;
+import roomescape.dto.response.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

@@ -15,9 +15,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
-import roomescape.dto.ReservationTimesWithTotalPageResponse;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.request.ReservationTimesWithTotalPageResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class ReservationTimeServiceTest {
