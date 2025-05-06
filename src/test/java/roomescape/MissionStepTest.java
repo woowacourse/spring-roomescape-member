@@ -29,9 +29,6 @@ public class MissionStepTest {
 
     @BeforeEach
     void setupDatabase() {
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "12:00");
-        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "탈출 스페셜", "탈출하는 내용", "abc.jpg");
     }
 
@@ -100,7 +97,7 @@ public class MissionStepTest {
     @Test
     void 칠단계() {
         Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
+        params.put("startAt", "11:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

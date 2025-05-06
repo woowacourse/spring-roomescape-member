@@ -3,6 +3,7 @@ package roomescape.domain;
 import roomescape.dto.response.ReservationResponse;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public interface ReservationRepository {
@@ -39,4 +40,6 @@ public interface ReservationRepository {
     boolean existReservationByThemeId(Long themeId);
 
     boolean existReservationByTimeId(Long timeId);
+
+    boolean existReservationTimeByTimeValue(LocalTime localTime);
 }

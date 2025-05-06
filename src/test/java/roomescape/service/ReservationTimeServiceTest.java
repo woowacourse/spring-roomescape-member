@@ -37,10 +37,22 @@ public class ReservationTimeServiceTest {
     @Test
     void 예약_시간을_생성할_수_있다() {
         // given
-        ReservationTimeRequest time = new ReservationTimeRequest(NOON);
+        ReservationTimeRequest time = new ReservationTimeRequest(ONE_PM);
 
         // when & then
         assertDoesNotThrow(() -> reservationTimeService.save(time));
+    }
+
+    @Test
+    void 중복된_시간이_존재하는_경우_시간을_생성할_수_없다() {
+        // given
+        ReservationTimeRequest time = new ReservationTimeRequest(DEFAULT_TIME.getStartAt());
+
+        // when & then
+        assertDoesNotThrow(() -> reservationTimeService.save(time));
+        assertThatThrownBy(() -> reservationTimeService.save(time))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 해당 시간이 이미 존재합니다.");
     }
 
     @Test

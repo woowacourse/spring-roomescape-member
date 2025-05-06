@@ -2,6 +2,7 @@ package roomescape.fake;
 
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,13 @@ public class FakeReservationTimeDao {
             return 1;
         }
         return 0;
+    }
+
+    public boolean existByTimeValue(final LocalTime localTime) {
+        long count = TIMES.values().stream()
+                .filter(time -> time.getStartAt().equals(localTime))
+                .count();
+        return count != 0;
     }
 
     public void clear() {

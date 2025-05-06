@@ -21,7 +21,12 @@ public class ReservationTimeService {
     }
 
     public ReservationTimeResponse save(ReservationTimeRequest request) {
+        boolean isTimeAlreadyExist = repository.existReservationTimeByTimeValue(request.startAt());
+        if (isTimeAlreadyExist) {
+            throw new IllegalArgumentException("[ERROR] 해당 시간이 이미 존재합니다.");
+        }
         ReservationTime reservationTime = new ReservationTime(request.startAt());
+
         return ReservationTimeResponse.from(repository.saveReservationTime(reservationTime));
     }
 

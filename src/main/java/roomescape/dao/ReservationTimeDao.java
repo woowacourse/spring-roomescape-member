@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,11 @@ public class ReservationTimeDao {
                 ROW_MAPPER,
                 id
         );
+    }
+
+    public boolean existByTimeValue(LocalTime startAt) {
+        String sql = "SELECT EXISTS (SELECT 1 from reservation_time where start_at = ?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt.toString());
     }
 
     public ReservationTime save(ReservationTime reservationTime) {

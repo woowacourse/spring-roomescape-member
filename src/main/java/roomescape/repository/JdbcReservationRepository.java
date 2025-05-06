@@ -16,6 +16,7 @@ import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -82,6 +83,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     public ReservationTime saveReservationTime(final ReservationTime reservationTime) {
         try {
             return reservationTimeDao.save(reservationTime);
+        } catch (DuplicateKeyException e) {
+            throw new IllegalArgumentException("[ERROR] 해당 시간이 이미 존재합니다.");
         } catch (DataAccessException e) {
             throw new IllegalArgumentException("[ERROR] 예약 시간 생성에 실패하였습니다");
         }
@@ -149,5 +152,10 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean existReservationByTimeId(final Long timeId) {
         return reservationDao.existByTimeId(timeId);
+    }
+
+    @Override
+    public boolean existReservationTimeByTimeValue(final LocalTime localTime) {
+        return reservationTimeDao.existByTimeValue(localTime);
     }
 }

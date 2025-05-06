@@ -15,5 +15,5 @@ public class TestFixture {
 
     public static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
     public static final LocalDate YESTERDAY = LocalDate.now().plusDays(-1);
-    public static final LocalTime NOON = LocalTime.NOON;
+    public static final LocalTime ONE_PM = LocalTime.of(13, 0);
 }

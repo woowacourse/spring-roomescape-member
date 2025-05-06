@@ -12,6 +12,7 @@ import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -116,5 +117,10 @@ public class FakeReservationRepository implements ReservationRepository {
     @Override
     public boolean existReservationByTimeId(final Long timeId) {
         return reservationDao.existByTimeId(timeId);
+    }
+
+    @Override
+    public boolean existReservationTimeByTimeValue(final LocalTime localTime) {
+        return reservationTimeDao.existByTimeValue(localTime);
     }
 }
