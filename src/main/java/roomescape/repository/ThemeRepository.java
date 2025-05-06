@@ -91,6 +91,6 @@ public class ThemeRepository {
                 new ThemeName(resultSet.getString("name")),
                 new ThemeDescription(resultSet.getString("description")),
                 new ThemeThumbnail(resultSet.getString("thumbnail"))
-        ), lastWeekRange.getStart(), lastWeekRange.getEnd(), limit);
+        ), lastWeekRange.getStartDate(), lastWeekRange.getEndDate(), limit);
     }
 }

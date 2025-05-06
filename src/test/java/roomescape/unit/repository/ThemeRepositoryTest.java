@@ -139,7 +139,7 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
         }
 
         // when
-        LastWeekRange range = new LastWeekRange(LocalDate.now(FIXED_CLOCK));
+        LastWeekRange range = new LastWeekRange(FIXED_CLOCK);
         List<Theme> popularThemes = themeRepository.findPopularThemeDuringAWeek(10, range);
 
         // then

@@ -19,10 +19,10 @@ public class LastWeekRangeTest {
     void 시작일은_현재_기준_7일_전이다() {
         // given
         LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
-        LastWeekRange lastWeekRange = new LastWeekRange(beforeSevenDays);
+        LastWeekRange lastWeekRange = new LastWeekRange(FIXED_CLOCK);
 
         // when
-        LocalDate start = lastWeekRange.getStart();
+        LocalDate start = lastWeekRange.getStartDate();
 
         // then
         assertThat(start).isEqualTo(beforeSevenDays.minusDays(7));
@@ -32,10 +32,10 @@ public class LastWeekRangeTest {
     void 종료일은_현재_기준_하루_전이다() {
         // given
         LocalDate beforeSevenDays = LocalDate.now(FIXED_CLOCK);
-        LastWeekRange lastWeekRange = new LastWeekRange(beforeSevenDays);
+        LastWeekRange lastWeekRange = new LastWeekRange(FIXED_CLOCK);
 
         // when
-        LocalDate end = lastWeekRange.getEnd();
+        LocalDate end = lastWeekRange.getEndDate();
 
         // then
         assertThat(end).isEqualTo(beforeSevenDays.minusDays(1));

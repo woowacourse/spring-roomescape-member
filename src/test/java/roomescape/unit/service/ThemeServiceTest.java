@@ -146,7 +146,7 @@ public class ThemeServiceTest {
                         new ThemeThumbnail("love.jpg")
                 )
         );
-        LastWeekRange lastWeekRange = new LastWeekRange(LocalDate.now(FIXED_CLOCK));
+        LastWeekRange lastWeekRange = new LastWeekRange(FIXED_CLOCK);
         Mockito.when(themeRepository.findPopularThemeDuringAWeek(eq(10L), any(LastWeekRange.class)))
                 .thenReturn(themes);
 

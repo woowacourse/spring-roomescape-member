@@ -1,23 +1,24 @@
 package roomescape.domain.theme;
 
+import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
 public class LastWeekRange {
-    private final LocalDate start;
-    private final LocalDate end;
+    private final LocalDateTime start;
+    private final LocalDateTime end;
 
-    public LastWeekRange(final LocalDate now) {
-        LocalDate validatedNow = Objects.requireNonNull(now, "now는 null일 수 없습니다.");
-        this.start = validatedNow.minusDays(7);
-        this.end = validatedNow.minusDays(1);
+    public LastWeekRange(final Clock clock) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        this.start = now.minusDays(7);
+        this.end = now.minusDays(1);
     }
 
-    public LocalDate getStart() {
-        return start;
+    public LocalDate getStartDate() {
+        return start.toLocalDate();
     }
 
-    public LocalDate getEnd() {
-        return end;
+    public LocalDate getEndDate() {
+        return end.toLocalDate();
     }
 }
