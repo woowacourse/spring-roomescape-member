@@ -40,14 +40,29 @@ public class ReservationService {
             final LocalDate date,
             final long timeId,
             final long themeId,
+            final String userEmail
+    ) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(UserNotFoundException::new);
+        return addAndGet(date, timeId, themeId, user);
+    }
+
+    public Reservation addAndGet(
+            final LocalDate date,
+            final long timeId,
+            final long themeId,
             final long userId
     ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        return addAndGet(date, timeId, themeId, user);
+    }
+
+    private Reservation addAndGet(final LocalDate date, final long timeId, final long themeId, final User user) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationNotFoundException::new);
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(ThemeNotFoundException::new);
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
 
         if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.getStartAt(), theme)) {
             throw new AlreadyReservedException();

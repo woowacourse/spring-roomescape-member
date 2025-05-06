@@ -8,7 +8,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.AuthRequired;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.Authorization;
+import roomescape.business.model.vo.UserRole;
+import roomescape.exception.impl.ForbiddenException;
 import roomescape.exception.impl.NotAuthenticatedException;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
@@ -20,27 +25,22 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
-        if (!requireAuthorization(handler)) {
-            return true;
-        }
-
-        String token = extractTokenFromCookies(request);
-
-        if (token != null && jwtUtil.validateToken(token)) {
-            final Authorization authorization = jwtUtil.getAuthorization(token);
-            request.setAttribute("authorization", authorization);
-            return true;
-        }
-
-        throw new NotAuthenticatedException();
-    }
-
-    private static boolean requireAuthorization(final Object handler) {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return false;
+            return true;
         }
-
-        return handlerMethod.hasMethodAnnotation(AuthRequired.class);
+        if (!handlerMethod.hasMethodAnnotation(AuthRequired.class)) {
+            return true;
+        }
+        AuthRequired authRequired = handlerMethod.getMethodAnnotation(AuthRequired.class);
+        if (authRequired == null) {
+            return true;
+        }
+        String token = extractTokenFromCookies(request);
+        validateAuthenticated(token);
+        Authorization authorization = jwtUtil.getAuthorization(token);
+        validateUserRole(authorization, authRequired);
+        request.setAttribute("authorization", authorization);
+        return true;
     }
 
     private String extractTokenFromCookies(HttpServletRequest request) {
@@ -55,5 +55,20 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         return null;
+    }
+
+    private void validateAuthenticated(final String token) {
+        if (token == null || !jwtUtil.validateToken(token)) {
+            throw new NotAuthenticatedException();
+        }
+    }
+
+    private static void validateUserRole(final Authorization authorization, final AuthRequired authRequired) {
+        UserRole userRole = authorization.userRole();
+        final List<UserRole> allowedRoles = Arrays.asList(authRequired.value());
+
+        if (!allowedRoles.contains(userRole)) {
+            throw new ForbiddenException();
+        }
     }
 }
