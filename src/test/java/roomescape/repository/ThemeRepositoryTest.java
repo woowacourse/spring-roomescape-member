@@ -60,7 +60,7 @@ public class ThemeRepositoryTest {
 
         //when
         assertThatThrownBy(
-            () -> themeRepository.delete(savedReservationTimeId))
+            () -> themeRepository.delete(savedThemeId))
             .isInstanceOf(InvalidReservationException.class)
             .hasMessage("이미 예약된 테마를 삭제할 수 없습니다.");
     }
