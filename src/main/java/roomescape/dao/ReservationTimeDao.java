@@ -6,8 +6,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +15,10 @@ public class ReservationTimeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
-
-    private static final RowMapper<ReservationTime> rowMapper = (resultSet, rowNum) ->
+    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) ->
             new ReservationTime(
                     resultSet.getLong("id"),
-                    LocalTime.parse(
-                            resultSet.getString("start_at"),
-                            DateTimeFormatter.ofPattern("HH:mm")
-                    )
+                    resultSet.getTime("start_at").toLocalTime()
             );
 
     public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
@@ -36,8 +30,8 @@ public class ReservationTimeDao {
 
     public ReservationTime findById(Long id) {
         return jdbcTemplate.queryForObject(
-                "select * from reservation_time where id = ?",
-                rowMapper,
+                "SELECT * FROM reservation_time WHERE id = ?",
+                ROW_MAPPER,
                 id
         );
     }
@@ -50,10 +44,10 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query("select * from reservation_time", rowMapper);
+        return jdbcTemplate.query("SELECT * FROM reservation_time", ROW_MAPPER);
     }
 
     public int deleteById(Long id) {
-        return jdbcTemplate.update("delete from reservation_time where id = ?", id);
+        return jdbcTemplate.update("DELETE FROM reservation_time WHERE id = ?", id);
     }
 }

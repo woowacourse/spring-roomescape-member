@@ -15,6 +15,12 @@ public class ThemeDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> new Theme(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("thumbnail")
+    );
 
     public ThemeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -25,8 +31,7 @@ public class ThemeDao {
 
     public List<Theme> findAll() {
         String query = "SELECT * FROM theme";
-        List<Theme> themes = jdbcTemplate.query(query, mapToTheme());
-        return themes;
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 
     public Theme save(Theme theme) {
@@ -46,7 +51,7 @@ public class ThemeDao {
 
     public Theme findById(Long id) {
         String sql = "SELECT * from theme where id = ?";
-        return jdbcTemplate.queryForObject(sql, mapToTheme(), id);
+        return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
     }
 
     public boolean existByName(String name) {
@@ -56,29 +61,17 @@ public class ThemeDao {
 
     public List<Theme> findPopular(int count) {
         String sql = """
-                select count(*), t.id, t.name, t.description, t.thumbnail from theme as t
-                left join (
-                    select * 
-                    from reservation as r 
-                    where PARSEDATETIME(r.date, 'yyyy-MM-dd') 
-                        between TIMESTAMPADD(DAY, -7, CURRENT_DATE) 
-                            and TIMESTAMPADD(DAY, -1, CURRENT_DATE)
-                    )
-                as r on t.id = r.theme_id
-                group by t.id
-                order by count(*) desc
+                SELECT count(*), t.id, t.name, t.description, t.thumbnail FROM theme AS t
+                LEFT JOIN (
+                    SELECT * 
+                    FROM reservation AS r 
+                    WHERE PARSEDATETIME(r.date, 'yyyy-MM-dd') BETWEEN TIMESTAMPADD(DAY, -7, CURRENT_DATE) AND TIMESTAMPADD(DAY, -1, CURRENT_DATE)
+                ) AS r ON t.id = r.theme_id
+                GROUP BY t.id
+                ORDER BY count(*) DESC
                 limit ?
                 """;
-        return jdbcTemplate.query(sql, mapToTheme(), count);
+        return jdbcTemplate.query(sql, ROW_MAPPER, count);
     }
 
-    private RowMapper<Theme> mapToTheme() {
-        return (resultSet, rowNum) -> {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            String description = resultSet.getString("description");
-            String thumbnail = resultSet.getString("thumbnail");
-            return new Theme(id, name, description, thumbnail);
-        };
-    }
 }

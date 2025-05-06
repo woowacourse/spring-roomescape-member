@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
@@ -8,8 +9,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,21 @@ public class ReservationDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
+    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
+            resultSet.getLong("id"),
+            resultSet.getString("name"),
+            resultSet.getDate("date").toLocalDate(),
+            new ReservationTime(
+                    resultSet.getLong("time_id"),
+                    resultSet.getTime("time_value").toLocalTime()
+            ),
+            new Theme(
+                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_name"),
+                    resultSet.getString("theme_description"),
+                    resultSet.getString("theme_thumbnail")
+            )
+    );
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -28,49 +42,17 @@ public class ReservationDao {
     }
 
     public List<Reservation> findAll() {
+        String query = """
+                   SELECT r.id, r.name, r.date,
+                   rt.id AS time_id, rt.start_at AS time_value,
+                   t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, t.thumbnail AS theme_thumbnail
+                   FROM reservation AS r
+                   INNER JOIN reservation_time AS rt ON r.time_id = rt.id
+                   INNER JOIN theme AS t ON r.theme_id = t.id
+                """;
         return jdbcTemplate.query(
-                """
-                        SELECT
-                        r.id as reservation_id,
-                        r.name,
-                        r.date,
-                        rt.id as time_id,
-                        rt.start_at as time_value,
-                        t.id as theme_id,
-                        t.name as theme_name,
-                        t.description as theme_description,
-                        t.thumbnail as theme_thumbnail
-                        FROM reservation as r
-                        inner join reservation_time as rt
-                        on r.time_id = rt.id
-                        inner join theme as t
-                        on r.theme_id = t.id
-                        """,
-                (resultSet, rowNum) ->
-                {
-                    LocalDate date = LocalDate.parse(
-                            resultSet.getString("date"),
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    );
-                    return new Reservation(
-                            resultSet.getLong("reservation_id"),
-                            resultSet.getString("name"),
-                            date,
-                            new ReservationTime(
-                                    resultSet.getLong("time_id"),
-                                    LocalTime.parse(
-                                            resultSet.getString("time_value"),
-                                            DateTimeFormatter.ofPattern("HH:mm")
-                                    )
-                            ),
-                            new Theme(
-                                    resultSet.getLong("theme_id"),
-                                    resultSet.getString("theme_name"),
-                                    resultSet.getString("theme_description"),
-                                    resultSet.getString("theme_thumbnail")
-                            )
-                    );
-                }
+                query,
+                ROW_MAPPER
         );
     }
 
@@ -92,7 +74,7 @@ public class ReservationDao {
     }
 
     public int deleteById(Long id) {
-        return jdbcTemplate.update("delete from reservation where id = ?", id);
+        return jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
     }
 
     public boolean existByTimeId(Long timeId) {
