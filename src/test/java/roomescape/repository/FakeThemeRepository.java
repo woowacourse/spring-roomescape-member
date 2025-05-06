@@ -16,11 +16,10 @@ public class FakeThemeRepository implements ThemeRepository {
 
     private final List<Theme> themes;
     private final AtomicLong themeId = new AtomicLong(1);
-    private final List<Reservation> reservations;
+    private final List<Reservation> reservations = new ArrayList<>();
 
     public FakeThemeRepository(final List<Theme> themes) {
-        this.themes = themes;
-        reservations = new ArrayList<>();
+        this.themes = new ArrayList<>(themes);
     }
 
     @Override

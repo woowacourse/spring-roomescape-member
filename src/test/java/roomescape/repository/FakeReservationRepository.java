@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,7 +16,7 @@ public class FakeReservationRepository implements ReservationRepository {
     private final AtomicLong reservationId = new AtomicLong(1);
 
     public FakeReservationRepository(final List<Reservation> reservations) {
-        this.reservations = reservations;
+        this.reservations = new ArrayList<>(reservations);
     }
 
     @Override

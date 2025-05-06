@@ -13,11 +13,10 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
 
     private final List<ReservationTime> reservationTimes;
     private final AtomicLong reservationTimeId = new AtomicLong(1);
-    private final List<Reservation> reservations;
+    private final List<Reservation> reservations = new ArrayList<>();
 
     public FakeReservationTimeRepository(final List<ReservationTime> reservationTimes) {
-        this.reservationTimes = reservationTimes;
-        reservations = new ArrayList<>();
+        this.reservationTimes = new ArrayList<>(reservationTimes);
     }
 
     @Override

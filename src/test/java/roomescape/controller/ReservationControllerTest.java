@@ -46,7 +46,7 @@ class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(201);
 
-            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "http://");
+            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "https://");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -120,7 +120,7 @@ class ReservationControllerTest {
                     .then().log().all()
                     .statusCode(201);
 
-            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "http://");
+            ThemeCreateRequestDto theme = new ThemeCreateRequestDto("a", "b", "https://");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
