@@ -13,7 +13,7 @@ public class StubThemeRepository implements ThemeRepository {
     private final List<Theme> data = new ArrayList<>();
     private final AtomicLong atomicLong = new AtomicLong();
 
-    public StubThemeRepository(final Theme... themes) {
+    public StubThemeRepository(Theme... themes) {
         data.addAll(List.of(themes));
         long maxId = data.stream()
                 .mapToLong(Theme::getId)
@@ -23,7 +23,7 @@ public class StubThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(final Theme theme) {
+    public Theme save(Theme theme) {
         Theme savedTheme = new Theme(atomicLong.incrementAndGet(), theme.getName(),
                 theme.getDescription(), theme.getThumbnail());
         data.add(savedTheme);
@@ -37,16 +37,16 @@ public class StubThemeRepository implements ThemeRepository {
 
     @Override
     public List<PopularThemeResponse> findAllPopular() {
-        return List.of();
+        return List.of(); // TODO. Stub이기 때문에 Setter로 구현하는 방식을 어떻게 생각하시는지 지노에게 여쭤보기
     }
 
     @Override
-    public void deleteById(final Long id) {
+    public void deleteById(Long id) {
         data.removeIf(theme -> theme.getId().equals(id));
     }
 
     @Override
-    public Optional<Theme> findById(final Long id) {
+    public Optional<Theme> findById(Long id) {
         return data.stream()
                 .filter(theme -> theme.getId().equals(id))
                 .findFirst();

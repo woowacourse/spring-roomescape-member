@@ -90,8 +90,10 @@ class JdbcReservationTimeRepositoryTest {
     @Test
     void id에_알맞은_예약_시간을_삭제한다() {
         // given
+        Long id = 1L;
+
         // when
-        repository.deleteById(1L);
+        repository.deleteById(id);
         List<ReservationTime> reservationTimes = repository.findAll();
 
         // then
@@ -116,6 +118,7 @@ class JdbcReservationTimeRepositoryTest {
     void 존재하지_않는_id면_빈_Optional을_반환한다() {
         // given
         Long invalidId = 999L;
+
         // when
         // then
         assertThat(repository.findById(invalidId)).isEmpty();
