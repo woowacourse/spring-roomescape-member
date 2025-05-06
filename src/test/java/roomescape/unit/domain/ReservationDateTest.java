@@ -2,7 +2,7 @@ package roomescape.unit.domain;
 
 import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.ReservationDate;
+import roomescape.domain.reservation.ReservationDate;
 
 public class ReservationDateTest {
 

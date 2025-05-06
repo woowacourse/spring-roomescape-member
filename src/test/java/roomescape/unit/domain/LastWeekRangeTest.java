@@ -5,7 +5,7 @@ import static roomescape.common.Constant.FIXED_CLOCK;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.LastWeekRange;
+import roomescape.domain.theme.LastWeekRange;
 
 public class LastWeekRangeTest {
 

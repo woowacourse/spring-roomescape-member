@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.ThemeDescription;
-import roomescape.theme.domain.ThemeName;
-import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.time.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
+import roomescape.domain.time.ReservationTime;
+import roomescape.domain.theme.Theme;
 
 public class ReservationTest {
 

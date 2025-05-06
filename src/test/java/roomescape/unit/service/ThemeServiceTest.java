@@ -5,8 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
-import java.lang.reflect.Field;
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,17 +13,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import roomescape.common.Constant;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.controller.request.CreateThemeRequest;
-import roomescape.theme.controller.response.ThemeResponse;
-import roomescape.theme.domain.LastWeekRange;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeDescription;
-import roomescape.theme.domain.ThemeName;
-import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.ThemeService;
+import roomescape.repository.ReservationRepository;
+import roomescape.controller.rest.request.CreateThemeRequest;
+import roomescape.controller.rest.response.ThemeResponse;
+import roomescape.domain.theme.LastWeekRange;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
+import roomescape.repository.ThemeRepository;
+import roomescape.service.ThemeService;
 
 public class ThemeServiceTest {
 

@@ -1,7 +1,7 @@
 package roomescape.unit.domain;
 
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.ThemeDescription;
+import roomescape.domain.theme.ThemeDescription;
 
 import static org.assertj.core.api.Assertions.*;
 

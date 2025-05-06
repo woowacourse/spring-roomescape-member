@@ -3,7 +3,7 @@ package roomescape.unit.domain;
 import static org.assertj.core.api.Assertions.*;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.time.domain.ReservationTime;
+import roomescape.domain.time.ReservationTime;
 
 public class ReservationTimeTest {
 

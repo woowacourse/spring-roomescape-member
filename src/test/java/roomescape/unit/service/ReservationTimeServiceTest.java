@@ -12,14 +12,14 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.time.controller.request.AvailableReservationTimeRequest;
-import roomescape.time.controller.request.CreateReservationTimeRequest;
-import roomescape.time.controller.response.AvailableReservationTimeResponse;
-import roomescape.time.controller.response.ReservationTimeResponse;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
-import roomescape.time.service.ReservationTimeService;
+import roomescape.repository.ReservationRepository;
+import roomescape.controller.rest.request.AvailableReservationTimeRequest;
+import roomescape.controller.rest.request.CreateReservationTimeRequest;
+import roomescape.controller.rest.response.AvailableReservationTimeResponse;
+import roomescape.controller.rest.response.ReservationTimeResponse;
+import roomescape.domain.time.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.service.ReservationTimeService;
 
 public class ReservationTimeServiceTest {
 

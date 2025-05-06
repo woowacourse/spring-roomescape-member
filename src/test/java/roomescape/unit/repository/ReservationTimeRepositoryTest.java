@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import roomescape.common.RepositoryBaseTest;
-import roomescape.theme.domain.Theme;
-import roomescape.time.controller.response.AvailableReservationTimeResponse;
-import roomescape.time.domain.ReservationTime;
-import roomescape.time.repository.ReservationTimeRepository;
+import roomescape.domain.theme.Theme;
+import roomescape.controller.rest.response.AvailableReservationTimeResponse;
+import roomescape.domain.time.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 import roomescape.unit.fixture.ReservationDateFixture;
 import roomescape.unit.fixture.ReservationDbFixture;
 import roomescape.unit.fixture.ReservationTimeDbFixture;
@@ -133,7 +133,7 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
 
         // when
         List<AvailableReservationTimeResponse> available = repository.findAllAvailableReservationTimes(
-                ReservationDateFixture.예약날짜_25_4_22.getDate(), 공포.getId());
+                ReservationDateFixture.예약날짜_25_4_22.date(), 공포.getId());
 
         // then
         SoftAssertions softly = new SoftAssertions();

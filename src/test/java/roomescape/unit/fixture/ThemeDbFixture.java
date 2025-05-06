@@ -4,10 +4,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeDescription;
-import roomescape.theme.domain.ThemeName;
-import roomescape.theme.domain.ThemeThumbnail;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeThumbnail;
 
 @Component
 public class ThemeDbFixture {

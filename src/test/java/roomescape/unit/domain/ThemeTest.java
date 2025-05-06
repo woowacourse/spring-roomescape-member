@@ -3,10 +3,10 @@ package roomescape.unit.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import roomescape.theme.domain.Theme;
-import roomescape.theme.domain.ThemeName;
-import roomescape.theme.domain.ThemeDescription;
-import roomescape.theme.domain.ThemeThumbnail;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemeDescription;
+import roomescape.domain.theme.ThemeThumbnail;
 
 public class ThemeTest {
 

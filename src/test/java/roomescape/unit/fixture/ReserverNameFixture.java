@@ -1,6 +1,6 @@
 package roomescape.unit.fixture;
 
-import roomescape.reservation.domain.ReserverName;
+import roomescape.domain.reservation.ReserverName;
 
 public class ReserverNameFixture {
 

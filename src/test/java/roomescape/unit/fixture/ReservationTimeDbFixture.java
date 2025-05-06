@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import roomescape.time.domain.ReservationTime;
+import roomescape.domain.time.ReservationTime;
 
 @Component
 public class ReservationTimeDbFixture {

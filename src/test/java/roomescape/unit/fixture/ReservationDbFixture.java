@@ -5,10 +5,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import roomescape.reservation.domain.Reservation;
-import roomescape.reservation.domain.ReservationDate;
-import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
+import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
+import roomescape.domain.theme.Theme;
+import roomescape.domain.time.ReservationTime;
 
 @Component
 public class ReservationDbFixture {
@@ -25,7 +25,7 @@ public class ReservationDbFixture {
                 .usingGeneratedKeyColumns("id");
 
         String name = ReserverNameFixture.한스.getName();
-        LocalDate date = ReservationDateFixture.예약날짜_25_4_22.getDate();
+        LocalDate date = ReservationDateFixture.예약날짜_25_4_22.date();
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", name)
@@ -43,7 +43,7 @@ public class ReservationDbFixture {
                 .usingGeneratedKeyColumns("id");
 
         String name = ReserverNameFixture.한스.getName();
-        LocalDate date = reservationDate.getDate();
+        LocalDate date = reservationDate.date();
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", name)
