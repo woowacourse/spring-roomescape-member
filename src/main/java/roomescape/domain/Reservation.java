@@ -18,7 +18,7 @@ public class Reservation {
                        final LocalDate date,
                        final ReservationTime time,
                        final RoomTheme theme) {
-        validateNotNull(name, date, time, theme);
+        validateInvalidInput(name, date, time, theme);
 
         this.id = id;
         this.name = name;
@@ -43,8 +43,8 @@ public class Reservation {
         return isPastDate || isPastTime;
     }
 
-    private void validateNotNull(final String name, final LocalDate date,
-                                 final ReservationTime reservationTime, final RoomTheme theme) {
+    private void validateInvalidInput(final String name, final LocalDate date,
+                                      final ReservationTime reservationTime, final RoomTheme theme) {
         if (name == null || name.isBlank()) {
             throw new InvalidInputException("예약자 명은 빈 값이 입력될 수 없습니다");
         }
