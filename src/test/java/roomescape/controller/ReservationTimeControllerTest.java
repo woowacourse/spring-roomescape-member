@@ -102,7 +102,7 @@ class ReservationTimeControllerTest {
         //given
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 0)));
 
-        //when //then
+        //when
         RestAssured
                 .given()
                 .log().all()
@@ -112,6 +112,10 @@ class ReservationTimeControllerTest {
                 .then()
                 .log().all()
                 .statusCode(204);
+
+        //then
+        List<ReservationTime> actual = reservationTimeDao.findAllReservationTimes();
+        assertThat(actual).hasSize(0);
     }
 
 }

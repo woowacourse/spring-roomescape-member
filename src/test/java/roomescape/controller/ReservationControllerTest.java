@@ -171,7 +171,7 @@ class ReservationControllerTest {
                 reservationTime,
                 theme));
 
-        //when //then
+        //when
         RestAssured
                 .given()
                 .log().all()
@@ -181,6 +181,10 @@ class ReservationControllerTest {
                 .then()
                 .log().all()
                 .statusCode(204);
+
+        //then
+        List<Reservation> actual = reservationDao.findAllReservation();
+        assertThat(actual).hasSize(0);
     }
 
     @DisplayName("특정 날짜와 테마에 대해 예약 가능한 시간을 조회하면 모든 시간에 대해서 예약 가능 여부를 포함해 응답으로 반환한다.")
