@@ -117,7 +117,7 @@ public class JdbcThemeRepository implements ThemeRepository {
                 ) as r_stats
                 ON t.id = r_stats.theme_id
                 ORDER BY cnt DESC, theme_id DESC
-                FETCH FIRST :limit ROWS ONLY
+                LIMIT :limit
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("startDate", startDate)
