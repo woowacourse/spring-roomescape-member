@@ -2,6 +2,7 @@ package roomescape.reservation.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.reservation.service.ReservationService;
@@ -27,7 +28,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest requestDto) {
         ReservationResponse responseDto = service.createReservation(requestDto);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @DeleteMapping("/{id}")
