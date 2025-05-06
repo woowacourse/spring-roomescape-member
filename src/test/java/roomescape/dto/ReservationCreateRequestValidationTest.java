@@ -32,8 +32,9 @@ public class ReservationCreateRequestValidationTest {
     @Test
     @DisplayName("ReservationCreateRequest 정상 생성 테스트")
     void generateReservationCreateRequest() {
-        assertThatCode(() -> new ReservationCreateRequest("홍길동", LocalDate.now(), 1L, 1L))
-                .doesNotThrowAnyException();
+        ReservationCreateRequest request = new ReservationCreateRequest("홍길동", LocalDate.now(), 1L, 1L);
+        Set<ConstraintViolation<ReservationCreateRequest>> violations = validator.validate(request);
+        assertThat(violations.size()).isEqualTo(0);
     }
 
     @ParameterizedTest
