@@ -29,6 +29,33 @@ class ThemeServiceTest {
     private final ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
     private final ThemeService service = new ThemeService(themeRepository);
 
+    @DisplayName("테마를 생성할 수 있다.")
+    @Test
+    void createTheme() {
+        // given
+        ThemeRequest request = new ThemeRequest("theme", "desc", "https://example.com/thumbnail.png");
+
+        // when
+        ThemeResponse response = service.createTheme(request);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(themeRepository.findById(response.id())).isNotEmpty();
+    }
+
+    @DisplayName("테마를 삭제할 수 있다.")
+    @Test
+    void deleteTheme() {
+        // given
+        themeRepository.save(new Theme(1L, "theme", "desc", "https://example.com/thumbnail.png"));
+
+        // when
+        service.deleteTheme(1L);
+
+        // then
+        assertThat(themeRepository.findById(1L)).isEmpty();
+    }
+
     @DisplayName("중복되는 테마 이름이 있을 경우 생성할 수 없다.")
     @Test
     void duplicateByName() {
@@ -96,7 +123,7 @@ class ThemeServiceTest {
         );
 
         // when
-        List<ThemeResponse> actual = service.getPopularThemes(3);
+        List<ThemeResponse> actual = service.getPopularThemes(expect.size());
 
         // then
         assertThat(actual).containsExactlyElementsOf(expect);
