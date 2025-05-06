@@ -1,9 +1,9 @@
 package roomescape.fake;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.exception.ResourceNotExistException;
+import roomescape.domain.exception.ResourceNotExistException;
+import roomescape.domain.model.ReservationTime;
+import roomescape.domain.repository.ReservationTimeRepository;
 
 import java.time.LocalTime;
 import java.util.List;

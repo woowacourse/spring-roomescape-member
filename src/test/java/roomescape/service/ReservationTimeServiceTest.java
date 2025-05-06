@@ -2,14 +2,15 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.ReservationTimeRepository;
-import roomescape.dto.request.ReservationTimeRequest;
-import roomescape.exception.ResourceNotExistException;
+import roomescape.application.service.ReservationTimeService;
+import roomescape.domain.exception.ResourceNotExistException;
+import roomescape.domain.model.Reservation;
+import roomescape.domain.model.ReservationTime;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.presentation.dto.request.ReservationTimeRequest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

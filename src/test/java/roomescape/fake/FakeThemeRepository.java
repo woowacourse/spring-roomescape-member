@@ -1,7 +1,7 @@
 package roomescape.fake;
 
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
+import roomescape.domain.model.Theme;
+import roomescape.domain.repository.ThemeRepository;
 
 import java.util.List;
 

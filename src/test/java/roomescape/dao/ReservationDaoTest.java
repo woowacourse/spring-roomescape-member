@@ -5,9 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.model.Reservation;
+import roomescape.domain.model.ReservationTime;
+import roomescape.domain.model.Theme;
+import roomescape.infrastructure.dao.ReservationDao;
+import roomescape.infrastructure.dao.ReservationTimeDao;
+import roomescape.infrastructure.dao.ThemeDao;
 
 import java.time.LocalDate;
 

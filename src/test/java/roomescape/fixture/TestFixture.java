@@ -1,8 +1,8 @@
 package roomescape.fixture;
 
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.model.Reservation;
+import roomescape.domain.model.ReservationTime;
+import roomescape.domain.model.Theme;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

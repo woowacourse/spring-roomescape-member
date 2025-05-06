@@ -2,11 +2,12 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.Theme;
-import roomescape.domain.ThemeRepository;
-import roomescape.dto.request.ThemeRequest;
+import roomescape.application.service.ThemeService;
+import roomescape.domain.model.Reservation;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.model.Theme;
+import roomescape.domain.repository.ThemeRepository;
+import roomescape.presentation.dto.request.ThemeRequest;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeThemeRepository;
 

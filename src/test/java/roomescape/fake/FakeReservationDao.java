@@ -1,6 +1,6 @@
 package roomescape.fake;
 
-import roomescape.domain.Reservation;
+import roomescape.domain.model.Reservation;
 
 import java.time.LocalDate;
 import java.util.HashMap;
