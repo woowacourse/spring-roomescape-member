@@ -6,6 +6,7 @@ import roomescape.exception.custom.InvalidInputException;
 public class Reservation {
 
     private static final int NON_SAVED_STATUS = 0;
+    private static final int MAX_LENGTH = 255;
 
     private final long id;
     private final String name;
@@ -45,6 +46,12 @@ public class Reservation {
 
     private void validateInvalidInput(final String name, final LocalDate date,
                                       final ReservationTime reservationTime, final RoomTheme theme) {
+        validateNotNull(name, date, reservationTime, theme);
+        validateValidLength(name);
+    }
+
+    private void validateNotNull(final String name, final LocalDate date,
+                                 final ReservationTime reservationTime, final RoomTheme theme) {
         if (name == null || name.isBlank()) {
             throw new InvalidInputException("예약자 명은 빈 값이 입력될 수 없습니다");
         }
@@ -56,6 +63,12 @@ public class Reservation {
         }
         if (theme == null) {
             throw new InvalidInputException("예약 테마는 빈 값이 입력될 수 없습니다");
+        }
+    }
+
+    private void validateValidLength(final String name) {
+        if (name.length() > MAX_LENGTH) {
+            throw new InvalidInputException("예약자 명은 255자를 초과할 수 없습니다.");
         }
     }
 
