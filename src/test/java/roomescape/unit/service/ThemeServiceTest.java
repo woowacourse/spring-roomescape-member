@@ -25,16 +25,9 @@ import roomescape.service.ThemeService;
 
 public class ThemeServiceTest {
 
-    private ThemeRepository themeRepository;
-    private ReservationRepository reservationRepository;
-    private ThemeService themeService;
-
-    @BeforeEach
-    void setUp() {
-        themeRepository = Mockito.mock(ThemeRepository.class);
-        reservationRepository = Mockito.mock(ReservationRepository.class);
-        themeService = new ThemeService(themeRepository, reservationRepository, FIXED_CLOCK);
-    }
+    private ThemeRepository themeRepository = Mockito.mock(ThemeRepository.class);
+    private ReservationRepository reservationRepository = Mockito.mock(ReservationRepository.class);
+    private ThemeService themeService = new ThemeService(themeRepository, reservationRepository, FIXED_CLOCK);
 
     @Test
     void 테마를_생성할_수_있다() {

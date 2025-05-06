@@ -25,16 +25,13 @@ import roomescape.service.ReservationTimeService;
 
 public class ReservationTimeServiceTest {
 
-    private ReservationTimeRepository reservationTimeRepository;
-    private ReservationRepository reservationRepository;
-    private ReservationTimeService service;
-
-    @BeforeEach
-    void setUp() {
-        reservationTimeRepository = mock(ReservationTimeRepository.class);
-        reservationRepository = mock(ReservationRepository.class);
-        service = new ReservationTimeService(reservationTimeRepository, reservationRepository);
-    }
+    private ReservationTimeRepository reservationTimeRepository = mock(ReservationTimeRepository.class);
+    private ReservationRepository reservationRepository = mock(ReservationRepository.class);
+    ;
+    private ReservationTimeService service = new ReservationTimeService(
+            reservationTimeRepository,
+            reservationRepository
+    );
 
     @Test
     void 예약시간을_생성할_수_있다() {

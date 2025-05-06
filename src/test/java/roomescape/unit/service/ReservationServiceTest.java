@@ -10,45 +10,38 @@ import static org.mockito.Mockito.when;
 import static roomescape.common.Constant.FIXED_CLOCK;
 import static roomescape.integration.fixture.ReservationDateFixture.예약날짜_오늘;
 
-import java.time.Clock;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.service.request.ReservationCreateRequest;
-import roomescape.service.response.ReservationResponse;
 import roomescape.domain.reservation.Reservation;
-import roomescape.repository.ReservationRepository;
-import roomescape.service.ReservationService;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
-import roomescape.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
+import roomescape.service.ReservationService;
+import roomescape.service.request.ReservationCreateRequest;
+import roomescape.service.response.ReservationResponse;
 
 public class ReservationServiceTest {
 
-    private ReservationRepository reservationRepository;
-    private ReservationTimeRepository reservationTimeRepository;
-    private ThemeRepository themeRepository;
-    private Clock clock;
-    private ReservationService service;
+    private ReservationRepository reservationRepository = mock(ReservationRepository.class);;
+    private ReservationTimeRepository reservationTimeRepository = mock(ReservationTimeRepository.class);
+    private ThemeRepository themeRepository = mock(ThemeRepository.class);
+    private ReservationService service = new ReservationService(
+            reservationRepository,
+            reservationTimeRepository,
+            themeRepository,
+            FIXED_CLOCK
+    );
 
     private final LocalTime time = LocalTime.of(10, 0);
-
-    @BeforeEach
-    void setUp() {
-        reservationRepository = mock(ReservationRepository.class);
-        reservationTimeRepository = mock(ReservationTimeRepository.class);
-        themeRepository = mock(ThemeRepository.class);
-        clock = FIXED_CLOCK;
-        service = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository, clock);
-    }
 
     @Test
     void 모든_예약을_조회한다() {
