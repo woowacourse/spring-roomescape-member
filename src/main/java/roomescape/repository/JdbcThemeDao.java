@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -37,19 +35,15 @@ public class JdbcThemeDao implements ThemeRepository {
 
     @Override
     public Optional<Theme> save(Theme theme) {
-        try {
-            String name = theme.getName();
-            String description = theme.getDescription();
-            String thumbnail = theme.getThumbnail();
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", name)
-                    .addValue("description", description)
-                    .addValue("thumbnail", thumbnail);
-            long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return findById(id);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalStateException("[ERROR] 이미 등록된 테마 입니다.", e);
-        }
+        String name = theme.getName();
+        String description = theme.getDescription();
+        String thumbnail = theme.getThumbnail();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("description", description)
+                .addValue("thumbnail", thumbnail);
+        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        return findById(id);
     }
 
     @Override
@@ -90,10 +84,6 @@ public class JdbcThemeDao implements ThemeRepository {
     @Override
     public int deleteById(long id) {
         String sql = "delete from theme where id = ?";
-        try {
-            return jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("[ERROR] 이 테마는 이미 존재합니다. id : " + id, e);
-        }
+        return jdbcTemplate.update(sql, id);
     }
 }

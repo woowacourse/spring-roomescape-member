@@ -4,8 +4,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -36,15 +34,11 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
 
     @Override
     public Optional<ReservationTime> save(ReservationTime reservationTime) {
-        try {
-            LocalTime startTime = reservationTime.getStartAt();
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("start_at", startTime.toString());
-            long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return findById(id);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalStateException("[ERROR] 이미 등록된 예약 시간 입니다.", e);
-        }
+        LocalTime startTime = reservationTime.getStartAt();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("start_at", startTime.toString());
+        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        return findById(id);
     }
 
     @Override
@@ -67,10 +61,6 @@ public class JdbcReservationTimeDao implements ReservationTimeRepository {
     @Override
     public int deleteById(long id) {
         String sql = "delete from reservation_time where id = ?";
-        try {
-            return jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("[ERROR] 이 시간의 예약이 이미 존재합니다. id : " + id, e);
-        }
+        return jdbcTemplate.update(sql, id);
     }
 }

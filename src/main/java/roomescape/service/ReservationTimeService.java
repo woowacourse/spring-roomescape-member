@@ -2,12 +2,15 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.AvailableReservationTimeResponseDto;
 import roomescape.dto.ReservationTimeCreateRequestDto;
 import roomescape.dto.ReservationTimeResponseDto;
+import roomescape.exception.ConstrainedDataException;
 import roomescape.exception.DuplicateContentException;
 import roomescape.exception.NotFoundException;
 import roomescape.repository.ReservationRepository;
@@ -31,8 +34,8 @@ public class ReservationTimeService {
                     .orElseThrow(() -> new IllegalStateException("[ERROR] 예약시간을 저장할 수 없습니다. 관리자에게 문의해 주세요."));
 
             return ReservationTimeResponseDto.from(savedTime);
-        } catch (IllegalStateException e) {
-            throw new DuplicateContentException(e.getMessage());
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateContentException("[ERROR] 이미 동일한 예약 시간이 존재합니다.");
         }
     }
 
@@ -61,10 +64,14 @@ public class ReservationTimeService {
     }
 
     public void deleteReservationTimeById(final Long id) {
-        int deletedReservationCount = reservationTimeRepository.deleteById(id);
+        try {
+            int deletedReservationCount = reservationTimeRepository.deleteById(id);
 
-        if (deletedReservationCount == 0) {
-            throw new NotFoundException("[ERROR] 등록된 예약 시간 번호만 삭제할 수 있습니다. 입력된 번호는 " + id + "입니다.");
+            if (deletedReservationCount == 0) {
+                throw new NotFoundException("[ERROR] 등록된 예약 시간 번호만 삭제할 수 있습니다. 입력된 번호는 " + id + "입니다.");
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new ConstrainedDataException("[ERROR] 해당 시간에 예약 기록이 존재합니다. 예약을 먼저 삭제해 주세요.");
         }
     }
 }

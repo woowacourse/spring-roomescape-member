@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -53,18 +52,14 @@ public class JdbcReservationDao implements ReservationRepository {
 
     @Override
     public Optional<Reservation> save(final Reservation reservation) {
-        try {
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("name", reservation.getName())
-                    .addValue("date", reservation.getDate())
-                    .addValue("time_id", reservation.getTime().getId())
-                    .addValue("theme_id", reservation.getTheme().getId());
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("time_id", reservation.getTime().getId())
+                .addValue("theme_id", reservation.getTheme().getId());
 
-            long id = jdbcInsert.executeAndReturnKey(params).longValue();
-            return findById(id);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalStateException("[ERROR] 이미 등록된 예약 입니다.", e);
-        }
+        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        return findById(id);
     }
 
     @Override
