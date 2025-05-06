@@ -26,13 +26,21 @@ public class ThemeControllerTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
+    @DisplayName("/themes GET 요청에 정상적으로 응답한다")
+    void themes_api() {
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
     @DisplayName("/themes POST 요청에 정상적으로 응답한다")
     void theme_post_test() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
         params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
-        params.put("thumbnail",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -49,16 +57,30 @@ public class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("/themes GET 요청에 정상적으로 응답한다")
-    void theme_get_test() {
+    @DisplayName("/themes POST 요청시 중복된 테마 이름이 존재하는 경우 400을 응답한다")
+    void theme_post_name_duplication() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "레벨2 탈출");
+        params.put("description", "우테코 레벨2를 탈출하는 내용입니다.");
+        params.put("thumbnail", "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
+
         RestAssured.given().log().all()
-                .when().get("/themes")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @Test
-    @DisplayName("/themes DELETE 요청에 정상적으로 응답한다")
+    @DisplayName("/themes/{id} DELETE 요청에 정상적으로 응답한다")
     void theme_delete_when_exist() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "레벨2 탈출");
@@ -85,16 +107,16 @@ public class ThemeControllerTest {
     }
 
     @Test
-    @DisplayName("/themes DELETE 요청에 id가 존재하지 않는다면 404를 반환한다")
+    @DisplayName("/themes/{id} DELETE 요청에 id가 존재하지 않는다면 404를 반환한다")
     void theme_delete_when_not_exist() {
         RestAssured.given().log().all()
-                .when().delete("/themes/100")
+                .when().delete("/themes/-1")
                 .then().log().all()
                 .statusCode(404);
     }
 
     @Test
-    @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하려 할 때 400 코드를 반환한다")
+    @DisplayName("/themes/{id} DELETE 요청시 특정 id 대한 예약이 존재하면 400를 반환한다")
     void cannot_delete_theme_if_reservation_exist() {
         Map<String, Object> params = new HashMap<>();
         params.put("name", "브라운");
