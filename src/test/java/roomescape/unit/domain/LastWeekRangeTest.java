@@ -10,7 +10,7 @@ import roomescape.domain.theme.LastWeekRange;
 public class LastWeekRangeTest {
 
     @Test
-    void now는_null일_수_없다() {
+    void clock은_null일_수_없다() {
         assertThatThrownBy(() -> new LastWeekRange(null))
                 .isInstanceOf(NullPointerException.class);
     }

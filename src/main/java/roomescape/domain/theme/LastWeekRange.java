@@ -2,23 +2,29 @@ package roomescape.domain.theme;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class LastWeekRange {
-    private final LocalDateTime start;
-    private final LocalDateTime end;
+
+    private static final int DAYS_BEFORE_A_WEEK = 7;
+    private static final int DAYS_BEFORE_YESTERDAY = 1;
+
+    private final LocalDate start;
+    private final LocalDate end;
 
     public LastWeekRange(final Clock clock) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        this.start = now.minusDays(7);
-        this.end = now.minusDays(1);
+        if (clock == null) {
+            throw new NullPointerException("Clock은 null일 수 없습니다.");
+        }
+        LocalDate now = LocalDate.now(clock);
+        this.start = now.minusDays(DAYS_BEFORE_A_WEEK);
+        this.end = now.minusDays(DAYS_BEFORE_YESTERDAY);
     }
 
     public LocalDate getStartDate() {
-        return start.toLocalDate();
+        return start;
     }
 
     public LocalDate getEndDate() {
-        return end.toLocalDate();
+        return end;
     }
 }
