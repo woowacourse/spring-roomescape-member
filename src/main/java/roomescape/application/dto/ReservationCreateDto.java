@@ -1,11 +1,11 @@
-package roomescape.presentation.dto.request;
+package roomescape.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public record ReservationRequest(
+public record ReservationCreateDto(
 
         @NotNull
         Long themeId,

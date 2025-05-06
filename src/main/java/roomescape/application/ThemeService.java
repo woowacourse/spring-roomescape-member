@@ -6,11 +6,11 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import roomescape.application.dto.ThemeCreateDto;
 import roomescape.application.dto.ThemeDto;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ThemeRepository;
 import roomescape.exception.NotFoundException;
-import roomescape.presentation.dto.request.ThemeRequest;
 
 @Service
 public class ThemeService {
@@ -27,9 +27,9 @@ public class ThemeService {
         return ThemeDto.from(themes);
     }
 
-    public ThemeDto registerTheme(@Valid ThemeRequest themeRequest) {
-        Theme themeWithoutId = Theme.withoutId(themeRequest.name(), themeRequest.description(),
-                themeRequest.thumbnail());
+    public ThemeDto registerTheme(@Valid ThemeCreateDto themeCreateDto) {
+        Theme themeWithoutId = Theme.withoutId(themeCreateDto.name(), themeCreateDto.description(),
+                themeCreateDto.thumbnail());
         Long id = themeRepository.save(themeWithoutId);
         Theme theme = Theme.assignId(id, themeWithoutId);
         return ThemeDto.from(theme);

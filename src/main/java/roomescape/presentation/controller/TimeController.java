@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.TimeService;
+import roomescape.application.dto.TimeCreateDto;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.repository.dto.TimeDataWithBookingInfo;
-import roomescape.presentation.dto.request.TimeRequest;
-import roomescape.presentation.dto.response.TimeResponse;
-import roomescape.presentation.dto.response.TimeResponseWithBookingInfo;
 
 @RestController
 @RequestMapping("/times")
@@ -31,16 +29,14 @@ public class TimeController {
     }
 
     @GetMapping
-    public List<TimeResponse> getAllTimes() {
-        List<TimeDto> times = service.getAllTimes();
-        return TimeResponse.from(times);
+    public List<TimeDto> getAllTimes() {
+        return service.getAllTimes();
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> addTime(@Valid @RequestBody TimeRequest request) {
+    public ResponseEntity<TimeDto> addTime(@Valid @RequestBody TimeCreateDto request) {
         TimeDto timeDto = service.registerNewTime(request);
-        TimeResponse timeResponse = TimeResponse.from(timeDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(timeResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(timeDto);
     }
 
     @DeleteMapping("/{id}")
@@ -50,10 +46,11 @@ public class TimeController {
     }
 
     @GetMapping("/booking-status")
-    public ResponseEntity<List<TimeResponseWithBookingInfo>> getTimesWithBookingInfo(
-            @RequestParam LocalDate date, @RequestParam Long themeId) {
-        List<TimeDataWithBookingInfo> timesWithBookingStatus = service.getTimesWithBookingInfo(date, themeId);
-        List<TimeResponseWithBookingInfo> response = TimeResponseWithBookingInfo.from(timesWithBookingStatus);
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<List<TimeDataWithBookingInfo>> getTimesWithBookingInfo(
+            @RequestParam LocalDate date,
+            @RequestParam Long themeId
+    ) {
+        List<TimeDataWithBookingInfo> timesWithBookingInfo = service.getTimesWithBookingInfo(date, themeId);
+        return ResponseEntity.ok().body(timesWithBookingInfo);
     }
 }

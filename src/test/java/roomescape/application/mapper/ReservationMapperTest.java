@@ -9,10 +9,10 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.presentation.dto.request.ReservationRequest;
 
 class ReservationMapperTest {
 
@@ -22,7 +22,7 @@ class ReservationMapperTest {
         // given
         LocalDate reservationDate = LocalDate.of(2024, 4, 1);
         ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationRequest request = new ReservationRequest(1L, reservationDate, "멍구", 1L);
+        ReservationCreateDto request = new ReservationCreateDto(1L, reservationDate, "멍구", 1L);
 
         // when
         Reservation reservation = Reservation.withoutId(request.name(), THEME_1, request.date(), reservationTime);

@@ -2,13 +2,13 @@ package roomescape.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.exception.NotFoundException;
-import roomescape.presentation.dto.request.ReservationRequest;
 
 @Service
 public class ReservationService {
@@ -17,14 +17,17 @@ public class ReservationService {
     private final TimeService timeService;
     private final ThemeService themeService;
 
-    public ReservationService(ReservationRepository reservationRepository, TimeService timeService,
-                              ThemeService themeService) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            TimeService timeService,
+            ThemeService themeService
+    ) {
         this.reservationRepository = reservationRepository;
         this.timeService = timeService;
         this.themeService = themeService;
     }
 
-    public ReservationDto registerReservation(ReservationRequest request) {
+    public ReservationDto registerReservation(ReservationCreateDto request) {
         Theme theme = themeService.getThemeById(request.themeId()).toEntity();
         ReservationTime reservationTime = timeService.getTimeById(request.timeId()).toEntity();
         Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);

@@ -9,10 +9,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.application.dto.TimeCreateDto;
 import roomescape.application.dto.TimeDto;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.repository.TimeRepository;
-import roomescape.presentation.dto.request.TimeRequest;
 import roomescape.testRepository.FakeTimeRepository;
 
 class TimeServiceTest {
@@ -55,10 +55,10 @@ class TimeServiceTest {
     void registerNewTime_withRequest() {
         // given
         LocalTime time = LocalTime.of(10, 0);
-        TimeRequest timeRequest = new TimeRequest(time);
+        TimeCreateDto timeCreateDto = new TimeCreateDto(time);
 
         // when
-        TimeDto timeDto = timeService.registerNewTime(timeRequest);
+        TimeDto timeDto = timeService.registerNewTime(timeCreateDto);
 
         // then
         assertAll(

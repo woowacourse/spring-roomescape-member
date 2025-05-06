@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.application.ThemeService;
+import roomescape.application.dto.ThemeCreateDto;
 import roomescape.application.dto.ThemeDto;
-import roomescape.presentation.dto.request.ThemeRequest;
-import roomescape.presentation.dto.response.ThemeResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -27,16 +26,14 @@ public class ThemeController {
     }
 
     @GetMapping
-    public List<ThemeResponse> getAllThemes() {
-        List<ThemeDto> themes = themeService.getAllThemes();
-        return ThemeResponse.from(themes);
+    public List<ThemeDto> getAllThemes() {
+        return themeService.getAllThemes();
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> createTheme(@Valid @RequestBody ThemeRequest themeRequest) {
-        ThemeDto themeDto = themeService.registerTheme(themeRequest);
-        ThemeResponse themeResponse = ThemeResponse.from(themeDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(themeResponse);
+    public ResponseEntity<ThemeDto> createTheme(@Valid @RequestBody ThemeCreateDto themeCreateDto) {
+        ThemeDto themeDto = themeService.registerTheme(themeCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(themeDto);
     }
 
     @DeleteMapping("/{id}")
@@ -46,8 +43,7 @@ public class ThemeController {
     }
 
     @GetMapping("/ranking")
-    public List<ThemeResponse> getThemeRanking() {
-        List<ThemeDto> themes = themeService.getThemeRanking();
-        return ThemeResponse.from(themes);
+    public List<ThemeDto> getThemeRanking() {
+        return themeService.getThemeRanking();
     }
 }
