@@ -1,4 +1,4 @@
-package roomescape.controller.rest.response;
+package roomescape.service.response;
 
 import java.time.LocalDate;
 import java.util.List;

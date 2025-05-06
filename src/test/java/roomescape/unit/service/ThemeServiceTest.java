@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -14,8 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import roomescape.repository.ReservationRepository;
-import roomescape.controller.rest.request.CreateThemeRequest;
-import roomescape.controller.rest.response.ThemeResponse;
+import roomescape.service.request.CreateThemeRequest;
+import roomescape.service.response.ThemeResponse;
 import roomescape.domain.theme.LastWeekRange;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;

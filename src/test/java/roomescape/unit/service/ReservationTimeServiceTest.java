@@ -10,13 +10,15 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.time.AvailableReservationTime;
 import roomescape.repository.ReservationRepository;
-import roomescape.controller.rest.request.AvailableReservationTimeRequest;
-import roomescape.controller.rest.request.CreateReservationTimeRequest;
-import roomescape.controller.rest.response.AvailableReservationTimeResponse;
-import roomescape.controller.rest.response.ReservationTimeResponse;
+import roomescape.service.request.AvailableReservationTimeRequest;
+import roomescape.service.request.CreateReservationTimeRequest;
+import roomescape.service.response.AvailableReservationTimeResponse;
+import roomescape.service.response.ReservationTimeResponse;
 import roomescape.domain.time.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.ReservationTimeService;
@@ -147,15 +149,21 @@ public class ReservationTimeServiceTest {
         LocalDate date = LocalDate.of(2024, 5, 5);
         Long themeId = 1L;
         AvailableReservationTimeRequest request = new AvailableReservationTimeRequest(date, themeId);
-        List<AvailableReservationTimeResponse> expected = List.of(
-                new AvailableReservationTimeResponse(1L, LocalTime.of(10, 0), false)
-        );
+        List<AvailableReservationTime> expected = List.of(
+                new AvailableReservationTime(
+                        new ReservationTime(1L, LocalTime.of(10, 0)),
+                        false
+                ));
         when(reservationTimeRepository.findAllAvailableReservationTimes(date, themeId)).thenReturn(expected);
 
         // when
         List<AvailableReservationTimeResponse> result = service.findAvailableReservationTimes(request);
 
         // then
-        assertThat(result).isEqualTo(expected);
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(result.get(0).id()).isEqualTo(1L);
+        softly.assertThat(result.get(0).startAt()).isEqualTo(LocalTime.of(10, 0));
+        softly.assertThat(result.get(0).isReserved()).isFalse();
+        softly.assertAll();
     }
 }

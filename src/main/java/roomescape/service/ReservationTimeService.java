@@ -4,11 +4,12 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
+import roomescape.domain.time.AvailableReservationTime;
 import roomescape.repository.ReservationRepository;
-import roomescape.controller.rest.request.AvailableReservationTimeRequest;
-import roomescape.controller.rest.request.CreateReservationTimeRequest;
-import roomescape.controller.rest.response.AvailableReservationTimeResponse;
-import roomescape.controller.rest.response.ReservationTimeResponse;
+import roomescape.service.request.AvailableReservationTimeRequest;
+import roomescape.service.request.CreateReservationTimeRequest;
+import roomescape.service.response.AvailableReservationTimeResponse;
+import roomescape.service.response.ReservationTimeResponse;
 import roomescape.domain.time.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 
@@ -55,6 +56,10 @@ public class ReservationTimeService {
     public List<AvailableReservationTimeResponse> findAvailableReservationTimes(
             final AvailableReservationTimeRequest request
     ) {
-        return reservationTimeRepository.findAllAvailableReservationTimes(request.date(), request.themeId());
+        List<AvailableReservationTime> allAvailableReservationTimes = reservationTimeRepository.findAllAvailableReservationTimes(
+                request.date(),
+                request.themeId()
+        );
+        return AvailableReservationTimeResponse.from(allAvailableReservationTimes);
     }
 }

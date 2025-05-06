@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import roomescape.common.RepositoryBaseTest;
 import roomescape.domain.theme.Theme;
-import roomescape.controller.rest.response.AvailableReservationTimeResponse;
+import roomescape.domain.time.AvailableReservationTime;
+import roomescape.service.response.AvailableReservationTimeResponse;
 import roomescape.domain.time.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.unit.fixture.ReservationDateFixture;
@@ -132,16 +133,16 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         reservationDbFixture.예약_한스_25_4_22(예약시간, 공포);
 
         // when
-        List<AvailableReservationTimeResponse> available = repository.findAllAvailableReservationTimes(
+        List<AvailableReservationTime> available = repository.findAllAvailableReservationTimes(
                 ReservationDateFixture.예약날짜_25_4_22.date(), 공포.getId());
 
         // then
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(available).hasSize(2);
-        softly.assertThat(available.get(0).startAt()).isEqualTo(LocalTime.of(10, 0));
-        softly.assertThat(available.get(0).isReserved()).isTrue();
-        softly.assertThat(available.get(1).startAt()).isEqualTo(LocalTime.of(11, 0));
-        softly.assertThat(available.get(1).isReserved()).isFalse();
+        softly.assertThat(available.get(0).time().getStartAt()).isEqualTo(LocalTime.of(10, 0));
+        softly.assertThat(available.get(0).available()).isTrue();
+        softly.assertThat(available.get(1).time().getStartAt()).isEqualTo(LocalTime.of(11, 0));
+        softly.assertThat(available.get(1).available()).isFalse();
         softly.assertAll();
     }
 }

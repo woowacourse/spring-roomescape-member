@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.controller.rest.response.AvailableReservationTimeResponse;
+import roomescape.domain.time.AvailableReservationTime;
 import roomescape.domain.time.ReservationTime;
 
 @Repository
@@ -71,7 +71,7 @@ public class ReservationTimeRepository {
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
     }
 
-    public List<AvailableReservationTimeResponse> findAllAvailableReservationTimes(LocalDate date, Long themeId) {
+    public List<AvailableReservationTime> findAllAvailableReservationTimes(LocalDate date, Long themeId) {
         String sql = """
                 SELECT
                     rt.id,
@@ -85,9 +85,11 @@ public class ReservationTimeRepository {
                     rt.id
                 """;
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
-                new AvailableReservationTimeResponse(
-                        resultSet.getLong("id"),
-                        LocalTime.parse(resultSet.getString("start_at")),
+                new AvailableReservationTime(
+                        new ReservationTime(
+                                resultSet.getLong("id"),
+                                LocalTime.parse(resultSet.getString("start_at"))
+                        ),
                         resultSet.getBoolean("is_reserved")
                 ), date, themeId);
     }

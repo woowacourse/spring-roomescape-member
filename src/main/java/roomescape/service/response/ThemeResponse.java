@@ -1,4 +1,4 @@
-package roomescape.controller.rest.response;
+package roomescape.service.response;
 
 import java.util.List;
 import roomescape.domain.theme.Theme;

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.rest.request.CreateThemeRequest;
-import roomescape.controller.rest.response.ThemeResponse;
+import roomescape.service.request.CreateThemeRequest;
+import roomescape.service.response.ThemeResponse;
 import roomescape.service.ThemeService;
 
 @RestController
