@@ -19,7 +19,7 @@ class ReservationTest {
     @DisplayName("예약 생성시, 예약자 명이 빈 값이면 예외를 던진다")
     @Test
     void createReservationTest1() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new Reservation(null, DATE, RESERVATION_TIME, ROOM_THEME))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약자 명은 빈 값이 입력될 수 없습니다");
@@ -28,7 +28,7 @@ class ReservationTest {
     @DisplayName("예약 생성시, 예약 날짜가 빈 값이면 예외를 던진다")
     @Test
     void createReservationTest2() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new Reservation(NAME, null, RESERVATION_TIME, ROOM_THEME))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 날짜는 빈 값이 입력될 수 없습니다");
@@ -37,7 +37,7 @@ class ReservationTest {
     @DisplayName("예약 생성시, 예약 시간이 빈 값이면 예외를 던진다")
     @Test
     void createReservationTest3() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new Reservation(NAME, DATE, null, ROOM_THEME))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 시간은 빈 값이 입력될 수 없습니다");
@@ -46,7 +46,7 @@ class ReservationTest {
     @DisplayName("예약 생성시, 예약 테마가 빈 값이면 예외를 던진다")
     @Test
     void createReservationTest4() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new Reservation(NAME, DATE, RESERVATION_TIME, null))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 테마는 빈 값이 입력될 수 없습니다");
@@ -56,8 +56,8 @@ class ReservationTest {
     @Test
     void validatePastDateAndTimeTest1() {
         // given
-        LocalDate pastDate = LocalDate.now().minusDays(1);
-        Reservation reservation = new Reservation(NAME, pastDate, RESERVATION_TIME, ROOM_THEME);
+        final LocalDate pastDate = LocalDate.now().minusDays(1);
+        final Reservation reservation = new Reservation(NAME, pastDate, RESERVATION_TIME, ROOM_THEME);
 
         // when // then
         assertThat(reservation.validatePastDateAndTime()).isTrue();
@@ -67,7 +67,7 @@ class ReservationTest {
     @Test
     void validatePastDateAndTimeTest2() {
         // given
-        Reservation reservation = new Reservation(NAME, DATE, RESERVATION_TIME, ROOM_THEME);
+        final Reservation reservation = new Reservation(NAME, DATE, RESERVATION_TIME, ROOM_THEME);
 
         // when // then
         assertThat(reservation.validatePastDateAndTime()).isFalse();
@@ -77,8 +77,8 @@ class ReservationTest {
     @Test
     void validatePastDateAndTimeTest3() {
         // given
-        ReservationTime pastTime = new ReservationTime(2L, LocalTime.now().minusHours(1));
-        Reservation reservation = new Reservation(NAME, LocalDate.now(), pastTime, ROOM_THEME);
+        final ReservationTime pastTime = new ReservationTime(2L, LocalTime.now().minusHours(1));
+        final Reservation reservation = new Reservation(NAME, LocalDate.now(), pastTime, ROOM_THEME);
 
         // when // then
         assertThat(reservation.validatePastDateAndTime()).isTrue();
@@ -88,8 +88,8 @@ class ReservationTest {
     @Test
     void validatePastDateAndTimeTest4() {
         // given
-        ReservationTime futureTime = new ReservationTime(2L, LocalTime.now().plusMinutes(1));
-        Reservation reservation = new Reservation(NAME, LocalDate.now(), futureTime, ROOM_THEME);
+        final ReservationTime futureTime = new ReservationTime(2L, LocalTime.now().plusMinutes(1));
+        final Reservation reservation = new Reservation(NAME, LocalDate.now(), futureTime, ROOM_THEME);
 
         // when // then
         assertThat(reservation.validatePastDateAndTime()).isFalse();

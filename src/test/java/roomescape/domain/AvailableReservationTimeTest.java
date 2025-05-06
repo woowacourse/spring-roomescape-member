@@ -23,7 +23,7 @@ class AvailableReservationTimeTest {
     @DisplayName("이용 가능한 예약 시간 생성시, 예약된 시간 목록이 null이면 예외를 던진다")
     @Test
     void createAvailableReservationTimeTest1() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new AvailableReservationTime(null, RESERVATION_TIME))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약된 시간 목록은 null이 될 수 없습니다");
@@ -32,7 +32,7 @@ class AvailableReservationTimeTest {
     @DisplayName("이용 가능한 예약 시간 생성시, 예약 시간이 null이면 예외를 던진다")
     @Test
     void createAvailableReservationTimeTest2() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new AvailableReservationTime(BOOKED_TIMES, null))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("예약 시간은 null이 될 수 없습니다");
@@ -55,7 +55,7 @@ class AvailableReservationTimeTest {
     @DisplayName("해당 예약 시간이 예약된 시간 목록에 포함되어 있으면 true를 반환한다")
     @Test
     void isBookedTest2() {
-        // when
+        // given // when
         final AvailableReservationTime availableReservationTime
                 = new AvailableReservationTime(BOOKED_TIMES, RESERVATION_TIME);
 

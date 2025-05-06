@@ -29,14 +29,14 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약 정보를 저장한 다음 저장 정보를 리턴한다")
     void saveReservation() {
-        //given
-        LocalDate date = LocalDate.of(2100, 6, 30);
+        // given
+        final LocalDate date = LocalDate.of(2100, 6, 30);
 
-        //when
-        ReservationCreation creation = new ReservationCreation("test", date, 1L, 1L);
-        Reservation actual = reservationService.addReservation(creation);
+        // when
+        final ReservationCreation creation = new ReservationCreation("test", date, 1L, 1L);
+        final Reservation actual = reservationService.addReservation(creation);
 
-        //then
+        // then
         assertAll(
                 () -> assertThat(reservationService.findAllReservations()).hasSize(2),
                 () -> assertThat(actual.getId()).isEqualTo(2L)
@@ -46,12 +46,12 @@ class ReservationServiceTest {
     @Test
     @DisplayName("테마, 날짜, 시간이 같은 예약이 존재하면 예외를 던진다")
     void exceptionWhenSameDateTime() {
-        //given
-        LocalDate date = LocalDate.of(2100, 1, 1);
+        // given
+        final LocalDate date = LocalDate.of(2100, 1, 1);
         reservationService.addReservation(ReservationCreation.from(new CreateReservationRequest("test", date, 1, 1)));
 
-        //when & then
-        ReservationCreation duplicated = new ReservationCreation("test", date, 1L, 1L);
+        // when // then
+        final ReservationCreation duplicated = new ReservationCreation("test", date, 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(duplicated))
                 .isInstanceOf(ExistedDuplicateValueException.class)
                 .hasMessageContaining("이미 예약이 존재하는 시간입니다");
@@ -61,10 +61,10 @@ class ReservationServiceTest {
     @DisplayName("과거 시점으로 예약하는 경우 예외를 던진다")
     void exceptionWhenPastDate() {
         // given
-        LocalDate date = LocalDate.of(2000, 1, 1);
+        final LocalDate date = LocalDate.of(2000, 1, 1);
 
-        //when & then
-        ReservationCreation past = new ReservationCreation("test", date, 1L, 1L);
+        // when // then
+        final ReservationCreation past = new ReservationCreation("test", date, 1L, 1L);
         assertThatThrownBy(() -> reservationService.addReservation(past))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessageContaining("과거 시점은 예약할 수 없습니다");
@@ -73,7 +73,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 timeId인 경우 예외를 던진다")
     void throwExceptionWhenNotExistTimeId() {
-        //given //when & then
+        // given // when // then
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationCreation("test", LocalDate.of(3000, 1, 1), 1000, 1)))
                 .isInstanceOf(NotExistedValueException.class)
@@ -83,7 +83,7 @@ class ReservationServiceTest {
     @Test
     @DisplayName("존재하지 않는 themeId 경우 예외를 던진다")
     void throwExceptionWhenNotExistThemeId() {
-        //given //when & then
+        // given // when // then
         assertThatThrownBy(() -> reservationService.addReservation(
                 new ReservationCreation("test", LocalDate.of(3000, 1, 1), 1, 1000L)))
                 .isInstanceOf(NotExistedValueException.class)
@@ -93,26 +93,26 @@ class ReservationServiceTest {
     @Test
     @DisplayName("예약을 조회한다")
     void findReservation() {
-        //given //when
-        List<Reservation> actual = reservationService.findAllReservations();
+        // given // when
+        final List<Reservation> actual = reservationService.findAllReservations();
 
-        //then
+        // then
         assertThat(actual).hasSize(1);
     }
 
     @Test
     @DisplayName("예약을 삭제한다")
     void removeReservationById() {
-        //given //when //then
+        // given // when // then
         assertDoesNotThrow(() -> reservationService.removeReservationById(1L));
     }
 
     @Test
     @DisplayName("존재하지 않는 예약을 삭제하려는 경우 예외를 던진다")
     void removeNotExistReservationById() {
-        //given
-        long notExistId = 1000L;
-        //when & then
+        // given
+        final long notExistId = 1000L;
+        // when // then
         assertThatThrownBy(() -> reservationService.removeReservationById(notExistId))
                 .isInstanceOf(NotExistedValueException.class)
                 .hasMessageContaining("존재하지 않는 예약입니다");

@@ -23,10 +23,10 @@ class JdbcRoomThemeDaoTest {
     @Test
     void insertTest() {
         // given
-        RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
+        final RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
 
         // when
-        long result = roomThemeDAO.insert(roomTheme);
+        final long result = roomThemeDAO.insert(roomTheme);
 
         // then
         assertThat(result).isEqualTo(2L);
@@ -35,8 +35,8 @@ class JdbcRoomThemeDaoTest {
     @DisplayName("같은 이름의 테마가 존재하면 true를 반환한다")
     @Test
     void existsByNameTest() {
-        // when
-        boolean result = roomThemeDAO.existsByName("예시 1");
+        // given // when
+        final boolean result = roomThemeDAO.existsByName("예시 1");
 
         // then
         assertThat(result).isTrue();
@@ -45,8 +45,8 @@ class JdbcRoomThemeDaoTest {
     @DisplayName("존재하는 모든 방 테마를 찾아 반환한다")
     @Test
     void findAllTest() {
-        // when
-        List<RoomTheme> result = roomThemeDAO.findAll();
+        // given // when
+        final List<RoomTheme> result = roomThemeDAO.findAll();
 
         // then
         assertThat(result).hasSize(1);
@@ -58,10 +58,10 @@ class JdbcRoomThemeDaoTest {
     @Test
     void findByIdTest() {
         // given
-        long id = 1L;
+        final long id = 1L;
 
         // when
-        Optional<RoomTheme> resultOptional = roomThemeDAO.findById(id);
+        final Optional<RoomTheme> resultOptional = roomThemeDAO.findById(id);
 
         // then
         assertThat(resultOptional).isPresent();
@@ -72,8 +72,7 @@ class JdbcRoomThemeDaoTest {
     @Test
     void findPopularThemesTest() {
         // given
-        RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
-        long result = roomThemeDAO.insert(roomTheme);
+        final RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
 
         // when
         List<RoomTheme> popularThemes = roomThemeDAO.findPopularThemes(
@@ -88,11 +87,11 @@ class JdbcRoomThemeDaoTest {
     @Test
     void deleteByIdTest() {
         // given
-        RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
-        long id = roomThemeDAO.insert(roomTheme);
+        final RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
+        final long id = roomThemeDAO.insert(roomTheme);
 
         // when
-        boolean result = roomThemeDAO.deleteById(id);
+        final boolean result = roomThemeDAO.deleteById(id);
 
         // then
         assertThat(result).isTrue();

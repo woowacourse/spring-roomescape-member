@@ -13,7 +13,7 @@ class ReservationTimeTest {
     @DisplayName("예약 시간 생성시, 예약 시간이 빈 값이면 예외를 던진다")
     @Test
     void createReservationTimeTest1() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new ReservationTime(null))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("시간은 빈 값이 입력될 수 없습니다");
@@ -23,8 +23,8 @@ class ReservationTimeTest {
     @Test
     void validatePastTimeTest1() {
         // given
-        LocalTime pastTime = LocalTime.now().minusMinutes(1);
-        ReservationTime reservationTime = new ReservationTime(pastTime);
+        final LocalTime pastTime = LocalTime.now().minusMinutes(1);
+        final ReservationTime reservationTime = new ReservationTime(pastTime);
 
         // when // then
         assertThat(reservationTime.validatePastTime()).isTrue();
@@ -34,8 +34,8 @@ class ReservationTimeTest {
     @Test
     void validatePastTimeTest2() {
         // given
-        LocalTime futureTime = LocalTime.now().plusMinutes(1);
-        ReservationTime reservationTime = new ReservationTime(futureTime);
+        final LocalTime futureTime = LocalTime.now().plusMinutes(1);
+        final ReservationTime reservationTime = new ReservationTime(futureTime);
 
         // when // then
         assertThat(reservationTime.validatePastTime()).isFalse();

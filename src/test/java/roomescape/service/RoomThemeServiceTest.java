@@ -26,9 +26,9 @@ class RoomThemeServiceTest {
     @Test
     @DisplayName("테마를 추가한다")
     void addTheme() {
-        //given
-        RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
-        //when //then
+        // given
+        final RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
+        // when // then
         assertThatCode(() -> roomThemeService.addTheme(creation))
                 .doesNotThrowAnyException();
     }
@@ -36,11 +36,11 @@ class RoomThemeServiceTest {
     @Test
     @DisplayName("같은 테마가 존재하면 예외를 던진다")
     void throwExceptionWhenExistSameTheme() {
-        //given
-        RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
+        // given
+        final RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
         roomThemeService.addTheme(creation);
 
-        //when //then
+        // when // then
         assertThatThrownBy(() -> roomThemeService.addTheme(creation))
                 .isInstanceOf(ExistedDuplicateValueException.class)
                 .hasMessageContaining("이미 존재하는 테마입니다");
@@ -49,21 +49,21 @@ class RoomThemeServiceTest {
     @Test
     @DisplayName("존재하는 모든 테마를 조회한다")
     void findAllThemes() {
-        //given //when
-        List<RoomTheme> allThemes = roomThemeService.findAllThemes();
+        // given // when
+        final List<RoomTheme> allThemes = roomThemeService.findAllThemes();
 
-        //then
+        // then
         assertThat(allThemes).hasSize(1);
     }
 
     @Test
     @DisplayName("테마를 삭제한다")
     void deleteTheme() {
-        //given
+        // given
         roomThemeService.addTheme(new RoomThemeCreation("test", "description", "thumbnail"));
-        long deleteId = 2L;
+        final long deleteId = 2L;
 
-        //when //then
+        // when // then
         assertThatCode(() -> roomThemeService.deleteTheme(deleteId))
                 .doesNotThrowAnyException();
     }
@@ -71,10 +71,10 @@ class RoomThemeServiceTest {
     @Test
     @DisplayName("사용중인 테마를 삭제하는 경우 예외를 던진다")
     void throwExceptionWhenDeleteUsingTheme() {
-        //given
-        long deleteId = 1L;
+        // given
+        final long deleteId = 1L;
 
-        //when //then
+        // when // then
         assertThatThrownBy(() -> roomThemeService.deleteTheme(deleteId))
                 .isInstanceOf(InUseException.class)
                 .hasMessageContaining("사용 중인 테마입니다");
@@ -83,10 +83,10 @@ class RoomThemeServiceTest {
     @Test
     @DisplayName("존재하지 않는 테마를 삭제하는 경우 예외를 던진다")
     void throwExceptionWhenNotExistTheme() {
-        //given
-        long deleteId = 1000L;
+        // given
+        final long deleteId = 1000L;
 
-        //when //then
+        // when // then
         assertThatThrownBy(() -> roomThemeService.deleteTheme(deleteId))
                 .isInstanceOf(NotExistedValueException.class)
                 .hasMessageContaining("존재하지 않는 테마입니다");

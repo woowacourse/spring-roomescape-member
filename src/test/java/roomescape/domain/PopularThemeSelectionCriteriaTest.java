@@ -18,7 +18,7 @@ class PopularThemeSelectionCriteriaTest {
         final int durationInDays = 10;
 
         // when
-        PopularThemeSelectionCriteria criteria = new PopularThemeSelectionCriteria(startBaseDate, durationInDays);
+        final PopularThemeSelectionCriteria criteria = new PopularThemeSelectionCriteria(startBaseDate, durationInDays);
 
         // then
         assertThat(criteria.getStartDay()).isEqualTo(LocalDate.of(2025, 4, 24));

@@ -26,13 +26,13 @@ public class JdbcReservationDaoTest {
     @Test
     void insertTest1() {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
-        RoomTheme roomTheme = new RoomTheme(1L, "예시 1", "우테코 레벨2를 탈출하는 내용입니다.",
+        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
+        final RoomTheme roomTheme = new RoomTheme(1L, "예시 1", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Reservation reservation = new Reservation("검프", LocalDate.now().plusDays(1), reservationTime, roomTheme);
+        final Reservation reservation = new Reservation("검프", LocalDate.now().plusDays(1), reservationTime, roomTheme);
 
         // when
-        long result = reservationDAO.insert(reservation);
+        final long result = reservationDAO.insert(reservation);
 
         // then
         assertThat(result).isEqualTo(2L);
@@ -41,8 +41,8 @@ public class JdbcReservationDaoTest {
     @DisplayName("같은 예약이 존재하면 true를 반환한다")
     @Test
     void existsSameReservationTest1() {
-        // when
-        boolean result = reservationDAO.existSameReservation(LocalDate.of(2025, 4, 28), 1L, 1L);
+        // given // when
+        final boolean result = reservationDAO.existSameReservation(LocalDate.of(2025, 4, 28), 1L, 1L);
 
         // then
         assertThat(result).isTrue();
@@ -51,8 +51,8 @@ public class JdbcReservationDaoTest {
     @DisplayName("존재하는 모든 예약을 찾아 반환한다")
     @Test
     void findAllTest1() {
-        // when
-        List<Reservation> result = reservationDAO.findAll();
+        // given // when
+        final List<Reservation> result = reservationDAO.findAll();
 
         // then
         assertThat(result).hasSize(1);
@@ -65,10 +65,10 @@ public class JdbcReservationDaoTest {
     @Test
     void findByIdTest1() {
         // given
-        long id = 1L;
+        final long id = 1L;
 
         // when
-        Optional<Reservation> resultOptional = reservationDAO.findById(id);
+        final Optional<Reservation> resultOptional = reservationDAO.findById(id);
 
         // then
         assertThat(resultOptional).isPresent();
@@ -79,10 +79,10 @@ public class JdbcReservationDaoTest {
     @Test
     void existsByTimeIdTest1() {
         // given
-        long timeId = 1L;
+        final long timeId = 1L;
 
         // when
-        boolean result = reservationDAO.existsByTimeId(timeId);
+        final boolean result = reservationDAO.existsByTimeId(timeId);
 
         // then
         assertThat(result).isTrue();
@@ -92,10 +92,10 @@ public class JdbcReservationDaoTest {
     @Test
     void existsByThemeIdTest1() {
         // given
-        long themeId = 1L;
+        final long themeId = 1L;
 
         // when
-        boolean result = reservationDAO.existsByThemeId(themeId);
+        final boolean result = reservationDAO.existsByThemeId(themeId);
 
         // then
         assertThat(result).isTrue();
@@ -105,10 +105,10 @@ public class JdbcReservationDaoTest {
     @Test
     void deleteByIdTest1() {
         // given
-        long id = 1L;
+        final long id = 1L;
 
         // when
-        boolean result = reservationDAO.deleteById(id);
+        final boolean result = reservationDAO.deleteById(id);
 
         // then
         assertThat(result).isTrue();

@@ -42,7 +42,7 @@ public class JdbcRoomThemeDao implements RoomThemeDao {
     }
 
     @Override
-    public boolean existsByName(String name) {
+    public boolean existsByName(final String name) {
         final String query = "SELECT EXISTS (SELECT 1 FROM theme WHERE theme_name = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, name));
     }
@@ -62,7 +62,7 @@ public class JdbcRoomThemeDao implements RoomThemeDao {
     }
 
     @Override
-    public List<RoomTheme> findPopularThemes(LocalDate start, LocalDate end) {
+    public List<RoomTheme> findPopularThemes(final LocalDate start, final LocalDate end) {
 
         final String query = """
                         SELECT
@@ -81,7 +81,7 @@ public class JdbcRoomThemeDao implements RoomThemeDao {
     }
 
     @Override
-    public boolean deleteById(long id) {
+    public boolean deleteById(final long id) {
         final String query = "DELETE FROM theme WHERE id = ?";
         return jdbcTemplate.update(query, id) > 0;
     }

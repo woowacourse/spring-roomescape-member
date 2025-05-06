@@ -16,7 +16,7 @@ class RoomThemeTest {
     @DisplayName("방 테마 생성시, 테마 명이 빈 값이면 예외를 던진다")
     @Test
     void createRoomThemeTest1() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new RoomTheme(ID, null, DESCRIPTION, THUMBNAIL))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("테마 명은 빈 값이 입력될 수 없습니다");
@@ -25,7 +25,7 @@ class RoomThemeTest {
     @DisplayName("방 테마 생성시, 테마 상세 설명이 빈 값이면 예외를 던진다")
     @Test
     void createRoomThemeTest2() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new RoomTheme(ID, NAME, null, THUMBNAIL))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("테마 상세 설명은 빈 값이 입력될 수 없습니다");
@@ -34,7 +34,7 @@ class RoomThemeTest {
     @DisplayName("방 테마 생성시, 테마 상세 설명이 빈 값이면 예외를 던진다")
     @Test
     void createRoomThemeTest3() {
-        // when // then
+        // given // when // then
         assertThatThrownBy(() -> new RoomTheme(ID, NAME, DESCRIPTION, null))
                 .isInstanceOf(InvalidInputException.class)
                 .hasMessage("썸네일 주소는 빈 값이 입력될 수 없습니다");

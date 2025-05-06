@@ -78,7 +78,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Optional<Reservation> findById(long id) {
+    public Optional<Reservation> findById(final long id) {
         final String query = """
                 SELECT
                     r.id AS reservation_id,

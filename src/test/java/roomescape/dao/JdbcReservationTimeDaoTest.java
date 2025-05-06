@@ -25,10 +25,10 @@ class JdbcReservationTimeDaoTest {
     @Test
     void insertTest() {
         // given
-        ReservationTime reservationTime = new ReservationTime(LocalTime.of(16, 0));
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.of(16, 0));
 
         // when
-        long result = reservationTimeDAO.insert(reservationTime);
+        final long result = reservationTimeDAO.insert(reservationTime);
 
         // then
         assertThat(result).isEqualTo(3L);
@@ -37,8 +37,8 @@ class JdbcReservationTimeDaoTest {
     @DisplayName("같은 예약 시간이 존재하면 true를 반환한다")
     @Test
     void existsByStartAtTest() {
-        // when
-        boolean result = reservationTimeDAO.existsByStartAt(LocalTime.of(10, 0));
+        // given // when
+        final boolean result = reservationTimeDAO.existsByStartAt(LocalTime.of(10, 0));
 
         // then
         assertThat(result).isTrue();
@@ -47,8 +47,8 @@ class JdbcReservationTimeDaoTest {
     @DisplayName("존재하는 모든 시간을 찾아 반환한다")
     @Test
     void findAllTest() {
-        // when
-        List<ReservationTime> result = reservationTimeDAO.findAll();
+        // given // when
+        final List<ReservationTime> result = reservationTimeDAO.findAll();
 
         // then
         assertThat(result).hasSize(2);
@@ -60,10 +60,10 @@ class JdbcReservationTimeDaoTest {
     @Test
     void findByIdTest() {
         // given
-        long id = 1L;
+        final long id = 1L;
 
         // when
-        Optional<ReservationTime> resultOptional = reservationTimeDAO.findById(id);
+        final Optional<ReservationTime> resultOptional = reservationTimeDAO.findById(id);
 
         // then
         assertThat(resultOptional).isPresent();
@@ -74,8 +74,8 @@ class JdbcReservationTimeDaoTest {
     @DisplayName("예약에 사용중인 예약 시간을 찾아 반환한다")
     @Test
     void findAllBookedTimeTest() {
-        // when
-        List<ReservationTime> bookedTimes = reservationTimeDAO.findAllBookedTime(
+        // given // when
+        final List<ReservationTime> bookedTimes = reservationTimeDAO.findAllBookedTime(
                 LocalDate.of(2025, 4, 28), 1L
         );
 
@@ -89,10 +89,10 @@ class JdbcReservationTimeDaoTest {
     @Test
     void deleteByIdTest() {
         // given
-        long id = 2L;
+        final long id = 2L;
 
         // when
-        boolean result = reservationTimeDAO.deleteById(id);
+        final boolean result = reservationTimeDAO.deleteById(id);
 
         // then
         assertThat(result).isTrue();

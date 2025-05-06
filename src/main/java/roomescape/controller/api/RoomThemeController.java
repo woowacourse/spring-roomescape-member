@@ -23,7 +23,7 @@ public class RoomThemeController {
 
     private final RoomThemeService roomThemeService;
 
-    public RoomThemeController(RoomThemeService roomThemeService) {
+    public RoomThemeController(final RoomThemeService roomThemeService) {
         this.roomThemeService = roomThemeService;
     }
 
