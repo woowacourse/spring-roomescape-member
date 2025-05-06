@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -17,7 +18,8 @@ import org.springframework.test.context.jdbc.Sql;
 public class MissionStepTest {
 
     @Test
-    void 일단계() {
+    @DisplayName("admin 페이지를 매핑할 수 있어야 한다.")
+    void can_mapping_admin_page() {
         RestAssured.given().log().all()
             .when().get("/admin")
             .then().log().all()
@@ -25,7 +27,8 @@ public class MissionStepTest {
     }
 
     @Test
-    void 이단계() {
+    @DisplayName("관리자 페이지의 예약 조회를 테스트 한다.")
+    void admin_reservation_get_test() {
         RestAssured.given().log().all()
             .when().get("/admin/reservation")
             .then().log().all()
@@ -40,7 +43,8 @@ public class MissionStepTest {
     }
 
     @Test
-    void 칠단계() {
+    @DisplayName("예약 시간 추가, 조회, 삭제를 테스트 한다.")
+    void reservation_time_api_test() {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
