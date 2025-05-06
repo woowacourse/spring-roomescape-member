@@ -63,39 +63,45 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByDateAndTimeAndTheme(final LocalDate date, final LocalTime time, final Long themeId) {
-        final String sql = """
-                select count(*) 
-                from reservation as r                
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                where r.date = ? 
-                  and rt.start_at = ?
-                  and r.theme_id = ?
+        final String existsSql = """
+                    select exists(
+                        select 1
+                        from reservation as r
+                        inner join reservation_time as rt
+                        on r.time_id = rt.id
+                        where r.date = ?
+                          and rt.start_at = ?
+                          and r.theme_id = ?
+                    )
                 """;
-        final Integer count = template.queryForObject(sql, Integer.class, date, time, themeId);
-        return count != null && count > 0;
+        final Boolean exists = template.queryForObject(existsSql, Boolean.class, date, time, themeId);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override
     public boolean existsByReservationTimeId(final Long reservationTimeId) {
-        final String sql = """
-                        select count(*) 
+        final String existsSql = """
+                    select exists(
+                        select 1
                         from reservation as r
                         where r.time_id = ?
+                    )
                 """;
-        final Integer count = template.queryForObject(sql, Integer.class, reservationTimeId);
-        return count != null && count > 0;
+        final Boolean exists = template.queryForObject(existsSql, Boolean.class, reservationTimeId);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override
     public boolean existsByThemeId(final Long themeId) {
-        final String sql = """
-                        select count(*) 
+        final String existsSql = """
+                    select exists(
+                        select 1
                         from reservation as r
                         where r.theme_id = ?
+                    )
                 """;
-        final Integer count = template.queryForObject(sql, Integer.class, themeId);
-        return count != null && count > 0;
+        final Boolean exists = template.queryForObject(existsSql, Boolean.class, themeId);
+        return Boolean.TRUE.equals(exists);
     }
 
     @Override
