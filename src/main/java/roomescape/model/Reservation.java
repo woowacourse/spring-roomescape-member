@@ -31,10 +31,6 @@ public class Reservation {
         return !date.isAfter(other);
     }
 
-    public boolean isSameTime(ReservationTime other) {
-        return reservationTime.isSameTime(other);
-    }
-
     public Long getId() {
         return id;
     }

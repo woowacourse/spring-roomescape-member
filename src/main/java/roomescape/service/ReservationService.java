@@ -37,7 +37,8 @@ public class ReservationService {
         Theme theme = themeDao.findById(reservationRequest.themeId())
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 테마입니다."));
         Reservation reservation = reservationRequest.toEntityWithReservationTime(reservationTime, theme);
-        if (reservation.isPast(LocalDate.now(clock))) {
+        LocalDate reservationDate = reservation.getDate();
+        if (!reservationDate.isAfter(LocalDate.now(clock))) {
             throw new IllegalStateException("하루 전 까지 예약 가능합니다.");
         }
         if (reservationDao.isExistByThemeIdAndTimeIdAndDate(
