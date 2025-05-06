@@ -86,9 +86,9 @@ class ThemeControllerTest {
         @DisplayName("유효하지 않은 name 필드값을 가진 Theme는 생성할 수 없다")
         @ParameterizedTest
         @MethodSource("invalidStrings")
-        void invalidRequestThemeTest1() {
+        void invalidRequestThemeTest1(String name) {
             Map<String, String> params = Map.of(
-                    "name", "",
+                    "name", name,
                     "description", "hello",
                     "thumbnail", "https://"
             );
@@ -105,10 +105,10 @@ class ThemeControllerTest {
         @DisplayName("유효하지 않은 description 필드값을 가진 Theme는 생성할 수 없다")
         @ParameterizedTest
         @MethodSource("invalidStrings")
-        void invalidRequestThemeTest2() {
+        void invalidRequestThemeTest2(String description) {
             Map<String, String> params = Map.of(
                     "name", "가이온",
-                    "description", "",
+                    "description", description,
                     "thumbnail", "https://"
             );
 
@@ -123,19 +123,18 @@ class ThemeControllerTest {
         static Stream<Arguments> invalidStrings() {
             return Stream.of(
                     Arguments.of(" "),
-                    Arguments.of(""),
-                    Arguments.of((String) null)
+                    Arguments.of("")
             );
         }
 
         @DisplayName("유효하지 않은 thumbnail 필드값을 가진 Theme는 생성할 수 없다")
         @ParameterizedTest
         @MethodSource("invalidUrls")
-        void invalidRequestThemeTest3() {
+        void invalidRequestThemeTest3(String url) {
             Map<String, String> params = Map.of(
                     "name", "가이온",
                     "description", "hello",
-                    "thumbnail", ""
+                    "thumbnail", url
             );
 
             RestAssured.given().log().all()
@@ -150,7 +149,6 @@ class ThemeControllerTest {
             return Stream.of(
                     Arguments.of(" "),
                     Arguments.of(""),
-                    Arguments.of((String) null),
                     Arguments.of("ftp://")
             );
         }
