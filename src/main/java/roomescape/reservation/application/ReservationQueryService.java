@@ -2,6 +2,7 @@ package roomescape.reservation.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.exception.NotFoundException;
 import roomescape.reservation.presentation.controller.ReservationSearchCondition;
 import roomescape.reservation.infrastructure.JdbcReservationQueryDao;
 import roomescape.reservation.infrastructure.dto.ReservationDetailData;
@@ -23,6 +24,7 @@ public class ReservationQueryService {
     }
 
     public ReservationDetailData getReservationDetailById(Long id) {
-        return reservationQueryDao.getReservationDetailById(id);
+        return reservationQueryDao.findReservationDetailById(id)
+                .orElseThrow(() -> new NotFoundException("reservationId", id));
     }
 }

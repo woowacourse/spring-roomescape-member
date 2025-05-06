@@ -2,6 +2,8 @@ package roomescape.reservation.infrastructure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -52,7 +54,7 @@ public class JdbcReservationQueryDao {
         return jdbcTemplate.query(sql, RESERVATION_DETAIL_DATA_ROW_MAPPER);
     }
 
-    public ReservationDetailData getReservationDetailById(Long id) {
+    public Optional<ReservationDetailData> findReservationDetailById(Long id) {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -67,8 +69,13 @@ public class JdbcReservationQueryDao {
                 WHERE r.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(sql, RESERVATION_DETAIL_DATA_ROW_MAPPER,
-                id);
+        try {
+            ReservationDetailData reservationDetailData =
+                    jdbcTemplate.queryForObject(sql, RESERVATION_DETAIL_DATA_ROW_MAPPER, id);
+            return Optional.of(reservationDetailData);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public List<ReservationDetailData> findByCondition(ReservationSearchCondition condition) {
@@ -88,9 +95,9 @@ public class JdbcReservationQueryDao {
 
         List<Object> params = new ArrayList<>();
 
-        if (condition.memberName() != null) {
-            sql.append(" AND m.name = ?");
-            params.add(condition.memberName());
+        if (condition.memberId() != null) {
+            sql.append(" AND m.id = ?");
+            params.add(condition.memberId());
         }
         if (condition.themeId() != null) {
             sql.append(" AND t.id = ?");
