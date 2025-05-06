@@ -1,7 +1,9 @@
 package roomescape.member;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -25,13 +27,13 @@ public class MemberJdbcRepository implements MemberRepository {
     @Override
     public Member findByEmail(final String email) {
         final String sql = "SELECT * FROM member WHERE email=?";
-        return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) ->
-                new Member(
-                        resultSet.getLong("id"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("name")
-                ), email);
+        return jdbcTemplate.queryForObject(sql, getRowMapper(), email);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        final String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, getRowMapper());
     }
 
     @Override
@@ -44,5 +46,15 @@ public class MemberJdbcRepository implements MemberRepository {
     public Boolean existsByEmail(final String email) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM member WHERE email=?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+    }
+
+    private RowMapper<Member> getRowMapper() {
+        return (resultSet, rowNum) ->
+                new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("name")
+                );
     }
 }
