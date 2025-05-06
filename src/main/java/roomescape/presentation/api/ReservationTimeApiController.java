@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.AuthRequired;
 import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.vo.UserRole;
 import roomescape.business.service.ReservationTimeService;
 import roomescape.presentation.dto.request.ReservationTimeRequest;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
@@ -23,7 +24,7 @@ public class ReservationTimeApiController {
     }
 
     @PostMapping("/times")
-    @AuthRequired
+    @AuthRequired(UserRole.ADMIN)
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody @Valid ReservationTimeRequest request) {
         ReservationTime reservationTime = reservationTimeService.addAndGet(request.startAtToLocalTime());
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
@@ -50,7 +51,7 @@ public class ReservationTimeApiController {
     }
 
     @DeleteMapping("/times/{id}")
-    @AuthRequired
+    @AuthRequired(UserRole.ADMIN)
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
