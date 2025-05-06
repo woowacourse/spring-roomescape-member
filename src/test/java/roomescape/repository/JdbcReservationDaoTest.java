@@ -36,7 +36,7 @@ class JdbcReservationDaoTest {
         // given
         ReservationTime time = jdbcReservationTimeDao.findById(1L).orElseThrow();
         Theme theme = jdbcThemeDao.findById(1L).orElseThrow();
-        Reservation reservation = new Reservation("leo", LocalDate.of(2025, 5, 4), time, theme);
+        Reservation reservation = new Reservation("leo", LocalDate.now().plusDays(1), time, theme);
         // when
         Reservation savedReservation = jdbcReservationDao.save(reservation);
         // then
