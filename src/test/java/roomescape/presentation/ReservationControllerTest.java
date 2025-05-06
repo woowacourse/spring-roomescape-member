@@ -50,9 +50,9 @@ class ReservationControllerTest extends AbstractControllerTest {
         reservationThemeRepository.clear();
     }
 
-    @DisplayName("예약 가능한 테마 목록을 조회하면 상태 코드와 함께 테마 목록이 반환된다.")
+    @DisplayName("예약 목록을 조회하면 상태 코드와 함께 예약 목록이 반환된다.")
     @Test
-    void getReservationThemes() {
+    void getAllReservations() {
         // given
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
