@@ -195,7 +195,7 @@ function applyFilter(event) {
   const params = new URLSearchParams();
 
   if (themeId) params.append('themeId', themeId);
-  if (memberId) params.append('memberName', memberId);
+  if (memberId) params.append('memberId', memberId);
   if (dateFrom) params.append('dateFrom', dateFrom);
   if (dateTo) params.append('dateTo', dateTo);
 

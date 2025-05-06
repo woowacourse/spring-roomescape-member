@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public record ReservationSearchCondition(
 
-        String memberName,
+        Long memberId,
 
         Long themeId,
 
@@ -16,6 +16,6 @@ public record ReservationSearchCondition(
         LocalDate dateTo
 ) {
     public boolean isEmpty() {
-        return memberName == null && themeId == null && dateFrom == null && dateTo == null;
+        return memberId == null && themeId == null && dateFrom == null && dateTo == null;
     }
 }
