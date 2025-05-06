@@ -85,9 +85,23 @@ class JdbcReservationDaoTest {
             "2, FALSE"
     })
     @DisplayName("예약 시간 ID로 예약 존재 여부를 판단한다")
-    void existsReservationByTimeId(Long timeId, boolean expected) {
+    void existsReservationByTimeId(long timeId, boolean expected) {
         // when
         Boolean result = jdbcReservationDao.existsByTimeId(timeId);
+
+        // then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, TRUE",
+            "2, FALSE"
+    })
+    @DisplayName("테마 ID로 예약 존재 여부를 판단한다")
+    void existsReservationByThemeId(long themeId, boolean expected) {
+        // when
+        Boolean result = jdbcReservationDao.existsByThemeId(themeId);
 
         // then
         assertThat(result).isEqualTo(expected);
