@@ -1,5 +1,6 @@
 package roomescape.domain.exception;
 
+// TODO : 추상화 수준 낮추기
 public class ReservationException extends RuntimeException {
 
     public ReservationException(String message) {
