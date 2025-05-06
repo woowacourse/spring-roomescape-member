@@ -1,9 +1,13 @@
 package roomescape;
 
-import java.time.LocalDateTime;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import roomescape.dao.FakeReservationDaoImpl;
+import roomescape.dao.FakeReservationTimeDaoImpl;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.service.TestTime;
 import roomescape.service.nowdate.CurrentDateTime;
 
 @TestConfiguration
@@ -12,14 +16,19 @@ public class TestConfig {
     @Bean
     @Primary
     public CurrentDateTime currentDate() {
-        return new CurrentATime();
+        return new TestTime();
     }
 
-    static class CurrentATime implements CurrentDateTime {
-
-        @Override
-        public LocalDateTime get() {
-            return LocalDateTime.of(2025, 1, 1, 10, 30);
-        }
+    @Bean
+    @Primary
+    public ReservationDao reservationDao() {
+        return new FakeReservationDaoImpl();
     }
+
+    @Bean
+    @Primary
+    public ReservationTimeDao reservationTimeDao() {
+        return new FakeReservationTimeDaoImpl();
+    }
+
 }

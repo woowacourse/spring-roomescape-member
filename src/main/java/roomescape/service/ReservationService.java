@@ -41,6 +41,10 @@ public class ReservationService {
             .toList();
     }
 
+    public void deleteReservation(Long id) {
+        reservationRepository.deleteReservation(id);
+    }
+
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
         Reservation reservation = createReservationFrom(reservationRequestDto);
         reservation.validateDateTime(currentDateTime.get());
@@ -65,9 +69,5 @@ public class ReservationService {
         if (reservationRepository.hasAnotherReservation(date, reservationRequestDto.timeId())) {
             throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
         }
-    }
-
-    public void deleteReservation(Long id) {
-        reservationRepository.deleteReservation(id);
     }
 }

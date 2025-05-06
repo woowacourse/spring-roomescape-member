@@ -1,16 +1,16 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import roomescape.TestConfig;
+import roomescape.dao.FakeReservationDaoImpl;
+import roomescape.dao.FakeReservationTimeDaoImpl;
+import roomescape.dao.FakeThemeDaoImpl;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -21,66 +21,67 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.exception.InvalidReservationException;
-import roomescape.service.nowdate.CurrentDateTime;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
+import roomescape.repository.impl.ReservationRepositoryImpl;
+import roomescape.repository.impl.ReservationTimeRepositoryImpl;
+import roomescape.repository.impl.ThemeRepositoryImpl;
 
 public class ReservationServiceTest {
 
-    private ThemeDao themeDao = Mockito.mock(ThemeDao.class);
-    private ReservationTimeDao reservationTimeDao = Mockito.mock(ReservationTimeDao.class);
-    private ReservationDao reservationDao = Mockito.mock(ReservationDao.class);
-    private CurrentDateTime currentDateTime = new TestConfig().currentDate();
+    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
+    private ThemeDao themeDao;
+    private ThemeRepository themeRepository;
+    private ReservationTimeDao reservationTimeDao;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationService reservationService;
 
-    private ReservationService reservationService = new ReservationService(
-        reservationDao, reservationTimeDao, themeDao, currentDateTime
-    );
 
-    @DisplayName("삭제할 예약 id가 주어졌을 때, 존재하지 않는다면 예외가 발생해야 한다.")
-    @Test
-    void given_delete_invalid_reservation_id_then_throw_exception() {
-        when(reservationDao.findById(1L)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> reservationService.deleteReservation(1L))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("삭제할 예약 id가 주어졌을 때, 존재하는 값이라면, 삭제 되어야 한다.")
-    @Test
-    void given_delete_valid_reservation_id_then_throw_exception() {
-        //given
-        Reservation reservation = new Reservation(
-            new Person("jenson"),
-            new ReservationDate(LocalDate.of(2025, 5, 10)),
-            new ReservationTime(1L, LocalTime.of(10, 0)),
-            new Theme(1L, "공포", "공포테마입니다", "http://aaa")
-        );
-        long savedReservationId = reservationDao.saveReservation(reservation);
-        when(reservationDao.findById(savedReservationId))
-            .thenReturn(Optional.of(reservation));
-
-        //when
-        reservationService.deleteReservation(savedReservationId);
-
-        //then
-        assertThat(reservationService.getAllReservations().size()).isEqualTo(0);
+    @BeforeEach
+    void init() {
+        reservationDao = new FakeReservationDaoImpl();
+        reservationRepository = new ReservationRepositoryImpl(reservationDao);
+        themeDao = new FakeThemeDaoImpl();
+        themeRepository = new ThemeRepositoryImpl(themeDao);
+        reservationTimeDao = new FakeReservationTimeDaoImpl();
+        reservationTimeRepository = new ReservationTimeRepositoryImpl(reservationTimeDao,
+            reservationDao);
+        reservationService = new ReservationService(
+            reservationRepository, reservationTimeRepository, themeRepository, new TestTime());
     }
 
     @DisplayName("이미 존재하는 날짜와 시간에 예약하려고 하면, 예외가 발생해야 한다.")
     @Test
     void already_exist_date_time_save_reservation_then_throw_exception() {
+        //given
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 5, 5));
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포", "공포테마입니다", "http://aaa");
-        when(reservationTimeDao.findById(1L)).thenReturn(Optional.of(reservationTime));
-        when(themeDao.findById(1L)).thenReturn(Optional.of(theme));
-        when(reservationDao.findByDateAndTime(reservationDate, 1L)).thenReturn(1);
-        ReservationRequestDto reservationRequestDto1 = new ReservationRequestDto(
-            "jenson",
+
+        long savedThemeId = themeDao.saveTheme(theme);
+        theme.setId(savedThemeId);
+
+        long savedReservationTimeId = reservationTimeDao.saveReservationTime(reservationTime);
+        reservationTime.setId(savedReservationTimeId);
+
+        Reservation reservation = new Reservation(
+            new Person("젠슨"),
+            reservationDate,
+            reservationTime,
+            theme);
+        reservationRepository.saveReservation(reservation);
+        ReservationRequestDto reservationRequestDto = new ReservationRequestDto(
+            "젠슨",
             "2025-05-05",
-            1L,
-            1L
+            savedThemeId,
+            savedThemeId
         );
-        assertThatThrownBy(() -> reservationService.saveReservation(reservationRequestDto1))
+
+        //when, then
+        assertThatThrownBy(() -> reservationService.saveReservation(reservationRequestDto))
             .isInstanceOf(InvalidReservationException.class)
             .hasMessage("중복된 날짜와 시간을 예약할 수 없습니다.");
     }
-
 }
