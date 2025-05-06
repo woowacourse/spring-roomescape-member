@@ -19,13 +19,13 @@ public record ReservationDetailResponse(
 
         TimeResponse time
 ) {
-    public record MemberResponse(long id, String name) {
+    private record MemberResponse(long id, String name) {
     }
 
-    public record ThemeResponse(long id, String name, String description, String thumbnail) {
+    private record ThemeResponse(long id, String name, String description, String thumbnail) {
     }
 
-    public record TimeResponse(
+    private record TimeResponse(
             long id,
             @JsonFormat(pattern = "HH:mm") LocalTime startAt) {
     }
