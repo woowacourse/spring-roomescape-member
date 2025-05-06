@@ -1,12 +1,11 @@
 package roomescape.application.dto;
 
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import roomescape.domain.ReservationTime;
 
 public record ReservationTimeAvailableResponse(
         Long id,
-        LocalTime startAt,
+        String startAt,
         boolean alreadyBooked
 ) {
 
@@ -15,12 +14,8 @@ public record ReservationTimeAvailableResponse(
     public ReservationTimeAvailableResponse(ReservationTime reservationTime, boolean alreadyBooked) {
         this(
                 reservationTime.getId(),
-                reservationTime.getStartAt(),
+                reservationTime.getStartAt().format(TIME_FORMATTER),
                 alreadyBooked
         );
-    }
-
-    public String getStartAt() {
-        return startAt.format(TIME_FORMATTER);
     }
 }
