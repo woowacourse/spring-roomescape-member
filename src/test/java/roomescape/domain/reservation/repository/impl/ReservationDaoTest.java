@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.reservation.entity.Reservation;
@@ -25,16 +26,17 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
+@ActiveProfiles("test")
 @JdbcTest
 @Import({ReservationDao.class})
 class ReservationDaoTest {
 
-    private static final Long RESERVATION_TIME_ID = 1L;
-    private static final LocalTime RESERVATION_TIME_START_TIME = LocalTime.of(8, 0);
-    private static final Long THEME_ID = 1L;
-    private static final String THEME_NAME = "공포";
-    private static final String THEME_DESCRIPTION = "우테코 공포";
-    private static final String THEME_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
+    private final Long RESERVATION_TIME_ID = 1L;
+    private final LocalTime RESERVATION_TIME_START_TIME = LocalTime.of(8, 0);
+    private final Long THEME_ID = 1L;
+    private final String THEME_NAME = "공포";
+    private final String THEME_DESCRIPTION = "우테코 공포";
+    private final String THEME_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
