@@ -1,24 +1,15 @@
 package roomescape.dto.request;
 
-import roomescape.common.exception.InvalidRequestException;
+import jakarta.validation.constraints.NotBlank;
 import roomescape.domain.Theme;
 
 public record ThemeCreateRequest(
+        @NotBlank(message = "이름은 빈 값이 올 수 없습니다")
         String name,
         String description,
         String thumbnail
 ) {
-    public ThemeCreateRequest {
-        validate(name);
-    }
-
     public Theme toTheme() {
         return new Theme(null, name, description, thumbnail);
-    }
-
-    private void validate(String name) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidRequestException("잘못된 요청입니다.");
-        }
     }
 }
