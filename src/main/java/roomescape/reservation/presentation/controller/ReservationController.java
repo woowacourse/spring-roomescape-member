@@ -33,8 +33,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationDetailResponse> getAllReservations() {
-        List<ReservationDetailData> reservationDetails = queryService.getAllReservationDetails();
+    public List<ReservationDetailResponse> getAllReservations(ReservationSearchCondition condition) {
+        List<ReservationDetailData> reservationDetails = queryService.getReservationDetails(condition);
         return ReservationDetailResponse.from(reservationDetails);
     }
 
