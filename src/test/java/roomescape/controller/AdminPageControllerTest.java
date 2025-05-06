@@ -34,4 +34,13 @@ class AdminPageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("Theme Page 테스트")
+    @Test
+    void themePageTest() {
+        RestAssured.given().log().all()
+                .when().get("/admin/theme")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
