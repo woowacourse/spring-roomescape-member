@@ -28,4 +28,10 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(message));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("예상치 못한 서버 오류가 발생했습니다."));
+    }
 }
