@@ -153,7 +153,6 @@ function onReservationButtonClick() {
             date: selectedDate,
             themeId: selectedThemeId,
             timeId: selectedTimeId,
-            name: name
         };
 
         fetch('/reservations', {

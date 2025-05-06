@@ -2,8 +2,8 @@ package roomescape.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.LoginMember;
 import roomescape.auth.dto.LoginRequest;
-import roomescape.auth.dto.LoginResponse;
 import roomescape.exception.custom.reason.auth.AuthNotExistsEmailException;
 import roomescape.exception.custom.reason.auth.AuthNotValidPasswordException;
 import roomescape.exception.custom.reason.auth.AuthNotValidTokenException;
@@ -34,18 +34,18 @@ public class AuthService {
         return jwtProvider.provideToken(loginRequest.email());
     }
 
-    public LoginResponse checkMemberInfoByToken(final String token){
+    public LoginMember findLoginMemberByToken(final String token) {
         validateToken(token);
         final String email = jwtProvider.extractPayload(token);
 
         validateExistsMemberByEmail(email);
-        final Member memberByEmail = memberRepository.findByEmail(email);
+        final Member member = memberRepository.findByEmail(email);
 
-        return new LoginResponse(memberByEmail.getName());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail());
     }
 
     private void validateToken(final String token) {
-        if(!jwtProvider.isValidToken(token)){
+        if (!jwtProvider.isValidToken(token)) {
             throw new AuthNotValidTokenException();
         }
     }

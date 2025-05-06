@@ -24,6 +24,10 @@ public class Member {
         return Objects.equals(this.password, password);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getEmail() {
         return email;
     }
