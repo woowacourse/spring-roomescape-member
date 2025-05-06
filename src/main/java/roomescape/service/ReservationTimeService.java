@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.model.ReservationTime;
@@ -13,13 +12,10 @@ import roomescape.model.ReservationTime;
 public class ReservationTimeService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
 
-    public ReservationTimeService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao,
-                                  ThemeDao themeDao) {
+    public ReservationTimeService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
     }
 
     public ReservationTimeResponse addTime(ReservationTimeRequest reservationTimeRequest) {

@@ -107,11 +107,11 @@ class ReservationDaoTest {
     @Test
     void theme_id와_time_id와_날짜로_존재여부_반환() {
         // given
-        LocalDate existDate = LocalDate.of(2023, 3, 1);
+        LocalDate existDate = LocalDate.now().minusDays(25);
         Long existTimeId = 1L;
         Long existThemeId = 1L;
 
-        LocalDate nonExistDate = LocalDate.of(2025, 3, 1);
+        LocalDate nonExistDate = LocalDate.now().minusDays(25);
         Long nonExistTimeId = 99L;
         Long nonExistThemeId = 99L;
 
@@ -150,7 +150,7 @@ class ReservationDaoTest {
     @Test
     void theme_id와_날짜에_해당하는_예약_리스트_반환() {
         // given
-        LocalDate date = LocalDate.of(2023, 3, 1);
+        LocalDate date = LocalDate.now().minusDays(25);
         Long themeId = 1L;
 
         // when

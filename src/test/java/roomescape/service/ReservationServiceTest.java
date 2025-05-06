@@ -3,11 +3,8 @@ package roomescape.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,8 +38,7 @@ class ReservationServiceTest {
         ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
         reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         themeDao = new ThemeDao(jdbcTemplate);
-        Clock clock = Clock.fixed(Instant.parse("2023-02-25T08:25:24Z"), ZoneId.systemDefault());
-        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao, clock);
+        reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao);
     }
 
     @Test

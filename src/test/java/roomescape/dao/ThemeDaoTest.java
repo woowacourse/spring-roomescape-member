@@ -109,8 +109,8 @@ class ThemeDaoTest {
         // when
         List<Theme> topFiveTheme = dao.getPopularThemeByRankAndDuration(
                 5,
-                LocalDate.of(2023, 3, 11),
-                LocalDate.of(2023, 3, 25)
+                LocalDate.now().minusDays(15),
+                LocalDate.now()
         );
 
         // then

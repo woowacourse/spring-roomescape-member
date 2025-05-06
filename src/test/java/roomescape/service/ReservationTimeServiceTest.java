@@ -15,7 +15,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 
@@ -33,8 +32,7 @@ class ReservationTimeServiceTest {
         jdbcTemplate = new JdbcTemplate(dataSource);
         ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
         ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
-        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
-        reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao, themeDao);
+        reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao);
     }
 
     @Test

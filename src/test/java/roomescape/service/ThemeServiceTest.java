@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +39,11 @@ public class ThemeServiceTest {
                 .addScript("data.sql")
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        Clock clock = Clock.fixed(Instant.parse("2023-03-26T08:25:24Z"), ZoneId.systemDefault());
-        service = new ThemeService(new ReservationDao(jdbcTemplate), new ReservationTimeDao(jdbcTemplate),
-                new ThemeDao(jdbcTemplate), clock);
+        service = new ThemeService(
+                new ReservationDao(jdbcTemplate),
+                new ReservationTimeDao(jdbcTemplate),
+                new ThemeDao(jdbcTemplate)
+        );
     }
 
     @Test
@@ -126,7 +125,7 @@ public class ThemeServiceTest {
     @Test
     void 선택한_날짜와_테마의_시간과_예약_여부_조회하기() {
         // given
-        LocalDate date = LocalDate.of(2023, 3, 21);
+        LocalDate date = LocalDate.now().minusDays(5);
         Long themeId = 11L;
 
         // when
