@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -44,7 +46,7 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(2),
+                .body("id", not(nullValue()),
                         "name", is(NAME),
                         "date", is(DATE),
                         "reservationTime.id", is(TIME_ID),

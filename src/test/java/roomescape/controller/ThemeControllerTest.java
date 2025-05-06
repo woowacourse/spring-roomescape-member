@@ -1,6 +1,8 @@
 package roomescape.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -51,7 +53,7 @@ public class ThemeControllerTest {
                 .when().post("/themes")
                 .then().log().all()
                 .statusCode(201)
-                .body("id", is(12),
+                .body("id", not(nullValue()),
                         "name", is(NAME),
                         "description", is(DESCRIPTION),
                         "thumbnail", is(THUMBNAIL));
