@@ -8,6 +8,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationsWithTotalPageRequest;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -55,10 +56,18 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationResponse> getReservations() {
-        return reservationDao.findAll()
+    public ReservationsWithTotalPageRequest getReservationsByPage(int page) {
+        int totalPage = reservationDao.countTotalReservation() % 10 == 0 ?
+                reservationDao.countTotalReservation() / 10 : (reservationDao.countTotalReservation() / 10) + 1;
+        if (page < 1 || page > totalPage) {
+            throw new IllegalArgumentException("해당하는 페이지가 없습니다");
+        }
+        int start = (page - 1) * 10 + 1;
+        int end = start + 10 - 1;
+        List<ReservationResponse> reservationResponses = reservationDao.findReservationsWithPage(start, end)
                 .stream()
                 .map(ReservationResponse::fromEntity)
                 .toList();
+        return new ReservationsWithTotalPageRequest(totalPage, reservationResponses);
     }
 }

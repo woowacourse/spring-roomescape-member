@@ -5,16 +5,95 @@ const THEME_API_ENDPOINT = '/themes';
 const timesOptions = [];
 const themesOptions = [];
 
+// 페이지 관련 상태 변수
+let currentPage = 1;
+let totalPages = 1;
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('add-button').addEventListener('click', addInputRow);
 
-    requestReadByPage(RESERVATION_API_ENDPOINT)
-        .then(render)
-        .catch(error => console.error('Error fetching reservations:', error));
+    // URL에서 페이지 번호 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    currentPage = parseInt(urlParams.get('page')) || 1;
+
+    // 페이지 데이터 로드
+    loadReservations(currentPage);
 
     fetchTimes();
     fetchThemes();
 });
+
+function loadReservations(page) {
+    // URL 쿼리 파라미터를 통해 페이지 정보 전달
+    fetch(`${RESERVATION_API_ENDPOINT}?page=${page}`)
+        .then(response => {
+            if (response.status === 200) return response.json();
+            throw new Error('Read failed');
+        })
+        .then(data => {
+            // 데이터 렌더링
+            render(data.reservations || []);
+
+            // 페이지네이션 정보 설정
+            if (data.totalPages) {
+                totalPages = data.totalPages;
+            } else {
+                // 백엔드가 페이지네이션 정보를 제공하지 않는 경우 기본값 설정
+                totalPages = Math.max(1, Math.ceil(data.length / 10));
+            }
+
+            // 페이지네이션 렌더링
+            renderPagination();
+        })
+        .catch(error => console.error('Error fetching reservations:', error));
+}
+
+function renderPagination() {
+    const paginationEl = document.getElementById('pagination');
+    if (!paginationEl) return;
+
+    paginationEl.innerHTML = '';
+
+    // 이전 페이지 버튼
+    const prevBtn = document.createElement('li');
+    prevBtn.className = `page-item ${currentPage <= 1 ? 'disabled' : ''}`;
+
+    const prevLink = document.createElement('a');
+    prevLink.className = 'page-link';
+    prevLink.href = currentPage > 1 ? `?page=${currentPage - 1}` : '#';
+    prevLink.textContent = '이전';
+    prevBtn.appendChild(prevLink);
+    paginationEl.appendChild(prevBtn);
+
+    // 페이지 번호 버튼들
+    // 최대 5개의 페이지 번호만 표시
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, startPage + 4);
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageItem = document.createElement('li');
+        pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+
+        const pageLink = document.createElement('a');
+        pageLink.className = 'page-link';
+        pageLink.href = `?page=${i}`;
+        pageLink.textContent = i;
+
+        pageItem.appendChild(pageLink);
+        paginationEl.appendChild(pageItem);
+    }
+
+    // 다음 페이지 버튼
+    const nextBtn = document.createElement('li');
+    nextBtn.className = `page-item ${currentPage >= totalPages ? 'disabled' : ''}`;
+
+    const nextLink = document.createElement('a');
+    nextLink.className = 'page-link';
+    nextLink.href = currentPage < totalPages ? `?page=${currentPage + 1}` : '#';
+    nextLink.textContent = '다음';
+    nextBtn.appendChild(nextLink);
+    paginationEl.appendChild(nextBtn);
+}
 
 function render(data) {
     const tableBody = document.getElementById('table-body');
@@ -23,10 +102,6 @@ function render(data) {
     data.forEach(item => {
         const row = tableBody.insertRow();
 
-        /*
-        TODO: [2단계] 관리자 기능 - 예약 목록 조회 API 호출 후 렌더링
-              response 명세에 맞춰 값 설정
-        */
         row.insertCell(0).textContent = item.id;            // 예약 id
         row.insertCell(1).textContent = item.name;          // 예약자명
         row.insertCell(2).textContent = item.theme.name;    // 테마명
@@ -121,14 +196,6 @@ function createInput(type) {
     return input;
 }
 
-function createActionButton(label, className, eventListener) {
-    const button = document.createElement('button');
-    button.textContent = label;
-    button.classList.add('btn', className, 'mr-2');
-    button.addEventListener('click', eventListener);
-    return button;
-}
-
 function saveRow(event) {
     // 이벤트 전파를 막는다
     event.stopPropagation();
@@ -148,11 +215,11 @@ function saveRow(event) {
 
     requestCreate(reservation)
         .then(() => {
-            location.reload();
+            // 현재 페이지 다시 로드
+            loadReservations(currentPage);
+            isEditing = false;
         })
         .catch(error => console.error('Error:', error));
-
-    isEditing = false;  // isEditing 값을 false로 설정
 }
 
 function deleteRow(event) {
@@ -160,7 +227,10 @@ function deleteRow(event) {
     const reservationId = row.cells[0].textContent;
 
     requestDelete(reservationId)
-        .then(() => row.remove())
+        .then(() => {
+            // 성공적으로 삭제한 후 현재 페이지 다시 로드
+            loadReservations(currentPage);
+        })
         .catch(error => console.error('Error:', error));
 }
 
@@ -191,15 +261,6 @@ function requestDelete(id) {
 
 function requestRead(endpoint) {
     return fetch(endpoint)
-        .then(response => {
-            if (response.status === 200) return response.json();
-            throw new Error('Read failed');
-        });
-}
-
-function requestReadByPage(endPoint, page) {
-    endPoint = endPoint + "/byPage?page=" + page;
-    return fetch(endPoint)
         .then(response => {
             if (response.status === 200) return response.json();
             throw new Error('Read failed');

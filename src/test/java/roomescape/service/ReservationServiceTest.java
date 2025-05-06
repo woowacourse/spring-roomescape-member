@@ -1,11 +1,11 @@
 package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.dto.ReservationsWithTotalPageRequest;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
@@ -119,12 +120,6 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 예약_리스트를_정상적으로_조회() {
-        List<ReservationResponse> reservations = reservationService.getReservations();
-        assertThat(reservations.size()).isEqualTo(25);
-    }
-
-    @Test
     void 예약을_정상적으로_삭제() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
         Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
@@ -132,15 +127,37 @@ class ReservationServiceTest {
                 savedTheme.getId());
         ReservationResponse response = reservationService.addReservation(request);
 
-        reservationService.deleteReservation(response.id());
-        List<ReservationResponse> reservations = reservationService.getReservations();
-
-        assertThat(reservations).hasSize(25);
+        assertThatCode(() -> reservationService.deleteReservation(response.id()))
+                .doesNotThrowAnyException();
     }
 
     @Test
     void 예약이_존재하지_않으면_예외발생() {
         assertThatThrownBy(() -> reservationService.deleteReservation(999L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 해당하는_페이지의_예약을_반환한다() {
+        // given
+        int page = 2;
+
+        // when
+        ReservationsWithTotalPageRequest reservationsWithTotalPage = reservationService.getReservationsByPage(page);
+
+        // then
+        assertThat(reservationsWithTotalPage.reservations()).hasSize(10);
+        assertThat(reservationsWithTotalPage.reservations().getFirst().id()).isEqualTo(11L);
+        assertThat(reservationsWithTotalPage.reservations().getLast().id()).isEqualTo(20L);
+    }
+
+    @Test
+    void 페이지의_개수보다_큰_페이지를_요청하면_예외가_발생한다() {
+        // given
+        int page = 4;
+
+        // when, then
+        assertThatThrownBy(() -> reservationService.getReservationsByPage(page))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

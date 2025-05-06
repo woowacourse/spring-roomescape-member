@@ -50,12 +50,7 @@ class ReservationDaoTest {
         Reservation saved = reservationDao.save(reservation);
 
         // then
-        List<Reservation> all = reservationDao.findAll();
-        assertThat(all).hasSize(26);
-        assertThat(all.getLast().getId()).isEqualTo(saved.getId());
-        assertThat(all.getLast().getName()).isEqualTo(saved.getName());
-        assertThat(all.getLast().getDate()).isEqualTo(saved.getDate());
-        assertThat(all.getLast().getReservationTime().getId()).isEqualTo(saved.getReservationTime().getId());
+        assertThat(reservationDao.countTotalReservation()).isEqualTo(26);
     }
 
     @Test
@@ -64,9 +59,8 @@ class ReservationDaoTest {
         boolean isDeleted = reservationDao.deleteById(1L);
 
         // then
-        List<Reservation> all = reservationDao.findAll();
         assertThat(isDeleted).isTrue();
-        assertThat(all).hasSize(24);
+        assertThat(reservationDao.countTotalReservation()).isEqualTo(24);
     }
 
     @Test
@@ -75,18 +69,8 @@ class ReservationDaoTest {
         boolean isDeleted = reservationDao.deleteById(26L);
 
         // then
-        List<Reservation> all = reservationDao.findAll();
         assertThat(isDeleted).isFalse();
-        assertThat(all).hasSize(25);
-    }
-
-    @Test
-    void 모든_예약을_반환한다() {
-        // when
-        List<Reservation> all = reservationDao.findAll();
-
-        // then
-        assertThat(all).hasSize(25);
+        assertThat(reservationDao.countTotalReservation()).isEqualTo(25);
     }
 
     @Test
@@ -158,5 +142,29 @@ class ReservationDaoTest {
 
         // then
         assertThat(reservations).hasSize(1);
+    }
+
+    @Test
+    void 예약의_전체_개수를_카운팅한다() {
+        // when
+        int count = reservationDao.countTotalReservation();
+
+        // then
+        assertThat(count).isEqualTo(25);
+    }
+
+    @Test
+    void 시작_인덱스와_마지막_인덱스를_설정해_예약을_불러온다() {
+        // given
+        int start = 3;
+        int end = 10;
+
+        // when
+        List<Reservation> reservations = reservationDao.findReservationsWithPage(start, end);
+
+        // then
+        assertThat(reservations).hasSize(8);
+        assertThat(reservations.getFirst().getId()).isEqualTo(3L);
+        assertThat(reservations.getLast().getId()).isEqualTo(10L);
     }
 }

@@ -73,26 +73,33 @@ public class ReservationDao {
         return deletedRow == 1;
     }
 
-    public List<Reservation> findAll() {
+    public List<Reservation> findReservationsWithPage(int startRowNumber, int endRowNumber) {
         String sql = """
                 SELECT r.id as reservation_id,
-                    r.name,
-                    r.date,
-                    t.id as time_id,
-                    t.start_at as time_value,
-                    th.id as theme_id,
-                    th.name,
-                    th.description,
-                    th.thumbnail
-                FROM reservation as r
-                INNER JOIN reservation_time as t
-                ON r.time_id = t.id
-                INNER JOIN theme as th
-                ON r.theme_id = th.id
+                                r.name,
+                                r.date,
+                                t.id as time_id,
+                                t.start_at as time_value,
+                                th.id as theme_id,
+                                th.name as theme_name,
+                                th.description,
+                                th.thumbnail
+                            FROM (
+                                SELECT ROW_NUMBER() OVER() as row_num, *
+                                FROM reservation
+                            ) as r
+                            INNER JOIN reservation_time as t
+                            ON r.time_id = t.id
+                            INNER JOIN theme as th
+                            ON r.theme_id = th.id
+                            WHERE r.row_num BETWEEN ? AND ?
+                            ORDER BY r.row_num
                 """;
         return jdbcTemplate.query(
                 sql,
-                reservationRowMapper()
+                reservationRowMapper(),
+                startRowNumber,
+                endRowNumber
         );
     }
 
@@ -141,5 +148,12 @@ public class ReservationDao {
                     date = ?
                 """;
         return jdbcTemplate.query(sql, reservationRowMapper(), themeId, date);
+    }
+
+    public int countTotalReservation() {
+        String sql = """
+                SELECT COUNT(*) FROM RESERVATION
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 }
