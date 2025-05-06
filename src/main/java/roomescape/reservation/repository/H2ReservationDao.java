@@ -1,0 +1,133 @@
+package roomescape.reservation.repository;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
+
+@Repository
+public class H2ReservationDao implements ReservationDao {
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNum) ->
+            new Reservation(
+                    resultSet.getLong("reservation_id"),
+                    resultSet.getString("name"),
+                    resultSet.getDate("date").toLocalDate(),
+                    new ReservationTime(
+                            resultSet.getLong("time_id"),
+                            resultSet.getTime("time_value").toLocalTime()
+                    ),
+                    new Theme(
+                            resultSet.getLong("theme_id"),
+                            resultSet.getString("theme_name"),
+                            resultSet.getString("theme_description"),
+                            resultSet.getString("theme_thumbnail")
+                    )
+            );
+
+    public H2ReservationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public List<Reservation> findAll() {
+        final String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                """;
+        return jdbcTemplate.query(sql, reservationRowMapper);
+    }
+
+    @Override
+    public Reservation save(final Reservation reservation) {
+        final String sql = "INSERT INTO reservation(name, date, time_id, theme_id) VALUES(:name, :date, :timeId, :themeId)";
+        final KeyHolder keyHolder = new GeneratedKeyHolder();
+        final SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("name", reservation.getName())
+                .addValue("date", Date.valueOf(reservation.getDate()))
+                .addValue("timeId", reservation.getTimeId())
+                .addValue("themeId", reservation.getTheme().getId());
+        jdbcTemplate.update(sql, parameters, keyHolder, new String[]{"id"});
+        return new Reservation(keyHolder.getKeyAs(Long.class), reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
+    }
+
+    @Override
+    public void deleteById(final long id) {
+        final String sql = "DELETE FROM reservation WHERE id = :id";
+        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
+        jdbcTemplate.update(sql, parameters);
+    }
+
+    @Override
+    public boolean isExistsByDateAndTimeIdAndThemeId(final LocalDate date, final long timeId, final long themeId) {
+        final String sql = "SELECT count(*) FROM reservation WHERE date = :date AND time_id = :timeId AND theme_id = :themeId";
+        final SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("timeId", timeId)
+                .addValue("themeId", themeId);
+        final Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
+        return count > 0;
+    }
+
+    @Override
+    public boolean isExistsByTimeId(final long timeId) {
+        final String sql = "SELECT count(*) FROM reservation WHERE time_id = :timeId";
+        final SqlParameterSource parameters = new MapSqlParameterSource("timeId", timeId);
+        Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
+        return count > 0;
+    }
+
+    @Override
+    public boolean isExistsByThemeId(Long themeId) {
+        final String sql = "SELECT count(*) FROM reservation WHERE theme_id = :themeId";
+        final SqlParameterSource parameters = new MapSqlParameterSource("themeId", themeId);
+        final Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
+        return count > 0;
+    }
+
+    @Override
+    public List<Reservation> findAllByDateAndThemeId(final LocalDate date, final long themeId) {
+        final String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name,
+                    r.date,
+                    t.id AS time_id,
+                    t.start_at AS time_value,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_description,
+                    th.thumbnail AS theme_thumbnail
+                FROM reservation AS r 
+                INNER JOIN reservation_time AS t ON r.time_id = t.id
+                INNER JOIN theme AS th ON r.theme_id = th.id
+                WHERE r.date = :date AND r.theme_id = :themeId
+                """;
+        final SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("themeId", themeId);
+        return jdbcTemplate.query(sql, parameters, reservationRowMapper);
+    }
+}
