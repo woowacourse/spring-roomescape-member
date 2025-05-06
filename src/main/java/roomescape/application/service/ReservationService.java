@@ -29,7 +29,9 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll();
+        return reservationRepository.findAll().stream()
+                .map(ReservationResponse::from)
+                .toList();
     }
 
     public void deleteReservation(Long id) {

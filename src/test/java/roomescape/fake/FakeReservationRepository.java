@@ -2,7 +2,6 @@ package roomescape.fake;
 
 import roomescape.domain.model.Reservation;
 import roomescape.domain.repository.ReservationRepository;
-import roomescape.presentation.dto.response.ReservationResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,11 +15,8 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationResponse> findAll() {
-        return reservationDao.findAll()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> findAll() {
+        return reservationDao.findAll();
     }
 
     @Override

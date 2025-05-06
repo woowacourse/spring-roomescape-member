@@ -3,10 +3,9 @@ package roomescape.infrastructure.repository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
-import roomescape.infrastructure.dao.ReservationDao;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.repository.ReservationRepository;
-import roomescape.presentation.dto.response.ReservationResponse;
+import roomescape.infrastructure.dao.ReservationDao;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,11 +20,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationResponse> findAll() {
-        return reservationDao.findAll()
-                .stream()
-                .map(ReservationResponse::from)
-                .toList();
+    public List<Reservation> findAll() {
+        return reservationDao.findAll();
     }
 
     @Override

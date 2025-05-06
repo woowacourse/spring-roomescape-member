@@ -1,7 +1,6 @@
 package roomescape.domain.repository;
 
 import roomescape.domain.model.Reservation;
-import roomescape.presentation.dto.response.ReservationResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,7 +9,7 @@ public interface ReservationRepository {
 
     Reservation save(Reservation reservation);
 
-    List<ReservationResponse> findAll();
+    List<Reservation> findAll();
 
     int deleteById(Long id);
 
