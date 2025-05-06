@@ -1,11 +1,11 @@
 package roomescape.admin.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -77,7 +77,7 @@ class AuthenticationControllerTest {
 
         String token = header.split("token=")[1];
 
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(header).isNotNull(),
                 () -> assertThat(token).isNotEmpty()
         );

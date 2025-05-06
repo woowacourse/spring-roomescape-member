@@ -19,11 +19,13 @@ import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationSlot;
 import roomescape.domain.reservation.ReservationSlotTimes;
 import roomescape.domain.reservation.Theme;
+import roomescape.domain.reservationmember.ReservationMember;
 import roomescape.dto.reservation.AddReservationDto;
 import roomescape.dto.reservation.AvailableTimeRequestDto;
 import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservation.ReservationTimeSlotResponseDto;
 import roomescape.dto.reservation.ThemeResponseDto;
+import roomescape.dto.reservationmember.ReservationMemberResponseDto;
 import roomescape.service.ReservationMemberService;
 import roomescape.service.reservation.ReservationService;
 
@@ -44,12 +46,17 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponseDto>> reservations() {
-        List<Reservation> reservations = reservationService.allReservations();
-        List<ReservationResponseDto> reservationDtos = reservations.stream()
-                .map((reservation) -> new ReservationResponseDto(reservation.getId(), reservation.getName(),
-                        reservation.getStartAt(), reservation.getDate(), reservation.getThemeName()))
+    public ResponseEntity<List<ReservationMemberResponseDto>> reservations() {
+        List<ReservationMember> reservationMembers = reservationMemberService.allReservations();
+
+        List<ReservationMemberResponseDto> reservationDtos = reservationMembers.stream()
+                .map((reservationMember) -> new ReservationMemberResponseDto(reservationMember.getReservationId(),
+                        reservationMember.getUsername(),
+                        reservationMember.getThemeName(),
+                        reservationMember.getDate(),
+                        reservationMember.getStartAt()))
                 .toList();
+
         return ResponseEntity.ok(reservationDtos);
     }
 

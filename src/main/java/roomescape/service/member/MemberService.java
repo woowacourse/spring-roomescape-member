@@ -1,6 +1,5 @@
 package roomescape.service.member;
 
-import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
@@ -52,10 +51,6 @@ public class MemberService {
 
     public Member getMemberById(long id) {
         return memberRepository.findById(id).orElseThrow(() -> new InvalidMemberException("존재하지 않는 유저입니다"));
-    }
-
-    public Optional<Member> findMemberById(long id) {
-        return memberRepository.findById(id);
     }
 
     public Member getMemberByToken(String token) {

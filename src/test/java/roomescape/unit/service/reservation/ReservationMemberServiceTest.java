@@ -1,13 +1,18 @@
 package roomescape.unit.service.reservation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeAll;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import roomescape.auth.JwtTokenProvider;
+import roomescape.domain.reservationmember.ReservationMember;
 import roomescape.dto.member.SignupRequestDto;
 import roomescape.dto.reservation.AddReservationDto;
 import roomescape.dto.reservation.AddReservationTimeDto;
@@ -22,16 +27,17 @@ import roomescape.unit.repository.member.FakeMemberRepository;
 import roomescape.unit.repository.reservation.FakeReservationRepository;
 import roomescape.unit.repository.reservation.FakeReservationTimeRepository;
 import roomescape.unit.repository.reservation.FakeThemeRepository;
+import roomescape.unit.repository.reservationmember.FakeReservationMemberRepository;
 
 class ReservationMemberServiceTest {
 
-    private static ReservationMemberService reservationMemberService;
-    private static ReservationTimeService reservationTimeService;
-    private static ThemeService themeService;
-    private static MemberService memberService;
+    private ReservationMemberService reservationMemberService;
+    private ReservationTimeService reservationTimeService;
+    private ThemeService themeService;
+    private MemberService memberService;
 
-    @BeforeAll
-    static void setup() {
+    @BeforeEach
+    void setup() {
         FakeReservationRepository fakeReservationRepository = ServiceFixture.fakeReservationRepository();
         FakeReservationTimeRepository fakeReservationTimeRepository = ServiceFixture.fakeReservationTimeRepository();
         FakeThemeRepository fakeThemeRepository = ServiceFixture.fakeThemeRepository();
@@ -46,7 +52,9 @@ class ReservationMemberServiceTest {
         BCryptPasswordEncoder bCryptPasswordEncoder = ServiceFixture.passwordEncoder();
         memberService = new MemberService(bCryptPasswordEncoder, fakeMemberRepository, jwtTokenProvider);
 
-        reservationMemberService = new ReservationMemberService(memberService, reservationService);
+        FakeReservationMemberRepository reservationMemberRepository = ServiceFixture.fakeReservationMemberRepository();
+        reservationMemberService = new ReservationMemberService(memberService, reservationService,
+                reservationMemberRepository);
     }
 
     @Test
@@ -58,8 +66,8 @@ class ReservationMemberServiceTest {
                 Long.valueOf(themeId));
 
         long memberId = memberService.signup(new SignupRequestDto("test@naver.com", "testtest", "test"));
-
-        reservationMemberService.addReservation(addReservationDto, memberId);
+        assertThatCode(
+                () -> reservationMemberService.addReservation(addReservationDto, memberId)).doesNotThrowAnyException();
     }
 
     @Test
@@ -74,5 +82,24 @@ class ReservationMemberServiceTest {
 
         assertThatThrownBy(() -> reservationMemberService.addReservation(addReservationDto, memberId)).isInstanceOf(
                 IllegalArgumentException.class);
+    }
+
+    @Test
+    void 유저와_예약_정보를_합친_정보를_반환할_수_있다() {
+        long timeId = reservationTimeService.addReservationTime(
+                new AddReservationTimeDto(LocalTime.now().plusHours(1L)));
+        long themeId = themeService.addTheme(new AddThemeDto("tuda", "asdf", "asdf"));
+
+        AddReservationDto addReservationDto = new AddReservationDto("asdf", LocalDate.now(), Long.valueOf(timeId),
+                Long.valueOf(themeId));
+        long memberId = memberService.signup(new SignupRequestDto("test@naver.com", "testtest", "test"));
+        long reservationId = reservationMemberService.addReservation(addReservationDto, memberId);
+
+        List<ReservationMember> reservationMembers = reservationMemberService.allReservations();
+
+        assertAll(
+                () -> assertThat(reservationMembers.get(0).getReservationId()).isEqualTo(reservationId),
+                () -> assertThat(reservationMembers.get(0).getUsername()).isEqualTo("test@naver.com")
+        );
     }
 }
