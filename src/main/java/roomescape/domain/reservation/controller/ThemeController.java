@@ -21,33 +21,33 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ThemeResponse>> readAllTheme() {
-        List<ThemeResponse> responses = themeService.getAll();
+        final List<ThemeResponse> responses = themeService.getAll();
 
         return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> readPopularThemes() {
-        List<ThemeResponse> responses = themeService.getPopularThemes();
+        final List<ThemeResponse> responses = themeService.getPopularThemes();
 
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> create(@Valid @RequestBody ThemeRequest request) {
-        ThemeResponse response = themeService.create(request);
+    public ResponseEntity<ThemeResponse> create(@Valid @RequestBody final ThemeRequest request) {
+        final ThemeResponse response = themeService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         themeService.delete(id);
 
         return ResponseEntity.noContent().build();

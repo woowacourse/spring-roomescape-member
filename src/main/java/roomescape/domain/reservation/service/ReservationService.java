@@ -31,8 +31,9 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public ReservationService(Clock clock, ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository, ThemeRepository themeRepository) {
+    public ReservationService(final Clock clock, final ReservationRepository reservationRepository,
+                              final ReservationTimeRepository reservationTimeRepository,
+                              final ThemeRepository themeRepository) {
         this.clock = clock;
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
@@ -41,7 +42,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponse> getAll() {
-        List<Reservation> reservations = reservationRepository.findAll();
+        final List<Reservation> reservations = reservationRepository.findAll();
 
         return reservations.stream()
                 .map(ReservationResponse::from)
@@ -49,41 +50,41 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse create(ReservationRequest request) {
+    public ReservationResponse create(final ReservationRequest request) {
         if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
             throw new AlreadyInUseException("해당 예약은 이미 존재합니다!");
         }
 
-        Reservation reservation = getReservation(request);
+        final Reservation reservation = getReservation(request);
         reservation.validateNotPastReservation(now());
 
-        Reservation savedReservation = reservationRepository.save(reservation);
+        final Reservation savedReservation = reservationRepository.save(reservation);
 
         return ReservationResponse.from(savedReservation);
     }
 
-    private Reservation getReservation(ReservationRequest request) {
-        ReservationTime reservationTime = getReservationTime(request);
-        Theme theme = getTheme(request);
+    private Reservation getReservation(final ReservationRequest request) {
+        final ReservationTime reservationTime = getReservationTime(request);
+        final Theme theme = getTheme(request);
 
         return Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
     }
 
     private Theme getTheme(final ReservationRequest request) {
-        Long themeId = request.themeId();
+        final Long themeId = request.themeId();
         return themeRepository.findById(themeId)
                 .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
     }
 
     private ReservationTime getReservationTime(final ReservationRequest request) {
-        Long timeId = request.timeId();
+        final Long timeId = request.timeId();
 
         return reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(final Long id) {
         reservationRepository.deleteById(id);
     }
 
@@ -92,9 +93,8 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookedReservationTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
-        Map<ReservationTime, Boolean> allTimes = processAlreadyBookedTimesMap(
-                date, themeId);
+    public List<BookedReservationTimeResponse> getAvailableTimes(final LocalDate date, final Long themeId) {
+        final Map<ReservationTime, Boolean> allTimes = processAlreadyBookedTimesMap(date, themeId);
 
         return allTimes.entrySet()
                 .stream()
@@ -102,9 +102,9 @@ public class ReservationService {
                 .toList();
     }
 
-    private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(LocalDate date, Long themeId) {
-        List<ReservationTime> allTimes = reservationTimeRepository.findAll();
-        Set<ReservationTime> bookedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
+    private Map<ReservationTime, Boolean> processAlreadyBookedTimesMap(final LocalDate date, final Long themeId) {
+        final List<ReservationTime> allTimes = reservationTimeRepository.findAll();
+        final Set<ReservationTime> bookedTimes = reservationRepository.findByDateAndThemeId(date, themeId)
                 .stream()
                 .map(Reservation::getReservationTime)
                 .collect(Collectors.toSet());
@@ -113,9 +113,8 @@ public class ReservationService {
                 .collect(Collectors.toMap(Function.identity(), bookedTimes::contains));
     }
 
-    private BookedReservationTimeResponse bookedReservationTimeResponseOf(
-            ReservationTime reservationTime, boolean alreadyBooked) {
-        return new BookedReservationTimeResponse(
-                ReservationTimeResponse.from(reservationTime), alreadyBooked);
+    private BookedReservationTimeResponse bookedReservationTimeResponseOf(final ReservationTime reservationTime,
+                                                                          final boolean alreadyBooked) {
+        return new BookedReservationTimeResponse(ReservationTimeResponse.from(reservationTime), alreadyBooked);
     }
 }

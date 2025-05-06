@@ -31,7 +31,7 @@ public class FakeThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(Long id) {
+    public Optional<Theme> findById(final Long id) {
         if (themes.containsKey(id)) {
             return Optional.of(themes.get(id));
         }
@@ -39,9 +39,8 @@ public class FakeThemeRepository implements ThemeRepository {
         return Optional.empty();
     }
 
-
     @Override
-    public Theme save(Theme theme) {
+    public Theme save(final Theme theme) {
         if (theme.existId() && !themes.containsKey(theme.getId())) {
             throw new EntityNotFoundException("theme with id " + theme.getId() + " not found");
         }
@@ -51,14 +50,14 @@ public class FakeThemeRepository implements ThemeRepository {
             return theme;
         }
 
-        Theme themeWithId = new Theme(id.getAndIncrement(), theme.getName(), theme.getDescription(),
+        final Theme themeWithId = new Theme(id.getAndIncrement(), theme.getName(), theme.getDescription(),
                 theme.getThumbnail());
         themes.put(themeWithId.getId(), themeWithId);
         return themeWithId;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         if (!themes.containsKey(id)) {
             throw new EntityNotFoundException("theme with id " + id + " not found");
         }
@@ -66,7 +65,7 @@ public class FakeThemeRepository implements ThemeRepository {
         themes.remove(id);
     }
 
-    public void add(Theme theme) {
+    public void add(final Theme theme) {
         themes.put(theme.getId(), theme);
     }
 

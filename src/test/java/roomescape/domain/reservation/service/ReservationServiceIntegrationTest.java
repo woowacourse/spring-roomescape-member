@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.domain.reservation.utils.FixedClock;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -34,6 +33,7 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
+import roomescape.domain.reservation.utils.FixedClock;
 
 @ActiveProfiles("test")
 @JdbcTest
@@ -54,13 +54,14 @@ public class ReservationServiceIntegrationTest {
     private ReservationService reservationService;
 
     private static LocalDate nextDay() {
-        return now.toLocalDate().plusDays(1);
+        return now.toLocalDate()
+                .plusDays(1);
     }
 
     @BeforeEach
     void setUp() {
         now = LocalDateTime.of(2025, 4, 30, 12, 0);
-        Clock clock = FixedClock.from(now);
+        final Clock clock = FixedClock.from(now);
 
         reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository,
                 themeRepository);
@@ -71,16 +72,16 @@ public class ReservationServiceIntegrationTest {
     @Test
     void test1() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
 
-        LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
-        LocalDate date = LocalDate.of(2024, 4, 29);
+        final LocalDate date = LocalDate.of(2024, 4, 29);
         reservationRepository.save(Reservation.withoutId("꾹", date, savedTime, savedTheme));
 
         // when
-        List<ReservationResponse> response = reservationService.getAll();
+        final List<ReservationResponse> response = reservationService.getAll();
 
         // then
         assertThat(response).hasSize(1);
@@ -89,7 +90,7 @@ public class ReservationServiceIntegrationTest {
     @DisplayName("예약 정보가 없다면 빈 리스트를 반환한다.")
     @Test
     void test2() {
-        List<ReservationResponse> result = reservationService.getAll();
+        final List<ReservationResponse> result = reservationService.getAll();
 
         assertThat(result).isEmpty();
     }
@@ -98,28 +99,31 @@ public class ReservationServiceIntegrationTest {
     @Test
     void test3() {
         // given
-        String name = "꾹";
+        final String name = "꾹";
 
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
-        Long themeId = savedTheme.getId();
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Long themeId = savedTheme.getId();
 
-        LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
-        Long timeId = savedTime.getId();
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        final Long timeId = savedTime.getId();
 
-        LocalDate date = nextDay();
+        final LocalDate date = nextDay();
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
 
         // when
-        ReservationResponse result = reservationService.create(requestDto);
+        final ReservationResponse result = reservationService.create(requestDto);
 
         // then
-        SoftAssertions softAssertions = new SoftAssertions();
+        final SoftAssertions softAssertions = new SoftAssertions();
 
-        softAssertions.assertThat(result.name()).isEqualTo(name);
-        softAssertions.assertThat(result.date()).isEqualTo(date);
-        softAssertions.assertThat(result.time()).isEqualTo(new ReservationTimeResponse(timeId, time));
+        softAssertions.assertThat(result.name())
+                .isEqualTo(name);
+        softAssertions.assertThat(result.date())
+                .isEqualTo(date);
+        softAssertions.assertThat(result.time())
+                .isEqualTo(new ReservationTimeResponse(timeId, time));
         softAssertions.assertThat(result.theme())
                 .isEqualTo(new ThemeResponse(themeId, savedTheme.getName(), savedTheme.getDescription(),
                         savedTheme.getThumbnail()));
@@ -131,129 +135,127 @@ public class ReservationServiceIntegrationTest {
     @Test
     void test4() {
         // given
-        String name = "꾹";
+        final String name = "꾹";
 
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
-        Long themeId = savedTheme.getId();
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Long themeId = savedTheme.getId();
 
-        LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
-        Long timeId = savedTime.getId();
-        LocalDate date = nextDay();
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        final Long timeId = savedTime.getId();
+        final LocalDate date = nextDay();
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
         reservationService.create(requestDto);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .isInstanceOf(AlreadyInUseException.class);
+        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(AlreadyInUseException.class);
     }
 
     @DisplayName("과거 날짜에 예약을 추가하면 예외가 발생한다.")
     @Test
     void test5() {
         // given
-        String name = "꾹";
+        final String name = "꾹";
 
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
-        Long themeId = savedTheme.getId();
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Long themeId = savedTheme.getId();
 
-        LocalDate date = now.toLocalDate();
-        LocalTime pastTime = now.toLocalTime().minusMinutes(1);
+        final LocalDate date = now.toLocalDate();
+        final LocalTime pastTime = now.toLocalTime()
+                .minusMinutes(1);
 
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(pastTime));
-        Long timeId = savedTime.getId();
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(pastTime));
+        final Long timeId = savedTime.getId();
 
-        ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationRequest requestDto = new ReservationRequest(name, date, timeId, themeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("존재하지 않는 예약 시간 ID로 저장하면 예외를 반환한다.")
     @Test
     void test6() {
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
-        Long themeId = savedTheme.getId();
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Long themeId = savedTheme.getId();
 
-        LocalDate date = nextDay();
+        final LocalDate date = nextDay();
 
-        Long notExistId = 1000L;
-        ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId, themeId);
+        final Long notExistId = 1000L;
+        final ReservationRequest requestDto = new ReservationRequest("꾹", date, notExistId, themeId);
 
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("존재하지 않는 테마 ID로 저장하면 예외를 반환한다.")
     @Test
     void notExistThemeId() {
-        LocalDate date = now.toLocalDate().plusDays(1);
+        final LocalDate date = now.toLocalDate()
+                .plusDays(1);
 
-        LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
-        Long timeId = savedTime.getId();
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        final Long timeId = savedTime.getId();
 
-        Long notExistId = 1000L;
-        ReservationRequest requestDto = new ReservationRequest("꾹", date, timeId, notExistId);
+        final Long notExistId = 1000L;
+        final ReservationRequest requestDto = new ReservationRequest("꾹", date, timeId, notExistId);
 
-        assertThatThrownBy(() -> reservationService.create(requestDto))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> reservationService.create(requestDto)).isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("예약을 삭제한다")
     @Test
     void test7() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
 
-        LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
-        LocalDate date = nextDay();
-        Reservation savedReservation = reservationRepository.save(
+        final LocalDate date = nextDay();
+        final Reservation savedReservation = reservationRepository.save(
                 Reservation.withoutId("꾹", date, savedTime, savedTheme));
 
-        Long id = savedReservation.getId();
+        final Long id = savedReservation.getId();
 
         // then
-        assertThatCode(() -> reservationService.delete(id))
-                .doesNotThrowAnyException();
+        assertThatCode(() -> reservationService.delete(id)).doesNotThrowAnyException();
     }
 
     @DisplayName("예약이 존재하지 않으면 예외를 반환한다.")
     @Test
     void test8() {
-        Long id = 1L;
-        assertThatThrownBy(() -> reservationService.delete(id))
-                .isInstanceOf(EntityNotFoundException.class);
+        final Long id = 1L;
+        assertThatThrownBy(() -> reservationService.delete(id)).isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("가능한 시간 대에 대하여 반환한다.")
     @Test
     void test9() {
         // given
-        LocalDate date = nextDay();
+        final LocalDate date = nextDay();
 
-        LocalTime time1 = LocalTime.of(8, 0);
-        LocalTime time2 = LocalTime.of(9, 0);
+        final LocalTime time1 = LocalTime.of(8, 0);
+        final LocalTime time2 = LocalTime.of(9, 0);
 
-        ReservationTime reservationTime1 = reservationTimeRepository.save(ReservationTime.withoutId(time1));
-        ReservationTime reservationTime2 = reservationTimeRepository.save(ReservationTime.withoutId(time2));
+        final ReservationTime reservationTime1 = reservationTimeRepository.save(ReservationTime.withoutId(time1));
+        final ReservationTime reservationTime2 = reservationTimeRepository.save(ReservationTime.withoutId(time2));
 
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
-        Long themeId = savedTheme.getId();
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Long themeId = savedTheme.getId();
 
         reservationRepository.save(Reservation.withoutId("꾹", date, reservationTime1, savedTheme));
 
         // when
-        List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
+        final List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
 
         // then
         assertThat(responses).hasSize(2);
 
-        List<Boolean> booleans = responses.stream().map(BookedReservationTimeResponse::alreadyBooked).toList();
+        final List<Boolean> booleans = responses.stream()
+                .map(BookedReservationTimeResponse::alreadyBooked)
+                .toList();
         assertThat(booleans).containsExactlyInAnyOrder(true, false);
     }
 

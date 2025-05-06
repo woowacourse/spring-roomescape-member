@@ -24,36 +24,36 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(final ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> readAllReservations() {
-        List<ReservationResponse> response = reservationService.getAll();
+        final List<ReservationResponse> response = reservationService.getAll();
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/available")
     public ResponseEntity<List<BookedReservationTimeResponse>> readAvailableReservationTimes(
-            @RequestParam("date") LocalDate date,
-            @RequestParam("themeId") Long themeId
+            @RequestParam("date") final LocalDate date,
+            @RequestParam("themeId") final Long themeId
     ) {
-        List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
+        final List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
 
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.create(request);
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationRequest request) {
+        final ReservationResponse response = reservationService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         reservationService.delete(id);
 
         return ResponseEntity.noContent().build();

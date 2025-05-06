@@ -20,16 +20,16 @@ class ReservationTest {
     @DisplayName("아이디 존재 여부")
     @ParameterizedTest
     @CsvSource(value = {"1,true", "null,false"}, delimiter = ',', nullValues = "null")
-    void test1(Long id, boolean expected) {
+    void test1(final Long id, final boolean expected) {
         // given
-        ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Theme theme = new Theme(1L, "공포", "우테코 공포",
+        final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
+        final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
-        Reservation reservation = new Reservation(id, "꾹이", LocalDate.now(), reservationTime, theme);
+        final Reservation reservation = new Reservation(id, "꾹이", LocalDate.now(), reservationTime, theme);
 
         // when
-        boolean result = reservation.existId();
+        final boolean result = reservation.existId();
 
         // then
         assertThat(result).isEqualTo(expected);
@@ -38,60 +38,58 @@ class ReservationTest {
     @DisplayName("25자 이하의 이름을 사용할 수 있다.")
     @Test
     void test2() {
-        String nameLength25 = "aaaaaaaaaabbbbbbbbbbccc25";
-        Theme theme = new Theme(1L, "공포", "우테코 공포",
+        final String nameLength25 = "aaaaaaaaaabbbbbbbbbbccc25";
+        final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
-        assertThatCode(() ->
-                new Reservation(1L, nameLength25, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), theme)
-        ).doesNotThrowAnyException();
+        assertThatCode(
+                () -> new Reservation(1L, nameLength25, LocalDate.now(), new ReservationTime(1L, LocalTime.now()),
+                        theme)).doesNotThrowAnyException();
     }
 
     @DisplayName("잘못된 이름을 사용하면 예외를 반환한다.")
     @NullAndEmptySource
     @ValueSource(strings = {"  ", "aaaaaaaaaabbbbbbbbbbcccc26"})
     @ParameterizedTest
-    void test3(String name) {
-        Theme theme = new Theme(1L, "공포", "우테코 공포",
+    void test3(final String name) {
+        final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when & then
-        assertThatThrownBy(() ->
-                new Reservation(1L, name, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), theme)
-        ).isInstanceOf(InvalidArgumentException.class);
+        assertThatThrownBy(() -> new Reservation(1L, name, LocalDate.now(), new ReservationTime(1L, LocalTime.now()),
+                theme)).isInstanceOf(InvalidArgumentException.class);
     }
 
     @DisplayName("예약 날짜는 현재보다 미래여야 한다.")
     @Test
     void test4() {
         // given
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime future = now.plusDays(1);
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime future = now.plusDays(1);
 
-        Theme theme = new Theme(1L, "공포", "우테코 공포",
+        final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        ReservationTime reservationTime = new ReservationTime(1L, future.toLocalTime());
-        Reservation reservation = new Reservation(1L, "예약", future.toLocalDate(), reservationTime, theme);
+        final ReservationTime reservationTime = new ReservationTime(1L, future.toLocalTime());
+        final Reservation reservation = new Reservation(1L, "예약", future.toLocalDate(), reservationTime, theme);
 
         // when & then
-        assertThatCode(() -> reservation.validateNotPastReservation(now))
-                .doesNotThrowAnyException();
+        assertThatCode(() -> reservation.validateNotPastReservation(now)).doesNotThrowAnyException();
     }
 
     @DisplayName("예약 날짜가 과거라면 예외를 반환한다.")
     @Test
     void notPastReservation_throwsException() {
         // given
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime pastDay = now.minusDays(1);
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime pastDay = now.minusDays(1);
 
-        Theme theme = new Theme(1L, "공포", "우테코 공포",
+        final Theme theme = new Theme(1L, "공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        ReservationTime reservationTime = new ReservationTime(1L, pastDay.toLocalTime());
-        Reservation reservation = new Reservation(1L, "예약", pastDay.toLocalDate(), reservationTime, theme);
+        final ReservationTime reservationTime = new ReservationTime(1L, pastDay.toLocalTime());
+        final Reservation reservation = new Reservation(1L, "예약", pastDay.toLocalDate(), reservationTime, theme);
 
         // when & then
-        assertThatThrownBy(() -> reservation.validateNotPastReservation(now))
-                .isInstanceOf(InvalidArgumentException.class);
+        assertThatThrownBy(() -> reservation.validateNotPastReservation(now)).isInstanceOf(
+                InvalidArgumentException.class);
     }
 }

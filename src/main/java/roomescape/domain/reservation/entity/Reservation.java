@@ -19,7 +19,8 @@ public class Reservation {
     private final Theme theme;
 
     @Builder
-    public Reservation(Long id, String name, LocalDate reservationDate, ReservationTime reservationTime, Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate reservationDate,
+                       final ReservationTime reservationTime, final Theme theme) {
         this.id = id;
         this.name = name;
         this.reservationDate = reservationDate;
@@ -28,8 +29,8 @@ public class Reservation {
         validateReservation();
     }
 
-    public static Reservation withoutId(String name, LocalDate reservationDate, ReservationTime reservationTime,
-                                        Theme theme) {
+    public static Reservation withoutId(final String name, final LocalDate reservationDate,
+                                        final ReservationTime reservationTime, final Theme theme) {
         return new Reservation(null, name, reservationDate, reservationTime, theme);
     }
 
@@ -46,14 +47,14 @@ public class Reservation {
         }
     }
 
-    public void validateNotPastReservation(LocalDateTime now) {
+    public void validateNotPastReservation(final LocalDateTime now) {
         if (isPast(now)) {
             throw new InvalidArgumentException("이미 지난 예약 시간입니다.");
         }
     }
 
-    private boolean isPast(LocalDateTime now) {
-        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, getReservationStartTime());
+    private boolean isPast(final LocalDateTime now) {
+        final LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate, getReservationStartTime());
         return reservationDateTime.isBefore(now);
     }
 
@@ -79,11 +80,11 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Reservation that = (Reservation) o;
+        final Reservation that = (Reservation) o;
         return Objects.equals(id, that.id);
     }
 }

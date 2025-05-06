@@ -46,28 +46,38 @@ public class ReservationTimeApiTest {
     @DisplayName("예약 시간을 추가한다.")
     @Test
     void test1() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
-                .then().log().all()
+                .when()
+                .post("/times")
+                .then()
+                .log()
+                .all()
                 .statusCode(201);
     }
 
     @DisplayName("예약 시간 요청에 초가 있으면 Bad Request 반환")
     @Test
     void test2() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00:20");
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/times")
-                .then().log().all()
+                .when()
+                .post("/times")
+                .then()
+                .log()
+                .all()
                 .statusCode(400);
     }
 
@@ -75,14 +85,19 @@ public class ReservationTimeApiTest {
     @Test
     void test3() {
         // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
 
         reservationTimeRepository.save(reservationTime);
 
         // when & then
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/times")
+                .then()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(1));
     }
@@ -91,16 +106,21 @@ public class ReservationTimeApiTest {
     @Test
     void test4() {
         // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
 
-        ReservationTime saved = reservationTimeRepository.save(reservationTime);
+        final ReservationTime saved = reservationTimeRepository.save(reservationTime);
 
-        Long savedId = saved.getId();
+        final Long savedId = saved.getId();
 
         // when & then
-        RestAssured.given().log().all()
-                .when().delete("/times/" + savedId.intValue())
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/times/" + savedId.intValue())
+                .then()
+                .log()
+                .all()
                 .statusCode(204);
     }
 
@@ -108,12 +128,17 @@ public class ReservationTimeApiTest {
     @Test
     void test5() {
         // given
-        int notFoundStatusCode = 404;
+        final int notFoundStatusCode = 404;
 
         // when & then
-        RestAssured.given().log().all()
-                .when().delete("/times/4")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/times/4")
+                .then()
+                .log()
+                .all()
                 .statusCode(notFoundStatusCode);
     }
 
@@ -121,23 +146,28 @@ public class ReservationTimeApiTest {
     @Test
     void test6() {
         // given
-        int conflictStatusCode = 409;
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final int conflictStatusCode = 409;
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
 
-        ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
-        Long savedId = savedTime.getId();
+        final ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
+        final Long savedId = savedTime.getId();
 
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
+        final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
+        final Theme savedTheme = themeRepository.save(theme);
 
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
+        final Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then
-        RestAssured.given().log().all()
-                .when().delete("/times/" + savedId.intValue())
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/times/" + savedId.intValue())
+                .then()
+                .log()
+                .all()
                 .statusCode(conflictStatusCode);
     }
 }

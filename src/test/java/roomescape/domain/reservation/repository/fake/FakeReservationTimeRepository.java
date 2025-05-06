@@ -24,7 +24,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(final Long id) {
         if (reservationTimes.containsKey(id)) {
             return Optional.of(reservationTimes.get(id));
         }
@@ -33,7 +33,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime save(ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         if (reservationTime.existId() && !reservationTimes.containsKey(reservationTime.getId())) {
             throw new EntityNotFoundException("ReservationTime with id " + reservationTime.getId() + " not found");
         }
@@ -43,13 +43,13 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
             return reservationTime;
         }
 
-        ReservationTime timeWithId = new ReservationTime(id.getAndIncrement(), reservationTime.getStartAt());
+        final ReservationTime timeWithId = new ReservationTime(id.getAndIncrement(), reservationTime.getStartAt());
         reservationTimes.put(timeWithId.getId(), timeWithId);
         return timeWithId;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         if (!reservationTimes.containsKey(id)) {
             throw new EntityNotFoundException("ReservationTime with id " + id + " not found");
         }
@@ -57,7 +57,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
         reservationTimes.remove(id);
     }
 
-    public void add(ReservationTime reservationTime) {
+    public void add(final ReservationTime reservationTime) {
         reservationTimes.put(reservationTime.getId(), reservationTime);
     }
 

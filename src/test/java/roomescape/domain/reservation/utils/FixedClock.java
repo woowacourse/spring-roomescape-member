@@ -10,10 +10,11 @@ public final class FixedClock {
     private FixedClock() {
     }
 
-    public static Clock from(LocalDateTime localDateTime) {
-        ZoneId zoneId = ZoneId.systemDefault();
+    public static Clock from(final LocalDateTime localDateTime) {
+        final ZoneId zoneId = ZoneId.systemDefault();
 
-        Instant fixedInstant = localDateTime.atZone(zoneId).toInstant();
+        final Instant fixedInstant = localDateTime.atZone(zoneId)
+                .toInstant();
         return Clock.fixed(fixedInstant, zoneId);
     }
 }

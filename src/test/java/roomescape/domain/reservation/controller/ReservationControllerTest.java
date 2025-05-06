@@ -46,8 +46,8 @@ public class ReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private static String formatStartAt(LocalTime time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    private static String formatStartAt(final LocalTime time) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         return time.format(formatter);
     }
@@ -56,16 +56,16 @@ public class ReservationControllerTest {
     @Test
     void test1() throws Exception {
         // given
-        List<String> names = List.of("꾹", "드라고", "히로");
-        LocalDate now = LocalDate.now();
-        LocalTime time = LocalTime.now();
-        Long timeId = 1L;
-        Long themeId = 1L;
-        AtomicLong id = new AtomicLong(1L);
-        ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
-        ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
+        final List<String> names = List.of("꾹", "드라고", "히로");
+        final LocalDate now = LocalDate.now();
+        final LocalTime time = LocalTime.now();
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final AtomicLong id = new AtomicLong(1L);
+        final ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
+        final ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
 
-        List<ReservationResponse> responses = names.stream()
+        final List<ReservationResponse> responses = names.stream()
                 .map(name -> new ReservationResponse(id.getAndIncrement(), name, now, timeResponse, themeResponse))
                 .toList();
 
@@ -81,20 +81,21 @@ public class ReservationControllerTest {
     @DisplayName("예약 정보를 추가한다.")
     @Test
     void test2() throws Exception {
-        Long reservationId = 1L;
-        Long timeId = 1L;
-        Long themeId = 1L;
+        final Long reservationId = 1L;
+        final Long timeId = 1L;
+        final Long themeId = 1L;
 
-        LocalDate date = LocalDate.now();
-        LocalTime time = LocalTime.of(8, 0);
-        String name = "꾹이";
+        final LocalDate date = LocalDate.now();
+        final LocalTime time = LocalTime.of(8, 0);
+        final String name = "꾹이";
 
-        ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
-        ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
-        ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
-        ReservationResponse response = new ReservationResponse(reservationId, name, date, timeResponse, themeResponse);
+        final ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationTimeResponse timeResponse = new ReservationTimeResponse(timeId, time);
+        final ThemeResponse themeResponse = new ThemeResponse(themeId, "공포", "묘사", "url");
+        final ReservationResponse response = new ReservationResponse(reservationId, name, date, timeResponse,
+                themeResponse);
 
-        String requestContent = objectMapper.writeValueAsString(request);
+        final String requestContent = objectMapper.writeValueAsString(request);
 
         when(reservationService.create(request)).thenReturn(response);
 
@@ -113,13 +114,13 @@ public class ReservationControllerTest {
     @Test
     void test3() throws Exception {
         // given
-        Long timeId = 1L;
-        Long themeId = 1L;
-        LocalDate date = LocalDate.now();
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final LocalDate date = LocalDate.now();
 
-        ReservationRequest request = new ReservationRequest(null, date, timeId, themeId);
+        final ReservationRequest request = new ReservationRequest(null, date, timeId, themeId);
 
-        String requestContent = objectMapper.writeValueAsString(request);
+        final String requestContent = objectMapper.writeValueAsString(request);
 
         // when
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
@@ -132,14 +133,14 @@ public class ReservationControllerTest {
     @Test
     void test4() throws Exception {
         // given
-        Long timeId = 1L;
-        Long themeId = 1L;
-        LocalDate date = LocalDate.now();
-        String name = "꾹이";
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final LocalDate date = LocalDate.now();
+        final String name = "꾹이";
 
-        ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
+        final ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
 
-        String requestContent = objectMapper.writeValueAsString(request);
+        final String requestContent = objectMapper.writeValueAsString(request);
 
         // when
         when(reservationService.create(any())).thenThrow(EntityNotFoundException.class);
@@ -155,10 +156,11 @@ public class ReservationControllerTest {
     @Test
     void test5() throws Exception {
         // given
-        long reservationId = 1;
+        final long reservationId = 1;
 
         // when
-        doNothing().when(reservationService).delete(any());
+        doNothing().when(reservationService)
+                .delete(any());
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.delete("/reservations/" + reservationId))
@@ -169,10 +171,11 @@ public class ReservationControllerTest {
     @Test
     void test6() throws Exception {
         // given
-        long reservationId = 1;
+        final long reservationId = 1;
 
         // when
-        doThrow(EntityNotFoundException.class).when(reservationService).delete(any());
+        doThrow(EntityNotFoundException.class).when(reservationService)
+                .delete(any());
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.delete("/reservations/" + reservationId))
@@ -184,8 +187,10 @@ public class ReservationControllerTest {
     void jdbcBeanTest() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
+        for (final Field field : reservationController.getClass()
+                .getDeclaredFields()) {
+            if (field.getType()
+                    .equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;
             }
@@ -198,18 +203,18 @@ public class ReservationControllerTest {
     @Test
     void test7() throws Exception {
         // given
-        String name = "";
-        LocalDate date = LocalDate.now();
-        Long timeId = 1L;
-        Long themeId = 1L;
+        final String name = "";
+        final LocalDate date = LocalDate.now();
+        final Long timeId = 1L;
+        final Long themeId = 1L;
 
-        ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
-        String content = objectMapper.writeValueAsString(request);
+        final ReservationRequest request = new ReservationRequest(name, date, timeId, themeId);
+        final String content = objectMapper.writeValueAsString(request);
 
         // when & then
         mockMvc.perform(MockMvcRequestBuilders.post("/reservations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content)
-        ).andExpect(status().isBadRequest());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isBadRequest());
     }
 }

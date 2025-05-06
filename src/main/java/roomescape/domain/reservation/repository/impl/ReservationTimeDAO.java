@@ -26,40 +26,35 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public ReservationTimeDAO(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationTimeDAO(final NamedParameterJdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TABLE_NAME)
+        this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(TABLE_NAME)
                 .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "select * from reservation_time";
+        final String sql = "select * from reservation_time";
 
-        return jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> reservationTimeOf(resultSet)
-        );
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> reservationTimeOf(resultSet));
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long id) {
-        String sql = "select * from reservation_time where id = :id";
+    public Optional<ReservationTime> findById(final Long id) {
+        final String sql = "select * from reservation_time where id = :id";
 
-        Map<String, Long> params = Map.of("id", id);
+        final Map<String, Long> params = Map.of("id", id);
 
         try {
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql,
-                    params,
-                    (resultSet, rowNum) -> reservationTimeOf(resultSet)
-            );
+            final ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, params,
+                    (resultSet, rowNum) -> reservationTimeOf(resultSet));
             return Optional.ofNullable(reservationTime);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    private ReservationTime reservationTimeOf(ResultSet resultSet) throws SQLException {
+    private ReservationTime reservationTimeOf(final ResultSet resultSet) throws SQLException {
         return ReservationTime.builder()
                 .id(resultSet.getLong("id"))
                 .startAt(LocalTime.parse(resultSet.getString("start_at")))
@@ -67,7 +62,7 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
     }
 
     @Override
-    public ReservationTime save(ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         if (reservationTime.existId()) {
             return update(reservationTime);
         }
@@ -75,13 +70,13 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
         return create(reservationTime);
     }
 
-    private ReservationTime update(ReservationTime reservationTime) {
-        String sql = "update reservation_time set start_at = :start_at where id = :id";
+    private ReservationTime update(final ReservationTime reservationTime) {
+        final String sql = "update reservation_time set start_at = :start_at where id = :id";
 
-        Map<String, Object> params = Map.of("start_at", reservationTime.getStartAt(),
-                "id", reservationTime.getId());
+        final Map<String, Object> params = Map.of("start_at", reservationTime.getStartAt(), "id",
+                reservationTime.getId());
 
-        int updateRowCount = jdbcTemplate.update(sql, params);
+        final int updateRowCount = jdbcTemplate.update(sql, params);
 
         if (updateRowCount == 0) {
             throw new EntityNotFoundException("ReservationTime with id " + reservationTime.getId() + " not found");
@@ -90,21 +85,22 @@ public class ReservationTimeDAO implements ReservationTimeRepository {
         return reservationTime;
     }
 
-    private ReservationTime create(ReservationTime reservationTime) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", reservationTime.getStartAt());
+    private ReservationTime create(final ReservationTime reservationTime) {
+        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("start_at",
+                reservationTime.getStartAt());
 
-        long id = jdbcInsert.executeAndReturnKey(params).longValue();
+        final long id = jdbcInsert.executeAndReturnKey(params)
+                .longValue();
 
         return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override
-    public void deleteById(Long id) {
-        String deleteSql = "delete from reservation_time where id = :id";
-        Map<String, Long> params = Map.of("id", id);
+    public void deleteById(final Long id) {
+        final String deleteSql = "delete from reservation_time where id = :id";
+        final Map<String, Long> params = Map.of("id", id);
 
-        int deleteRowCount = jdbcTemplate.update(deleteSql, params);
+        final int deleteRowCount = jdbcTemplate.update(deleteSql, params);
 
         if (deleteRowCount != 1) {
             throw new EntityNotFoundException("ReservationTime with id " + id + " not found");

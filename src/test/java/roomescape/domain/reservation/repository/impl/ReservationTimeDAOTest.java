@@ -37,12 +37,12 @@ class ReservationTimeDAOTest {
     @Test
     void test1() {
         // given
-        Long id = 1L;
-        LocalTime now = LocalTime.now();
+        final Long id = 1L;
+        final LocalTime now = LocalTime.now();
         saveReservationTime(id, now);
 
         // when
-        ReservationTime result = reservationTimeRepository.findById(id)
+        final ReservationTime result = reservationTimeRepository.findById(id)
                 .get();
 
         // then
@@ -50,8 +50,8 @@ class ReservationTimeDAOTest {
         assertThat(result.getStartAt()).isEqualTo(now);
     }
 
-    private void saveReservationTime(Long id, LocalTime startAt) {
-        String sql = "insert into reservation_time (id, start_at) values (?, ?)";
+    private void saveReservationTime(final Long id, final LocalTime startAt) {
+        final String sql = "insert into reservation_time (id, start_at) values (?, ?)";
         jdbcTemplate.update(sql, id, startAt);
     }
 
@@ -75,9 +75,9 @@ class ReservationTimeDAOTest {
         @Test
         void test1() {
             // given
-            Long id = 1L;
-            LocalTime now = LocalTime.of(9, 0);
-            String sql = "insert into reservation_time(id, start_at) values(?, ?)";
+            final Long id = 1L;
+            final LocalTime now = LocalTime.of(9, 0);
+            final String sql = "insert into reservation_time(id, start_at) values(?, ?)";
             jdbcTemplate.update(sql, id, now);
 
             // when
@@ -88,9 +88,9 @@ class ReservationTimeDAOTest {
         @Test
         void test2() {
             // given
-            Long id = 1L;
-            LocalTime now = LocalTime.of(10, 0);
-            String sql = "insert into reservation_time(id, start_at) values(?, ?)";
+            final Long id = 1L;
+            final LocalTime now = LocalTime.of(10, 0);
+            final String sql = "insert into reservation_time(id, start_at) values(?, ?)";
             jdbcTemplate.update(sql, id, now);
 
             jdbcTemplate.update("INSERT INTO reservation(name, date, time_id) VALUES (?, ?, ?)", "꾹", LocalDate.now(),
@@ -110,11 +110,11 @@ class ReservationTimeDAOTest {
         @Test
         void test1() {
             // given
-            LocalTime now = LocalTime.now();
-            ReservationTime time = ReservationTime.withoutId(now);
+            final LocalTime now = LocalTime.now();
+            final ReservationTime time = ReservationTime.withoutId(now);
 
             // when
-            ReservationTime saved = reservationTimeRepository.save(time);
+            final ReservationTime saved = reservationTimeRepository.save(time);
 
             // then
             assertThat(saved.getId()).isNotNull();
@@ -125,19 +125,19 @@ class ReservationTimeDAOTest {
         @Test
         void test5() {
             // given
-            Long id = 1L;
-            LocalTime now = LocalTime.of(9, 0);
-            String sql = "insert into reservation_time(id, start_at) values(?, ?)";
+            final Long id = 1L;
+            final LocalTime now = LocalTime.of(9, 0);
+            final String sql = "insert into reservation_time(id, start_at) values(?, ?)";
             jdbcTemplate.update(sql, id, now);
 
             // when
-            LocalTime changeTime = LocalTime.of(10, 0);
-            ReservationTime reservationTime = new ReservationTime(id, changeTime);
-            ReservationTime result = reservationTimeRepository.save(reservationTime);
+            final LocalTime changeTime = LocalTime.of(10, 0);
+            final ReservationTime reservationTime = new ReservationTime(id, changeTime);
+            final ReservationTime result = reservationTimeRepository.save(reservationTime);
 
             // then
 
-            SoftAssertions softly = new SoftAssertions();
+            final SoftAssertions softly = new SoftAssertions();
 
             softly.assertThat(result.getId())
                     .isEqualTo(id);
@@ -151,9 +151,9 @@ class ReservationTimeDAOTest {
         @Test
         void test6() {
             // given
-            Long id = 1L;
-            LocalTime now = LocalTime.of(9, 0);
-            ReservationTime reservationTime = new ReservationTime(id, now);
+            final Long id = 1L;
+            final LocalTime now = LocalTime.of(9, 0);
+            final ReservationTime reservationTime = new ReservationTime(id, now);
 
             // when & then
             assertThatThrownBy(() -> reservationTimeRepository.save(reservationTime)).isInstanceOf(

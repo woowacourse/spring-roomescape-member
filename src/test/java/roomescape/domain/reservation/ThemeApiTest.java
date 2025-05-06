@@ -39,7 +39,7 @@ class ThemeApiTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    private static LocalDate minusDay(LocalDate date, int days) {
+    private static LocalDate minusDay(final LocalDate date, final int days) {
         return date.minusDays(days);
     }
 
@@ -51,16 +51,21 @@ class ThemeApiTest {
     @DisplayName("테마를 추가한다.")
     @Test
     void test1() {
-        Map<String, String> params = new HashMap<>();
+        final Map<String, String> params = new HashMap<>();
         params.put("name", "테마1");
         params.put("description", "테마1");
         params.put("thumbnail", "www.m.com");
 
-        RestAssured.given().log().all()
+        RestAssured.given()
+                .log()
+                .all()
                 .contentType(ContentType.JSON)
                 .body(params)
-                .when().post("/themes")
-                .then().log().all()
+                .when()
+                .post("/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(201);
     }
 
@@ -68,14 +73,19 @@ class ThemeApiTest {
     @Test
     void test2() {
         // given
-        Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
+        final Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
 
         themeRepository.save(theme);
 
         // when & then
-        RestAssured.given().log().all()
-                .when().get("/themes")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/themes")
+                .then()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(1));
     }
@@ -84,16 +94,21 @@ class ThemeApiTest {
     @Test
     void test3() {
         // given
-        Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
+        final Theme theme = Theme.withoutId("테마1", "테마1", "www.m.com");
 
-        Theme saved = themeRepository.save(theme);
+        final Theme saved = themeRepository.save(theme);
 
-        Long savedId = saved.getId();
+        final Long savedId = saved.getId();
 
         // when & then
-        RestAssured.given().log().all()
-                .when().delete("/themes/" + savedId.intValue())
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/themes/" + savedId.intValue())
+                .then()
+                .log()
+                .all()
                 .statusCode(204);
     }
 
@@ -101,12 +116,17 @@ class ThemeApiTest {
     @Test
     void test4() {
         // given
-        int notFoundStatusCode = 404;
+        final int notFoundStatusCode = 404;
 
         // when & then
-        RestAssured.given().log().all()
-                .when().delete("/themes/4")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/themes/4")
+                .then()
+                .log()
+                .all()
                 .statusCode(notFoundStatusCode);
     }
 
@@ -114,23 +134,28 @@ class ThemeApiTest {
     @Test
     void test5() {
         // given
-        int conflictStatusCode = 409;
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final int conflictStatusCode = 409;
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
 
-        ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
+        final ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
-        Theme theme = Theme.withoutId("공포", "우테코 공포",
+        final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        Theme savedTheme = themeRepository.save(theme);
-        Long savedId = savedTheme.getId();
+        final Theme savedTheme = themeRepository.save(theme);
+        final Long savedId = savedTheme.getId();
 
-        Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
+        final Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then
-        RestAssured.given().log().all()
-                .when().delete("/themes/" + savedId.intValue())
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .delete("/themes/" + savedId.intValue())
+                .then()
+                .log()
+                .all()
                 .statusCode(conflictStatusCode);
     }
 
@@ -138,16 +163,16 @@ class ThemeApiTest {
     @Test
     void test6() {
         // given
-        ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
+        final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
 
-        ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
+        final ReservationTime savedTime = reservationTimeRepository.save(reservationTime);
 
-        Theme theme1 = Theme.withoutId("공포1", "우테코 공포", "www.m.com");
-        Theme theme2 = Theme.withoutId("공포2", "우테코 공포", "www.m.com");
-        Theme theme3 = Theme.withoutId("공포3", "우테코 공포", "www.m.com");
-        Theme savedTheme1 = themeRepository.save(theme1);
-        Theme savedTheme2 = themeRepository.save(theme2);
-        Theme savedTheme3 = themeRepository.save(theme3);
+        final Theme theme1 = Theme.withoutId("공포1", "우테코 공포", "www.m.com");
+        final Theme theme2 = Theme.withoutId("공포2", "우테코 공포", "www.m.com");
+        final Theme theme3 = Theme.withoutId("공포3", "우테코 공포", "www.m.com");
+        final Theme savedTheme1 = themeRepository.save(theme1);
+        final Theme savedTheme2 = themeRepository.save(theme2);
+        final Theme savedTheme3 = themeRepository.save(theme3);
 
         reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 1), savedTime, savedTheme3));
         reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 2), savedTime, savedTheme3));
@@ -157,9 +182,14 @@ class ThemeApiTest {
         reservationRepository.save(Reservation.withoutId("꾹", minusDay(LocalDate.now(), 6), savedTime, savedTheme2));
 
         // when & then
-        RestAssured.given().log().all()
-                .when().get("/themes/popular")
-                .then().log().all()
+        RestAssured.given()
+                .log()
+                .all()
+                .when()
+                .get("/themes/popular")
+                .then()
+                .log()
+                .all()
                 .statusCode(200)
                 .body("size()", is(3))
                 .body("name", contains("공포3", "공포1", "공포2"));

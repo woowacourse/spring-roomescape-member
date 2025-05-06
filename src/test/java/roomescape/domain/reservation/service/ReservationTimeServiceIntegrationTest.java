@@ -54,19 +54,21 @@ class ReservationTimeServiceIntegrationTest {
     @Test
     void test1() {
         // given
-        LocalTime localTime1 = LocalTime.of(8, 0);
-        LocalTime localTime2 = LocalTime.of(9, 0);
-        List<LocalTime> localTimes = List.of(localTime1, localTime2);
+        final LocalTime localTime1 = LocalTime.of(8, 0);
+        final LocalTime localTime2 = LocalTime.of(9, 0);
+        final List<LocalTime> localTimes = List.of(localTime1, localTime2);
 
-        for (LocalTime localTime : localTimes) {
+        for (final LocalTime localTime : localTimes) {
             reservationTimeRepository.save(ReservationTime.withoutId(localTime));
         }
 
         // when
-        List<ReservationTimeResponse> result = reservationTimeService.getAll();
+        final List<ReservationTimeResponse> result = reservationTimeService.getAll();
 
         // then
-        List<LocalTime> resultTimes = result.stream().map(ReservationTimeResponse::startAt).toList();
+        final List<LocalTime> resultTimes = result.stream()
+                .map(ReservationTimeResponse::startAt)
+                .toList();
         assertThat(resultTimes).containsExactlyInAnyOrderElementsOf(localTimes);
     }
 
@@ -74,7 +76,7 @@ class ReservationTimeServiceIntegrationTest {
     @Test
     void test2() {
         // given & when
-        List<ReservationTimeResponse> result = reservationTimeService.getAll();
+        final List<ReservationTimeResponse> result = reservationTimeService.getAll();
 
         // then
         assertThat(result).isEmpty();
@@ -84,11 +86,11 @@ class ReservationTimeServiceIntegrationTest {
     @Test
     void test3() {
         // given
-        LocalTime localTime1 = LocalTime.of(8, 0);
-        ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(localTime1);
+        final LocalTime localTime1 = LocalTime.of(8, 0);
+        final ReservationTimeRequest reservationTimeRequest = new ReservationTimeRequest(localTime1);
 
         // when
-        ReservationTimeResponse result = reservationTimeService.create(reservationTimeRequest);
+        final ReservationTimeResponse result = reservationTimeService.create(reservationTimeRequest);
 
         // then
         assertThat(result.id()).isNotNull();
@@ -99,8 +101,8 @@ class ReservationTimeServiceIntegrationTest {
     @Test
     void test4() {
         // given
-        ReservationTime saved = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
-        Long id = saved.getId();
+        final ReservationTime saved = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
+        final Long id = saved.getId();
 
         // when & then
         assertThatCode(() -> reservationTimeService.delete(id)).doesNotThrowAnyException();
@@ -110,26 +112,25 @@ class ReservationTimeServiceIntegrationTest {
     @Test
     void test5() {
         // given
-        Long id = 1L;
+        final Long id = 1L;
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(id))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> reservationTimeService.delete(id)).isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("예약이 존재할 때 예약을 삭제하면 예외를 반환한다.")
     @Test
     void test6() {
         // given
-        Theme theme = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
+        final Theme theme = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
 
-        ReservationTime reservationTime = reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(8, 0)));
+        final ReservationTime reservationTime = reservationTimeRepository.save(
+                ReservationTime.withoutId(LocalTime.of(8, 0)));
 
         reservationRepository.save(Reservation.withoutId("꾹", LocalDate.now(), reservationTime, theme));
-        Long timeId = reservationTime.getId();
+        final Long timeId = reservationTime.getId();
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
-                .isInstanceOf(AlreadyInUseException.class);
+        assertThatThrownBy(() -> reservationTimeService.delete(timeId)).isInstanceOf(AlreadyInUseException.class);
     }
 }

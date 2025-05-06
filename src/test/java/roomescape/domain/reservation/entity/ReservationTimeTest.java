@@ -14,17 +14,17 @@ class ReservationTimeTest {
     @DisplayName("id 존재를 확인할 수 있다.")
     @ParameterizedTest
     @CsvSource(value = {"1,true", "null,false"}, nullValues = "null", delimiter = ',')
-    void test1(Long id, Boolean expect){
-        LocalTime now = LocalTime.now();
+    void test1(final Long id, final Boolean expect) {
+        final LocalTime now = LocalTime.now();
 
-        ReservationTime reservationTime = new ReservationTime(id, now);
+        final ReservationTime reservationTime = new ReservationTime(id, now);
         assertThat(reservationTime.existId()).isEqualTo(expect);
     }
 
     @DisplayName("시간은 null일 수 없다.")
     @Test
-    void test2(){
-        SoftAssertions softAssertions = new SoftAssertions();
+    void test2() {
+        final SoftAssertions softAssertions = new SoftAssertions();
 
         softAssertions.assertThatThrownBy(() -> new ReservationTime(1L, null))
                 .isInstanceOf(IllegalArgumentException.class);

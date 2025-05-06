@@ -13,7 +13,7 @@ public class Theme {
     private final String thumbnail;
 
     @Builder
-    public Theme(Long id, String name, String description, String thumbnail) {
+    public Theme(final Long id, final String name, final String description, final String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -21,7 +21,7 @@ public class Theme {
         validateTheme();
     }
 
-    public static Theme withoutId(String name, String description, String thumbnail) {
+    public static Theme withoutId(final String name, final String description, final String thumbnail) {
         return new Theme(null, name, description, thumbnail);
     }
 

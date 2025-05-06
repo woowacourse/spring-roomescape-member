@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.domain.reservation.utils.FixedClock;
 import roomescape.domain.reservation.dto.ThemeRequest;
 import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.entity.Reservation;
@@ -29,6 +28,7 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
+import roomescape.domain.reservation.utils.FixedClock;
 
 @ActiveProfiles("test")
 @JdbcTest
@@ -50,7 +50,7 @@ class ThemeServiceIntegrationTest {
     @BeforeEach
     void setUp() {
         now = LocalDateTime.of(2025, 4, 30, 12, 0);
-        Clock clock = FixedClock.from(now);
+        final Clock clock = FixedClock.from(now);
 
         themeService = new ThemeService(clock, themeRepository, reservationRepository);
     }
@@ -63,7 +63,7 @@ class ThemeServiceIntegrationTest {
         themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
 
         // when
-        List<ThemeResponse> responses = themeService.getAll();
+        final List<ThemeResponse> responses = themeService.getAll();
 
         // then
         assertThat(responses).hasSize(2);
@@ -73,7 +73,7 @@ class ThemeServiceIntegrationTest {
     @Test
     void test2() {
         // when
-        List<ThemeResponse> responses = themeService.getAll();
+        final List<ThemeResponse> responses = themeService.getAll();
 
         // then
         assertThat(responses).isEmpty();
@@ -83,10 +83,10 @@ class ThemeServiceIntegrationTest {
     @Test
     void test3() {
         // given
-        ThemeRequest request = new ThemeRequest("테마1", "테마1", "www.m.com");
+        final ThemeRequest request = new ThemeRequest("테마1", "테마1", "www.m.com");
 
         // when
-        ThemeResponse response = themeService.create(request);
+        final ThemeResponse response = themeService.create(request);
 
         // then
         assertThat(response.id()).isNotNull();
@@ -99,9 +99,9 @@ class ThemeServiceIntegrationTest {
     @Test
     void test4() {
         // given
-        ThemeRequest request = new ThemeRequest("테마1", "테마1", "www.m.com");
-        ThemeResponse response = themeService.create(request);
-        Long themeId = response.id();
+        final ThemeRequest request = new ThemeRequest("테마1", "테마1", "www.m.com");
+        final ThemeResponse response = themeService.create(request);
+        final Long themeId = response.id();
 
         // when
         themeService.delete(themeId);
@@ -114,39 +114,37 @@ class ThemeServiceIntegrationTest {
     @Test
     void test5() {
         // when & then
-        assertThatThrownBy(() -> themeService.delete(1L))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> themeService.delete(1L)).isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("예약 정보가 있는 테마의 경우 삭제할 수 없다")
     @Test
     void test6() {
         // given
-        Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
-        Long themeId = savedTheme.getId();
+        final Theme savedTheme = themeRepository.save(Theme.withoutId("포스티", "공포", "wwww.um.com"));
+        final Long themeId = savedTheme.getId();
 
-        LocalTime time = LocalTime.of(8, 0);
-        ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
+        final LocalTime time = LocalTime.of(8, 0);
+        final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
-        LocalDate date = LocalDate.of(2024, 4, 29);
+        final LocalDate date = LocalDate.of(2024, 4, 29);
         reservationRepository.save(Reservation.withoutId("꾹", date, savedTime, savedTheme));
 
         // when & then
-        assertThatThrownBy(() -> themeService.delete(themeId))
-                .isInstanceOf(AlreadyInUseException.class);
+        assertThatThrownBy(() -> themeService.delete(themeId)).isInstanceOf(AlreadyInUseException.class);
     }
 
     @DisplayName("1~8일 전 사이의 예약이 많은 최대 10개의 테마 정보를 가져온다")
     @Test
     void test7() {
         // given
-        ReservationTime reservationTime = reservationTimeRepository.save(
+        final ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.of(10, 0)));
-        LocalDate date = now.toLocalDate();
+        final LocalDate date = now.toLocalDate();
 
-        Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
-        Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
-        Theme theme3 = themeRepository.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
+        final Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
+        final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
+        final Theme theme3 = themeRepository.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
         reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(1), reservationTime, theme1));
         reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(2), reservationTime, theme1));
         reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(3), reservationTime, theme1));
@@ -155,13 +153,10 @@ class ThemeServiceIntegrationTest {
         reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(6), reservationTime, theme3));
 
         // when
-        List<ThemeResponse> responses = themeService.getPopularThemes();
+        final List<ThemeResponse> responses = themeService.getPopularThemes();
 
         // then
-        assertThat(responses).containsExactly(
-                ThemeResponse.from(theme1),
-                ThemeResponse.from(theme2),
-                ThemeResponse.from(theme3)
-        );
+        assertThat(responses).containsExactly(ThemeResponse.from(theme1), ThemeResponse.from(theme2),
+                ThemeResponse.from(theme3));
     }
 }

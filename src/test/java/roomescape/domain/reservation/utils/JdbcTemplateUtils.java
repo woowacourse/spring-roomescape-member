@@ -8,7 +8,7 @@ public final class JdbcTemplateUtils {
     private JdbcTemplateUtils() {
     }
 
-    public static void deleteAllTables(JdbcTemplate jdbcTemplate) {
+    public static void deleteAllTables(final JdbcTemplate jdbcTemplate) {
         try {
             // 외래 키 제약 테이블 삭제
             jdbcTemplate.update("truncate TABLE reservation");
@@ -16,7 +16,7 @@ public final class JdbcTemplateUtils {
             // 부모 테이블 삭제
             jdbcTemplate.update("delete from reservation_time");
             jdbcTemplate.update("delete from theme");
-        } catch (DataAccessException e) {
+        } catch (final DataAccessException e) {
             throw new RuntimeException("테이블 삭제 중 오류 발생", e);
         }
     }

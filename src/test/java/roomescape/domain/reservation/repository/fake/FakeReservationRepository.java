@@ -25,7 +25,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(Long id) {
+    public Optional<Reservation> findById(final Long id) {
         if (reservations.containsKey(id)) {
             return Optional.ofNullable(reservations.get(id));
         }
@@ -34,7 +34,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation save(Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         if (reservation.existId() && !reservations.containsKey(reservation.getId())) {
             throw new EntityNotFoundException("Reservation with id " + reservation.getId() + " not found");
         }
@@ -44,7 +44,7 @@ public class FakeReservationRepository implements ReservationRepository {
             return reservation;
         }
 
-        Reservation reservationWithId = new Reservation(id.getAndIncrement(), reservation.getName(),
+        final Reservation reservationWithId = new Reservation(id.getAndIncrement(), reservation.getName(),
                 reservation.getReservationDate(), reservation.getReservationTime(), reservation.getTheme());
 
         reservations.put(reservationWithId.getId(), reservationWithId);
@@ -52,7 +52,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         if (!reservations.containsKey(id)) {
             throw new EntityNotFoundException("Reservation with id " + id + " not found");
         }
@@ -61,33 +61,39 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByDateAndTimeId(LocalDate date, Long timeId) {
+    public boolean existsByDateAndTimeId(final LocalDate date, final Long timeId) {
         return reservations.values()
                 .stream()
                 .anyMatch(reservation -> sameReservationDateTime(reservation, date, timeId));
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean existsByTimeId(Long timeId) {
-        return reservations.values().stream()
-                .anyMatch(reservation -> reservation.getReservationTimeId().equals(timeId));
+    public boolean existsByTimeId(final Long timeId) {
+        return reservations.values()
+                .stream()
+                .anyMatch(reservation -> reservation.getReservationTimeId()
+                        .equals(timeId));
     }
 
     @Override
-    public boolean existsByThemeId(Long themeId) {
-        return reservations.values().stream()
-                .anyMatch(reservation -> reservation.getThemeId().equals(themeId));
+    public boolean existsByThemeId(final Long themeId) {
+        return reservations.values()
+                .stream()
+                .anyMatch(reservation -> reservation.getThemeId()
+                        .equals(themeId));
 
     }
 
-    private boolean sameReservationDateTime(Reservation reservation, LocalDate date, Long timeId) {
-        return reservation.getReservationDate().equals(date) &&
-               reservation.getReservationTime().getId().equals(timeId);
+    private boolean sameReservationDateTime(final Reservation reservation, final LocalDate date, final Long timeId) {
+        return reservation.getReservationDate()
+                .equals(date) && reservation.getReservationTime()
+                .getId()
+                .equals(timeId);
     }
 
     public void deleteAll() {
