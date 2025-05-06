@@ -44,10 +44,7 @@ public class FakeThemeDao implements ThemeDao {
         themes.remove(theme);
     }
 
-    /**
-     * TODO
-     * JOIN을 구현할 방법 찾기
-     */
+    @Deprecated
     @Override
     public List<Theme> findPopularThemes(LocalDate from, LocalDate to, int count) {
         return null;
