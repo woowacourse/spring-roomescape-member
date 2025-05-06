@@ -27,7 +27,7 @@ import roomescape.reservationtime.domain.dto.ReservationTimeResDto;
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ExtendWith({SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ReservationTimeControllerTest {
+public class ReservationTimeApiControllerTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
