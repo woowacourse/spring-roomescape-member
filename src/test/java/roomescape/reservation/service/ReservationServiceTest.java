@@ -3,26 +3,50 @@ package roomescape.reservation.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.stream.Stream;
+import javax.sql.DataSource;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import roomescape.common.util.DateTime;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
+import roomescape.reservation.infrastructure.JdbcReservationRepository;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.ReservationTimeRepository;
+import roomescape.reservationTime.infrastructure.JdbcReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.infrastructure.JdbcThemeRepository;
 
 class ReservationServiceTest {
 
+    private final static DataSource DATASOURCE = DataSourceBuilder.create()
+            .driverClassName("org.h2.Driver")
+            .url("jdbc:h2:mem:testDatabase")
+            .username("sa")
+            .build();
+
     private ReservationService reservationService;
+
+    @BeforeAll
+    static void before() {
+        DatabaseInitializationSettings databaseInitializationSettings = new DatabaseInitializationSettings();
+        databaseInitializationSettings.setSchemaLocations(List.of("classpath:/schema.sql"));
+        DataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer = new DataSourceScriptDatabaseInitializer(DATASOURCE, databaseInitializationSettings);
+        dataSourceScriptDatabaseInitializer.initializeDatabase();
+    }
 
     @BeforeEach
     void beforeEach() {
@@ -32,18 +56,20 @@ class ReservationServiceTest {
                 return LocalDateTime.of(2025, 10, 5, 10, 0);
             }
         };
-        ThemeRepository themeRepository = new FakeThemeRepository(null);
-        Theme theme = Theme.createWithId(1L, "테스트1", "설명", "localhost:8080");
+
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(DATASOURCE);
+
+        ThemeRepository themeRepository = new JdbcThemeRepository(namedParameterJdbcTemplate, DATASOURCE);
+        Theme theme = Theme.createWithoutId("테스트1", "설명", "localhost:8080");
         themeRepository.save(theme);
 
+        ReservationTimeRepository reservationTimeRepository = new JdbcReservationTimeRepository(namedParameterJdbcTemplate, DATASOURCE);
         ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.of(9, 0));
-
-        ReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
         reservationTimeRepository.save(reservationTime1);
         reservationTimeRepository.save(reservationTime2);
 
-        ReservationRepository reservationRepository = new FakeReservationRepository();
+        ReservationRepository reservationRepository = new JdbcReservationRepository(namedParameterJdbcTemplate, DATASOURCE);
         reservationRepository.save(Reservation.createWithoutId("홍길동", LocalDate.of(2024, 10, 6), reservationTime1, theme));
 
         reservationService = new ReservationService(
