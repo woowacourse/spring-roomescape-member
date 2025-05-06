@@ -2,6 +2,7 @@ package roomescape.theme.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("limit") final int limit) {
+    public ResponseEntity<List<ThemeResponse>> getPopularThemes(@RequestParam("limit") @Positive final int limit) {
         List<ThemeResponse> response = themeService.getPopularThemes(limit);
         return ResponseEntity.ok(response);
     }
