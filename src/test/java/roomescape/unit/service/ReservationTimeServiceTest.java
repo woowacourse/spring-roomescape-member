@@ -50,8 +50,10 @@ public class ReservationTimeServiceTest {
         ReservationTimeResponse response = service.createReservationTime(request);
 
         // then
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.startAt()).isEqualTo(startAt);
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(response.id()).isEqualTo(1L);
+        softly.assertThat(response.startAt()).isEqualTo(startAt);
+        softly.assertAll();
     }
 
     @Test
