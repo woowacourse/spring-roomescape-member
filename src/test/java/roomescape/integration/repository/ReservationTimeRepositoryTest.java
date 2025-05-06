@@ -1,4 +1,4 @@
-package roomescape.unit.repository;
+package roomescape.integration.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -14,13 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.RepositoryBaseTest;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.AvailableReservationTime;
-import roomescape.service.response.AvailableReservationTimeResponse;
 import roomescape.domain.time.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.unit.fixture.ReservationDateFixture;
-import roomescape.unit.fixture.ReservationDbFixture;
-import roomescape.unit.fixture.ReservationTimeDbFixture;
-import roomescape.unit.fixture.ThemeDbFixture;
+import roomescape.integration.fixture.ReservationDateFixture;
+import roomescape.integration.fixture.ReservationDbFixture;
+import roomescape.integration.fixture.ReservationTimeDbFixture;
+import roomescape.integration.fixture.ThemeDbFixture;
 
 public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
 

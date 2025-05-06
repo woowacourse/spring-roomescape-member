@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static roomescape.common.Constant.FIXED_CLOCK;
-import static roomescape.unit.fixture.ReservationDateFixture.예약날짜_오늘;
+import static roomescape.integration.fixture.ReservationDateFixture.예약날짜_오늘;
 
 import java.time.Clock;
 import java.time.LocalTime;

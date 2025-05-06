@@ -1,4 +1,4 @@
-package roomescape.unit.repository;
+package roomescape.integration.repository;
 
 import static org.assertj.core.api.Assertions.*;
 import static roomescape.common.Constant.FIXED_CLOCK;
@@ -17,11 +17,11 @@ import roomescape.domain.reservation.ReserverName;
 import roomescape.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
-import roomescape.unit.fixture.ReservationDateFixture;
-import roomescape.unit.fixture.ReservationDbFixture;
-import roomescape.unit.fixture.ReservationTimeDbFixture;
-import roomescape.unit.fixture.ReserverNameFixture;
-import roomescape.unit.fixture.ThemeDbFixture;
+import roomescape.integration.fixture.ReservationDateFixture;
+import roomescape.integration.fixture.ReservationDbFixture;
+import roomescape.integration.fixture.ReservationTimeDbFixture;
+import roomescape.integration.fixture.ReserverNameFixture;
+import roomescape.integration.fixture.ThemeDbFixture;
 
 public class ReservationRepositoryTest extends RepositoryBaseTest {
 

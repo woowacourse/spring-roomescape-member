@@ -6,9 +6,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.unit.fixture.ReservationDbFixture;
-import roomescape.unit.fixture.ReservationTimeDbFixture;
-import roomescape.unit.fixture.ThemeDbFixture;
+import roomescape.integration.fixture.ReservationDbFixture;
+import roomescape.integration.fixture.ReservationTimeDbFixture;
+import roomescape.integration.fixture.ThemeDbFixture;
 
 @TestConfiguration
 public class RepositoryTestConfig {

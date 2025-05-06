@@ -1,9 +1,8 @@
-package roomescape.unit.repository;
+package roomescape.integration.repository;
 
 import static org.assertj.core.api.Assertions.*;
 import static roomescape.common.Constant.FIXED_CLOCK;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +19,12 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
-import roomescape.unit.fixture.ReservationDateFixture;
-import roomescape.unit.fixture.ReservationTimeDbFixture;
+import roomescape.integration.fixture.ReservationDateFixture;
+import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
-import roomescape.unit.fixture.ReservationDbFixture;
-import roomescape.unit.fixture.ThemeDbFixture;
+import roomescape.integration.fixture.ReservationDbFixture;
+import roomescape.integration.fixture.ThemeDbFixture;
 
 public class ThemeRepositoryTest extends RepositoryBaseTest {
 
