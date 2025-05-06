@@ -6,8 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,16 +19,42 @@ public class GlobalExceptionHandler {
             final HttpMessageNotReadableException e,
             final HttpServletRequest request
     ) {
-        String path = request.getServletPath();
-        if (request.getQueryString() != null) {
-            path += "?" + request.getQueryString();
-        }
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "요청 형식이 올바르지 않습니다.",
-                path
+                getRequestPath(request)
+        );
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    private ResponseEntity<ErrorResponse> handleTypeMismatch(
+            final MethodArgumentTypeMismatchException e,
+            final HttpServletRequest request
+    ) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "요청 파라미터의 타입이 올바르지 않습니다.",
+                getRequestPath(request)
+        );
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    private ResponseEntity<ErrorResponse> handleMissingParam(
+            final MissingServletRequestParameterException e,
+            final HttpServletRequest request
+    ) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                String.format("요청 파라미터 '%s'가 누락되었습니다.", e.getParameterName()),
+                getRequestPath(request)
         );
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -36,16 +64,12 @@ public class GlobalExceptionHandler {
             final MethodArgumentNotValidException e,
             final HttpServletRequest request
     ) {
-        String path = request.getServletPath();
-        if (request.getQueryString() != null) {
-            path += "?" + request.getQueryString();
-        }
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 e.getBindingResult().getFieldError().getDefaultMessage(),
-                path
+                getRequestPath(request)
         );
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -55,17 +79,18 @@ public class GlobalExceptionHandler {
             final IllegalArgumentException e,
             final HttpServletRequest request
     ) {
-        String path = request.getServletPath();
-        if (request.getQueryString() != null) {
-            path += "?" + request.getQueryString();
-        }
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 e.getMessage(),
-                path
+                getRequestPath(request)
         );
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    private String getRequestPath(final HttpServletRequest request) {
+        final String path = request.getServletPath();
+        return request.getQueryString() != null ? path + "?" + request.getQueryString() : path;
     }
 }
