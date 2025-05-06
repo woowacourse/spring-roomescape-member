@@ -2,14 +2,14 @@ package roomescape.reservation.ui.dto;
 
 import java.time.LocalDate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.ui.dto.ThemeResponse;
+import roomescape.theme.ui.dto.CreateThemeResponse;
 
 public record CreateReservationResponse(
         Long id,
         String name,
         LocalDate date,
         ReservationTimeResponse time,
-        ThemeResponse theme
+        CreateThemeResponse theme
 ) {
 
     public static CreateReservationResponse from(final Reservation reservation) {
@@ -18,6 +18,6 @@ public record CreateReservationResponse(
                 reservation.getName(),
                 reservation.getDate(),
                 ReservationTimeResponse.from(reservation.getTime()),
-                ThemeResponse.from(reservation.getTheme()));
+                CreateThemeResponse.from(reservation.getTheme()));
     }
 }

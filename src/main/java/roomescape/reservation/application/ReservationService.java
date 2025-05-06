@@ -12,6 +12,8 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
+import roomescape.reservation.ui.dto.CreateReservationRequest;
+import roomescape.reservation.ui.dto.CreateReservationResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 
@@ -23,18 +25,22 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public Long save(final String name, final LocalDate date, final Long timeId, final Long themeId) {
-        if (reservationRepository.existsByDateAndTimeIdAndThemeId(date, timeId, themeId)) {
+    public CreateReservationResponse save(final CreateReservationRequest request) {
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
+                request.themeId())) {
             throw new AlreadyExistException("해당 시간에 이미 예약된 테마입니다.");
         }
 
-        final ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + timeId));
-        final Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + themeId));
-        final Reservation reservation = new Reservation(name, date, reservationTime, theme);
+        final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + request.timeId()));
+        final Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + request.themeId()));
+        final Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
 
-        return reservationRepository.save(reservation);
+        final Long id = reservationRepository.save(reservation);
+        final Reservation found = getById(id);
+
+        return CreateReservationResponse.from(found);
     }
 
     public void deleteById(final Long id) {

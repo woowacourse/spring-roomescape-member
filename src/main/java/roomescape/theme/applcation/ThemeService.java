@@ -8,6 +8,9 @@ import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.ui.dto.CreateThemeRequest;
+import roomescape.theme.ui.dto.CreateThemeResponse;
+import roomescape.theme.ui.dto.ThemeResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -15,18 +18,21 @@ public class ThemeService {
 
     private final ThemeRepository themeRepository;
 
-    public Long save(final String name, final String description, final String thumbnail) {
-        final long count = themeRepository.countByName(name);
+    public CreateThemeResponse create(final CreateThemeRequest request) {
+        final long count = themeRepository.countByName(request.name());
         if (count >= 1) {
-            throw new AlreadyExistException("해당 테마명이 이미 존재합니다. name = " + name);
+            throw new AlreadyExistException("해당 테마명이 이미 존재합니다. name = " + request.name());
         }
 
-        final Theme theme = new Theme(name, description, thumbnail);
+        final Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
+        final Long id = themeRepository.save(theme);
+        final Theme found = themeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
 
-        return themeRepository.save(theme);
+        return CreateThemeResponse.from(found);
     }
 
-    public void deleteById(final Long id) {
+    public void delete(final Long id) {
         themeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
 
@@ -37,16 +43,17 @@ public class ThemeService {
         }
     }
 
-    public Theme getById(final Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + id));
+    public List<ThemeResponse> findAll() {
+        return themeRepository.findAll()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 
-    public List<Theme> findAll() {
-        return themeRepository.findAll();
-    }
-
-    public List<Theme> findPopularThemes() {
-        return themeRepository.findTop10ThemesByReservationCountWithin7Days();
+    public List<ThemeResponse> findPopularThemes() {
+        return themeRepository.findTop10ThemesByReservationCountWithin7Days()
+                .stream()
+                .map(ThemeResponse::from)
+                .toList();
     }
 }

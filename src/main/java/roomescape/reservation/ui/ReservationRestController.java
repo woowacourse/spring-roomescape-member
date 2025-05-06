@@ -28,16 +28,12 @@ public class ReservationRestController {
 
     @PostMapping
     public ResponseEntity<CreateReservationResponse> createReservation(
-            @RequestBody final CreateReservationRequest createReservationRequest
+            @RequestBody final CreateReservationRequest request
     ) {
-        final Long id = reservationService.save(
-                createReservationRequest.name(),
-                createReservationRequest.date(),
-                createReservationRequest.timeId(),
-                createReservationRequest.themeId()
-        );
-        final Reservation found = reservationService.getById(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CreateReservationResponse.from(found));
+        CreateReservationResponse response = reservationService.save(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @DeleteMapping("/{id}")

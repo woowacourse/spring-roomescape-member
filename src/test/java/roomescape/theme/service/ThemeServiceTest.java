@@ -15,6 +15,8 @@ import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
 import roomescape.theme.infrastructure.H2ThemeRepository;
+import roomescape.theme.ui.dto.CreateThemeRequest;
+import roomescape.theme.ui.dto.ThemeResponse;
 
 @JdbcTest
 class ThemeServiceTest {
@@ -31,10 +33,11 @@ class ThemeServiceTest {
         final String name = "우가우가";
         final String description = "우가우가 설명";
         final String thumbnail = "따봉우가.jpg";
+        final CreateThemeRequest request = new CreateThemeRequest(name, description, thumbnail);
 
         // when & then
         Assertions.assertThatCode(() -> {
-            themeService.save(name, description, thumbnail);
+            themeService.create(request);
         }).doesNotThrowAnyException();
     }
 
@@ -49,28 +52,8 @@ class ThemeServiceTest {
 
         // when & then
         Assertions.assertThatCode(() -> {
-            themeService.deleteById(id);
+            themeService.delete(id);
         }).doesNotThrowAnyException();
-    }
-
-    @Test
-    void 테마를_조회한다() {
-        // given
-        final String name = "우가우가";
-        final String description = "우가우가 설명";
-        final String thumbnail = "따봉우가.jpg";
-        final Theme theme = new Theme(name, description, thumbnail);
-        final Long id = themeRepository.save(theme);
-
-        // when
-        final Theme found = themeService.getById(id);
-
-        // then
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(found.getName()).isEqualTo(name);
-            softly.assertThat(found.getDescription()).isEqualTo(description);
-            softly.assertThat(found.getThumbnail()).isEqualTo(thumbnail);
-        });
     }
 
     @Test
@@ -89,17 +72,17 @@ class ThemeServiceTest {
         themeRepository.save(theme2);
 
         // when
-        final List<Theme> themes = themeService.findAll();
+        final List<ThemeResponse> themes = themeService.findAll();
 
         // then
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(themes).hasSize(2);
-            softly.assertThat(themes.get(0).getName()).isEqualTo(name1);
-            softly.assertThat(themes.get(0).getDescription()).isEqualTo(description1);
-            softly.assertThat(themes.get(0).getThumbnail()).isEqualTo(thumbnail1);
-            softly.assertThat(themes.get(1).getName()).isEqualTo(name2);
-            softly.assertThat(themes.get(1).getDescription()).isEqualTo(description2);
-            softly.assertThat(themes.get(1).getThumbnail()).isEqualTo(thumbnail2);
+            softly.assertThat(themes.get(0).name()).isEqualTo(name1);
+            softly.assertThat(themes.get(0).description()).isEqualTo(description1);
+            softly.assertThat(themes.get(0).thumbnail()).isEqualTo(thumbnail1);
+            softly.assertThat(themes.get(1).name()).isEqualTo(name2);
+            softly.assertThat(themes.get(1).description()).isEqualTo(description2);
+            softly.assertThat(themes.get(1).thumbnail()).isEqualTo(thumbnail2);
         });
     }
 
@@ -112,10 +95,11 @@ class ThemeServiceTest {
         final Theme theme = new Theme(name, description, thumbnail);
         themeRepository.save(theme);
 
+        final CreateThemeRequest request = new CreateThemeRequest(name, description, thumbnail);
+
         // when & then
-        Assertions.assertThatThrownBy(() -> {
-            themeService.save(name, description, thumbnail);
-        }).isInstanceOf(AlreadyExistException.class);
+        Assertions.assertThatThrownBy(() -> themeService.create(request))
+                .isInstanceOf(AlreadyExistException.class);
     }
 
     @TestConfiguration

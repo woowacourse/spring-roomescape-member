@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.application.ReservationTimeService;
-import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.ui.dto.ReservationTimeRequest;
 import roomescape.reservation.ui.dto.ReservationTimeResponse;
 
@@ -27,20 +26,10 @@ public class ReservationTimeRestController {
     public ResponseEntity<ReservationTimeResponse> createReservationTime(
             @RequestBody final ReservationTimeRequest request
     ) {
-        final Long id = reservationTimeService.save(request.startAt());
-        final ReservationTime found = reservationTimeService.getById(id);
+        final ReservationTimeResponse response = reservationTimeService.save(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ReservationTimeResponse.from(found));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        return ResponseEntity.ok(
-                reservationTimeService.findAll().stream()
-                        .map(ReservationTimeResponse::from)
-                        .toList()
-        );
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -50,5 +39,14 @@ public class ReservationTimeRestController {
         reservationTimeService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
+        return ResponseEntity.ok(
+                reservationTimeService.findAll().stream()
+                        .map(ReservationTimeResponse::from)
+                        .toList()
+        );
     }
 }

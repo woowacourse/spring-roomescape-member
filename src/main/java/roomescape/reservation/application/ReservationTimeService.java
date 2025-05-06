@@ -10,6 +10,8 @@ import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
+import roomescape.reservation.ui.dto.ReservationTimeRequest;
+import roomescape.reservation.ui.dto.ReservationTimeResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +19,20 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public Long save(final LocalTime startAt) {
+    public ReservationTimeResponse save(final ReservationTimeRequest request) {
+        final LocalTime startAt = request.startAt();
+        
         final List<ReservationTime> foundReservationTimes = reservationTimeRepository.findAllByStartAt(startAt);
         if (!foundReservationTimes.isEmpty()) {
             throw new AlreadyExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
         }
 
         final ReservationTime reservationTimeEntity = new ReservationTime(startAt);
+        final Long id = reservationTimeRepository.save(reservationTimeEntity);
 
-        return reservationTimeRepository.save(reservationTimeEntity);
+        final ReservationTime found = getById(id);
+
+        return ReservationTimeResponse.from(found);
     }
 
     public void deleteById(final Long id) {
