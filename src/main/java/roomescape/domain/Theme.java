@@ -39,7 +39,7 @@ public class Theme {
             throw new IllegalArgumentException("[ERROR] 테마 이미지가 없습니다.");
         }
         if (!Pattern.matches(URL_REGEX, thumbnail)) {
-            throw new IllegalArgumentException("[ERROR] URL 형식이 아닙니다.");
+            throw new IllegalArgumentException("[ERROR] 썸네일 이미지가 URL 형식이 아닙니다.");
         }
     }
 

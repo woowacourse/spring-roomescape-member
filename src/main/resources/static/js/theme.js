@@ -84,7 +84,10 @@ function saveRow(event) {
       .then(() => {
         location.reload();
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        alert(error);
+        console.error('Error:', error);
+      });
 
   isEditing = false;  // isEditing 값을 false로 설정
 }
@@ -95,7 +98,10 @@ function deleteRow(event) {
 
   requestDelete(id)
       .then(() => row.remove())
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+              alert(error);
+              console.error('Error:', error);
+            });
 }
 
 
@@ -109,9 +115,10 @@ function requestCreate(data) {
   };
 
   return fetch(API_ENDPOINT, requestOptions)
-      .then(response => {
-        if (response.status === 201) return response.json();
-        throw new Error('Create failed');
+      .then(response => response.json())
+      .then(data => {
+        if (data.hasOwnProperty("status") && data.status !== 201) throw new Error(data.errors);
+        return data;
       });
 }
 
@@ -129,7 +136,8 @@ function requestDelete(id) {
   };
 
   return fetch(`${API_ENDPOINT}/${id}`, requestOptions)
-      .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
+      .then(response => response.json())
+      .then(data => {
+        if (data.hasOwnProperty("status") && data.status !== 204) throw new Error(data.errors);
       });
 }
