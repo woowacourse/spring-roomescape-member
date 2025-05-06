@@ -56,7 +56,7 @@ public class FakeThemeDao {
                 .collect(Collectors.groupingBy(Reservation::getTheme, Collectors.counting()));
 
         return reservationCount.entrySet().stream()
-                .sorted(Comparator.comparingInt(e -> e.getValue().intValue()))
+                .sorted(Comparator.<Map.Entry<Theme, Long>>comparingLong(Map.Entry::getValue).reversed())
                 .limit(count)
                 .map(Map.Entry::getKey)
                 .toList();
