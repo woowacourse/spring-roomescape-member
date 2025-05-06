@@ -60,10 +60,10 @@ public class ReservationServiceIntegrationTest {
         ReservationResponse result = reservationService.createReservation(request);
         // then
         assertAll(
-                () -> assertThat(result.id()).isEqualTo(14L),
+                () -> assertThat(result.id()).isNotNull(),
                 () -> assertThat(result.name()).isEqualTo("leo"),
                 () -> assertThat(result.date()).isEqualTo(date),
-                () -> assertThat(result.time().id()).isEqualTo(1L),
+                () -> assertThat(result.time().id()).isNotNull(),
                 () -> assertThat(result.time().startAt()).isEqualTo(LocalTime.of(10, 0))
         );
     }

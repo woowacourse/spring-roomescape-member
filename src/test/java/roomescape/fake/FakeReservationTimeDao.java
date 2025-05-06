@@ -41,7 +41,7 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
 
     @Override
     public void deleteById(final long id) {
-        ReservationTime reservationTime = findById(id).get();
+        ReservationTime reservationTime = findById(id).orElseThrow();
         times.remove(reservationTime);
     }
 }

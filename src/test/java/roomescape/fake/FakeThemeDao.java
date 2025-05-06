@@ -42,7 +42,8 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public void deleteById(long id) {
-        themes.remove(findById(id).get());
+        Theme theme = findById(id).orElseThrow();
+        themes.remove(theme);
     }
 
     @Deprecated

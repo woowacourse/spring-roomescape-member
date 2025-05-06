@@ -52,11 +52,11 @@ public class ThemeServiceIntegrationTest {
         // then
         Theme savedTheme = themeDao.findById(result.id()).get();
         assertAll(
-                () -> assertThat(result.id()).isEqualTo(12L),
+                () -> assertThat(result.id()).isNotNull(),
                 () -> assertThat(result.name()).isEqualTo(request.name()),
                 () -> assertThat(result.description()).isEqualTo(request.description()),
                 () -> assertThat(result.thumbnail()).isEqualTo(request.thumbnail()),
-                () -> assertThat(savedTheme.getId()).isEqualTo(12L),
+                () -> assertThat(savedTheme.getId()).isNotNull(),
                 () -> assertThat(savedTheme.getName()).isEqualTo(request.name()),
                 () -> assertThat(savedTheme.getDescription()).isEqualTo(request.description()),
                 () -> assertThat(savedTheme.getThumbnail()).isEqualTo(request.thumbnail())

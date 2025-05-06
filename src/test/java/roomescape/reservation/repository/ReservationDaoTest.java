@@ -130,7 +130,7 @@ class ReservationDaoTest {
         reservationDao.save(new Reservation(null, name, date, reservationTime, theme));
         reservationDao.save(new Reservation(null, name, date.plusDays(1), reservationTime, theme));
         // when
-        List<Reservation> result = reservationDao.findAllByDateAndThemeId(date, reservationTime.getId());
+        List<Reservation> result = reservationDao.findAllByDateAndThemeId(date, theme.getId());
         // then
         assertThat(result).hasSize(1);
     }
