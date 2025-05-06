@@ -7,11 +7,11 @@ import roomescape.domain.ReservationDate;
 
 public interface ReservationDao {
 
-    List<Reservation> findAllReservation();
+    List<Reservation> findAll();
 
-    long saveReservation(Reservation reservation);
+    long save(Reservation reservation);
 
-    void deleteReservation(Long id);
+    void delete(Long id);
 
     int countAlreadyExistReservation(Long id);
 

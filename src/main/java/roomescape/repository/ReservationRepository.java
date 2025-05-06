@@ -6,11 +6,11 @@ import roomescape.domain.ReservationDate;
 
 public interface ReservationRepository {
 
-    List<Reservation> findAllReservation();
+    List<Reservation> findAll();
 
-    void saveReservation(Reservation reservation);
+    void save(Reservation reservation);
 
-    void deleteReservation(Long id);
+    void delete(Long id);
 
     boolean hasAnotherReservation(ReservationDate date, Long timeId);
 

@@ -48,7 +48,7 @@ public class ReservationRepositoryTest {
     @DisplayName("존재하는 예약ID를 가져오려고 할 경우, 성공해야 한다")
     void exist_reservation_id_get_then_success() {
         Reservation reservation = createReservation(createTheme(), createReservationTime());
-        long savedId = reservationDao.saveReservation(reservation);
+        long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
         assertThatCode(() -> reservationRepository.findById(savedId))
             .doesNotThrowAnyException();
@@ -58,9 +58,9 @@ public class ReservationRepositoryTest {
     @DisplayName("존재하지 않는 예약ID를 삭제하려고 할 경우, 예외가 발생해야 한다.")
     void not_exist_theme_id_delete_then_throw_exception() {
         Reservation reservation = createReservation(createTheme(), createReservationTime());
-        long savedId = reservationDao.saveReservation(reservation);
+        long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
-        assertThatCode(() -> reservationRepository.deleteReservation(savedId))
+        assertThatCode(() -> reservationRepository.delete(savedId))
             .doesNotThrowAnyException();
     }
 
@@ -71,7 +71,7 @@ public class ReservationRepositoryTest {
         Theme theme = createTheme();
         ReservationTime reservationTime = createReservationTime();
         Reservation reservation = createReservation(theme, reservationTime);
-        long savedId = reservationDao.saveReservation(reservation);
+        long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
 
         //when
@@ -95,14 +95,14 @@ public class ReservationRepositoryTest {
 
     private Theme createTheme() {
         Theme theme = new Theme("공포", "공포테마입니다", "http://aaa");
-        long savedThemeId = themeDao.saveTheme(theme);
+        long savedThemeId = themeDao.save(theme);
         theme.setId(savedThemeId);
         return theme;
     }
 
     private ReservationTime createReservationTime() {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        long savedReservationTimeId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
         return reservationTime;
     }

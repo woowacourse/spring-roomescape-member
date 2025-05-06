@@ -16,18 +16,18 @@ public class FakeThemeDaoImpl implements ThemeDao {
     private final List<Theme> themes = new ArrayList<>();
 
     @Override
-    public List<Theme> findAllTheme() {
+    public List<Theme> findAll() {
         return Collections.unmodifiableList(themes);
     }
 
     @Override
-    public long saveTheme(Theme theme) {
+    public long save(Theme theme) {
         themes.add(theme);
         return index.getAndIncrement();
     }
 
     @Override
-    public void deleteTheme(Long id) {
+    public void delete(Long id) {
         Theme theme = findById(id).
             orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호 입니다."));
         themes.remove(theme);
@@ -41,7 +41,7 @@ public class FakeThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate) {
+    public List<Theme> findAllOfRanks(LocalDate startDate, LocalDate currentDate) {
         return List.of();
     }
 }

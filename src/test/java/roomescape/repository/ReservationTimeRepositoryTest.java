@@ -41,7 +41,7 @@ public class ReservationTimeRepositoryTest {
     @DisplayName("존재하지 않는 예약 시간을 삭제하려고 할 경우, 예외가 발생해야 한다.")
     @Test
     void delete_not_exist_reservation_id_then_throw_exception() {
-        assertThatThrownBy(() -> reservationTimeRepository.deleteReservationTime(10000L))
+        assertThatThrownBy(() -> reservationTimeRepository.delete(10000L))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -49,10 +49,10 @@ public class ReservationTimeRepositoryTest {
     @Test
     void exist_reservation_id_delete_then_success() {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        long savedReservationTimeId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
         assertThatCode(
-            () -> reservationTimeRepository.deleteReservationTime(savedReservationTimeId))
+            () -> reservationTimeRepository.delete(savedReservationTimeId))
             .doesNotThrowAnyException();
     }
 
@@ -62,11 +62,11 @@ public class ReservationTimeRepositoryTest {
 
         //given
         Theme theme = new Theme("공포", "공포테마입니다", "http://aaa");
-        long savedThemeId = themeDao.saveTheme(theme);
+        long savedThemeId = themeDao.save(theme);
         theme.setId(savedThemeId);
 
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        long savedReservationTimeId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
 
         Reservation reservation = new Reservation(
@@ -76,12 +76,12 @@ public class ReservationTimeRepositoryTest {
             theme
         );
 
-        long savedId = reservationDao.saveReservation(reservation);
+        long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
 
         //when
         assertThatThrownBy(
-            () -> reservationTimeRepository.deleteReservationTime(savedReservationTimeId))
+            () -> reservationTimeRepository.delete(savedReservationTimeId))
             .isInstanceOf(InvalidReservationException.class)
             .hasMessage("이미 예약된 예약 시간을 삭제할 수 없습니다.");
     }
@@ -97,7 +97,7 @@ public class ReservationTimeRepositoryTest {
     @DisplayName("존재하는 예약 시간 id를 조회하려고 할 경우, 성공해야 한다.")
     void exist_reservation_id_get_then_success() {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        long savedReservationTimeId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
 
         assertThatCode(

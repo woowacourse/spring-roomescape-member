@@ -26,7 +26,7 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public List<ReservationTime> findAllReservationTimes() {
+    public List<ReservationTime> findAll() {
         String query = "select * from reservation_time";
         return jdbcTemplate.query(query,
             (resultSet, RowNum) -> {
@@ -38,7 +38,7 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public long saveReservationTime(ReservationTime reservationTime) {
+    public long save(ReservationTime reservationTime) {
         Map<String, Object> parameters = new HashMap<>(1);
         parameters.put("start_at", reservationTime.getStartAt());
         Number newId = insertActor.executeAndReturnKey(parameters);
@@ -46,7 +46,7 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public void deleteReservationTime(Long id) {
+    public void delete(Long id) {
         String query = "delete from reservation_time where id = ?";
         jdbcTemplate.update(query, id);
     }
@@ -67,7 +67,7 @@ public class JdbcReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public List<BookedReservationTimeResponseDto> findBookedReservationTime(String date,
+    public List<BookedReservationTimeResponseDto> findBooked(String date,
         Long themeId) {
         String query = """
             SELECT

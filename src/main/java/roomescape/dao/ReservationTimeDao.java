@@ -7,13 +7,13 @@ import roomescape.dto.BookedReservationTimeResponseDto;
 
 public interface ReservationTimeDao {
 
-    List<ReservationTime> findAllReservationTimes();
+    List<ReservationTime> findAll();
 
-    long saveReservationTime(ReservationTime reservationTime);
+    long save(ReservationTime reservationTime);
 
-    void deleteReservationTime(Long id);
+    void delete(Long id);
 
     Optional<ReservationTime> findById(Long id);
 
-    List<BookedReservationTimeResponseDto> findBookedReservationTime(String date, Long themeId);
+    List<BookedReservationTimeResponseDto> findBooked(String date, Long themeId);
 }

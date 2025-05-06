@@ -17,20 +17,20 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllReservation() {
-        return reservationDao.findAllReservation();
+    public List<Reservation> findAll() {
+        return reservationDao.findAll();
     }
 
     @Override
-    public void saveReservation(Reservation reservation) {
-        long savedId = reservationDao.saveReservation(reservation);
+    public void save(Reservation reservation) {
+        long savedId = reservationDao.save(reservation);
         reservation.setId(savedId);
     }
 
     @Override
-    public void deleteReservation(Long id) {
+    public void delete(Long id) {
         findById(id);
-        reservationDao.deleteReservation(id);
+        reservationDao.delete(id);
     }
 
     @Override

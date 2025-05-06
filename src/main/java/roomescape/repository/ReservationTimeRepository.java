@@ -6,14 +6,14 @@ import roomescape.dto.BookedReservationTimeResponseDto;
 
 public interface ReservationTimeRepository {
 
-    List<ReservationTime> findAllReservationTimes();
+    List<ReservationTime> findAll();
 
-    void saveReservationTime(ReservationTime reservationTime);
+    void save(ReservationTime reservationTime);
 
-    void deleteReservationTime(Long id);
+    void delete(Long id);
 
     ReservationTime findById(Long id);
 
-    List<BookedReservationTimeResponseDto> findBookedReservationTime(String date, Long themeId);
+    List<BookedReservationTimeResponseDto> findBooked(String date, Long themeId);
 
 }

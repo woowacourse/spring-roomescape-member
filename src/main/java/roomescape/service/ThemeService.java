@@ -19,25 +19,25 @@ public class ThemeService {
     }
 
     public List<ThemeResponseDto> getAllThemes() {
-        return themeRepository.findAllTheme().stream()
+        return themeRepository.findAll().stream()
             .map(ThemeResponseDto::from)
             .toList();
     }
 
     public ThemeResponseDto saveTheme(ThemeRequestDto request) {
         Theme theme = new Theme(request.name(), request.description(), request.thumbnail());
-        themeRepository.saveTheme(theme);
+        themeRepository.save(theme);
         return ThemeResponseDto.from(theme);
     }
 
     public void deleteTheme(Long id) {
-        themeRepository.deleteTheme(id);
+        themeRepository.delete(id);
     }
 
     public List<ThemeResponseDto> getAllThemeOfRanks() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startDate = currentDate.minusDays(CHECK_STANDARD_OF_DATE);
-        List<Theme> themes = themeRepository.findAllThemeOfRanks(startDate, currentDate);
+        List<Theme> themes = themeRepository.findAllOfRank(startDate, currentDate);
         return themes.stream().map(ThemeResponseDto::from).toList();
     }
 }

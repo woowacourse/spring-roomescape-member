@@ -41,11 +41,11 @@ public class JdbcReservationTimeDaoTest {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
 
         //when
-        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedId = reservationTimeDao.save(reservationTime);
 
         //then
         assertThat(reservationTimeDao.findById(savedId)).isNotNull();
-        assertThat(reservationTimeDao.findAllReservationTimes().size()).isEqualTo(1);
+        assertThat(reservationTimeDao.findAll().size()).isEqualTo(1);
     }
 
     @DisplayName("db에 저장된 모든 시간을 가져올 수 있어야 한다.")
@@ -53,16 +53,16 @@ public class JdbcReservationTimeDaoTest {
     void get_all_reservation_times() {
         //given
         ReservationTime reservationTime1 = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeDao.saveReservationTime(reservationTime1);
+        reservationTimeDao.save(reservationTime1);
 
         ReservationTime reservationTime2 = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeDao.saveReservationTime(reservationTime2);
+        reservationTimeDao.save(reservationTime2);
 
         ReservationTime reservationTime3 = new ReservationTime(LocalTime.of(10, 0));
-        reservationTimeDao.saveReservationTime(reservationTime3);
+        reservationTimeDao.save(reservationTime3);
 
         // when, then
-        assertThat(reservationTimeDao.findAllReservationTimes()).hasSize(3);
+        assertThat(reservationTimeDao.findAll()).hasSize(3);
     }
 
     @DisplayName("reservationTimeId가 주어졌을 때, 해당하는 데이터를 삭제해야 한다")
@@ -70,20 +70,20 @@ public class JdbcReservationTimeDaoTest {
     void given_reservation_time_id_then_delete_data() {
         //given
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedId = reservationTimeDao.save(reservationTime);
 
         //when
-        reservationTimeDao.deleteReservationTime(savedId);
+        reservationTimeDao.delete(savedId);
 
         //then
-        assertThat(reservationTimeDao.findAllReservationTimes().size()).isEqualTo(0);
+        assertThat(reservationTimeDao.findAll().size()).isEqualTo(0);
     }
 
     @DisplayName("db에 저장되어 있는 id를 통해서 reservationTime 객체를 반환할 수 있어야 한다")
     @Test
     void given_reservation_id_then_return_reservation_time_object() {
         ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 0));
-        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedId = reservationTimeDao.save(reservationTime);
         assertThat(reservationTimeDao.findById(savedId)).isNotNull();
     }
 
@@ -91,7 +91,7 @@ public class JdbcReservationTimeDaoTest {
     @Test
     void already_reservation_then_true_else_false() {
         initData();
-        List<BookedReservationTimeResponseDto> bookedReservationTime = reservationTimeDao.findBookedReservationTime(
+        List<BookedReservationTimeResponseDto> bookedReservationTime = reservationTimeDao.findBooked(
             "2025-04-24", 1L);
         assertThat(bookedReservationTime.get(0).timeId()).isEqualTo(1);
         assertThat(bookedReservationTime.get(0).alreadyBooked()).isTrue();

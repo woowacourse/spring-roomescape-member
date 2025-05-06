@@ -14,18 +14,18 @@ public class FakeReservationDaoImpl implements ReservationDao {
     private final AtomicLong index = new AtomicLong(1);
 
     @Override
-    public List<Reservation> findAllReservation() {
+    public List<Reservation> findAll() {
         return Collections.unmodifiableList(reservations);
     }
 
     @Override
-    public long saveReservation(Reservation reservation) {
+    public long save(Reservation reservation) {
         reservations.add(reservation);
         return index.getAndIncrement();
     }
 
     @Override
-    public void deleteReservation(Long id) {
+    public void delete(Long id) {
         Reservation reservation = findById(id).orElseThrow(() -> new IllegalArgumentException());
         reservations.remove(reservation);
     }

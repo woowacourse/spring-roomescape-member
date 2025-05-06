@@ -18,7 +18,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponseDto> getAllReservationTimes() {
-        return reservationTimeRepository.findAllReservationTimes().stream()
+        return reservationTimeRepository.findAll().stream()
             .map(ReservationTimeResponseDto::from)
             .toList();
     }
@@ -26,16 +26,16 @@ public class ReservationTimeService {
     public ReservationTimeResponseDto saveReservationTime(
         ReservationTimeRequestDto reservationTimeRequestDto) {
         ReservationTime reservationTime = reservationTimeRequestDto.toReservationTime();
-        reservationTimeRepository.saveReservationTime(reservationTime);
+        reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponseDto.from(reservationTime);
     }
 
     public void deleteReservationTime(Long id) {
-        reservationTimeRepository.deleteReservationTime(id);
+        reservationTimeRepository.delete(id);
     }
 
     public List<BookedReservationTimeResponseDto> getTimesContainsReservationInfoBy(String date,
         Long themeId) {
-        return reservationTimeRepository.findBookedReservationTime(date, themeId);
+        return reservationTimeRepository.findBooked(date, themeId);
     }
 }

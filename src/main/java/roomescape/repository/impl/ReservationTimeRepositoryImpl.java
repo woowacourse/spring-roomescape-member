@@ -22,23 +22,23 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> findAllReservationTimes() {
-        return reservationTimeDao.findAllReservationTimes();
+    public List<ReservationTime> findAll() {
+        return reservationTimeDao.findAll();
     }
 
     @Override
-    public void saveReservationTime(ReservationTime reservationTime) {
-        long savedId = reservationTimeDao.saveReservationTime(reservationTime);
+    public void save(ReservationTime reservationTime) {
+        long savedId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedId);
     }
 
     @Override
-    public void deleteReservationTime(Long id) {
+    public void delete(Long id) {
         findById(id);
         if (reservationDao.countAlreadyExistReservation(id) != 0) {
             throw new InvalidReservationException("이미 예약된 예약 시간을 삭제할 수 없습니다.");
         }
-        reservationTimeDao.deleteReservationTime(id);
+        reservationTimeDao.delete(id);
     }
 
     @Override
@@ -48,8 +48,8 @@ public class ReservationTimeRepositoryImpl implements ReservationTimeRepository 
     }
 
     @Override
-    public List<BookedReservationTimeResponseDto> findBookedReservationTime(String date,
+    public List<BookedReservationTimeResponseDto> findBooked(String date,
         Long themeId) {
-        return reservationTimeDao.findBookedReservationTime(date, themeId);
+        return reservationTimeDao.findBooked(date, themeId);
     }
 }

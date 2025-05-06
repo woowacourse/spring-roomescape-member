@@ -7,13 +7,13 @@ import roomescape.domain.Theme;
 
 public interface ThemeDao {
 
-    List<Theme> findAllTheme();
+    List<Theme> findAll();
 
-    long saveTheme(Theme theme);
+    long save(Theme theme);
 
-    void deleteTheme(Long id);
+    void delete(Long id);
 
     Optional<Theme> findById(Long id);
 
-    List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate);
+    List<Theme> findAllOfRanks(LocalDate startDate, LocalDate currentDate);
 }

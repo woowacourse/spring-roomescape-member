@@ -32,7 +32,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public List<Reservation> findAllReservation() {
+    public List<Reservation> findAll() {
         String sql = """
                select r.id as reservation_id, 
                       r.name, 
@@ -84,7 +84,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public long saveReservation(Reservation reservation) {
+    public long save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>(4);
         parameters.put("name", reservation.getPersonName());
         parameters.put("date", reservation.getDate());
@@ -96,7 +96,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public void deleteReservation(Long id) {
+    public void delete(Long id) {
         String query = "delete from reservation where id = ?";
         jdbcTemplate.update(query, id);
     }

@@ -38,7 +38,7 @@ public class JdbcThemeDaoTest {
         Theme theme = new Theme("테마1", "공포 테마라 무섭습니다.", "http://aaa");
 
         //when
-        long savedId = themeDao.saveTheme(theme);
+        long savedId = themeDao.save(theme);
         //then
 
         Theme findTheme = themeDao.findById(savedId).get();
@@ -56,12 +56,12 @@ public class JdbcThemeDaoTest {
         Theme theme3 = new Theme("테마3", "공포 테마라 무섭습니다.", "http://aaa3");
 
         //when
-        themeDao.saveTheme(theme1);
-        themeDao.saveTheme(theme2);
-        themeDao.saveTheme(theme3);
+        themeDao.save(theme1);
+        themeDao.save(theme2);
+        themeDao.save(theme3);
 
         //then
-        assertThat(themeDao.findAllTheme().size()).isEqualTo(3);
+        assertThat(themeDao.findAll().size()).isEqualTo(3);
     }
 
     @DisplayName("테마 아이디가 주어졌을 때, 해당되는 테마를 삭제할 수 있어야 한다.")
@@ -69,14 +69,14 @@ public class JdbcThemeDaoTest {
     void given_theme_id_then_remote_theme() {
         //given
         Theme theme1 = new Theme("테마1", "공포 테마라 무섭습니다.", "http://aaa1");
-        long savedId = themeDao.saveTheme(theme1);
+        long savedId = themeDao.save(theme1);
 
         //when
-        themeDao.deleteTheme(savedId);
+        themeDao.delete(savedId);
         Optional<Theme> findTheme = themeDao.findById(savedId);
 
         //then
-        assertThat(themeDao.findAllTheme().size()).isEqualTo(0);
+        assertThat(themeDao.findAll().size()).isEqualTo(0);
         assertThat(findTheme).isEmpty();
     }
 
@@ -85,7 +85,7 @@ public class JdbcThemeDaoTest {
     void find_popular_rank() {
         initData();
         LocalDate startDate = LocalDate.of(2025, 5, 1);
-        List<Theme> allThemeOfRanks = themeDao.findAllThemeOfRanks(startDate.minusDays(7),
+        List<Theme> allThemeOfRanks = themeDao.findAllOfRanks(startDate.minusDays(7),
             startDate);
         assertThat(allThemeOfRanks.get(0).getId()).isEqualTo(1);
         assertThat(allThemeOfRanks.get(1).getId()).isEqualTo(2);

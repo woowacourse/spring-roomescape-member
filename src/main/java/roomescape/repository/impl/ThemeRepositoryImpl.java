@@ -17,20 +17,20 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllTheme() {
-        return themeDao.findAllTheme();
+    public List<Theme> findAll() {
+        return themeDao.findAll();
     }
 
     @Override
-    public void saveTheme(Theme theme) {
-        long savedId = themeDao.saveTheme(theme);
+    public void save(Theme theme) {
+        long savedId = themeDao.save(theme);
         theme.setId(savedId);
     }
 
     @Override
-    public void deleteTheme(Long id) {
+    public void delete(Long id) {
         findById(id);
-        themeDao.deleteTheme(id);
+        themeDao.delete(id);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ThemeRepositoryImpl implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate) {
-        return themeDao.findAllThemeOfRanks(startDate, currentDate);
+    public List<Theme> findAllOfRank(LocalDate startDate, LocalDate currentDate) {
+        return themeDao.findAllOfRanks(startDate, currentDate);
     }
 }

@@ -60,10 +60,10 @@ public class ReservationServiceTest {
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         Theme theme = new Theme(1L, "공포", "공포테마입니다", "http://aaa");
 
-        long savedThemeId = themeDao.saveTheme(theme);
+        long savedThemeId = themeDao.save(theme);
         theme.setId(savedThemeId);
 
-        long savedReservationTimeId = reservationTimeDao.saveReservationTime(reservationTime);
+        long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
 
         Reservation reservation = new Reservation(
@@ -71,7 +71,7 @@ public class ReservationServiceTest {
             reservationDate,
             reservationTime,
             theme);
-        reservationRepository.saveReservation(reservation);
+        reservationRepository.save(reservation);
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(
             "젠슨",
             "2025-05-05",

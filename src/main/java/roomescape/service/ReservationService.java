@@ -36,20 +36,20 @@ public class ReservationService {
     }
 
     public List<ReservationResponseDto> getAllReservations() {
-        return reservationRepository.findAllReservation().stream()
+        return reservationRepository.findAll().stream()
             .map(ReservationResponseDto::from)
             .toList();
     }
 
     public void deleteReservation(Long id) {
-        reservationRepository.deleteReservation(id);
+        reservationRepository.delete(id);
     }
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
         Reservation reservation = createReservationFrom(reservationRequestDto);
         reservation.validateDateTime(currentDateTime.get());
         validateAlreadyExistDateTime(reservationRequestDto, reservation.getReservationDate());
-        reservationRepository.saveReservation(reservation);
+        reservationRepository.save(reservation);
         return ReservationResponseDto.from(reservation);
     }
 

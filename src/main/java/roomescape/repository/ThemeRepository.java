@@ -6,13 +6,13 @@ import roomescape.domain.Theme;
 
 public interface ThemeRepository {
 
-    List<Theme> findAllTheme();
+    List<Theme> findAll();
 
-    void saveTheme(Theme theme);
+    void save(Theme theme);
 
-    void deleteTheme(Long id);
+    void delete(Long id);
 
     Theme findById(Long id);
 
-    List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate);
+    List<Theme> findAllOfRank(LocalDate startDate, LocalDate currentDate);
 }

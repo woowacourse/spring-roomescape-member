@@ -14,18 +14,18 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
     private final List<ReservationTime> reservationTimes = new ArrayList<>();
 
     @Override
-    public List<ReservationTime> findAllReservationTimes() {
+    public List<ReservationTime> findAll() {
         return Collections.unmodifiableList(reservationTimes);
     }
 
     @Override
-    public long saveReservationTime(ReservationTime reservationTime) {
+    public long save(ReservationTime reservationTime) {
         reservationTimes.add(reservationTime);
         return index.getAndIncrement();
     }
 
     @Override
-    public void deleteReservationTime(Long id) {
+    public void delete(Long id) {
         ReservationTime reservationTime = findById(id)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약시간입니다."));
         reservationTimes.remove(reservationTime);
@@ -39,7 +39,7 @@ public class FakeReservationTimeDaoImpl implements ReservationTimeDao {
     }
 
     @Override
-    public List<BookedReservationTimeResponseDto> findBookedReservationTime(String date,
+    public List<BookedReservationTimeResponseDto> findBooked(String date,
         Long themeId) {
         return List.of();
     }

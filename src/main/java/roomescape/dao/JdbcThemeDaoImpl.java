@@ -27,7 +27,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllTheme() {
+    public List<Theme> findAll() {
         String query = "select * from theme";
         return jdbcTemplate.query(query,
             (resultSet, RowNum) -> new Theme(
@@ -39,7 +39,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public long saveTheme(Theme theme) {
+    public long save(Theme theme) {
         Map<String, Object> parameters = new HashMap<>(3);
         parameters.put("name", theme.getName());
         parameters.put("description", theme.getDescription());
@@ -49,7 +49,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public void deleteTheme(Long id) {
+    public void delete(Long id) {
         String query = "delete from theme where id = ?";
         jdbcTemplate.update(query, id);
     }
@@ -70,7 +70,7 @@ public class JdbcThemeDaoImpl implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findAllThemeOfRanks(LocalDate startDate, LocalDate currentDate) {
+    public List<Theme> findAllOfRanks(LocalDate startDate, LocalDate currentDate) {
         String query = """
             SELECT id, name, description, thumbnail
             FROM
