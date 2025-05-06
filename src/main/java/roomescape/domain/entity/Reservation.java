@@ -21,7 +21,7 @@ public record Reservation(
         this(null, name, date, time, theme);
     }
 
-    public static Reservation create(ReservationDetails details) {
+    public static Reservation createFutureReservation(ReservationDetails details) {
         LocalDateTime requestedDateTime = LocalDateTime.of(details.date(), details.reservationTime().startAt());
         validateFutureTime(requestedDateTime);
         return new Reservation(details.name(), details.date(), details.reservationTime(), details.reservationTheme());

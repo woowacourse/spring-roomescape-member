@@ -17,7 +17,7 @@ class ReservationTest {
 
     @DisplayName("예약을 생성할 수 있다")
     @Test
-    void createSuccess() {
+    void createFutureReservationSuccess() {
         //given
         ReservationDetails details = new ReservationDetails(
                 "웨이드",
@@ -27,7 +27,7 @@ class ReservationTest {
         );
 
         //when
-        Reservation reservation = Reservation.create(details);
+        Reservation reservation = Reservation.createFutureReservation(details);
 
         //then
         assertThat(reservation.name()).isEqualTo("웨이드");
@@ -36,7 +36,7 @@ class ReservationTest {
 
     @DisplayName("예약 생성시 예약 시간이 과거 시간이면 예외를 발생시킨다")
     @Test
-    void createExceptionIfPastTime() {
+    void createFutureReservationExceptionIfPastTime() {
         //given
         ReservationDetails details = new ReservationDetails(
                 "홍길동",
@@ -46,7 +46,7 @@ class ReservationTest {
         );
 
         //when & then
-        assertThatThrownBy(() -> Reservation.create(details))
+        assertThatThrownBy(() -> Reservation.createFutureReservation(details))
                 .isInstanceOf(InvalidReservationTimeException.class);
     }
 

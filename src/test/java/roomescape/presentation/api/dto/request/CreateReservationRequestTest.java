@@ -47,7 +47,7 @@ class CreateReservationRequestTest {
             "'', null, null, null",
             "'   ', null, 1, null",
     })
-    void InvalidCreateReservationRequest(String name, String dateStr, String timeIdStr, String themeIdStr) {
+    void InvalidCreateFutureReservationReservationRequest(String name, String dateStr, String timeIdStr, String themeIdStr) {
         LocalDate date = "null".equals(dateStr) ? null : LocalDate.parse(dateStr);
         Long timeId = "null".equals(timeIdStr) ? null : Long.valueOf(timeIdStr);
         Long themeId = "null".equals(themeIdStr) ? null : Long.valueOf(themeIdStr);
@@ -62,7 +62,7 @@ class CreateReservationRequestTest {
 
     @DisplayName("예약 생성시 값이 유효하다면 예외를 발생시키지 않는다")
     @Test
-    void validCreateReservationRequest() {
+    void validCreateFutureReservationReservationRequest() {
         //given
         CreateReservationRequest request = new CreateReservationRequest(
                 "웨이드",

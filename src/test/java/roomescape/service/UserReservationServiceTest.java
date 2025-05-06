@@ -36,7 +36,7 @@ class UserReservationServiceTest extends IntegrationTestSupport {
 
     @DisplayName("요청된 예약 정보로 예약을 진행할 수 있다")
     @Test
-    void create() {
+    void createFutureReservation() {
         // given
         String name = "웨이드";
         LocalDate date = LocalDate.now().plusDays(20);
