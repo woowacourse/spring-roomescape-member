@@ -20,17 +20,17 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime addTime(ReservationTime reservationTime) {
+    public ReservationTime addTime(ReservationTime reservationTimeWithNoId) {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into reservation_time (start_at) values (?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservationTime.getStartAt().toString());
+            ps.setString(1, reservationTimeWithNoId.getStartAt().toString());
             return ps;
         }, keyHolder);
         return new ReservationTime(Objects.requireNonNull(keyHolder.getKey())
-                .longValue(), reservationTime.getStartAt());
+                .longValue(), reservationTimeWithNoId.getStartAt());
     }
 
     @Override
