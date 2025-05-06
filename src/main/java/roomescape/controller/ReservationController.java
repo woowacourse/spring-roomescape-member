@@ -24,7 +24,6 @@ import roomescape.dto.AvailableReservationTimeResponse;
 @RestController
 @RequestMapping("/reservations")
 @RequiredArgsConstructor
-@Validated
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -35,8 +34,7 @@ public class ReservationController {
     }
 
     @GetMapping("/times")
-    public List<AvailableReservationTimeResponse> findAllAvailableTimes(@RequestParam @NotNull final LocalDate date,
-                                                                        @RequestParam("theme-id") @NotNull final Long themeId) {
+    public List<AvailableReservationTimeResponse> findAllAvailableTimes(@RequestParam final LocalDate date, @RequestParam("theme-id") final Long themeId) {
         return reservationService.findAllReservationTime(date, themeId);
     }
 
