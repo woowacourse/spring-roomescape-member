@@ -8,9 +8,9 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.fake.FakeReservationDao;
+import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeDao;
 import roomescape.fake.FakeThemeDao;
-import roomescape.repository.FakeReservationRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
