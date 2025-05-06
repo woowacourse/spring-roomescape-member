@@ -20,9 +20,9 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existsByUsernameAndPassword(String email, String password) {
+    public boolean existsByUsernameAndPassword(String username, String password) {
         return members.stream()
-                .anyMatch((member) -> member.isSamePassword(password) && member.isSameUsername(email));
+                .anyMatch((member) -> member.isSamePassword(password) && member.isSameUsername(username));
 
     }
 
@@ -34,15 +34,15 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByUsernameAndPassword(String email, String password) {
+    public Optional<Member> findByUsername(String username) {
         return members.stream()
-                .filter(((member) -> member.isSamePassword(password) && member.isSameUsername(email)))
+                .filter(((member) -> member.isSameUsername(username)))
                 .findAny();
     }
 
     @Override
-    public boolean existByUsername(String email) {
+    public boolean existByUsername(String username) {
         return members.stream()
-                .anyMatch(((member) -> member.isSameUsername(email)));
+                .anyMatch(((member) -> member.isSameUsername(username)));
     }
 }

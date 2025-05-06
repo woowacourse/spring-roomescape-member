@@ -64,10 +64,10 @@ public class JdbcMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByUsernameAndPassword(String username, String password) {
+    public Optional<Member> findByUsername(String username) {
         try {
-            String sql = "select id,username,password,name,role from member where username=? and password=?";
-            return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper, username, password));
+            String sql = "select id,username,password,name,role from member where username=?";
+            return Optional.of(jdbcTemplate.queryForObject(sql, memberRowMapper, username));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
