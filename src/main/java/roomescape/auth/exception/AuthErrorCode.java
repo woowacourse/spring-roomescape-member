@@ -6,7 +6,7 @@ import roomescape.exception.ErrorCode;
 public enum AuthErrorCode implements ErrorCode {
     MEMBER_NOT_FOUND("해당 email의 member가 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
     INVALID_PASSWORD("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
-    INVALID_TOKEN("유효하지 않은 Token입니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
     LOGIN_REQUIRED("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED),
     FORBIDDEN_ACCESS("접근 권한이 없습니다.", HttpStatus.FORBIDDEN);
 
