@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ReservationServiceTest {
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
     private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
-    private final ThemeRepository themeRepository = new FakeThemeRepository();
+    private final ThemeRepository themeRepository = new FakeThemeRepository(reservationRepository);
     private final ReservationService service = new ReservationService(
             reservationRepository,
             timeRepository,
