@@ -1,10 +1,8 @@
 package roomescape.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;

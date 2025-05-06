@@ -19,5 +19,4 @@ public class ReservationDateTime {
         return time;
     }
 
-
 }

@@ -16,12 +16,15 @@ public class Theme {
     public Long getId() {
         return id;
     }
+
     public String getName() {
         return name;
     }
+
     public String getDescription() {
         return description;
     }
+
     public String getThumbnail() {
         return thumbnail;
     }

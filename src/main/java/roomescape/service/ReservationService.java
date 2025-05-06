@@ -14,17 +14,17 @@ import roomescape.repository.ReservedChecker;
 
 @Service
 public class ReservationService {
-    private final ReservationRepository reservationRepository;
-    private final ReservedChecker reservedChecker;
     private final ReservationTimeService reservationTimeService;
     private final ThemeService themeService;
+    private final ReservationRepository reservationRepository;
+    private final ReservedChecker reservedChecker;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservedChecker reservedChecker,
-                              ReservationTimeService reservationTimeService, ThemeService themeService) {
-        this.reservationRepository = reservationRepository;
-        this.reservedChecker = reservedChecker;
+    public ReservationService(ReservationTimeService reservationTimeService, ThemeService themeService,
+                              ReservationRepository reservationRepository, ReservedChecker reservedChecker) {
         this.reservationTimeService = reservationTimeService;
         this.themeService = themeService;
+        this.reservationRepository = reservationRepository;
+        this.reservedChecker = reservedChecker;
     }
 
     public List<Reservation> getAllReservations() {
@@ -38,7 +38,8 @@ public class ReservationService {
         Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
         Reservation reservationWithNoId = reservationRequestDto.toEntity(null, reservationTime, theme);
 
-        validateUniqueReservation(reservationRequestDto.date(), reservationRequestDto.timeId(), reservationRequestDto.themeId());
+        validateUniqueReservation(reservationRequestDto.date(), reservationRequestDto.timeId(),
+                reservationRequestDto.themeId());
         return reservationRepository.addReservation(reservationWithNoId);
     }
 

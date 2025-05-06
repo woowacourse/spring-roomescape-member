@@ -50,7 +50,6 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
         return jdbcTemplate.queryForObject(sql, Boolean.class, reservationDate, timeId, themeId);
     }
 
-
     @Override
     public Reservation addReservation(Reservation reservationWithNoId) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -64,7 +63,8 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
             ps.setLong(4, reservationWithNoId.getTheme().getId());
             return ps;
         }, keyHolder);
-        return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(), reservationWithNoId.getUserName(),
+        return new Reservation(Objects.requireNonNull(keyHolder.getKey()).longValue(),
+                reservationWithNoId.getUserName(),
                 reservationWithNoId.getReservationDateTime(), reservationWithNoId.getTheme());
     }
 
