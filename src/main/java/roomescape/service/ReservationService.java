@@ -7,16 +7,15 @@ import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import roomescape.error.NotFoundException;
-import roomescape.error.ReservationException;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.error.NotFoundException;
+import roomescape.error.ReservationException;
 import roomescape.repository.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.domain.Theme;
 import roomescape.repository.ThemeRepository;
 
 @Service
@@ -32,10 +31,6 @@ public class ReservationService {
         return reservations.stream()
                 .map(ReservationResponse::new)
                 .toList();
-    }
-
-    public List<AvailableReservationTimeResponse> findAllReservationTime(final LocalDate date, final Long themeId) {
-        return reservationTimeRepository.findAllAvailable(date, themeId);
     }
 
     public ReservationResponse saveReservation(final @Valid ReservationRequest request) {
