@@ -43,6 +43,15 @@ public class ReservationService {
         return reservationRepository.addReservation(reservationWithNoId);
     }
 
+    private void validateFutureDateTime(ReservationDateTime reservationDateTime) {
+        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate(),
+                reservationDateTime.getTime().getStartAt());
+        LocalDateTime now = LocalDateTime.now();
+        if (dateTime.isBefore(now)) {
+            throw new IllegalArgumentException("과거 예약은 불가능합니다.");
+        }
+    }
+
     private void validateUniqueReservation(LocalDate reservationDate, Long timeId, Long themeId) {
         if (reservedChecker.contains(reservationDate, timeId, themeId)) {
             throw new IllegalArgumentException("Reservation already exists");
@@ -51,15 +60,6 @@ public class ReservationService {
 
     public void deleteReservation(long id) {
         reservationRepository.deleteReservation(id);
-    }
-
-    private void validateFutureDateTime(ReservationDateTime reservationDateTime) {
-        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate(),
-                reservationDateTime.getTime().getStartAt());
-        LocalDateTime now = LocalDateTime.now();
-        if (dateTime.isBefore(now)) {
-            throw new IllegalArgumentException("과거 예약은 불가능합니다.");
-        }
     }
 
 }
