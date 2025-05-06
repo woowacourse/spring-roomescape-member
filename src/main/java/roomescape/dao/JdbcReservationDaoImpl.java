@@ -15,7 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.exception.InvalidThemeException;
+import roomescape.exception.InvalidReservationException;
 
 @Repository
 public class JdbcReservationDaoImpl implements ReservationDao {
@@ -102,7 +102,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     private void validateDeleteRowCount(final int deletedRowCount) {
         if (deletedRowCount == 0) {
-            throw new InvalidThemeException("삭제하려는 ID의 예약이 존재하지 않습니다.");
+            throw new InvalidReservationException("삭제하려는 ID의 예약이 존재하지 않습니다.");
         }
     }
 
