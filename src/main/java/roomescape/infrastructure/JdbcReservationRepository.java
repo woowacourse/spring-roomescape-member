@@ -24,6 +24,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             resultSet.getLong("reservation_id"),
             User.afterSave(
                     resultSet.getLong("user_id"),
+                    resultSet.getString("user_role"),
                     resultSet.getString("user_name"),
                     resultSet.getString("user_email"),
                     resultSet.getString("user_password")
@@ -82,6 +83,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                  t.description as theme_description,
                  t.thumbnail as theme_thumbnail,
                  u.id as user_id,
+                 u.role as user_role,
                  u.name as user_name,
                  u.email as user_email,
                  u.password as user_password
@@ -107,6 +109,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                      t.description as theme_description,
                      t.thumbnail as theme_thumbnail,
                      u.id as user_id,
+                     u.role as user_role,
                      u.name as user_name,
                      u.email as user_email,
                      u.password as user_password

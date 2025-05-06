@@ -17,10 +17,11 @@ public class JdbcUserRepository implements UserRepository {
 
     private static final RowMapper<User> ROW_MAPPER = (resultSet, rowNum) -> {
         long id = resultSet.getLong("id");
+        String userRole = resultSet.getString("role");
         String name = resultSet.getString("name");
         String email = resultSet.getString("email");
         String password = resultSet.getString("password");
-        return User.afterSave(id, name, email, password);
+        return User.afterSave(id, userRole, name, email, password);
     };
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,12 +37,13 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public User saveAndGet(final User user) {
         final Number id = insert.executeAndReturnKey(Map.of(
+                "role", user.role(),
                 "email", user.email(),
                 "name", user.name(),
                 "password", user.password()
         ));
 
-        return User.afterSave(id.longValue(), user.name(), user.email(), user.password());
+        return User.afterSave(id.longValue(), user.role(), user.name(), user.email(), user.password());
     }
 
     @Override

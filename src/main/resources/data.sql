@@ -7,9 +7,10 @@ VALUES ('미스터리 저택', '기묘한 사건이 벌어지는 저택을 탈�
 INSERT INTO reservation_time (start_at)
 VALUES ('14:00');
 
-INSERT INTO users (name, email, password)
-VALUES ('dompoo', 'dompoo@gmail.com', '1234'),
-       ('lemon', 'lemon@gmail.com', '1234');
+INSERT INTO users (role, name, email, password)
+VALUES ('USER', 'dompoo', 'dompoo@gmail.com', '1234'),
+       ('USER', 'lemon', 'lemon@gmail.com', '1234'),
+       ('ADMIN', 'admin', 'admin@gmail.com', '1234');
 
 -- 예약 추가
 -- theme_id 1에 예약 1건

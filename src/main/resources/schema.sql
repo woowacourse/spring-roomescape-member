@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
+    role     VARCHAR(255) NOT NULL,
     email    VARCHAR(255) NOT NULL,
     name     VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
