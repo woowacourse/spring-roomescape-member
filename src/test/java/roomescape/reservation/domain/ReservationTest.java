@@ -58,4 +58,13 @@ class ReservationTest {
         // then
         assertThat(reservation.getId()).isNull();
     }
+
+    @Test
+    void id_필드를_제외한_필드가_null이면_예외처리() {
+        // given
+        // when
+        // then
+        assertThatThrownBy(() -> new Reservation(null, null, null, null, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
