@@ -120,7 +120,8 @@ public class FakeReservationRepository implements ReservationRepository {
                 id,
                 "email",
                 "pass",
-                "boogie"
+                "boogie",
+                "MEMBER"
         );
     }
 }

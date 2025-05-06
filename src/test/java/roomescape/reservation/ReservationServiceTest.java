@@ -72,7 +72,7 @@ public class ReservationServiceTest {
             final LoginMember loginMember = new LoginMember(1L, "boogie", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when
             final ReservationResponse response = reservationService.create(request, loginMember);
@@ -93,7 +93,7 @@ public class ReservationServiceTest {
                     1L, 1L);
             final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -110,7 +110,7 @@ public class ReservationServiceTest {
                     1L, 1L);
             final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -146,7 +146,7 @@ public class ReservationServiceTest {
             final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
             fakeReservationRepository.save(
                     new Reservation(LocalDate.now().plusDays(1)),
                     1L, 1L, 1L
@@ -169,7 +169,7 @@ public class ReservationServiceTest {
             final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -187,7 +187,7 @@ public class ReservationServiceTest {
             final LoginMember loginMember = new LoginMember(1L, "로키", "asd@email.com");
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.now().minusHours(1)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -208,7 +208,7 @@ public class ReservationServiceTest {
                     LocalDate.now().plusDays(1), 1L, 1L, 1L);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when
             final ReservationResponse response = reservationService.createForAdmin(request);
@@ -227,7 +227,7 @@ public class ReservationServiceTest {
             final AdminReservationRequest request = new AdminReservationRequest(
                     LocalDate.now().plusDays(1), 1L, 1L, 1L);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -242,7 +242,7 @@ public class ReservationServiceTest {
             final AdminReservationRequest request = new AdminReservationRequest(
                     LocalDate.now().plusDays(1), 1L, 1L, 1L);
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -274,7 +274,7 @@ public class ReservationServiceTest {
                     LocalDate.now().plusDays(1), 1L, 1L, 1L);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
             fakeReservationRepository.save(
                     new Reservation(LocalDate.now().plusDays(1)),
                     1L, 1L, 1L
@@ -295,7 +295,7 @@ public class ReservationServiceTest {
                     LocalDate.now().minusDays(1), 1L, 1L, 1L);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.of(12, 40)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -311,7 +311,7 @@ public class ReservationServiceTest {
                     LocalDate.now(), 1L, 1L, 1L);
             fakeReservationTimeRepository.save(new ReservationTime(LocalTime.now().minusHours(1)));
             fakeThemeRepository.save(new Theme("1", "2", "3"));
-            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie"));
+            fakeMemberRepository.saveMember(new Member("asd@email.com", "password", "boogie", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {

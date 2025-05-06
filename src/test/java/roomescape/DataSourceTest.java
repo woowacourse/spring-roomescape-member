@@ -91,7 +91,7 @@ public class DataSourceTest {
     @Test
     void 오단계() {
         // given
-        jdbcTemplate.update("INSERT INTO member (name, email, password) VALUES (?, ?, ?)", "name", "email@email.com", "password");
+        jdbcTemplate.update("INSERT INTO member (name, email, password, role) VALUES (?, ?, ?, ?)", "name", "email@email.com", "password", "MEMBER");
         jdbcTemplate.update("INSERT INTO THEME (name, description, thumbnail) VALUES (?, ?, ?)", "name", "dest", "thumb");
         jdbcTemplate.update("INSERT INTO RESERVATION_TIME (start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO RESERVATION (date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?)", "2023-08-05",

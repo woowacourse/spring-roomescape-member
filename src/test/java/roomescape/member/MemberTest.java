@@ -13,7 +13,7 @@ public class MemberTest {
     @CsvSource(value = {"password:true", "not matches password:false"}, delimiter = ':')
     void matchesPassword(final String password, final boolean expected) {
         // given
-        final Member member = new Member("email", "password", "name");
+        final Member member = new Member("email", "password", "name", "MEMBER");
 
         // when
         final boolean actual = member.matchesPassword(password);

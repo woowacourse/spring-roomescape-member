@@ -56,7 +56,7 @@ public class MemberServiceTest {
     @Test
     void readAll() {
         // given
-        fakeMemberRepository.saveMember(new Member("email", "pass", "name"));
+        fakeMemberRepository.saveMember(new Member("email", "pass", "name", "MEMBER"));
 
         // when
         final List<MemberResponse> actual = memberService.readAllMember();

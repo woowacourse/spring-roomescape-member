@@ -34,7 +34,7 @@ public class AuthServiceTest {
         void generateToken() {
             // given
             final LoginRequest request = new LoginRequest("admin@email.com", "pw1234");
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
 
             // when
             final String actual = authService.generateToken(request);
@@ -60,7 +60,7 @@ public class AuthServiceTest {
         void generateToken2() {
             // given
             final LoginRequest request = new LoginRequest("admin@email.com", "not matches password");
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
 
             // when & then
             assertThatThrownBy(() -> {
@@ -76,7 +76,7 @@ public class AuthServiceTest {
         @Test
         void findLoginMemberByToken() {
             // given
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
             final String token = jwtProvider.provideToken("admin@email.com");
 
             // when
@@ -90,7 +90,7 @@ public class AuthServiceTest {
         @Test
         void findLoginMemberByToken1() {
             // given
-            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기"));
+            fakeMemberRepository.saveMember(new Member("admin@email.com", "pw1234", "부기", "MEMBER"));
             final String notValidToken = jwtProvider.provideToken("admin@email.com") + "a";
 
             // when & then

@@ -14,7 +14,7 @@ public class FakeMemberRepository implements MemberRepository {
 
     @Override
     public void saveMember(final Member member) {
-        final Member saveMember = new Member(nextId++, member.getEmail(), member.getPassword(), member.getName());
+        final Member saveMember = new Member(nextId++, member.getEmail(), member.getPassword(), member.getName(), member.getRole());
         members.add(saveMember);
         invokeSaveMemberEmail.add(member.getEmail());
     }
