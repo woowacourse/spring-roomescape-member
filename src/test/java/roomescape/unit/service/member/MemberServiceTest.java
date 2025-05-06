@@ -73,4 +73,14 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.signup(duplicateSignupRequestDto)).isInstanceOf(
                 IllegalArgumentException.class);
     }
+
+    @Test
+    void 모든_유저를_가져올_수_있다() {
+        SignupRequestDto signupRequestDto = new SignupRequestDto("praisebak", "password", "투다");
+        memberService.signup(signupRequestDto);
+        SignupRequestDto secondSignupRequestDto = new SignupRequestDto("praisebak2", "password", "투다");
+        memberService.signup(secondSignupRequestDto);
+
+        assertThat(memberService.findAll()).hasSize(2);
+    }
 }

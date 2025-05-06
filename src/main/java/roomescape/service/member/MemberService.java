@@ -1,5 +1,6 @@
 package roomescape.service.member;
 
+import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
@@ -56,5 +57,9 @@ public class MemberService {
     public Member getMemberByToken(String token) {
         UserInfo userInfo = jwtTokenProvider.resolveToken(token);
         return getMemberById(userInfo.id());
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 }
