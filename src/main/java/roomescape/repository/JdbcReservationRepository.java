@@ -4,7 +4,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.dto.response.ReservationResponse;
@@ -16,11 +15,9 @@ import java.util.List;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final ReservationDao reservationDao;
-    private final ThemeDao themeDao;
 
-    public JdbcReservationRepository(final ReservationDao reservationDao, final ThemeDao themeDao) {
+    public JdbcReservationRepository(final ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
-        this.themeDao = themeDao;
     }
 
     @Override
