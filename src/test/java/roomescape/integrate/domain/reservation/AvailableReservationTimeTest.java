@@ -41,6 +41,23 @@ class AvailableReservationTimeTest {
 
     @BeforeEach
     void setup() {
+        Map<String, String> signupParam = Map.of("name", "투다", "email", "reservation-add@email.com", "password",
+                "password");
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(signupParam)
+                .when().post("/auth/signup")
+                .then()
+                .statusCode(201);
+        Map<String, String> loginParam = Map.of("email", "reservation-add@email.com", "password", "password");
+
+        Map<String, String> cookies = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(loginParam)
+                .when().post("/auth/login")
+                .then().log().all()
+                .extract().cookies();
+
         todayDateString = LocalDate.now().plusDays(1).toString();
         Map<String, String> timeParam = new HashMap<>();
         LocalTime afterTime = LocalTime.now().plusHours(1L);
@@ -95,6 +112,7 @@ class AvailableReservationTimeTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies(cookies)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()

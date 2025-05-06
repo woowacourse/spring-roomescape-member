@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import roomescape.repository.reservation.ReservationRepository;
 class ReservationIntegrateTest {
 
     static Map<String, String> params;
+    private static Map<String, String> cookies;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -44,11 +46,34 @@ class ReservationIntegrateTest {
         params.put("time", "15:40");
     }
 
+    @BeforeEach
+    void setup() {
+        Map<String, String> signupParam = Map.of("name", "투다", "email", "test@email.com", "password",
+                "testtest");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(signupParam)
+                .log().all()
+                .when().post("/auth/signup")
+                .then()
+                .statusCode(201);
+
+        Map<String, String> loginParam = Map.of("email", "test@email.com", "password", "testtest");
+        cookies = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(loginParam)
+                .when().post("/auth/login")
+                .then().log().all()
+                .extract().cookies();
+    }
+
     @AfterEach
     void cleanup() {
-        jdbcTemplate.execute("drop table reservation");  // 자식 테이블 먼저
+        jdbcTemplate.execute("drop table reservation");
         jdbcTemplate.execute("drop table reservation_time");
         jdbcTemplate.execute("drop table theme");
+        jdbcTemplate.execute("drop table member");
     }
 
     @Test
@@ -84,6 +109,7 @@ class ReservationIntegrateTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookies(cookies)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -132,6 +158,7 @@ class ReservationIntegrateTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
+                .cookies(cookies)
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -145,6 +172,7 @@ class ReservationIntegrateTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
+                .cookies(cookies)
                 .when().delete("/reservations/" + deleteReservationId)
                 .then().log().all()
                 .statusCode(204);
@@ -200,17 +228,17 @@ class ReservationIntegrateTest {
                 .statusCode(201);
 
         Reservation reservation1 = new Reservation(null, "이름", LocalDate.now().minusDays(1),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"), null);
         Reservation reservation2 = new Reservation(null, "이름", LocalDate.now().minusDays(2),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"), null);
         Reservation reservation3 = new Reservation(null, "이름", LocalDate.now().minusDays(3),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
+                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"), null);
         Reservation reservation4 = new Reservation(null, "이름", LocalDate.now().minusDays(4),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
+                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"), null);
         Reservation reservation5 = new Reservation(null, "이름", LocalDate.now().minusDays(5),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
+                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"), null);
         Reservation reservation6 = new Reservation(null, "이름", LocalDate.now().minusDays(6),
-                new ReservationTime(1L, afterTime), new Theme(3L, "테마 명3", "description", "thumbnail"));
+                new ReservationTime(1L, afterTime), new Theme(3L, "테마 명3", "description", "thumbnail"), null);
 
         reservationRepository.add(reservation1);
         reservationRepository.add(reservation2);

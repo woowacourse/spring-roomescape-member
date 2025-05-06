@@ -20,13 +20,6 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public boolean existsByUsernameAndPassword(String username, String password) {
-        return members.stream()
-                .anyMatch((member) -> member.isSamePassword(password) && member.isSameUsername(username));
-
-    }
-
-    @Override
     public Optional<Member> findById(long id) {
         return members.stream()
                 .filter((member) -> member.getId().equals(id))

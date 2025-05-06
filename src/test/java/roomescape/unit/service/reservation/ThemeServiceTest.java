@@ -69,7 +69,8 @@ class ThemeServiceTest {
         themeRepository.add(theme);
 
         Long timeId = reservationTimeService.addReservationTime(new AddReservationTimeDto(LocalTime.now()));
-        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1L), timeId, 1L));
+        reservationService.addReservation(new AddReservationDto("praisebak", LocalDate.now().plusDays(1L), timeId, 1L),
+                null);
         assertThatThrownBy(() -> themeService.deleteThemeById(1L)).isInstanceOf(IllegalArgumentException.class);
     }
 

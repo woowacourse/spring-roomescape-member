@@ -17,8 +17,7 @@ import roomescape.dto.reservation.AddReservationTimeDto;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservation.ReservationTimeRepository;
 import roomescape.service.reservation.ReservationTimeService;
-import roomescape.unit.repository.reservation.FakeReservationRepository;
-import roomescape.unit.repository.reservation.FakeReservationTimeRepository;
+import roomescape.unit.config.ServiceFixture;
 
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -31,10 +30,9 @@ class ReservationTimeServiceTest {
 
     @BeforeEach
     void setup() {
-        reservationRepository = new FakeReservationRepository();
-        reservationTimeRepository = new FakeReservationTimeRepository();
-        reservationTimeService = new ReservationTimeService(reservationRepository,
-                reservationTimeRepository);
+        reservationRepository = ServiceFixture.fakeReservationRepository();
+        reservationTimeRepository = ServiceFixture.fakeReservationTimeRepository();
+        reservationTimeService = new ReservationTimeService(reservationRepository, reservationTimeRepository);
     }
 
     @Test
@@ -66,7 +64,7 @@ class ReservationTimeServiceTest {
         ReservationTime reservationTime = new ReservationTime(id, startAt);
         Theme theme = new Theme(0L, "공포", "공포테마입니다.", "ㅁㄴㅇㄹ");
         Reservation reservation = new Reservation(null, "praisebak", LocalDate.now().plusDays(1), reservationTime,
-                theme);
+                theme, null);
         reservationRepository.add(reservation);
 
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(id))
