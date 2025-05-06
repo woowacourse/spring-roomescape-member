@@ -1,10 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;
@@ -16,18 +13,22 @@ import java.util.List;
 @Service
 public class ReservationService {
 
-    private final ReservationRepository repository;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
 
-    public ReservationService(final ReservationRepository repository) {
-        this.repository = repository;
+    public ReservationService(final ReservationRepository reservationRepository, final ReservationTimeRepository reservationTimeRepository, final ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
     }
 
     public List<ReservationResponse> findAll() {
-        return repository.findAllReservations();
+        return reservationRepository.findAll();
     }
 
     public void deleteReservation(Long id) {
-        int count = repository.deleteReservationById(id);
+        int count = reservationRepository.deleteById(id);
         if (count == 0) {
             throw new ResourceNotExistException();
         }
@@ -48,11 +49,11 @@ public class ReservationService {
     }
 
     private ReservationTime getReservationTime(final Long timeId) {
-        return repository.findReservationTimeById(timeId);
+        return reservationTimeRepository.findById(timeId);
     }
 
     private Theme getTheme(final Long themeId) {
-        return repository.findThemeById(themeId);
+        return themeRepository.findById(themeId);
     }
 
     private void validateSaveReservation(
@@ -64,7 +65,7 @@ public class ReservationService {
     }
 
     private void validateIsDuplicate(ReservationRequest request) {
-        boolean isReservationExist = repository.existByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
+        boolean isReservationExist = reservationRepository.existByTimeIdAndThemeIdAndDate(request.timeId(), request.themeId(), request.date());
         if (isReservationExist) {
             throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
         }
@@ -78,6 +79,6 @@ public class ReservationService {
     }
 
     private ReservationResponse getReservationResponse(Reservation reservation) {
-        return ReservationResponse.from(repository.saveReservation(reservation));
+        return ReservationResponse.from(reservationRepository.save(reservation));
     }
 }

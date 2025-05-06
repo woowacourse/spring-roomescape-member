@@ -4,13 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.ThemeRepository;
 import roomescape.dto.request.ThemeRequest;
-import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeReservationTimeDao;
-import roomescape.fake.FakeThemeDao;
+import roomescape.fake.FakeThemeRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -18,19 +16,19 @@ import static roomescape.fixture.TestFixture.*;
 
 public class ThemeServiceTest {
 
-    FakeThemeDao themeDao;
-    ReservationRepository repository;
+    ReservationRepository reservationRepository;
+    ThemeRepository themeRepository;
     ThemeService themeService;
 
     public ThemeServiceTest() {
-        themeDao = new FakeThemeDao();
-        repository = new FakeReservationRepository(new FakeReservationDao(), new FakeReservationTimeDao(), themeDao);
-        this.themeService = new ThemeService(repository);
+        reservationRepository = new FakeReservationRepository();
+        themeRepository = new FakeThemeRepository();
+        this.themeService = new ThemeService(reservationRepository, themeRepository);
     }
 
     @BeforeEach
     void setUp() {
-        themeDao.clear();
+        ((FakeThemeRepository) themeRepository).clear();
     }
 
     @Test
@@ -57,9 +55,8 @@ public class ThemeServiceTest {
     @Test
     void 특정_테마에_대한_예약이_존재하는_경우_테마를_삭제할_수_없다() {
         // given
-        ReservationTime savedTime = repository.saveReservationTime(DEFAULT_TIME);
-        Theme savedTheme = repository.saveTheme(DEFAULT_THEME);
-        repository.saveReservation(new Reservation("예약", TOMORROW, savedTime, savedTheme));
+        Theme savedTheme = themeRepository.save(DEFAULT_THEME);
+        reservationRepository.save(new Reservation("예약", TOMORROW, DEFAULT_TIME, savedTheme));
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteById(savedTheme.getId()))

@@ -1,39 +1,30 @@
 package roomescape.repository;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.dto.response.ReservationResponse;
-import roomescape.exception.ResourceNotExistException;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
     private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
 
-    public JdbcReservationRepository(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao, final ThemeDao themeDao) {
+    public JdbcReservationRepository(final ReservationDao reservationDao, final ThemeDao themeDao) {
         this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
     }
 
     @Override
-    public List<ReservationResponse> findAllReservations() {
+    public List<ReservationResponse> findAll() {
         return reservationDao.findAll()
                 .stream()
                 .map(ReservationResponse::from)
@@ -41,30 +32,12 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public int deleteReservationById(final Long id) {
+    public int deleteById(final Long id) {
         return reservationDao.deleteById(id);
     }
 
     @Override
-    public ReservationTime findReservationTimeById(final Long timeId) {
-        try {
-            return reservationTimeDao.findById(timeId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotExistException();
-        }
-    }
-
-    @Override
-    public Theme findThemeById(final Long themeId) {
-        try {
-            return themeDao.findById(themeId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotExistException();
-        }
-    }
-
-    @Override
-    public Reservation saveReservation(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         try {
             return reservationDao.save(reservation);
         } catch (DuplicateKeyException e) {
@@ -80,82 +53,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public ReservationTime saveReservationTime(final ReservationTime reservationTime) {
-        try {
-            return reservationTimeDao.save(reservationTime);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간이 이미 존재합니다.");
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간 생성에 실패하였습니다");
-        }
-    }
-
-    @Override
-    public List<ReservationTime> findAllReservationTimes() {
-        return reservationTimeDao.findAll();
-    }
-
-    @Override
-    public int deleteReservationTimeById(final Long id) {
-        try {
-            return reservationTimeDao.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
-        }
-    }
-
-    @Override
-    public List<Theme> findAllThemes() {
-        return themeDao.findAll();
-    }
-
-    @Override
-    public int deleteThemeById(final Long id) {
-        try {
-            return themeDao.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
-        }
-    }
-
-    @Override
-    public List<Theme> findPopularThemes(final int count) {
-        return themeDao.findPopular(count);
-    }
-
-    @Override
-    public boolean existByName(final String name) {
-        return themeDao.existByName(name);
-    }
-
-    @Override
-    public Theme saveTheme(final Theme theme) {
-        try {
-            return themeDao.save(theme);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 테마 생성에 실패했습니다.");
-        }
-    }
-
-    @Override
     public List<Long> findBookedTimes(final Long themeId, final LocalDate date) {
         return reservationDao.findBookedTimes(themeId, date);
     }
 
     @Override
-    public boolean existReservationByThemeId(final Long themeId) {
+    public boolean existByThemeId(final Long themeId) {
         return reservationDao.existByThemeId(themeId);
     }
 
     @Override
-    public boolean existReservationByTimeId(final Long timeId) {
+    public boolean existByTimeId(final Long timeId) {
         return reservationDao.existByTimeId(timeId);
-    }
-
-    @Override
-    public boolean existReservationTimeByTimeValue(final LocalTime localTime) {
-        return reservationTimeDao.existByTimeValue(localTime);
     }
 }

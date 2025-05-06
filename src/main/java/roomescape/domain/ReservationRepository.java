@@ -3,43 +3,21 @@ package roomescape.domain;
 import roomescape.dto.response.ReservationResponse;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 public interface ReservationRepository {
-    List<ReservationResponse> findAllReservations();
 
-    int deleteReservationById(Long id);
+    Reservation save(Reservation reservation);
 
-    ReservationTime findReservationTimeById(Long timeId);
+    List<ReservationResponse> findAll();
 
-    Theme findThemeById(Long themeId);
-
-    Reservation saveReservation(Reservation reservation);
+    int deleteById(Long id);
 
     boolean existByTimeIdAndThemeIdAndDate(Long timeId, Long themeId, LocalDate date);
 
-    ReservationTime saveReservationTime(ReservationTime reservationTime);
-
-    List<ReservationTime> findAllReservationTimes();
-
-    int deleteReservationTimeById(Long id);
-
-    List<Theme> findAllThemes();
-
-    int deleteThemeById(Long id);
-
-    List<Theme> findPopularThemes(int count);
-
-    boolean existByName(String name);
-
-    Theme saveTheme(Theme theme);
-
     List<Long> findBookedTimes(Long themeId, LocalDate date);
 
-    boolean existReservationByThemeId(Long themeId);
+    boolean existByThemeId(Long themeId);
 
-    boolean existReservationByTimeId(Long timeId);
-
-    boolean existReservationTimeByTimeValue(LocalTime localTime);
+    boolean existByTimeId(Long timeId);
 }

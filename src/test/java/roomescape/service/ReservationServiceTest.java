@@ -2,15 +2,12 @@ package roomescape.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.domain.ReservationRepository;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
+import roomescape.domain.*;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.exception.ResourceNotExistException;
-import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeReservationTimeDao;
-import roomescape.fake.FakeThemeDao;
+import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.fake.FakeThemeRepository;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -18,26 +15,28 @@ import static roomescape.fixture.TestFixture.*;
 
 public class ReservationServiceTest {
 
-    FakeReservationDao reservationDao;
-    ReservationRepository repository;
+    ReservationRepository reservationRepository;
+    ReservationTimeRepository reservationTimeRepository;
+    ThemeRepository themeRepository;
     ReservationService reservationService;
 
     public ReservationServiceTest() {
-        reservationDao = new FakeReservationDao();
-        repository = new FakeReservationRepository(reservationDao, new FakeReservationTimeDao(), new FakeThemeDao());
-        this.reservationService = new ReservationService(repository);
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        themeRepository = new FakeThemeRepository();
+        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
     }
 
     @BeforeEach
     void setUp() {
-        reservationDao.clear();
+        ((FakeReservationRepository) reservationRepository).clear();
     }
 
     @Test
     void 예약을_생성할_수_있다() {
         // given
-        ReservationTime time = repository.saveReservationTime(DEFAULT_TIME);
-        Theme theme = repository.saveTheme(DEFAULT_THEME);
+        ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
+        Theme theme = themeRepository.save(DEFAULT_THEME);
 
         // when
         ReservationRequest reservation = new ReservationRequest("예약", TOMORROW, time.getId(), theme.getId());
@@ -49,8 +48,8 @@ public class ReservationServiceTest {
     @Test
     void 중복_예약을_시도하는_경우_예외를_발생시킨다() {
         // given
-        ReservationTime time = repository.saveReservationTime(DEFAULT_TIME);
-        Theme theme = repository.saveTheme(DEFAULT_THEME);
+        ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
+        Theme theme = themeRepository.save(DEFAULT_THEME);
 
         // when
         ReservationRequest reservation = new ReservationRequest("예약", TOMORROW, time.getId(), theme.getId());
@@ -65,8 +64,8 @@ public class ReservationServiceTest {
     @Test
     void 과거_시간대를_예약하려는_경우_예외를_발생시킨다() {
         // given
-        ReservationTime time = repository.saveReservationTime(DEFAULT_TIME);
-        Theme theme = repository.saveTheme(DEFAULT_THEME);
+        ReservationTime time = reservationTimeRepository.save(DEFAULT_TIME);
+        Theme theme = themeRepository.save(DEFAULT_THEME);
 
         // when
         ReservationRequest reservation = new ReservationRequest("예약", YESTERDAY, time.getId(), theme.getId());
