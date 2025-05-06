@@ -25,7 +25,7 @@ public class ReservationTime {
         return startAt.isBefore(now);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
