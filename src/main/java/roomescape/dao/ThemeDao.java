@@ -1,7 +1,7 @@
 package roomescape.dao;
 
 import java.util.List;
-import roomescape.domain_entity.Theme;
+import roomescape.entity.Theme;
 
 public interface ThemeDao {
 

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.domain_entity.ReservationTime;
+import roomescape.entity.ReservationTime;
 import roomescape.dto.ReservationTimeAvailableResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;

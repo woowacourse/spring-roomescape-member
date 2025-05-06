@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import roomescape.dao.ThemeDao;
-import roomescape.domain_entity.Theme;
+import roomescape.entity.Theme;
 
 public class FakeThemeDao implements ThemeDao {
 

@@ -3,7 +3,7 @@ package roomescape.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
-import roomescape.domain_entity.Theme;
+import roomescape.entity.Theme;
 
 public class ThemeMapper implements RowMapper<Theme> {
 

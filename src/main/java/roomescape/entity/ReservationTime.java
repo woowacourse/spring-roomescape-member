@@ -1,4 +1,4 @@
-package roomescape.domain_entity;
+package roomescape.entity;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;

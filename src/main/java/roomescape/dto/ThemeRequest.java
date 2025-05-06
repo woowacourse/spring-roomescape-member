@@ -1,6 +1,6 @@
 package roomescape.dto;
 
-import roomescape.domain_entity.Theme;
+import roomescape.entity.Theme;
 
 public record ThemeRequest(
         String name, String description, String thumbnail
