@@ -38,9 +38,7 @@ class ReservationTimeIntegrateTest {
 
     @AfterEach
     void cleanUp() {
-        jdbcTemplate.execute("drop table reservation");  // 자식 테이블 먼저
-        jdbcTemplate.execute("drop table reservation_time");
-        jdbcTemplate.execute("drop table theme");
+        jdbcTemplate.execute("drop all objects");
     }
 
     @Test

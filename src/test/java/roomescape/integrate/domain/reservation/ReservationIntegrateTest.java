@@ -70,10 +70,7 @@ class ReservationIntegrateTest {
 
     @AfterEach
     void cleanup() {
-        jdbcTemplate.execute("drop table reservation");
-        jdbcTemplate.execute("drop table reservation_time");
-        jdbcTemplate.execute("drop table theme");
-        jdbcTemplate.execute("drop table member");
+        jdbcTemplate.execute("drop all objects");
     }
 
     @Test
