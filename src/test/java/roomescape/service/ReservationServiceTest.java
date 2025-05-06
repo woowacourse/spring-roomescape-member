@@ -17,7 +17,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationsWithTotalPageRequest;
+import roomescape.dto.ReservationsWithTotalPageResponse;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
@@ -143,7 +143,7 @@ class ReservationServiceTest {
         int page = 2;
 
         // when
-        ReservationsWithTotalPageRequest reservationsWithTotalPage = reservationService.getReservationsByPage(page);
+        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(page);
 
         // then
         assertThat(reservationsWithTotalPage.reservations()).hasSize(10);

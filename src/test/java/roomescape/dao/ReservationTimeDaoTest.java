@@ -34,7 +34,7 @@ class ReservationTimeDaoTest {
         ReservationTime saved = dao.save(reservationTime);
         List<ReservationTime> all = dao.findAll();
 
-        assertThat(all).hasSize(5);
+        assertThat(all).hasSize(13);
         assertThat(all.getLast().getId()).isEqualTo(saved.getId());
         assertThat(all.getLast().getStartAt()).isEqualTo(saved.getStartAt());
     }
@@ -45,7 +45,7 @@ class ReservationTimeDaoTest {
 
         List<ReservationTime> all = dao.findAll();
         assertThat(isDeleted).isTrue();
-        assertThat(all).hasSize(3);
+        assertThat(all).hasSize(11);
     }
 
     @Test
@@ -59,7 +59,7 @@ class ReservationTimeDaoTest {
         // then
         List<ReservationTime> all = dao.findAll();
         assertThat(isDeleted).isFalse();
-        assertThat(all).hasSize(4);
+        assertThat(all).hasSize(12);
     }
 
     @Test
@@ -91,7 +91,7 @@ class ReservationTimeDaoTest {
         List<ReservationTime> all = dao.findAll();
 
         // then
-        assertThat(all).hasSize(4);
+        assertThat(all).hasSize(12);
     }
 
     @Test
@@ -107,5 +107,29 @@ class ReservationTimeDaoTest {
         // then
         assertThat(exist).isTrue();
         assertThat(nonExist).isFalse();
+    }
+
+    @Test
+    void 존재하는_모든_시간을_카운팅() {
+        // when
+        int count = dao.countTotalReservationTimes();
+
+        // then
+        assertThat(count).isEqualTo(12);
+    }
+
+    @Test
+    void 시작부터_끝을_설정해_예약시간을_반환() {
+        // given
+        int start = 3;
+        int end = 10;
+
+        // when
+        List<ReservationTime> reservationTimesWithPage = dao.findReservationTimesWithPage(start, end);
+
+        // then
+        assertThat(reservationTimesWithPage).hasSize(8);
+        assertThat(reservationTimesWithPage.getFirst().getId()).isEqualTo(3L);
+        assertThat(reservationTimesWithPage.getLast().getId()).isEqualTo(10L);
     }
 }

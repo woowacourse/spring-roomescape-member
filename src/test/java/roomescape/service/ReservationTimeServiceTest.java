@@ -17,6 +17,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimesWithTotalPageResponse;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class ReservationTimeServiceTest {
@@ -58,7 +59,7 @@ class ReservationTimeServiceTest {
     void 예약시간_리스트_정상적으로_조회() {
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes();
 
-        assertThat(reservationTimes).hasSize(4);
+        assertThat(reservationTimes).hasSize(12);
     }
 
     @Test
@@ -68,7 +69,7 @@ class ReservationTimeServiceTest {
         reservationTimeService.deleteTime(id);
         List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes();
 
-        assertThat(reservationTimes).hasSize(3);
+        assertThat(reservationTimes).hasSize(11);
     }
 
     @Test
@@ -85,5 +86,19 @@ class ReservationTimeServiceTest {
         // when, then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(id))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void 페이지에_해당하는_예약시간_조회() {
+        // given
+        int page = 2;
+
+        // when
+        ReservationTimesWithTotalPageResponse reservationTimesByPage = reservationTimeService.getReservationTimesByPage(
+                page);
+
+        // then
+        assertThat(reservationTimesByPage.totalPages()).isEqualTo(2);
+        assertThat(reservationTimesByPage.reservationTimes()).hasSize(2);
     }
 }

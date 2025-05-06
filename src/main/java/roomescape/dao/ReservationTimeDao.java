@@ -85,4 +85,32 @@ public class ReservationTimeDao {
                 time
         );
     }
+
+    public int countTotalReservationTimes() {
+        String sql = """
+                SELECT COUNT(*) FROM RESERVATION_TIME
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+
+    public List<ReservationTime> findReservationTimesWithPage(int startRowNumber, int endRowNumber) {
+        String sql = """
+                SELECT t.id, t.start_at
+                    FROM (
+                        SELECT ROW_NUMBER() OVER() as row_num, * 
+                        FROM RESERVATION_TIME
+                    ) as t
+                WHERE t.row_num BETWEEN ? AND ?
+                ORDER BY t.row_num
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new ReservationTime(
+                        rs.getLong("id"),
+                        rs.getTime("start_at").toLocalTime()
+                ),
+                startRowNumber,
+                endRowNumber
+        );
+    }
 }

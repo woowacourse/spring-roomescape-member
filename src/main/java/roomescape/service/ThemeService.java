@@ -38,12 +38,6 @@ public class ThemeService {
         return ThemeResponse.from(saved);
     }
 
-    public List<ThemeResponse> getThemes() {
-        return themeDao.findAll().stream()
-                .map(ThemeResponse::from)
-                .toList();
-    }
-
     public ThemesWithTotalPageRequest getThemesByPage(int page) {
         int totalThemes = themeDao.countTotalTheme();
         int totalPage = (totalThemes % 10 == 0) ?

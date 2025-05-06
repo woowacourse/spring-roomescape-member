@@ -76,15 +76,6 @@ public class ThemeServiceTest {
     }
 
     @Test
-    void 모든_테마_조회() {
-        // when
-        List<ThemeResponse> responses = service.getThemes();
-
-        // then
-        assertThat(responses).hasSize(16);
-    }
-
-    @Test
     void 일주일동안_가장_인기있는_테마_10개_조회() {
         // when
         List<ThemeResponse> topTenResponses = service.getTopTenTheme();
@@ -136,9 +127,9 @@ public class ThemeServiceTest {
                 .map(AvailableReservationResponse::isBooked).toList();
 
         // then
-        assertThat(responses).hasSize(4);
+        assertThat(responses).hasSize(12);
         assertThat(list.stream().filter(b -> b).count()).isEqualTo(1L);
-        assertThat(list.stream().filter(b -> !b).count()).isEqualTo(3L);
+        assertThat(list.stream().filter(b -> !b).count()).isEqualTo(11L);
     }
 
     @Test

@@ -71,15 +71,6 @@ class ThemeDaoTest {
     }
 
     @Test
-    void 모든_테마_반환() {
-        // when
-        List<Theme> all = dao.findAll();
-
-        // then
-        assertThat(all).hasSize(16);
-    }
-
-    @Test
     void id로_테마_조회() {
         // given
         Long id = 1L;

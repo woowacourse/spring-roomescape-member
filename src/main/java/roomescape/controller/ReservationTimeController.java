@@ -2,7 +2,6 @@ package roomescape.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimesWithTotalPageResponse;
 import roomescape.service.ReservationTimeService;
 
 @RestController
@@ -26,9 +27,11 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        List<ReservationTimeResponse> reservationTimes = reservationTimeService.getReservationTimes();
-        return ResponseEntity.ok(reservationTimes);
+    public ResponseEntity<ReservationTimesWithTotalPageResponse> getReservationTimesByPage(
+            @RequestParam(required = false, defaultValue = "1") int page) {
+        ReservationTimesWithTotalPageResponse reservationTimesByPage = reservationTimeService.getReservationTimesByPage(
+                page);
+        return ResponseEntity.ok(reservationTimesByPage);
     }
 
     @PostMapping

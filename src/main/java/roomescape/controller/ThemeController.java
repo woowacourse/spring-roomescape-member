@@ -35,11 +35,6 @@ public class ThemeController {
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.id())).body(themeResponse);
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<ThemeResponse>> getThemes() {
-//        return ResponseEntity.ok(themeService.getThemes());
-//    }
-
     @GetMapping
     public ResponseEntity<ThemesWithTotalPageRequest> getThemesWithPage(
             @RequestParam(required = false, defaultValue = "1") int page) {

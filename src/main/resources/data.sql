@@ -2,7 +2,16 @@ INSERT INTO RESERVATION_TIME(start_at)
 VALUES ('13:40'),
        ('14:40'),
        ('15:40'),
-       ('23:58')
+       ('23:58'),
+       ('01:40'),
+       ('02:40'),
+       ('03:40'),
+       ('04:58'),
+       ('05:40'),
+       ('06:40'),
+
+       ('07:40'),
+       ('08:58')
 ;
 
 INSERT INTO THEME(name, description, thumbnail)

@@ -46,19 +46,6 @@ public class ThemeDao {
         return deletedRow == 1;
     }
 
-    public List<Theme> findAll() {
-        return jdbcTemplate.query(
-                "SELECT id, name, description, thumbnail"
-                        + " FROM theme",
-                (rs, rowNum) -> new Theme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                )
-        );
-    }
-
     public Optional<Theme> findById(Long id) {
         try {
             String sql = """

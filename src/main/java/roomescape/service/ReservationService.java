@@ -8,7 +8,7 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationsWithTotalPageRequest;
+import roomescape.dto.ReservationsWithTotalPageResponse;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -56,7 +56,7 @@ public class ReservationService {
         }
     }
 
-    public ReservationsWithTotalPageRequest getReservationsByPage(int page) {
+    public ReservationsWithTotalPageResponse getReservationsByPage(int page) {
         int totalReservations = reservationDao.countTotalReservation();
         int totalPage = totalReservations % 10 == 0 ?
                 totalReservations / 10 : (totalReservations / 10) + 1;
@@ -69,6 +69,6 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponse::fromEntity)
                 .toList();
-        return new ReservationsWithTotalPageRequest(totalPage, reservationResponses);
+        return new ReservationsWithTotalPageResponse(totalPage, reservationResponses);
     }
 }

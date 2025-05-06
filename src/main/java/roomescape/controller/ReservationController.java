@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationsWithTotalPageRequest;
+import roomescape.dto.ReservationsWithTotalPageResponse;
 import roomescape.service.ReservationService;
 
 @RestController
@@ -27,9 +27,9 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<ReservationsWithTotalPageRequest> getReservationsByPage(
+    public ResponseEntity<ReservationsWithTotalPageResponse> getReservationsByPage(
             @RequestParam(required = false, defaultValue = "1") int page) {
-        ReservationsWithTotalPageRequest reservationsWithTotalPage = reservationService.getReservationsByPage(page);
+        ReservationsWithTotalPageResponse reservationsWithTotalPage = reservationService.getReservationsByPage(page);
         return ResponseEntity.ok(reservationsWithTotalPage);
     }
 

@@ -6,6 +6,7 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.ReservationTimesWithTotalPageResponse;
 import roomescape.model.ReservationTime;
 
 @Service
@@ -41,5 +42,21 @@ public class ReservationTimeService {
         return reservationTimeDao.findAll().stream()
                 .map(ReservationTimeResponse::fromEntity)
                 .toList();
+    }
+
+    public ReservationTimesWithTotalPageResponse getReservationTimesByPage(int page) {
+        int totalThemes = reservationTimeDao.countTotalReservationTimes();
+        int totalPage = (totalThemes % 10 == 0) ?
+                totalThemes / 10 : (totalThemes / 10) + 1;
+        if (page < 1 || page > totalPage) {
+            throw new IllegalArgumentException("해당하는 페이지가 없습니다");
+        }
+        int start = (page - 1) * 10 + 1;
+        int end = start + 10 - 1;
+        List<ReservationTimeResponse> reservationTimeResponses = reservationTimeDao.findReservationTimesWithPage(start,
+                        end).stream()
+                .map(ReservationTimeResponse::fromEntity)
+                .toList();
+        return new ReservationTimesWithTotalPageResponse(totalPage, reservationTimeResponses);
     }
 }
