@@ -1,12 +1,11 @@
 package roomescape.exception;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,35 +17,38 @@ public class GlobalExceptionHandler {
             DuplicateContentException.class,
             InvalidRequestException.class
     })
-    public ResponseEntity<String> handleBadRequestException(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public ProblemDetail handleBadRequestException(Exception ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()), request.getRequestURI());
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ProblemDetail handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.NOT_FOUND, List.of(ex.getMessage()), request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    public ProblemDetail handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.SERVICE_UNAVAILABLE, List.of(ex.getMessage()), request.getRequestURI());
     }
 
     @ExceptionHandler(ConstrainedDataException.class)
-    public ResponseEntity<String> handleConstrainedDataException(ConstrainedDataException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    public ProblemDetail handleConstrainedDataException(ConstrainedDataException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.CONFLICT, List.of(ex.getMessage()), request.getRequestURI());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.BAD_REQUEST, List.of("[ERROR] 입력한 값의 형식이 올바르지 않습니다."), request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        Map<String, Object> errors = ex.getBindingResult()
+    public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .collect(Collectors.toMap(FieldError::getField, DefaultMessageSourceResolvable::getDefaultMessage));
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
 
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setProperties(errors);
-
-        return problemDetail;
+        return GlobalProblemDetail.of(HttpStatus.BAD_REQUEST, errors, request.getRequestURI());
     }
 }
