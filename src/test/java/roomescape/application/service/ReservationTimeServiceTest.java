@@ -1,6 +1,7 @@
 package roomescape.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -100,7 +101,6 @@ class ReservationTimeServiceTest {
     void createReservationTime() {
         // given
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(10, 0));
-        ReservationTime reservationTime = request.toTime();
 
         doReturn(1L).when(reservationTimeDao).save(any(ReservationTime.class));
 
@@ -120,15 +120,31 @@ class ReservationTimeServiceTest {
     @DisplayName("예약 시간을 삭제한다")
     void deleteReservationTime() {
         // given
-        long timeId = 1L;
-        doReturn(false).when(reservationDao).existsByTimeId(timeId);
+        long deleteTimeId = 1L;
+        doReturn(false).when(reservationDao).existsByTimeId(deleteTimeId);
 
         // when
-        reservationTimeService.deleteReservationTime(timeId);
+        reservationTimeService.deleteReservationTime(deleteTimeId);
 
         // then
-        verify(reservationTimeDao, times(1)).deleteById(timeId);
-        verify(reservationDao, times(1)).existsByTimeId(timeId);
+        verify(reservationTimeDao, times(1)).deleteById(deleteTimeId);
+        verify(reservationDao, times(1)).existsByTimeId(deleteTimeId);
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 경우 예약 시간을 삭제할 수 없다")
+    void deleteReservationTimeFailsWhenReservationExist() {
+        // given
+        long deleteTimeId = 1L;
+        doReturn(true).when(reservationDao).existsByTimeId(deleteTimeId);
+
+        // when && then
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(deleteTimeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 예약 시간에 존재하는 예약 정보가 있습니다.");
+
+        // verify
+        verify(reservationDao, times(1)).existsByTimeId(deleteTimeId);
     }
 
     private List<ReservationTime> sampleReservationTimes() {

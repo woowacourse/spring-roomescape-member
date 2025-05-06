@@ -1,9 +1,9 @@
 package roomescape.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -123,13 +123,30 @@ class ThemeServiceTest {
     @DisplayName("테마를 삭제한다")
     void deleteTheme() {
         // given
-        long deleteId = 1L;
-        doNothing().when(themeDao).deleteById(deleteId);
+        long deleteThemeId = 1L;
+        doReturn(false).when(reservationDao).existsByThemeId(deleteThemeId);
 
         // when
-        themeService.deleteTheme(deleteId);
+        themeService.deleteTheme(deleteThemeId);
 
         // verify
-        verify(themeDao, times(1)).deleteById(deleteId);
+        verify(themeDao, times(1)).deleteById(deleteThemeId);
+        verify(reservationDao, times(1)).existsByThemeId(deleteThemeId);
+    }
+
+    @Test
+    @DisplayName("예약이 존재하는 경우 테마를 삭제할 수 없다")
+    void deleteReservationTimeFailsWhenReservationExist() {
+        // given
+        long deleteThemeId = 1L;
+        doReturn(true).when(reservationDao).existsByThemeId(deleteThemeId);
+
+        // when && then
+        assertThatThrownBy(() -> themeService.deleteTheme(deleteThemeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 테마에 존재하는 예약 정보가 있습니다.");
+
+        // verify
+        verify(reservationDao, times(1)).existsByThemeId(deleteThemeId);
     }
 }
