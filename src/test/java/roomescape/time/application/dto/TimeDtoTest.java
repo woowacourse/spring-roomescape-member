@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.application.dto.info.TimeDto;
 
 class TimeDtoTest {
 

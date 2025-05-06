@@ -14,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.domain.Reservation;
 import roomescape.time.domain.ReservationTime;
-import roomescape.reservation.application.dto.info.ReservationDto;
 
 class ReservationDtoTest {
     @DisplayName("Reservation 객체를 응답객체로 변환한다.")

@@ -1,10 +1,10 @@
-package roomescape.reservation.application.dto.info;
+package roomescape.reservation.application.dto;
 
 import java.time.LocalDate;
 import java.util.List;
 import roomescape.reservation.domain.Reservation;
 import roomescape.theme.application.dto.ThemeDto;
-import roomescape.time.application.dto.info.TimeDto;
+import roomescape.time.application.dto.TimeDto;
 
 public record ReservationDto(
         long id,

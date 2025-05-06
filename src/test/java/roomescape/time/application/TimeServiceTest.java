@@ -21,7 +21,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.exception.BusinessException;
 import roomescape.exception.NotFoundException;
 import roomescape.reservation.domain.repository.dto.TimeDataWithBookingInfo;
-import roomescape.time.application.dto.info.TimeDto;
+import roomescape.time.application.dto.TimeDto;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.repository.TimeRepository;
 import roomescape.time.presentation.dto.request.TimeRequest;

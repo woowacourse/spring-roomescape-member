@@ -1,7 +1,7 @@
 package roomescape.member.presentation.dto.response;
 
 import java.util.List;
-import roomescape.member.application.dto.info.MemberDto;
+import roomescape.member.application.dto.MemberDto;
 
 public record MemberResponse(
         Long id,

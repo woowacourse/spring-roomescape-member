@@ -1,4 +1,4 @@
-package roomescape.member.application.dto.info;
+package roomescape.member.application.dto;
 
 import java.util.List;
 import roomescape.member.domain.Member;

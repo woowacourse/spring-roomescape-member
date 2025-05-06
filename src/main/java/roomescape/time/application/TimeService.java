@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import roomescape.time.application.dto.info.TimeDto;
+import roomescape.time.application.dto.TimeDto;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.repository.TimeRepository;
 import roomescape.reservation.domain.repository.dto.TimeDataWithBookingInfo;
