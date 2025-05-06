@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 import roomescape.reservation.ui.dto.CreateReservationRequest;
 import roomescape.reservation.ui.dto.CreateReservationResponse;
+import roomescape.reservation.ui.dto.ReservationResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,44 +27,35 @@ public class ReservationRestController {
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<CreateReservationResponse> createReservation(
+    public ResponseEntity<CreateReservationResponse> create(
             @RequestBody final CreateReservationRequest request
     ) {
-        CreateReservationResponse response = reservationService.save(request);
+        CreateReservationResponse response = reservationService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable final Long id) {
-        reservationService.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
+        reservationService.delete(id);
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<CreateReservationResponse>> getReservations() {
-        final List<Reservation> reservations = reservationService.findAll();
-        final List<CreateReservationResponse> createReservationResponse = reservations.stream()
-                .map(CreateReservationResponse::from)
-                .toList();
+    public ResponseEntity<List<ReservationResponse>> findAll() {
+        final List<ReservationResponse> reservationResponses = reservationService.findAll();
 
-        return ResponseEntity.ok(createReservationResponse);
+        return ResponseEntity.ok(reservationResponses);
     }
 
     @GetMapping("/available-times")
-    public ResponseEntity<List<AvailableReservationTimeResponse>> getAvailableReservationTimes(
+    public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTimes(
             @ModelAttribute final AvailableReservationTimeRequest request) {
+        final List<AvailableReservationTimeResponse> availableReservationTimes
+                = reservationService.findAvailableReservationTimes(request);
 
-        return ResponseEntity.ok(
-                reservationService.findAvailableReservationTimes(request.date(), request.themeId()).stream()
-                        .map(availableReservationTime -> new AvailableReservationTimeResponse(
-                                availableReservationTime.id(),
-                                availableReservationTime.startAt(),
-                                availableReservationTime.alreadyBooked()
-                        ))
-                        .toList()
-        );
+        return ResponseEntity.ok(availableReservationTimes);
     }
 }

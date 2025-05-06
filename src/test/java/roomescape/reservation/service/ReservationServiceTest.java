@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -17,13 +16,16 @@ import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.application.ReservationTimeService;
-import roomescape.reservation.application.dto.AvailableReservationTime;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
 import roomescape.reservation.infrastructure.JdbcReservationRepository;
 import roomescape.reservation.infrastructure.JdbcReservationTimeRepository;
+import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
+import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
+import roomescape.reservation.ui.dto.CreateReservationRequest;
+import roomescape.reservation.ui.dto.ReservationResponse;
 import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeRepository;
@@ -82,7 +84,7 @@ class ReservationServiceTest {
         );
 
         // when
-        final List<Reservation> reservations = reservationService.findAll();
+        final List<ReservationResponse> reservations = reservationService.findAll();
 
         // then
         assertThat(reservations.size()).isEqualTo(2);
@@ -100,38 +102,12 @@ class ReservationServiceTest {
         final String description = "무섭다";
         final String thumbnail = "귀신사진";
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
+        final CreateReservationRequest request =
+                new CreateReservationRequest(name, date, timeId, themeId);
 
         // when & then
-        Assertions.assertThatCode(() -> reservationService.save(name, date, timeId, themeId))
+        Assertions.assertThatCode(() -> reservationService.create(request))
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    void 예약_정보를_id로_조회한다() {
-        // given
-        final String name = "헤일러";
-        final LocalTime time = LocalTime.parse("10:00");
-        final LocalDate date = LocalDate.parse("2023-08-05");
-        final Long timeId = reservationTimeRepository.save(new ReservationTime(time));
-
-        final String themeName = "공포";
-        final String description = "무섭다";
-        final String thumbnail = "귀신사진";
-        final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
-
-        final Long savedId = reservationService.save(name, date, timeId, themeId);
-
-        // when
-        final Reservation found = reservationService.getById(savedId);
-
-        // then
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(savedId).isEqualTo(found.getId());
-            softly.assertThat(name).isEqualTo(found.getName());
-            softly.assertThat(date).isEqualTo(found.getDate());
-            softly.assertThat(timeId).isEqualTo(found.getTime().getId());
-            softly.assertThat(time).isEqualTo(found.getTime().getStartAt());
-        });
     }
 
     @Test
@@ -155,7 +131,7 @@ class ReservationServiceTest {
         ));
 
         // when & then
-        Assertions.assertThatCode(() -> reservationService.deleteById(savedId)).doesNotThrowAnyException();
+        Assertions.assertThatCode(() -> reservationService.delete(savedId)).doesNotThrowAnyException();
     }
 
     @Test
@@ -181,12 +157,13 @@ class ReservationServiceTest {
         final LocalTime time2 = LocalTime.parse("12:00");
         reservationTimeRepository.save(new ReservationTime(time2));
 
+        final AvailableReservationTimeRequest request =
+                new AvailableReservationTimeRequest(date, themeId);
         // when
-        final long count =
-                reservationService.findAvailableReservationTimes(date, themeId)
-                        .stream()
-                        .filter(AvailableReservationTime::alreadyBooked)
-                        .count();
+        final long count = reservationService.findAvailableReservationTimes(request)
+                .stream()
+                .filter(AvailableReservationTimeResponse::alreadyBooked)
+                .count();
 
         // then
         assertThat(count).isEqualTo(1);
@@ -214,8 +191,11 @@ class ReservationServiceTest {
                 )
         );
 
+        final CreateReservationRequest request =
+                new CreateReservationRequest(name, date, timeId, themeId);
+
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.save(name, date, timeId, themeId))
+        Assertions.assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(AlreadyExistException.class);
     }
 
@@ -230,9 +210,11 @@ class ReservationServiceTest {
         final String description = "무섭다";
         final String thumbnail = "귀신사진";
         final Long themeId = themeRepository.save(new Theme(themeName, description, thumbnail));
+        final CreateReservationRequest request =
+                new CreateReservationRequest(name, date, timeId, themeId);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.save(name, date, timeId, themeId))
+        Assertions.assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -257,9 +239,11 @@ class ReservationServiceTest {
                         new Theme(themeId, themeName, description, thumbnail)
                 )
         );
+        final CreateReservationRequest request =
+                new CreateReservationRequest(name, date, timeId, themeId);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationService.save("우가", date, timeId, themeId))
+        Assertions.assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(AlreadyExistException.class);
     }
 

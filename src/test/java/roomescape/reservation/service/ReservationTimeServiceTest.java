@@ -18,6 +18,7 @@ import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
 import roomescape.reservation.infrastructure.JdbcReservationRepository;
 import roomescape.reservation.infrastructure.JdbcReservationTimeRepository;
+import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
 
 @JdbcTest
 class ReservationTimeServiceTest {
@@ -33,8 +34,11 @@ class ReservationTimeServiceTest {
             "10:00", "22:00"
     })
     void 예약시간을_추가한다(final LocalTime startAt) {
+        // given
+        final CreateReservationTimeRequest request = new CreateReservationTimeRequest(startAt);
+
         // when & then
-        Assertions.assertThatCode(() -> reservationTimeService.save(startAt))
+        Assertions.assertThatCode(() -> reservationTimeService.create(request))
                 .doesNotThrowAnyException();
     }
 
@@ -45,22 +49,8 @@ class ReservationTimeServiceTest {
         final Long id = reservationTimeRepository.save(new ReservationTime(startAt));
 
         // when & then
-        Assertions.assertThatCode(() -> reservationTimeService.deleteById(id))
+        Assertions.assertThatCode(() -> reservationTimeService.delete(id))
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    void 예약시간을_id로_조회한다() {
-        // given
-        final LocalTime startAt = LocalTime.of(20, 28);
-        final ReservationTime reservationTime = new ReservationTime(startAt);
-        final Long id = reservationTimeRepository.save(reservationTime);
-
-        // when
-        final ReservationTime found = reservationTimeService.getById(id);
-
-        // then
-        Assertions.assertThat(found.getStartAt()).isEqualTo(reservationTime.getStartAt());
     }
 
     @Test
@@ -69,8 +59,10 @@ class ReservationTimeServiceTest {
         final LocalTime startAt = LocalTime.of(19, 55);
         reservationTimeRepository.save(new ReservationTime(startAt));
 
+        final CreateReservationTimeRequest request = new CreateReservationTimeRequest(startAt);
+
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationTimeService.save(startAt))
+        Assertions.assertThatThrownBy(() -> reservationTimeService.create(request))
                 .isInstanceOf(AlreadyExistException.class);
     }
 
@@ -80,7 +72,7 @@ class ReservationTimeServiceTest {
         final Long id = Long.MAX_VALUE;
 
         // when & then
-        Assertions.assertThatThrownBy(() -> reservationTimeService.deleteById(id))
+        Assertions.assertThatThrownBy(() -> reservationTimeService.delete(id))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 

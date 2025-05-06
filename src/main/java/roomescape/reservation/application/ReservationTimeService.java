@@ -10,7 +10,8 @@ import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
 import roomescape.reservation.domain.ReservationTime;
 import roomescape.reservation.domain.ReservationTimeRepository;
-import roomescape.reservation.ui.dto.ReservationTimeRequest;
+import roomescape.reservation.ui.dto.CreateReservationTimeRequest;
+import roomescape.reservation.ui.dto.CreateReservationTimeResponse;
 import roomescape.reservation.ui.dto.ReservationTimeResponse;
 
 @Service
@@ -19,9 +20,9 @@ public class ReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 
-    public ReservationTimeResponse save(final ReservationTimeRequest request) {
+    public CreateReservationTimeResponse create(final CreateReservationTimeRequest request) {
         final LocalTime startAt = request.startAt();
-        
+
         final List<ReservationTime> foundReservationTimes = reservationTimeRepository.findAllByStartAt(startAt);
         if (!foundReservationTimes.isEmpty()) {
             throw new AlreadyExistException("해당 예약 시간이 이미 존재합니다. startAt = " + startAt);
@@ -30,12 +31,13 @@ public class ReservationTimeService {
         final ReservationTime reservationTimeEntity = new ReservationTime(startAt);
         final Long id = reservationTimeRepository.save(reservationTimeEntity);
 
-        final ReservationTime found = getById(id);
+        final ReservationTime found = reservationTimeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id));
 
-        return ReservationTimeResponse.from(found);
+        return CreateReservationTimeResponse.from(found);
     }
 
-    public void deleteById(final Long id) {
+    public void delete(final Long id) {
         final Optional<ReservationTime> found = reservationTimeRepository.findById(id);
 
         if (found.isEmpty()) {
@@ -49,12 +51,11 @@ public class ReservationTimeService {
         }
     }
 
-    public ReservationTime getById(final Long id) {
-        return reservationTimeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + id));
-    }
+    public List<ReservationTimeResponse> findAll() {
+        final List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
-    public List<ReservationTime> findAll() {
-        return reservationTimeRepository.findAll();
+        return reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 }

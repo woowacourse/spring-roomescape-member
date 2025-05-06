@@ -7,4 +7,12 @@ public record AvailableReservationTimeResponse(
         LocalTime startAt,
         boolean alreadyBooked
 ) {
+
+    public AvailableReservationTimeResponse from(
+            Long timeId,
+            LocalTime startAt,
+            boolean alreadyBooked
+    ) {
+        return new AvailableReservationTimeResponse(timeId, startAt, alreadyBooked);
+    }
 }
