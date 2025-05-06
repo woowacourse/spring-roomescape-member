@@ -30,17 +30,6 @@ public class FakeReservationDaoImpl implements ReservationDao {
         reservations.remove(reservation);
     }
 
-    @Override
-    public Boolean existsByTimeId(Long id) {
-        return reservations.stream()
-                .anyMatch(reservation -> reservation.getTimeId().equals(id));
-    }
-
-    @Override
-    public Boolean existsByThemeId(final Long id) {
-        return true;
-    }
-
     private Reservation findById(long id) {
         return reservations.stream()
                 .filter(reservation -> reservation.getId() == id)

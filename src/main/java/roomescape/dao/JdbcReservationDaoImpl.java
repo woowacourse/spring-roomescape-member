@@ -15,6 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.exception.InvalidThemeException;
 
 @Repository
 public class JdbcReservationDaoImpl implements ReservationDao {
@@ -95,24 +96,19 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     @Override
     public void deleteReservation(Long id) {
         String query = "delete from reservation where id = ?";
-        jdbcTemplate.update(query, id);
+        int deletedRowCount = jdbcTemplate.update(query, id);
+        validateDeleteRowCount(deletedRowCount);
+    }
+
+    private void validateDeleteRowCount(final int deletedRowCount) {
+        if (deletedRowCount == 0) {
+            throw new InvalidThemeException("삭제하려는 ID의 예약이 존재하지 않습니다.");
+        }
     }
 
     @Override
     public Boolean existsReservationBy(LocalDate date, Long timeId, Long themeId) {
         String query = "select exists (select 1 from reservation where date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(query, Boolean.class, date, timeId, themeId);
-    }
-
-    @Override
-    public Boolean existsByTimeId(Long id) {
-        String query = "select exists (select 1 from reservation where time_id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, id);
-    }
-
-    @Override
-    public Boolean existsByThemeId(final Long id) {
-        String query = "select exists (select 1 from reservation where theme_id = ?)";
-        return jdbcTemplate.queryForObject(query, Boolean.class, id);
     }
 }
