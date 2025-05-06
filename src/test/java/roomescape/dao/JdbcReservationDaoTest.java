@@ -1,6 +1,7 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -52,13 +53,16 @@ public class JdbcReservationDaoTest {
     @Test
     void findAllTest1() {
         // given // when
-        final List<Reservation> result = reservationDAO.findAll();
+        final List<Reservation> results = reservationDAO.findAll();
+        final Reservation result = results.getFirst();
 
         // then
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getId()).isEqualTo(1L);
-        assertThat(result.getFirst().getDate()).isEqualTo(LocalDate.of(2025, 4, 28));
-        assertThat(result.getFirst().getTime()).isEqualTo(new ReservationTime(1L, LocalTime.of(10, 0)));
+        assertAll(
+                () -> assertThat(results).hasSize(1),
+                () -> assertThat(result.getId()).isEqualTo(1L),
+                () -> assertThat(result.getDate()).isEqualTo(LocalDate.of(2025, 4, 28)),
+                () -> assertThat(result.getTime()).isEqualTo(new ReservationTime(1L, LocalTime.of(10, 0)))
+        );
     }
 
     @DisplayName("id에 해당하는 예약을 반환한다")
