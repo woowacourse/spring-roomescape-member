@@ -24,6 +24,8 @@ import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.request.ThemesWithTotalPageRequest;
 import roomescape.dto.response.AvailableReservationResponse;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.RoomEscapeException.BadRequestException;
+import roomescape.exception.RoomEscapeException.ResourceNotFoundException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -72,7 +74,7 @@ public class ThemeServiceTest {
 
         // then
         assertThatThrownBy(() -> service.addTheme(request))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test
@@ -101,7 +103,7 @@ public class ThemeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> service.deleteTheme(id))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -111,7 +113,7 @@ public class ThemeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> service.deleteTheme(id))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test

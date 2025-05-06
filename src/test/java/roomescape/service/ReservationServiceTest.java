@@ -18,6 +18,8 @@ import roomescape.dao.ThemeDao;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationsWithTotalPageResponse;
+import roomescape.exception.RoomEscapeException.BadRequestException;
+import roomescape.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
@@ -69,7 +71,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -85,7 +87,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -100,7 +102,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(BadRequestException.class);
 
     }
 
@@ -116,7 +118,7 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.addReservation(request))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test
@@ -134,7 +136,7 @@ class ReservationServiceTest {
     @Test
     void 예약이_존재하지_않으면_예외발생() {
         assertThatThrownBy(() -> reservationService.deleteReservation(999L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -158,6 +160,6 @@ class ReservationServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationService.getReservationsByPage(page))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 }

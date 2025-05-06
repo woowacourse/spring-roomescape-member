@@ -12,6 +12,8 @@ import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.request.ThemesWithTotalPageRequest;
 import roomescape.dto.response.AvailableReservationResponse;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.exception.RoomEscapeException.BadRequestException;
+import roomescape.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -32,7 +34,7 @@ public class ThemeService {
 
     public ThemeResponse addTheme(ThemeRequest themeRequest) {
         if (themeDao.isExistThemeName(themeRequest.name())) {
-            throw new IllegalStateException("이미 존재하는 테마입니다.");
+            throw new BadRequestException("이미 존재하는 테마입니다.");
         }
         Theme saved = themeDao.save(themeRequest.toEntity());
         return ThemeResponse.from(saved);
@@ -43,7 +45,7 @@ public class ThemeService {
         int totalPage = (totalThemes % 10 == 0) ?
                 totalThemes / 10 : (totalThemes / 10) + 1;
         if (page < 1 || page > totalPage) {
-            throw new IllegalArgumentException("해당하는 페이지가 없습니다");
+            throw new ResourceNotFoundException("해당하는 페이지가 없습니다");
         }
         int start = (page - 1) * 10 + 1;
         int end = start + 10 - 1;
@@ -66,11 +68,11 @@ public class ThemeService {
 
     public void deleteTheme(Long id) {
         if (reservationDao.isExistByThemeId(id)) {
-            throw new IllegalStateException("예약이 존재하여 삭제할 수 없습니다.");
+            throw new BadRequestException("예약이 존재하여 삭제할 수 없습니다.");
         }
         boolean isDeleted = themeDao.deleteById(id);
         if (!isDeleted) {
-            throw new IllegalArgumentException("해당하는 ID가 없습니다.");
+            throw new ResourceNotFoundException("해당하는 ID가 없습니다.");
         }
     }
 

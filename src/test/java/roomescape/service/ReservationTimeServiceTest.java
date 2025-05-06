@@ -18,6 +18,8 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.request.ReservationTimesWithTotalPageResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.RoomEscapeException.BadRequestException;
+import roomescape.exception.RoomEscapeException.ResourceNotFoundException;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class ReservationTimeServiceTest {
@@ -52,7 +54,7 @@ class ReservationTimeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.addTime(request))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test
@@ -75,7 +77,7 @@ class ReservationTimeServiceTest {
     @Test
     void 삭제하려는_예약시간이_존재하지_않으면_예외() {
         assertThatThrownBy(() -> reservationTimeService.deleteTime(999L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -85,7 +87,7 @@ class ReservationTimeServiceTest {
 
         // when, then
         assertThatThrownBy(() -> reservationTimeService.deleteTime(id))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test

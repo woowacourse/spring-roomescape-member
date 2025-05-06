@@ -7,6 +7,8 @@ import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.request.ReservationTimesWithTotalPageResponse;
 import roomescape.dto.response.ReservationTimeResponse;
+import roomescape.exception.RoomEscapeException.BadRequestException;
+import roomescape.exception.RoomEscapeException.ResourceNotFoundException;
 import roomescape.model.ReservationTime;
 
 @Service
@@ -21,7 +23,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse addTime(ReservationTimeRequest reservationTimeRequest) {
         if (reservationTimeDao.isExistTime(reservationTimeRequest.startAt())) {
-            throw new IllegalStateException("이미 존재하는 시간입니다.");
+            throw new BadRequestException("이미 존재하는 시간입니다.");
         }
         ReservationTime time = reservationTimeRequest.toEntity();
         ReservationTime savedTime = reservationTimeDao.save(time);
@@ -30,11 +32,11 @@ public class ReservationTimeService {
 
     public void deleteTime(Long id) {
         if (reservationDao.isExistByTimeId(id)) {
-            throw new IllegalStateException("예약이 존재하여 삭제할 수 없습니다.");
+            throw new BadRequestException("예약이 존재하여 삭제할 수 없습니다.");
         }
         boolean isDeleted = reservationTimeDao.deleteById(id);
         if (!isDeleted) {
-            throw new IllegalArgumentException("해당하는 ID가 없습니다.");
+            throw new ResourceNotFoundException("해당하는 ID가 없습니다.");
         }
     }
 
@@ -49,7 +51,7 @@ public class ReservationTimeService {
         int totalPage = (totalThemes % 10 == 0) ?
                 totalThemes / 10 : (totalThemes / 10) + 1;
         if (page < 1 || page > totalPage) {
-            throw new IllegalArgumentException("해당하는 페이지가 없습니다");
+            throw new ResourceNotFoundException("해당하는 페이지가 없습니다");
         }
         int start = (page - 1) * 10 + 1;
         int end = start + 10 - 1;
