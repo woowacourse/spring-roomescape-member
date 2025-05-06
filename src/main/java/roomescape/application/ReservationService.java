@@ -2,6 +2,7 @@ package roomescape.application;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.application.dto.ReservationCreateDto;
 import roomescape.application.dto.ReservationDto;
 import roomescape.domain.Reservation;
@@ -27,6 +28,7 @@ public class ReservationService {
         this.themeService = themeService;
     }
 
+    @Transactional
     public ReservationDto registerReservation(ReservationCreateDto request) {
         Theme theme = themeService.getThemeById(request.themeId()).toEntity();
         ReservationTime reservationTime = timeService.getTimeById(request.timeId()).toEntity();
