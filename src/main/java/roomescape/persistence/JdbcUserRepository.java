@@ -35,4 +35,15 @@ public class JdbcUserRepository implements UserRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<User> findById(final Long id) {
+        String sql = "SELECT id, name, email, password FROM users WHERE id = ?";
+        try {
+            User user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

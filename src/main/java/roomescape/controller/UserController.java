@@ -1,14 +1,16 @@
 package roomescape.controller;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.controller.request.LoginUserRequest;
+import roomescape.controller.response.CheckLoginUserResponse;
+import roomescape.controller.response.LoginUserResponse;
 import roomescape.service.UserService;
 import roomescape.service.param.LoginUserParam;
 import roomescape.service.result.LoginUserResult;
@@ -16,12 +18,12 @@ import roomescape.service.result.LoginUserResult;
 @Controller
 public class UserController {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public UserController(final UserService userService) {
+    public UserController(final UserService userService, final JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @GetMapping("/login")
@@ -30,23 +32,26 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse response) {
+    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse response) {
         LoginUserParam loginUserParam = loginUserRequest.toServiceParam();
         LoginUserResult user = userService.login(loginUserParam);
 
-        String accessToken = Jwts.builder()
-                .subject(user.id().toString())
-                .claim("name", user.name())
-                .claim("email", user.email())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .compact();
-
-        response.addHeader("Keep-Alive", "timeout=60");
-        response.addHeader("Content-Type", "application/json");
-
-        Cookie cookie = new Cookie("token", accessToken);
+        String token = jwtTokenProvider.createToken(user);
+        Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
+
+        return ResponseEntity.ok().body(LoginUserResponse.from(user));
+    }
+
+    @GetMapping("/login/check")
+    public ResponseEntity<CheckLoginUserResponse> loginCheck(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
+        Long id = jwtTokenProvider.extractIdFromToken(token);
+
+        return ResponseEntity.ok().body(CheckLoginUserResponse.from(userService.findById(id)));
     }
 }
