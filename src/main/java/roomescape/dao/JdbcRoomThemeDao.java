@@ -62,7 +62,7 @@ public class JdbcRoomThemeDao implements RoomThemeDao {
     }
 
     @Override
-    public List<RoomTheme> findPopularThemes(final LocalDate start, final LocalDate end) {
+    public List<RoomTheme> findPopularThemes(final LocalDate start, final LocalDate end, final int limit) {
 
         final String query = """
                         SELECT
@@ -76,8 +76,9 @@ public class JdbcRoomThemeDao implements RoomThemeDao {
                         WHERE r.date BETWEEN ? AND ?
                         GROUP BY t.id
                         ORDER BY COUNT(r.id) DESC
+                        LIMIT ?
                 """;
-        return jdbcTemplate.query(query, THEME_ROW_MAPPER, start, end);
+        return jdbcTemplate.query(query, THEME_ROW_MAPPER, start, end, limit);
     }
 
     @Override

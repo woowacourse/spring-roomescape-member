@@ -15,7 +15,7 @@ public interface RoomThemeDao {
 
     Optional<RoomTheme> findById(long id);
 
-    List<RoomTheme> findPopularThemes(LocalDate start, LocalDate end);
+    List<RoomTheme> findPopularThemes(LocalDate start, LocalDate end, int limit);
 
     boolean deleteById(long id);
 }

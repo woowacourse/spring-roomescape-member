@@ -54,9 +54,7 @@ public class RoomThemeService {
         PopularThemeSelectionCriteria criteria =
                 new PopularThemeSelectionCriteria(LocalDate.now(), POPULAR_THEME_SELECTION_DURATION);
 
-        List<RoomTheme> popularThemes = themeDAO.findPopularThemes(criteria.getStartDay(), criteria.getEndDay());
-
-        return popularThemes.subList(0, Math.min(POPULAR_THEMES_TOP_COUNT, popularThemes.size()));
+        return themeDAO.findPopularThemes(criteria.getStartDay(), criteria.getEndDay(), POPULAR_THEMES_TOP_COUNT);
     }
 
     public void deleteTheme(final long id) {

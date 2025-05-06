@@ -79,7 +79,7 @@ class JdbcRoomThemeDaoTest {
     void findPopularThemesTest() {
         // given // when
         List<RoomTheme> popularThemes = roomThemeDAO.findPopularThemes(
-                LocalDate.of(2024, 10, 1), LocalDate.of(2025, 5, 1));
+                LocalDate.of(2024, 10, 1), LocalDate.of(2025, 5, 1), 10);
 
         // then
         Assertions.assertNotNull(popularThemes);
