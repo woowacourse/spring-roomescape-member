@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import lombok.Setter;
 import roomescape.domain.Reservation;
 import roomescape.repository.ReservationRepository;
 
@@ -13,7 +14,9 @@ public class StubReservationRepository implements ReservationRepository {
 
     private final List<Reservation> data = new ArrayList<>();
     private final AtomicLong atomicLong = new AtomicLong();
+    @Setter
     private boolean existsByReservationTimeId = false;
+    @Setter
     private boolean existsByThemeId = false;
 
     public StubReservationRepository(Reservation... inputReservations) {
@@ -65,20 +68,12 @@ public class StubReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existsByReservationTimeId(final Long id) {
+    public boolean existsByReservationTimeId(Long id) {
         return existsByReservationTimeId;
     }
 
     @Override
-    public boolean existsByThemeId(final Long id) {
+    public boolean existsByThemeId(Long id) {
         return existsByThemeId;
-    }
-
-    public void setExistsByReservationTimeId(final boolean existsByReservationTimeId) {
-        this.existsByReservationTimeId = existsByReservationTimeId;
-    }
-
-    public void setExistsByThemeId(final boolean existsByThemeId) {
-        this.existsByThemeId = existsByThemeId;
     }
 }

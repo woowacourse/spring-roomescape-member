@@ -2,28 +2,27 @@ package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.SoftAssertions;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import roomescape.error.NotFoundException;
 import roomescape.domain.Reservation;
-import roomescape.repository.JdbcReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.PopularThemeResponse;
-import roomescape.repository.JdbcThemeRepository;
+import roomescape.error.NotFoundException;
 
 class JdbcThemeRepositoryTest {
 
-    private static EmbeddedDatabase db;
+    private EmbeddedDatabase db;
     private JdbcThemeRepository repository;
     private JdbcReservationRepository jdbcReservationRepository;
 
@@ -39,7 +38,7 @@ class JdbcThemeRepositoryTest {
     }
 
     @AfterEach
-    void shutdownDatabase() {
+    void tearDown() {
         db.shutdown();
     }
 
@@ -52,7 +51,7 @@ class JdbcThemeRepositoryTest {
         Theme savedTheme = repository.save(theme);
 
         // then
-        SoftAssertions.assertSoftly(soft -> {
+        assertSoftly(soft -> {
             soft.assertThat(savedTheme.getId()).isNotNull();
             soft.assertThat(savedTheme.getName()).isEqualTo("테마이름");
             soft.assertThat(savedTheme.getDescription()).isEqualTo("테마설명");
@@ -62,7 +61,6 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 모든_테마를_조회한다() {
-        // given
         // when
         List<Theme> themes = repository.findAll();
 
@@ -87,7 +85,7 @@ class JdbcThemeRepositoryTest {
         List<PopularThemeResponse> allPopular = repository.findAllPopular();
 
         // then
-        SoftAssertions.assertSoftly(soft -> {
+        assertSoftly(soft -> {
                     soft.assertThat(allPopular).hasSize(2);
                     soft.assertThat(allPopular.get(0).name()).isEqualTo("이름1");
                     soft.assertThat(allPopular.get(1).name()).isEqualTo("이름2");
@@ -98,8 +96,10 @@ class JdbcThemeRepositoryTest {
     @Test
     void id에_알맞은_테마을_삭제한다() {
         // given
+        Long id = 1L;
+
         // when
-        repository.deleteById(1L);
+        repository.deleteById(id);
         List<Theme> themes = repository.findAll();
 
         // then
@@ -110,8 +110,6 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 존재하지_않는_테마를_삭제할_때_예외_처리() {
-        // given
-        // when
         // then
         assertThatThrownBy(() -> repository.deleteById(999L))
                 .isInstanceOf(NotFoundException.class)
@@ -134,8 +132,11 @@ class JdbcThemeRepositoryTest {
     void 존재하지_않는_id면_빈_Optional을_반환한다() {
         // given
         Long invalidId = 999L;
+
         // when
+        final Optional<Theme> optionalTheme = repository.findById(invalidId);
+
         // then
-        assertThat(repository.findById(invalidId)).isEmpty();
+        assertThat(optionalTheme).isEmpty();
     }
 }

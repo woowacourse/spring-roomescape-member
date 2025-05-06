@@ -1,51 +1,38 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.Reservation;
-import roomescape.repository.JdbcReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 class JdbcReservationRepositoryTest {
 
-    private static EmbeddedDatabase db;
+    private EmbeddedDatabase db;
     private JdbcReservationRepository repository;
 
-    @BeforeAll
-    static void initDatabase() {
+    @BeforeEach
+    void setUp() {
         db = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("classpath:schema.sql")
                 .addScript("classpath:data.sql")
                 .build();
-    }
-
-    @BeforeEach
-    void setUp() {
         repository = new JdbcReservationRepository(db);
     }
 
     @AfterEach
-    void cleanUp() {
-        new JdbcTemplate(db).execute("DELETE FROM reservation");
-    }
-
-    @AfterAll
-    static void shutdownDatabase() {
+    void tearDown() {
         db.shutdown();
     }
 
@@ -59,11 +46,13 @@ class JdbcReservationRepositoryTest {
         Reservation reservation = new Reservation(null, name, date, new ReservationTime(1L, time), theme1);
 
         // when
-        var saved = repository.save(reservation);
+        Reservation saved = repository.save(reservation);
 
         // then
-        assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getName()).isEqualTo(name);
+        assertSoftly(soft -> {
+            soft.assertThat(saved.getId()).isNotNull();
+            soft.assertThat(saved.getName()).isEqualTo(name);
+        });
     }
 
     @Test
@@ -82,7 +71,7 @@ class JdbcReservationRepositoryTest {
 
         // when
         // then
-        SoftAssertions.assertSoftly(soft -> {
+        assertSoftly(soft -> {
             soft.assertThat(repository.existsByDateAndTimeAndTheme(existedDate, existedTime, 1L)).isTrue();
             soft.assertThat(repository.existsByDateAndTimeAndTheme(date, time, 1L)).isFalse();
         });

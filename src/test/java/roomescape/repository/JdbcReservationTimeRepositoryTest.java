@@ -1,11 +1,11 @@
 package roomescape.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,15 +13,13 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.domain.Reservation;
-import roomescape.repository.JdbcReservationRepository;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.AvailableReservationTimeResponse;
-import roomescape.repository.JdbcReservationTimeRepository;
 import roomescape.domain.Theme;
+import roomescape.dto.AvailableReservationTimeResponse;
 
 class JdbcReservationTimeRepositoryTest {
 
-    private static EmbeddedDatabase db;
+    private EmbeddedDatabase db;
     private JdbcReservationTimeRepository repository;
     private JdbcReservationRepository jdbcReservationRepository;
 
@@ -37,22 +35,22 @@ class JdbcReservationTimeRepositoryTest {
     }
 
     @AfterEach
-    void shutdownDatabase() {
+    void tearDown() {
         db.shutdown();
     }
 
     @Test
     void 예약_시간을_올바르게_저장한다() {
         // given
-        ReservationTime reservationTime = new ReservationTime(3L, LocalTime.of(11, 0));
+        ReservationTime reservationTime = new ReservationTime(LocalTime.of(11, 0));
 
         // when
         ReservationTime savedReservationTime = repository.save(reservationTime);
 
         // then
-        SoftAssertions.assertSoftly(soft -> {
-            soft.assertThat(reservationTime.getId()).isNotNull();
-            soft.assertThat(reservationTime.getStartAt()).isEqualTo(savedReservationTime.getStartAt());
+        assertSoftly(soft -> {
+            soft.assertThat(savedReservationTime.getId()).isNotNull();
+            soft.assertThat(savedReservationTime.getStartAt()).isEqualTo(reservationTime.getStartAt());
         });
     }
 
@@ -81,7 +79,7 @@ class JdbcReservationTimeRepositoryTest {
                 LocalDate.of(2999, 5, 1), 1L);
 
         // then
-        SoftAssertions.assertSoftly(soft -> {
+        assertSoftly(soft -> {
                     soft.assertThat(allAvailable).hasSize(2);
                     soft.assertThat(allAvailable.get(0).alreadyBooked()).isTrue();
                     soft.assertThat(allAvailable.get(1).alreadyBooked()).isTrue();
