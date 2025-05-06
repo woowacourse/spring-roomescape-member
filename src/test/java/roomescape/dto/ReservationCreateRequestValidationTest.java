@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ReservationCreatedRequestValidationTest {
+public class ReservationCreateRequestValidationTest {
 
     private static ValidatorFactory factory;
     private static Validator validator;

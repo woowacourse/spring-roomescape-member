@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ReservationTimeCreatedRequestValidationTest {
+public class ReservationTimeCreateRequestValidationTest {
 
     @Test
     @DisplayName("ReservationTimeCreateRequest 생성 테스트")
