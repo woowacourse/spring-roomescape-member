@@ -1,0 +1,91 @@
+package roomescape.reservation.application.service;
+
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.NoSuchElementException;
+import org.springframework.stereotype.Service;
+import roomescape.reservation.application.dto.CreateReservationRequest;
+import roomescape.reservation.domain.repository.ReservationRepository;
+import roomescape.reservation.domain.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.repository.ThemeRepository;
+import roomescape.reservation.domain.ReservationDate;
+import roomescape.reservation.domain.ReservationName;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
+import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.ReservationResponse;
+
+@Service
+public class ReservationService {
+
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
+
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ReservationTimeRepository reservationTimeRepository,
+                              final ThemeRepository themeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
+    }
+
+    public ReservationResponse createReservation(final ReservationRequest reservationRequest) {
+        ReservationDate reservationDate = new ReservationDate(reservationRequest.getDate());
+        ReservationTime reservationTime = getReservationTime(reservationRequest.getTimeId());
+        Theme theme = getTheme(reservationRequest.getThemeId());
+        validateReservationDateTime(reservationDate, reservationTime);
+
+        CreateReservationRequest createReservationRequest = new CreateReservationRequest(
+                new ReservationName(reservationRequest.getName()),
+                theme,
+                reservationDate,
+                reservationTime
+        );
+
+        return new ReservationResponse(reservationRepository.insert(createReservationRequest));
+    }
+
+    public List<ReservationResponse> getReservations() {
+        return reservationRepository.findAllReservations().stream()
+                .map(ReservationResponse::new)
+                .toList();
+    }
+
+    public void deleteReservation(final Long id) {
+        if (reservationRepository.delete(id) == 0) {
+            throw new IllegalStateException("이미 삭제되어 있는 리소스입니다.");
+        }
+    }
+
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new NoSuchElementException("예약 시간 정보를 찾을 수 없습니다."));
+    }
+
+    private Theme getTheme(final Long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new NoSuchElementException("테마 정보를 찾을 수 없습니다."));
+    }
+
+    private void validateReservationDateTime(ReservationDate reservationDate, ReservationTime reservationTime) {
+        LocalDateTime reservationDateTime = LocalDateTime.of(reservationDate.getReservationDate(),
+                reservationTime.getStartAt());
+
+        validateIsPast(reservationDateTime);
+        validateIsDuplicate(reservationDateTime);
+    }
+
+    private static void validateIsPast(LocalDateTime reservationDateTime) {
+        if (reservationDateTime.isBefore(LocalDateTime.now())) {
+            throw new DateTimeException("지난 일시에 대한 예약 생성은 불가능합니다.");
+        }
+    }
+
+    private void validateIsDuplicate(LocalDateTime reservationDateTime) {
+        if (reservationRepository.existsByDateTime(reservationDateTime)) {
+            throw new IllegalStateException("중복된 일시의 예약은 불가능합니다.");
+        }
+    }
+}
