@@ -39,4 +39,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInUseException(InUseException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ERROR_PREFIX + e.getMessage());
     }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ERROR_PREFIX + e.getMessage());
+    }
 }
