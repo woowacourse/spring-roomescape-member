@@ -35,6 +35,12 @@ public class MemberJdbcRepository implements MemberRepository {
     }
 
     @Override
+    public Boolean existsById(final Long id) {
+        final String sql = "SELECT EXISTS (SELECT 1 FROM member WHERE id=?)";
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+    }
+
+    @Override
     public Boolean existsByEmail(final String email) {
         final String sql = "SELECT EXISTS (SELECT 1 FROM member WHERE email=?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, email);

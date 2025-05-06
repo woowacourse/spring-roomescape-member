@@ -1,11 +1,11 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Date;
 import org.springframework.stereotype.Component;
@@ -43,7 +43,7 @@ public class JwtProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parse(token);
             return true;
-        } catch (final SignatureException e) {
+        } catch (final JwtException e) {
             return false;
         }
     }

@@ -8,13 +8,13 @@ import roomescape.theme.dto.ThemeResponse;
 
 public record ReservationResponse(
         Long id,
-        String name,
         LocalDate date,
+        String name,
         ReservationTimeResponse time,
         ThemeResponse theme
 ) {
     public ReservationResponse {
-        if (id == null || name == null || date == null || time == null || theme == null) {
+        if (id == null || date == null || time == null || theme == null) {
             throw new ResponseInvalidException();
         }
     }
@@ -22,8 +22,8 @@ public record ReservationResponse(
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
-                reservation.getName(),
                 reservation.getDate(),
+                reservation.getMember().getName(),
                 ReservationTimeResponse.from(reservation.getReservationTime()),
                 ThemeResponse.from(reservation.getTheme())
         );

@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ReservationRepository {
 
-    Long save(Reservation reservation, Long reservationTimeId, Long themeId);
+    Long save(Reservation reservation, Long reservationTimeId, Long themeId, Long memberId);
 
     Reservation findById(Long id);
     List<Reservation> findAll();
