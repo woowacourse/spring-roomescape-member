@@ -120,8 +120,25 @@ public class JdbcReservationDaoTest {
     @DisplayName("예약 id가 주어졌을 때, 존재하지 않는 id라면, 빈 값을 반환해야 한다.")
     @Test
     void given_reservation_id_then_return_null() {
-        long savedId = reservationDao.saveReservation(reservation);
+        reservationDao.saveReservation(reservation);
         Optional<Reservation> reservation = reservationDao.findById(99999999999L);
         assertThat(reservation).isEmpty();
+    }
+
+    @DisplayName("주어진 id가 존재하는지 셀 수 있어야 한다.")
+    @Test
+    void count_reservation_by_id() {
+        long savedId = reservationDao.saveReservation(reservation);
+        int result = reservationDao.countAlreadyExistReservation(savedId);
+        assertThat(result).isEqualTo(1);
+    }
+
+    @DisplayName("주어진 날짜+시간에 예약이 존재하는 지 셀 수 있어야 한다.")
+    @Test
+    void count_reservation_of_date_and_time() {
+        reservationDao.saveReservation(reservation);
+        int result = reservationDao.countAlreadyReservationOf(reservation.getReservationDate(),
+            reservation.getTimeId());
+        assertThat(result).isEqualTo(1);
     }
 }
