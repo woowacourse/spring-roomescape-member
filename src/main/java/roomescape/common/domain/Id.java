@@ -4,53 +4,52 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Id {
-    private boolean unassigned;
-    private Long value;
 
-    private Id(final Long value, final boolean unassigned) {
-        this.value = value;
-        this.unassigned = unassigned;
-    }
+    private final UUID objectId;
+    private final Long databaseId;
 
-    public static Id from(Long value) {
-        Id id = new Id(value, false);
-        id.setValue(value);
-        return id;
+    public Id(final UUID objectId, final Long databaseId) {
+        this.objectId = validateNotNull(objectId);
+        this.databaseId = databaseId;
     }
 
     public static Id unassigned() {
-        return new Id(UUID.randomUUID().getMostSignificantBits(), true);
+        return new Id(UUID.randomUUID(), null);
     }
 
-    public Long getValue() {
-        if (unassigned) {
-            throw new IllegalStateException("할당되지 않은 ID에 접근할 수 없습니다.");
+    public static Id assignDatabaseId(Long databaseId) {
+        validateNotNull(databaseId);
+        return new Id(UUID.randomUUID(), databaseId);
+    }
+
+    private static <T> T validateNotNull(T value) {
+        if (value == null) {
+            throw new IllegalArgumentException("null이 될 수 없습니다.");
         }
         return value;
     }
 
-    public void setValue(final Long value) {
-        if (value == null) {
-            throw new IllegalArgumentException("ID 값은 null일 수 없습니다.");
-        }
-        this.value = value;
-        this.unassigned = false;
-    }
-
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+    public boolean equals(final Object object) {
+        if (!(object instanceof final Id id)) {
             return false;
         }
-        Id id = (Id) o;
-        return unassigned == id.unassigned && Objects.equals(value, id.value);
+        return Objects.equals(objectId, id.objectId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, unassigned);
+        return Objects.hashCode(objectId);
+    }
+
+    public Long getDatabaseId() {
+        if (isNotPersisted()) {
+            throw new IllegalStateException("할당되지 않은 ID에 접근할 수 없습니다.");
+        }
+        return databaseId;
+    }
+
+    private boolean isNotPersisted() {
+        return databaseId == null;
     }
 }

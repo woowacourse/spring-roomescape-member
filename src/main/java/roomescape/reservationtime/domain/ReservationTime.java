@@ -19,11 +19,11 @@ public class ReservationTime {
     }
 
     public static ReservationTime of(final Long id, final LocalTime startAt) {
-        return new ReservationTime(Id.from(id), startAt);
+        return new ReservationTime(Id.assignDatabaseId(id), startAt);
     }
 
     public static ReservationTime of(final Long id, final String startAt) {
-        return new ReservationTime(Id.from(id), startAt);
+        return new ReservationTime(Id.assignDatabaseId(id), startAt);
     }
 
     public static ReservationTime withUnassignedId(final LocalTime startAt) {
@@ -31,7 +31,7 @@ public class ReservationTime {
     }
 
     public Long getId() {
-        return id.getValue();
+        return id.getDatabaseId();
     }
 
     public LocalTime getStartAt() {

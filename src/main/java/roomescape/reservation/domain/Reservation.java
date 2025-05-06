@@ -28,7 +28,7 @@ public class Reservation {
 
     public static Reservation of(final Long id, final String name, final LocalDate date, final ReservationTime time,
                                  final Theme theme) {
-        return new Reservation(Id.from(id), name, date, time, theme);
+        return new Reservation(Id.assignDatabaseId(id), name, date, time, theme);
     }
 
     public static Reservation withUnassignedId(final String name, final LocalDate date, final ReservationTime time,
@@ -49,7 +49,7 @@ public class Reservation {
     }
 
     public Long getId() {
-        return id.getValue();
+        return id.getDatabaseId();
     }
 
     public String getName() {

@@ -18,8 +18,8 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public static Theme of(final Long id, final String name, final String description, final String thumbnail) {
-        return new Theme(Id.from(id), name, description, thumbnail);
+    public static Theme of(final Long databaseId, final String name, final String description, final String thumbnail) {
+        return new Theme(Id.assignDatabaseId(databaseId), name, description, thumbnail);
     }
 
     public static Theme withUnassignedId(final String name, final String description, final String thumbnail) {
@@ -45,11 +45,7 @@ public class Theme {
     }
 
     public Long getId() {
-        return id.getValue();
-    }
-
-    public void setId(final Long value) {
-        id.setValue(value);
+        return id.getDatabaseId();
     }
 
     public String getName() {
