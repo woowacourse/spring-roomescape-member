@@ -21,6 +21,7 @@ import roomescape.reservationtime.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
+
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 

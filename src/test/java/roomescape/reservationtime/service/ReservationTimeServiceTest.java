@@ -24,6 +24,7 @@ import roomescape.theme.repository.FakeThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 class ReservationTimeServiceTest {
+
     private final LocalDate futureDate = LocalDate.now().plusDays(1);
     private final Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
 

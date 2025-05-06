@@ -5,6 +5,7 @@ import java.util.Objects;
 import roomescape.common.domain.Id;
 
 public class ReservationTime {
+
     private final Id id;
     private final LocalTime startAt;
 

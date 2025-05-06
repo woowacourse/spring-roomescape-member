@@ -6,6 +6,7 @@ import java.util.Optional;
 import roomescape.reservationtime.domain.ReservationTime;
 
 public interface ReservationTimeRepository {
+
     List<ReservationTime> getAll();
 
     ReservationTime put(ReservationTime reservationTime);

@@ -12,6 +12,7 @@ import roomescape.reservationtime.entity.ReservationTimeEntity;
 
 @Repository
 public class JDBCReservationTimeRepository implements ReservationTimeRepository {
+
     private final JdbcTemplate jdbcTemplate;
 
     public JDBCReservationTimeRepository(final JdbcTemplate jdbcTemplate) {

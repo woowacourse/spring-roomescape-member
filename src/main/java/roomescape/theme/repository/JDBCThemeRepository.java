@@ -12,6 +12,7 @@ import roomescape.theme.entity.ThemeEntity;
 
 @Repository
 public class JDBCThemeRepository implements ThemeRepository {
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 

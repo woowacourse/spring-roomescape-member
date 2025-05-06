@@ -6,6 +6,7 @@ import java.util.Optional;
 import roomescape.theme.domain.Theme;
 
 public interface ThemeRepository {
+
     List<Theme> getAll();
 
     Theme put(Theme theme);

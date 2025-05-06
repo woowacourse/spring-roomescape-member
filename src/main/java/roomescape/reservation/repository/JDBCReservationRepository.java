@@ -13,6 +13,7 @@ import roomescape.theme.entity.ThemeEntity;
 
 @Repository
 public class JDBCReservationRepository implements ReservationRepository {
+
     private final JdbcTemplate jdbcTemplate;
 
     public JDBCReservationRepository(final JdbcTemplate jdbcTemplate) {

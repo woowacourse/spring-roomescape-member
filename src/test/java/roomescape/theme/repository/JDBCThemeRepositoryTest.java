@@ -11,6 +11,7 @@ import roomescape.theme.domain.Theme;
 
 @JdbcTest
 class JDBCThemeRepositoryTest {
+
     private final LocalDate futureDate = LocalDate.now().plusDays(10);
 
     @Autowired

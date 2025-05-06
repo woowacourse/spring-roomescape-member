@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservation.domain.Reservation;
 
 public class FakeReservationRepository implements ReservationRepository {
+
     private final Map<Long, Reservation> reservations = new ConcurrentHashMap<>();
     private final AtomicLong index = new AtomicLong(1);
 

@@ -11,6 +11,7 @@ import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 
 class FakeReservationTimeRepositoryTest {
+
     private FakeReservationTimeRepository repository;
 
     @BeforeEach

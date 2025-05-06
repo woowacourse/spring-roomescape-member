@@ -11,6 +11,7 @@ import roomescape.reservationtime.exception.ReservationTimeInUseException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
