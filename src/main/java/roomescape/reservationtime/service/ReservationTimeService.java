@@ -1,6 +1,7 @@
 package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -64,7 +65,7 @@ public class ReservationTimeService {
 
         Map<ReservationTime, Boolean> availabilities = reservationTimes.stream()
                 .map(reservationTime -> mapToDto(reservations, reservationTime))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (o1, o2) -> o1, LinkedHashMap::new));
 
         return availabilities.entrySet().stream()
                 .map(entry -> {
@@ -78,7 +79,7 @@ public class ReservationTimeService {
     private Entry<ReservationTime, Boolean> mapToDto(final List<Reservation> reservations,
                                                      final ReservationTime reservationTime) {
         if (containsTime(reservations, reservationTime.getId())) {
-           return Map.entry(reservationTime, true);
+            return Map.entry(reservationTime, true);
         }
         return Map.entry(reservationTime, false);
     }
