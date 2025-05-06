@@ -41,14 +41,15 @@ public class ReservationThemeService {
         LocalDate now = LocalDate.now();
         LocalDate start = calculateStartDate(now);
         LocalDate end = calculateEndDate(now);
-        return getBestReservedThemes(start, end, TOP_THEME_LIMIT)
+        return getBestReservedThemes(start, end)
                 .stream()
                 .map(ReservationThemeMapper::toResponse)
                 .toList();
     }
 
-    private List<ReservationTheme> getBestReservedThemes(LocalDate start, LocalDate end, int limit) {
-        return reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(start, end, limit);
+    private List<ReservationTheme> getBestReservedThemes(LocalDate start, LocalDate end) {
+        return reservationThemeRepository.findByStartDateAndEndDateOrderByReservedDesc(
+                start, end, ReservationThemeService.TOP_THEME_LIMIT);
     }
 
     private LocalDate calculateStartDate(LocalDate nowDate) {
