@@ -7,44 +7,37 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
+import roomescape.domain.user.entity.Name;
 
 @Getter
 public class Reservation {
 
-    private static final int MAX_NAME_LENGTH = 25;
     private final Long id;
-    private final String name;
+    private final Name reservationName;
     private final LocalDate reservationDate;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
     @Builder
-    public Reservation(final Long id, final String name, final LocalDate reservationDate,
+    public Reservation(final Long id, final Name reservationName, final LocalDate reservationDate,
                        final ReservationTime reservationTime, final Theme theme) {
         this.id = id;
-        this.name = name;
+        this.reservationName = reservationName;
         this.reservationDate = reservationDate;
         this.reservationTime = reservationTime;
         this.theme = theme;
         validateReservation();
     }
 
-    public static Reservation withoutId(final String name, final LocalDate reservationDate,
-                                        final ReservationTime reservationTime, final Theme theme) {
-        return new Reservation(null, name, reservationDate, reservationTime, theme);
-    }
-
     private void validateReservation() {
-        if (name == null || reservationDate == null || reservationTime == null || theme == null) {
+        if (reservationName == null || reservationDate == null || reservationTime == null || theme == null) {
             throw new InvalidArgumentException("Reservation field cannot be null");
         }
-        validateName();
     }
 
-    private void validateName() {
-        if (name.isBlank() || name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidArgumentException("invalid reservation name");
-        }
+    public static Reservation withoutId(final Name name, final LocalDate reservationDate,
+                                        final ReservationTime reservationTime, final Theme theme) {
+        return new Reservation(null, name, reservationDate, reservationTime, theme);
     }
 
     public void validateNotPastReservation(final LocalDateTime now) {
@@ -58,6 +51,10 @@ public class Reservation {
         return reservationDateTime.isBefore(now);
     }
 
+    public LocalTime getReservationStartTime() {
+        return reservationTime.getStartAt();
+    }
+
     public boolean existId() {
         return id != null;
     }
@@ -66,12 +63,12 @@ public class Reservation {
         return reservationTime.getId();
     }
 
-    public LocalTime getReservationStartTime() {
-        return reservationTime.getStartAt();
-    }
-
     public Long getThemeId() {
         return theme.getId();
+    }
+
+    public String getName() {
+        return reservationName.getName();
     }
 
     @Override

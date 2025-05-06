@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +22,7 @@ import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.domain.user.entity.Name;
 
 /**
  * DAO 테스트 비활성화
@@ -30,7 +30,6 @@ import roomescape.domain.reservation.utils.JdbcTemplateUtils;
  * 대신, Fake를 활용한 서비스 테스트와 서비스 + 실제 레포지토리를 함친 테스트를 하여 테스트 문제점을 파악할 수 있다고 보았음
  */
 
-@Disabled
 @JdbcTest
 @Import(ReservationDAO.class)
 class ReservationDAOTest {
@@ -57,18 +56,18 @@ class ReservationDAOTest {
     @Test
     void test1() {
         // given
-        ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, RESERVATION_TIME_START_TIME);
-        Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, RESERVATION_TIME_START_TIME);
+        final Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
 
-        LocalDateTime now = LocalDateTime.now();
-        String name = "꾹";
-        Reservation reservation = Reservation.withoutId(name, now.toLocalDate(), reservationTime, theme);
+        final LocalDateTime now = LocalDateTime.now();
+        final Name name = new Name("꾹");
+        final Reservation reservation = Reservation.withoutId(name, now.toLocalDate(), reservationTime, theme);
 
         // when
-        Reservation result = reservationRepository.save(reservation);
+        final Reservation result = reservationRepository.save(reservation);
 
         // then
-        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getReservationName()).isEqualTo(name);
         assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
         assertThat(result.getReservationTime()
                 .getId()).isEqualTo(RESERVATION_TIME_ID);
@@ -76,15 +75,15 @@ class ReservationDAOTest {
                 .getId()).isEqualTo(THEME_ID);
     }
 
-    private ReservationTime saveReservationTime(Long id, LocalTime time) {
-        String insertTimeSql = "insert into reservation_time (id, start_at) values (?, ?)";
+    private ReservationTime saveReservationTime(final Long id, final LocalTime time) {
+        final String insertTimeSql = "insert into reservation_time (id, start_at) values (?, ?)";
         jdbcTemplate.update(insertTimeSql, id, time);
 
         return new ReservationTime(id, time);
     }
 
-    private Theme saveTheme(Long id, String name, String description, String thumbnail) {
-        String insertTimeSql = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
+    private Theme saveTheme(final Long id, final String name, final String description, final String thumbnail) {
+        final String insertTimeSql = "insert into theme (id, name, description, thumbnail) values (?, ?, ?, ?)";
         jdbcTemplate.update(insertTimeSql, id, name, description, thumbnail);
 
         return new Theme(id, name, description, thumbnail);
@@ -94,28 +93,29 @@ class ReservationDAOTest {
     @Test
     void test4() {
         // given
-        long reservationId = 1;
-        LocalDateTime now = LocalDateTime.now();
+        final long reservationId = 1;
+        final LocalDateTime now = LocalDateTime.now();
 
-        ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
-        Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
+        final Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
 
-        String originalName = "꾹";
+        final String originalName = "꾹";
         saveReservation(reservationId, originalName, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
-        String changedName = "드라고";
-        Reservation updateReservation = new Reservation(reservationId, changedName, now.toLocalDate(), reservationTime,
-                theme);
+        final Name changedName = new Name("드라고");
+        final Reservation updateReservation = new Reservation(reservationId, changedName, now.toLocalDate(),
+                reservationTime, theme);
 
         // when
-        Reservation result = reservationRepository.save(updateReservation);
+        final Reservation result = reservationRepository.save(updateReservation);
 
         // then
         assertThat(result).isEqualTo(updateReservation);
     }
 
-    private void saveReservation(Long id, String name, LocalDate date, Long timeId, Long themeId) {
-        String sql = "insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)";
+    private void saveReservation(final Long id, final String name, final LocalDate date, final Long timeId,
+                                 final Long themeId) {
+        final String sql = "insert into reservation (id, name, date, time_id, theme_id) values (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, id, name, date, timeId, themeId);
     }
 
@@ -123,10 +123,11 @@ class ReservationDAOTest {
     @Test
     void test5() {
         // given
-        ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, RESERVATION_TIME_START_TIME);
-        Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
-        LocalDateTime now = LocalDateTime.now();
-        Reservation reservation = new Reservation(1L, "꾹", now.toLocalDate(), reservationTime, theme);
+        final ReservationTime reservationTime = saveReservationTime(RESERVATION_TIME_ID, RESERVATION_TIME_START_TIME);
+        final Theme theme = saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        final LocalDateTime now = LocalDateTime.now();
+        final Name name = new Name("꾹");
+        final Reservation reservation = new Reservation(1L, name, now.toLocalDate(), reservationTime, theme);
 
         // when & then
         assertThatThrownBy(() -> reservationRepository.save(reservation)).isInstanceOf(EntityNotFoundException.class);
@@ -136,17 +137,17 @@ class ReservationDAOTest {
     @Test
     void test6() {
         // given
-        LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime now = LocalDateTime.now();
 
         saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
         saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
 
-        long id = 1;
-        String name = "꾹";
+        final long id = 1;
+        final String name = "꾹";
         saveReservation(id, name, now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
 
         // when
-        Reservation result = reservationRepository.findById(id)
+        final Reservation result = reservationRepository.findById(id)
                 .get();
 
         // then
@@ -161,49 +162,49 @@ class ReservationDAOTest {
     @Test
     void test7() {
         // given
-        LocalDate date = LocalDate.now();
+        final LocalDate date = LocalDate.now();
 
         saveReservationTime(RESERVATION_TIME_ID, RESERVATION_TIME_START_TIME);
         saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
 
-        List<String> names = List.of("꾹", "헤일러", "라젤");
+        final List<String> names = List.of("꾹", "헤일러", "라젤");
 
-        String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
+        final String sql = "insert into reservation (name, date, time_id, theme_id) values (?, ?, ?, ?)";
 
-        for (String name : names) {
+        for (final String name : names) {
             jdbcTemplate.update(sql, name, date, RESERVATION_TIME_ID, THEME_ID);
         }
 
         // when
-        List<Reservation> result = reservationRepository.findAll();
+        final List<Reservation> result = reservationRepository.findAll();
 
         // then
-        List<String> resultNames = result.stream()
+        final List<String> resultNames = result.stream()
                 .map(Reservation::getName)
                 .toList();
-        List<LocalDate> resultDates = result.stream()
+        final List<LocalDate> resultDates = result.stream()
                 .map(Reservation::getReservationDate)
                 .toList();
-        List<LocalTime> resultTimes = result.stream()
+        final List<LocalTime> resultTimes = result.stream()
                 .map(Reservation::getReservationTime)
                 .map(ReservationTime::getStartAt)
                 .toList();
-        List<String> themeNames = result.stream()
+        final List<String> themeNames = result.stream()
                 .map(Reservation::getTheme)
                 .map(Theme::getName)
                 .toList();
 
         assertThat(resultNames).containsAll(names);
 
-        for (LocalDate resultDate : resultDates) {
+        for (final LocalDate resultDate : resultDates) {
             assertThat(resultDate).isEqualTo(date);
         }
 
-        for (LocalTime resultTime : resultTimes) {
+        for (final LocalTime resultTime : resultTimes) {
             assertThat(resultTime).isEqualTo(RESERVATION_TIME_START_TIME);
         }
 
-        for (String themeName : themeNames) {
+        for (final String themeName : themeNames) {
             assertThat(themeName).isEqualTo(THEME_NAME);
         }
     }
@@ -212,9 +213,9 @@ class ReservationDAOTest {
     @Test
     void test8() {
         // given
-        Long reservationId = 2L;
-        String name = "꾹";
-        LocalDateTime now = LocalDateTime.now();
+        final Long reservationId = 2L;
+        final String name = "꾹";
+        final LocalDateTime now = LocalDateTime.now();
 
         saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
         saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
@@ -224,8 +225,8 @@ class ReservationDAOTest {
         reservationRepository.deleteById(reservationId);
 
         // then
-        String sql = "select count(*) from reservation where id = ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, reservationId);
+        final String sql = "select count(*) from reservation where id = ?";
+        final int count = jdbcTemplate.queryForObject(sql, Integer.class, reservationId);
         assertThat(count).isZero();
     }
 
@@ -234,11 +235,11 @@ class ReservationDAOTest {
             "29,29,true", "28,29,false"
     })
     @ParameterizedTest
-    void test9(int day1, int day2, boolean expected) {
+    void test9(final int day1, final int day2, final boolean expected) {
         // given
-        Long reservationId = 2L;
-        String name = "꾹";
-        LocalDateTime now = LocalDateTime.of(2025, 4, day1, 10, 0);
+        final Long reservationId = 2L;
+        final String name = "꾹";
+        final LocalDateTime now = LocalDateTime.of(2025, 4, day1, 10, 0);
 
         saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
         saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);

@@ -19,6 +19,7 @@ import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
+import roomescape.domain.user.entity.Name;
 
 @Repository
 public class ReservationDAO implements ReservationRepository {
@@ -68,19 +69,9 @@ public class ReservationDAO implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(final Long id) {
-        final String sql = """
-                select rs.id as reservation_id, rs.name, rs.date,
-                       rst.id as reservation_time_id, rst.start_at,
-                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
-                from reservation rs
-                INNER JOIN reservation_time rst ON rs.time_id = rst.id
-                INNER JOIN theme th ON rs.theme_id = th.id
-                WHERE rs.id = :reservation_id
-                """;
-
         final Map<String, Long> params = Map.of("reservation_id", id);
 
-        return reservationOf(sql, params);
+        return reservationOf(params);
     }
 
     @Override
@@ -129,7 +120,52 @@ public class ReservationDAO implements ReservationRepository {
         return jdbcTemplate.queryForObject(selectSql, params, Boolean.class);
     }
 
-    private Optional<Reservation> reservationOf(final String sql, final Map<String, Long> params) {
+    private Reservation update(final Reservation reservation) {
+        final String updateReservationSql = """
+                update reservation 
+                set name = :name, date = :date, time_id = :time_id, theme_id = :theme_id
+                where id =:id
+                """;
+
+        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", reservation.getName())
+                .addValue("date", reservation.getReservationDate())
+                .addValue("time_id", reservation.getReservationTimeId())
+                .addValue("theme_id", reservation.getThemeId())
+                .addValue("id", reservation.getId());
+
+        final int updatedRowCount = jdbcTemplate.update(updateReservationSql, params);
+
+        if (updatedRowCount == 0) {
+            throw new EntityNotFoundException("Reservation with id " + reservation.getId() + " not found");
+        }
+
+        return reservation;
+    }
+
+    private Reservation create(final Reservation reservation) {
+        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", reservation.getName())
+                .addValue("date", reservation.getReservationDate())
+                .addValue("time_id", reservation.getReservationTimeId())
+                .addValue("theme_id", reservation.getThemeId());
+
+        final long id = jdbcInsert.executeAndReturnKey(params)
+                .longValue();
+
+        return new Reservation(id, reservation.getReservationName(), reservation.getReservationDate(),
+                reservation.getReservationTime(), reservation.getTheme());
+    }
+
+    private Optional<Reservation> reservationOf(final Map<String, Long> params) {
+        final String sql = """
+                select rs.id as reservation_id, rs.name as name, rs.date,
+                       rst.id as reservation_time_id, rst.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                from reservation rs
+                INNER JOIN reservation_time rst ON rs.time_id = rst.id
+                INNER JOIN theme th ON rs.theme_id = th.id
+                WHERE rs.id = :reservation_id
+                """;
+
         try {
             final Reservation reservation = jdbcTemplate.queryForObject(sql, params,
                     (resultSet, rowNum) -> reservationOf(resultSet));
@@ -142,7 +178,7 @@ public class ReservationDAO implements ReservationRepository {
     private Reservation reservationOf(final ResultSet resultSet) throws SQLException {
         return Reservation.builder()
                 .id(resultSet.getLong("reservation_id"))
-                .name(resultSet.getString("name"))
+                .reservationName(new Name(resultSet.getString("name")))
                 .reservationDate(LocalDate.parse(resultSet.getString("date")))
                 .reservationTime(reservationTimeOf(resultSet))
                 .theme(themeOf(resultSet))
@@ -164,40 +200,5 @@ public class ReservationDAO implements ReservationRepository {
                 .description(resultSet.getString("description"))
                 .thumbnail(resultSet.getString("thumbnail"))
                 .build();
-    }
-
-    private Reservation create(final Reservation reservation) {
-        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", reservation.getName())
-                .addValue("date", reservation.getReservationDate())
-                .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("theme_id", reservation.getThemeId());
-
-        final long id = jdbcInsert.executeAndReturnKey(params)
-                .longValue();
-
-        return new Reservation(id, reservation.getName(), reservation.getReservationDate(),
-                reservation.getReservationTime(), reservation.getTheme());
-    }
-
-    private Reservation update(final Reservation reservation) {
-        final String updateReservationSql = """
-                update reservation 
-                set name = :name, date = :date, time_id = :time_id, theme_id = :theme_id
-                where id =:id
-                """;
-
-        final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", reservation.getName())
-                .addValue("date", reservation.getReservationDate())
-                .addValue("time_id", reservation.getReservationTimeId())
-                .addValue("theme_id", reservation.getThemeId())
-                .addValue("id", reservation.getId());
-
-        final int updatedRowCount = jdbcTemplate.update(updateReservationSql, params);
-
-        if (updatedRowCount == 0) {
-            throw new EntityNotFoundException("Reservation with id " + reservation.getId() + " not found");
-        }
-
-        return reservation;
     }
 }

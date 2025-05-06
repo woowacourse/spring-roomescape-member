@@ -27,6 +27,7 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
+import roomescape.domain.user.entity.Name;
 
 @ActiveProfiles("test")
 @JdbcTest
@@ -127,7 +128,8 @@ class ReservationTimeServiceIntegrationTest {
         final ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.of(8, 0)));
 
-        reservationRepository.save(Reservation.withoutId("꾹", LocalDate.now(), reservationTime, theme));
+        final Name name = new Name("꾹");
+        reservationRepository.save(Reservation.withoutId(name, LocalDate.now(), reservationTime, theme));
         final Long timeId = reservationTime.getId();
 
         // when & then

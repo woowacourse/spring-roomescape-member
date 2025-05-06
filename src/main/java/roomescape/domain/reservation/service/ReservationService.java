@@ -22,6 +22,7 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
+import roomescape.domain.user.entity.Name;
 
 @Service
 public class ReservationService {
@@ -66,14 +67,13 @@ public class ReservationService {
     private Reservation getReservation(final ReservationRequest request) {
         final ReservationTime reservationTime = getReservationTime(request);
         final Theme theme = getTheme(request);
+        final Name name = new Name(request.name());
 
-        return Reservation.withoutId(request.name(), request.date(), reservationTime, theme);
+        return Reservation.withoutId(name, request.date(), reservationTime, theme);
     }
 
-    private Theme getTheme(final ReservationRequest request) {
-        final Long themeId = request.themeId();
-        return themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+    private LocalDateTime now() {
+        return LocalDateTime.now(clock);
     }
 
     private ReservationTime getReservationTime(final ReservationRequest request) {
@@ -83,13 +83,15 @@ public class ReservationService {
                 .orElseThrow(() -> new EntityNotFoundException("reservationsTime not found id =" + timeId));
     }
 
+    private Theme getTheme(final ReservationRequest request) {
+        final Long themeId = request.themeId();
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("theme not found id =" + themeId));
+    }
+
     @Transactional
     public void delete(final Long id) {
         reservationRepository.deleteById(id);
-    }
-
-    private LocalDateTime now() {
-        return LocalDateTime.now(clock);
     }
 
     @Transactional(readOnly = true)

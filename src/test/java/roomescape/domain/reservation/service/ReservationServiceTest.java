@@ -26,6 +26,7 @@ import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
 import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
 import roomescape.domain.reservation.repository.fake.FakeThemeRepository;
 import roomescape.domain.reservation.utils.FixedClock;
+import roomescape.domain.user.entity.Name;
 
 class ReservationServiceTest {
 
@@ -72,7 +73,8 @@ class ReservationServiceTest {
         final LocalDate date = LocalDate.of(2020, 1, 1);
 
         for (final String name : names) {
-            final Reservation reservation = Reservation.withoutId(name, date, reservationTime, theme);
+            Name reservationName = new Name(name);
+            final Reservation reservation = Reservation.withoutId(reservationName, date, reservationTime, theme);
             reservationRepository.save(reservation);
         }
 
@@ -175,7 +177,9 @@ class ReservationServiceTest {
     @Test
     void test7() {
         // given
-        final Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), reservationTime, theme);
+        final Name name = new Name("꾹");
+
+        final Reservation reservation = Reservation.withoutId(name, LocalDate.now(), reservationTime, theme);
         final Reservation saved = reservationRepository.save(reservation);
 
         final Long id = saved.getId();

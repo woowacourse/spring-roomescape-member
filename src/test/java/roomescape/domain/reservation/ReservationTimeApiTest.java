@@ -22,6 +22,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.domain.user.entity.Name;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ReservationTimeApiTest {
@@ -155,8 +156,9 @@ public class ReservationTimeApiTest {
         final Theme theme = Theme.withoutId("공포", "우테코 공포",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final Theme savedTheme = themeRepository.save(theme);
+        final Name name = new Name("꾹");
 
-        final Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedTime, savedTheme);
+        final Reservation reservation = Reservation.withoutId(name, LocalDate.now(), savedTime, savedTheme);
         reservationRepository.save(reservation);
 
         // when & then

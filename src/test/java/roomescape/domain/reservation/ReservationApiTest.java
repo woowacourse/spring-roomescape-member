@@ -25,6 +25,7 @@ import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
+import roomescape.domain.user.entity.Name;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 class ReservationApiTest {
@@ -91,7 +92,8 @@ class ReservationApiTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         final Theme savedTheme = themeRepository.save(theme);
 
-        final Reservation reservation = Reservation.withoutId("꾹", LocalDate.now(), savedReservationTime, savedTheme);
+        final Name name = new Name("브라운");
+        final Reservation reservation = Reservation.withoutId(name, LocalDate.now(), savedReservationTime, savedTheme);
         reservationRepository.save(reservation);
 
         // then
@@ -203,7 +205,7 @@ class ReservationApiTest {
     @Test
     void test6() {
         // given
-        final String name = "브라운";
+        final Name name = new Name("브라운");
         final LocalDate now = LocalDate.now();
 
         final ReservationTime reservationTime = ReservationTime.withoutId(LocalTime.now());
@@ -251,7 +253,8 @@ class ReservationApiTest {
         reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
 
         final LocalDate date = LocalDate.now();
-        reservationRepository.save(Reservation.withoutId("꾹", date, time1, theme));
+        final Name name = new Name("브라운");
+        reservationRepository.save(Reservation.withoutId(name, date, time1, theme));
 
         final String path = UriComponentsBuilder.fromUriString("/reservations/available")
                 .queryParam("date", formatDateTime(date))

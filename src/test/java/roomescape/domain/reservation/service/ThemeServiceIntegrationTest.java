@@ -29,6 +29,7 @@ import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
 import roomescape.domain.reservation.utils.FixedClock;
+import roomescape.domain.user.entity.Name;
 
 @ActiveProfiles("test")
 @JdbcTest
@@ -128,7 +129,8 @@ class ThemeServiceIntegrationTest {
         final ReservationTime savedTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
 
         final LocalDate date = LocalDate.of(2024, 4, 29);
-        reservationRepository.save(Reservation.withoutId("꾹", date, savedTime, savedTheme));
+        final Name name = new Name("꾹");
+        reservationRepository.save(Reservation.withoutId(name, date, savedTime, savedTheme));
 
         // when & then
         assertThatThrownBy(() -> themeService.delete(themeId)).isInstanceOf(AlreadyInUseException.class);
@@ -145,12 +147,13 @@ class ThemeServiceIntegrationTest {
         final Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
         final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));
         final Theme theme3 = themeRepository.save(Theme.withoutId("테마3", "테마3", "www.m.com"));
-        reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(1), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(2), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(3), reservationTime, theme1));
-        reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(4), reservationTime, theme2));
-        reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(5), reservationTime, theme2));
-        reservationRepository.save(Reservation.withoutId("꾹", date.minusDays(6), reservationTime, theme3));
+        final Name name = new Name("꾹");
+        reservationRepository.save(Reservation.withoutId(name, date.minusDays(2), reservationTime, theme1));
+        reservationRepository.save(Reservation.withoutId(name, date.minusDays(3), reservationTime, theme1));
+        reservationRepository.save(Reservation.withoutId(name, date.minusDays(4), reservationTime, theme2));
+        reservationRepository.save(Reservation.withoutId(name, date.minusDays(1), reservationTime, theme1));
+        reservationRepository.save(Reservation.withoutId(name, date.minusDays(5), reservationTime, theme2));
+        reservationRepository.save(Reservation.withoutId(name, date.minusDays(6), reservationTime, theme3));
 
         // when
         final List<ThemeResponse> responses = themeService.getPopularThemes();

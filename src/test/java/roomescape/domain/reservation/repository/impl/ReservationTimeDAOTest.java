@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
-@Disabled
 @JdbcTest
 @Import(ReservationTimeDAO.class)
 class ReservationTimeDAOTest {
