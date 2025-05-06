@@ -44,9 +44,9 @@ public class ThemeService {
         return new ThemeResponse(savedTheme);
     }
 
-    public void deleteTheme(long id) {
-        validateNoReservationsForTheme(id);
-        themeDao.deleteById(id);
+    public void deleteTheme(long themeId) {
+        validateNoReservationsForTheme(themeId);
+        themeDao.deleteById(themeId);
     }
 
     private List<ThemeResponse> convertThemeIdsToThemeResponses(List<Long> rank) {
@@ -62,7 +62,7 @@ public class ThemeService {
     }
 
     private void validateNoReservationsForTheme(long themeId) {
-        boolean hasTheme = reservationDao.existsByTimeId(themeId);
+        boolean hasTheme = reservationDao.existsByThemeId(themeId);
         if (hasTheme) {
             throw new IllegalArgumentException(ERROR_RESERVATION_THEME_WITH_HAS_RESERVATION);
         }
