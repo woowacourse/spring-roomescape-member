@@ -78,8 +78,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 FROM reservation_time t
                 LEFT JOIN reservation r
                     ON t.id = r.time_id
-                    AND r.date = ?
-                    AND r.theme_id = ?
+                WHERE r.date = ? AND r.theme_id = ?
                 """;
         return jdbcTemplate.query(query, (rs, rowNum) -> new AvailableTimesResponseDto(
                         rs.getLong("id"),
