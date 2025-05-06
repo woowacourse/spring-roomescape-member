@@ -12,8 +12,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.repository.ReservationRepository;
 
@@ -28,7 +30,15 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> {
         long reservationId = resultSet.getLong("reservation_id");
-        String name = resultSet.getString("name");
+
+        Member member = new Member(
+                resultSet.getLong("member_id"),
+                resultSet.getString("name"),
+                resultSet.getString("email"),
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role"))
+        );
+
         LocalDate date = resultSet.getDate("date").toLocalDate();
         long timeId = resultSet.getLong("time_id");
         LocalTime timeValue = resultSet.getTime("time_value").toLocalTime();
@@ -41,17 +51,41 @@ public class JdbcReservationRepository implements ReservationRepository {
         String themeThumbnail = resultSet.getString("theme_thumbnail");
         Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
 
-        return new Reservation(reservationId, name, date, reservationTime, theme);
+        return new Reservation(reservationId, member, date, reservationTime, theme);
     };
+
+    private static final String DEFUALT_SELECT_SQL = """
+                select
+                    r.id as reservation_id,
+                    m.id as member_id,
+                    m.name,
+                    m.email,
+                    m.password,
+                    m.role,
+                    r.`date`,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as theme_description,
+                    t.thumbnail as theme_thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
+                inner join member as m
+                on r.member_id = m.id
+                """;
 
     @Override
     public Reservation add(Reservation reservation) {
-        String sql = "insert into reservation (name, `date`, time_id, theme_id) values(?, ?, ?, ?)";
+        String sql = "insert into reservation (member_id, `date`, time_id, theme_id) values(?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservation.getName());
+            ps.setLong(1, reservation.getMember().getId());
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getReservationTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
@@ -62,7 +96,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
         return new Reservation(
                 generatedId,
-                reservation.getName(),
+                reservation.getMember(),
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme()
@@ -71,46 +105,12 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        String sql = """
-                select 
-                    r.id as reservation_id,
-                    r.name,
-                    r.`date`,
-                    rt.id as time_id,
-                    rt.start_at as time_value,
-                    t.id as theme_id,
-                    t.name as theme_name,
-                    t.description as theme_description,
-                    t.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                """;
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        return jdbcTemplate.query(DEFUALT_SELECT_SQL, reservationRowMapper);
     }
 
     @Override
     public Optional<Reservation> findById(long id) {
-        String sql = """
-                select 
-                    r.id as reservation_id,
-                    r.name,
-                    r.`date`,
-                    rt.id as time_id,
-                    rt.start_at as time_value,
-                    t.id as theme_id,
-                    t.name as theme_name,
-                    t.description as theme_description,
-                    t.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                where r.id = ?
-                """;
+        String sql = DEFUALT_SELECT_SQL + "where r.id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -120,47 +120,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = """
-                select 
-                    r.id as reservation_id,
-                    r.name,
-                    r.`date`,
-                    rt.id as time_id,
-                    rt.start_at as time_value,
-                    t.id as theme_id,
-                    t.name as theme_name,
-                    t.description as theme_description,
-                    t.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                where `date` = ? and theme_id = ?               
-                """;
+        String sql = DEFUALT_SELECT_SQL + "where `date` = ? and theme_id = ?";
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
     @Override
     public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
-        String sql = """
-                select 
-                    r.id as reservation_id,
-                    r.name,
-                    r.`date`,
-                    rt.id as time_id,
-                    rt.start_at as time_value,
-                    t.id as theme_id,
-                    t.name as theme_name,
-                    t.description as theme_description,
-                    t.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                where r.`date` between ? and ?
-                """;
+        String sql = DEFUALT_SELECT_SQL + "where r.`date` between ? and ?";
         return jdbcTemplate.query(sql, reservationRowMapper, start, end);
     }
 

@@ -10,8 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.request.AddReservationTimeRequest;
 import roomescape.exception.InvalidReservationTimeException;
@@ -64,13 +66,15 @@ class ReservationTimeServiceTest {
     @Test
     void 특정_시간에_대한_예약이_존재할때_시간을_삭제하려고하면_예외가_발생한다() {
         // given
+        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
         AddReservationTimeRequest requset = new AddReservationTimeRequest(startAt);
         ReservationTime reservationTime = reservationTimeService.addReservationTime(requset);
 
         Theme theme = new Theme(0L, "공포", "공포테마입니다.", "thumbnail");
 
-        Reservation reservation = new Reservation(null, "praisebak",
+        Reservation reservation = new Reservation(null, member,
                 LocalDate.now().plusDays(1), reservationTime, theme);
         reservationRepository.add(reservation);
 

@@ -8,23 +8,23 @@ import roomescape.exception.InvalidReservationException;
 public class Reservation {
 
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validate(member, date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || name.isBlank()) {
-            throw new InvalidReservationException("이름은 비어있을 수 없습니다");
+    private void validate(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        if (member == null) {
+            throw new InvalidReservationException("예약자는 비어있을 수 없습니다");
         }
         if (date == null || time == null) {
             throw new InvalidReservationException("시간은 비어있을 수 없습니다.");
@@ -43,8 +43,12 @@ public class Reservation {
         return id;
     }
 
+    public Member getMember() {
+        return member;
+    }
+
     public String getName() {
-        return name;
+        return member.getName();
     }
 
     public LocalDate getDate() {

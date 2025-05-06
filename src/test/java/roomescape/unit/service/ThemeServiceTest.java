@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.request.AddReservationRequest;
 import roomescape.dto.request.AddReservationTimeRequest;
@@ -80,13 +82,16 @@ class ThemeServiceTest {
     @Test
     void 예약이_존재하는_테마는_삭제할_수_없다() {
         // given
+        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+
         Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
         Long themeId = themeRepository.add(theme).getId();
 
         ReservationTime reservationTime = reservationTimeService.addReservationTime(
                 new AddReservationTimeRequest(LocalTime.now()));
         reservationService.addReservation(
-                new AddReservationRequest("praisebak", LocalDate.now().plusDays(1L), reservationTime.getId(), themeId));
+                new AddReservationRequest(LocalDate.now().plusDays(1L), reservationTime.getId(), themeId),
+                member);
 
         // when & then
         assertThatThrownBy(() -> themeService.deleteThemeById(themeId)).isInstanceOf(InvalidThemeException.class);

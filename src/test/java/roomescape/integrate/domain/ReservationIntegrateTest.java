@@ -17,8 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationRepository;
@@ -85,7 +87,7 @@ class ReservationIntegrateTest {
                 "thumbnail", "thumbnail"
         );
 
-        long timeId =RestAssured.given().log().all()
+        long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParam)
                 .when().post("/times")
@@ -181,17 +183,20 @@ class ReservationIntegrateTest {
                 .statusCode(201)
                 .extract().jsonPath().getLong("id");
 
-        Reservation reservation1 = new Reservation(null, "이름", LocalDate.now().minusDays(1),
+        // TODO: token을 이용한 member로 변경
+        Member member = new Member(1L, "Hula", "test@test.com", "test", Role.USER);
+
+        Reservation reservation1 = new Reservation(null, member, LocalDate.now().minusDays(1),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
-        Reservation reservation2 = new Reservation(null, "이름", LocalDate.now().minusDays(2),
+        Reservation reservation2 = new Reservation(null, member, LocalDate.now().minusDays(2),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
-        Reservation reservation3 = new Reservation(null, "이름", LocalDate.now().minusDays(3),
+        Reservation reservation3 = new Reservation(null, member, LocalDate.now().minusDays(3),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
-        Reservation reservation4 = new Reservation(null, "이름", LocalDate.now().minusDays(4),
+        Reservation reservation4 = new Reservation(null, member, LocalDate.now().minusDays(4),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
-        Reservation reservation5 = new Reservation(null, "이름", LocalDate.now().minusDays(5),
+        Reservation reservation5 = new Reservation(null, member, LocalDate.now().minusDays(5),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
-        Reservation reservation6 = new Reservation(null, "이름", LocalDate.now().minusDays(6),
+        Reservation reservation6 = new Reservation(null, member, LocalDate.now().minusDays(6),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_3, "테마 명3", "description", "thumbnail"));
 
         reservationRepository.add(reservation1);
