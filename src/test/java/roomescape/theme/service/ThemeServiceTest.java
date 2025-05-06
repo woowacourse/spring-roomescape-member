@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.DataExistException;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.H2ThemeRepository;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 
 @JdbcTest
@@ -23,7 +23,7 @@ class ThemeServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-    
+
     @Test
     void 테마를_저장한다() {
         // given
@@ -124,7 +124,7 @@ class ThemeServiceTest {
         public ThemeRepository themeRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
-            return new H2ThemeRepository(jdbcTemplate);
+            return new JdbcThemeRepository(jdbcTemplate);
         }
 
         @Bean

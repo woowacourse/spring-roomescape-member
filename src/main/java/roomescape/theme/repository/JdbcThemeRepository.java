@@ -1,6 +1,7 @@
 package roomescape.theme.repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import roomescape.theme.domain.Theme;
 
 @RequiredArgsConstructor
 @Repository
-public class H2ThemeRepository implements ThemeRepository {
+public class JdbcThemeRepository implements ThemeRepository {
 
     private static final RowMapper<Theme> THEME_ROW_MAPPER = (rs, rowNum) ->
             new Theme(
@@ -60,14 +61,16 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public long countByName(final String name) {
+    public boolean existsByName(final String name) {
         final String sql = """
-                SELECT COUNT(*) AS count
-                FROM themes
-                WHERE name = ? 
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM themes
+                    WHERE name = ?
+                )
                 """;
 
-        return jdbcTemplate.queryForObject(sql, Long.class, name);
+        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
     }
 
     @Override
@@ -104,7 +107,7 @@ public class H2ThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findTop10ThemesByReservationCountWithin7Days() {
+    public List<Theme> findTop10ThemesByReservationCountWithin7Days(final int days, final int limit) {
         final String sql = """
                 SELECT
                     t.id AS id,
@@ -114,12 +117,14 @@ public class H2ThemeRepository implements ThemeRepository {
                     COUNT(r.id) AS reservation_count
                 FROM themes t
                 LEFT JOIN reservations r 
-                    ON t.id = r.theme_id AND r.date >= DATEADD('DAY', -7, CURRENT_DATE)
+                    ON t.id = r.theme_id AND r.date >= ?
                 GROUP BY t.id, t.name, t.description, t.thumbnail
                 ORDER BY reservation_count DESC
-                LIMIT 10;
+                LIMIT ?
                 """;
 
-        return jdbcTemplate.query(sql, THEME_ROW_MAPPER);
+        final LocalDate fromDate = LocalDate.now().minusDays(days);
+
+        return jdbcTemplate.query(sql, THEME_ROW_MAPPER, fromDate, limit);
     }
 }

@@ -21,7 +21,7 @@ import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.service.dto.AvailableReservationTime;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.H2ThemeRepository;
+import roomescape.theme.repository.JdbcThemeRepository;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.theme.service.ThemeService;
 
@@ -289,7 +289,7 @@ class ReservationServiceTest {
         public ThemeRepository themeRepository(
                 final JdbcTemplate jdbcTemplate
         ) {
-            return new H2ThemeRepository(jdbcTemplate);
+            return new JdbcThemeRepository(jdbcTemplate);
         }
 
         @Bean
