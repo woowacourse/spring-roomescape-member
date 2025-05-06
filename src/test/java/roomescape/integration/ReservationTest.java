@@ -35,7 +35,7 @@ public class ReservationTest extends BaseTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        theme = themeRepository.save("테마1", "설명1", "썸네일1");
+        theme = themeRepository.save(Theme.create("테마1", "설명1", "썸네일1"));
         reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", "2025-08-05");

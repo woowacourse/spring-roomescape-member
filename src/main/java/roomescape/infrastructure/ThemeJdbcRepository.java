@@ -38,7 +38,11 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public Theme save(String name, String description, String thumbnail) {
+    public Theme save(Theme theme) {
+        String name = theme.getName();
+        String description = theme.getDescription();
+        String thumbnail = theme.getThumbnail();
+
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)

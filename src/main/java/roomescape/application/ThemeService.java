@@ -34,8 +34,9 @@ public class ThemeService {
     }
 
     public ThemeResponse createTheme(ThemeCreateRequest request) {
-        Theme theme = themeRepository.save(request.name(), request.description(), request.thumbnail());
-        return ThemeResponse.from(theme);
+        Theme theme = Theme.create(request.name(), request.description(), request.thumbnail());
+        Theme created = themeRepository.save(theme);
+        return ThemeResponse.from(created);
     }
 
     public void deleteThemeById(Long id) {
