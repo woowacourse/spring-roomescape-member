@@ -27,9 +27,6 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
-    private static final boolean IS_ALREADY_BOOKED = true;
-    private static final boolean IS_UNBOOKED = false;
-
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
@@ -117,14 +114,7 @@ public class ReservationService {
 
         return reservationTimeRepository.findAll()
                 .stream()
-                .collect(Collectors.toMap(Function.identity(), time -> isAlreadyBookedTime(time, alreadyBookedTimes)));
-    }
-
-    private Boolean isAlreadyBookedTime(final ReservationTime time, final Set<ReservationTime> alreadyBookedTimes) {
-        if (alreadyBookedTimes.contains(time)) {
-            return IS_ALREADY_BOOKED;
-        }
-        return IS_UNBOOKED;
+                .collect(Collectors.toMap(Function.identity(), alreadyBookedTimes::contains));
     }
 
     private BookedReservationTimeResponse bookedReservationTimeResponseOf(
