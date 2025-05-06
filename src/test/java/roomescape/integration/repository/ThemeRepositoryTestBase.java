@@ -12,7 +12,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.common.RepositoryTestBase;
+import roomescape.common.RepositoryBaseTest;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.theme.LastWeekRange;
 import roomescape.domain.theme.Theme;
@@ -26,7 +26,7 @@ import roomescape.domain.time.ReservationTime;
 import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 
-public class ThemeRepositoryTestBase extends RepositoryTestBase {
+public class ThemeRepositoryTestBase extends RepositoryBaseTest {
 
     @Autowired
     private ThemeRepository themeRepository;

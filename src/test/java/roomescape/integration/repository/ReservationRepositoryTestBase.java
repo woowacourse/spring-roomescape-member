@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import roomescape.common.RepositoryTestBase;
+import roomescape.common.RepositoryBaseTest;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationDateTime;
@@ -23,7 +23,7 @@ import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ReserverNameFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 
-public class ReservationRepositoryTestBase extends RepositoryTestBase {
+public class ReservationRepositoryTestBase extends RepositoryBaseTest {
 
     private static final String SELECT_RESERVATION_BY_ID = "SELECT * FROM reservation WHERE id = ?";
     private static final String SELECT_ALL_RESERVATIONS = "SELECT * FROM reservation";

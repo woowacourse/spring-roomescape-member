@@ -11,7 +11,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import roomescape.common.RepositoryTestBase;
+import roomescape.common.RepositoryBaseTest;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.AvailableReservationTime;
 import roomescape.domain.time.ReservationTime;
@@ -21,7 +21,7 @@ import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ReservationTimeDbFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 
-public class ReservationTimeRepositoryTestBase extends RepositoryTestBase {
+public class ReservationTimeRepositoryTestBase extends RepositoryBaseTest {
 
     @Autowired
     private ReservationTimeRepository repository;
