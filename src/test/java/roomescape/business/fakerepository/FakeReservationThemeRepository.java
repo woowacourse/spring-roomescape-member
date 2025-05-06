@@ -31,12 +31,6 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
     }
 
     @Override
-    public boolean existByName(String name) {
-        return themes.stream()
-                .anyMatch(theme -> theme.getName().equals(name));
-    }
-
-    @Override
     public void deleteById(Long id) {
         themes.removeIf(theme -> theme.getId().equals(id));
     }

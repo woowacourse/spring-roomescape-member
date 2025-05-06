@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.ReservationTheme;
@@ -66,21 +67,22 @@ public class ReservationThemeService {
     }
 
     public ReservationThemeResponseDto createTheme(ReservationThemeRequestDto reservationThemeDto) {
-        if (reservationThemeRepository.existByName(reservationThemeDto.name())) {
+        try {
+            Long id = reservationThemeRepository.add(new ReservationTheme(
+                            reservationThemeDto.name(),
+                            reservationThemeDto.description(),
+                            reservationThemeDto.thumbnail()
+                    )
+            );
+            return new ReservationThemeResponseDto(
+                    id,
+                    reservationThemeDto.name(),
+                    reservationThemeDto.description(),
+                    reservationThemeDto.thumbnail()
+            );
+        } catch (DataIntegrityViolationException exception) {
             throw new ReservationThemeException("동일한 이름의 테마를 추가할 수 없습니다.");
         }
-        Long id = reservationThemeRepository.add(new ReservationTheme(
-                        reservationThemeDto.name(),
-                        reservationThemeDto.description(),
-                        reservationThemeDto.thumbnail()
-                )
-        );
-        return new ReservationThemeResponseDto(
-                id,
-                reservationThemeDto.name(),
-                reservationThemeDto.description(),
-                reservationThemeDto.thumbnail()
-        );
     }
 
     public void deleteTheme(Long id) {

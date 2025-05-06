@@ -50,18 +50,6 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
     }
 
     @Override
-    public boolean existByName(String name) {
-        String query = """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM theme
-                    WHERE name = ?
-                )
-                """;
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(query, Boolean.class, name));
-    }
-
-    @Override
     public void deleteById(Long id) {
         String query = """
                 DELETE FROM theme
