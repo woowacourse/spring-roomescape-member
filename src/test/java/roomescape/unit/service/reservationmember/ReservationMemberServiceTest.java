@@ -1,4 +1,4 @@
-package roomescape.unit.service.reservation;
+package roomescape.unit.service.reservationmember;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -17,11 +17,11 @@ import roomescape.dto.member.SignupRequestDto;
 import roomescape.dto.reservation.AddReservationDto;
 import roomescape.dto.reservation.AddReservationTimeDto;
 import roomescape.dto.reservation.AddThemeDto;
-import roomescape.service.ReservationMemberService;
 import roomescape.service.member.MemberService;
 import roomescape.service.reservation.ReservationService;
 import roomescape.service.reservation.ReservationTimeService;
 import roomescape.service.reservation.ThemeService;
+import roomescape.service.reservationmember.ReservationMemberService;
 import roomescape.unit.config.ServiceFixture;
 import roomescape.unit.repository.member.FakeMemberRepository;
 import roomescape.unit.repository.reservation.FakeReservationRepository;

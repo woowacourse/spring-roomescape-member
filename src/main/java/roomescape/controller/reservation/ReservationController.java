@@ -26,8 +26,8 @@ import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.dto.reservation.ReservationTimeSlotResponseDto;
 import roomescape.dto.reservation.ThemeResponseDto;
 import roomescape.dto.reservationmember.ReservationMemberResponseDto;
-import roomescape.service.ReservationMemberService;
 import roomescape.service.reservation.ReservationService;
+import roomescape.service.reservationmember.ReservationMemberService;
 
 @RestController
 @RequestMapping("/reservations")
@@ -74,7 +74,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservations(@PathVariable Long id) {
-        reservationService.deleteReservation(id);
+        reservationMemberService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
 

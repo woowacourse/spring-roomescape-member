@@ -1,6 +1,7 @@
 package roomescape.repository.member;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,5 +72,11 @@ public class JdbcMemberRepository implements MemberRepository {
     public boolean existByUsername(String username) {
         String sql = "select exists (select 1 from member where username = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, username);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "select id,username,password,name,role from member";
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 }

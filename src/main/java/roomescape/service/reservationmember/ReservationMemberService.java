@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.service.reservationmember;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -42,5 +42,9 @@ public class ReservationMemberService {
                     return new ReservationMember(reservation, member);
                 })
                 .toList();
+    }
+
+    public void deleteReservation(long id) {
+        reservationMemberRepository.deleteById(id);
     }
 }

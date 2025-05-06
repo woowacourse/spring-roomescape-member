@@ -47,4 +47,10 @@ public class JdbcReservationMemberRepository implements ReservationMemberReposit
 
         return keyHolder.getKey().longValue();
     }
+
+    @Override
+    public void deleteById(long id) {
+        String sql = "delete from reservation_member where id=?";
+        jdbcTemplate.update(sql, id);
+    }
 }

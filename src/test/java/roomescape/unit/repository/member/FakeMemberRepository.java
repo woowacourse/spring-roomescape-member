@@ -1,6 +1,7 @@
 package roomescape.unit.repository.member;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -37,5 +38,10 @@ public class FakeMemberRepository implements MemberRepository {
     public boolean existByUsername(String username) {
         return members.stream()
                 .anyMatch(((member) -> member.isSameUsername(username)));
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return Collections.unmodifiableList(members);
     }
 }

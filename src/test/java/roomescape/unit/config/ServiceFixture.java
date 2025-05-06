@@ -2,11 +2,11 @@ package roomescape.unit.config;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.service.ReservationMemberService;
 import roomescape.service.member.MemberService;
 import roomescape.service.reservation.ReservationService;
 import roomescape.service.reservation.ReservationTimeService;
 import roomescape.service.reservation.ThemeService;
+import roomescape.service.reservationmember.ReservationMemberService;
 import roomescape.unit.repository.member.FakeMemberRepository;
 import roomescape.unit.repository.reservation.FakeReservationRepository;
 import roomescape.unit.repository.reservation.FakeReservationTimeRepository;

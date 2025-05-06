@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationmember.ReservationMemberIds;
+import roomescape.exception.reservation.InvalidReservationException;
 import roomescape.repository.reservationmember.ReservationMemberRepository;
 
 public class FakeReservationMemberRepository implements ReservationMemberRepository {
@@ -24,5 +25,14 @@ public class FakeReservationMemberRepository implements ReservationMemberReposit
         long id = index.getAndIncrement();
         reservationMemberIds.add(new ReservationMemberIds(id, reservation.getId(), member.getId()));
         return id;
+    }
+
+    @Override
+    public void deleteById(long id) {
+        ReservationMemberIds deleteReservationMemberId = reservationMemberIds.stream()
+                .filter(reservationMemberIds -> reservationMemberIds.getId() == id)
+                .findAny()
+                .orElseThrow(() -> new InvalidReservationException("존재하지 않는 id입니다"));
+        reservationMemberIds.remove(deleteReservationMemberId);
     }
 }
