@@ -2,6 +2,8 @@ package roomescape.reservation.repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -41,10 +43,15 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public ReservationTime findById(final long id) {
+    public Optional<ReservationTime> findById(final long id) {
         final String sql = "SELECT id, start_at FROM reservation_time WHERE id = :id";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, reservationTimeMapper);
+        try {
+            ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, parameters, reservationTimeMapper);
+            return Optional.of(reservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -53,14 +60,6 @@ public class H2ReservationTimeDao implements ReservationTimeDao {
         final SqlParameterSource parameters = new MapSqlParameterSource("startAt", reservationTime);
         Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
         return count > 0;
-    }
-
-    @Override
-    public boolean isNotExistsById(final long id) {
-        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id = :id";
-        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
-        return count == 0;
     }
 
     @Override

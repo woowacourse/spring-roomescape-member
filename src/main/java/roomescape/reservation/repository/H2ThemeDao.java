@@ -2,6 +2,8 @@ package roomescape.reservation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -55,10 +57,15 @@ public class H2ThemeDao implements ThemeDao {
     }
 
     @Override
-    public Theme findById(final long id) {
+    public Optional<Theme> findById(final long id) {
         final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = :id";
         final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.queryForObject(sql, parameters, themeMapper);
+        try {
+            Theme theme = jdbcTemplate.queryForObject(sql, parameters, themeMapper);
+            return Optional.of(theme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -90,13 +97,5 @@ public class H2ThemeDao implements ThemeDao {
                 .addValue("toDate", to)
                 .addValue("count", count);
         return jdbcTemplate.query(sql, parameters, themeMapper);
-    }
-
-    @Override
-    public boolean isNotExistsById(long id) {
-        final String sql = "SELECT COUNT(*) FROM theme WHERE id = :id";
-        final SqlParameterSource parameters = new MapSqlParameterSource("id", id);
-        final Long count = jdbcTemplate.queryForObject(sql, parameters, Long.class);
-        return count == 0;
     }
 }

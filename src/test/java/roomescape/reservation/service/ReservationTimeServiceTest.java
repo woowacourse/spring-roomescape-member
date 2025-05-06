@@ -48,7 +48,7 @@ class ReservationTimeServiceTest {
         // when
         ReservationTimeResponse result = reservationTimeService.createReservationTime(request);
         // then
-        ReservationTime savedTime = reservationTimeDao.findById(1L);
+        ReservationTime savedTime = reservationTimeDao.findById(1L).get();
         assertAll(
                 () -> assertThat(result.id()).isEqualTo(1L),
                 () -> assertThat(result.startAt()).isEqualTo(time),
@@ -80,7 +80,7 @@ class ReservationTimeServiceTest {
         // when
         reservationTimeService.deleteReservationTimeById(1L);
         // then
-        assertThat(reservationTimeDao.isNotExistsById(1L)).isTrue();
+        assertThat(reservationTimeDao.findById(1L)).isEmpty();
     }
 
     @DisplayName("예약이 존재하는 시간은 삭제할 경우 예외가 발생한다")

@@ -50,7 +50,7 @@ public class ThemeServiceIntegrationTest {
         // when
         ThemeResponse result = themeService.createTheme(request);
         // then
-        Theme savedTheme = themeDao.findById(result.id());
+        Theme savedTheme = themeDao.findById(result.id()).get();
         assertAll(
                 () -> assertThat(result.id()).isEqualTo(12L),
                 () -> assertThat(result.name()).isEqualTo(request.name()),

@@ -2,6 +2,7 @@ package roomescape.reservation.repository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import roomescape.reservation.domain.ReservationTime;
 
 public interface ReservationTimeDao {
@@ -10,11 +11,9 @@ public interface ReservationTimeDao {
 
     List<ReservationTime> findAll();
 
-    ReservationTime findById(long id);
+    Optional<ReservationTime> findById(long id);
 
     boolean isExistsByTime(LocalTime reservationTime);
-
-    boolean isNotExistsById(long id);
 
     void deleteById(long id);
 }

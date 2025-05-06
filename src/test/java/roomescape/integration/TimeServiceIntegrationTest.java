@@ -53,7 +53,7 @@ public class TimeServiceIntegrationTest {
         // when
         ReservationTimeResponse result = reservationTimeService.createReservationTime(request);
         // then
-        ReservationTime savedTime = reservationTimeDao.findById(result.id());
+        ReservationTime savedTime = reservationTimeDao.findById(result.id()).get();
         assertAll(
                 () -> assertThat(result.id()).isEqualTo(4L),
                 () -> assertThat(result.startAt()).isEqualTo(time),

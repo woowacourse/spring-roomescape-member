@@ -1,6 +1,7 @@
 package roomescape.reservation.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.CurrentDateTime;
 import roomescape.reservation.controller.dto.ReservationRequest;
@@ -57,16 +58,18 @@ public class ReservationService {
     }
 
     private ReservationTime findReservationTime(final long timeId) {
-        if (reservationTimeDao.isNotExistsById(timeId)) {
+        Optional<ReservationTime> optionalReservationTime = reservationTimeDao.findById(timeId);
+        if (optionalReservationTime.isEmpty()) {
             throw new IllegalArgumentException("예약 시간이 존재하지 않습니다.");
         }
-        return reservationTimeDao.findById(timeId);
+        return optionalReservationTime.get();
     }
 
     private Theme findTheme(final long themeId) {
-        if (themeDao.isNotExistsById(themeId)) {
+        Optional<Theme> optionalTheme = themeDao.findById(themeId);
+        if (optionalTheme.isEmpty()) {
             throw new IllegalArgumentException("테마가 존재하지 않습니다.");
         }
-        return themeDao.findById(themeId);
+        return optionalTheme.get();
     }
 }

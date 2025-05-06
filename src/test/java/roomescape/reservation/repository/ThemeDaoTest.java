@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class ThemeDaoTest {
         // when
         Theme result = themeDao.save(theme);
         // then
-        Theme savedTheme = themeDao.findById(result.getId());
+        Theme savedTheme = themeDao.findById(result.getId()).get();
         assertAll(
                 () -> assertThat(result.getId()).isEqualTo(1L),
                 () -> assertThat(result.getName()).isEqualTo(name),
@@ -86,12 +87,15 @@ class ThemeDaoTest {
         // given
         Theme savedTheme = themeDao.save(new Theme(null, "테마1", "우테코탈출", "하고싶지않아"));
         // when
-        Theme result = themeDao.findById(savedTheme.getId());
+        Optional<Theme> result = themeDao.findById(savedTheme.getId());
         // then
-        assertThat(result.getId()).isEqualTo(savedTheme.getId());
-        assertThat(result.getName()).isEqualTo(savedTheme.getName());
-        assertThat(result.getDescription()).isEqualTo(savedTheme.getDescription());
-        assertThat(result.getThumbnail()).isEqualTo(savedTheme.getThumbnail());
+        assertAll(
+                () -> assertThat(result).isNotEmpty(),
+                () -> assertThat(result.get().getId()).isEqualTo(savedTheme.getId()),
+                () -> assertThat(result.get().getName()).isEqualTo(savedTheme.getName()),
+                () -> assertThat(result.get().getDescription()).isEqualTo(savedTheme.getDescription()),
+                () -> assertThat(result.get().getThumbnail()).isEqualTo(savedTheme.getThumbnail())
+        );
     }
 
     @DisplayName("id를 기반으로 테마를 삭제할 수 있다")
@@ -104,14 +108,5 @@ class ThemeDaoTest {
         // then
         List<Theme> themes = themeDao.findAll();
         assertThat(themes).isEmpty();
-    }
-
-    @DisplayName("id를 기반으로 테마가 조회하지 않는 지 여부를 반환할 수 있다")
-    @Test
-    void isNotExistsById() {
-        // when
-        boolean result = themeDao.isNotExistsById(11L);
-        // then
-        assertThat(result).isTrue();
     }
 }

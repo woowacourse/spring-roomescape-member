@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,11 +68,12 @@ class ReservationTimeDaoTest {
         // given
         ReservationTime savedReservationTime = reservationTimeDao.save(new ReservationTime(time));
         // when
-        ReservationTime result = reservationTimeDao.findById(savedReservationTime.getId());
+        Optional<ReservationTime> result = reservationTimeDao.findById(savedReservationTime.getId());
         // then
         assertAll(
-                () -> assertThat(result.getId()).isEqualTo(savedReservationTime.getId()),
-                () -> assertThat(result.getStartAt()).isEqualTo(time)
+                () -> assertThat(result).isNotEmpty(),
+                () -> assertThat(result.get().getId()).isEqualTo(savedReservationTime.getId()),
+                () -> assertThat(result.get().getStartAt()).isEqualTo(time)
         );
     }
 
@@ -82,15 +84,6 @@ class ReservationTimeDaoTest {
         reservationTimeDao.save(new ReservationTime(time));
         // when
         boolean result = reservationTimeDao.isExistsByTime(time);
-        // then
-        assertThat(result).isTrue();
-    }
-
-    @DisplayName("id를 기반으로 예약시간이 존재하지 않는지 여부를 반환할 수 있다")
-    @Test
-    void isNotExistsById() {
-        // when
-        boolean result = reservationTimeDao.isNotExistsById(11L);
         // then
         assertThat(result).isTrue();
     }
