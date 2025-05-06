@@ -22,7 +22,7 @@ public class UserReservationTimeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<ReservationTimeResponse> getAll(
+    public List<ReservationTimeResponse> getAllWithStatus(
             @RequestParam("themeId") Long themeId,
             @RequestParam("date") LocalDate date
     ) {
