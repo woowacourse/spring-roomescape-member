@@ -23,21 +23,27 @@ public class ReservationDao {
     }
 
     private static RowMapper<Reservation> reservationRowMapper() {
-        return (rs, rowNum) -> new Reservation(
-                rs.getLong("reservation_id"),
-                rs.getString("name"),
-                rs.getDate("date").toLocalDate(),
-                new ReservationTime(
-                        rs.getLong("time_id"),
-                        rs.getTime("time_value").toLocalTime()
-                ),
-                new Theme(
-                        rs.getLong("theme_id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                )
-        );
+        return (rs, rowNum) -> {
+            var reservationTime = new ReservationTime(
+                    rs.getLong("time_id"),
+                    rs.getTime("time_value").toLocalTime()
+            );
+
+            var theme = new Theme(
+                    rs.getLong("theme_id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbnail")
+            );
+
+            return new Reservation(
+                    rs.getLong("reservation_id"),
+                    rs.getString("name"),
+                    rs.getDate("date").toLocalDate(),
+                    reservationTime,
+                    theme
+            );
+        };
     }
 
     public Reservation save(Reservation reservation) {
