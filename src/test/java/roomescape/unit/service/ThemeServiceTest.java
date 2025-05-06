@@ -82,7 +82,7 @@ public class ThemeServiceTest {
         Mockito.when(themeRepository.findAll()).thenReturn(themes);
 
         // when
-        List<ThemeResponse> result = themeService.getAllThemes();
+        List<ThemeResponse> result = themeService.findAllThemes();
 
         // then
         assertThat(result).hasSize(2);

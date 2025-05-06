@@ -36,7 +36,7 @@ public class ReservationService {
         this.clock = clock;
     }
 
-    public List<ReservationResponse> getAllReservations() {
+    public List<ReservationResponse> findAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         return ReservationResponse.from(reservations);
     }

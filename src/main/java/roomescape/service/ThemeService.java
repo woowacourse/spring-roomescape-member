@@ -49,7 +49,7 @@ public class ThemeService {
         return ThemeResponse.from(theme);
     }
 
-    public List<ThemeResponse> getAllThemes() {
+    public List<ThemeResponse> findAllThemes() {
         List<Theme> themes = themeRepository.findAll();
         return ThemeResponse.from(themes);
     }

@@ -34,7 +34,7 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(created);
     }
 
-    public List<ReservationTimeResponse> getAllReservationTimes() {
+    public List<ReservationTimeResponse> findAllReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return ReservationTimeResponse.from(reservationTimes);
     }

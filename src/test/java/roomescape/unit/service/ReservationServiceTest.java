@@ -64,7 +64,7 @@ public class ReservationServiceTest {
         when(reservationRepository.findAll()).thenReturn(List.of(reservation));
 
         // when
-        List<ReservationResponse> all = service.getAllReservations();
+        List<ReservationResponse> all = service.findAllReservations();
 
         // then
         SoftAssertions softly = new SoftAssertions();
