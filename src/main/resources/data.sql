@@ -55,3 +55,5 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('Lily', '2025-04-
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('유진', '2025-04-29', 7, 7);
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('Owen', '2025-04-28', 11, 13);
 
+-- user 테이블에 대한 INSERT
+INSERT INTO users(name, email, password) VALUES ('admin','admin@email.com', 'password');
