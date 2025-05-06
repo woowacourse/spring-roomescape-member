@@ -43,7 +43,7 @@ class JdbcReservationTimeRepositoryTest {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        assertThat(reservationTimes.size()).isEqualTo(2);
+        assertThat(reservationTimes.size()).isEqualTo(6);
     }
 
     @Test
@@ -55,18 +55,18 @@ class JdbcReservationTimeRepositoryTest {
 
         // then
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        assertThat(reservationTimes.size()).isEqualTo(3);
+        assertThat(reservationTimes.size()).isEqualTo(7);
     }
 
     @Test
-    void delete() {
+    void deleteReservationTime_shouldReturnTrue() {
         // given
 
         // when
-        reservationTimeRepository.deleteById(1L);
+        reservationTimeRepository.deleteById(6L);
 
         // then
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        assertThat(reservationTimes.size()).isEqualTo(1);
+        assertThat(reservationTimes.size()).isEqualTo(5);
     }
 }

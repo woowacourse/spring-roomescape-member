@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
 import roomescape.reservation.exception.ReservationNotFoundException;
+import roomescape.reservation.fixture.TestFixture;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -22,7 +24,8 @@ import roomescape.theme.repository.ThemeRepository;
 
 class ReservationServiceTest {
 
-    private final LocalDate futureDate = LocalDate.now().plusDays(1);
+    private static final LocalDate futureDate = TestFixture.makeFutureDate();
+    private static final LocalDateTime afterOneHour = TestFixture.makeTimeAfterOneHour();
 
     private ReservationService reservationService;
     private ReservationTimeRepository reservationTimeRepository;
@@ -43,7 +46,7 @@ class ReservationServiceTest {
     @Test
     void createReservation_shouldReturnResponseWhenSuccessful() {
         ReservationCreateRequest request = new ReservationCreateRequest("홍길동", futureDate, 1L, 1L);
-        ReservationResponse response = reservationService.create(request);
+        ReservationResponse response = reservationService.create(request, afterOneHour);
 
         assertThat(response.name()).isEqualTo("홍길동");
         assertThat(response.date()).isEqualTo(futureDate);
@@ -53,8 +56,8 @@ class ReservationServiceTest {
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
         reservationTimeRepository.save(ReservationTime.of(2L, LocalTime.of(10, 0)));
-        reservationService.create(new ReservationCreateRequest("A", futureDate, 1L, 1L));
-        reservationService.create(new ReservationCreateRequest("B", futureDate, 2L, 1L));
+        reservationService.create(new ReservationCreateRequest("A", futureDate, 1L, 1L), afterOneHour);
+        reservationService.create(new ReservationCreateRequest("B", futureDate, 2L, 1L), afterOneHour);
 
         List<ReservationResponse> result = reservationService.getReservations();
         assertThat(result).hasSize(2);
@@ -70,7 +73,7 @@ class ReservationServiceTest {
     @Test
     void deleteReservation_shouldRemoveSuccessfully() {
         ReservationResponse response = reservationService.create(
-                new ReservationCreateRequest("Test", futureDate, 1L, 1L)
+                new ReservationCreateRequest("Test", futureDate, 1L, 1L), TestFixture.makeTimeAfterOneHour()
         );
 
         reservationService.delete(response.id());
@@ -83,14 +86,14 @@ class ReservationServiceTest {
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
         ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L, 1L);
 
-        assertThatThrownBy(() -> reservationService.create(request))
+        assertThatThrownBy(() -> reservationService.create(request, afterOneHour))
                 .isInstanceOf(ReservationNotFoundException.class);
     }
 
     @Test
     void createReservation_shouldThrowException_WhenDuplicated() {
         ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L, 1L);
-        reservationService.create(request);
-        assertThatThrownBy(() -> reservationService.create(request));
+        reservationService.create(request, afterOneHour);
+        assertThatThrownBy(() -> reservationService.create(request, afterOneHour));
     }
 }

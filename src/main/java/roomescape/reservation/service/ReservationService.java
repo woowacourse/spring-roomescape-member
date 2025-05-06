@@ -1,5 +1,6 @@
 package roomescape.reservation.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
@@ -44,7 +45,7 @@ public class ReservationService {
         }
     }
 
-    public ReservationResponse create(final ReservationCreateRequest request) {
+    public ReservationResponse create(final ReservationCreateRequest request, LocalDateTime now) {
         if (reservationRepository.existsByDateAndTimeId(request.date(), request.timeId())) {
             throw new ReservationAlreadyExistsException("해당 시간에 이미 예약이 존재합니다.");
         }
@@ -55,7 +56,8 @@ public class ReservationService {
                 .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 테마 정보가 없습니다."));
 
         Reservation newReservation = reservationRepository.save(
-                Reservation.withUnassignedId(request.name(), request.date(), time, theme));
+                Reservation.createUpcomingReservationWithUnassignedId(request.name(), request.date(), time, theme,
+                        now));
         return ReservationResponse.of(newReservation, time, theme);
     }
 }

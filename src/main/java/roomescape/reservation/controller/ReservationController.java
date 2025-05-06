@@ -1,6 +1,7 @@
 package roomescape.reservation.controller;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +35,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationCreateRequest request
     ) {
-        ReservationResponse dto = reservationService.create(request);
+        ReservationResponse dto = reservationService.create(request, LocalDateTime.now());
         return ResponseEntity.created(makeReservationUri(dto)).body(dto);
     }
 

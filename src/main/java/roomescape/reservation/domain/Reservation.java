@@ -19,7 +19,6 @@ public class Reservation {
     private Reservation(final Id id, final String name, final LocalDate date, final ReservationTime time,
                         final Theme theme) {
         validateNameLength(name);
-        validateDateTime(date, time.getStartAt());
         this.id = id;
         this.name = name;
         this.date = date;
@@ -32,20 +31,21 @@ public class Reservation {
         return new Reservation(Id.assignDatabaseId(id), name, date, time, theme);
     }
 
-    public static Reservation withUnassignedId(final String name, final LocalDate date, final ReservationTime time,
-                                               final Theme theme) {
+    public static Reservation createUpcomingReservationWithUnassignedId(final String name, final LocalDate date, final ReservationTime time,
+                                                                        final Theme theme, final LocalDateTime now) {
+        validateDateTime(date, time.getStartAt(), now);
         return new Reservation(Id.unassigned(), name, date, time, theme);
+    }
+
+    private static void validateDateTime(LocalDate date, LocalTime time, LocalDateTime now) {
+        if (LocalDateTime.of(date, time).isBefore(now)) {
+            throw new IllegalArgumentException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
+        }
     }
 
     private void validateNameLength(final String value) {
         if (value.length() > 10) {
             throw new IllegalArgumentException("이름은 10글자 이내여야 합니다.");
-        }
-    }
-
-    private void validateDateTime(LocalDate date, LocalTime time) {
-        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
         }
     }
 

@@ -28,9 +28,6 @@ class JdbcReservationRepositoryTest {
                 .build();
         jdbcTemplate = new JdbcTemplate(dataSource);
         reservationRepository = new JDBCReservationRepository(jdbcTemplate);
-
-        jdbcTemplate.update("insert into reservation(name, date, time_id, theme_id) VALUES (?,?,?,?)",
-                "mint", TestFixture.makeTomorrowMessage(), "1", "1");
     }
 
     @AfterEach
@@ -43,7 +40,7 @@ class JdbcReservationRepositoryTest {
     @Test
     void findAll() {
         List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations.size()).isEqualTo(1);
+        assertThat(reservations.size()).isEqualTo(27);
     }
 
     @Test
@@ -54,7 +51,7 @@ class JdbcReservationRepositoryTest {
         reservationRepository.save(reservation);
 
         List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations.size()).isEqualTo(2);
+        assertThat(reservations.size()).isEqualTo(28);
     }
 
     @Test
@@ -62,6 +59,6 @@ class JdbcReservationRepositoryTest {
         reservationRepository.deleteById(1L);
 
         List<Reservation> reservations = reservationRepository.findAll();
-        assertThat(reservations).isEmpty();
+        assertThat(reservations.size()).isEqualTo(26);
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.reservation.fixture;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservationtime.domain.ReservationTime;
@@ -15,9 +16,8 @@ public class TestFixture {
         return Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
     }
 
-    public static String makeTomorrowMessage() {
-        LocalDate today = LocalDate.now().plusDays(1);
-        return String.format(DATE_FORMAT, today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+    public static LocalDateTime makeTimeAfterOneHour() {
+        return LocalDateTime.now().plusHours(1);
     }
 
     public static Reservation makeReservation(final Long reservationId, final long reservationTimeId) {
@@ -27,5 +27,9 @@ public class TestFixture {
 
     public static ReservationTime makeReservationTime(final long reservationTimeId) {
         return ReservationTime.of(reservationTimeId, TIME);
+    }
+
+    public static LocalDate makeFutureDate() {
+        return LocalDate.now().plusDays(5);
     }
 }
