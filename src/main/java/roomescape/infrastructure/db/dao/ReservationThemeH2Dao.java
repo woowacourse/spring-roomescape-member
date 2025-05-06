@@ -17,12 +17,13 @@ import roomescape.domain.entity.ReservationTheme;
 @RequiredArgsConstructor
 public class ReservationThemeH2Dao implements ReservationThemeDao {
 
-    private static final RowMapper<ReservationTheme> DEFAULT_ROW_MAPPER = (resultSet, rowNum) -> new ReservationTheme(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("thumbnail")
-    );
+    private static final RowMapper<ReservationTheme> DEFAULT_ROW_MAPPER = (resultSet, rowNum) ->
+            ReservationTheme.builder()
+                    .id(resultSet.getLong("theme_id"))
+                    .name(resultSet.getString("th_name"))
+                    .description(resultSet.getString("th_description"))
+                    .thumbnail(resultSet.getString("th_thumbnail"))
+                    .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 

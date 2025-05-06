@@ -2,6 +2,7 @@ package roomescape.domain.entity;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -10,6 +11,7 @@ public class ReservationTime {
     private final Long id;
     private final LocalTime startAt;
 
+    @Builder
     public ReservationTime(Long id, LocalTime startAt) {
         validateNotNull(startAt);
         this.id = id;
@@ -18,6 +20,10 @@ public class ReservationTime {
 
     public ReservationTime(LocalTime startAt) {
         this(null, startAt);
+    }
+
+    public ReservationTime assignId(Long id) {
+        return new ReservationTime(id, startAt);
     }
 
     private void validateNotNull(LocalTime startAt) {

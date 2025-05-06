@@ -3,6 +3,7 @@ package roomescape.domain.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Builder;
 import lombok.Getter;
 import roomescape.domain.exception.ReservationException.InvalidReservationTimeException;
 import roomescape.domain.vo.ReservationDetails;
@@ -16,6 +17,7 @@ public class Reservation {
     private final ReservationTime time;
     private final ReservationTheme theme;
 
+    @Builder
     public Reservation(Long id, String name, LocalDate date, ReservationTime time, ReservationTheme theme) {
         validateNotBlank(name, date);
         this.id = id;

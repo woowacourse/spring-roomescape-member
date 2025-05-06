@@ -1,6 +1,7 @@
 package roomescape.domain.entity;
 
 import java.util.Objects;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -11,6 +12,7 @@ public class ReservationTheme {
     private final String description;
     private final String thumbnail;
 
+    @Builder
     public ReservationTheme(Long id, String name, String description, String thumbnail) {
         validateNotBlank(name, description, thumbnail);
         this.id = id;

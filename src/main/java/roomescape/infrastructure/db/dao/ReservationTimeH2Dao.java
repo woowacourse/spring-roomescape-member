@@ -18,10 +18,11 @@ import roomescape.domain.entity.ReservationTime;
 @RequiredArgsConstructor
 public class ReservationTimeH2Dao implements ReservationTimeDao {
 
-    private static final RowMapper<ReservationTime> DEFAULT_ROW_MAPPER = (resultSet, rowNum) -> new ReservationTime(
-            resultSet.getLong("id"),
-            resultSet.getTime("start_at").toLocalTime()
-    );
+    private static final RowMapper<ReservationTime> DEFAULT_ROW_MAPPER = (resultSet, rowNum) ->
+            ReservationTime.builder()
+                    .id(resultSet.getLong("time_id"))
+                    .startAt(resultSet.getTime("start_at").toLocalTime())
+                    .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -46,7 +47,7 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         jdbcTemplate.update(insertQuery, params, keyHolder);
         Long id = keyHolder.getKey().longValue();
 
-        return new ReservationTime(id, reservationTime.getStartAt());
+        return reservationTime.assignId(id);
     }
 
     @Override

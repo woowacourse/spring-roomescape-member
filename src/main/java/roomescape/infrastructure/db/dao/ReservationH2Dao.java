@@ -21,21 +21,26 @@ import roomescape.domain.entity.ReservationTime;
 @RequiredArgsConstructor
 public class ReservationH2Dao implements ReservationDao {
 
-    private static final RowMapper<Reservation> DEFAULT_ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
-            resultSet.getLong("id"),
-            resultSet.getString("name"),
-            resultSet.getDate("date").toLocalDate(),
-            new ReservationTime(
-                    resultSet.getLong("time_id"),
-                    resultSet.getTime("start_at").toLocalTime()
-            ),
-            new ReservationTheme(
-                    resultSet.getLong("theme_id"),
-                    resultSet.getString("th_name"),
-                    resultSet.getString("th_description"),
-                    resultSet.getString("th_thumbnail")
-            )
-    );
+    private static final RowMapper<Reservation> DEFAULT_ROW_MAPPER = (resultSet, rowNum) ->
+            Reservation.builder()
+                    .id(resultSet.getLong("id"))
+                    .name(resultSet.getString("name"))
+                    .date(resultSet.getDate("date").toLocalDate())
+                    .time(
+                            ReservationTime.builder()
+                                    .id(resultSet.getLong("time_id"))
+                                    .startAt(resultSet.getTime("start_at").toLocalTime())
+                                    .build()
+                    )
+                    .theme(
+                            ReservationTheme.builder()
+                                    .id(resultSet.getLong("theme_id"))
+                                    .name(resultSet.getString("th_name"))
+                                    .description(resultSet.getString("th_description"))
+                                    .thumbnail(resultSet.getString("th_thumbnail"))
+                                    .build()
+                    )
+                    .build();
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
