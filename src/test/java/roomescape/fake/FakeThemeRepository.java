@@ -35,7 +35,9 @@ public class FakeThemeRepository implements ThemeRepository {
 
     @Override
     public List<Theme> findRankByDate(final LocalDate startDate, final LocalDate endDate, final int limit) {
-        return List.copyOf(themes); //TODO: 테스트 구현 고민하기
+        return themes.stream()
+                .limit(limit)
+                .toList();
     }
 
     @Override
