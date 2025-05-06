@@ -12,16 +12,14 @@ public class Reservation {
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
-    private final Long memberId;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme, Long memberId) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validate(name, date, time);
         this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
-        this.memberId = memberId;
     }
 
     private void validate(String name, LocalDate date, ReservationTime time) {

@@ -34,13 +34,13 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public long addReservation(AddReservationDto newReservation, Long memberId) {
+    public long addReservation(AddReservationDto newReservation) {
         ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
         Theme theme = themeRepository.findById(newReservation.themeId())
                 .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
 
-        Reservation reservation = newReservation.toReservation(reservationTime, theme, memberId);
+        Reservation reservation = newReservation.toReservation(reservationTime, theme);
 
         validateDuplicateReservation(reservation);
         LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());

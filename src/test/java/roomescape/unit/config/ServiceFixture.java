@@ -52,11 +52,11 @@ public class ServiceFixture {
         );
     }
 
-    public static ReservationTimeService reservationTimeService() {
+    public static ReservationTimeService createReservationTimeService() {
         return new ReservationTimeService(fakeReservationRepository(), fakeReservationTimeRepository());
     }
 
-    public static ThemeService themeService() {
+    public static ThemeService createThemeService() {
         return new ThemeService(fakeThemeRepository(), fakeReservationRepository());
     }
 

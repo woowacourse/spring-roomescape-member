@@ -57,7 +57,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponseDto> addReservations(
             @RequestBody @Valid AddReservationDto newReservationDto,
             @AuthenticationPrincipal UserInfo userInfo) {
-        long addedReservationId = reservationMemberService.addReservation(newReservationDto, userInfo);
+        long addedReservationId = reservationMemberService.addReservation(newReservationDto, userInfo.id());
         Reservation reservation = reservationService.getReservationById(addedReservationId);
 
         ReservationResponseDto reservationResponseDto = new ReservationResponseDto(reservation.getId(),

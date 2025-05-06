@@ -40,7 +40,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String themeThumbnail = resultSet.getString("theme_thumbnail");
         Theme theme = new Theme(themeId, themeName, themeDescription, themeThumbnail);
 
-        return new Reservation(reservationId, name, date, reservationTime, theme, null);
+        return new Reservation(reservationId, name, date, reservationTime, theme);
     };
 
     @Override

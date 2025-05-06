@@ -228,17 +228,17 @@ class ReservationIntegrateTest {
                 .statusCode(201);
 
         Reservation reservation1 = new Reservation(null, "이름", LocalDate.now().minusDays(1),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"), null);
+                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
         Reservation reservation2 = new Reservation(null, "이름", LocalDate.now().minusDays(2),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"), null);
+                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
         Reservation reservation3 = new Reservation(null, "이름", LocalDate.now().minusDays(3),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"), null);
+                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
         Reservation reservation4 = new Reservation(null, "이름", LocalDate.now().minusDays(4),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"), null);
+                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
         Reservation reservation5 = new Reservation(null, "이름", LocalDate.now().minusDays(5),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"), null);
+                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
         Reservation reservation6 = new Reservation(null, "이름", LocalDate.now().minusDays(6),
-                new ReservationTime(1L, afterTime), new Theme(3L, "테마 명3", "description", "thumbnail"), null);
+                new ReservationTime(1L, afterTime), new Theme(3L, "테마 명3", "description", "thumbnail"));
 
         reservationRepository.add(reservation1);
         reservationRepository.add(reservation2);

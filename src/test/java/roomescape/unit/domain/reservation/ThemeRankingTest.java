@@ -18,18 +18,16 @@ class ThemeRankingTest {
         Theme themeA = new Theme(1L, "asdf", "asdf", "asdf");
         Theme themeB = new Theme(2L, "asdf", "asdf", "asdf");
         Reservation reservation = new Reservation(0L, "tuda", LocalDate.now(), new ReservationTime(0L, LocalTime.now()),
-                themeA, null);
+                themeA);
 
         Reservation reservation2 = new Reservation(1L, "tuda2", LocalDate.now(),
-                new ReservationTime(0L, LocalTime.now()),
-                themeB, null);
+                new ReservationTime(0L, LocalTime.now()), themeB);
 
         Reservation reservation3 = new Reservation(2L, "tuda3", LocalDate.now(),
-                new ReservationTime(0L, LocalTime.now()),
-                themeB, null);
+                new ReservationTime(0L, LocalTime.now()), themeB);
+
         Reservation reservation4 = new Reservation(2L, "tuda3", LocalDate.now(),
-                new ReservationTime(0L, LocalTime.now()),
-                themeB, null);
+                new ReservationTime(0L, LocalTime.now()), themeB);
 
         ThemeRanking ranking = new ThemeRanking(List.of(reservation, reservation2, reservation3, reservation4));
         assertThat(ranking.getAscendingRanking()).containsExactlyElementsOf(List.of(themeB, themeA));

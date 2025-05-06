@@ -20,7 +20,7 @@ public class FakeReservationRepository implements ReservationRepository {
         long id = index.getAndIncrement();
         reservations.add(
                 new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getReservationTime(),
-                        reservation.getTheme(), null));
+                        reservation.getTheme()));
         return id;
     }
 
