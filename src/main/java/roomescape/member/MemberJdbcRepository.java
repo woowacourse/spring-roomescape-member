@@ -20,8 +20,8 @@ public class MemberJdbcRepository implements MemberRepository {
 
     @Override
     public void saveMember(final Member member) {
-        final String sql = "INSERT INTO member(email, password, name) VALUES(?, ?, ?)";
-        jdbcTemplate.update(sql, member.getEmail(), member.getPassword(), member.getName());
+        final String sql = "INSERT INTO member(email, password, name, role) VALUES(?, ?, ?, ?)";
+        jdbcTemplate.update(sql, member.getEmail(), member.getPassword(), member.getName(), member.getRole());
     }
 
     @Override
@@ -54,7 +54,8 @@ public class MemberJdbcRepository implements MemberRepository {
                         resultSet.getLong("id"),
                         resultSet.getString("email"),
                         resultSet.getString("password"),
-                        resultSet.getString("name")
+                        resultSet.getString("name"),
+                        resultSet.getString("role")
                 );
     }
 }

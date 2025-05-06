@@ -8,16 +8,18 @@ public class Member {
     private final String email;
     private final String password;
     private final String name;
+    private final String role;
 
-    public Member(final Long id, final String email, final String password, final String name) {
+    public Member(final Long id, final String email, final String password, final String name, final String role) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
+        this.role = role;
     }
 
-    public Member(final String email, final String password, final String name) {
-        this(null, email, password, name);
+    public Member(final String email, final String password, final String name, final String role) {
+        this(null, email, password, name, role);
     }
 
     public boolean matchesPassword(final String password) {
@@ -38,5 +40,9 @@ public class Member {
 
     public String getName() {
         return name;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

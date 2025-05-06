@@ -54,6 +54,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        m.email AS member_email,
                        m.password AS member_password,
                        m.name AS member_name, 
+                       m.role AS member_role,
                        t.id AS time_id, 
                        t.start_at AS time_value, 
                        th.id AS theme_id, 
@@ -75,6 +76,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        m.email AS member_email,
                        m.password AS member_password,
                        m.name AS member_name, 
+                       m.role AS member_role, 
                        t.id AS time_id, 
                        t.start_at AS time_value, 
                        th.id AS theme_id, 
@@ -98,6 +100,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                        m.email AS member_email,
                        m.password AS member_password,
                        m.name AS member_name, 
+                       m.role AS member_role, 
                        t.id AS time_id, 
                        t.start_at AS time_value, 
                        th.id AS theme_id, 
@@ -160,7 +163,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     resultSet.getLong("member_id"),
                     resultSet.getString("member_email"),
                     resultSet.getString("member_password"),
-                    resultSet.getString("member_name")
+                    resultSet.getString("member_name"),
+                    resultSet.getString("member_role")
             );
 
             return new Reservation(

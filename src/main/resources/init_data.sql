@@ -17,17 +17,17 @@ INSERT INTO theme (name, description, thumbnail) VALUES
                                                      ('Secret Society', 'Uncover the cult and stop the ritual', 'https://i.namu.wiki/i/zfRtOmLQlnowdqQsfQPPFtjIuZcXI0sXsCYCypGmAGlg4L89S5q7s38sMYwYLdHkV6tYgDwKDIk38StNo_TdaovVMbYKJz46DL3yMjR3VglSFodoABoZQ2VG83vNOMuHuwmsrPlmz6KOot8MbLsNjQ.webp');
 
 -- member
-INSERT INTO member (email, password, name) VALUES
-                                               ('user1@example.com', 'pass1', 'Alice'),
-                                               ('user2@example.com', 'pass2', 'Bob'),
-                                               ('user3@example.com', 'pass3', 'Charlie'),
-                                               ('user4@example.com', 'pass4', 'David'),
-                                               ('user5@example.com', 'pass5', 'Eve'),
-                                               ('user6@example.com', 'pass6', 'Frank'),
-                                               ('user7@example.com', 'pass7', 'Grace'),
-                                               ('user8@example.com', 'pass8', 'Hannah'),
-                                               ('user9@example.com', 'pass9', 'Isaac'),
-                                               ('user10@example.com', 'pass10', 'Jane');
+INSERT INTO member (email, password, name, role) VALUES
+                                               ('user1@example.com', 'pass1', 'Alice', 'MEMBER'),
+                                               ('user2@example.com', 'pass2', 'Bob', 'MEMBER'),
+                                               ('user3@example.com', 'pass3', 'Charlie', 'MEMBER'),
+                                               ('user4@example.com', 'pass4', 'David', 'MEMBER'),
+                                               ('user5@example.com', 'pass5', 'Eve', 'MEMBER'),
+                                               ('user6@example.com', 'pass6', 'Frank', 'MEMBER'),
+                                               ('user7@example.com', 'pass7', 'Grace', 'MEMBER'),
+                                               ('user8@example.com', 'pass8', 'Hannah', 'MEMBER'),
+                                               ('user9@example.com', 'pass9', 'Isaac', 'MEMBER'),
+                                               ('user10@example.com', 'pass10', 'Jane', 'MEMBER');
 
 -- reservation (조합 생성)
 INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES
@@ -42,5 +42,5 @@ INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES
                                                                  ('2025-05-05', 9, 9, 9),
                                                                  ('2025-05-05', 10, 10, 10);
 
-INSERT INTO member(email, password, name)
-VALUES ('asd@naver.com', '1234', 'name');
+INSERT INTO member(email, password, name, role)
+VALUES ('asd@naver.com', '1234', 'name', 'ADMIN');
