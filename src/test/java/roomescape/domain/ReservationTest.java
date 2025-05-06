@@ -16,7 +16,7 @@ class ReservationTest {
     @Test
     void invalidReservationDateTimeTest() {
         Assertions.assertThatThrownBy(() ->
-                        new Reservation(1L, "가이온", null, new ReservationTime(1L, LocalTime.now()), new Theme(1L, "우테코", "방탈출", "http://")))
+                        new Reservation(1L, "가이온", null, new ReservationTime(1L, LocalTime.now()), new Theme(1L, "우테코", "방탈출", "https://")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -24,7 +24,7 @@ class ReservationTest {
     @Test
     void invalidReservationTimeTest() {
         Assertions.assertThatThrownBy(() ->
-                        new Reservation(1L, "가이온", LocalDate.now(), null, new Theme(1L, "우테코", "방탈출", "http://")))
+                        new Reservation(1L, "가이온", LocalDate.now(), null, new Theme(1L, "우테코", "방탈출", "https://")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -35,7 +35,7 @@ class ReservationTest {
         Long id = 1L;
         LocalDate date = LocalDate.now();
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.now());
-        Theme theme = new Theme(1L, "우테코", "방탈출", "http://");
+        Theme theme = new Theme(1L, "우테코", "방탈출", "https://");
 
         Assertions.assertThatThrownBy(() -> new Reservation(id, reservationName, date, reservationTime, theme))
                 .isInstanceOf(IllegalArgumentException.class);

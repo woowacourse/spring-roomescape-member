@@ -79,7 +79,7 @@ class ReservationTimeServiceTest {
             reservationTimeService.createReservationTime(new ReservationTimeCreateRequestDto(LocalTime.of(11, 0)));
 
             ReservationTime reservationTime = reservationTimeRepository.findById(1L).get();
-            Theme theme = new Theme(1L, "ABC","DEF","http://");
+            Theme theme = new Theme(1L, "ABC","DEF","https://");
             Reservation reservation = new Reservation(1L, "가이온", LocalDate.now().plusDays(1), reservationTime, theme);
             reservationRepository.save(reservation);
 

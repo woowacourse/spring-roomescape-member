@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationTimeCreateRequestDto;
+import roomescape.dto.ThemeCreateRequestDto;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -19,14 +20,19 @@ import static org.hamcrest.Matchers.is;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationTimeControllerTest {
 
-    @DisplayName("목록 내용 갯수를 검사한다")
-    @Test
-    void timesTest() {
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
+    @Nested
+    @DisplayName("예약시간 조회")
+    class ReservationTimeGetTest {
+
+        @DisplayName("ReservationTime 목록 내용 갯수를 검사한다")
+        @Test
+        void timesTest() {
+            RestAssured.given().log().all()
+                    .when().get("/times")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(0));
+        }
     }
 
     @Nested
@@ -115,6 +121,44 @@ class ReservationTimeControllerTest {
                     .then().log().all()
                     .statusCode(200)
                     .body("size()", is(0));
+        }
+
+        @DisplayName("예약된 내역이 존재하는 시간은 삭제할 수 없다")
+        @Test
+        void deleteThemeExceptionTest() {
+            ReservationTimeCreateRequestDto requestTime = new ReservationTimeCreateRequestDto(LocalTime.of(10, 0));
+            ThemeCreateRequestDto requestTheme = new ThemeCreateRequestDto("테마", "설명", "https://");
+            Map<String, Object> reservationParams = new HashMap<>();
+            reservationParams.put("name", "브라운");
+            reservationParams.put("date", "2030-08-05");
+            reservationParams.put("timeId", 1);
+            reservationParams.put("themeId", 1);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestTime)
+                    .when().post("/times")
+                    .then().log().all()
+                    .statusCode(201);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(requestTheme)
+                    .when().post("/themes")
+                    .then().log().all()
+                    .statusCode(201);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(reservationParams)
+                    .when().post("/reservations")
+                    .then().log().all()
+                    .statusCode(201);
+
+            RestAssured.given().log().all()
+                    .when().delete("/times/1")
+                    .then().log().all()
+                    .statusCode(409);
         }
 
         @DisplayName("존재하지 않는 Id의 Time 을 삭제할 수 없다")

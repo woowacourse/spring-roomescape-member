@@ -69,13 +69,26 @@ class BookServiceTest {
 
         @DisplayName("요청한 ReservationTime의 id가 존재하지 않으면 Reservation을 생성할 수 없다")
         @Test
-        void createInvalidReservationIdTest() {
+        void invalidReservationTimeIdTest() {
             ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
             ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
             ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
             bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
 
             ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 10L, 1L);
+
+            assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
+        }
+
+        @DisplayName("요청한 Theme의 id가 존재하지 않으면 Reservation을 생성할 수 없다")
+        @Test
+        void invalidThemeIdTest() {
+            ReservationRepository reservationRepository = new FakeReservationRepository(new ArrayList<>());
+            ReservationTimeRepository reservationTimeRepository = FakeReservationTimeRepositoryFixture.create();
+            ThemeRepository themeRepository = FakeThemeRepositoryFixture.create();
+            bookService = new BookService(reservationRepository, reservationTimeRepository, themeRepository);
+
+            ReservationCreateRequestDto requestDto = new ReservationCreateRequestDto("가이온", LocalDate.now().plusDays(7), 1L, 10L);
 
             assertThatThrownBy(() -> bookService.createReservation(requestDto)).isInstanceOf(NotFoundException.class);
         }

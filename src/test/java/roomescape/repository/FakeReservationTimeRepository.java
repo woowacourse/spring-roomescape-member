@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
@@ -25,7 +27,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
                 .filter(rt -> rt.getStartAt().equals(reservationTime.getStartAt()))
                 .count();
         if (count != 0) {
-            throw new IllegalStateException("Reservation time already exists");
+            throw new DuplicateKeyException("동일한 시간이 존재합니다.");
         }
 
         ReservationTime newReservationTime = new ReservationTime(reservationTimeId.getAndIncrement(), reservationTime.getStartAt());
@@ -55,7 +57,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
             if (reservations.stream()
                     .filter(reservation -> reservation.getTime().equals(deleteReservation))
                     .count() != 0) {
-                throw new IllegalStateException();
+                throw new DataIntegrityViolationException("연결된 예약 데이터로 인해 삭제할 수 없습니다.");
             }
             int affectedRows = (int) reservationTimes.stream()
                     .filter(reservationTime -> Objects.equals(reservationTime.getId(), id))

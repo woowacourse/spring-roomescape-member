@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Reservation;
 
 public class FakeReservationRepository implements ReservationRepository {
@@ -23,7 +24,7 @@ public class FakeReservationRepository implements ReservationRepository {
     public Optional<Reservation> save(final Reservation reservation) {
         List<Reservation> existingReservations = findByDateTimeTheme(reservation.getDate(), reservation.getTime().getStartAt(), reservation.getTheme().getId());
         if (!existingReservations.isEmpty()) {
-            throw new IllegalStateException();
+            throw new DuplicateKeyException("동일한 예약이 존재합니다.");
         }
         Reservation newReservation = new Reservation(reservationId.getAndIncrement(), reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
         reservations.add(newReservation);

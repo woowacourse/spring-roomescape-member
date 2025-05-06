@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import roomescape.domain.ReservationTime;
 
 public record ReservationTimeCreateRequestDto(
-        @NotNull(message = "예약시간이 없습니다.") LocalTime startAt
+        @NotNull(message = "[ERROR] 예약시간이 없습니다.") LocalTime startAt
 ) {
 
     public ReservationTime createWithoutId() {

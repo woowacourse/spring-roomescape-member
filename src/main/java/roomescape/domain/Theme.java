@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public class Theme {
 
-    private static final String URL_REGEX = "^https?://.*";
+    private static final String URL_REGEX = "^https://.*";
 
     private final Long id;
     private final String name;

@@ -29,7 +29,7 @@ class ReservationServiceTest {
         void findAllReservationResponsesTest() {
             LocalTime startTime = LocalTime.of(10, 0);
             ReservationTime reservationTime = new ReservationTime(1L, startTime);
-            Theme theme = new Theme(1L, "우테코", "방탈출", "http://");
+            Theme theme = new Theme(1L, "우테코", "방탈출", "https://");
 
             Reservation reservation1 = new Reservation(1L, "가이온", LocalDate.of(2025, 4, 24), reservationTime, theme);
             Reservation reservation2 = new Reservation(2L, "홍길동", LocalDate.of(2025, 4, 25), reservationTime, theme);

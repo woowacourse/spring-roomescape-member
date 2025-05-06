@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import roomescape.domain.Reservation;
 import roomescape.domain.Theme;
 
@@ -28,7 +30,7 @@ public class FakeThemeRepository implements ThemeRepository {
                 .filter(t -> t.getName().equals(theme.getName()) && t.getDescription().equals(theme.getDescription()) && t.getThumbnail().equals(theme.getThumbnail()))
                 .count();
         if (count != 0) {
-            throw new IllegalStateException("Reservation time already exists");
+            throw new DuplicateKeyException("동일한 테마가 존재합니다.");
         }
 
         Theme newTheme = new Theme(themeId.getAndIncrement(), theme.getName(), theme.getDescription(), theme.getThumbnail());
@@ -66,13 +68,13 @@ public class FakeThemeRepository implements ThemeRepository {
         Theme deleteTheme = themes.stream()
                 .filter(theme -> Objects.equals(theme.getId(), id))
                 .findFirst()
-                .orElse(new Theme(null, "A", "b", "http://"));
+                .orElse(new Theme(null, "A", "b", "https://"));
 
         if (deleteTheme.getId() != null) {
             if (reservations.stream()
                     .filter(reservation -> reservation.getTheme().equals(deleteTheme))
                     .count() != 0) {
-                throw new IllegalStateException();
+                throw new DataIntegrityViolationException("연결된 예약 데이터로 인해 삭제할 수 없습니다.");
             }
             int affectedRows = (int) themes.stream()
                     .filter(theme -> Objects.equals(theme.getId(), id))
