@@ -155,4 +155,44 @@ public class ReservationDaoImpl implements ReservationDao {
 
         return jdbcTemplate.query(sql, mapSqlParameterSource, ROW_MAPPER);
     }
+
+    @Override
+    public List<Reservation> findByThemeIdAndMemberIdInDuration(final long themeId, final long memberId,
+                                                                final LocalDate start,
+                                                                final LocalDate end) {
+        String sql = """
+                    SELECT
+                        r.id AS "reservation.id",
+                        r.date AS "reservation.date",
+                        r.theme_id AS "reservation.theme_id",
+                
+                        rt.id AS "reservation_time.id",
+                        rt.start_at AS "reservation_time.start_at",
+                
+                        t.name AS "theme.name",
+                        t.description AS "theme.description",
+                        t.thumbnail AS "theme.thumbnail",
+                
+                        m.id AS "member.id",
+                        m.name AS "member.name",
+                        m.email AS "member.email",
+                        m.password AS "member.password",
+                        m.role AS "role"
+                
+                    FROM reservation r
+                    JOIN reservation_time rt ON r.time_id = rt.id
+                    JOIN theme t ON r.theme_id = t.id
+                    JOIN member m ON r.member_id = m.id
+                    WHERE r.theme_id = :theme_id
+                      AND r.member_id = :member_id
+                      AND r.date BETWEEN :start AND :end
+                """;
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                .addValue("theme_id", themeId)
+                .addValue("member_id", memberId)
+                .addValue("start", start)
+                .addValue("end", end);
+        return jdbcTemplate.query(sql, mapSqlParameterSource, ROW_MAPPER);
+    }
 }
