@@ -63,7 +63,7 @@ class JdbcThemeDaoTest {
 
         // when
         Long savedThemeId = jdbcThemeDao.save(theme);
-        Boolean result = existsThemeById(savedThemeId);
+        boolean result = existsThemeById(savedThemeId);
 
         // then
         assertThat(savedThemeId).isNotNull();
@@ -74,22 +74,22 @@ class JdbcThemeDaoTest {
     @DisplayName("테마를 삭제한다")
     void deleteTheme() {
         // given
-        Boolean exists = existsThemeById(1L);
+        boolean exists = existsThemeById(1L);
 
         // when
         jdbcThemeDao.deleteById(1L);
-        Boolean notExists = existsThemeById(1L);
+        boolean notExists = existsThemeById(1L);
 
         // then
         assertThat(exists).isTrue();
         assertThat(notExists).isFalse();
     }
 
-    private Boolean existsThemeById(Long id) {
-        return jdbcTemplate.queryForObject(
+    private boolean existsThemeById(Long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "select exists(select 1 from theme where id = ?)",
                 Boolean.class,
                 id
-        );
+        ));
     }
 }

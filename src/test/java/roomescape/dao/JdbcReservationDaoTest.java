@@ -57,7 +57,7 @@ class JdbcReservationDaoTest {
 
         // when
         Long savedId = jdbcReservationDao.save(reservation);
-        Boolean result = existsReservationById(savedId);
+        boolean result = existsReservationById(savedId);
 
         // then 
         assertThat(savedId).isNotNull();
@@ -68,11 +68,11 @@ class JdbcReservationDaoTest {
     @DisplayName("예약을 삭제한다")
     void deleteReservation() {
         // given
-        Boolean exists = existsReservationById(1L);
+        boolean exists = existsReservationById(1L);
 
         // when
         jdbcReservationDao.deleteById(1L);
-        Boolean notExists = existsReservationById(1L);
+        boolean notExists = existsReservationById(1L);
 
         // then
         assertThat(exists).isTrue();
@@ -144,12 +144,12 @@ class JdbcReservationDaoTest {
         assertThat(result).containsExactlyElementsOf(expected);
     }
 
-    private Boolean existsReservationById(Long id) {
-        return jdbcTemplate.queryForObject(
+    private boolean existsReservationById(Long id) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 "select exists(select 1 from reservation where id = ?)",
                 Boolean.class,
                 id
-        );
+        ));
     }
 
     private void setupTestData(LocalDate now) {

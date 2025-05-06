@@ -64,36 +64,36 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Boolean existsByTimeId(long timeId) {
+    public boolean existsByTimeId(long timeId) {
         String sql = "select exists(select 1 from reservation where time_id = ?)";
-        return jdbcTemplate.queryForObject(
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
                 timeId
-        );
+        ));
     }
 
     @Override
-    public Boolean existsByDateAndTimeId(LocalDate date, long timeId) {
+    public boolean existsByDateAndTimeId(LocalDate date, long timeId) {
         String sql = "select exists(select 1 from reservation where date = ? AND time_id = ?)";
-        return jdbcTemplate.queryForObject(
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
                 date,
                 timeId
-        );
+        ));
     }
 
     @Override
-    public Boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId) {
         String sql = "select exists(select 1 from reservation where date = ? AND time_id = ? AND theme_id = ?)";
-        return jdbcTemplate.queryForObject(
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
                 sql,
                 Boolean.class,
                 date,
                 timeId,
                 themeId
-        );
+        ));
     }
 
     @Override
