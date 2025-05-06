@@ -129,7 +129,7 @@ public class JdbcReservationDaoTest {
     @Test
     void count_reservation_by_id() {
         long savedId = reservationDao.save(reservation);
-        int result = reservationDao.countAlreadyExistReservation(savedId);
+        int result = reservationDao.countExistReservationByTime(savedId);
         assertThat(result).isEqualTo(1);
     }
 

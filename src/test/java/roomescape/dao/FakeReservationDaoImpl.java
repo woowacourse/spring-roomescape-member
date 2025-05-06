@@ -38,7 +38,14 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int countAlreadyExistReservation(Long id) {
+    public int countExistReservationByTime(Long id) {
+        return (int) reservations.stream()
+            .filter(reservation -> reservation.getId().equals(id))
+            .count();
+    }
+
+    @Override
+    public int countExistReservationByTheme(Long id) {
         return (int) reservations.stream()
             .filter(reservation -> reservation.getId().equals(id))
             .count();

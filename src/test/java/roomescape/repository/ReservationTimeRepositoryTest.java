@@ -56,7 +56,7 @@ public class ReservationTimeRepositoryTest {
             .doesNotThrowAnyException();
     }
 
-    @DisplayName("다른 예약에서 사용중인 예약 시간을 사용하려고 할 경우, 예외가 발생해야 한다.")
+    @DisplayName("다른 예약에서 사용중인 예약 시간을 삭제하려고 할 경우, 예외가 발생해야 한다.")
     @Test
     void delete_already_use_other_reservation_time_id_then_throw_exception() {
 

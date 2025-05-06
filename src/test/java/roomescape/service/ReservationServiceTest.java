@@ -44,7 +44,7 @@ public class ReservationServiceTest {
         reservationDao = new FakeReservationDaoImpl();
         reservationRepository = new ReservationRepositoryImpl(reservationDao);
         themeDao = new FakeThemeDaoImpl();
-        themeRepository = new ThemeRepositoryImpl(themeDao);
+        themeRepository = new ThemeRepositoryImpl(themeDao, reservationDao);
         reservationTimeDao = new FakeReservationTimeDaoImpl();
         reservationTimeRepository = new ReservationTimeRepositoryImpl(reservationTimeDao,
             reservationDao);

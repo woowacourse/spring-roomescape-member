@@ -13,7 +13,9 @@ public interface ReservationDao {
 
     void delete(Long id);
 
-    int countAlreadyExistReservation(Long id);
+    int countExistReservationByTime(Long id);
+
+    int countExistReservationByTheme(Long id);
 
     int countAlreadyReservationOf(ReservationDate date, Long timeId);
 
