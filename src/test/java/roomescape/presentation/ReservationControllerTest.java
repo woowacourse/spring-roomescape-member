@@ -13,12 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import roomescape.TestRepositoryConfig;
 import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.ReservationTime;
@@ -29,11 +24,7 @@ import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = "spring.sql.init.mode=never")
-@ActiveProfiles("test")
-@Import(TestRepositoryConfig.class)
-class ReservationControllerTest {
+class ReservationControllerTest extends AbstractControllerTest {
 
     @LocalServerPort
     private int port;
@@ -207,7 +198,7 @@ class ReservationControllerTest {
 
         // then
         assertThat(errorResponseDto.message())
-            .isEqualTo("과거 일시로 예약을 생성할 수 없습니다.");
+                .isEqualTo("과거 일시로 예약을 생성할 수 없습니다.");
     }
 
     @DisplayName("이미 예약된 시간에 예약을 추가할 수 없다.")
@@ -247,7 +238,7 @@ class ReservationControllerTest {
 
         // then
         assertThat(errorResponseDto.message())
-            .isEqualTo("해당 날짜와 시간에 이미 예약이 존재합니다.");
+                .isEqualTo("해당 날짜와 시간에 이미 예약이 존재합니다.");
     }
 
     @DisplayName("예약을 삭제하면 상태 코드 204가 반환된다.")

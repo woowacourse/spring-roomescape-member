@@ -12,23 +12,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import roomescape.TestRepositoryConfig;
 import roomescape.business.ReservationTime;
 import roomescape.exception.ErrorResponseDto;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.dto.ReservationTimeRequestDto;
 import roomescape.presentation.dto.ReservationTimeResponseDto;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = "spring.sql.init.mode=never")
-@ActiveProfiles("test")
-@Import(TestRepositoryConfig.class)
-class ReservationTimeControllerTest {
+class ReservationTimeControllerTest extends AbstractControllerTest {
 
     @LocalServerPort
     private int port;
