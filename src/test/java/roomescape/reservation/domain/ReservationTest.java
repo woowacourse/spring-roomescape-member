@@ -1,7 +1,10 @@
 package roomescape.reservation.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
+import static roomescape.testFixture.Fixture.RESERVATION_TIME_2;
 import static roomescape.testFixture.Fixture.THEME_1;
+import static roomescape.testFixture.Fixture.THEME_2;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +15,28 @@ import org.junit.jupiter.params.provider.CsvSource;
 import roomescape.time.domain.ReservationTime;
 
 class ReservationTest {
+
+    @DisplayName("식별자인 id가 동일하면 같은 예약으로 취급한다.")
+    @Test
+    void sameReservation_whenSameId() {
+        // given
+        Reservation reservation1 = Reservation.of(1L, 1L, THEME_1, LocalDate.of(2025, 1, 1), RESERVATION_TIME_1);
+        Reservation reservation2 = Reservation.of(1L, 1L, THEME_2, LocalDate.of(2025, 2, 1), RESERVATION_TIME_2);
+
+        // when & then
+        assertThat(reservation1).isEqualTo(reservation2);
+    }
+
+    @DisplayName("식별자가 null일 때 비교 시 항상 다른 예약과 동일취급되지 않는다.")
+    @Test
+    void noSameReservation_whenNullId() {
+        // given
+        Reservation reservation1 = Reservation.of(null, 1L, THEME_1, LocalDate.of(2025, 1, 1), RESERVATION_TIME_1);
+        Reservation reservation2 = Reservation.of(null, 1L, THEME_1, LocalDate.of(2025, 1, 1), RESERVATION_TIME_1);
+
+        // when & then
+        assertThat(reservation1).isNotEqualTo(reservation2);
+    }
 
     @DisplayName("일시가 같으면 중복된 예약이다")
     @Test

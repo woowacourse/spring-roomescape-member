@@ -68,4 +68,9 @@ public class JdbcHelper {
         jdbcTemplate.update("INSERT INTO members (email, password, name, role) VALUES (?, ?, ?, ?)",
                 member.getEmail(), member.getPassword(), member.getName(), member.getRole().name());
     }
+
+    public static void insertMembers(JdbcTemplate jdbcTemplate, Member... members) {
+        Arrays.stream(members)
+                .forEach(member -> insertMember(jdbcTemplate, member));
+    }
 }

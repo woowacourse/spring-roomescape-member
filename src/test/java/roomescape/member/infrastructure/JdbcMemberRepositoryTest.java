@@ -2,6 +2,7 @@ package roomescape.member.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static roomescape.testFixture.Fixture.MEMBER_1;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
 import roomescape.member.domain.Member;
 import roomescape.member.domain.Role;
+import roomescape.testFixture.JdbcHelper;
 
 @JdbcTest
 @Import(JdbcMemberRepository.class)
@@ -88,5 +90,38 @@ class JdbcMemberRepositoryTest {
                 () -> assertThat(member.getPassword()).isEqualTo(password),
                 () -> assertThat(member.getName()).isEqualTo(name)
         );
+    }
+
+    @DisplayName("유저를 ID로 조회할 수 있다.")
+    @Test
+    void findMemberById() {
+        // given
+        Member member = MEMBER_1;
+        JdbcHelper.insertMember(jdbcTemplate, member);
+
+        // when
+        Optional<Member> result = jdbcMemberRepository.findById(member.getId());
+
+        // then
+        assertThat(result).isPresent();
+        Member resultMember = result.get();
+
+        assertAll(
+                () -> assertThat(resultMember.getPassword()).isEqualTo(member.getPassword()),
+                () -> assertThat(resultMember.getName()).isEqualTo(member.getName())
+        );
+    }
+
+    @DisplayName("유저를 ID로 조회했을 때 존재하지 않으면 빈 Optional을 반환한다.")
+    @Test
+    void findMemberById_emptyOptional() {
+        // given
+        Long nonExistingId = 999L;
+
+        // when
+        Optional<Member> result = jdbcMemberRepository.findById(nonExistingId);
+
+        // then
+        assertThat(result).isEmpty();
     }
 }

@@ -3,6 +3,7 @@ package roomescape.time.infrastructure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static roomescape.testFixture.Fixture.RESERVATION_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 
@@ -10,6 +11,7 @@ import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -112,6 +114,48 @@ class JdbcTimeRepositoryTest {
         // when & then
         assertThatThrownBy(() -> timeRepository.deleteById(RESERVATION_TIME_1.getId()))
                 .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @DisplayName("존재하지 않는 ID로 시간 삭제 시도시 예외가 발생하지 않는다.")
+    @Test
+    void deleteNonExistingTheme_notThrowException() {
+        // given
+        Long notExistingId = 999L;
+
+        // when & then
+        assertDoesNotThrow(() -> timeRepository.deleteById(notExistingId));
+    }
+
+    @DisplayName("ID로 시간을 조회할 수 있다")
+    @Test
+    void findById() {
+        //given
+        JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
+        //when
+        Long id = RESERVATION_1.getId();
+        Optional<ReservationTime> result = timeRepository.findById(id);
+
+        //then
+        assertThat(result).isPresent();
+        ReservationTime resultTime = result.get();
+        assertAll(
+                () -> assertThat(resultTime.getId()).isEqualTo(id),
+                () -> assertThat(resultTime.getStartAt()).isEqualTo(RESERVATION_TIME_1.getStartAt())
+        );
+    }
+
+
+    @DisplayName("ID로 조회했을 때 존재하지 않으면 빈 Optional을 반환한다.")
+    @Test
+    void findMemberById_emptyOptional() {
+        // given
+        Long nonExistingId = 999L;
+
+        // when
+        Optional<ReservationTime> result = timeRepository.findById(nonExistingId);
+
+        // then
+        assertThat(result).isEmpty();
     }
 
     private int getTimeCount() {

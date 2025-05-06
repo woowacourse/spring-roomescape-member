@@ -8,28 +8,28 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static roomescape.reservation.exception.ReservationErrorCode.ALREADY_RESERVED;
 import static roomescape.reservation.exception.ReservationErrorCode.PAST_RESERVATION;
+import static roomescape.testFixture.Fixture.MEMBER_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.exception.NotFoundException;
 import roomescape.member.application.MemberService;
-import roomescape.reservation.application.ReservationService;
-import roomescape.theme.application.ThemeService;
-import roomescape.time.application.TimeService;
+import roomescape.member.application.dto.MemberDto;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRegistrationPolicy;
-import roomescape.time.domain.ReservationTime;
-import roomescape.theme.domain.Theme;
 import roomescape.reservation.domain.exception.ImpossibleReservationException;
 import roomescape.reservation.domain.repository.ReservationRepository;
+import roomescape.reservation.presentation.dto.request.AdminReservationRequest;
 import roomescape.reservation.presentation.dto.request.ReservationRequest;
+import roomescape.theme.application.ThemeService;
+import roomescape.time.application.TimeService;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
@@ -49,32 +49,44 @@ class ReservationServiceTest {
     @Mock
     private ReservationRegistrationPolicy reservationRegistrationPolicy;
 
+    @InjectMocks
     private ReservationService reservationService;
 
-    @BeforeEach
-    void setUp() {
-        reservationService = new ReservationService(
-                reservationRepository, timeService, themeService, memberService, reservationRegistrationPolicy
-        );
+    @DisplayName("관리자는 예약을 등록할 수 있다.")
+    @Test
+    void registerReservationForAdmin() {
+        // given
+        AdminReservationRequest request = new AdminReservationRequest(LocalDate.of(2025, 6, 1), 1L, 1L, 1L);
+
+        given(memberService.getMemberById(1L)).willReturn(MemberDto.from(MEMBER_1));
+        given(themeService.getThemeById(1L)).willReturn(THEME_1);
+        given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
+        given(reservationRepository.save(any(Reservation.class))).willReturn(1L);
+
+        // when
+        reservationService.registerReservationForAdmin(request);
+
+        // then
+        verify(memberService).getMemberById(MEMBER_1.getId());
+        verify(themeService).getThemeById(THEME_1.getId());
+        verify(timeService).getTimeById(RESERVATION_TIME_1.getId());
+        verify(reservationRepository).existsDuplicatedReservation(request.date(), request.timeId(), request.themeId());
+        verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(false));
+        verify(reservationRepository).save(any(Reservation.class));
     }
 
-    @DisplayName("예약을 정상적으로 등록할 수 있다.")
+    @DisplayName("사용자는 자신의 id를 통해 예약을 정상적으로 등록할 수 있다.")
     @Test
     void registerReservation() {
         // given
         ReservationRequest request = new ReservationRequest(1L, LocalDate.of(2025, 5, 2), 1L);
 
-        Theme theme = Theme.of(1L, "호러 테마", "완전 호러입니다.", "thumbnail.url");
-        ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        Long memberId = 1L;
-        Reservation reservation = Reservation.createNew(memberId, theme, request.date(), time);
-
-        given(themeService.getThemeById(1L)).willReturn(theme);
-        given(timeService.getTimeById(1L)).willReturn(time);
-        long reservationId = 1L;
-        given(reservationRepository.save(reservation)).willReturn(reservationId);
+        given(themeService.getThemeById(1L)).willReturn(THEME_1);
+        given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
+        given(reservationRepository.save(any(Reservation.class))).willReturn(1L);
 
         // when
+        Long memberId = 1L;
         reservationService.registerReservationForUser(request, memberId);
 
         // then
@@ -82,7 +94,7 @@ class ReservationServiceTest {
         verify(timeService).getTimeById(1L);
         verify(reservationRepository).existsDuplicatedReservation(request.date(), request.timeId(), request.themeId());
         verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(false));
-        verify(reservationRepository).save(reservation);
+        verify(reservationRepository).save(any(Reservation.class));
     }
 
     @DisplayName("중복된 예약일 때 도메인 예외를 그대로 전파한다")
@@ -121,19 +133,33 @@ class ReservationServiceTest {
         given(timeService.getTimeById(1L)).willReturn(RESERVATION_TIME_1);
         given(reservationRepository.existsDuplicatedReservation(
                 request.date(), request.timeId(), request.themeId()
-        )).willReturn(true);
+        )).willReturn(false);
 
         // when
         doThrow(new ImpossibleReservationException(PAST_RESERVATION.getMessage()))
                 .when(reservationRegistrationPolicy)
-                .validate(any(Reservation.class), eq(true));
+                .validate(any(Reservation.class), eq(false));
 
         // then
         assertThatThrownBy(() -> reservationService.registerReservationForUser(request, memberId))
                 .isInstanceOf(ImpossibleReservationException.class)
                 .hasMessageContaining(PAST_RESERVATION.getMessage());
 
-        verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(true));
+        verify(reservationRegistrationPolicy).validate(any(Reservation.class), eq(false));
+    }
+
+    @DisplayName("존재하지 않는 themeId로 예약 시 NotFoundException이 발생한다.")
+    @Test
+    void registerReservation_fail_when_themeNotFound() {
+        // given
+        ReservationRequest request = new ReservationRequest(999L, LocalDate.now(), 1L);
+        Long memberId = 1L;
+
+        given(themeService.getThemeById(999L)).willThrow(new NotFoundException("theme", 999L));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.registerReservationForUser(request, memberId))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("예약을 삭제할 수 있다.")

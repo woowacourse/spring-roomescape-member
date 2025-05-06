@@ -6,6 +6,7 @@ import static roomescape.testFixture.Fixture.RESERVATION_2;
 import static roomescape.testFixture.Fixture.RESERVATION_3;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,5 +54,21 @@ class JdbcReservationQueryDaoTest {
 
         // then
         assertThat(reservationDetails).hasSize(3);
+    }
+
+    @DisplayName("예약 id로 해당 예약을 조회할 수 있다.")
+    @Test
+    void findById() {
+        // given
+        JdbcHelper.insertReservations(jdbcTemplate, RESERVATION_1);
+        Long id = RESERVATION_1.getId();
+
+        // when
+        Optional<ReservationDetailData> result = reservationQueryDao.findReservationDetailById(id);
+
+        // then
+        assertThat(result).isPresent();
+        ReservationDetailData reservationData = result.get();
+        assertThat(reservationData.member().id()).isEqualTo(RESERVATION_1.getMemberId());
     }
 }

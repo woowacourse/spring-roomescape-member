@@ -15,7 +15,8 @@ class TimeDtoTest {
     @Test
     void reservationTime_toResponse() {
         // given
-        ReservationTime reservationTime = ReservationTime.of(1L, LocalTime.of(10, 0));
+        LocalTime time = LocalTime.of(10, 0);
+        ReservationTime reservationTime = ReservationTime.of(1L, time);
 
         // when
         TimeDto dto = TimeDto.from(reservationTime);
@@ -23,7 +24,7 @@ class TimeDtoTest {
         // then
         assertAll(
                 () -> assertThat(dto.id()).isEqualTo(1L),
-                () -> assertThat(dto.startAt()).isEqualTo("10:00")
+                () -> assertThat(dto.startAt()).isEqualTo(time)
         );
     }
 

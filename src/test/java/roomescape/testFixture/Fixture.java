@@ -26,8 +26,10 @@ public class Fixture {
     public static final Reservation RESERVATION_3 = Reservation.of(
             3L, 1L, THEME_3, LocalDate.now().plusDays(1), RESERVATION_TIME_3);
     public static final Member MEMBER_1 = new Member(1L, "test@email.com", "password", "멍구", Role.ADMIN);
+    public static final Member MEMBER_2 = new Member(2L, "test2@email.com", "password2", "멍구2", Role.ADMIN);
 
     public static final Map<String, Object> RESERVATION_BODY = createReservationBody();
+    public static final Map<String, Object> ADMIN_RESERVATION_BODY = createReservationBody();
 
     public static Reservation createReservation(LocalDate date, Long memberId, Long timeId, Long themeId) {
         Theme theme = Theme.of(themeId, "테마", "테마 설명입니다.", "썸네일");
@@ -57,5 +59,9 @@ public class Fixture {
         params.put("themeId", 1);
 
         return params;
+    }
+
+    public static Member createMemberByIdAndName(Long id, String name) {
+        return new Member(id, "email" + id, "password", name, Role.ADMIN);
     }
 }

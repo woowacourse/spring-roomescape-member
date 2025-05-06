@@ -1,8 +1,12 @@
 package roomescape.theme.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static roomescape.testFixture.Fixture.THEME_1;
 
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import roomescape.testFixture.JdbcHelper;
 import roomescape.theme.domain.Theme;
 
 @JdbcTest
@@ -77,6 +82,47 @@ class JdbcThemeRepositoryTest {
 
         //then
         assertThat(getThemesCount()).isEqualTo(0);
+    }
+
+    @DisplayName("존재하지 않는 ID로 테마 삭제 시도시 예외가 발생하지 않는다.")
+    @Test
+    void deleteNonExistingTheme_notThrowException() {
+        // given
+        Long notExistingId = 999L;
+
+        // when & then
+        assertDoesNotThrow(() -> jdbcThemeRepository.deleteById(notExistingId));
+    }
+
+    @DisplayName("ID로 시간을 조회할 수 있다")
+    @Test
+    void findById() {
+        //given
+        JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
+        //when
+        Long id = THEME_1.getId();
+        Optional<Theme> result = jdbcThemeRepository.findById(id);
+
+        //then
+        assertThat(result).isPresent();
+        Theme resultTheme = result.get();
+        assertAll(
+                () -> assertThat(resultTheme.getId()).isEqualTo(id),
+                () -> assertThat(resultTheme.getName()).isEqualTo(THEME_1.getName())
+        );
+    }
+
+    @DisplayName("ID로 조회했을 때 존재하지 않으면 빈 Optional을 반환한다.")
+    @Test
+    void findMemberById_emptyOptional() {
+        // given
+        Long nonExistingId = 999L;
+
+        // when
+        Optional<Theme> result = jdbcThemeRepository.findById(nonExistingId);
+
+        // then
+        assertThat(result).isEmpty();
     }
 
     private int getThemesCount() {

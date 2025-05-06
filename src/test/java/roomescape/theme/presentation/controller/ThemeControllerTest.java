@@ -102,6 +102,15 @@ public class ThemeControllerTest {
         assertThat(deletedCount).isEqualTo(0);
     }
 
+    @DisplayName("테마 랭킹 조회 시 200 OK")
+    @Test
+    void getThemeRanking() {
+        RestAssured.given().log().all()
+                .when().get("/themes/ranking")
+                .then().log().all()
+                .statusCode(200);
+    }
+
     private int getThemesCount() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme", Integer.class);
     }
