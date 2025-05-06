@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.controller.dto.request.CreateReservationRequest;
-import roomescape.domain.Reservation;
+import roomescape.domain.reservation.Reservation;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
@@ -48,7 +48,7 @@ class ReservationServiceTest {
         // given
         reservationService.addReservation(ReservationCreation.from(
                 new CreateReservationRequest("test", FUTURE_DATE, 1L, 1L)));
-        
+
         final ReservationCreation duplicated = new ReservationCreation("test", FUTURE_DATE, 1L, 1L);
 
         // when // then

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.roomtheme.PopularThemeSelectionCriteria;
 import roomescape.exception.custom.InvalidInputException;
 
 class PopularThemeSelectionCriteriaTest {

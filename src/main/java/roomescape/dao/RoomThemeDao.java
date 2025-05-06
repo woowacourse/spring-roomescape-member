@@ -3,7 +3,7 @@ package roomescape.dao;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import roomescape.domain.RoomTheme;
+import roomescape.domain.roomtheme.RoomTheme;
 
 public interface RoomThemeDao {
 

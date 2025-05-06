@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.CreateThemeRequest;
 import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
-import roomescape.domain.RoomTheme;
+import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.service.RoomThemeService;
 import roomescape.service.dto.RoomThemeCreation;
 

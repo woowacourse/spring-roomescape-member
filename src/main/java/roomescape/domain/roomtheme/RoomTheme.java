@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.roomtheme;
 
 import java.util.Objects;
 import roomescape.exception.custom.InvalidInputException;

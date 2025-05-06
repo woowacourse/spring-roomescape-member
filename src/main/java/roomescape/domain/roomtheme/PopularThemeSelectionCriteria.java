@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.roomtheme;
 
 import java.time.LocalDate;
 import roomescape.exception.custom.InvalidInputException;

@@ -1,4 +1,4 @@
-package roomescape.domain;
+package roomescape.domain.reservationtime;
 
 import java.util.List;
 import roomescape.exception.custom.InvalidInputException;

@@ -1,6 +1,6 @@
 package roomescape.controller.dto.response;
 
-import roomescape.domain.RoomTheme;
+import roomescape.domain.roomtheme.RoomTheme;
 
 public record PopularThemeResponse(String name, String description, String thumbnail) {
 

@@ -1,6 +1,8 @@
-package roomescape.domain;
+package roomescape.domain.reservation;
 
 import java.time.LocalDate;
+import roomescape.domain.reservationtime.ReservationTime;
+import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.exception.custom.InvalidInputException;
 
 public class Reservation {
