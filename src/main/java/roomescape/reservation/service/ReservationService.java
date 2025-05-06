@@ -3,18 +3,15 @@ package roomescape.reservation.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.ReservationMapper;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.dto.ReservationRequestDto;
 import roomescape.reservation.domain.dto.ReservationResponseDto;
 import roomescape.reservation.exception.InvalidReservationTimeException;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.ReservationTimeResponseDto;
 import roomescape.reservationTime.exception.DuplicateReservationException;
 import roomescape.reservationTime.repository.ReservationTimeRepository;
-import roomescape.theme.ThemeMapper;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.ThemeResponseDto;
 import roomescape.theme.exception.InvalidThemeException;
@@ -69,13 +66,13 @@ public class ReservationService {
         Theme theme = themeRepository.findById(dto.themeId())
                 .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마입니다."));
 
-        return ReservationMapper.toEntity(dto, reservationTime, theme);
+        return dto.toEntity(reservationTime, theme);
     }
 
     private ReservationResponseDto convertReservationResponseDto(Reservation reservation) {
-        ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeMapper.toResponseDto(
+        ReservationTimeResponseDto reservationTimeResponseDto = ReservationTimeResponseDto.of(
                 reservation.getReservationTime());
-        ThemeResponseDto themeResponseDto = ThemeMapper.toResponseDto(reservation.getTheme());
-        return ReservationMapper.toResponseDto(reservation, reservationTimeResponseDto, themeResponseDto);
+        ThemeResponseDto themeResponseDto = ThemeResponseDto.of(reservation.getTheme());
+        return ReservationResponseDto.from(reservation, reservationTimeResponseDto, themeResponseDto);
     }
 }

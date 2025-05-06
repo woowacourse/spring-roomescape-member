@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservationTime.ReservationTimeMapper;
 import roomescape.reservationTime.domain.ReservationTime;
 import roomescape.reservationTime.domain.dto.AvailableReservationTimeResponseDto;
 import roomescape.reservationTime.domain.dto.ReservationTimeRequestDto;
@@ -86,10 +85,10 @@ public class ReservationTimeService {
     }
 
     private ReservationTime convertToReservationTimeRequestDto(ReservationTimeRequestDto requestDto) {
-        return ReservationTimeMapper.toEntity(requestDto);
+        return requestDto.toEntity();
     }
 
     private ReservationTimeResponseDto convertToReservationTimeResponseDto(ReservationTime reservationTime) {
-        return ReservationTimeMapper.toResponseDto(reservationTime);
+        return ReservationTimeResponseDto.of(reservationTime);
     }
 }

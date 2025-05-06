@@ -3,7 +3,6 @@ package roomescape.theme.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.theme.ThemeMapper;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.dto.PopularThemeRequestDto;
 import roomescape.theme.domain.dto.ThemeRequestDto;
@@ -21,21 +20,21 @@ public class ThemeService {
 
     public List<ThemeResponseDto> findAll() {
         return repository.findAll().stream()
-                .map(ThemeMapper::toResponseDto)
+                .map(ThemeResponseDto::of)
                 .toList();
     }
 
     public List<ThemeResponseDto> findThemesOrderByReservationCount(LocalDate from, LocalDate to,
                                                                     PopularThemeRequestDto popularThemeRequestDto) {
         return repository.findThemesOrderByReservationCount(from, to, popularThemeRequestDto).stream()
-                .map(ThemeMapper::toResponseDto)
+                .map(ThemeResponseDto::of)
                 .toList();
     }
 
     public ThemeResponseDto add(ThemeRequestDto dto) {
-        Theme notSavedTheme = new Theme(dto.name(), dto.description(), dto.thumbnail());
+        Theme notSavedTheme = dto.toEntity();
         Theme savedTheme = repository.add(notSavedTheme);
-        return ThemeMapper.toResponseDto(savedTheme);
+        return ThemeResponseDto.of(savedTheme);
     }
 
     public void deleteById(Long id) {
