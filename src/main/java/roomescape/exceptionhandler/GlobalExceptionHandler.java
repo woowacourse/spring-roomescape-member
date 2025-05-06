@@ -1,4 +1,4 @@
-package roomescape.exception_handler;
+package roomescape.exceptionhandler;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
