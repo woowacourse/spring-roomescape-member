@@ -1,4 +1,4 @@
-package roomescape.reservation.service;
+package roomescape.reservation.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,8 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
-import roomescape.reservation.application.ReservationService;
-import roomescape.reservation.application.ReservationTimeService;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;

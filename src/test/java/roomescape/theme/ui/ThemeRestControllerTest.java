@@ -1,4 +1,4 @@
-package roomescape.theme.controller;
+package roomescape.theme.ui;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

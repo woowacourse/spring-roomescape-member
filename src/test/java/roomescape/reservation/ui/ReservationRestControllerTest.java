@@ -1,4 +1,4 @@
-package roomescape.reservation.controller;
+package roomescape.reservation.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.reservation.ui.ReservationRestController;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
