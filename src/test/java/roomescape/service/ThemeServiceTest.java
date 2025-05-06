@@ -23,6 +23,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.dto.AvailableReservationResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.dto.ThemesWithTotalPageRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -138,5 +139,18 @@ public class ThemeServiceTest {
         assertThat(responses).hasSize(4);
         assertThat(list.stream().filter(b -> b).count()).isEqualTo(1L);
         assertThat(list.stream().filter(b -> !b).count()).isEqualTo(3L);
+    }
+
+    @Test
+    void 페이지에_해당하는_테마들_반환() {
+        // given
+        int page = 2;
+
+        // when
+        ThemesWithTotalPageRequest themesByPage = service.getThemesByPage(page);
+
+        // then
+        assertThat(themesByPage.totalPages()).isEqualTo(2);
+        assertThat(themesByPage.themes()).hasSize(6);
     }
 }

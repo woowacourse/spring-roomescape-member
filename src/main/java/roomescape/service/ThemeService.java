@@ -11,6 +11,7 @@ import roomescape.dao.ThemeDao;
 import roomescape.dto.AvailableReservationResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.dto.ThemesWithTotalPageRequest;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -41,6 +42,21 @@ public class ThemeService {
         return themeDao.findAll().stream()
                 .map(ThemeResponse::from)
                 .toList();
+    }
+
+    public ThemesWithTotalPageRequest getThemesByPage(int page) {
+        int totalThemes = themeDao.countTotalTheme();
+        int totalPage = (totalThemes % 10 == 0) ?
+                totalThemes / 10 : (totalThemes / 10) + 1;
+        if (page < 1 || page > totalPage) {
+            throw new IllegalArgumentException("해당하는 페이지가 없습니다");
+        }
+        int start = (page - 1) * 10 + 1;
+        int end = start + 10 - 1;
+        List<ThemeResponse> themes = themeDao.findThemesWithPage(start, end).stream()
+                .map(ThemeResponse::from)
+                .toList();
+        return new ThemesWithTotalPageRequest(totalPage, themes);
     }
 
     public List<ThemeResponse> getTopTenTheme() {

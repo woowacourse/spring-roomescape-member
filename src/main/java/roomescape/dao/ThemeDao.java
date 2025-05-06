@@ -116,4 +116,34 @@ public class ThemeDao {
                 name
         );
     }
+
+    public int countTotalTheme() {
+        String sql = """
+                SELECT COUNT(*) FROM THEME
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+
+    public List<Theme> findThemesWithPage(int startRowNumber, int endRowNumber) {
+        String sql = """
+                SELECT t.id, t.name, t.description, t.thumbnail
+                    FROM (
+                        SELECT ROW_NUMBER() OVER() as row_num, * 
+                        FROM THEME
+                    ) as t
+                WHERE t.row_num BETWEEN ? AND ?
+                ORDER BY t.row_num
+                """;
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new Theme(
+                        rs.getLong("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("thumbnail")
+                ),
+                startRowNumber,
+                endRowNumber
+        );
+    }
 }

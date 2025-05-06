@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.AvailableReservationResponse;
 import roomescape.dto.ThemeRequest;
 import roomescape.dto.ThemeResponse;
+import roomescape.dto.ThemesWithTotalPageRequest;
 import roomescape.service.ThemeService;
 
 @RestController
@@ -34,9 +35,15 @@ public class ThemeController {
         return ResponseEntity.created(URI.create("/themes/" + themeResponse.id())).body(themeResponse);
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<ThemeResponse>> getThemes() {
+//        return ResponseEntity.ok(themeService.getThemes());
+//    }
+
     @GetMapping
-    public ResponseEntity<List<ThemeResponse>> getThemes() {
-        return ResponseEntity.ok(themeService.getThemes());
+    public ResponseEntity<ThemesWithTotalPageRequest> getThemesWithPage(
+            @RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(themeService.getThemesByPage(page));
     }
 
     @GetMapping("/popular")

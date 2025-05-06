@@ -57,8 +57,9 @@ public class ReservationService {
     }
 
     public ReservationsWithTotalPageRequest getReservationsByPage(int page) {
-        int totalPage = reservationDao.countTotalReservation() % 10 == 0 ?
-                reservationDao.countTotalReservation() / 10 : (reservationDao.countTotalReservation() / 10) + 1;
+        int totalReservations = reservationDao.countTotalReservation();
+        int totalPage = totalReservations % 10 == 0 ?
+                totalReservations / 10 : (totalReservations / 10) + 1;
         if (page < 1 || page > totalPage) {
             throw new IllegalArgumentException("해당하는 페이지가 없습니다");
         }

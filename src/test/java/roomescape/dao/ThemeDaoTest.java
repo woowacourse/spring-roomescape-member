@@ -134,6 +134,30 @@ class ThemeDaoTest {
         assertThat(nonExist).isFalse();
     }
 
+    @Test
+    void 존재하는_모든_테마의_개수를_카운팅한다() {
+        // when
+        int count = dao.countTotalTheme();
+
+        // then
+        assertThat(count).isEqualTo(16);
+    }
+
+    @Test
+    void 시작과_끝을_설정해_테마들을_조회() {
+        // given
+        int start = 3;
+        int end = 10;
+
+        // when
+        List<Theme> themesWithPage = dao.findThemesWithPage(start, end);
+
+        // then
+        assertThat(themesWithPage).hasSize(8);
+        assertThat(themesWithPage.getFirst().getId()).isEqualTo(3L);
+        assertThat(themesWithPage.getLast().getId()).isEqualTo(10L);
+    }
+
     private List<Theme> findByJdbc() {
         return jdbcTemplate.query("""
                         SELECT id, name, description, thumbnail
