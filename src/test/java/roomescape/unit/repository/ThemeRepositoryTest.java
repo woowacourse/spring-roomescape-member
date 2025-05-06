@@ -20,11 +20,11 @@ import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
+import roomescape.unit.fixture.ReservationDateFixture;
+import roomescape.unit.fixture.ReservationTimeDbFixture;
 import roomescape.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
-import roomescape.unit.fixture.ReservationDateFixture;
 import roomescape.unit.fixture.ReservationDbFixture;
-import roomescape.unit.fixture.ReservationTimeDbFixture;
 import roomescape.unit.fixture.ThemeDbFixture;
 
 public class ThemeRepositoryTest extends RepositoryBaseTest {

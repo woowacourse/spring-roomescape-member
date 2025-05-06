@@ -1,4 +1,4 @@
-package roomescape.integration.api;
+package roomescape.integration.api.rest;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -11,7 +11,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import roomescape.common.BaseTest;
 
-class TimeApiTest extends BaseTest {
+class TimeRestTest extends BaseTest {
 
     private Map<String, String> reservationTime = Map.of("startAt", "10:00");
 

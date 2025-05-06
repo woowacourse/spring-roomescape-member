@@ -1,4 +1,4 @@
-package roomescape.integration.api;
+package roomescape.integration.api.rest;
 
 import static org.hamcrest.Matchers.*;
 import static roomescape.common.Constant.FIXED_CLOCK;
@@ -6,14 +6,12 @@ import static roomescape.common.Constant.FIXED_CLOCK;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.common.BaseTest;
-import roomescape.common.Constant;
 
-class ReservationApiTest extends BaseTest {
+class ReservationRestTest extends BaseTest {
 
     private Integer timeId;
     private Integer themeId;

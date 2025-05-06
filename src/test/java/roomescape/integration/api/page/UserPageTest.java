@@ -1,4 +1,4 @@
-package roomescape.integration.page;
+package roomescape.integration.api.page;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

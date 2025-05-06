@@ -1,4 +1,4 @@
-package roomescape.integration.api;
+package roomescape.integration.api.rest;
 
 import static org.hamcrest.Matchers.*;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import roomescape.common.BaseTest;
 
-class ThemeApiTest extends BaseTest {
+class ThemeRestTest extends BaseTest {
 
     private Map<String, String> createThemeRequest = Map.of(
             "name", "공포방탈출",
