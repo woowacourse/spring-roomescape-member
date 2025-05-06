@@ -41,12 +41,12 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("startAt", reservationTime.startAt().toString());
+                .addValue("startAt", reservationTime.getStartAt().toString());
 
         jdbcTemplate.update(insertQuery, params, keyHolder);
         Long id = keyHolder.getKey().longValue();
 
-        return new ReservationTime(id, reservationTime.startAt());
+        return new ReservationTime(id, reservationTime.getStartAt());
     }
 
     @Override

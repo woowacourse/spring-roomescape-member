@@ -57,7 +57,7 @@ class ReservationTimeH2DaoTest extends JdbcTestSupport {
 
         assertSoftly(softly -> {
             softly.assertThat(reservationTimes).hasSize(1);
-            softly.assertThat(reservationTimes.getFirst().startAt()).isEqualTo(startAt);
+            softly.assertThat(reservationTimes.getFirst().getStartAt()).isEqualTo(startAt);
         });
     }
 
@@ -72,8 +72,8 @@ class ReservationTimeH2DaoTest extends JdbcTestSupport {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(insertedReservationTime.id()).isEqualTo(reservationTime.id());
-            softly.assertThat(insertedReservationTime.startAt()).isEqualTo(reservationTime.startAt());
+            softly.assertThat(insertedReservationTime.getId()).isEqualTo(reservationTime.getId());
+            softly.assertThat(insertedReservationTime.getStartAt()).isEqualTo(reservationTime.getStartAt());
         });
     }
 
@@ -91,7 +91,7 @@ class ReservationTimeH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("id에 해당하는 예약 정보를 조회할 수 있다.")
     @Test
-    void selectById() {
+    void selectByGetGetId() {
         // given
         LocalTime firstTime = LocalTime.parse("10:00");
         LocalTime secondTime = LocalTime.parse("11:00");
@@ -105,12 +105,12 @@ class ReservationTimeH2DaoTest extends JdbcTestSupport {
         assertThatCode(selectedReservationTime::get).doesNotThrowAnyException();
         ReservationTime reservationTime = selectedReservationTime.get();
 
-        assertThat(reservationTime.startAt()).isEqualTo(secondTime);
+        assertThat(reservationTime.getStartAt()).isEqualTo(secondTime);
     }
 
     @DisplayName("id에 해당하는 예약 시간을 삭제할 수 있다.")
     @Test
-    void deleteById() {
+    void deleteByGetGetId() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "11:00");
@@ -125,7 +125,7 @@ class ReservationTimeH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("입력한 테마id와 날짜에 해당하는 예약 시간을 모두 조회한다")
     @Test
-    void selectAllByThemeIdAndDate() {
+    void selectAllByGetThemeGetGetIdAndGetDate() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:10");
@@ -149,8 +149,8 @@ class ReservationTimeH2DaoTest extends JdbcTestSupport {
         // then
         assertSoftly(softly -> {
             softly.assertThat(reservationTimes).hasSize(2);
-            softly.assertThat(reservationTimes.getFirst().id()).isEqualTo(1L);
-            softly.assertThat(reservationTimes.get(1).id()).isEqualTo(3L);
+            softly.assertThat(reservationTimes.getFirst().getId()).isEqualTo(1L);
+            softly.assertThat(reservationTimes.get(1).getId()).isEqualTo(3L);
         });
     }
 }

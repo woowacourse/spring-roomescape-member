@@ -42,7 +42,7 @@ public class ReservationTimeDbRepository implements ReservationTimeRepository {
     @Override
     public void remove(ReservationTime reservationTime) {
         try {
-            reservationTimeDao.deleteById(reservationTime.id());
+            reservationTimeDao.deleteById(reservationTime.getId());
         } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("삭제하려는 시간을 가진 예약이 존재합니다.", e);
         }

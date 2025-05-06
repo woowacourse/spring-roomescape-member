@@ -39,7 +39,7 @@ public class ReservationDbRepository implements ReservationRepository {
 
     @Override
     public void remove(Reservation reservation) {
-        reservationDao.deleteById(reservation.id());
+        reservationDao.deleteById(reservation.getId());
     }
 
     @Override

@@ -71,7 +71,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
         // then
         List<Reservation> reservations = reservationH2Dao.selectAll();
         assertThat(reservations).hasSize(1);
-        assertThat(reservations.getFirst().name()).isEqualTo("브라운");
+        assertThat(reservations.getFirst().getName()).isEqualTo("브라운");
     }
 
     @DisplayName("Reservation객체로 데이터를 삽입 후 삽입된 데이터를 가져올 수 있다.")
@@ -88,9 +88,9 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(insertedReservation.time().id()).isEqualTo(reservationTime.id());
-            softly.assertThat(insertedReservation.theme().id()).isEqualTo(reservationTheme.id());
-            softly.assertThat(insertedReservation.name()).isEqualTo("브라운");
+            softly.assertThat(insertedReservation.getTime().getId()).isEqualTo(reservationTime.getId());
+            softly.assertThat(insertedReservation.getTheme().getId()).isEqualTo(reservationTheme.getId());
+            softly.assertThat(insertedReservation.getName()).isEqualTo("브라운");
         });
     }
 
@@ -109,7 +109,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("id에 해당하는 예약 정보를 조회할 수 있다.")
     @Test
-    void selectById() {
+    void selectByGetId() {
         // given
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
                 LocalDate.now().plusDays(20), "1", "1");
@@ -123,12 +123,12 @@ class ReservationH2DaoTest extends JdbcTestSupport {
         assertThatCode(selectedReservation::get).doesNotThrowAnyException();
         Reservation reservation = selectedReservation.get();
 
-        assertThat(reservation.name()).isEqualTo("2번사람");
+        assertThat(reservation.getName()).isEqualTo("2번사람");
     }
 
     @DisplayName("id에 해당하는 예약 정보를 삭제할 수 있다.")
     @Test
-    void deleteById() {
+    void deleteByGetId() {
         // given
         jdbcTemplate.update("INSERT INTO reservation(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "1번사람",
                 LocalDate.now().plusDays(20), "1", "1");
@@ -145,7 +145,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("입력한 date, timeId, themeId의 값을 가진 데이터가 존재하면, true를 반환한다")
     @Test
-    void existDuplicatedDateTimeReturnTrue() {
+    void existDuplicatedGetDateGetTimeReturnTrue() {
         // given
         LocalDate date = LocalDate.now().plusDays(20);
         Long timeId = 1L;
@@ -162,7 +162,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("입력한 date, timeId, themeId의 값을 가진 데이터가 존재하지 않면, false를 반환한다")
     @Test
-    void existDuplicatedDateTimeReturnFalse() {
+    void existDuplicatedGetDateGetTimeReturnFalse() {
         // given
         LocalDate date = LocalDate.now().plusDays(20);
         Long timeId = 1L;
@@ -180,7 +180,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("입력한 timeId를 가진 예약이 존재하면 true를 반환한다")
     @Test
-    void existsByTimeId() {
+    void existsByGetTimeGetId() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         Long timeId = 1L;
@@ -197,7 +197,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("입력한 timeId를 가진 예약이 존재하지 않으면 false를 반환한다")
     @Test
-    void notExistsByTimeId() {
+    void notExistsByGetTimeGetId() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         Long timeId = 1L;
@@ -215,7 +215,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("입력한 themeId를 가진 예약이 존재하면 true를 반환한다")
     @Test
-    void existsByThemeId() {
+    void existsByGetThemeGetId() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "10:00");
         Long themeId = 1L;
@@ -232,7 +232,7 @@ class ReservationH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("입력한 themeId를 가진 예약이 존재하지 않으면 false를 반환한다")
     @Test
-    void notExistsByThemeId() {
+    void notExistsByGetThemeGetId() {
         // given
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름", "설명", "썸네일");
         Long themeId = 1L;

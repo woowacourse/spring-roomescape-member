@@ -59,10 +59,10 @@ public class ReservationH2Dao implements ReservationDao {
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservation.name())
-                .addValue("date", reservation.date())
-                .addValue("timeId", reservation.time().id())
-                .addValue("themeId", reservation.theme().id());
+                .addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate())
+                .addValue("timeId", reservation.getTime().getId())
+                .addValue("themeId", reservation.getTheme().getId());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertQuery, params, keyHolder);

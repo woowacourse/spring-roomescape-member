@@ -51,8 +51,8 @@ class UserReservationServiceTest extends IntegrationTestSupport {
         List<Reservation> reservations = reservationRepository.getAll();
         assertSoftly(softly -> {
             softly.assertThat(reservations).hasSize(1);
-            softly.assertThat(reservations.getFirst().name()).isEqualTo(name);
-            softly.assertThat(reservations.getFirst().date()).isEqualTo(date);
+            softly.assertThat(reservations.getFirst().getName()).isEqualTo(name);
+            softly.assertThat(reservations.getFirst().getDate()).isEqualTo(date);
         });
     }
 

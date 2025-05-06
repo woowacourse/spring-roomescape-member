@@ -41,7 +41,7 @@ public class ReservationThemeDbRepository implements ReservationThemeRepository 
     @Override
     public void remove(ReservationTheme reservationTime) {
         try {
-            reservationThemeDao.deleteById(reservationTime.id());
+            reservationThemeDao.deleteById(reservationTime.getId());
         } catch (DataIntegrityViolationException e) {
             throw new ResourceInUseException("삭제하려는 테마를 가진 예약이 존재합니다.", e);
         }

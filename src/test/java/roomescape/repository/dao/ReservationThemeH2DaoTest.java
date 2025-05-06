@@ -58,9 +58,9 @@ class ReservationThemeH2DaoTest extends JdbcTestSupport {
 
         assertSoftly(softly -> {
             softly.assertThat(reservationThemes).hasSize(1);
-            softly.assertThat(reservationThemes.getFirst().name()).isEqualTo(name);
-            softly.assertThat(reservationThemes.getFirst().description()).isEqualTo(description);
-            softly.assertThat(reservationThemes.getFirst().thumbnail()).isEqualTo(thumbnail);
+            softly.assertThat(reservationThemes.getFirst().getName()).isEqualTo(name);
+            softly.assertThat(reservationThemes.getFirst().getDescription()).isEqualTo(description);
+            softly.assertThat(reservationThemes.getFirst().getThumbnail()).isEqualTo(thumbnail);
         });
     }
 
@@ -78,9 +78,9 @@ class ReservationThemeH2DaoTest extends JdbcTestSupport {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(insertedReservationTheme.name()).isEqualTo(name);
-            softly.assertThat(insertedReservationTheme.description()).isEqualTo(description);
-            softly.assertThat(insertedReservationTheme.thumbnail()).isEqualTo(thumbnail);
+            softly.assertThat(insertedReservationTheme.getName()).isEqualTo(name);
+            softly.assertThat(insertedReservationTheme.getDescription()).isEqualTo(description);
+            softly.assertThat(insertedReservationTheme.getThumbnail()).isEqualTo(thumbnail);
         });
     }
 
@@ -98,7 +98,7 @@ class ReservationThemeH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("id에 해당하는 테마를 조회할 수 있다.")
     @Test
-    void selectById() {
+    void selectByGetGetId() {
         // given
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름1", "설명1", "썸네일1");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름2", "설명2", "썸네일2");
@@ -111,15 +111,15 @@ class ReservationThemeH2DaoTest extends JdbcTestSupport {
         ReservationTheme reservationTheme = selectedReservationTheme.get();
 
         assertSoftly(softly -> {
-            softly.assertThat(reservationTheme.name()).isEqualTo("이름2");
-            softly.assertThat(reservationTheme.description()).isEqualTo("설명2");
-            softly.assertThat(reservationTheme.thumbnail()).isEqualTo("썸네일2");
+            softly.assertThat(reservationTheme.getName()).isEqualTo("이름2");
+            softly.assertThat(reservationTheme.getDescription()).isEqualTo("설명2");
+            softly.assertThat(reservationTheme.getThumbnail()).isEqualTo("썸네일2");
         });
     }
 
     @DisplayName("id에 해당하는 테마을 삭제할 수 있다.")
     @Test
-    void deleteById() {
+    void deleteByGetGetId() {
         // given
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름1", "설명1", "썸네일1");
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름2", "설명2", "썸네일2");
@@ -134,7 +134,7 @@ class ReservationThemeH2DaoTest extends JdbcTestSupport {
 
     @DisplayName("테마의 인기 목록을 입력한 개수만큼 조회할 수 있다")
     @Test
-    void orderByThemeBookedCountWithLimit() {
+    void orderByGetThemeBookedCountWithLimit() {
         // given
         int limit = 2;
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00");
@@ -156,8 +156,8 @@ class ReservationThemeH2DaoTest extends JdbcTestSupport {
         // then
         assertSoftly(softly -> {
             softly.assertThat(populars).hasSize(limit);
-            softly.assertThat(populars.getFirst().id()).isEqualTo(2L);
-            softly.assertThat(populars.get(1).id()).isEqualTo(1L);
+            softly.assertThat(populars.getFirst().getId()).isEqualTo(2L);
+            softly.assertThat(populars.get(1).getId()).isEqualTo(1L);
         });
     }
 }

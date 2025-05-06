@@ -33,7 +33,7 @@ class ReservationDbRepositoryTest extends JdbcTestSupport {
 
     @DisplayName("존재하지 않는 id를 조회하면 예외를 발생시킨다")
     @Test
-    void getByIdException() {
+    void getByGetIdException() {
         // given
         jdbcTemplate.update("INSERT INTO RESERVATION(name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", "브라운",
                 LocalDate.now().plusDays(20), "1", "1");
@@ -45,7 +45,7 @@ class ReservationDbRepositoryTest extends JdbcTestSupport {
 
     @DisplayName("존재하는 id를 조회하면 조회된 예약 객체를 반환한다")
     @Test
-    void getById() {
+    void getByGetId() {
         // given
         String name = "브라운";
         LocalDate date = LocalDate.now().plusDays(20);
@@ -56,7 +56,7 @@ class ReservationDbRepositoryTest extends JdbcTestSupport {
         Reservation reservation = reservationDbRepository.getById(1L);
 
         // then
-        assertThat(reservation.name()).isEqualTo(name);
-        assertThat(reservation.date()).isEqualTo(date);
+        assertThat(reservation.getName()).isEqualTo(name);
+        assertThat(reservation.getDate()).isEqualTo(date);
     }
 }

@@ -24,7 +24,7 @@ class ReservationValidationServiceTest {
 
     @DisplayName("중복 예약이면 예외를 발생시킨다")
     @Test
-    void existDuplicatedDateTime() {
+    void existDuplicatedGetDateGetTime() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         Long timeId = 1L;

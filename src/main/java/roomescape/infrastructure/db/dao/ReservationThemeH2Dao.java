@@ -44,9 +44,9 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("name", reservationTheme.name())
-                .addValue("description", reservationTheme.description())
-                .addValue("thumbnail", reservationTheme.thumbnail());
+                .addValue("name", reservationTheme.getName())
+                .addValue("description", reservationTheme.getDescription())
+                .addValue("thumbnail", reservationTheme.getThumbnail());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(insertQuery, params, keyHolder, new String[]{"id"});

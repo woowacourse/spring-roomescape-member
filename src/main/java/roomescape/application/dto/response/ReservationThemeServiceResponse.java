@@ -10,7 +10,7 @@ public record ReservationThemeServiceResponse(
 ) {
 
     public static ReservationThemeServiceResponse from(ReservationTheme reservationTheme) {
-        return new ReservationThemeServiceResponse(reservationTheme.id(), reservationTheme.name(),
-                reservationTheme.description(), reservationTheme.thumbnail());
+        return new ReservationThemeServiceResponse(reservationTheme.getId(), reservationTheme.getName(),
+                reservationTheme.getDescription(), reservationTheme.getThumbnail());
     }
 }

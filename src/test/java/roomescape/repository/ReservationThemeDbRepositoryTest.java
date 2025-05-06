@@ -25,7 +25,7 @@ class ReservationThemeDbRepositoryTest extends JdbcTestSupport {
 
     @DisplayName("존재하지 않는 id를 조회하면 예외를 발생시킨다")
     @Test
-    void getByIdException() {
+    void getByGetGetIdException() {
         // given
         jdbcTemplate.update("INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)", "이름1", "설명1", "썸네일1");
 
@@ -36,7 +36,7 @@ class ReservationThemeDbRepositoryTest extends JdbcTestSupport {
 
     @DisplayName("존재하는 id를 조회하면 조회된 예약 객체를 반환한다")
     @Test
-    void getById() {
+    void getByGetGetId() {
         // given
         String name = "이름";
         String description = "설명";
@@ -48,9 +48,9 @@ class ReservationThemeDbRepositoryTest extends JdbcTestSupport {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(reservationTheme.name()).isEqualTo(name);
-            softly.assertThat(reservationTheme.description()).isEqualTo(description);
-            softly.assertThat(reservationTheme.thumbnail()).isEqualTo(thumbnail);
+            softly.assertThat(reservationTheme.getName()).isEqualTo(name);
+            softly.assertThat(reservationTheme.getDescription()).isEqualTo(description);
+            softly.assertThat(reservationTheme.getThumbnail()).isEqualTo(thumbnail);
         });
     }
 }

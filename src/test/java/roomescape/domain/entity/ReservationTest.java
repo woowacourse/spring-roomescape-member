@@ -30,13 +30,13 @@ class ReservationTest {
         Reservation reservation = Reservation.createFutureReservation(details);
 
         //then
-        assertThat(reservation.name()).isEqualTo("웨이드");
-        assertThat(reservation.date()).isEqualTo(details.date());
+        assertThat(reservation.getName()).isEqualTo("웨이드");
+        assertThat(reservation.getDate()).isEqualTo(details.date());
     }
 
     @DisplayName("예약 생성시 예약 시간이 과거 시간이면 예외를 발생시킨다")
     @Test
-    void createFutureReservationExceptionIfPastTime() {
+    void createFutureReservationExceptionIfPastGetTime() {
         //given
         ReservationDetails details = new ReservationDetails(
                 "홍길동",
@@ -54,7 +54,7 @@ class ReservationTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" "})
-    void nameNullException(String value) {
+    void getNameNullException(String value) {
         assertThatThrownBy(() -> new Reservation(
                 value,
                 LocalDate.now().plusDays(1),
@@ -66,7 +66,7 @@ class ReservationTest {
     @DisplayName("예약 생성시 날짜가 null이라면 예외를 발생시킨다"
             + "")
     @Test
-    void dateNullException() {
+    void getDateNullException() {
         assertThatThrownBy(() -> new Reservation(
                 "이름",
                 null,
@@ -77,7 +77,7 @@ class ReservationTest {
 
     @DisplayName("id를 할당한 새로운 예약 객체를 얻을 수 있다")
     @Test
-    void assignIdSuccess() {
+    void assignGetIdSuccess() {
         //given
         Reservation original = new Reservation(
                 "웨이드",
@@ -92,13 +92,13 @@ class ReservationTest {
         Reservation reservationWithId = original.assignId(assignedId);
 
         //then
-        assertThat(reservationWithId.id()).isEqualTo(assignedId);
-        assertThat(reservationWithId.name()).isEqualTo(original.name());
+        assertThat(reservationWithId.getId()).isEqualTo(assignedId);
+        assertThat(reservationWithId.getName()).isEqualTo(original.getName());
     }
 
     @DisplayName("할당한 id가 null이라면 예외를 발생시킨다")
     @Test
-    void assignIdNull() {
+    void assignGetIdNull() {
         //given
         Reservation original = new Reservation(
                 "웨이드",

@@ -26,7 +26,7 @@ class ReservationTimeDbRepositoryTest extends JdbcTestSupport {
 
     @DisplayName("존재하지 않는 id를 조회하면 예외를 발생시킨다")
     @Test
-    void getByIdException() {
+    void getByGetGetIdException() {
         // given
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", "10:00");
 
@@ -37,7 +37,7 @@ class ReservationTimeDbRepositoryTest extends JdbcTestSupport {
 
     @DisplayName("존재하는 id를 조회하면 조회된 예약 객체를 반환한다")
     @Test
-    void getById() {
+    void getByGetGetId() {
         // given
         LocalTime startAt = LocalTime.parse("10:00");
         jdbcTemplate.update("INSERT INTO reservation_time(start_at) VALUES (?)", startAt);
@@ -46,6 +46,6 @@ class ReservationTimeDbRepositoryTest extends JdbcTestSupport {
         ReservationTime reservationTime = reservationTimeDbRepository.getById(1L);
 
         // then
-        assertThat(reservationTime.startAt()).isEqualTo(startAt);
+        assertThat(reservationTime.getStartAt()).isEqualTo(startAt);
     }
 }

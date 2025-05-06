@@ -1,14 +1,19 @@
 package roomescape.domain.entity;
 
 import java.time.LocalTime;
+import java.util.Objects;
+import lombok.Getter;
 
-public record ReservationTime(
-        Long id,
-        LocalTime startAt
-) {
+@Getter
+public class ReservationTime {
 
-    public ReservationTime {
+    private final Long id;
+    private final LocalTime startAt;
+
+    public ReservationTime(Long id, LocalTime startAt) {
         validateNotNull(startAt);
+        this.id = id;
+        this.startAt = startAt;
     }
 
     public ReservationTime(LocalTime startAt) {
@@ -19,5 +24,25 @@ public record ReservationTime(
         if (startAt == null) {
             throw new IllegalArgumentException("예약 시작시간은 null이 될 수 없습니다.");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTime that = (ReservationTime) o;
+        if (this.id == null || that.id == null) {
+            return false;
+        }
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

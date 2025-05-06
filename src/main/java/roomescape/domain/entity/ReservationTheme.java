@@ -1,14 +1,22 @@
 package roomescape.domain.entity;
 
-public record ReservationTheme(
-        Long id,
-        String name,
-        String description,
-        String thumbnail
-) {
+import java.util.Objects;
+import lombok.Getter;
 
-    public ReservationTheme {
+@Getter
+public class ReservationTheme {
+
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final String thumbnail;
+
+    public ReservationTheme(Long id, String name, String description, String thumbnail) {
         validateNotBlank(name, description, thumbnail);
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.thumbnail = thumbnail;
     }
 
     public ReservationTheme(String name, String description, String thumbnail) {
@@ -41,5 +49,25 @@ public record ReservationTheme(
         if (thumbnail.isBlank()) {
             throw new IllegalArgumentException("테마 썸네일은 비어 있을 수 없습니다.");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationTheme that = (ReservationTheme) o;
+        if (this.id == null || that.id == null) {
+            return false;
+        }
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
