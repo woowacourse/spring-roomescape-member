@@ -62,17 +62,26 @@ public class ReservationService {
     }
 
     private Reservation convertReservation(ReservationReqDto dto) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(dto.timeId())
-            .orElseThrow(() -> new BadRequestException("존재하지 않는 예약 시간입니다."));
-        Theme theme = themeRepository.findById(dto.themeId())
-            .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
-
-        return ReservationMapper.toEntity(dto, reservationTime, theme);
+        return ReservationMapper.toEntity(
+            dto,
+            findExistingReservationTimeById(dto.timeId()),
+            findExistingThemeById(dto.themeId())
+        );
     }
 
     private ReservationResDto convertReservationResDto(Reservation reservation) {
         ReservationTimeResDto reservationTimeResDto = ReservationTimeMapper.toResDto(reservation.getReservationTime());
         ThemeResDto themeResDto = ThemeResDto.from(reservation.getTheme());
         return ReservationMapper.toResDto(reservation, reservationTimeResDto, themeResDto);
+    }
+
+    private ReservationTime findExistingReservationTimeById(Long id) {
+        return reservationTimeRepository.findById(id)
+            .orElseThrow(() -> new BadRequestException("존재하지 않는 예약 시간입니다."));
+    }
+
+    private Theme findExistingThemeById(Long id) {
+        return themeRepository.findById(id)
+            .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
     }
 }
