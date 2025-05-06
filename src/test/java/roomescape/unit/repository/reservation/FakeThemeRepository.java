@@ -10,8 +10,8 @@ import roomescape.repository.reservation.ThemeRepository;
 
 public class FakeThemeRepository implements ThemeRepository {
 
-    AtomicLong index = new AtomicLong(1L);
-    List<Theme> themes = new ArrayList<>();
+    private final AtomicLong index = new AtomicLong(1L);
+    private final List<Theme> themes = new ArrayList<>();
 
     @Override
     public long add(Theme theme) {

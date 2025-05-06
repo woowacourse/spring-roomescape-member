@@ -9,8 +9,8 @@ import roomescape.repository.member.MemberRepository;
 
 public class FakeMemberRepository implements MemberRepository {
 
-    AtomicLong index = new AtomicLong(1L);
-    List<Member> members = new ArrayList<>();
+    private final AtomicLong index = new AtomicLong(1L);
+    private final List<Member> members = new ArrayList<>();
 
     @Override
     public long add(Member member) {

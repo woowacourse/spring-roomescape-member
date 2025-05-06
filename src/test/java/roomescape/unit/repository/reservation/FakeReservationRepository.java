@@ -12,8 +12,8 @@ import roomescape.repository.reservation.ReservationRepository;
 
 public class FakeReservationRepository implements ReservationRepository {
 
-    AtomicLong index = new AtomicLong(1L);
-    List<Reservation> reservations = new ArrayList<>();
+    private final AtomicLong index = new AtomicLong(1L);
+    private final List<Reservation> reservations = new ArrayList<>();
 
     @Override
     public long add(Reservation reservation) {
