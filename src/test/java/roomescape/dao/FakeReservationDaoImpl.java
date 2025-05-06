@@ -45,14 +45,10 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int findByDateAndTime(ReservationDate date, Long timeId) {
-        return 0;
-    }
-
-    private Reservation findById(long id) {
-        return reservations.stream()
-            .filter(reservation -> reservation.getId() == id)
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호 입니다."));
+    public int countAlreadyReservationOf(ReservationDate date, Long timeId) {
+        return (int) reservations.stream()
+            .filter(reservation -> reservation.getReservationDate().equals(date))
+            .filter(reservation -> reservation.getTimeId() == timeId)
+            .count();
     }
 }

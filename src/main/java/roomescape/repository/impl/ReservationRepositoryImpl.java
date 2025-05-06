@@ -35,7 +35,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public boolean hasAnotherReservation(ReservationDate date, Long timeId) {
-        return reservationDao.findByDateAndTime(date, timeId) != 0;
+        return reservationDao.countAlreadyReservationOf(date, timeId) != 0;
     }
 
     @Override

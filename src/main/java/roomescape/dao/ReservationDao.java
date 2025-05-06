@@ -15,7 +15,7 @@ public interface ReservationDao {
 
     int countAlreadyExistReservation(Long id);
 
-    int findByDateAndTime(ReservationDate date, Long timeId);
+    int countAlreadyReservationOf(ReservationDate date, Long timeId);
 
     Optional<Reservation> findById(Long id);
 }

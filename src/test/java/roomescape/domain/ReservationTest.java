@@ -26,7 +26,7 @@ class ReservationTest {
 
         //when, then
         assertThatThrownBy(
-            () -> reservation.validateDateTime(reservationDate, reservationTime, currentDateTime))
+            () -> reservation.validateDateTime(currentDateTime))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("과거 시간으로는 예약할 수 없습니다.");
     }
@@ -44,7 +44,7 @@ class ReservationTest {
 
         //when, then
         assertThatCode(
-            () -> reservation.validateDateTime(reservationDate, reservationTime, currentDateTime))
+            () -> reservation.validateDateTime(currentDateTime))
             .doesNotThrowAnyException();
     }
 

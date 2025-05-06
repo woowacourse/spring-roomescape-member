@@ -145,7 +145,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int findByDateAndTime(ReservationDate date, Long timeId) {
+    public int countAlreadyReservationOf(ReservationDate date, Long timeId) {
         String query = "select count(*) from reservation where date = ? AND time_id = ?";
         return jdbcTemplate.queryForObject(query, Integer.class, date.getDate(), timeId);
     }
