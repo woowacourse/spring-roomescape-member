@@ -29,13 +29,13 @@ public class ReservationService {
         ReservationTime reservationTime = timeService.getTimeById(request.timeId()).toEntity();
         Reservation reservation = Reservation.withoutId(request.name(), theme, request.date(), reservationTime);
         validateNotPast(reservation);
-        validteNotDuplicate(reservation);
+        validateNotDuplicate(reservation);
         Long id = reservationRepository.save(reservation);
 
         return ReservationDto.from(Reservation.assignId(id, reservation));
     }
 
-    private void validteNotDuplicate(Reservation reservation) {
+    private void validateNotDuplicate(Reservation reservation) {
         List<Reservation> allReservations = reservationRepository.findAll();
         boolean duplicated = allReservations.stream()
                 .anyMatch(r -> r.isDuplicated(reservation));
