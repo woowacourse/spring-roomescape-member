@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @JdbcTest
 class JdbcReservationTimeRepositoryTest {
@@ -93,5 +94,35 @@ class JdbcReservationTimeRepositoryTest {
 
         // then
         assertThat(allWithBooked).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @DisplayName("존재하지 않는 id로 조회 테스트")
+    @Test
+    void findNotExistEntity() {
+        // given
+
+        // when
+        Optional<ReservationTime> found = timeRepository.findById(1L);
+
+        // then
+        assertThat(found).isEmpty();
+    }
+
+    @DisplayName("start_at 필드를 기준으로 올바른 time 데이터를 조회할 수 있다.")
+    @Test
+    void findByStartAt() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ( ? )", "10:00");
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ( ? )", "11:00");
+
+        // when
+        LocalTime time = LocalTime.of(10, 0);
+        Optional<ReservationTime> found = timeRepository.findByStartAt(time);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(found).isNotEmpty();
+            softly.assertThat(found.get().getStartAt()).isEqualTo(time);
+        });
     }
 }
