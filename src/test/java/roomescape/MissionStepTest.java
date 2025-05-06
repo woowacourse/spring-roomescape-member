@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,216 +29,209 @@ import roomescape.reservation.controller.ReservationController;
 public class MissionStepTest {
 
     private final String futureDate = LocalDate.now().plusDays(1).toString();
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private ReservationController reservationController;
 
-    @Test
-    void step1_accessAdminPage() {
-        RestAssured.given().log().all()
-                .when().get("/admin")
-                .then().log().all()
-                .statusCode(200);
-    }
+    @Nested
+    class AdminTest {
 
-    @Test
-    void step2_accessAdminReservationPage() {
-        RestAssured.given().log().all()
-                .when().get("/admin/reservation")
-                .then().log().all()
-                .statusCode(200);
-    }
+        @Autowired
+        private JdbcTemplate jdbcTemplate;
+        @Autowired
+        private ReservationController reservationController;
 
-    @Test
-    void step3_createAndDeleteReservation() {
-        Map<String, String> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "10:00");
+        @Test
+        void step1_accessAdminPage() {
+            RestAssured.given().log().all()
+                    .when().get("/admin")
+                    .then().log().all()
+                    .statusCode(200);
+        }
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
+        @Test
+        void step2_accessAdminReservationPage() {
+            RestAssured.given().log().all()
+                    .when().get("/admin/reservation")
+                    .then().log().all()
+                    .statusCode(200);
+        }
 
-        Map<String, String> theme = new HashMap<>();
-        theme.put("name", "추리");
-        theme.put("description", "셜록 with Danny");
-        theme.put("thumbnail", "image.png");
+        @Test
+        void step3_createAndDeleteReservation() {
+            createReservationTime();
+            createTheme("추리");
+            createReservation();
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
+            RestAssured.given().log().all()
+                    .when().get("/reservations")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", futureDate);
-        params.put("timeId", 1);
-        params.put("themeId", 1);
+            RestAssured.given().log().all()
+                    .when().delete("/reservations/1")
+                    .then().log().all()
+                    .statusCode(204);
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
+            RestAssured.given().log().all()
+                    .when().get("/reservations")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(0));
+        }
 
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        @Test
+        void step4_applyDatabase() {
+            try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+                assertThat(connection).isNotNull();
+                assertThat(connection.getCatalog()).isEqualTo("TEST");
+                assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
+        @Test
+        void step5_getReservationWithDatabase() {
+            createReservationTime();
 
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
+            jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", futureDate,
+                    "1");
 
-    @Test
-    void step4_applyDatabase() {
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            assertThat(connection).isNotNull();
-            assertThat(connection.getCatalog()).isEqualTo("TEST");
-            assertThat(connection.getMetaData().getTables(null, null, "RESERVATION", null).next()).isTrue();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            RestAssured.given().log().all()
+                    .when().get("/reservations")
+                    .then().log().all()
+                    .statusCode(200);
+
+            Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+            assertThat(count).isEqualTo(1);
+        }
+
+        @Test
+        void step6_addReservationWithDatabase() {
+            createReservationTime();
+            createTheme("추리");
+            createReservation();
+
+            Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+            assertThat(count).isEqualTo(1);
+
+            RestAssured.given().log().all()
+                    .when().delete("/reservations/1")
+                    .then().log().all()
+                    .statusCode(204);
+
+            Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+            assertThat(countAfterDelete).isEqualTo(0);
+        }
+
+        @Test
+        void step7_timeAPIFeature() {
+            createReservationTime();
+
+            RestAssured.given().log().all()
+                    .when().get("/times")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
+
+            RestAssured.given().log().all()
+                    .when().delete("/times/1")
+                    .then().log().all()
+                    .statusCode(204);
+        }
+
+        @Test
+        void step8_schemaModification() {
+            createReservationTime();
+            createTheme("추리");
+            createReservation();
+
+            RestAssured.given().log().all()
+                    .when().get("/reservations")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
+        }
+
+        @Test
+        void step9_controllerDoesNotHasDatabaseLogic() {
+            boolean isJdbcTemplateInjected = false;
+
+            for (Field field : reservationController.getClass().getDeclaredFields()) {
+                if (field.getType().equals(JdbcTemplate.class)) {
+                    isJdbcTemplateInjected = true;
+                    break;
+                }
+            }
+            assertThat(isJdbcTemplateInjected).isFalse();
         }
     }
 
-    @Test
-    void step5_getReservationWithDatabase() {
-        Map<String, String> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "10:00");
+    @Nested
+    class UserTest {
 
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
+        @Test
+        void step1_exceptionHandle() {
+            createReservationTime();
+            createTheme("추리");
+            createReservation();
 
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", futureDate,
-                "1");
+            RestAssured.given().log().all()
+                    .when().delete("/times/1")
+                    .then().log().all()
+                    .statusCode(409);
+        }
 
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200);
+        @Test
+        void step2_createAndDeleteTheme() {
+            createTheme("추리");
+            findThemesBySize(1);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
+            RestAssured.given().log().all()
+                    .when().delete("/themes/1")
+                    .then().log().all()
+                    .statusCode(204);
+            findThemesBySize(0);
+        }
+
+        @Test
+        void step3_findAvailableReservations() {
+            createReservationTime();
+            createTheme("추리");
+
+            LocalDate now = LocalDate.now();
+            RestAssured.given().log().all()
+                    .when().queryParams("date", now.toString(), "themeId", 1L).get("/times/available")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
+        }
+
+        @Test
+        void step3_findPopularTheme() {
+            createReservationTime();
+            createTheme("추리1");
+            createTheme("추리2");
+            createTheme("추리3");
+            createTheme("추리4");
+            createTheme("추리5");
+            createTheme("추리6");
+            createTheme("추리7");
+            createTheme("추리8");
+            createTheme("추리9");
+            createTheme("추리10");
+            createTheme("추리11");
+            createTheme("추리12");
+            findThemesBySize(12);
+
+            RestAssured.given().log().all()
+                    .when().get("/themes/popular")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(10));
+        }
+
     }
-
-    @Test
-    void step6_addReservationWithDatabase() {
-        Map<String, String> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, String> theme = new HashMap<>();
-        theme.put("name", "추리");
-        theme.put("description", "셜록 with Danny");
-        theme.put("thumbnail", "image.png");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", futureDate);
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
-
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(count).isEqualTo(1);
-
-        RestAssured.given().log().all()
-                .when().delete("/reservations/1")
-                .then().log().all()
-                .statusCode(204);
-
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
-        assertThat(countAfterDelete).isEqualTo(0);
-    }
-
-    @Test
-    void step7_timeAPIFeature() {
-        Map<String, String> params = new HashMap<>();
-        params.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
-
-        RestAssured.given().log().all()
-                .when().delete("/times/1")
-                .then().log().all()
-                .statusCode(204);
-    }
-
-    @Test
-    void step8_schemaModification() {
-
-        Map<String, String> reservationTime = new HashMap<>();
-        reservationTime.put("startAt", "10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        Map<String, String> theme = new HashMap<>();
-        theme.put("name", "추리");
-        theme.put("description", "셜록 with Danny");
-        theme.put("thumbnail", "image.png");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
+    private void createReservation() {
         Map<String, Object> reservation = new HashMap<>();
         reservation.put("name", "브라운");
         reservation.put("date", futureDate);
@@ -250,24 +244,39 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/reservations")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
     }
 
-    @Test
-    void step9_controllerDoesNotHasDatabaseLogic() {
-        boolean isJdbcTemplateInjected = false;
+    private void createTheme(final String name) {
+        Map<String, String> theme = new HashMap<>();
+        theme.put("name", name);
+        theme.put("description", "셜록 with Danny");
+        theme.put("thumbnail", "image.png");
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
-            if (field.getType().equals(JdbcTemplate.class)) {
-                isJdbcTemplateInjected = true;
-                break;
-            }
-        }
-        assertThat(isJdbcTemplateInjected).isFalse();
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(theme)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    private void createReservationTime() {
+        Map<String, String> reservationTime = new HashMap<>();
+        reservationTime.put("startAt", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservationTime)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    private void findThemesBySize(final int size) {
+        RestAssured.given().log().all()
+                .when().get("/themes")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(size));
     }
 }
