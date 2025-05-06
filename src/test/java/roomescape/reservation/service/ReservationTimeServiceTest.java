@@ -12,11 +12,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.reservation.application.ReservationTimeService;
+import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.repository.JdbcReservationRepository;
-import roomescape.reservation.repository.JdbcReservationTimeRepository;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.ReservationTimeRepository;
+import roomescape.reservation.domain.ReservationTimeRepository;
+import roomescape.reservation.infrastructure.JdbcReservationRepository;
+import roomescape.reservation.infrastructure.JdbcReservationTimeRepository;
 
 @JdbcTest
 class ReservationTimeServiceTest {

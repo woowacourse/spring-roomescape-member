@@ -11,9 +11,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.AlreadyExistException;
+import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.H2ThemeRepository;
-import roomescape.theme.repository.ThemeRepository;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.infrastructure.H2ThemeRepository;
 
 @JdbcTest
 class ThemeServiceTest {
@@ -23,7 +24,7 @@ class ThemeServiceTest {
 
     @Autowired
     private ThemeRepository themeRepository;
-    
+
     @Test
     void 테마를_저장한다() {
         // given

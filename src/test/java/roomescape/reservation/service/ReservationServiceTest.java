@@ -1,5 +1,7 @@
 package roomescape.reservation.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -13,19 +15,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.reservation.application.ReservationService;
+import roomescape.reservation.application.ReservationTimeService;
+import roomescape.reservation.application.dto.AvailableReservationTime;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
-import roomescape.reservation.repository.JdbcReservationRepository;
-import roomescape.reservation.repository.JdbcReservationTimeRepository;
-import roomescape.reservation.repository.ReservationRepository;
-import roomescape.reservation.repository.ReservationTimeRepository;
-import roomescape.reservation.service.dto.AvailableReservationTime;
+import roomescape.reservation.domain.ReservationTimeRepository;
+import roomescape.reservation.infrastructure.JdbcReservationRepository;
+import roomescape.reservation.infrastructure.JdbcReservationTimeRepository;
+import roomescape.theme.applcation.ThemeService;
 import roomescape.theme.domain.Theme;
-import roomescape.theme.repository.H2ThemeRepository;
-import roomescape.theme.repository.ThemeRepository;
-import roomescape.theme.service.ThemeService;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import roomescape.theme.domain.ThemeRepository;
+import roomescape.theme.infrastructure.H2ThemeRepository;
 
 
 @JdbcTest
