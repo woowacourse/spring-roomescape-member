@@ -10,7 +10,7 @@ public class Reservation {
     private final Theme theme;
 
     public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
-        validateMaxLength(name);
+        validateName(name);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -33,9 +33,12 @@ public class Reservation {
         }
     }
 
-    private void validateMaxLength(String name) {
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("이름은 비어있을 수 없습니다.");
+        }
         if (name.length() > 255) {
-            throw new IllegalArgumentException("요청 필드가 최대 제한 길이를 초과했습니다.");
+            throw new IllegalArgumentException("이름의 최대 제한 길이를 초과했습니다.");
         }
     }
 
