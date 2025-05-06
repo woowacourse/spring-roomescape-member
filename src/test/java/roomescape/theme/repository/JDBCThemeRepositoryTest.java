@@ -20,7 +20,7 @@ class JDBCThemeRepositoryTest {
     void setUp() {
         EmbeddedDatabase database = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScripts("/schema.sql", "/test-data.sql")
+                .addScripts("/schema.sql", "/data.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(database);
         themeRepository = new JDBCThemeRepository(jdbcTemplate);

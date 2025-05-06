@@ -24,7 +24,7 @@ class JdbcReservationRepositoryTest {
     void setUp() {
         DataSource dataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScripts("/schema.sql", "/test-data.sql")
+                .addScripts("/schema.sql", "/data.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(dataSource);
         reservationRepository = new JDBCReservationRepository(jdbcTemplate);

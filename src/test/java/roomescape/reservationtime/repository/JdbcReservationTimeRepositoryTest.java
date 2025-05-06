@@ -22,7 +22,7 @@ class JdbcReservationTimeRepositoryTest {
     void setUp() {
         EmbeddedDatabase database = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScripts("/schema.sql", "/test-data.sql")
+                .addScripts("/schema.sql", "/data.sql")
                 .build();
         jdbcTemplate = new JdbcTemplate(database);
         reservationTimeRepository = new JDBCReservationTimeRepository(jdbcTemplate);
@@ -43,7 +43,7 @@ class JdbcReservationTimeRepositoryTest {
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
 
         // then
-        assertThat(reservationTimes.size()).isEqualTo(6);
+        assertThat(reservationTimes.size()).isEqualTo(5);
     }
 
     @Test
@@ -55,12 +55,13 @@ class JdbcReservationTimeRepositoryTest {
 
         // then
         List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        assertThat(reservationTimes.size()).isEqualTo(7);
+        assertThat(reservationTimes.size()).isEqualTo(6);
     }
 
     @Test
     void deleteReservationTime_shouldReturnTrue() {
         // given
+        reservationTimeRepository.save(TestFixture.makeReservationTime(6L));
 
         // when
         reservationTimeRepository.deleteById(6L);
