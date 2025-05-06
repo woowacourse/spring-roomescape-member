@@ -80,15 +80,16 @@ public class ThemeDao {
 
     public List<Theme> getPopularThemeByRankAndDuration(int rank, LocalDate startAt, LocalDate endAt) {
         String sql = """
-                SELECT id, name, description, thumbnail FROM THEME AS t
-                INNER JOIN
-                (SELECT THEME_ID, count(THEME_ID) AS COUNT
-                FROM RESERVATION
-                WHERE date BETWEEN ? AND ?
-                GROUP BY THEME_ID
-                ORDER BY COUNT DESC, THEME_ID ASC
-                LIMIT ?) AS popular
-                ON t.ID = popular.THEME_ID
+                SELECT id, name, description, thumbnail
+                            FROM (
+                                SELECT t.id, t.name, t.description, t.thumbnail,
+                                       RANK() OVER (ORDER BY COUNT(r.THEME_ID) DESC, r.THEME_ID ASC) as theme_rank
+                                FROM THEME t
+                                LEFT JOIN RESERVATION r ON t.ID = r.THEME_ID
+                                WHERE r.date BETWEEN ? AND ?
+                                GROUP BY t.id, t.name, t.description, t.thumbnail
+                            ) ranked
+                            WHERE theme_rank <= ?
                 """;
 
         return jdbcTemplate.query(
