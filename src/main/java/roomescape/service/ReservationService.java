@@ -7,6 +7,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.exception.ResourceNotExistException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +27,10 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id) {
-        repository.deleteReservationById(id);
+        int count = repository.deleteReservationById(id);
+        if (count == 0) {
+            throw new ResourceNotExistException();
+        }
     }
 
     public ReservationResponse save(ReservationRequest request) {

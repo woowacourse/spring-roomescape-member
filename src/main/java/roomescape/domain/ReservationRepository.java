@@ -8,7 +8,7 @@ import java.util.List;
 public interface ReservationRepository {
     List<ReservationResponse> findAllReservations();
 
-    void deleteReservationById(Long id);
+    int deleteReservationById(Long id);
 
     ReservationTime findReservationTimeById(Long timeId);
 

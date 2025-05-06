@@ -14,5 +14,6 @@ public class TestFixture {
     public static final Reservation DEFAULT_RESERVATION = new Reservation("메이", LocalDate.now().plusDays(1), DEFAULT_TIME, DEFAULT_THEME);
 
     public static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
+    public static final LocalDate YESTERDAY = LocalDate.now().plusDays(-1);
     public static final LocalTime NOON = LocalTime.NOON;
 }

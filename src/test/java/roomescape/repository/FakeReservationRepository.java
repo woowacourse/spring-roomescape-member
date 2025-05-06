@@ -1,31 +1,26 @@
 package roomescape.repository;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Repository;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ResourceNotExistException;
+import roomescape.fake.FakeReservationDao;
+import roomescape.fake.FakeReservationTimeDao;
+import roomescape.fake.FakeThemeDao;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
-public class JdbcReservationRepository implements ReservationRepository {
+public class FakeReservationRepository implements ReservationRepository {
 
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final FakeReservationDao reservationDao;
+    private final FakeReservationTimeDao reservationTimeDao;
+    private final FakeThemeDao themeDao;
 
-    public JdbcReservationRepository(final ReservationDao reservationDao, final ReservationTimeDao reservationTimeDao, final ThemeDao themeDao) {
+    public FakeReservationRepository(final FakeReservationDao reservationDao, final FakeReservationTimeDao reservationTimeDao, final FakeThemeDao themeDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
@@ -55,22 +50,12 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Theme findThemeById(final Long themeId) {
-        try {
-            return themeDao.findById(themeId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotExistException();
-        }
+        return themeDao.findById(themeId);
     }
 
     @Override
     public Reservation saveReservation(final Reservation reservation) {
-        try {
-            return reservationDao.save(reservation);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 날짜와 시간에 대한 예약이 이미 존재합니다.");
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 예약 생성에 실패하였습니다");
-        }
+        return reservationDao.save(reservation);
     }
 
     @Override
@@ -80,11 +65,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public ReservationTime saveReservationTime(final ReservationTime reservationTime) {
-        try {
-            return reservationTimeDao.save(reservationTime);
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 예약 시간 생성에 실패하였습니다");
-        }
+        return reservationTimeDao.save(reservationTime);
     }
 
     @Override
@@ -94,11 +75,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public int deleteReservationTimeById(final Long id) {
-        try {
-            return reservationTimeDao.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 시간에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
-        }
+        return reservationTimeDao.deleteById(id);
     }
 
     @Override
@@ -108,16 +85,12 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public int deleteThemeById(final Long id) {
-        try {
-            return themeDao.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마에 대한 예약이 존재하기 때문에 삭제할 수 없습니다.");
-        }
+        return themeDao.deleteById(id);
     }
 
     @Override
     public List<Theme> findPopularThemes(final int count) {
-        return themeDao.findPopular(count);
+        return themeDao.findPopular(reservationDao.findAll(), count);
     }
 
     @Override
@@ -127,13 +100,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Theme saveTheme(final Theme theme) {
-        try {
-            return themeDao.save(theme);
-        } catch (DuplicateKeyException e) {
-            throw new IllegalArgumentException("[ERROR] 해당 테마 이름이 이미 존재합니다.");
-        } catch (DataAccessException e) {
-            throw new IllegalArgumentException("[ERROR] 테마 생성에 실패했습니다.");
-        }
+        return themeDao.save(theme);
     }
 
     @Override
