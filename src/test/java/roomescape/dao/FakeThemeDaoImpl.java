@@ -6,12 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
 
 @Repository
-@Qualifier("fakeThemeDao")
 public class FakeThemeDaoImpl implements ThemeDao {
 
     private final AtomicLong index = new AtomicLong(1);
@@ -19,15 +17,13 @@ public class FakeThemeDaoImpl implements ThemeDao {
 
     @Override
     public List<Theme> findAllTheme() {
-        System.out.println("페이크 객체 테마 가져오기가 실행되었음");
         return Collections.unmodifiableList(themes);
     }
 
     @Override
     public long saveTheme(Theme theme) {
-        theme.setId(index.getAndIncrement());
         themes.add(theme);
-        return index.longValue();
+        return index.getAndIncrement();
     }
 
     @Override

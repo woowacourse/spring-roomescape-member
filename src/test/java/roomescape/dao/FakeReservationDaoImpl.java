@@ -20,9 +20,8 @@ public class FakeReservationDaoImpl implements ReservationDao {
 
     @Override
     public long saveReservation(Reservation reservation) {
-        reservation.setId(index.getAndIncrement());
         reservations.add(reservation);
-        return index.longValue();
+        return index.getAndIncrement();
     }
 
     @Override
@@ -39,8 +38,10 @@ public class FakeReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public int findByTimeId(Long id) {
-        return 0;
+    public int countAlreadyExistReservation(Long id) {
+        return (int) reservations.stream()
+            .filter(reservation -> reservation.getId().equals(id))
+            .count();
     }
 
     @Override
@@ -53,10 +54,5 @@ public class FakeReservationDaoImpl implements ReservationDao {
             .filter(reservation -> reservation.getId() == id)
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약번호 입니다."));
-    }
-
-    @Override
-    public int calculateAlreadyExistReservationBy(String date, long timeId, Long themeId) {
-        return 0;
     }
 }
