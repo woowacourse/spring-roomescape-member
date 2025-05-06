@@ -35,7 +35,7 @@ class ReservationServiceTest {
         reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
 
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
-        reservationTimeRepository.put(time);
+        reservationTimeRepository.save(time);
         Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
         themeRepository.put(theme);
     }
@@ -52,7 +52,7 @@ class ReservationServiceTest {
 
     @Test
     void getReservations_shouldReturnAllCreatedReservations() {
-        reservationTimeRepository.put(ReservationTime.of(2L, LocalTime.of(10, 0)));
+        reservationTimeRepository.save(ReservationTime.of(2L, LocalTime.of(10, 0)));
         reservationService.create(new ReservationCreateRequest("A", futureDate, 1L, 1L));
         reservationService.create(new ReservationCreateRequest("B", futureDate, 2L, 1L));
 

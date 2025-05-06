@@ -32,21 +32,21 @@ class FakeReservationRepositoryTest {
     }
 
     @Test
-    void put_shouldStoreReservation() {
-        reservationRepository.put(reservation);
+    void save_shouldStoreReservation() {
+        reservationRepository.save(reservation);
 
-        assertThat(reservationRepository.getAll()).hasSize(1);
+        assertThat(reservationRepository.findAll()).hasSize(1);
     }
 
     @Test
-    void getAll_shouldReturnAllSavedReservations() {
+    void findAll_shouldReturnAllSavedReservations() {
         Reservation reservation2 = Reservation.of(1L, "대니", futureDate, ReservationTime.of(1L, "16:00"),
                 theme);
 
-        reservationRepository.put(reservation);
-        reservationRepository.put(reservation2);
+        reservationRepository.save(reservation);
+        reservationRepository.save(reservation2);
 
-        List<Reservation> all = reservationRepository.getAll();
+        List<Reservation> all = reservationRepository.findAll();
         assertThat(all).hasSize(2);
     }
 
@@ -54,6 +54,6 @@ class FakeReservationRepositoryTest {
     void deleteById_shouldRemoveReservation() {
         reservationRepository.deleteById(1L);
 
-        assertThat(reservationRepository.getAll()).isEmpty();
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 }

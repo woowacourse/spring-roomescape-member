@@ -14,14 +14,14 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     private final AtomicLong index = new AtomicLong(1);
 
     @Override
-    public List<ReservationTime> getAll() {
+    public List<ReservationTime> findAll() {
         return reservationTimes.entrySet().stream()
                 .map(entry -> ReservationTime.of(entry.getKey(), entry.getValue().getStartAt()))
                 .toList();
     }
 
     @Override
-    public ReservationTime put(final ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         Long id = index.getAndIncrement();
         reservationTimes.put(id, reservationTime);
         return ReservationTime.of(id, reservationTime.getStartAt());

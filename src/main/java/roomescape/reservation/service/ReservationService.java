@@ -29,7 +29,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> getReservations() {
-        return reservationRepository.getAll().stream()
+        return reservationRepository.findAll().stream()
                 .map(reservation -> {
                     ReservationTime time = reservation.getTime();
                     Theme theme = reservation.getTheme();
@@ -54,7 +54,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ReservationNotFoundException("요청한 id와 일치하는 테마 정보가 없습니다."));
 
-        Reservation newReservation = reservationRepository.put(
+        Reservation newReservation = reservationRepository.save(
                 Reservation.withUnassignedId(request.name(), request.date(), time, theme));
         return ReservationResponse.of(newReservation, time, theme);
     }

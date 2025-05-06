@@ -21,7 +21,7 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> getAll() {
+    public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 "SELECT "
                         + "r.id as reservation_id, "
@@ -62,7 +62,7 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation put(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");

@@ -14,7 +14,7 @@ public class FakeReservationRepository implements ReservationRepository {
     private final AtomicLong index = new AtomicLong(1);
 
     @Override
-    public List<Reservation> getAll() {
+    public List<Reservation> findAll() {
         return reservations.entrySet().stream()
                 .map(entry -> {
                     Reservation value = entry.getValue();
@@ -25,7 +25,7 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Reservation put(final Reservation reservation) {
+    public Reservation save(final Reservation reservation) {
         Long id = index.getAndIncrement();
         reservations.put(id, reservation);
         return Reservation.of(id, reservation.getName(), reservation.getDate(), reservation.getTime(),

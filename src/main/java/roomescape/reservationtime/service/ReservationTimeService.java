@@ -1,7 +1,6 @@
 package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +31,7 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeRepository.getAll().stream()
+        return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
@@ -48,7 +47,7 @@ public class ReservationTimeService {
 
     public ReservationTimeResponse create(final ReservationTimeCreateRequest request) {
         validateIsTimeUnique(request);
-        ReservationTime newReservationTime = reservationTimeRepository.put(request.toReservationTime());
+        ReservationTime newReservationTime = reservationTimeRepository.save(request.toReservationTime());
         return ReservationTimeResponse.from(newReservationTime);
     }
 
@@ -60,7 +59,7 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date,
                                                                                final Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.getAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
 
         Map<ReservationTime, Boolean> availabilities = reservationTimes.stream()

@@ -20,7 +20,7 @@ public class JDBCReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public List<ReservationTime> getAll() {
+    public List<ReservationTime> findAll() {
         return jdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time",
                 (resultSet, rowNum) -> {
@@ -34,7 +34,7 @@ public class JDBCReservationTimeRepository implements ReservationTimeRepository 
     }
 
     @Override
-    public ReservationTime put(final ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation_time")
                 .usingGeneratedKeyColumns("id");
