@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.exception.badRequest.BadRequestException;
+import roomescape.exception.conflict.ReservationTimeConflictException;
+import roomescape.exception.notFound.ReservationTimeNotFoundException;
 import roomescape.reservation.entity.Reservation;
 import roomescape.reservation.repository.FakeReservationRepository;
 import roomescape.reservation.repository.ReservationRepository;
@@ -25,6 +27,21 @@ class ReservationTimeServiceTest {
     private final ReservationTimeRepository timeRepository = new FakeTimeRepository();
     private final ReservationRepository reservationRepository = new FakeReservationRepository();
     private final ReservationTimeService service = new ReservationTimeService(timeRepository, reservationRepository);
+
+    @DisplayName("이미 동일한 시간이 존재하는 경우 생성할 수 없다.")
+    @Test
+    void createDuplicateTime() {
+        // given
+        LocalTime duplicatedTime = LocalTime.of(10, 0);
+        timeRepository.save(ReservationTime.create(duplicatedTime));
+
+        ReservationTimeRequest request = new ReservationTimeRequest(duplicatedTime);
+
+        // when & then
+        assertThatThrownBy(() -> {
+            service.create(request);
+        }).isInstanceOf(ReservationTimeConflictException.class);
+    }
 
     @DisplayName("예약 생성이 가능한 시간은 10:00 ~ 22:00 이다.")
     @ParameterizedTest
@@ -79,5 +96,16 @@ class ReservationTimeServiceTest {
         assertThatThrownBy(() -> {
             service.delete(1L);
         }).isInstanceOf(BadRequestException.class);
+    }
+
+    @DisplayName("존재하지 않는 시간은 삭제할 수 없다.")
+    @Test
+    void deleteNotExistReservationTime() {
+        // given
+
+        // when & then
+        assertThatThrownBy(() -> {
+            service.delete(1L);
+        }).isInstanceOf(ReservationTimeNotFoundException.class);
     }
 }
