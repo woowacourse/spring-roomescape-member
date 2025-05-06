@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.AuthRequired;
+import roomescape.auth.Role;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.vo.UserRole;
 import roomescape.business.service.ReservationTimeService;
@@ -24,7 +25,8 @@ public class ReservationTimeApiController {
     }
 
     @PostMapping("/times")
-    @AuthRequired(UserRole.ADMIN)
+    @AuthRequired
+    @Role(UserRole.ADMIN)
     public ResponseEntity<ReservationTimeResponse> createReservationTime(@RequestBody @Valid ReservationTimeRequest request) {
         ReservationTime reservationTime = reservationTimeService.addAndGet(request.startAtToLocalTime());
         ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
@@ -51,7 +53,8 @@ public class ReservationTimeApiController {
     }
 
     @DeleteMapping("/times/{id}")
-    @AuthRequired(UserRole.ADMIN)
+    @AuthRequired
+    @Role(UserRole.ADMIN)
     public ResponseEntity<Void> deleteReservationTime(@PathVariable long id) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();

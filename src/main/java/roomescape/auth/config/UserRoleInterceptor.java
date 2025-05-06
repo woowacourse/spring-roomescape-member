@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.AuthRequired;
+import roomescape.auth.Role;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.Authorization;
 import roomescape.business.model.vo.UserRole;
@@ -27,16 +27,13 @@ public class UserRoleInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
-        if (!handlerMethod.hasMethodAnnotation(AuthRequired.class)) {
-            return true;
-        }
-        AuthRequired authRequired = handlerMethod.getMethodAnnotation(AuthRequired.class);
-        if (authRequired == null) {
+        Role role = handlerMethod.getMethodAnnotation(Role.class);
+        if (role == null) {
             return true;
         }
         String token = extractTokenFromCookies(request);
         Authorization authorization = jwtUtil.getAuthorization(token);
-        validateUserRole(authorization, authRequired);
+        validateUserRole(authorization, role);
         request.setAttribute("authorization", authorization);
         return true;
     }
@@ -55,9 +52,9 @@ public class UserRoleInterceptor implements HandlerInterceptor {
         return null;
     }
 
-    private static void validateUserRole(final Authorization authorization, final AuthRequired authRequired) {
+    private static void validateUserRole(final Authorization authorization, final Role role) {
         UserRole userRole = authorization.userRole();
-        final List<UserRole> allowedRoles = Arrays.asList(authRequired.value());
+        final List<UserRole> allowedRoles = Arrays.asList(role.value());
 
         if (!allowedRoles.contains(userRole)) {
             throw new ForbiddenException();

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.AuthRequired;
+import roomescape.auth.Role;
 import roomescape.business.model.entity.Theme;
 import roomescape.business.model.vo.UserRole;
 import roomescape.business.service.ThemeService;
@@ -23,7 +24,8 @@ public class ThemeApiController {
     }
 
     @PostMapping("/themes")
-    @AuthRequired(UserRole.ADMIN)
+    @AuthRequired
+    @Role(UserRole.ADMIN)
     public ResponseEntity<ThemeResponse> add(@RequestBody @Valid ThemeCreateRequest request) {
         Theme theme = themeService.addAndGet(request.name(), request.description(), request.thumbnail());
         return ResponseEntity.created(URI.create("/themes")).body(ThemeResponse.from(theme));
@@ -46,7 +48,8 @@ public class ThemeApiController {
     }
 
     @DeleteMapping("/themes/{id}")
-    @AuthRequired(UserRole.ADMIN)
+    @AuthRequired
+    @Role(UserRole.ADMIN)
     public ResponseEntity<Void> delete(@PathVariable long id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();

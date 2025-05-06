@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.auth.AuthRequired;
+import roomescape.auth.Role;
 import roomescape.business.model.entity.Reservation;
 import roomescape.business.model.vo.Authorization;
 import roomescape.business.model.vo.UserRole;
@@ -33,7 +34,8 @@ public class ReservationApiController {
     }
 
     @PostMapping("/admin/reservations")
-    @AuthRequired(UserRole.ADMIN)
+    @AuthRequired
+    @Role(UserRole.ADMIN)
     public ResponseEntity<ReservationResponse> adminCreateReservation(@RequestBody @Valid AdminReservationRequest request) {
         Reservation reservation = reservationService.addAndGet(request.date(), request.timeId(), request.themeId(), request.userId());
         ReservationResponse response = ReservationResponse.from(reservation);

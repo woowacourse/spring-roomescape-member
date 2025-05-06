@@ -23,9 +23,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
-        if (!handlerMethod.hasMethodAnnotation(AuthRequired.class)) {
-            return true;
-        }
         AuthRequired authRequired = handlerMethod.getMethodAnnotation(AuthRequired.class);
         if (authRequired == null) {
             return true;
