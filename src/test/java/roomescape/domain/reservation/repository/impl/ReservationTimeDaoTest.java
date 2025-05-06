@@ -9,33 +9,28 @@ import java.time.LocalTime;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.config.TestConfig;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.repository.ReservationTimeRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
-@Disabled
+@JdbcTest
+@Import({ReservationTimeDao.class})
 class ReservationTimeDaoTest {
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
     private ReservationTimeRepository reservationTimeRepository;
-
-    @BeforeEach
-    void init() {
-        jdbcTemplate = TestConfig.getJdbcTemplate();
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        reservationTimeRepository = new ReservationTimeDao(namedParameterJdbcTemplate, TestConfig.getDataSource());
-    }
 
     @AfterEach
     void tearDown() {
@@ -96,7 +91,7 @@ class ReservationTimeDaoTest {
                     .doesNotThrowAnyException();
         }
 
-        @DisplayName("Reservation 테이블에서 사용 중이라면 AlreadyUseException 예외를 반환한다.")
+        @DisplayName("Reservation 테이블에서 사용 중이라면 DataIntegrityViolationException 예외를 반환한다.")
         @Test
         void test2() {
             // given
@@ -110,7 +105,7 @@ class ReservationTimeDaoTest {
 
             // when
             assertThatThrownBy(() -> reservationTimeRepository.deleteById(id))
-                    .isInstanceOf(AlreadyInUseException.class);
+                    .isInstanceOf(DataIntegrityViolationException.class);
         }
     }
 

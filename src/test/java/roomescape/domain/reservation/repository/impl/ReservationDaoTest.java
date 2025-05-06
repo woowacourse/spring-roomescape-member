@@ -9,24 +9,24 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import roomescape.common.exception.EntityNotFoundException;
-import roomescape.config.TestConfig;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
-@Disabled
+@JdbcTest
+@Import({ReservationDao.class})
 class ReservationDaoTest {
 
     private static final Long RESERVATION_TIME_ID = 1L;
@@ -36,15 +36,10 @@ class ReservationDaoTest {
     private static final String THEME_DESCRIPTION = "우테코 공포";
     private static final String THEME_THUMBNAIL = "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg";
 
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
     private ReservationRepository reservationRepository;
-
-    @BeforeEach
-    void init() {
-        jdbcTemplate = TestConfig.getJdbcTemplate();
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = TestConfig.getNamedParameterJdbcTemplate();
-        reservationRepository = new ReservationDao(namedParameterJdbcTemplate, TestConfig.getDataSource());
-    }
 
     @AfterEach
     void tearDown() {
