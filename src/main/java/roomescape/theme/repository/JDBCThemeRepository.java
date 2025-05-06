@@ -74,9 +74,9 @@ public class JDBCThemeRepository implements ThemeRepository {
         List<ThemeEntity> themeEntity = jdbcTemplate.query(
                 "SELECT th.id, th.name, th.description, th.thumbnail "
                         + "FROM theme as th "
-                        + "inner join reservation as r "
+                        + "left join reservation as r "
                         + "on th.id = r.theme_id "
-                        + "where PARSEDATETIME(r.date, 'yyyy-MM-dd') between ? and ? "
+                        + "and PARSEDATETIME(r.date, 'yyyy-MM-dd') between ? and ? "
                         + "group by th.id "
                         + "order by count(r.id) desc, "
                         + "th.name asc "
