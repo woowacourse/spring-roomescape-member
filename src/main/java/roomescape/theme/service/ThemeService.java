@@ -43,7 +43,7 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getPopularThemes() {
-        final LocalDate date = LocalDate.now().plusDays(10);
+        final LocalDate date = LocalDate.now();
         return themeRepository.findTop10PopularThemesWithinLastWeek(date).stream()
                 .map(ThemeResponse::from)
                 .toList();
