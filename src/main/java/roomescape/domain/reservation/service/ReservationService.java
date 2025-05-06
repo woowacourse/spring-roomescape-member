@@ -59,7 +59,7 @@ public class ReservationService {
 
         Reservation reservation = getReservation(request);
         LocalDateTime now = LocalDateTime.now();
-        validateDateTime(now, reservation.getReservationDate(), reservation.getReservationStratTime());
+        validateDateTime(now, reservation.getReservationDate(), reservation.getReservationStartTime());
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -67,7 +67,9 @@ public class ReservationService {
     }
 
     private boolean isAlreadyBooked(final ReservationRequest request) {
-        return reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(), request.themeId());
+        return reservationRepository.existsByDateAndTimeIdAndThemeId(
+                request.date(), request.timeId(), request.themeId()
+        );
     }
 
     private Reservation getReservation(final ReservationRequest request) {

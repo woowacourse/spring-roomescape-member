@@ -17,8 +17,9 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
-                                  ReservationRepository reservationRepository) {
+    public ReservationTimeService(final ReservationTimeRepository reservationTimeRepository,
+                                  final ReservationRepository reservationRepository
+    ) {
         this.reservationTimeRepository = reservationTimeRepository;
         this.reservationRepository = reservationRepository;
     }
@@ -31,7 +32,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponse create(ReservationTimeRequest request) {
+    public ReservationTimeResponse create(final ReservationTimeRequest request) {
         ReservationTime reservationTime = request.toEntity();
 
         ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
@@ -39,7 +40,7 @@ public class ReservationTimeService {
         return ReservationTimeResponse.from(savedReservationTime);
     }
 
-    public void delete(Long id) {
+    public void delete(final Long id) {
         if (reservationRepository.existsByTimeId(id)) {
             throw new AlreadyInUseException("Reservation is already in use");
         }

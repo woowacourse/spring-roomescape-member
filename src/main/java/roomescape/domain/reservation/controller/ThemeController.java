@@ -23,7 +23,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    public ThemeController(final ThemeService themeService) {
         this.themeService = themeService;
     }
 
@@ -42,14 +42,14 @@ public class ThemeController {
     }
 
     @PostMapping
-    public ResponseEntity<ThemeResponse> create(@Valid @RequestBody ThemeRequest request) {
+    public ResponseEntity<ThemeResponse> create(@Valid @RequestBody final ThemeRequest request) {
         ThemeResponse response = themeService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         themeService.delete(id);
 
         return ResponseEntity.noContent().build();

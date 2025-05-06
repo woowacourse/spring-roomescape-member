@@ -125,7 +125,7 @@ class ReservationDaoTest {
         assertThat(result.getName()).isEqualTo(name);
         assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
         assertThat(result.getReservationTimeId()).isEqualTo(RESERVATION_TIME_ID);
-        assertThat(result.getReservationStratTime()).isEqualTo(now.toLocalTime());
+        assertThat(result.getReservationStartTime()).isEqualTo(now.toLocalTime());
         assertThat(result.getThemeId()).isEqualTo(THEME_ID);
     }
 

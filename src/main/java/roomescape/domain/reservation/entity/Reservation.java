@@ -15,7 +15,9 @@ public class Reservation {
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate reservationDate, ReservationTime reservationTime, Theme theme) {
+    public Reservation(final Long id, final String name, final LocalDate reservationDate,
+                       final ReservationTime reservationTime, final Theme theme
+    ) {
         this.id = id;
         this.name = name;
         this.reservationDate = reservationDate;
@@ -24,8 +26,12 @@ public class Reservation {
         validateReservation();
     }
 
-    public static Reservation withoutId(String name, LocalDate reservationDate, ReservationTime reservationTime,
-                                        Theme theme) {
+    public static Reservation withoutId(
+            final String name,
+            final LocalDate reservationDate,
+            final ReservationTime reservationTime,
+            final Theme theme
+    ) {
         return new Reservation(EMPTY_ID, name, reservationDate, reservationTime, theme);
     }
 
@@ -66,7 +72,7 @@ public class Reservation {
         return reservationTime;
     }
 
-    public LocalTime getReservationStratTime() {
+    public LocalTime getReservationStartTime() {
         return reservationTime.getStartAt();
     }
 
@@ -79,7 +85,7 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }

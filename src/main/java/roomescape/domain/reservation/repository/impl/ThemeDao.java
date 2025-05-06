@@ -28,7 +28,7 @@ public class ThemeDao implements ThemeRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public ThemeDao(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ThemeDao(final NamedParameterJdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(TABLE_NAME)
@@ -43,7 +43,9 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public List<Theme> findThemeRankingByReservation(LocalDate startDate, LocalDate endDate, int rowCount) {
+    public List<Theme> findThemeRankingByReservation(final LocalDate startDate, final LocalDate endDate,
+                                                     final int rowCount
+    ) {
         String sql = """
                 select T.*, count(R.id) as reservation_count
                 from theme T
@@ -62,7 +64,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Theme save(Theme theme) {
+    public Theme save(final Theme theme) {
         if (theme.existId()) {
             return update(theme);
         }
@@ -70,7 +72,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String deleteSql = "delete from theme where id = :id";
         Map<String, Long> params = Map.of("id", id);
 
@@ -82,7 +84,7 @@ public class ThemeDao implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(Long id) {
+    public Optional<Theme> findById(final Long id) {
         String sql = "select id, name, description, thumbnail from theme where id = :id";
 
         Map<String, Long> params = Map.of("id", id);
@@ -96,7 +98,7 @@ public class ThemeDao implements ThemeRepository {
         }
     }
 
-    private Theme themeOf(ResultSet resultSet) throws SQLException {
+    private Theme themeOf(final ResultSet resultSet) throws SQLException {
         return Theme.builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
@@ -105,7 +107,7 @@ public class ThemeDao implements ThemeRepository {
                 .build();
     }
 
-    private Theme update(Theme theme) {
+    private Theme update(final Theme theme) {
         String sql = """
                 update theme 
                 set name = :name, description = :description, thumbnail = :thumbnail
@@ -127,7 +129,7 @@ public class ThemeDao implements ThemeRepository {
         return theme;
     }
 
-    private Theme create(Theme theme) {
+    private Theme create(final Theme theme) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", theme.getName())
                 .addValue("description", theme.getDescription())

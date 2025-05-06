@@ -9,7 +9,7 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(Long id, String name, String description, String thumbnail) {
+    public Theme(final Long id, final String name, final String description, final String thumbnail) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -17,11 +17,11 @@ public class Theme {
         validateTheme();
     }
 
-    public static Theme withoutId(String name, String description, String thumbnail) {
+    public static Theme withoutId(final String name, final String description, final String thumbnail) {
         return new Theme(EMPTY_ID, name, description, thumbnail);
     }
 
-    private Theme(Builder builder) {
+    private Theme(final Builder builder) {
         this(builder.id, builder.name, builder.description, builder.thumbnail);
     }
 
@@ -62,22 +62,22 @@ public class Theme {
         private String description;
         private String thumbnail;
 
-        public Builder id(Long id) {
+        public Builder id(final Long id) {
             this.id = id;
             return this;
         }
 
-        public Builder name(String name) {
+        public Builder name(final String name) {
             this.name = name;
             return this;
         }
 
-        public Builder description(String description) {
+        public Builder description(final String description) {
             this.description = description;
             return this;
         }
 
-        public Builder thumbnail(String thumbnail) {
+        public Builder thumbnail(final String thumbnail) {
             this.thumbnail = thumbnail;
             return this;
         }

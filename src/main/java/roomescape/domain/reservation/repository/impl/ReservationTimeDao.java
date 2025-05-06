@@ -29,7 +29,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
-    public ReservationTimeDao(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource) {
+    public ReservationTimeDao(final NamedParameterJdbcTemplate jdbcTemplate, final DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName(TABLE_NAME)
@@ -46,7 +46,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public Optional<ReservationTime> findById(Long id) {
+    public Optional<ReservationTime> findById(final Long id) {
         String sql = "select * from reservation_time where id = :id";
 
         Map<String, Long> params = Map.of("id", id);
@@ -63,7 +63,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         }
     }
 
-    private ReservationTime reservationTimeOf(ResultSet resultSet) throws SQLException {
+    private ReservationTime reservationTimeOf(final ResultSet resultSet) throws SQLException {
         return new ReservationTime(
                 resultSet.getLong("id"),
                 LocalTime.parse(resultSet.getString("start_at"))
@@ -71,7 +71,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public ReservationTime save(ReservationTime reservationTime) {
+    public ReservationTime save(final ReservationTime reservationTime) {
         if (reservationTime.getStartAt() == null) {
             throw new IllegalArgumentException("start_at cannot be null");
         }
@@ -83,7 +83,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         return create(reservationTime);
     }
 
-    private ReservationTime update(ReservationTime reservationTime) {
+    private ReservationTime update(final ReservationTime reservationTime) {
         String sql = "update reservation_time set start_at = :start_at where id = :id";
 
         Map<String, Object> params = Map.of("start_at", reservationTime.getStartAt(),
@@ -98,7 +98,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
         return reservationTime;
     }
 
-    private ReservationTime create(ReservationTime reservationTime) {
+    private ReservationTime create(final ReservationTime reservationTime) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("start_at", reservationTime.getStartAt());
 
@@ -108,7 +108,7 @@ public class ReservationTimeDao implements ReservationTimeRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(final Long id) {
         String deleteSql = "delete from reservation_time where id = :id";
         Map<String, Long> params = Map.of("id", id);
 
