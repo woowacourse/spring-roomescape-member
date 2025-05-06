@@ -1,0 +1,270 @@
+# 방탈출 예약 관리
+
+## 버전 관리
+- JDK 21
+- Gradle 8.13
+- Spring Boot 3.4.4
+
+## 요구사항 명세서
+- [x] 예약 시간 검증
+    - [x] 시작 시간은 LocalTime 형식을 만족시켜야 한다.
+    - [x] 예약이 이미 존재하는 시간은 삭제할 수 없다.
+    - [x] 중복된 시간 추가는 불가능하다.
+
+- [x] 예약 검증
+    - [x] 예약자명이 존재하지 않거나, 10자를 초과할 수 없다. 
+    - [x] 날짜는 LocalDate 형식을 만족시켜야 한다.
+    - [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능하다.
+    - [x] 중복된 일시의 예약은 불가능하다. 
+    - [x] 존재하지 않는 예약 시간 ID를 이용하여 예약할 수 없다.
+
+- [x] 테마 검증
+    - [x] 예약이 이미 존재하는 테마는 삭제할 수 없다.
+
+- [x] NotNull
+  - [x] Reservation: date, themeId, timeId
+  - [x] ReservationTime: startAt
+- [x] NotBlank
+  - [x] Reservation: name
+  - [x] Theme: name
+
+##  화면 명세서
+###  1. 인기 테마 화면
+- [x] `localhost:8080` 요청 시 인기 테마 랭킹 페이지 응답
+
+### 2. 관리자 화면
+- [x] `localhost:8080/admin` 요청 시 어드민 메인 페이지 응답
+
+### 3. 관리자 예약 화면
+- [x] `/admin/reservation` 요청 시 예약 관리 페이지 응답
+
+### 4. 관리자 예약 시간 화면
+- [x] `/admin/time` 요청 시 예약 시간 관리 페이지 응답
+
+### 5. 관리자 테마 화면
+- [x] `/admin/theme` 요청 시 테마 관리 페이지 응답
+
+### 6. 사용자 예약 화면
+- [x] `/reservation` 요청 시 사용자 예약 페이지 응답
+
+## API 명세서
+## 예약 API
+### 예약 조회 API
+- [x] 예약 조회 API 구현
+#### Request
+```
+GET /reservations HTTP/1.1
+```
+
+#### Response
+```
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "theme": {
+            "id": 1,
+            "name": "레벨2 탈출",
+            "description": "우테코 레벨2를 탈출하는 내용입니다.",
+            "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+        }
+        "date": "2023-08-05",
+        "time": {
+            "id": 1,
+            "startAt": "10:00"
+        }
+    }
+]
+
+```
+
+### 예약 추가 API
+- [x] 예약 추가 API 구현
+#### Request
+```
+POST /reservations HTTP/1.1
+content-type: application/json
+
+{
+    "date": "2023-08-05",
+    "name": "브라운",
+    "themeId": 1
+    "timeId": 1
+}
+```
+
+#### Response
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "브라운",
+    "theme": {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+    "date": "2023-08-05",
+    "time" : {
+        "id": 1,
+        "startAt" : "10:00"
+    }
+}
+```
+
+### 예약 취소 API
+- [x] 예약 취소 API 구현
+#### Request
+```
+DELETE /reservations/1 HTTP/1.1
+```
+#### Response
+```
+HTTP/1.1 200
+```
+
+## 예약 시간 API
+### 예약 시간 추가 API
+- [x] 예약 시간 추가 API 구현
+#### Request
+```
+POST /times HTTP/1.1
+content-type: application/json
+
+{
+    "startAt": "10:00"
+}
+
+```
+
+#### Response
+```
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+    "id": 1,
+    "startAt": "10:00"
+}
+```
+
+### 예약 시간 조회 API
+- [x] 예약 시간 조회 API 구현
+#### Request
+```
+GET /times HTTP/1.1
+```
+
+#### Response
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "startAt": "10:00",
+        "alreadyBookmarked": true
+    }
+]
+```
+
+### 예약 시간 삭제 API
+- [x] 예약 시간 삭제 API 구현
+#### Request
+```
+DELETE /times/1 HTTP/1.1
+```
+
+#### Response
+```
+HTTP/1.1 200
+```
+
+## 테마 API
+### 테마 추가 API
+- [x] 테마 추가 API 구현
+#### Request
+```
+POST /themes HTTP/1.1
+content-type: application/json
+
+{
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+#### Response
+```
+HTTP/1.1 201
+Location: /themes/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "레벨2 탈출",
+    "description": "우테코 레벨2를 탈출하는 내용입니다.",
+    "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+```
+
+### 테마 조회 API
+- [x] 테마 조회 API 구현
+#### Request
+```
+GET /themes HTTP/1.1
+```
+
+#### Response
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+### 인기 테마 조회 API
+- [x] 인기 테마 조회 API 구현
+  - [x] 최근 일주일을 기준으로 하여 해당 기간 내에 방문하는 예약이 많은 테마 10개를 조회한다.
+#### Request
+```
+GET /themes/popular HTTP/1.1
+```
+
+#### Response
+```
+HTTP/1.1 200 
+Content-Type: application/json
+
+[
+   {
+        "id": 1,
+        "name": "레벨2 탈출",
+        "description": "우테코 레벨2를 탈출하는 내용입니다.",
+        "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+    }
+]
+```
+
+### 테마 삭제 API
+- [x] 테마 삭제 API 구현
+#### Request
+```
+DELETE /themes/1 HTTP/1.1
+```
+
+#### Response
+```
+HTTP/1.1 204
+```
