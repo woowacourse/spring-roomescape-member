@@ -3,6 +3,7 @@ package roomescape.auth;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -35,8 +36,19 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
             String token = getTokenFromCookie(request);
             return jwtTokenProvider.resolveToken(token);
         }
+        if (request != null) {
+            resetToken(request);
+        }
 
         throw new AuthenticationException("UserInfo를 파싱하는데 실패하였습니다");
+    }
+
+    private void resetToken(HttpServletRequest request) {
+        String jwtCookieKey = JwtTokenProvider.getCookieKey();
+        Optional<Cookie> tokenCookie = Arrays.stream(request.getCookies())
+                .filter((cookie) -> jwtCookieKey.equals(cookie.getName()))
+                .findAny();
+        tokenCookie.ifPresent(cookie -> cookie.setMaxAge(0));
     }
 
     private String getTokenFromCookie(HttpServletRequest request) {

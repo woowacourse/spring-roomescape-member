@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,10 +33,19 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto,
                                                   HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
         String token = memberService.login(loginRequestDto);
-        Cookie cookie = new Cookie("token", token);
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
+
+        Cookie newCookie = new Cookie("token", token);
+        newCookie.setMaxAge(3600);
+        newCookie.setPath("/");
+        response.addCookie(newCookie);
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
