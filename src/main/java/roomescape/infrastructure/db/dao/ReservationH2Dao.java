@@ -12,12 +12,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import roomescape.domain.entity.Reservation;
 import roomescape.domain.entity.ReservationTheme;
 import roomescape.domain.entity.ReservationTime;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class ReservationH2Dao implements ReservationDao {
 
