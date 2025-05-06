@@ -3,9 +3,11 @@ package roomescape.infrastructure.db;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.entity.ReservationTheme;
 import roomescape.domain.repository.ReservationThemeRepository;
+import roomescape.global.exception.ResourceInUseException;
 import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.infrastructure.db.dao.ReservationThemeDao;
 
@@ -38,7 +40,11 @@ public class ReservationThemeDbRepository implements ReservationThemeRepository 
 
     @Override
     public void remove(ReservationTheme reservationTime) {
-        reservationThemeDao.deleteById(reservationTime.id());
+        try {
+            reservationThemeDao.deleteById(reservationTime.id());
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceInUseException("삭제하려는 테마를 가진 예약이 존재합니다.", e);
+        }
     }
 
     @Override

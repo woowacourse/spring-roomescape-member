@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.domain.entity.ReservationTheme;
-import roomescape.global.exception.ResourceInUseException;
 
 @Component
 @RequiredArgsConstructor
@@ -75,12 +73,7 @@ public class ReservationThemeH2Dao implements ReservationThemeDao {
     @Override
     public void deleteById(Long id) {
         String deleteQuery = "DELETE FROM theme WHERE id = :id";
-
-        try {
-            jdbcTemplate.update(deleteQuery, Map.of("id", id));
-        } catch (DataIntegrityViolationException e) {
-            throw new ResourceInUseException("삭제하려는 테마를 가진 예약이 존재합니다.", e);
-        }
+        jdbcTemplate.update(deleteQuery, Map.of("id", id));
     }
 
     @Override

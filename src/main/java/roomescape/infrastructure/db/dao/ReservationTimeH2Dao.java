@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,9 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import roomescape.domain.entity.ReservationTime;
-import roomescape.global.exception.ResourceInUseException;
 
 @Component
 @RequiredArgsConstructor
@@ -70,12 +67,7 @@ public class ReservationTimeH2Dao implements ReservationTimeDao {
     @Override
     public void deleteById(Long id) {
         String deleteQuery = "DELETE FROM reservation_time WHERE id = :id";
-
-        try {
-            jdbcTemplate.update(deleteQuery, Map.of("id", id));
-        } catch (DataIntegrityViolationException e) {
-            throw new ResourceInUseException("삭제하려는 시간을 가진 예약이 존재합니다.", e);
-        }
+        jdbcTemplate.update(deleteQuery, Map.of("id", id));
     }
 
     @Override

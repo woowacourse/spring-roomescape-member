@@ -19,7 +19,7 @@ class ReservationTimeValidationServiceTest {
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    private ReservationThemeValidationService reservationThemeValidationService;
+    private ReservationTimeValidationService reservationTimeValidationService;
 
     @DisplayName("해당 예약시간을 사용중인 예약이 있다면 예외를 발생시킨다")
     @Test
@@ -29,7 +29,7 @@ class ReservationTimeValidationServiceTest {
         given(reservationRepository.existsByTimeId(timeId)).willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> reservationThemeValidationService.validateNotInUse(timeId))
+        assertThatThrownBy(() -> reservationTimeValidationService.validateNotInUse(timeId))
                 .isInstanceOf(ReservationTimeInUseException.class);
     }
 }

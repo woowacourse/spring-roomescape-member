@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.entity.ReservationTime;
 import roomescape.domain.repository.ReservationTimeRepository;
+import roomescape.global.exception.ResourceInUseException;
 import roomescape.global.exception.ResourceNotFoundException;
 import roomescape.infrastructure.db.dao.ReservationTimeDao;
 
@@ -39,7 +41,11 @@ public class ReservationTimeDbRepository implements ReservationTimeRepository {
 
     @Override
     public void remove(ReservationTime reservationTime) {
-        reservationTimeDao.deleteById(reservationTime.id());
+        try {
+            reservationTimeDao.deleteById(reservationTime.id());
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceInUseException("삭제하려는 시간을 가진 예약이 존재합니다.", e);
+        }
     }
 
     @Override
