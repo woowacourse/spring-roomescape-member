@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import roomescape.repository.ThemeDao;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
+import roomescape.repository.ThemeRepository;
 
-public class FakeThemeDao implements ThemeDao {
+public class FakeThemeDao implements ThemeRepository {
 
     List<Theme> themes = new ArrayList<>();
     Long index = 1L;

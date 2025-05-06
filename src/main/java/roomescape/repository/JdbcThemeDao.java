@@ -13,7 +13,7 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 
 @Repository
-public class JdbcThemeDao implements ThemeDao {
+public class JdbcThemeDao implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert themeInserter;

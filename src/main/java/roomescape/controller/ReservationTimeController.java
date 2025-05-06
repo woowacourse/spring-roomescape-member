@@ -46,12 +46,6 @@ public class ReservationTimeController {
         return ResponseEntity.ok().body(responses);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
-        reservationTimeService.deleteReservationTimeById(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/availability")
     public ResponseEntity<List<TimeAvailabilityResponse>> findAllTimeAvailability(
             @RequestParam("date") LocalDate date,
@@ -60,5 +54,11 @@ public class ReservationTimeController {
         final List<TimeAvailabilityResponse> responses = reservationAvailabilityService
                 .getAllTimeAvailability(date, themeId);
         return ResponseEntity.ok().body(responses);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") final long id) {
+        reservationTimeService.deleteReservationTimeById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -14,7 +14,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
 @Repository
-public class JdbcReservationDao implements ReservationDao {
+public class JdbcReservationDao implements ReservationRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert reservationInserter;

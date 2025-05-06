@@ -2,42 +2,43 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.repository.ReservationDao;
-import roomescape.repository.ReservationTimeDao;
-import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
 public class ReservationTimeService {
 
-    private final ReservationTimeDao reservationTimeDao;
-    private final ReservationDao reservationDao;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationRepository reservationRepository;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
-        this.reservationTimeDao = reservationTimeDao;
-        this.reservationDao = reservationDao;
+    public ReservationTimeService(ReservationTimeRepository reservationTimeRepository,
+                                  ReservationRepository reservationRepository) {
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public ReservationTimeResponse createReservationTime(final ReservationTimeRequest reservationTimeRequest) {
-        if (reservationTimeDao.existsByTime(reservationTimeRequest.startAt())) {
+        if (reservationTimeRepository.existsByTime(reservationTimeRequest.startAt())) {
             throw new IllegalArgumentException("이미 존재하는 시간입니다.");
         }
         final ReservationTime reservationTime = reservationTimeRequest.convertToReservationTime();
-        final ReservationTime savedReservationTime = reservationTimeDao.save(reservationTime);
+        final ReservationTime savedReservationTime = reservationTimeRepository.save(reservationTime);
         return new ReservationTimeResponse(savedReservationTime);
     }
 
     public List<ReservationTimeResponse> getReservationTimes() {
-        return reservationTimeDao.findAll().stream()
+        return reservationTimeRepository.findAll().stream()
                 .map(ReservationTimeResponse::new)
                 .toList();
     }
 
     public void deleteReservationTimeById(final long id) {
-        if (reservationDao.existsByTimeId(id)) {
+        if (reservationRepository.existsByTimeId(id)) {
             throw new IllegalArgumentException("예약이 존재하는 시간은 삭제할 수 없습니다.");
         }
-        reservationTimeDao.deleteById(id);
+        reservationTimeRepository.deleteById(id);
     }
 }

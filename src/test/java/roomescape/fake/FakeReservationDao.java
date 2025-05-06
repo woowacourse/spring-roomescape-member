@@ -3,10 +3,10 @@ package roomescape.fake;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import roomescape.repository.ReservationDao;
 import roomescape.domain.Reservation;
+import roomescape.repository.ReservationRepository;
 
-public class FakeReservationDao implements ReservationDao {
+public class FakeReservationDao implements ReservationRepository {
 
     List<Reservation> reservations = new ArrayList<>();
     Long index = 1L;

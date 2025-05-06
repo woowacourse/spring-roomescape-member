@@ -4,10 +4,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import roomescape.repository.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.ReservationTimeRepository;
 
-public class FakeReservationTimeDao implements ReservationTimeDao {
+public class FakeReservationTimeDao implements ReservationTimeRepository {
 
     List<ReservationTime> times = new ArrayList<>();
     Long index = 1L;

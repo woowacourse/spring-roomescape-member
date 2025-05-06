@@ -6,7 +6,7 @@ import java.util.Optional;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeName;
 
-public interface ThemeDao {
+public interface ThemeRepository {
 
     Theme save(Theme theme);
 

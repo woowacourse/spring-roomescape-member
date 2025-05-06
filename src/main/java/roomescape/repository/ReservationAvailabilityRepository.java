@@ -5,7 +5,7 @@ import java.util.List;
 import roomescape.domain.ReservationAvailability;
 import roomescape.domain.Theme;
 
-public interface ReservationAvailabilityDao {
+public interface ReservationAvailabilityRepository {
 
     List<ReservationAvailability> findAllByDateAndTheme(LocalDate date, Theme theme);
 }
