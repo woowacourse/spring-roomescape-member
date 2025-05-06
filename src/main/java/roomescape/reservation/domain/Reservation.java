@@ -14,7 +14,7 @@ public class Reservation {
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    private Reservation(Long id, String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         validateId(id);
         validateName(name);
         validateDate(date);
@@ -27,10 +27,33 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation of(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+    private Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
+        validateName(name);
+        validateDate(date);
+        validateReservationTime(reservationTime);
+        validateTheme(theme);
+        this.id = null;
+        this.name = name;
+        this.date = date;
+        this.reservationTime = reservationTime;
+        this.theme = theme;
+    }
+
+    public static Reservation withId(
+        Long id,
+        String name,
+        LocalDate date,
+        ReservationTime reservationTime,
+        Theme theme
+    ) {
+
+        return new Reservation(id, name, date, reservationTime, theme);
+    }
+
+    public static Reservation withoutId(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
         validateTense(dateTime);
-        return new Reservation(null, name, date, reservationTime, theme);
+        return new Reservation(name, date, reservationTime, theme);
     }
 
     private static void validateTense(LocalDateTime dateTime) {

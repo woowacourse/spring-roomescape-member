@@ -11,7 +11,7 @@ import roomescape.theme.domain.dto.ThemeResDto;
 public class ReservationMapper {
 
     public static Reservation toEntity(ReservationReqDto reqDto, ReservationTime reservationTime, Theme theme) {
-        return Reservation.of(reqDto.name(), reqDto.date(), reservationTime, theme);
+        return Reservation.withoutId(reqDto.name(), reqDto.date(), reservationTime, theme);
     }
 
     public static ReservationResDto toResDto(

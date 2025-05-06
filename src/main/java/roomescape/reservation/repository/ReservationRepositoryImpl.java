@@ -53,7 +53,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                     resultSet.getString("theme_thumbnail")
                 );
 
-                Reservation reservation = new Reservation(
+                Reservation reservation = Reservation.withId(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
@@ -104,7 +104,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                         resultSet.getString("theme_thumbnail")
                     );
 
-                    return new Reservation(
+                    return Reservation.withId(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getDate("date").toLocalDate(),
@@ -131,7 +131,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 resultSet.getTime("time_value").toLocalTime()
             );
 
-            return new Reservation(
+            return Reservation.withId(
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getDate("date").toLocalDate(),
