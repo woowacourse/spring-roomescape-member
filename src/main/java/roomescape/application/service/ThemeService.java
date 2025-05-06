@@ -13,6 +13,8 @@ import roomescape.domain.Theme;
 public class ThemeService {
 
     private static final String ERROR_RESERVATION_THEME_WITH_HAS_RESERVATION = "해당 테마에 존재하는 예약 정보가 있습니다.";
+    private static final int RANK_PERIOD_START_DAYS = 8;
+    private static final int RANK_PERIOD_END_DAYS = 1;
 
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
@@ -30,8 +32,8 @@ public class ThemeService {
 
     public List<ThemeResponse> findThemeRank() {
         LocalDate now = LocalDate.now();
-        LocalDate startDate = now.minusDays(8);
-        LocalDate endDate = now.minusDays(1);
+        LocalDate startDate = now.minusDays(RANK_PERIOD_START_DAYS);
+        LocalDate endDate = now.minusDays(RANK_PERIOD_END_DAYS);
         List<Long> rank = reservationDao.findTop10ByBetweenDates(startDate, endDate);
 
         return convertThemeIdsToThemeResponses(rank);
