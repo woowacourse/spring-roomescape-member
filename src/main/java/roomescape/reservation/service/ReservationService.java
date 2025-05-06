@@ -1,6 +1,5 @@
 package roomescape.reservation.service;
 
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ public class ReservationService {
         return reservationTimeRepository.findAllAvailable(date, themeId);
     }
 
-    public ReservationResponse saveReservation(final @Valid ReservationRequest request) {
+    public ReservationResponse saveReservation(final ReservationRequest request) {
         final ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 예약 시간입니다."));
         final Theme theme = themeRepository.findById(request.themeId())
