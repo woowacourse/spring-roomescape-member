@@ -11,9 +11,9 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservationtime.ReservationTimeMapper;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.domain.dto.AvailableReservationTimeResDto;
 import roomescape.reservationtime.domain.dto.ReservationTimeReqDto;
 import roomescape.reservationtime.domain.dto.ReservationTimeResDto;
+import roomescape.reservationtime.domain.dto.ReservationTimeStatusResDto;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
@@ -42,7 +42,7 @@ public class ReservationTimeService {
             .toList();
     }
 
-    public List<AvailableReservationTimeResDto> findAllAvailableTimes(Long themeId, LocalDate date) {
+    public List<ReservationTimeStatusResDto> findAllAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
             .orElseThrow(() -> new BadRequestException("존재하지 않는 테마입니다."));
@@ -53,7 +53,7 @@ public class ReservationTimeService {
 
         return allTime.stream()
             .map(reservationTime ->
-                AvailableReservationTimeResDto.from(
+                ReservationTimeStatusResDto.from(
                     reservationTime,
                     reservationTimesByThemeAndDate.contains(reservationTime)
                 )
