@@ -26,6 +26,7 @@ public class FakeThemeDaoImpl implements ThemeDao {
 
     @Override
     public void deleteTheme(final Long id) {
+        themes.removeIf(theme -> theme.getId().equals(id));
     }
 
     @Override

@@ -102,7 +102,7 @@ class ThemeControllerTest {
         //given
         themeDao.saveTheme(new Theme(1L, "테마", "설명", "http://썸네일"));
 
-        //when //then
+        //when
         RestAssured
                 .given()
                 .log().all()
@@ -112,5 +112,9 @@ class ThemeControllerTest {
                 .then()
                 .log().all()
                 .statusCode(204);
+
+        //then
+        List<Theme> actual = themeDao.findAllTheme();
+        assertThat(actual).hasSize(0);
     }
 }
