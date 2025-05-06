@@ -71,13 +71,13 @@ class JdbcThemeRepositoryTest {
     void 인기있는_테마_10개를_조회한다() {
         // given
         jdbcReservationRepository.save(
-                new Reservation("예약1", LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Reservation(1L, "예약1", LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
                         new Theme(1L, "이름1", "썸네일1", "설명1")));
         jdbcReservationRepository.save(
-                new Reservation("예약2", LocalDate.now().minusDays(3), new ReservationTime(2L, LocalTime.of(11, 0)),
+                new Reservation(2L, "예약2", LocalDate.now().minusDays(3), new ReservationTime(2L, LocalTime.of(11, 0)),
                         new Theme(1L, "이름1", "썸네일1", "설명1")));
         jdbcReservationRepository.save(
-                new Reservation("예약3", LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
+                new Reservation(3L, "예약3", LocalDate.now().minusDays(3), new ReservationTime(1L, LocalTime.of(10, 0)),
                         new Theme(2L, "이름2", "썸네일2", "설명2")));
 
         // when

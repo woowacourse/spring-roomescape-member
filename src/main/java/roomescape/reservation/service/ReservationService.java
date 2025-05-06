@@ -2,8 +2,6 @@ package roomescape.reservation.service;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,17 +47,8 @@ public class ReservationService {
         }
 
         final Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
-        validateFutureOrPresent(reservation.getDate(), reservation.extractTime());
         final Reservation newReservation = reservationRepository.save(reservation);
         return new ReservationResponse(newReservation);
-    }
-
-    private void validateFutureOrPresent(final LocalDate date, final LocalTime time) {
-        final LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
-        final LocalDateTime currentDateTime = LocalDateTime.now();
-        if (reservationDateTime.isBefore(currentDateTime)) {
-            throw new ReservationException("예약은 현재 시간 이후로 가능합니다.");
-        }
     }
 
     public void deleteReservation(final Long id) {
