@@ -87,7 +87,7 @@ class JdbcReservationDaoTest {
     @DisplayName("예약 시간 ID로 예약 존재 여부를 판단한다")
     void existsReservationByTimeId(Long timeId, boolean expected) {
         // when
-        Boolean result = jdbcReservationDao.existByTimeId(timeId);
+        Boolean result = jdbcReservationDao.existsByTimeId(timeId);
 
         // then
         assertThat(result).isEqualTo(expected);
@@ -103,7 +103,7 @@ class JdbcReservationDaoTest {
     @DisplayName("예약 날짜, 예약 시간 ID로 예약 존재 여부를 판단한다")
     void existsReservationByDateAndTimeId(LocalDate date, Long timeId, boolean expected) {
         // when
-        Boolean result = jdbcReservationDao.existByDateAndTimeId(date, timeId);
+        Boolean result = jdbcReservationDao.existsByDateAndTimeId(date, timeId);
 
         // then
         assertThat(result).isEqualTo(expected);
@@ -121,7 +121,7 @@ class JdbcReservationDaoTest {
     @DisplayName("예약 날짜, 시간 ID, 테마 ID로 예약 존재 여부를 판단한다")
     void existsReservationByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId, boolean expected) {
         // when
-        Boolean result = jdbcReservationDao.existByDateAndTimeIdAndThemeId(date, timeId, themeId);
+        Boolean result = jdbcReservationDao.existsByDateAndTimeIdAndThemeId(date, timeId, themeId);
 
         // then
         assertThat(result).isEqualTo(expected);

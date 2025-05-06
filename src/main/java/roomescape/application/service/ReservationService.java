@@ -53,7 +53,7 @@ public class ReservationService {
 
     private void validateForCreation(Reservation reservationWithoutId) {
         reservationWithoutId.validatePastDateTime();
-        if (reservationDao.existByDateAndTimeId(reservationWithoutId.getDate(),
+        if (reservationDao.existsByDateAndTimeId(reservationWithoutId.getDate(),
                 reservationWithoutId.getTheme().getId())) {
             throw new IllegalArgumentException(ERROR_DUPLICATE_RESERVATION);
         }

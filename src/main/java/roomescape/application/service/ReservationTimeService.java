@@ -33,7 +33,7 @@ public class ReservationTimeService {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
         return reservationTimes.stream()
                 .map(time -> {
-                    boolean alreadyBooked = reservationDao.existByDateAndTimeIdAndThemeId(date, time.getId(), themeId);
+                    boolean alreadyBooked = reservationDao.existsByDateAndTimeIdAndThemeId(date, time.getId(), themeId);
                     return new ReservationTimeAvailableResponse(time, alreadyBooked);
                 }).toList();
     }
@@ -56,7 +56,7 @@ public class ReservationTimeService {
     }
 
     private void validateNoReservationsForTime(long id) {
-        boolean hasTime = reservationDao.existByTimeId(id);
+        boolean hasTime = reservationDao.existsByTimeId(id);
         if (hasTime) {
             throw new IllegalArgumentException(ERROR_RESERVATION_TIME_WITH_HAS_RESERVATION);
         }

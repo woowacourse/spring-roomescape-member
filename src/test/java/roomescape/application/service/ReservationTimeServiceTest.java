@@ -73,7 +73,7 @@ class ReservationTimeServiceTest {
                 .findAll();
 
         doReturn(false).when(reservationDao)
-                .existByDateAndTimeIdAndThemeId(eq(now), any(Long.class), eq(1L));
+                .existsByDateAndTimeIdAndThemeId(eq(now), any(Long.class), eq(1L));
 
         // when
         List<ReservationTimeAvailableResponse> responses = reservationTimeService.findAvailableTimes(
@@ -91,7 +91,7 @@ class ReservationTimeServiceTest {
 
         // verify
         verify(reservationTimeDao, times(1)).findAll();
-        verify(reservationDao, times(3)).existByDateAndTimeIdAndThemeId(eq(now), any(Long.class),
+        verify(reservationDao, times(3)).existsByDateAndTimeIdAndThemeId(eq(now), any(Long.class),
                 eq(1L));
     }
 
@@ -121,14 +121,14 @@ class ReservationTimeServiceTest {
     void deleteReservationTime() {
         // given
         long timeId = 1L;
-        doReturn(false).when(reservationDao).existByTimeId(timeId);
+        doReturn(false).when(reservationDao).existsByTimeId(timeId);
 
         // when
         reservationTimeService.deleteReservationTime(timeId);
 
         // then
         verify(reservationTimeDao, times(1)).deleteById(timeId);
-        verify(reservationDao, times(1)).existByTimeId(timeId);
+        verify(reservationDao, times(1)).existsByTimeId(timeId);
     }
 
     private List<ReservationTime> sampleReservationTimes() {

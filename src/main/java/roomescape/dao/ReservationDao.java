@@ -12,11 +12,11 @@ public interface ReservationDao {
 
     void deleteById(long id);
 
-    Boolean existByTimeId(long timeId);
+    Boolean existsByTimeId(long timeId);
 
-    Boolean existByDateAndTimeId(LocalDate date, long timeId);
+    Boolean existsByDateAndTimeId(LocalDate date, long timeId);
 
-    Boolean existByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
+    Boolean existsByDateAndTimeIdAndThemeId(LocalDate date, long timeId, long themeId);
 
     List<Long> findTop10ByBetweenDates(LocalDate start, LocalDate end);
 }
