@@ -9,7 +9,7 @@ import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.model.UserName;
 
-public record ReservationRequestDto(
+public record ReservationRequest(
         @JsonProperty(value = "name", defaultValue = "name") @NotNull String name,
         @JsonProperty("date") @NotNull LocalDate date,
         @JsonProperty("timeId") @NotNull Long timeId,

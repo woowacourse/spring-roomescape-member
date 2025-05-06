@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.AvailableTimeResponseDto;
-import roomescape.dto.ReservationTimeRequestDto;
+import roomescape.dto.AvailableTimeResponse;
+import roomescape.dto.ReservationTimeRequest;
 import roomescape.model.ReservationTime;
 import roomescape.service.ReservationTimeService;
 
@@ -29,8 +29,8 @@ public class ReservationTimeController {
 
     @PostMapping()
     public ResponseEntity<ReservationTime> addTime(
-            @RequestBody @Valid ReservationTimeRequestDto reservationTimeRequestDto) {
-        ReservationTime reservationTime = reservationTimeService.addTime(reservationTimeRequestDto.startAt());
+            @RequestBody @Valid ReservationTimeRequest reservationTimeRequest) {
+        ReservationTime reservationTime = reservationTimeService.addTime(reservationTimeRequest.startAt());
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationTime);
     }
 
@@ -46,7 +46,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/available/{themeId}")
-    public ResponseEntity<List<AvailableTimeResponseDto>> getAvailableTimes(
+    public ResponseEntity<List<AvailableTimeResponse>> getAvailableTimes(
             @RequestParam Long themeId, @RequestParam LocalDate date) {
         return ResponseEntity.ok(reservationTimeService.getAvailableTimes(themeId, date));
     }

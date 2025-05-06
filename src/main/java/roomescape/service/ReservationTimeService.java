@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.AvailableTimeResponseDto;
+import roomescape.dto.AvailableTimeResponse;
 import roomescape.model.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ReservedChecker;
@@ -45,17 +45,17 @@ public class ReservationTimeService {
         return reservationTimeRepository.findById(id);
     }
 
-    public List<AvailableTimeResponseDto> getAvailableTimes(Long themeId, LocalDate date) {
+    public List<AvailableTimeResponse> getAvailableTimes(Long themeId, LocalDate date) {
         List<ReservationTime> reservationTimes = reservationTimeRepository.getAllTime();
-        List<AvailableTimeResponseDto> availableTimeResponseDtos = new ArrayList<>();
+        List<AvailableTimeResponse> availableTimeResponses = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             boolean alreadyBooked = false;
             if (reservedChecker.contains(date, reservationTime.getId(), themeId)) {
                 alreadyBooked = true;
             }
-            availableTimeResponseDtos.add(
-                    new AvailableTimeResponseDto(reservationTime.getId(), reservationTime.getStartAt(), alreadyBooked));
+            availableTimeResponses.add(
+                    new AvailableTimeResponse(reservationTime.getId(), reservationTime.getStartAt(), alreadyBooked));
         }
-        return availableTimeResponseDtos;
+        return availableTimeResponses;
     }
 }

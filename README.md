@@ -107,9 +107,8 @@
 
 ---
 
-- [ ] ReservationService 인자 필드 너무 많음 -> 수정 고려
-- [ ] DTO들 이름 뒤에 DTO 뺄까? - 고려
-- [ ] controller에서 서비스로 dto 넘길때도 있고 아닐때도 있음 -> 일관성 맞추자
+2. ReservationService 인자 필드 너무 많음 -> 어쩔 수 없음
+3. DTO들 이름 뒤에 DTO 뺄까? - 반영
 
 ### 고민해볼 내용
 

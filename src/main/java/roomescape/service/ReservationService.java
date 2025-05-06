@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.ReservationRequestDto;
+import roomescape.dto.ReservationRequest;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
@@ -31,15 +31,15 @@ public class ReservationService {
         return reservationRepository.getAllReservations();
     }
 
-    public Reservation addReservation(ReservationRequestDto reservationRequestDto) {
-        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(reservationRequestDto.timeId());
-        validateFutureDateTime(new ReservationDateTime(reservationRequestDto.date(), reservationTime));
+    public Reservation addReservation(ReservationRequest reservationRequest) {
+        ReservationTime reservationTime = reservationTimeService.getReservationTimeById(reservationRequest.timeId());
+        validateFutureDateTime(new ReservationDateTime(reservationRequest.date(), reservationTime));
 
-        Theme theme = themeService.getThemeById(reservationRequestDto.themeId());
-        Reservation reservationWithNoId = reservationRequestDto.toEntity(null, reservationTime, theme);
+        Theme theme = themeService.getThemeById(reservationRequest.themeId());
+        Reservation reservationWithNoId = reservationRequest.toEntity(null, reservationTime, theme);
 
-        validateUniqueReservation(reservationRequestDto.date(), reservationRequestDto.timeId(),
-                reservationRequestDto.themeId());
+        validateUniqueReservation(reservationRequest.date(), reservationRequest.timeId(),
+                reservationRequest.themeId());
         return reservationRepository.addReservation(reservationWithNoId);
     }
 
