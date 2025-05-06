@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,22 +39,14 @@ class ReservationServiceTest {
 
     private ReservationService reservationService;
 
-    @BeforeAll
-    static void before() {
+    @BeforeEach
+    void beforeEach() {
         DatabaseInitializationSettings databaseInitializationSettings = new DatabaseInitializationSettings();
         databaseInitializationSettings.setSchemaLocations(List.of("classpath:/schema.sql"));
         DataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer = new DataSourceScriptDatabaseInitializer(DATASOURCE, databaseInitializationSettings);
         dataSourceScriptDatabaseInitializer.initializeDatabase();
-    }
 
-    @BeforeEach
-    void beforeEach() {
-        DateTime dateTime = new DateTime() {
-            @Override
-            public LocalDateTime now() {
-                return LocalDateTime.of(2025, 10, 5, 10, 0);
-            }
-        };
+        DateTime dateTime = () -> LocalDateTime.of(2025, 10, 5, 10, 0);
 
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(DATASOURCE);
 
