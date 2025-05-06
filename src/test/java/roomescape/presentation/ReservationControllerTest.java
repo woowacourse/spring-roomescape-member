@@ -265,5 +265,7 @@ class ReservationControllerTest extends AbstractControllerTest {
                 .then()
                 .log().all()
                 .statusCode(204);
+        assertThat(reservationRepository.findById(id))
+                .isEmpty();
     }
 }
