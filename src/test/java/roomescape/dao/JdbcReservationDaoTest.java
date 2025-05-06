@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class JdbcReservationDaoTest {
         final long result = reservationDAO.insert(reservation);
 
         // then
-        assertThat(result).isEqualTo(2L);
+        assertThat(result).isEqualTo(4L);
     }
 
     @DisplayName("같은 예약이 존재하면 true를 반환한다")
@@ -54,14 +55,14 @@ public class JdbcReservationDaoTest {
     void findAllTest1() {
         // given // when
         final List<Reservation> results = reservationDAO.findAll();
-        final Reservation result = results.getFirst();
 
         // then
+        Assertions.assertNotNull(results);
         assertAll(
-                () -> assertThat(results).hasSize(1),
-                () -> assertThat(result.getId()).isEqualTo(1L),
-                () -> assertThat(result.getDate()).isEqualTo(LocalDate.of(2025, 4, 28)),
-                () -> assertThat(result.getTime()).isEqualTo(new ReservationTime(1L, LocalTime.of(10, 0)))
+                () -> assertThat(results).hasSize(3),
+                () -> assertThat(results.getFirst().getName()).isEqualTo("test1"),
+                () -> assertThat(results.get(1).getName()).isEqualTo("test2"),
+                () -> assertThat(results.getLast().getName()).isEqualTo("test3")
         );
     }
 

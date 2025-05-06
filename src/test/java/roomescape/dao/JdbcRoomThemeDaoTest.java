@@ -1,10 +1,12 @@
 package roomescape.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ class JdbcRoomThemeDaoTest {
         final long result = roomThemeDAO.insert(roomTheme);
 
         // then
-        assertThat(result).isEqualTo(2L);
+        assertThat(result).isEqualTo(4L);
     }
 
     @DisplayName("같은 이름의 테마가 존재하면 true를 반환한다")
@@ -49,9 +51,13 @@ class JdbcRoomThemeDaoTest {
         final List<RoomTheme> result = roomThemeDAO.findAll();
 
         // then
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst().getId()).isEqualTo(1L);
-        assertThat(result.getFirst().getName()).isEqualTo("예시 1");
+        Assertions.assertNotNull(result);
+        assertAll(
+                () -> assertThat(result).hasSize(3),
+                () -> assertThat(result.getFirst().getName()).isEqualTo("예시 1"),
+                () -> assertThat(result.get(1).getName()).isEqualTo("예시 2"),
+                () -> assertThat(result.getLast().getName()).isEqualTo("예시 3")
+        );
     }
 
     @DisplayName("id에 해당하는 방 테마를 반환한다")
@@ -71,24 +77,26 @@ class JdbcRoomThemeDaoTest {
     @DisplayName("예약 횟수에 따라 내림 차순으로 방 테마를 반환한다")
     @Test
     void findPopularThemesTest() {
-        // given
-        final RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
-
-        // when
+        // given // when
         List<RoomTheme> popularThemes = roomThemeDAO.findPopularThemes(
                 LocalDate.of(2024, 10, 1), LocalDate.of(2025, 5, 1));
 
         // then
-        assertThat(popularThemes).hasSize(1);
-        assertThat(popularThemes.getFirst().getId()).isEqualTo(1L);
+        Assertions.assertNotNull(popularThemes);
+        assertAll(
+                () -> assertThat(popularThemes).hasSize(2),
+                () -> assertThat(popularThemes.getFirst().getId()).isEqualTo(1L),
+                () -> assertThat(popularThemes.getFirst().getName()).isEqualTo("예시 1"),
+                () -> assertThat(popularThemes.getLast().getId()).isEqualTo(2L),
+                () -> assertThat(popularThemes.getLast().getName()).isEqualTo("예시 2")
+        );
     }
 
     @DisplayName("주어진 id에 해당하는 방 테마를 삭제한다")
     @Test
     void deleteByIdTest() {
         // given
-        final RoomTheme roomTheme = new RoomTheme("공포", "공포 테마 입니다", "url");
-        final long id = roomThemeDAO.insert(roomTheme);
+        final long id = 3L;
 
         // when
         final boolean result = roomThemeDAO.deleteById(id);

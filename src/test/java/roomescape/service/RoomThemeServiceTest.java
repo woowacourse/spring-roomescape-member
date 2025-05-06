@@ -53,7 +53,7 @@ class RoomThemeServiceTest {
         final List<RoomTheme> allThemes = roomThemeService.findAllThemes();
 
         // then
-        assertThat(allThemes).hasSize(1);
+        assertThat(allThemes).hasSize(3);
     }
 
     @Test
@@ -61,7 +61,7 @@ class RoomThemeServiceTest {
     void deleteTheme() {
         // given
         roomThemeService.addTheme(new RoomThemeCreation("test", "description", "thumbnail"));
-        final long deleteId = 2L;
+        final long deleteId = 3L;
 
         // when // then
         assertThatCode(() -> roomThemeService.deleteTheme(deleteId))
