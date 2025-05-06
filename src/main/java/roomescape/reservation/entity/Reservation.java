@@ -47,10 +47,6 @@ public class Reservation {
         return time.getStartAt();
     }
 
-    public String getFormattedDate() {
-        return date.toString();
-    }
-
     public Long getTimeId() {
         return time.getId();
     }

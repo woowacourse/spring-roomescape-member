@@ -32,9 +32,9 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime save(ReservationTime entity) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (:start_at)";
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("start_at", entity.getFormattedTime());
+                .addValue("start_at", entity.getStartAt());
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, params, keyHolder);
+        jdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
         final long id = keyHolder.getKey().longValue();
         return ReservationTime.of(id, entity.getStartAt());
     }

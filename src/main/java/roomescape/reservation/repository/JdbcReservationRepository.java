@@ -44,7 +44,7 @@ public class JdbcReservationRepository implements ReservationRepository {
         String query = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (:name, :date, :time_id, :theme_id)";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", newReservation.getName())
-                .addValue("date", newReservation.getFormattedDate())
+                .addValue("date", newReservation.getDate())
                 .addValue("time_id", newReservation.getTimeId())
                 .addValue("theme_id", newReservation.getThemeId());
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
