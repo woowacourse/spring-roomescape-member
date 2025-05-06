@@ -201,7 +201,7 @@ HTTP/1.1 204
 **Request**
 
 ```
-GET /available-times?date=2025-03-30&themeId=1 HTTP/1.1
+GET /times/availability?date=2025-03-30&themeId=1 HTTP/1.1
 ```
 
 **Response**
@@ -212,7 +212,7 @@ Content-Type: application/json
 
 [
     {
-        "id": 1,
+        "timeId": 1,
         "startAt": "10:00",
         "alreadyBooked": false
     }
