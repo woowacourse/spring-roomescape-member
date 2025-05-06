@@ -1,13 +1,13 @@
 package roomescape.domain.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import roomescape.domain.exception.ReservationException.ReservationTimeInUseException;
 import roomescape.domain.repository.ReservationRepository;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class ReservationTimeValidationService {
+public class ReservationTimeValidator {
 
     private final ReservationRepository reservationRepository;
 

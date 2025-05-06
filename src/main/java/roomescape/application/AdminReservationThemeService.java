@@ -7,7 +7,7 @@ import roomescape.application.dto.response.ReservationThemeServiceResponse;
 import roomescape.domain.entity.ReservationTheme;
 import roomescape.domain.exception.ReservationException;
 import roomescape.domain.repository.ReservationThemeRepository;
-import roomescape.domain.service.ReservationThemeValidationService;
+import roomescape.domain.service.ReservationThemeValidator;
 import roomescape.global.exception.BusinessRuleViolationException;
 
 @Service
@@ -15,7 +15,7 @@ import roomescape.global.exception.BusinessRuleViolationException;
 public class AdminReservationThemeService {
 
     private final ReservationThemeRepository reservationThemeRepository;
-    private final ReservationThemeValidationService reservationThemeValidationService;
+    private final ReservationThemeValidator reservationThemeValidator;
 
     public ReservationThemeServiceResponse create(CreateReservationThemeServiceRequest request) {
         ReservationTheme reservationTheme = reservationThemeRepository.save(request.toReservationTheme());
@@ -25,7 +25,7 @@ public class AdminReservationThemeService {
     public void delete(Long id) {
         ReservationTheme reservationTheme = reservationThemeRepository.getById(id);
         try {
-            reservationThemeValidationService.validateNotInUse(id);
+            reservationThemeValidator.validateNotInUse(id);
         } catch (ReservationException e) {
             throw new BusinessRuleViolationException(e.getMessage(), e);
         }

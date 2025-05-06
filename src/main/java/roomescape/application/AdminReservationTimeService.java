@@ -8,7 +8,7 @@ import roomescape.application.dto.response.ReservationTimeServiceResponse;
 import roomescape.domain.entity.ReservationTime;
 import roomescape.domain.exception.ReservationException;
 import roomescape.domain.repository.ReservationTimeRepository;
-import roomescape.domain.service.ReservationTimeValidationService;
+import roomescape.domain.service.ReservationTimeValidator;
 import roomescape.global.exception.BusinessRuleViolationException;
 
 @Service
@@ -16,7 +16,7 @@ import roomescape.global.exception.BusinessRuleViolationException;
 public class AdminReservationTimeService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationTimeValidationService reservationTimeValidationService;
+    private final ReservationTimeValidator reservationTimeValidator;
 
     public ReservationTimeServiceResponse create(CreateReservationTimeServiceRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.save(request.toReservationTime());
@@ -33,7 +33,7 @@ public class AdminReservationTimeService {
     public void delete(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.getById(id);
         try {
-            reservationTimeValidationService.validateNotInUse(id);
+            reservationTimeValidator.validateNotInUse(id);
         } catch (ReservationException e) {
             throw new BusinessRuleViolationException(e.getMessage(), e);
         }

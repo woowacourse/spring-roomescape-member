@@ -13,13 +13,13 @@ import roomescape.domain.exception.ReservationException.ReservationThemeInUseExc
 import roomescape.domain.repository.ReservationRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationThemeValidationServiceTest {
+class ReservationThemeValidatorTest {
 
     @Mock
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    private ReservationThemeValidationService reservationThemeValidationService;
+    private ReservationThemeValidator reservationThemeValidator;
 
     @DisplayName("해당 테마를 사용중인 예약이 있다면 예외를 발생시킨다")
     @Test
@@ -29,7 +29,7 @@ class ReservationThemeValidationServiceTest {
         given(reservationRepository.existsByThemeId(themeId)).willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> reservationThemeValidationService.validateNotInUse(themeId))
+        assertThatThrownBy(() -> reservationThemeValidator.validateNotInUse(themeId))
                 .isInstanceOf(ReservationThemeInUseException.class);
     }
 }

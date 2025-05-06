@@ -14,13 +14,13 @@ import roomescape.domain.exception.ReservationException.InvalidReservationTimeEx
 import roomescape.domain.repository.ReservationRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationValidationServiceTest {
+class ReservationValidatorTest {
 
     @Mock
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    private ReservationValidationService reservationValidationService;
+    private ReservationValidator reservationValidator;
 
     @DisplayName("중복 예약이면 예외를 발생시킨다")
     @Test
@@ -34,7 +34,7 @@ class ReservationValidationServiceTest {
 
         // when & then
         assertThrows(InvalidReservationTimeException.class, () ->
-                reservationValidationService.validateNoDuplication(date, timeId, themeId)
+                reservationValidator.validateNoDuplication(date, timeId, themeId)
         );
     }
 }

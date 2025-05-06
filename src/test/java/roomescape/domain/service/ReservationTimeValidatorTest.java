@@ -13,13 +13,13 @@ import roomescape.domain.exception.ReservationException.ReservationTimeInUseExce
 import roomescape.domain.repository.ReservationRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationTimeValidationServiceTest {
+class ReservationTimeValidatorTest {
 
     @Mock
     private ReservationRepository reservationRepository;
 
     @InjectMocks
-    private ReservationTimeValidationService reservationTimeValidationService;
+    private ReservationTimeValidator reservationTimeValidator;
 
     @DisplayName("해당 예약시간을 사용중인 예약이 있다면 예외를 발생시킨다")
     @Test
@@ -29,7 +29,7 @@ class ReservationTimeValidationServiceTest {
         given(reservationRepository.existsByTimeId(timeId)).willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> reservationTimeValidationService.validateNotInUse(timeId))
+        assertThatThrownBy(() -> reservationTimeValidator.validateNotInUse(timeId))
                 .isInstanceOf(ReservationTimeInUseException.class);
     }
 }
