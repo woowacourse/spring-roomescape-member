@@ -1,6 +1,7 @@
 package roomescape.application.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.Reservation;
 import roomescape.domain.model.ReservationTime;
@@ -34,6 +35,7 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
     public void deleteReservation(Long id) {
         int count = reservationRepository.deleteById(id);
         if (count == 0) {
@@ -41,6 +43,7 @@ public class ReservationService {
         }
     }
 
+    @Transactional
     public ReservationResponse save(ReservationRequest request) {
         ReservationTime reservationTime = getReservationTime(request.timeId());
         Theme theme = getTheme(request.themeId());

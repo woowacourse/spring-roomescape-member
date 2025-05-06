@@ -1,6 +1,7 @@
 package roomescape.application.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.Theme;
 import roomescape.domain.repository.ReservationRepository;
@@ -28,6 +29,7 @@ public class ThemeService {
                 .toList();
     }
 
+    @Transactional
     public ThemeResponse save(ThemeRequest request) {
         validateThemeName(request);
         Theme theme = new Theme(
@@ -39,6 +41,7 @@ public class ThemeService {
         return ThemeResponse.from(savedTheme);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         boolean isThemeInUse = reservationRepository.existByThemeId(id);
         if (isThemeInUse) {

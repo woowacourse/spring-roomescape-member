@@ -1,6 +1,7 @@
 package roomescape.application.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.exception.ResourceNotExistException;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.repository.ReservationRepository;
@@ -23,6 +24,7 @@ public class ReservationTimeService {
         this.reservationTimeRepository = reservationTimeRepository;
     }
 
+    @Transactional
     public ReservationTimeResponse save(ReservationTimeRequest request) {
         boolean isTimeAlreadyExist = reservationTimeRepository.existByTimeValue(request.startAt());
         if (isTimeAlreadyExist) {
@@ -40,6 +42,7 @@ public class ReservationTimeService {
                 .toList();
     }
 
+    @Transactional
     public void deleteReservationTime(Long id) {
         boolean isTimeInUse = reservationRepository.existByTimeId(id);
         if (isTimeInUse) {
