@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dao.ReservationDao;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Person;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
@@ -15,67 +12,62 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
 import roomescape.service.nowdate.CurrentDateTime;
 
 @Service
 public class ReservationService {
 
-    private final ReservationDao reservationDao;
-    private final ReservationTimeDao reservationTimeDao;
-    private final ThemeDao themeDao;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ThemeRepository themeRepository;
     private final CurrentDateTime currentDateTime;
 
-    public ReservationService(ReservationDao reservationDao,
-        ReservationTimeDao reservationTimeDao, ThemeDao themeDao, CurrentDateTime currentDateTime) {
-        this.reservationDao = reservationDao;
-        this.reservationTimeDao = reservationTimeDao;
-        this.themeDao = themeDao;
+    public ReservationService(ReservationRepository reservationRepository,
+        ReservationTimeRepository reservationTimeRepository,
+        ThemeRepository themeRepository,
+        CurrentDateTime currentDateTime) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.themeRepository = themeRepository;
         this.currentDateTime = currentDateTime;
     }
 
     public List<ReservationResponseDto> getAllReservations() {
-        return reservationDao.findAllReservation().stream()
+        return reservationRepository.findAllReservation().stream()
             .map(ReservationResponseDto::from)
             .toList();
     }
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
-        LocalDateTime currentDateTimeInfo = currentDateTime.get();
+        Reservation reservation = createReservationFrom(reservationRequestDto);
+        reservation.validateDateTime(currentDateTime.get());
+        validateAlreadyExistDateTime(reservationRequestDto, reservation.getReservationDate());
+        reservationRepository.saveReservation(reservation);
+        return ReservationResponseDto.from(reservation);
+    }
 
+    private Reservation createReservationFrom(ReservationRequestDto reservationRequestDto) {
+        LocalDateTime currentDateTimeInfo = currentDateTime.get();
         Person person = new Person(reservationRequestDto.name());
         ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
         date.validateDate(currentDateTimeInfo.toLocalDate());
-        ReservationTime reservationTime = reservationTimeDao.findById(
-                reservationRequestDto.timeId())
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약시간을 찾을 수 없습니다"));
-
-        Theme theme = themeDao.findById(reservationRequestDto.themeId())
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테마를 찾을 수 없습니다"));
-
-        Reservation reservation = new Reservation(person, date, reservationTime, theme);
-        reservation.validateDateTime(date, reservationTime, currentDateTimeInfo);
-
-        validateAlreadyExistDateTime(reservationRequestDto, date);
-        long newId = reservationDao.saveReservation(reservation);
-        reservation.setId(newId);
-
-        return ReservationResponseDto.from(reservation);
+        ReservationTime reservationTime = reservationTimeRepository.findById(
+            reservationRequestDto.timeId());
+        Theme theme = themeRepository.findById(reservationRequestDto.themeId());
+        return new Reservation(person, date, reservationTime, theme);
     }
 
     private void validateAlreadyExistDateTime(ReservationRequestDto reservationRequestDto,
         ReservationDate date) {
-        if (reservationDao.findByDateAndTime(date, reservationRequestDto.timeId()) != 0) {
+        if (reservationRepository.hasAnotherReservation(date, reservationRequestDto.timeId())) {
             throw new InvalidReservationException("중복된 날짜와 시간을 예약할 수 없습니다.");
         }
     }
 
     public void deleteReservation(Long id) {
-        validateIsExistReservationBy(id);
-        reservationDao.deleteReservation(id);
-    }
-
-    private void validateIsExistReservationBy(Long id) {
-        reservationDao.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 예약을 찾을 수 없습니다."));
+        reservationRepository.deleteReservation(id);
     }
 }

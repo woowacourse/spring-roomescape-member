@@ -26,10 +26,7 @@ public class Reservation {
         this(null, person, date, reservationTime, theme);
     }
 
-    public void validateDateTime(
-        ReservationDate date,
-        ReservationTime reservationTime,
-        LocalDateTime currentDateTime) {
+    public void validateDateTime(LocalDateTime currentDateTime) {
         if (date.isCurrentDay(currentDateTime.toLocalDate()) &&
             reservationTime.isBefore(currentDateTime.toLocalTime())) {
             throw new IllegalArgumentException("과거 시간으로는 예약할 수 없습니다.");
@@ -50,6 +47,10 @@ public class Reservation {
 
     public LocalDate getDate() {
         return date.getDate();
+    }
+
+    public ReservationDate getReservationDate() {
+        return date;
     }
 
     public ReservationTime getReservationTime() {

@@ -13,11 +13,9 @@ public interface ReservationDao {
 
     void deleteReservation(Long id);
 
-    int findByTimeId(Long id);
+    int countAlreadyExistReservation(Long id);
 
     int findByDateAndTime(ReservationDate date, Long timeId);
-
-    int calculateAlreadyExistReservationBy(String date, long timeId, Long themeId);
 
     Optional<Reservation> findById(Long id);
 }
