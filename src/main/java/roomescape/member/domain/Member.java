@@ -42,14 +42,20 @@ public class Member {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Member member)) {
+        if (!(o instanceof Member other)) {
             return false;
         }
-        return Objects.equals(id, member.id);
+        if (this.id == null || other.id == null){
+            return false;
+        }
+        return Objects.equals(id, other.id);
     }
 
     @Override
     public int hashCode() {
+        if (id == null) {
+            return System.identityHashCode(this);
+        }
         return Objects.hash(id);
     }
 }

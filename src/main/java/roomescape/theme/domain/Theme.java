@@ -48,14 +48,20 @@ public class Theme {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Theme theme)) {
+        if (!(o instanceof Theme other)) {
             return false;
         }
-        return Objects.equals(id, theme.id);
+        if (this.id == null || other.id == null){
+            return false;
+        }
+        return Objects.equals(id, other.id);
     }
 
     @Override
     public int hashCode() {
+        if (id == null) {
+            return System.identityHashCode(this);
+        }
         return Objects.hash(id);
     }
 }

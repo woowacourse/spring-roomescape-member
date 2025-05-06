@@ -72,14 +72,20 @@ public class Reservation {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Reservation that)) {
+        if (!(o instanceof Reservation other)) {
             return false;
         }
-        return Objects.equals(id, that.id);
+        if (this.id == null || other.id == null){
+            return false;
+        }
+        return Objects.equals(id, other.id);
     }
 
     @Override
     public int hashCode() {
+        if (id == null) {
+            return System.identityHashCode(this);
+        }
         return Objects.hash(id);
     }
 }
