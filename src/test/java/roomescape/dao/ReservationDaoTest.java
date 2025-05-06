@@ -13,8 +13,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static roomescape.fixture.TestFixture.DEFAULT_THEME;
-import static roomescape.fixture.TestFixture.DEFAULT_TIME;
+import static roomescape.fixture.TestFixture.*;
 
 @JdbcTest
 class ReservationDaoTest {
@@ -36,7 +35,7 @@ class ReservationDaoTest {
     void 예약을_저장할_수_있다() {
         // given
         String name = "두리";
-        LocalDate date = LocalDate.now().plusDays(1);
+        LocalDate date = TOMORROW;
         ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
         Theme savedTheme = themeDao.save(DEFAULT_THEME);
         Reservation reservation = new Reservation(name, date, savedReservationTime, savedTheme);
@@ -59,12 +58,12 @@ class ReservationDaoTest {
         int totalCount = reservationDao.findAll().size();
 
         // when
-        Reservation savedReservation = reservationDao.save(new Reservation("예약", LocalDate.now().plusDays(2), savedReservationTime, savedTheme));
+        Reservation savedReservation = reservationDao.save(new Reservation("예약", TOMORROW, savedReservationTime, savedTheme));
 
         // when & then
         assertAll(
-                () -> assertThat(reservationDao.findAll()).contains(savedReservation),
-                () -> assertThat(reservationDao.findAll().size()).isEqualTo(totalCount + 1)
+                () -> assertThat(reservationDao.findAll().size()).isEqualTo(totalCount + 1),
+                () -> assertThat(reservationDao.findAll()).contains(savedReservation)
         );
     }
 
@@ -82,5 +81,65 @@ class ReservationDaoTest {
 
         // then
         assertThat(reservationDao.findAll().size()).isEqualTo(totalCount - 1);
+    }
+
+    @Test
+    void 특정_시간에_대한_예약이_존재하는지_확인할_수_있다() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+
+        // when
+        reservationDao.save(new Reservation("예약", TOMORROW, savedReservationTime, savedTheme));
+
+        // then
+        assertThat(reservationDao.existByTimeId(savedReservationTime.getId())).isTrue();
+    }
+
+    @Test
+    void 특정_테마에_대한_예약이_존재하는지_확인할_수_있다() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+
+        // when
+        reservationDao.save(new Reservation("예약", TOMORROW, savedReservationTime, savedTheme));
+
+        // then
+        assertThat(reservationDao.existByThemeId(savedTheme.getId())).isTrue();
+    }
+
+    @Test
+    void 중복_예약이_존재하는지_확인할_수_있다() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+
+        Long timeId = savedReservationTime.getId();
+        Long themeId = savedTheme.getId();
+        LocalDate date = TOMORROW;
+
+        // when
+        reservationDao.save(new Reservation("예약", date, savedReservationTime, savedTheme));
+
+        // then
+        assertThat(reservationDao.existByTimeIdAndThemeIdAndDate(timeId, themeId, date)).isTrue();
+    }
+
+    @Test
+    void 특정_날짜와_테마에_대해_예약이_존재하는_시간대를_확인할_수_있다() {
+        // given
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+
+        Long timeId = savedReservationTime.getId();
+        Long themeId = savedTheme.getId();
+        LocalDate date = TOMORROW;
+
+        // when
+        reservationDao.save(new Reservation("예약", date, savedReservationTime, savedTheme));
+
+        // then
+        assertThat(reservationDao.findBookedTimes(themeId, date)).contains(timeId);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.Theme;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.fixture.TestFixture.DEFAULT_THEME;
 
 @JdbcTest
@@ -25,10 +26,33 @@ public class ThemeDaoTest {
     @Test
     void 테마를_저장할_수_있다() {
         // given
-        String themeName = "우아한테크코스";
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+
+        // when & then
+        assertThat(savedTheme.getName()).isEqualTo(DEFAULT_THEME.getName());
+    }
+
+    @Test
+    void id로_특정_테마를_조회할_수_있다() {
+        // given
+        Theme savedTheme = themeDao.save(DEFAULT_THEME);
+        Theme foundTheme = themeDao.findById(savedTheme.getId());
+
+        // when & then
+        assertAll(
+                () -> assertThat(savedTheme.getName()).isEqualTo(foundTheme.getName()),
+                () -> assertThat(savedTheme.getDescription()).isEqualTo(foundTheme.getDescription()),
+                () -> assertThat(savedTheme.getThumbnail()).isEqualTo(foundTheme.getThumbnail())
+        );
+    }
+
+    @Test
+    void 전체_테마를_조회할_수_있다() {
+        // given
+        int totalSize = themeDao.findAll().size();
         Theme theme = new Theme(
-                themeName,
-                "재밌다",
+                "진격의거인",
+                "감동적인 이야기",
                 "abc.jpg"
         );
 
@@ -36,36 +60,10 @@ public class ThemeDaoTest {
         Theme savedTheme = themeDao.save(theme);
 
         // then
-        assertThat(savedTheme.getName()).isEqualTo(themeName);
-    }
-
-    @Test
-    void 특정_테마를_조회할_수_있다() {
-        // given
-        Long id = 1L;
-        themeDao.save(DEFAULT_THEME);
-        Theme theme = themeDao.findById(id);
-
-        // when & then
-        assertThat(theme.getId()).isEqualTo(id);
-    }
-
-    @Test
-    void 전체_테마를_조회할_수_있다() {
-        // given
-        int totalSize = themeDao.findAll().size();
-        String themeName = "진격의거인";
-        Theme theme = new Theme(
-                themeName,
-                "재밌다",
-                "abc.jpg"
+        assertAll(
+                () -> assertThat(themeDao.findAll().size()).isEqualTo(totalSize + 1),
+                () -> assertThat(themeDao.findAll()).contains(savedTheme)
         );
-
-        // when
-        themeDao.save(theme);
-
-        // when & then
-        assertThat(themeDao.findAll().size()).isEqualTo(totalSize + 1);
     }
 
     @Test

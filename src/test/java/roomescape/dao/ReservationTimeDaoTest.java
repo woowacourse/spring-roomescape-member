@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static roomescape.fixture.TestFixture.DEFAULT_TIME;
+import static roomescape.fixture.TestFixture.NOON;
 
 @JdbcTest
 class ReservationTimeDaoTest {
@@ -28,7 +29,7 @@ class ReservationTimeDaoTest {
     @Test
     void 예약_시간을_저장할_수_있다() {
         // given
-        LocalTime startAt = LocalTime.of(10, 5);
+        LocalTime startAt = NOON;
         ReservationTime reservationTime = new ReservationTime(startAt);
 
         // when
@@ -39,7 +40,7 @@ class ReservationTimeDaoTest {
     }
 
     @Test
-    void 특정_예약_시간을_조회할_수_있다() {
+    void id로_특정_예약_시간을_조회할_수_있다() {
         // given
         Long id = 1L;
         reservationTimeDao.save(DEFAULT_TIME);
@@ -53,10 +54,9 @@ class ReservationTimeDaoTest {
     void 전체_예약_시간을_조회할_수_있다() {
         // given
         int totalCount = reservationTimeDao.findAll().size();
-        ReservationTime newReservationTime = new ReservationTime(LocalTime.of(13, 0));
 
         // when
-        ReservationTime savedReservationTime = reservationTimeDao.save(newReservationTime);
+        ReservationTime savedReservationTime = reservationTimeDao.save(DEFAULT_TIME);
 
         // then
         assertAll(
