@@ -22,6 +22,11 @@ import roomescape.service.ThemeService;
 @RestController
 @RequestMapping("/themes")
 public class ThemeController {
+
+    public static final String DEFAULT_RANK_COUNT = "10";
+    public static final String DEFAULT_START_DAYS_AGO = "7";
+    public static final String DEFAULT_END_DAYS_AGO = "1";
+
     private final ThemeService themeService;
 
     public ThemeController(ThemeService themeService) {
@@ -41,9 +46,9 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> getTopTenTheme(
-            @RequestParam(defaultValue = "10") int count,
-            @RequestParam(defaultValue = "7") int startDaysAgo,
-            @RequestParam(defaultValue = "1") int endDaysAgo
+            @RequestParam(defaultValue = DEFAULT_RANK_COUNT) int count,
+            @RequestParam(defaultValue = DEFAULT_START_DAYS_AGO) int startDaysAgo,
+            @RequestParam(defaultValue = DEFAULT_END_DAYS_AGO) int endDaysAgo
     ) {
         return ResponseEntity.ok(themeService.getTopTheme(count, startDaysAgo, endDaysAgo));
     }
