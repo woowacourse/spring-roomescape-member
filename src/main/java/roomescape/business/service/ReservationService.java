@@ -9,7 +9,7 @@ import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidReservationDateException;
-import roomescape.exception.ReservationNotFoundException;
+import roomescape.exception.NotFoundException;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
@@ -71,7 +71,7 @@ public class ReservationService {
 
     public void remove(final Long id) {
         if (!reservationDao.remove(id)) {
-            throw new ReservationNotFoundException(id);
+            throw new NotFoundException("해당하는 방탈출 예약을 찾을 수 없습니다. 방탈출 id: %d".formatted(id));
         }
     }
 

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.PlayTimeNotFoundException;
+import roomescape.exception.NotFoundException;
 import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.presentation.dto.PlayTimeRequest;
 import roomescape.presentation.dto.PlayTimeResponse;
@@ -21,7 +21,7 @@ public class PlayTimeService {
 
     public PlayTime find(final Long id) {
         return playTimeDao.find(id)
-                .orElseThrow(() -> new PlayTimeNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException("해당하는 방탈출 시간을 찾을 수 없습니다. 방탈출 id: %d".formatted(id)));
     }
 
     public PlayTimeResponse create(final PlayTimeRequest playTimeRequest) {
@@ -46,7 +46,7 @@ public class PlayTimeService {
 
     public void remove(final Long id) {
         if (!playTimeDao.remove(id)) {
-            throw new PlayTimeNotFoundException(id);
+            throw new NotFoundException("해당하는 방탈출 시간을 찾을 수 없습니다. 방탈출 id: %d".formatted(id));
         }
     }
 }

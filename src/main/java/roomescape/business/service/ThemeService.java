@@ -2,10 +2,9 @@ package roomescape.business.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.Theme;
-import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.NotFoundException;
 import roomescape.persistence.dao.ThemeDao;
 import roomescape.persistence.entity.ReservationEntity;
 import roomescape.presentation.dto.ThemeRequest;
@@ -22,7 +21,7 @@ public class ThemeService {
 
     public Theme find(final Long id) {
         return themeDao.find(id)
-                .orElseThrow(() -> new ThemeNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id)));
     }
 
     public ThemeResponse create(final ThemeRequest themeRequest) {
@@ -40,7 +39,7 @@ public class ThemeService {
 
     public void remove(final Long id) {
         if (!themeDao.remove(id)) {
-            throw new ThemeNotFoundException(id);
+            throw new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id));
         }
     }
 

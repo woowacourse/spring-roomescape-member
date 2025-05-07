@@ -7,13 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.PlayTimeNotFoundException;
-import roomescape.exception.ThemeNotFoundException;
+import roomescape.exception.NotFoundException;
 import roomescape.fake.FakePlayTimeDao;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeThemeDao;
@@ -79,7 +77,7 @@ public class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(PlayTimeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("저장하려는 예약에 해당하는 방탈출 테마가 없다면 예외가 발생한다.")
@@ -92,7 +90,7 @@ public class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(ThemeNotFoundException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("저장하려는 방탈출 예약에 날짜/시간/테마가 이미 존재한다면 예외가 발생한다.")
@@ -161,11 +159,11 @@ public class ReservationServiceTest {
         assertThat(reservationService.findAll()).isEmpty();
     }
 
-    @DisplayName("석재하려는 예약이 존재하지 않으면 예외가 발생한다.")
+    @DisplayName("삭제하려는 예약이 존재하지 않으면 예외가 발생한다.")
     @Test
     void removeOrThrowIfIdNotExists() {
         // given & when & then
         assertThatThrownBy(() -> reservationService.remove(1L))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 }
