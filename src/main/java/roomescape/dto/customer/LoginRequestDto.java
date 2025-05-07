@@ -12,7 +12,7 @@ public record LoginRequestDto(
         public Customer convertToUser(){
                 return new Customer(
                         email,
-r                        password
+                        password
                 );
         }
 }
