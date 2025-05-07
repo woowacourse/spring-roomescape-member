@@ -19,7 +19,11 @@ public enum DomainTerm {
 
     // Time 도메인
     RESERVATION_TIME("예약 시간"),
-    RESERVATION_TIME_ID("예약 시간 식별자");
+    RESERVATION_TIME_ID("예약 시간 식별자"),
+
+    // Common
+    DOMAIN_ID("도메인 식별자"),
+    ;
 
     private final String label;
 
