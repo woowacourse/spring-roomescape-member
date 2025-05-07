@@ -2,7 +2,7 @@ package roomescape.time.service.converter;
 
 import roomescape.time.service.dto.CreateReservationTimeServiceRequest;
 import roomescape.time.domain.ReservationTime;
-import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.controller.dto.ReservationTimeWebResponse;
 
 import java.util.List;
 
@@ -13,13 +13,13 @@ public class ReservationTimeConverter {
                 request.startAt());
     }
 
-    public static ReservationTimeResponse toDto(final ReservationTime reservationTime) {
-        return new ReservationTimeResponse(
+    public static ReservationTimeWebResponse toDto(final ReservationTime reservationTime) {
+        return new ReservationTimeWebResponse(
                 reservationTime.getId().getValue(),
                 reservationTime.getValue());
     }
 
-    public static List<ReservationTimeResponse> toDto(final List<ReservationTime> reservationTimes) {
+    public static List<ReservationTimeWebResponse> toDto(final List<ReservationTime> reservationTimes) {
         return reservationTimes.stream()
                 .map(ReservationTimeConverter::toDto)
                 .toList();

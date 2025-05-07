@@ -6,7 +6,7 @@ import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.service.converter.ThemeConverter;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.controller.dto.CreateThemeWebRequest;
-import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.controller.dto.ThemeWebResponse;
 import roomescape.theme.service.usecase.ThemeCommandUseCase;
 import roomescape.theme.service.usecase.ThemeQueryUseCase;
 
@@ -20,11 +20,11 @@ public class ThemeService {
     private final ThemeQueryUseCase themeQueryUseCase;
     private final ThemeCommandUseCase themeCommandUseCase;
 
-    public List<ThemeResponse> getAll() {
+    public List<ThemeWebResponse> getAll() {
         return ThemeConverter.toDto(themeQueryUseCase.getAll());
     }
 
-    public List<ThemeResponse> getRanking() {
+    public List<ThemeWebResponse> getRanking() {
         final int count = 10;
         final int dateRange = 7;
         final LocalDate endDate = LocalDate.now();
@@ -37,7 +37,7 @@ public class ThemeService {
                         count));
     }
 
-    public ThemeResponse create(final CreateThemeWebRequest createThemeWebRequest) {
+    public ThemeWebResponse create(final CreateThemeWebRequest createThemeWebRequest) {
         return ThemeConverter.toDto(themeCommandUseCase.create(ThemeConverter.toServiceDto(createThemeWebRequest)));
     }
 

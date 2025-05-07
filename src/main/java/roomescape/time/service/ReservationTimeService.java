@@ -6,7 +6,7 @@ import roomescape.time.service.converter.ReservationTimeConverter;
 import roomescape.time.service.dto.CreateReservationTimeServiceRequest;
 import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.controller.dto.CreateReservationTimeWebRequest;
-import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.controller.dto.ReservationTimeWebResponse;
 import roomescape.time.service.usecase.ReservationTimeCommandUseCase;
 import roomescape.time.service.usecase.ReservationTimeQueryUseCase;
 
@@ -19,12 +19,12 @@ public class ReservationTimeService {
     private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
     private final ReservationTimeCommandUseCase reservationTimeCommandUseCase;
 
-    public List<ReservationTimeResponse> getAll() {
+    public List<ReservationTimeWebResponse> getAll() {
         return ReservationTimeConverter.toDto(
                 reservationTimeQueryUseCase.getAll());
     }
 
-    public ReservationTimeResponse create(final CreateReservationTimeWebRequest createReservationTimeWebRequest) {
+    public ReservationTimeWebResponse create(final CreateReservationTimeWebRequest createReservationTimeWebRequest) {
         return ReservationTimeConverter.toDto(
                 reservationTimeCommandUseCase.create(
                         new CreateReservationTimeServiceRequest(

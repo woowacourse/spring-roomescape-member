@@ -6,7 +6,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReserverName;
 import roomescape.reservation.controller.dto.AvailableReservationTimeWebResponse;
-import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.ReservationWebResponse;
 import roomescape.theme.service.converter.ThemeConverter;
 import roomescape.theme.domain.Theme;
 import roomescape.time.service.converter.ReservationTimeConverter;
@@ -26,8 +26,8 @@ public class ReservationConverter {
                 theme);
     }
 
-    public static ReservationResponse toDto(final Reservation reservation) {
-        return new ReservationResponse(
+    public static ReservationWebResponse toDto(final Reservation reservation) {
+        return new ReservationWebResponse(
                 reservation.getId().getValue(),
                 reservation.getName().getValue(),
                 reservation.getDate().getValue(),
@@ -35,7 +35,7 @@ public class ReservationConverter {
                 ThemeConverter.toDto(reservation.getTheme()));
     }
 
-    public static List<ReservationResponse> toDto(final List<Reservation> reservations) {
+    public static List<ReservationWebResponse> toDto(final List<Reservation> reservations) {
         return reservations.stream()
                 .map(ReservationConverter::toDto)
                 .toList();

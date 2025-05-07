@@ -4,19 +4,19 @@ import lombok.experimental.FieldNameConstants;
 import roomescape.common.utils.Validator;
 
 @FieldNameConstants
-public record ThemeResponse(
+public record ThemeWebResponse(
         Long id,
         String name,
         String description,
         String thumbnail
 ) {
 
-    public ThemeResponse {
+    public ThemeWebResponse {
         validate(id, name, description, thumbnail);
     }
 
     private static void validate(final Long id, final String name, final String description, final String thumbnail) {
-        Validator.of(ThemeResponse.class)
+        Validator.of(ThemeWebResponse.class)
                 .notNullField(Fields.id, id)
                 .notNullField(Fields.name, name)
                 .notNullField(Fields.description, description)

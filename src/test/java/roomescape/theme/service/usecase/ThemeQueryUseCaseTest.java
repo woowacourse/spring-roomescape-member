@@ -1,4 +1,4 @@
-package roomescape.theme.service;
+package roomescape.theme.service.usecase;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +10,6 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
-import roomescape.theme.service.usecase.ThemeQueryUseCase;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;

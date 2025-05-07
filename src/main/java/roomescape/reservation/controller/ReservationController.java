@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.common.utils.UriFactory;
 import roomescape.reservation.controller.dto.AvailableReservationTimeWebResponse;
 import roomescape.reservation.controller.dto.CreateReservationWebRequest;
-import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.controller.dto.ReservationWebResponse;
 import roomescape.reservation.service.ReservationService;
 
 import java.net.URI;
@@ -30,7 +30,7 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public List<ReservationResponse> getAll() {
+    public List<ReservationWebResponse> getAll() {
         return reservationService.getAll();
     }
 
@@ -42,12 +42,12 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(
+    public ResponseEntity<ReservationWebResponse> create(
             @RequestBody final CreateReservationWebRequest createReservationWebRequest) {
-        final ReservationResponse reservationResponse = reservationService.create(createReservationWebRequest);
-        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationResponse.id()));
+        final ReservationWebResponse reservationWebResponse = reservationService.create(createReservationWebRequest);
+        final URI location = UriFactory.buildPath(BASE_PATH, String.valueOf(reservationWebResponse.id()));
         return ResponseEntity.created(location)
-                .body(reservationResponse);
+                .body(reservationWebResponse);
     }
 
     @DeleteMapping("/{id}")
