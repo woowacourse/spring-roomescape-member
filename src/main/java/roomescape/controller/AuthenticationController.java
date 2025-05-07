@@ -39,4 +39,13 @@ public class AuthenticationController {
     ) {
         return new MemberNameResponse(authenticationInformation.name());
     }
+
+    @PostMapping("logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from("access", null)
+                .path("/")
+                .maxAge(0)
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+    }
 }
