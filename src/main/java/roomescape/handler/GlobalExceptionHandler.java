@@ -13,10 +13,11 @@ import roomescape.exception.InvalidInputException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = RuntimeException.class)
+    @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleUnexpected(RuntimeException exception) {
-        return generateErrorResponse("예상하지 못한 예외가 발생했다.\n" + exception.getMessage());
+    public ErrorResponse handleUnexpected(Exception exception) {
+        System.out.println(exception.getMessage());
+        return generateErrorResponse("예상하지 못한 예외가 발생했다. 자세한 사항은 관리자에게 문의하라.");
     }
 
     @ExceptionHandler(value = InvalidInputException.class)
