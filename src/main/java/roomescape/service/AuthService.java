@@ -18,7 +18,7 @@ public class AuthService {
 
     public void login(final LoginRequestDto loginRequestDto) {
         User user = findUserByEmail(loginRequestDto.email());
-        if (user.hasSamePassword(loginRequestDto.password())) {
+        if (!user.hasSamePassword(loginRequestDto.password())) {
             throw new UnauthorizedException("로그인에 실패했습니다.");
         }
     }
