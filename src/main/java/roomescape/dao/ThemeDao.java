@@ -3,9 +3,12 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -14,24 +17,29 @@ import roomescape.model.Theme;
 @Repository
 public class ThemeDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public ThemeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ThemeDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public Theme save(Theme theme) {
+        String sql = """
+                INSERT INTO theme(name, description, thumbnail) VALUES(:name, :description, :thumbnail)
+                """;
+        Map<String, Object> params = Map.of(
+                "name", theme.getName(),
+                "description", theme.getDescription(),
+                "thumbnail", theme.getThumbnail()
+        );
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            "INSERT INTO theme(name, description, thumbnail) VALUES(?, ?, ?)",
-                            new String[]{"id"});
-                    ps.setString(1, theme.getName());
-                    ps.setString(2, theme.getDescription());
-                    ps.setString(3, theme.getThumbnail());
-                    return ps;
-                }
-                , keyHolder);
+
+        namedParameterJdbcTemplate.update(
+                sql,
+                new MapSqlParameterSource(params),
+                keyHolder,
+                new String[]{"id"}
+        );
 
         Long id = keyHolder.getKey().longValue();
 
@@ -39,17 +47,23 @@ public class ThemeDao {
     }
 
     public boolean deleteById(Long id) {
-        int deletedRow = jdbcTemplate.update(
-                "DELETE FROM theme WHERE id = ?",
-                id
+        String sql = """
+                DELETE FROM theme WHERE id = :id
+                """;
+        int deletedRow = namedParameterJdbcTemplate.update(
+                sql,
+                Map.of("id", id)
         );
         return deletedRow == 1;
     }
 
     public List<Theme> findAll() {
-        return jdbcTemplate.query(
-                "SELECT id, name, description, thumbnail"
-                        + " FROM theme",
+        String sql = """
+                SELECT id, name, description, thumbnail FROM THEME
+                """;
+
+        return namedParameterJdbcTemplate.query(
+                sql,
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"),
                         rs.getString("name"),
@@ -64,14 +78,18 @@ public class ThemeDao {
             String sql = """
                     SELECT id, name, description, thumbnail
                     FROM THEME
-                    WHERE id = ?
+                    WHERE id = :id
                     """;
-            Theme theme = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Theme(
+            Theme theme = namedParameterJdbcTemplate.queryForObject(
+                    sql,
+                    Map.of("id", id),
+                    (rs, rowNum) -> new Theme(
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
                     rs.getString("thumbnail")
-            ), id);
+                    )
+            );
             return Optional.ofNullable(theme);
         } catch (DataAccessException e) {
             return Optional.empty();
@@ -84,35 +102,39 @@ public class ThemeDao {
                 INNER JOIN
                 (SELECT THEME_ID, count(THEME_ID) AS COUNT
                 FROM RESERVATION
-                WHERE date BETWEEN ? AND ?
+                WHERE date BETWEEN :startAt AND :endAt
                 GROUP BY THEME_ID
                 ORDER BY COUNT DESC, THEME_ID ASC
-                LIMIT ?) AS popular
+                LIMIT :rank) AS popular
                 ON t.ID = popular.THEME_ID
                 """;
 
-        return jdbcTemplate.query(
+        Map<String, Object> params = Map.of(
+                "startAt", startAt,
+                "endAt", endAt,
+                "rank", rank
+        );
+
+        return namedParameterJdbcTemplate.query(
                 sql,
+                new MapSqlParameterSource(params),
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getString("thumbnail")
-                ),
-                startAt,
-                endAt,
-                rank
+                )
         );
     }
 
     public boolean isExistThemeName(String name) {
         String sql = """
-                SELECT EXISTS (SELECT 1 FROM theme WHERE name = ?)
+                SELECT EXISTS (SELECT 1 FROM theme WHERE name = :name)
                 """;
-        return jdbcTemplate.queryForObject(
+        return namedParameterJdbcTemplate.queryForObject(
                 sql,
-                Boolean.class,
-                name
-        );
+                Map.of("name", name),
+                Boolean.class
+                );
     }
 }

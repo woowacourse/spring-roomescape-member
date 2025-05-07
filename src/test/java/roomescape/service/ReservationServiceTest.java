@@ -12,7 +12,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.dao.ReservationDao;
@@ -28,7 +28,7 @@ class ReservationServiceTest {
     private ReservationService reservationService;
     private ReservationTimeDao reservationTimeDao;
     private ThemeDao themeDao;
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
     @BeforeEach
@@ -37,10 +37,10 @@ class ReservationServiceTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        jdbcTemplate = new JdbcTemplate(dataSource);
-        ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
-        reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        themeDao = new ThemeDao(jdbcTemplate);
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        ReservationDao reservationDao = new ReservationDao(namedParameterJdbcTemplate);
+        reservationTimeDao = new ReservationTimeDao(namedParameterJdbcTemplate);
+        themeDao = new ThemeDao(namedParameterJdbcTemplate);
         Clock clock = Clock.fixed(Instant.parse("2023-02-25T08:25:24Z"), ZoneId.systemDefault());
         reservationService = new ReservationService(reservationDao, reservationTimeDao, themeDao, clock);
     }

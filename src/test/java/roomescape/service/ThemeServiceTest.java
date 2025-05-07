@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -41,10 +42,10 @@ public class ThemeServiceTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         Clock clock = Clock.fixed(Instant.parse("2023-03-26T08:25:24Z"), ZoneId.systemDefault());
-        service = new ThemeService(new ReservationDao(jdbcTemplate), new ReservationTimeDao(jdbcTemplate),
-                new ThemeDao(jdbcTemplate), clock);
+        service = new ThemeService(new ReservationDao(namedParameterJdbcTemplate), new ReservationTimeDao(namedParameterJdbcTemplate),
+                new ThemeDao(namedParameterJdbcTemplate), clock);
     }
 
     @Test

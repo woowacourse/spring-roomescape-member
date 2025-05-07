@@ -4,9 +4,12 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -15,22 +18,24 @@ import roomescape.model.ReservationTime;
 @Repository
 public class ReservationTimeDao {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public ReservationTimeDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ReservationTimeDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public ReservationTime save(ReservationTime time) {
+        String sql = """
+                INSERT INTO reservation_time(start_at) VALUES(:startAt)
+                """;
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-                    PreparedStatement ps = connection.prepareStatement(
-                            "INSERT INTO reservation_time(start_at) VALUES(?)",
-                            new String[]{"id"});
-                    ps.setTime(1, Time.valueOf(time.getStartAt()));
-                    return ps;
-                }
-                , keyHolder);
+
+        namedParameterJdbcTemplate.update(
+                sql,
+                new MapSqlParameterSource(Map.of("startAt", time.getStartAt())),
+                keyHolder,
+                new String[]{"id"});
 
         Long id = keyHolder.getKey().longValue();
 
@@ -38,7 +43,7 @@ public class ReservationTimeDao {
     }
 
     public List<ReservationTime> findAll() {
-        return jdbcTemplate.query(
+        return namedParameterJdbcTemplate.query(
                 "SELECT id, start_at FROM reservation_time",
                 (rs, rowNum) -> {
                     return new ReservationTime(
@@ -50,24 +55,28 @@ public class ReservationTimeDao {
     }
 
     public boolean deleteById(Long id) {
-        int deletedRow = jdbcTemplate.update(
-                "DELETE FROM reservation_time WHERE id = ?",
-                id
+        String sql = """
+                DELETE FROM reservation_time WHERE id = :id
+                """;
+        int deletedRow = namedParameterJdbcTemplate.update(
+                sql,
+                Map.of("id", id)
         );
         return deletedRow == 1;
     }
 
     public Optional<ReservationTime> findById(Long id) {
+        String sql = """
+                SELECT id, start_at FROM reservation_time WHERE id = :id
+                """;
         try {
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(
-                    "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                    (rs, rowNum) -> {
-                        return new ReservationTime(
-                                rs.getLong("id"),
-                                rs.getTime("start_at").toLocalTime()
-                        );
-                    },
-                    id
+            ReservationTime reservationTime = namedParameterJdbcTemplate.queryForObject(
+                    sql,
+                    Map.of("id", id),
+                    (rs, rowNum) -> new ReservationTime(
+                            rs.getLong("id"),
+                            rs.getTime("start_at").toLocalTime()
+                    )
             );
             return Optional.ofNullable(reservationTime);
         } catch (DataAccessException e) {
@@ -77,12 +86,12 @@ public class ReservationTimeDao {
 
     public boolean isExistTime(LocalTime time) {
         String sql = """
-                SELECT EXISTS (SELECT 1 FROM RESERVATION_TIME WHERE start_at = ?)
+                SELECT EXISTS (SELECT 1 FROM RESERVATION_TIME WHERE start_at = :startAt)
                 """;
-        return jdbcTemplate.queryForObject(
+        return namedParameterJdbcTemplate.queryForObject(
                 sql,
-                Boolean.class,
-                time
-        );
+                Map.of("startAt", Time.valueOf(time)),
+                Boolean.class
+                );
     }
 }

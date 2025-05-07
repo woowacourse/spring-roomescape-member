@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.jdbc.Sql;
@@ -22,7 +23,7 @@ import roomescape.model.Theme;
 class ThemeDaoTest {
 
     private static ThemeDao dao;
-    private static JdbcTemplate jdbcTemplate;
+    private static NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -30,8 +31,8 @@ class ThemeDaoTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        jdbcTemplate = new JdbcTemplate(dataSource);
-        dao = new ThemeDao(jdbcTemplate);
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        dao = new ThemeDao(namedParameterJdbcTemplate);
     }
 
     @Test
@@ -141,7 +142,7 @@ class ThemeDaoTest {
     }
 
     private List<Theme> findByJdbc() {
-        return jdbcTemplate.query("""
+        return namedParameterJdbcTemplate.query("""
                         SELECT id, name, description, thumbnail
                         FROM THEME
                         """,

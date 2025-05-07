@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import roomescape.dao.ReservationDao;
@@ -22,7 +23,7 @@ import roomescape.dto.ReservationTimeResponse;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class ReservationTimeServiceTest {
     private ReservationTimeService reservationTimeService;
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @BeforeEach
     void setUp() {
@@ -30,10 +31,10 @@ class ReservationTimeServiceTest {
                 .addScript("schema.sql")
                 .addScript("data.sql")
                 .build();
-        jdbcTemplate = new JdbcTemplate(dataSource);
-        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(jdbcTemplate);
-        ReservationDao reservationDao = new ReservationDao(jdbcTemplate);
-        ThemeDao themeDao = new ThemeDao(jdbcTemplate);
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        ReservationTimeDao reservationTimeDao = new ReservationTimeDao(namedParameterJdbcTemplate);
+        ReservationDao reservationDao = new ReservationDao(namedParameterJdbcTemplate);
+        ThemeDao themeDao = new ThemeDao(namedParameterJdbcTemplate);
         reservationTimeService = new ReservationTimeService(reservationDao, reservationTimeDao, themeDao);
     }
 

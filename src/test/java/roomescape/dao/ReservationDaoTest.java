@@ -4,11 +4,12 @@
 
     import java.time.LocalDate;
     import java.util.List;
+    import java.util.Map;
     import org.junit.jupiter.api.Test;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
     import org.springframework.context.annotation.Import;
-    import org.springframework.jdbc.core.JdbcTemplate;
+    import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
     import org.springframework.test.context.jdbc.Sql;
     import roomescape.model.Reservation;
     import roomescape.model.ReservationTime;
@@ -22,18 +23,20 @@
         @Autowired
         private ReservationDao reservationDao;
         @Autowired
-        private JdbcTemplate jdbcTemplate;
+        private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
         @Test
         void 예약_저장() {
             // given
-            ReservationTime reservationTime = jdbcTemplate.queryForObject(
-                    "SELECT id, start_at FROM RESERVATION_TIME WHERE id = 1",
+            ReservationTime reservationTime = namedParameterJdbcTemplate.queryForObject(
+                    "SELECT id, start_at FROM RESERVATION_TIME WHERE id = :id",
+                    Map.of("id", 1L),
                     (rs, rowNum) -> new ReservationTime(
                             rs.getLong("id"),
                             rs.getTime("start_at").toLocalTime()
                     ));
-            Theme theme = jdbcTemplate.queryForObject("SELECT id, name, description, thumbnail FROM THEME WHERE id = 1",
+            Theme theme = namedParameterJdbcTemplate.queryForObject("SELECT id, name, description, thumbnail FROM THEME WHERE id = :id",
+                    Map.of("id", 1L),
                     (rs, rowNum) -> new Theme(
                             rs.getLong("id"),
                             rs.getString("name"),
