@@ -38,7 +38,7 @@ class JdbcReservationDaoTest {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
-        Theme theme = new Theme(1L, "themeName", "des", "th");
+        Theme theme = Theme.of(1L, "themeName", "description", "thumb.jpg");
         themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
@@ -79,13 +79,13 @@ class JdbcReservationDaoTest {
         // given
         ReservationTime reservationTime = ReservationTime.createWithoutId(LocalTime.of(10, 0));
         Long id = reservationTimeDao.create(reservationTime);
-        Theme theme = new Theme(1L, "themeName", "des", "th");
+        Theme theme = Theme.of(1L, "themeName", "description", "thumb.jpg");
         Long themeId = themeDao.create(theme);
         Reservation reservation = Reservation.createWithoutId(
                 "포라",
                 LocalDate.now().plusDays(1),
                 new ReservationTime(id, reservationTime.getStartAt()),
-                new Theme(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail()));
+                Theme.of(themeId, theme.getName(), theme.getDescription(), theme.getThumbnail()));
         reservationDao.create(reservation);
         // when
         Optional<Reservation> foundReservation = reservationDao.findByTimeId(id);

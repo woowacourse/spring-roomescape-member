@@ -50,7 +50,7 @@ public class JdbcReservationDao implements ReservationDao {
                             resultSet.getObject("time_value", LocalTime.class)
                     );
 
-                    Theme theme = new Theme(
+                    Theme theme = Theme.of(
                             resultSet.getLong("theme_id"),
                             resultSet.getString("theme_name"),
                             resultSet.getString("theme_des"),
@@ -114,7 +114,7 @@ public class JdbcReservationDao implements ReservationDao {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
                     (rs, rowNum) -> {
-                        Theme theme = new Theme(
+                        Theme theme = Theme.of(
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_des"),
@@ -158,7 +158,7 @@ public class JdbcReservationDao implements ReservationDao {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
                     (rs, rowNum) -> {
-                        Theme theme = new Theme(
+                        Theme theme = Theme.of(
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_des"),
@@ -197,7 +197,7 @@ public class JdbcReservationDao implements ReservationDao {
             Reservation reservation = jdbcTemplate.queryForObject(
                     sql,
                     (rs, rowNum) -> {
-                        Theme theme = new Theme(
+                        Theme theme = Theme.of(
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("theme_des"),
@@ -262,7 +262,7 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.query(sql,
                 new Object[]{startDate, currentDate},
                 (rs, rowNum) ->
-                        new Theme(
+                        Theme.of(
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("description"),

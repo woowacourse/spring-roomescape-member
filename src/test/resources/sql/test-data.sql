@@ -8,15 +8,15 @@ INSERT INTO reservation_time (start_at)
 values ('12:00');
 
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마1', 'desc1', 'thumb1');
+VALUES ('테마1', 'description1', 'thumb1.jpg');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마2', 'desc2', 'thumb2');
+VALUES ('테마2', 'description2', 'thumb2.jpg');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마3', 'desc3', 'thumb3');
+VALUES ('테마3', 'description3', 'thumb3.jpg');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마4', 'desc4', 'thumb4');
+VALUES ('테마4', 'description4', 'thumb4.jpg');
 INSERT INTO theme (name, description, thumbnail)
-VALUES ('테마5', 'desc5', 'thumb5');
+VALUES ('테마5', 'description5', 'thumb5.jpg');
 
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('포비', '2025-1-1', 1, 1);

@@ -41,7 +41,7 @@ public class JdbcThemeDao implements ThemeDao {
         String sql = "select * from theme";
         return jdbcTemplate.query(
                 sql,
-                (resultSet, rowNum) -> new Theme(
+                (resultSet, rowNum) -> Theme.of(
                         resultSet.getLong("id"),
                         resultSet.getString("name"),
                         resultSet.getString("description"),
@@ -62,7 +62,7 @@ public class JdbcThemeDao implements ThemeDao {
         try {
             Theme theme = this.jdbcTemplate.queryForObject(sql,
                     (resultSet, rowNum) -> {
-                        Theme foundTheme = new Theme(
+                        Theme foundTheme = Theme.of(
                                 resultSet.getLong("id"),
                                 resultSet.getString("name"),
                                 resultSet.getString("description"),
@@ -84,7 +84,7 @@ public class JdbcThemeDao implements ThemeDao {
         try {
             Theme theme = this.jdbcTemplate.queryForObject(sql,
                     (resultSet, rowNum) -> {
-                        Theme foundTheme = new Theme(
+                        Theme foundTheme = Theme.of(
                                 resultSet.getLong("id"),
                                 resultSet.getString("name"),
                                 resultSet.getString("description"),

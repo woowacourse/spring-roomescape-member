@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.reservation.Reservation;
@@ -20,6 +18,9 @@ import roomescape.reservationtime.dao.FakeReservationTimeDao;
 import roomescape.theme.Theme;
 import roomescape.theme.dao.FakeThemeDao;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 class ReservationServiceTest {
 
     private FakeReservationDao fakeReservationDao;
@@ -29,8 +30,8 @@ class ReservationServiceTest {
 
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
     private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
-    private final Theme theme1 = new Theme(1L, "themeName1", "des", "th");
-    private final Theme theme2 = new Theme(2L, "themeName2", "des", "th");
+    private final Theme theme1 = Theme.of(1L, "themeName1", "des", "th");
+    private final Theme theme2 = Theme.of(2L, "themeName2", "des", "th");
 
     private final Reservation fakeReservation1 = Reservation.of(1L, "포라", LocalDate.of(2025, 7, 25),
             fakeReservationTime1, theme1);

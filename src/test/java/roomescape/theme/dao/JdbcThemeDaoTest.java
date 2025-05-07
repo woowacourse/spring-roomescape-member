@@ -21,7 +21,7 @@ public class JdbcThemeDaoTest {
     @Test
     void 테마를_추가할_수_있다() {
         // given
-        Theme theme = Theme.createWithoutId("레벨2", "탈출하자",
+        Theme theme = Theme.createWithoutId("레벨2", "빨리 탈출하자",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when

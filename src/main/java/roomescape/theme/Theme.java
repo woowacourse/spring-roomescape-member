@@ -10,14 +10,13 @@ public class Theme {
     private final String thumbnail;
 
     public Theme(Long id, String name, String description, String thumbnail) {
-        validateNull(name, description, thumbnail);
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
-    private void validateNull(String name, String description, String thumbnail) {
+    private static void validateNull(String name, String description, String thumbnail) {
         if (name == null || name.isBlank()) {
             throw new ArgumentNullException();
         }
@@ -29,14 +28,27 @@ public class Theme {
         }
     }
 
+    public static Theme of(Long id, String name, String description, String thumbnail) {
+        validateNull(name, description, thumbnail);
+        return new Theme(id, name, description, thumbnail);
+    }
+
     public static Theme createWithoutId(String name, String description, String thumbnail) {
+        validateNull(name, description, thumbnail);
         validateDescriptionLength(description);
+        validateImageType(thumbnail);
         return new Theme(null, name, description, thumbnail);
     }
 
     private static void validateDescriptionLength(String description) {
         if (description.length() < 5 || description.length() > 100) {
             throw new IllegalArgumentException("테마 소개는 최소 5글자, 최대 100글자여야 합니다.");
+        }
+    }
+
+    private static void validateImageType(String thumbnail) {
+        if (!thumbnail.matches("(?i)^.+\\.(jpg|jpeg|png|gif|bmp|webp)$")) {
+            throw new IllegalArgumentException("썸네일은 이미지 형식이어야 합니다.");
         }
     }
 

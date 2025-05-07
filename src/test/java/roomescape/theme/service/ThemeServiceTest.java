@@ -24,8 +24,8 @@ public class ThemeServiceTest {
     private final ThemeService themeService;
     private final ThemeDao themeDao;
     private final ReservationDao reservationDao;
-    Theme theme1 = new Theme(1L, "테마1", "description1", "thumbnail1");
-    Theme theme2 = new Theme(2L, "테마2", "description2", "thumbnail2");
+    Theme theme1 = Theme.of(1L, "테마1", "description1", "thumbnail1");
+    Theme theme2 = Theme.of(2L, "테마2", "description2", "thumbnail2");
 
     public ThemeServiceTest() {
         this.themeDao = new FakeThemeDao(theme1, theme2);
@@ -36,7 +36,7 @@ public class ThemeServiceTest {
     @Test
     void 테마를_생성할_수_있다() {
         // given
-        ThemeRequest theme = new ThemeRequest("테마3", "description3", "thumbnail3");
+        ThemeRequest theme = new ThemeRequest("테마3", "description3", "thumbnail3.jpg");
         // when
         Long themeId = themeService.create(theme);
         // then
@@ -62,7 +62,7 @@ public class ThemeServiceTest {
     @Test
     void 중복된_이름으로_테마를_생성할_수_없다() {
         // given
-        Theme theme3 = new Theme(3L, "테마1", "description3", "thumbnail3");
+        Theme theme3 = Theme.of(3L, "테마1", "description3", "thumbnail3.jpg");
         ThemeRequest themeRequest = new ThemeRequest(theme3.getName(), theme3.getDescription(), theme3.getThumbnail());
         // when & then
         assertThatThrownBy(() -> themeService.create(themeRequest))
