@@ -92,7 +92,7 @@ public class FakeReservationDao implements ReservationDao {
         return themeCounts.keySet().stream().sorted(new Comparator<Theme>() {
                     @Override
                     public int compare(Theme o1, Theme o2) {
-                        return (int) (themeCounts.get(o1) - themeCounts.get(o2));
+                        return (int) (themeCounts.get(o2) - themeCounts.get(o1));
                     }
                 })
                 .limit(10)

@@ -30,7 +30,14 @@ public class Theme {
     }
 
     public static Theme createWithoutId(String name, String description, String thumbnail) {
+        validateDescriptionLength(description);
         return new Theme(null, name, description, thumbnail);
+    }
+
+    private static void validateDescriptionLength(String description) {
+        if (description.length() < 5 || description.length() > 100) {
+            throw new IllegalArgumentException("테마 소개는 최소 5글자, 최대 100글자여야 합니다.");
+        }
     }
 
     public Long getId() {
