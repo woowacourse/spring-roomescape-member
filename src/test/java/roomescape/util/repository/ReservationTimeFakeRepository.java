@@ -17,7 +17,7 @@ public class ReservationTimeFakeRepository implements ReservationTimeRepository 
     @Override
     public Long saveAndReturnId(ReservationTime time) {
         Long id = idGenerator.incrementAndGet();
-        times.put(id, time.withId(id));
+        times.put(id, time.createWithId(id));
         return id;
     }
 

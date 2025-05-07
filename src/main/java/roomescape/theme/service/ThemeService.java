@@ -28,7 +28,7 @@ public class ThemeService {
         Theme themeWithoutId = request.toThemeWithoutId();
         Long id = themeRepository.saveAndReturnId(themeWithoutId);
 
-        Theme theme = themeWithoutId.withId(id);
+        Theme theme = themeWithoutId.createWithId(id);
         return ThemeResponse.from(theme);
     }
 

@@ -31,7 +31,7 @@ public class ReservationTimeService {
         ReservationTime newTime = request.toTimeWithoutId();
         validateDuplicateTime(request);
         Long id = reservationTimeRepository.saveAndReturnId(request.toTimeWithoutId());
-        return ReservationTimeResponse.from(newTime.withId(id));
+        return ReservationTimeResponse.from(newTime.createWithId(id));
     }
 
     public List<ReservationTimeResponse> getTimes() {

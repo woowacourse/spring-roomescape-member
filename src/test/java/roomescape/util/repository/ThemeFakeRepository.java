@@ -26,7 +26,7 @@ public class ThemeFakeRepository implements ThemeRepository {
     @Override
     public Long saveAndReturnId(Theme themeWithoutId) {
         long id = idGenerator.incrementAndGet();
-        Theme theme = themeWithoutId.withId(id);
+        Theme theme = themeWithoutId.createWithId(id);
         themes.put(id, theme);
 
         return id;

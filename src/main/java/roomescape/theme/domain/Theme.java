@@ -14,7 +14,7 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public Theme withId(Long id) {
+    public Theme createWithId(Long id) {
         return new Theme(id, this.name, this.description, this.thumbnail);
     }
 

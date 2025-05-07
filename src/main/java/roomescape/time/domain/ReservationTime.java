@@ -12,7 +12,7 @@ public class ReservationTime {
         this.startAt = startAt;
     }
 
-    public ReservationTime withId(Long id) {
+    public ReservationTime createWithId(Long id) {
         return new ReservationTime(id, this.startAt);
     }
 

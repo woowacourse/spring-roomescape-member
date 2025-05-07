@@ -38,7 +38,7 @@ public class ReservationService {
     public ReservationResponse add(ReservationRequest request) {
         Reservation reservation = createReservationWithoutId(request);
         Long id = reservationRepository.saveAndReturnId(reservation);
-        return ReservationResponse.from(reservation.withId(id));
+        return ReservationResponse.from(reservation.createWithId(id));
     }
 
     public void remove(Long id) {

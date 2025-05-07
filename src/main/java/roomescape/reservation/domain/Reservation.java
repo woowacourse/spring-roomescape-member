@@ -21,7 +21,7 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation withId(Long id) {
+    public Reservation createWithId(Long id) {
         return new Reservation(id, this.name, this.date, this.time, this.theme);
     }
 
