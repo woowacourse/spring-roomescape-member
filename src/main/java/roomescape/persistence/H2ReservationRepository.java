@@ -1,15 +1,19 @@
 package roomescape.persistence;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.Reservation;
-import roomescape.persistence.mapper.ReservationMapper;
+import roomescape.business.ReservationTheme;
+import roomescape.business.ReservationTime;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
@@ -25,6 +29,24 @@ public class H2ReservationRepository implements ReservationRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    private final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) -> (
+            new Reservation(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getObject("date", LocalDate.class),
+                    new ReservationTime(
+                            rs.getLong("time_id"),
+                            rs.getObject("start_at", LocalTime.class)
+                    ),
+                    new ReservationTheme(
+                            rs.getLong("theme_id"),
+                            rs.getString("theme_name"),
+                            rs.getString("description"),
+                            rs.getString("thumbnail")
+                    )
+            )
+    );
+
     @Override
     public List<Reservation> findAll() {
         String query = """
@@ -37,7 +59,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 JOIN theme AS th
                 ON r.time_id = t.id AND r.theme_id = th.id
                 """;
-        return jdbcTemplate.query(query, new ReservationMapper());
+        return jdbcTemplate.query(query, reservationRowMapper);
     }
 
     @Override
@@ -53,7 +75,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 ON r.time_id = t.id AND r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.query(query, new ReservationMapper(), id)
+        return jdbcTemplate.query(query, reservationRowMapper, id)
                 .stream()
                 .findFirst();
     }

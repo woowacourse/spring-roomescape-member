@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.ReservationTheme;
@@ -25,19 +26,22 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
                 .usingGeneratedKeyColumns("id");
     }
 
+    private final RowMapper<ReservationTheme> reservationThemeRowMapper = (rs, rowNum) -> (
+            new ReservationTheme(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("thumbname")
+            )
+    );
+
     @Override
     public List<ReservationTheme> findAll() {
         String query = """
                 SELECT id, name, description, thumbnail
                 FROM theme
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                )
-        );
+        return jdbcTemplate.query(query, reservationThemeRowMapper);
     }
 
     @Override
@@ -65,12 +69,7 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
                 FROM theme
                 WHERE id = ?
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
-                                rs.getLong("id"),
-                                rs.getString("name"),
-                                rs.getString("description"),
-                                rs.getString("thumbnail")
-                        ),
+        return jdbcTemplate.query(query, reservationThemeRowMapper,
                         id
                 )
                 .stream()
@@ -90,12 +89,7 @@ public class H2ReservationThemeRepository implements ReservationThemeRepository 
                 ORDER BY COUNT(th.id) DESC
                 LIMIT ?
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("thumbnail")
-                ),
+        return jdbcTemplate.query(query, reservationThemeRowMapper,
                 start,
                 end,
                 limit

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.ReservationTime;
@@ -27,16 +28,20 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
+    private final RowMapper<ReservationTime> reservationTimeRowMapper = (rs, rowNum) -> (
+            new ReservationTime(
+                    rs.getLong("id"),
+                    rs.getObject("start_at", LocalTime.class)
+            )
+    );
+
     @Override
     public List<ReservationTime> findAll() {
         String query = """
                 SELECT id, start_at 
                 FROM reservation_time
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTime(
-                rs.getLong("id"),
-                rs.getObject("start_at", LocalTime.class)
-        ));
+        return jdbcTemplate.query(query, reservationTimeRowMapper);
     }
 
     @Override
@@ -46,11 +51,7 @@ public class H2ReservationTimeRepository implements ReservationTimeRepository {
                 FROM reservation_time 
                 WHERE id = ?
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTime(
-                                rs.getLong("id"),
-                                rs.getObject("start_at", LocalTime.class)),
-                        id
-                )
+        return jdbcTemplate.query(query, reservationTimeRowMapper, id)
                 .stream()
                 .findFirst();
     }
