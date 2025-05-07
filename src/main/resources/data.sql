@@ -12,3 +12,5 @@ insert into reservation ( name, date, time_id, theme_id) values ( '브라운', '
 insert into reservation ( name, date, time_id, theme_id) values ( '브라운', '2025-04-29', 2, 1);
 insert into reservation ( name, date, time_id, theme_id) values ( '브라운', '2025-04-29', 1, 2);
 insert into reservation ( name, date, time_id, theme_id) values ( '브라운', '2025-04-29', 1, 1);
+
+insert into users (email, name, password, role) values ("admin@naver.com", "어드민","1234", "ROLE_ADMIN");

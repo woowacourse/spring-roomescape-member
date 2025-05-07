@@ -13,4 +13,10 @@ public class AuthExceptionHandlerAdvice {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("유효하지 않은 계정입니다.");
     }
+
+    @ExceptionHandler(InvalidAuthorizationException.class)
+    public ResponseEntity<String> handleInvalidAuthorizationException(final InvalidAuthorizationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("유효하지 않은 인증입니다.");
+    }
 }

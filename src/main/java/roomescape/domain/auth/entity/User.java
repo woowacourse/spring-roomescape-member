@@ -4,6 +4,7 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import roomescape.common.exception.InvalidArgumentException;
+import roomescape.domain.auth.exception.InvalidAuthorizationException;
 
 @Getter
 public class User {
@@ -15,18 +16,20 @@ public class User {
     private final Name username;
     private final String email;
     private final String password;
+    private final Roles role;
 
     @Builder
-    public User(final Long id, final Name username, final String email, final String password) {
+    public User(final Long id, final Name username, final String email, final String password, final Roles role) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
         validate();
     }
 
     private void validate() {
-        if (username == null || email == null || password == null) {
+        if (username == null || email == null || password == null || role == null) {
             throw new InvalidArgumentException("User 필드는 null일 수 없습니다. (id 필드 제외)");
         }
 
@@ -46,8 +49,14 @@ public class User {
         }
     }
 
-    public static User withoutId(final Name name, final String email, final String password) {
-        return new User(null, name, email, password);
+    public void login(final String email, final String password) {
+        if (!Objects.equals(email, this.email) || !Objects.equals(password, this.password)) {
+            throw new InvalidAuthorizationException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    public static User withoutId(final Name name, final String email, final String password, final Roles role) {
+        return new User(null, name, email, password, role);
     }
 
     public boolean existId() {
@@ -56,6 +65,10 @@ public class User {
 
     public String getName() {
         return username.getName();
+    }
+
+    public String toRole() {
+        return role.getRole();
     }
 
     @Override

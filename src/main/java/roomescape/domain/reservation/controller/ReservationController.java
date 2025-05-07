@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -37,25 +38,26 @@ public class ReservationController {
 
     @GetMapping("/available")
     public ResponseEntity<List<BookedReservationTimeResponse>> readAvailableReservationTimes(
-            @RequestParam("date") final LocalDate date,
-            @RequestParam("themeId") final Long themeId
-    ) {
+            @RequestParam("date") final LocalDate date, @RequestParam("themeId") final Long themeId) {
         final List<BookedReservationTimeResponse> responses = reservationService.getAvailableTimes(date, themeId);
 
         return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationRequest request) {
+    public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationRequest request,
+                                                      final LoginUserDto userDto) {
         final ReservationResponse response = reservationService.create(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
         reservationService.delete(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }

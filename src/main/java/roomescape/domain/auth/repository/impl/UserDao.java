@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 
@@ -58,7 +59,7 @@ public class UserDao implements UserRepository {
 
     @Override
     public Optional<User> findByUserId(final Long userId) {
-        final String sql = "select id, name, email, password from " + TABLE_NAME + " where id = :id";
+        final String sql = "select id, name, email, password, role from " + TABLE_NAME + " where id = :id";
         final Map<String, Object> params = Map.of("id", userId);
 
         try {
@@ -71,7 +72,7 @@ public class UserDao implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(final String email) {
-        final String sql = "select id, name, email, password from " + TABLE_NAME + " where email = :email";
+        final String sql = "select id, name, email, password, role from " + TABLE_NAME + " where email = :email";
         final Map<String, Object> params = Map.of("email", email);
 
         try {
@@ -88,12 +89,13 @@ public class UserDao implements UserRepository {
                 .email(resultSet.getString("email"))
                 .username(new Name(resultSet.getString("name")))
                 .password(resultSet.getString("password"))
+                .role(Roles.from(resultSet.getString("role")))
                 .build();
     }
 
     private User update(final User user) {
         final String updateSql = String.format("""
-                update %s set name=:name, email=:email, password=:password where id=:id
+                update %s set name=:name, email=:email, password=:password role=:role where id=:id
                 """, TABLE_NAME);
 
         final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", user.getName())
@@ -113,11 +115,12 @@ public class UserDao implements UserRepository {
     private User create(final User user) {
         final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", user.getName())
                 .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword());
+                .addValue("password", user.getPassword())
+                .addValue("role", user.toRole());
 
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();
 
-        return new User(id, user.getUsername(), user.getEmail(), user.getPassword());
+        return new User(id, user.getUsername(), user.getEmail(), user.getPassword(), user.getRole());
     }
 }

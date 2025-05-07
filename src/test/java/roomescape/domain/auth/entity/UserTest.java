@@ -24,7 +24,7 @@ class UserTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            new User(1L, name, email, password);
+            new User(1L, name, email, password, Roles.USER);
         }).isInstanceOf(InvalidArgumentException.class);
     }
 
@@ -40,7 +40,7 @@ class UserTest {
         // when
         // then
         assertThatThrownBy(() -> {
-            new User(1L, name, email, password);
+            new User(1L, name, email, password, Roles.USER);
         }).isInstanceOf(InvalidArgumentException.class);
     }
 
@@ -55,7 +55,7 @@ class UserTest {
         // when
         // then
         assertThatCode(() -> {
-            new User(1L, name, email, password);
+            new User(1L, name, email, password, Roles.USER);
         }).doesNotThrowAnyException();
     }
 

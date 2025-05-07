@@ -1,13 +1,13 @@
 package roomescape.domain.auth.repository.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.repository.UserRepository;
 
@@ -23,7 +23,7 @@ class UserDaoTest {
     void findByEmailTest1() {
         // given
         final String email = "test@example.com";
-        final User user = User.withoutId(new Name("test"), email, "password");
+        final User user = User.withoutId(new Name("test"), email, "password", Roles.USER);
 
         userRepository.save(user);
 
@@ -33,7 +33,18 @@ class UserDaoTest {
                 .get();
 
         // then
-        assertThat(result.getEmail()).isEqualTo(email);
+        final SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.getEmail())
+                .isEqualTo(email);
+        softly.assertThat(result.getPassword())
+                .isEqualTo(user.getPassword());
+        softly.assertThat(result.getName())
+                .isEqualTo(user.getName());
+        softly.assertThat(result.getRole())
+                .isEqualTo(user.getRole());
+
+        softly.assertAll();
     }
 
 }
