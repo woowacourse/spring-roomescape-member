@@ -351,6 +351,133 @@ public class ReservationServiceTest {
         }
 
     }
+    @Nested
+    @DisplayName("예약 멤버 id, 테마 id, 날짜 범위 기준 조회")
+    class ReadAllByMemberAndThemeAndDateRange {
+
+        @DisplayName("조건에 맞는 예약이 없다면 빈 컬렉션을 반환한다")
+        @Test
+        void readAllByMemberAndThemeAndDateRange1() {
+            // given
+            final Long memberId = 1L;
+            final Long themeId = 1L;
+            final LocalDate startDate = LocalDate.of(2024, 1, 1);
+            final LocalDate endDate = LocalDate.of(2024, 12, 31);
+
+            // when
+            final List<ReservationResponse> responses =
+                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+
+            // then
+            assertThat(responses).isEmpty();
+        }
+
+        @DisplayName("조건에 맞는 예약들을 모두 조회한다")
+        @Test
+        void readAllByMemberAndThemeAndDateRange2() {
+            // given
+            final Long memberId = 1L;
+            final Long themeId = 1L;
+            final LocalDate startDate = LocalDate.of(2024, 1, 1);
+            final LocalDate endDate = LocalDate.of(2024, 12, 31);
+
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 6, 15)),
+                    1L, themeId, memberId
+            );
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 7, 20)),
+                    1L, themeId, memberId
+            );
+
+            // when
+            final List<ReservationResponse> responses =
+                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+
+            // then
+            assertThat(responses).hasSize(2);
+        }
+
+        @DisplayName("날짜 범위를 벗어난 예약은 조회되지 않는다")
+        @Test
+        void readAllByMemberAndThemeAndDateRange3() {
+            // given
+            final Long memberId = 1L;
+            final Long themeId = 1L;
+            final LocalDate startDate = LocalDate.of(2024, 1, 1);
+            final LocalDate endDate = LocalDate.of(2024, 6, 30);
+
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 6, 15)),
+                    1L, themeId, memberId
+            );
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 7, 20)),
+                    1L, themeId, memberId
+            );
+
+            // when
+            final List<ReservationResponse> responses =
+                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+
+            // then
+            assertThat(responses).hasSize(1);
+        }
+
+        @DisplayName("다른 멤버의 예약은 조회되지 않는다")
+        @Test
+        void readAllByMemberAndThemeAndDateRange4() {
+            // given
+            final Long memberId = 1L;
+            final Long otherMemberId = 2L;
+            final Long themeId = 1L;
+            final LocalDate startDate = LocalDate.of(2024, 1, 1);
+            final LocalDate endDate = LocalDate.of(2024, 12, 31);
+
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 6, 15)),
+                    1L, themeId, memberId
+            );
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 7, 20)),
+                    1L, themeId, otherMemberId
+            );
+
+            // when
+            final List<ReservationResponse> responses =
+                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+
+            // then
+            assertThat(responses).hasSize(1);
+        }
+
+        @DisplayName("다른 테마의 예약은 조회되지 않는다")
+        @Test
+        void readAllByMemberAndThemeAndDateRange5() {
+            // given
+            final Long memberId = 1L;
+            final Long themeId = 1L;
+            final Long otherThemeId = 2L;
+            final LocalDate startDate = LocalDate.of(2024, 1, 1);
+            final LocalDate endDate = LocalDate.of(2024, 12, 31);
+
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 6, 15)),
+                    1L, themeId, memberId
+            );
+            fakeReservationRepository.save(
+                    new Reservation(LocalDate.of(2024, 7, 20)),
+                    1L, otherThemeId, memberId
+            );
+
+            // when
+            final List<ReservationResponse> responses =
+                    reservationService.readAllByMemberAndThemeAndDateRange(memberId, themeId, startDate, endDate);
+
+            // then
+            assertThat(responses).hasSize(1);
+        }
+    }
 
     @Nested
     @DisplayName("예약 삭제")

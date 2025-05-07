@@ -1,5 +1,7 @@
 package roomescape.api;
 
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookie;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -138,6 +141,53 @@ public class AdminReservationApiTest {
                     Arguments.of(Map.of(), HttpStatus.BAD_REQUEST)
             );
         }
+    }
+
+    @Nested
+    @DisplayName("테마, 멤버, 날짜 범위 기반 필터링 Reservation 조회")
+    class ReadAllByMemberAndThemeAndDateRange {
+
+        @DisplayName("reservation 필터 기반 모두 조회")
+        @ParameterizedTest
+        @CsvSource(value = {
+                "1:1:2025-05-07:2025-05-07",
+                "1:2:2025-05-07:2025-05-07",
+                "1:2:2025-05-08:2025-05-08"
+        }, delimiter = ':')
+        void readAllByMemberAndThemeAndDateRange(final Long memberId, final Long themeId, final String from,
+                                                 final String to) {
+            // given
+            final Cookie cookie = givenAdminAuthCookie();
+            givenCreateReservationTime();
+            jdbcTemplate.update("""
+                        INSERT INTO theme (name, description, thumbnail) VALUES
+                        ('theme1', 'des1', 'thumb1'),
+                        ('theme2', 'des2', 'thumb2');
+                    """);
+            jdbcTemplate.update("""
+                        INSERT INTO reservation (date, member_id, time_id, theme_id) VALUES
+                        ('2025-05-07', 1, 1, 1),
+                        ('2025-05-07', 1, 1, 2),
+                        ('2025-05-08', 1, 1, 2);
+                    """);
+
+            // when & then
+            RestAssured
+                .given().log().all()
+                    .port(port)
+                    .contentType(ContentType.JSON)
+                    .cookie(cookie)
+                    .queryParam("member-id", memberId)
+                    .queryParam("theme-id", themeId)
+                    .queryParam("from", from)
+                    .queryParam("to", to)
+                .when()
+                    .get("/admin/reservations")
+                .then().log().all()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", is(1));
+        }
+
     }
 
     private void givenCreateReservationTime() {
