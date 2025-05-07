@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.RequiredTypeException;
 import io.jsonwebtoken.security.Keys;
+import java.util.Date;
 import roomescape.auth.member.UserInfo;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
@@ -15,6 +16,7 @@ public class JwtTokenProvider {
     private static final String USER_NAME_KEY = "username";
     private static final String NAME_KEY = "name";
     private static final String ROLE_KEY = "role";
+    private static final int ONE_HOUR = 3600000;
 
     private final String secretKey;
 
@@ -28,12 +30,9 @@ public class JwtTokenProvider {
                 .claim(USER_NAME_KEY, member.getUsername())
                 .claim(NAME_KEY, member.getName())
                 .claim(ROLE_KEY, member.getRole())
+                .setExpiration(new Date(System.currentTimeMillis() + ONE_HOUR))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
-    }
-
-    public static String getCookieKey() {
-        return COOKIE_KEY;
     }
 
     public UserInfo resolveToken(String token) {
@@ -52,5 +51,9 @@ public class JwtTokenProvider {
         } catch (RequiredTypeException e) {
             throw new AuthenticationException("토큰 파싱에 실패하였습니다");
         }
+    }
+
+    public static String getCookieKey() {
+        return COOKIE_KEY;
     }
 }
