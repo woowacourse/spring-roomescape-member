@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
+import roomescape.domain.Reservation;
 import roomescape.fixture.ReservationDbFixture;
 import roomescape.fixture.ReservationTimeDbFixture;
 import roomescape.fixture.ThemeDbFixture;
@@ -26,10 +27,10 @@ public class ReservationTimeServiceTest extends BaseTest {
     private ReservationTimeDbFixture reservationTimeDbFixture;
 
     @Autowired
-    private ReservationDbFixture reservationDbFixture;
+    private ThemeDbFixture themeDbFixture;
 
     @Autowired
-    private ThemeDbFixture themeDbFixture;
+    private ReservationDbFixture reservationDbFixture;
 
     @Test
     void 예약시간을_생성한다() {
@@ -51,8 +52,8 @@ public class ReservationTimeServiceTest extends BaseTest {
 
     @Test
     void 예약시간을_삭제한다() {
-        reservationTimeDbFixture.예약시간_10시();
-        reservationTimeService.deleteReservationTimeById(1L);
+        ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
+        reservationTimeService.deleteReservationTimeById(reservationTime.getId());
 
         List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
 
@@ -69,9 +70,9 @@ public class ReservationTimeServiceTest extends BaseTest {
     void 이미_해당_시간의_예약이_존재한다면_삭제할_수_없다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
+        Reservation reservation = reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
 
-        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(1L))
+        assertThatThrownBy(() -> reservationTimeService.deleteReservationTimeById(reservation.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

@@ -22,7 +22,7 @@ import roomescape.domain.ReservationTime;
 public class ThemeServiceTest extends BaseTest {
 
     @Autowired
-    private ReservationDbFixture reservationDbFixture;
+    private ThemeService themeService;
 
     @Autowired
     private ReservationTimeDbFixture reservationTimeDbFixture;
@@ -31,7 +31,7 @@ public class ThemeServiceTest extends BaseTest {
     private ThemeDbFixture themeDbFixture;
 
     @Autowired
-    private ThemeService themeService;
+    private ReservationDbFixture reservationDbFixture;
 
     @Test
     void 테마를_생성한다() {
@@ -48,8 +48,10 @@ public class ThemeServiceTest extends BaseTest {
     @Test
     void 테마를_조회한다() {
         Theme theme = themeDbFixture.공포();
-        ThemeResponse response = themeService.getThemes().get(0);
+        List<ThemeResponse> responses = themeService.getThemes();
+        ThemeResponse response = responses.getFirst();
 
+        assertThat(responses).hasSize(1);
         assertThat(response.id()).isEqualTo(theme.getId());
         assertThat(response.name()).isEqualTo(theme.getName());
         assertThat(response.description()).isEqualTo(theme.getDescription());
@@ -59,8 +61,8 @@ public class ThemeServiceTest extends BaseTest {
 
     @Test
     void 테마를_삭제한다() {
-        themeDbFixture.공포();
-        themeService.deleteThemeById(1L);
+        Theme theme = themeDbFixture.공포();
+        themeService.deleteThemeById(theme.getId());
 
         assertThat(themeService.getThemes()).isEmpty();
     }

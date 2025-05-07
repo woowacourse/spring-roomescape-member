@@ -1,19 +1,22 @@
 package roomescape.application;
 
-import java.util.List;
-import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import roomescape.common.BaseTest;
-import roomescape.presentation.dto.request.ReservationCreateRequest;
-import roomescape.presentation.dto.response.ReservationResponse;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.fixture.ReservationDateFixture;
+import roomescape.fixture.ReservationDbFixture;
 import roomescape.fixture.ReservationTimeDbFixture;
 import roomescape.fixture.ReserverNameFixture;
 import roomescape.fixture.ThemeDbFixture;
-import roomescape.domain.Theme;
+import roomescape.presentation.dto.request.ReservationCreateRequest;
+import roomescape.presentation.dto.response.ReservationResponse;
 import roomescape.presentation.dto.response.ReservationTimeResponse;
-import roomescape.domain.ReservationTime;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -27,6 +30,9 @@ public class ReservationServiceTest extends BaseTest {
 
     @Autowired
     private ThemeDbFixture themeDbFixture;
+
+    @Autowired
+    private ReservationDbFixture reservationDbFixture;
 
     @Test
     void 예약을_생성한다() {
@@ -53,13 +59,7 @@ public class ReservationServiceTest extends BaseTest {
     void 같은일시_같은테마_예약이_존재하면_예약을_생성할_수_없다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-
-        reservationService.createReservation(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
-                reservationTime.getId(),
-                theme.getId()
-        ));
+        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
 
         ReservationCreateRequest request = new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
@@ -77,13 +77,7 @@ public class ReservationServiceTest extends BaseTest {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme horror = themeDbFixture.공포();
         Theme mystery = themeDbFixture.커스텀_테마("미스테리");
-
-        reservationService.createReservation(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
-                reservationTime.getId(),
-                horror.getId()
-        ));
+        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, horror);
 
         ReservationCreateRequest request = new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
@@ -100,13 +94,8 @@ public class ReservationServiceTest extends BaseTest {
     void 예약을_모두_조회한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
+        reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
 
-        reservationService.createReservation(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
-                reservationTime.getId(),
-                theme.getId()
-        ));
         List<ReservationResponse> responses = reservationService.getReservations();
         ReservationResponse response = responses.getFirst();
 
@@ -122,14 +111,9 @@ public class ReservationServiceTest extends BaseTest {
     void 예약을_삭제한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        ReservationResponse created = reservationService.createReservation(new ReservationCreateRequest(
-                ReserverNameFixture.한스.getName(),
-                ReservationDateFixture.예약날짜_25_4_22.getDate(),
-                reservationTime.getId(),
-                theme.getId()
-        ));
+        Reservation reservation = reservationDbFixture.예약_한스_25_4_22_10시_공포(reservationTime, theme);
 
-        reservationService.deleteReservationById(created.id());
+        reservationService.deleteReservationById(reservation.getId());
 
         List<ReservationResponse> responses = reservationService.getReservations();
         assertThat(responses).hasSize(0);
