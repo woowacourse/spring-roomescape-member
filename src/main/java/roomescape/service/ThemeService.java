@@ -28,8 +28,7 @@ public class ThemeService {
 
     public List<Theme> findMostReservedThemes() {
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        return themeDao.findMostReservedThemesInPeriodWithLimit(today.minusDays(TOP_RANK_PERIOD_DAYS), today,
-            TOP_RANK_THRESHOLD);
+        return themeDao.findMostReservedThemesInPeriodWithLimit(today.minusDays(TOP_RANK_PERIOD_DAYS), today, TOP_RANK_THRESHOLD);
     }
 
     public Theme createTheme(ThemeCreateRequest request) {

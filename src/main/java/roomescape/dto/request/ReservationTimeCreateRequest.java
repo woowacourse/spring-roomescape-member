@@ -13,7 +13,7 @@ public record ReservationTimeCreateRequest(
 
     private void validateTime(LocalTime startAt) {
         if (startAt == null) {
-            throw new InvalidInputException("시간을 선택해라.");
+            throw new InvalidInputException("시간이 입력되지 않았다.");
         }
     }
 }

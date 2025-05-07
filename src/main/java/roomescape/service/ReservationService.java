@@ -67,7 +67,7 @@ public class ReservationService {
         return reservationDao.findAll();
     }
 
-    public void deleteeReservationById(Long id) {
+    public void deleteReservationById(Long id) {
         if (reservationDao.deleteById(id) == 0) {
             throw new InvalidInputException("존재하지 않는 예약 id이다.");
         }

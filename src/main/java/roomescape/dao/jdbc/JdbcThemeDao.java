@@ -71,8 +71,7 @@ public class JdbcThemeDao implements ThemeDao {
                   t.thumbnail
                 FROM
                   reservation as r
-                  INNER JOIN theme as t
-                  ON r.theme_id = t.id
+                  INNER JOIN theme as t ON r.theme_id = t.id
                 WHERE
                    r.date >= ? AND r.date < ?
                 GROUP BY

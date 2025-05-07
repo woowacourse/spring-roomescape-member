@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.dto.response.ErrorResponse;
 import roomescape.exception.AssociatedReservationExistsException;
-import roomescape.exception.DuplicateEntityException;
-import roomescape.exception.EntityNotExistException;
+import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicateThemeException;
+import roomescape.exception.DuplicateTimeException;
 import roomescape.exception.InvalidInputException;
+import roomescape.exception.ThemeNotExistException;
+import roomescape.exception.TimeNotExistException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,9 +29,9 @@ public class GlobalExceptionHandler {
         return generateErrorResponse(exception.getMessage());
     }
 
-    @ExceptionHandler(value = EntityNotExistException.class)
+    @ExceptionHandler(value = {ThemeNotExistException.class, TimeNotExistException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleEntityNotExist(EntityNotExistException exception) {
+    public ErrorResponse handleEntityNotExist(RuntimeException exception) {
         return generateErrorResponse(exception.getMessage());
     }
 
@@ -38,9 +41,9 @@ public class GlobalExceptionHandler {
         return generateErrorResponse(exception.getMessage());
     }
 
-    @ExceptionHandler(value = DuplicateEntityException.class)
+    @ExceptionHandler(value = {DuplicateReservationException.class, DuplicateThemeException.class, DuplicateTimeException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDuplicateEntity(DuplicateEntityException exception) {
+    public ErrorResponse handleDuplicateEntity(RuntimeException exception) {
         return generateErrorResponse(exception.getMessage());
     }
 

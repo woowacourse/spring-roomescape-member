@@ -71,7 +71,7 @@ public class ReservationServiceTest {
             1L);
         reservationService.createReservation(request);
 
-        reservationService.deleteeReservationById(1L);
+        reservationService.deleteReservationById(1L);
 
         assertThat(reservationService.findAllReservations()).hasSize(0);
     }

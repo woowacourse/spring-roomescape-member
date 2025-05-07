@@ -21,7 +21,7 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    public ThemeController(ThemeService themeService) {
+    private ThemeController(ThemeService themeService) {
         this.themeService = themeService;
     }
 

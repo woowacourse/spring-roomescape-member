@@ -33,7 +33,7 @@ public class ReservationController {
 
     @PostMapping("/admin")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse createAdminReservation(@RequestBody ReservationRequest request) {
+    private ReservationResponse createAdminReservation(@RequestBody ReservationRequest request) {
         return ReservationResponse.from(reservationService.createReservation(request));
     }
 
@@ -47,6 +47,6 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReservation(@PathVariable("id") Long id) {
-        reservationService.deleteeReservationById(id);
+        reservationService.deleteReservationById(id);
     }
 }

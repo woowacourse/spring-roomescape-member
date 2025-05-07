@@ -31,11 +31,12 @@
 ### 2. 예외 응답
 
 - [x] null, 생성할 때의 예외는 BadRequest로 응답한다.
-  - null: InvalidInputException
-  - 생성: TimeDoesNotExistException, ThemeDoesNotExistException, NotCorrectDateTimeException 
+  - null 또는 잘못된 입력: InvalidInputException
+  - 생성: TimeNotExistException, ThemeNotExistException, NotCorrectDateTimeException 
 - [x] 중복, 삭제할 때의 예외는 Conflict로 응답한다.
-  - 중복: DuplicateTimeException, DuplicateReservationException
-
+  - 중복: DuplicateTimeException, DuplicateReservationException, DuplicateThemeException
+  - 삭제: AssociatedReservationExistsException
+  
 ### 3. 테마 선택 기능
 
 - [x] `/admin/theme` 요청 시 테마 관리 페이지를 응답
