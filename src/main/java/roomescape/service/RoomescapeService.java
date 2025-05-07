@@ -101,7 +101,7 @@ public class RoomescapeService {
             throw new DeletionNotAllowedException("[ERROR] 예약이 연결된 테마는 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요.");
         }
         if (!roomescapeThemeRepository.deleteById(themeId)) {
-            throw new DataNotFoundException(String.format("[ERROR] 예약 테마 %d번애 해당하는 테마가 없습니다.", themeId));
+            throw new DataNotFoundException(String.format("[ERROR] 예약 테마 %d번에 해당하는 테마가 없습니다.", themeId));
         }
     }
 
