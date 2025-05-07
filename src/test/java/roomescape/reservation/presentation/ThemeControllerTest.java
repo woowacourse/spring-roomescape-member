@@ -4,11 +4,13 @@ import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.presentation.dto.ReservationRequest;
+import roomescape.reservation.presentation.dto.ReservationTimeRequest;
+import roomescape.reservation.presentation.dto.ThemeRequest;
 import roomescape.reservation.presentation.fixture.ReservationFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -20,7 +22,7 @@ public class ThemeControllerTest {
     @DisplayName("테마 추가 테스트")
     void createThemeTest() {
         // given
-        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when - then
@@ -36,7 +38,7 @@ public class ThemeControllerTest {
     @DisplayName("테마 전체 조회 테스트")
     void getThemesTest() {
         // given
-        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given().log().all()
@@ -57,7 +59,7 @@ public class ThemeControllerTest {
     @DisplayName("테마 삭제 테스트")
     void deleteThemeTest() {
         // given
-        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         RestAssured.given().log().all()
@@ -77,20 +79,20 @@ public class ThemeControllerTest {
     @DisplayName("예약이 이미 존재하는 테마는 삭제할 수 없다.")
     void deleteThemeExceptionTest() {
         // given
-        Map<String, String> reservationTime = reservationFixture.createReservationTime("10:00");
+        ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservationTime)
                 .when().post("/times");
 
-        Map<String, String> theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(theme)
                 .when().post("/themes");
 
-        Map<String, String> reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
+        ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(reservation)
