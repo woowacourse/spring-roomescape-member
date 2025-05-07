@@ -56,7 +56,7 @@ public class ReservationTest extends BaseTest {
                 .body(params)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -91,7 +91,7 @@ public class ReservationTest extends BaseTest {
                 .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         RestAssured.given().log().all()
                 .when().get("/times")
@@ -137,7 +137,7 @@ public class ReservationTest extends BaseTest {
                 .body(reservationTime)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201);
 
         reservation.remove("name");
 
