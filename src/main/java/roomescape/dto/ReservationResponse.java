@@ -10,9 +10,9 @@ public record ReservationResponse(
         ReservationTimeResponse time,
         ReservationThemeResponse theme) {
 
-    public static ReservationResponse of(Reservation reservation) {
+    public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(reservation.getId(), reservation.getName(),
-                reservation.getDate(), ReservationTimeResponse.of(reservation.getTime()),
-                ReservationThemeResponse.of(reservation.getTheme()));
+                reservation.getDate(), ReservationTimeResponse.from(reservation.getTime()),
+                ReservationThemeResponse.from(reservation.getTheme()));
     }
 }

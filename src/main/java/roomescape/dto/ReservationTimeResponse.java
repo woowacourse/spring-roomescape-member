@@ -5,7 +5,7 @@ import roomescape.domain.ReservationTime;
 
 public record ReservationTimeResponse(long timeId, LocalTime startAt) {
 
-    public static ReservationTimeResponse of(ReservationTime reservationTime) {
+    public static ReservationTimeResponse from(ReservationTime reservationTime) {
         return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
     }
 }

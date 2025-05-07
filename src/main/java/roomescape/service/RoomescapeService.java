@@ -36,22 +36,22 @@ public class RoomescapeService {
 
     public List<ReservationResponse> findReservations() {
         List<Reservation> reservations = roomescapeRepository.findAll();
-        return reservations.stream().map(ReservationResponse::of).toList();
+        return reservations.stream().map(ReservationResponse::from).toList();
     }
 
     public List<ReservationTimeResponse> findReservationTimes() {
         List<ReservationTime> reservationTimes = roomescapeTimeRepository.findAll();
-        return reservationTimes.stream().map(ReservationTimeResponse::of).toList();
+        return reservationTimes.stream().map(ReservationTimeResponse::from).toList();
     }
 
     public List<ReservationThemeResponse> findReservationThemes() {
         List<ReservationTheme> reservationThemes = roomescapeThemeRepository.findAll();
-        return reservationThemes.stream().map(ReservationThemeResponse::of).toList();
+        return reservationThemes.stream().map(ReservationThemeResponse::from).toList();
     }
 
     public List<ReservationThemeResponse> findPopularReservations() {
         List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository.findWeeklyThemeOrderByCountDesc();
-        return popularReservationThemes.stream().map(ReservationThemeResponse::of).toList();
+        return popularReservationThemes.stream().map(ReservationThemeResponse::from).toList();
     }
 
     public ReservationResponse addReservation(final ReservationRequest request) {
@@ -68,20 +68,20 @@ public class RoomescapeService {
         validateUniqueReservation(reservation);
 
         Reservation saved = roomescapeRepository.save(reservation);
-        return ReservationResponse.of(saved);
+        return ReservationResponse.from(saved);
     }
 
     public ReservationTimeResponse addReservationTime(final ReservationTimeRequest request) {
         ReservationTime reservationTime = new ReservationTime(request.startAt());
         ReservationTime saved = roomescapeTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.of(saved);
+        return ReservationTimeResponse.from(saved);
     }
 
     public ReservationThemeResponse addReservationTheme(final ReservationThemeRequest request) {
         ReservationTheme reservationTheme = new ReservationTheme(request.name(), request.description(),
                 request.thumbnail());
         ReservationTheme saved = roomescapeThemeRepository.save(reservationTheme);
-        return ReservationThemeResponse.of(saved);
+        return ReservationThemeResponse.from(saved);
     }
 
     public void removeReservation(final long id) {

@@ -44,7 +44,7 @@ class ReservationThemeControllerTest {
         final ReservationTheme reservationTheme1 = new ReservationTheme(1L, "테마1", "디스크립션1", "썸네일1");
         final ReservationTheme reservationTheme2 = new ReservationTheme(2L, "테마2", "디스크립션2", "썸네일2");
         final List<ReservationThemeResponse> reservationThemeResponses = List.of(
-                ReservationThemeResponse.of(reservationTheme1), ReservationThemeResponse.of(reservationTheme2));
+                ReservationThemeResponse.from(reservationTheme1), ReservationThemeResponse.from(reservationTheme2));
         given(roomescapeService.findReservationThemes()).willReturn(reservationThemeResponses);
 
         // when & then
@@ -63,7 +63,7 @@ class ReservationThemeControllerTest {
         final ReservationTheme reservationTheme1 = new ReservationTheme(1L, "테마1", "디스크립션1", "썸네일1");
         final ReservationTheme reservationTheme2 = new ReservationTheme(2L, "테마2", "디스크립션2", "썸네일2");
         final List<ReservationThemeResponse> reservationThemeResponses = List.of(
-                ReservationThemeResponse.of(reservationTheme1), ReservationThemeResponse.of(reservationTheme2));
+                ReservationThemeResponse.from(reservationTheme1), ReservationThemeResponse.from(reservationTheme2));
         given(roomescapeService.findPopularReservations()).willReturn(reservationThemeResponses);
 
         // when & then
@@ -80,7 +80,7 @@ class ReservationThemeControllerTest {
     void reservationThemeAdd() {
         //given
         final ReservationTheme reservationTheme1 = new ReservationTheme(1L, "테마1", "디스크립션1", "썸네일1");
-        final ReservationThemeResponse reservationThemeResponse = ReservationThemeResponse.of(reservationTheme1);
+        final ReservationThemeResponse reservationThemeResponse = ReservationThemeResponse.from(reservationTheme1);
         final ReservationThemeRequest reservationThemeRequest = new ReservationThemeRequest("테마1", "디스크립션1", "썸네일1");
 
         given(roomescapeService.addReservationTheme(any(ReservationThemeRequest.class))).willReturn(reservationThemeResponse);
