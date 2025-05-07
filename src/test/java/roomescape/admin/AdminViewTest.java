@@ -40,6 +40,7 @@ public class AdminViewTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM reservation");
         jdbcTemplate.update("DELETE FROM member");
         jdbcTemplate.update("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("INSERT INTO member (email, password, name, role) VALUES (?, ?, ?, ?)",
