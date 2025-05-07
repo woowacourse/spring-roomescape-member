@@ -20,9 +20,10 @@ public class Reservation {
 
     public Reservation(String name, LocalDate date, ReservationTime reservationTime, Theme theme) {
         this(null, name, date, reservationTime, theme);
+        validateReservationDateInFuture();
     }
 
-    public void validateReservationDateInFuture() {
+    private void validateReservationDateInFuture() {
         if (!this.date.isAfter(LocalDate.now())) {
             throw new IllegalStateException("과거 및 당일 예약은 불가능합니다.");
         }

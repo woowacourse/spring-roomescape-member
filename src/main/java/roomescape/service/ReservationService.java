@@ -30,7 +30,7 @@ public class ReservationService {
 
     public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
         Reservation reservation = createReservation(reservationRequestDto);
-        validateReservation(reservation);
+        assertReservationIsNotDuplicated(reservation);
 
         Long id = reservationDao.saveReservation(reservation);
 
@@ -65,9 +65,7 @@ public class ReservationService {
         return reservationRequestDto.convertToReservation(foundTime, foundTheme);
     }
 
-    private void validateReservation(Reservation reservation) {
-        reservation.validateReservationDateInFuture();
-
+    private void assertReservationIsNotDuplicated(Reservation reservation) {
         reservationDao.findByDateAndTime(reservation)
                 .ifPresent(foundReservation -> {
                     throw new DuplicatedException("이미 예약이 존재합니다.");
