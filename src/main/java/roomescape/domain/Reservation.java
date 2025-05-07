@@ -1,16 +1,15 @@
 package roomescape.domain;
 
-import java.time.LocalDate;
 import roomescape.exception.reservation.ReservationFieldRequiredException;
 
 public class Reservation {
     private final Long id;
     private final String name;
-    private final LocalDate date;
+    private final ReservationDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    private Reservation(Long id, String name, ReservationDate date, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
         this.id = id;
         this.name = name;
@@ -19,15 +18,16 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation createWithoutId(String name, ReservationDate date, ReservationTime time, Theme theme) {
         return new Reservation(null, name, date, time, theme);
     }
 
-    public static Reservation createWithId(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public static Reservation createWithId(Long id, String name, ReservationDate date, ReservationTime time,
+                                           Theme theme) {
         return new Reservation(id, name, date, time, theme);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
+    private void validate(String name, ReservationDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
@@ -40,7 +40,7 @@ public class Reservation {
         }
     }
 
-    private void validateDate(LocalDate date) {
+    private void validateDate(ReservationDate date) {
         if (date == null) {
             throw new ReservationFieldRequiredException("날짜");
         }
@@ -66,7 +66,7 @@ public class Reservation {
         return name;
     }
 
-    public LocalDate getDate() {
+    public ReservationDate getDate() {
         return date;
     }
 

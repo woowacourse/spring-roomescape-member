@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 
@@ -27,7 +28,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     public Reservation add(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservation.getName());
-        params.put("date", reservation.getDate());
+        params.put("date", reservation.getDate().getDate());
         params.put("time_id", reservation.getTime().getId());
         params.put("theme_id", reservation.getTheme().getId());
 
@@ -64,6 +65,8 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
+                    ReservationDate date = new ReservationDate(resultSet.getDate("reservation_date").toLocalDate());
+
                     ReservationTime time = ReservationTime.createWithId(
                             resultSet.getLong("time_id"),
                             resultSet.getTime("time_value").toLocalTime()
@@ -78,7 +81,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
                     return Reservation.createWithId(
                             resultSet.getLong("reservation_id"),
                             resultSet.getString("reservation_name"),
-                            resultSet.getDate("reservation_date").toLocalDate(),
+                            date,
                             time,
                             theme
                     );

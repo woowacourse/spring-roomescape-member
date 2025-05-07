@@ -3,6 +3,7 @@ package roomescape.service.reservation;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationDateTime;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -31,10 +32,11 @@ public class ReservationDefaultService implements ReservationService {
     }
 
     public ReservationResponse create(ReservationRequest request) {
+        ReservationDate date = new ReservationDate(request.date());
         ReservationTime time = timeRepository.findById(request.timeId())
                 .orElseThrow(ReservationTimeNotFoundException::new);
 
-        ReservationDateTime dateTime = new ReservationDateTime(request.date(), time);
+        ReservationDateTime dateTime = new ReservationDateTime(date, time);
 
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(ThemeNotFoundException::new);

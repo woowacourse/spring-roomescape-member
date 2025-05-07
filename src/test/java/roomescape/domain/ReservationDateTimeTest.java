@@ -14,7 +14,7 @@ class ReservationDateTimeTest {
     @Test
     void reservationInPastTest() {
         // given
-        LocalDate date = LocalDate.now();
+        ReservationDate date = new ReservationDate(LocalDate.now());
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().minusMinutes(1));
 
         // when & then

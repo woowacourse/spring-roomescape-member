@@ -15,7 +15,7 @@ class ReservationTest {
     void reservationNameTest() {
         // given
         String name = "";
-        LocalDate date = LocalDate.now();
+        ReservationDate date = new ReservationDate(LocalDate.now());
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
         Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
 
@@ -29,7 +29,7 @@ class ReservationTest {
     void reservationDateTest() {
         // given
         String name = "슬링키";
-        LocalDate date = null;
+        ReservationDate date = null;
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
         Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
 
@@ -43,7 +43,7 @@ class ReservationTest {
     void reservationTimeTest() {
         // given
         String name = "슬링키";
-        LocalDate date = LocalDate.now();
+        ReservationDate date = new ReservationDate(LocalDate.now());
         ReservationTime time = null;
         Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
 
@@ -57,7 +57,7 @@ class ReservationTest {
     void reservationThemeTest() {
         // given
         String name = "슬링키";
-        LocalDate date = LocalDate.now();
+        ReservationDate date = new ReservationDate(LocalDate.now());
         ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
         Theme theme = null;
 
