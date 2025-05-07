@@ -58,6 +58,10 @@ public class Reservation {
         return new Reservation(Id.create(id), user, date, time, theme);
     }
 
+    public boolean isSameReserver(final String userId) {
+        return user.id().equals(userId);
+    }
+
     public String id() {
         return id.value();
     }

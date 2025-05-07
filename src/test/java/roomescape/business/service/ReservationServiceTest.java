@@ -14,6 +14,7 @@ import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.business.model.repository.ThemeRepository;
 import roomescape.business.model.repository.UserRepository;
+import roomescape.exception.auth.ForbiddenException;
 import roomescape.exception.business.AlreadyReservedException;
 import roomescape.exception.business.ReservationNotFoundException;
 import roomescape.exception.business.ThemeNotFoundException;
@@ -214,16 +215,21 @@ class ReservationServiceTest {
     @DisplayName("예약을 삭제할 수 있다")
     void delete_ExistingReservation_DeletesReservation() {
         // given
-        String reservationId = "reservation-id";
-
-        when(reservationRepository.existById(reservationId)).thenReturn(true);
+        final User user = User.create("dompoo", "dompoo@email.com", "password");
+        final Reservation reservation = Reservation.create(
+                user,
+                LocalDate.now().plusDays(5),
+                ReservationTime.create(LocalTime.of(10, 0)),
+                Theme.create("theme", "", "")
+        );
+        when(reservationRepository.findById(reservation.id())).thenReturn(Optional.of(reservation));
 
         // when
-        reservationService.delete(reservationId);
+        reservationService.delete(reservation.id(), user.id());
 
         // then
-        verify(reservationRepository).existById(reservationId);
-        verify(reservationRepository).deleteById(reservationId);
+        verify(reservationRepository).findById(reservation.id());
+        verify(reservationRepository).deleteById(reservation.id());
     }
 
     @Test
@@ -232,13 +238,37 @@ class ReservationServiceTest {
         // given
         String reservationId = "nonexistent-id";
 
-        when(reservationRepository.existById(reservationId)).thenReturn(false);
+        final User user = User.create("dompoo", "dompoo@email.com", "password");
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> reservationService.delete(reservationId))
+        assertThatThrownBy(() -> reservationService.delete(reservationId, user.id()))
                 .isInstanceOf(ReservationNotFoundException.class);
 
-        verify(reservationRepository).existById(reservationId);
+        verify(reservationRepository).findById(reservationId);
+        verify(reservationRepository, never()).deleteById(anyString());
+    }
+
+    @Test
+    @DisplayName("예약자가 아닌 유저가 삭제 시도시 예외가 발생한다")
+    void delete_ReservationOfOtherUser_ThrowsException() {
+        // given
+        final User user1 = User.create("dompoo", "dompoo@email.com", "password");
+        final User user2 = User.create("lemon", "lemon@email.com", "password");
+        final Reservation reservation = Reservation.create(
+                user1,
+                LocalDate.now().plusDays(5),
+                ReservationTime.create(LocalTime.of(10, 0)),
+                Theme.create("theme", "", "")
+        );
+
+        when(reservationRepository.findById(reservation.id())).thenReturn(Optional.of(reservation));
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.delete(reservation.id(), user2.id()))
+                .isInstanceOf(ForbiddenException.class);
+
+        verify(reservationRepository).findById(reservation.id());
         verify(reservationRepository, never()).deleteById(anyString());
     }
 }

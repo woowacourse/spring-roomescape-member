@@ -9,6 +9,7 @@ import roomescape.business.model.repository.ReservationRepository;
 import roomescape.business.model.repository.ReservationTimeRepository;
 import roomescape.business.model.repository.ThemeRepository;
 import roomescape.business.model.repository.UserRepository;
+import roomescape.exception.auth.ForbiddenException;
 import roomescape.exception.business.AlreadyReservedException;
 import roomescape.exception.business.ReservationNotFoundException;
 import roomescape.exception.business.ThemeNotFoundException;
@@ -57,10 +58,12 @@ public class ReservationService {
         return reservationRepository.findAllWithFilter(themeId, userId, dateFrom, dateTo);
     }
 
-    public void delete(final String id) {
-        if (!reservationRepository.existById(id)) {
-            throw new ReservationNotFoundException();
+    public void delete(final String reservationId, final String userId) {
+        final Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        if (!reservation.isSameReserver(userId)) {
+            throw new ForbiddenException();
         }
-        reservationRepository.deleteById(id);
+        reservationRepository.deleteById(reservationId);
     }
 }

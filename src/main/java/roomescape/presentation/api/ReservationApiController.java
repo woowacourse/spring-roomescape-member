@@ -58,9 +58,8 @@ public class ReservationApiController {
 
     @DeleteMapping("/reservations/{id}")
     @AuthRequired
-    public ResponseEntity<Void> deleteReservation(@PathVariable String id) {
-        // TODO : 해당 예약을 한 유저가 본인인지 검증
-        reservationService.delete(id);
+    public ResponseEntity<Void> deleteReservation(@PathVariable String id, LoginInfo loginInfo) {
+        reservationService.delete(id, loginInfo.id());
         return ResponseEntity.noContent().build();
     }
 }
