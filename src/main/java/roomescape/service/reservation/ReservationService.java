@@ -56,7 +56,7 @@ public class ReservationService {
     }
 
     private void validateAddReservationDateTime(Reservation newReservation, LocalDateTime currentDateTime) {
-        if (newReservation.isBefore(currentDateTime)) {
+        if (newReservation.isBeforeDateTime(currentDateTime)) {
             throw new InvalidReservationException("과거 시간에 예약할 수 없습니다.");
         }
     }
@@ -100,7 +100,7 @@ public class ReservationService {
         }
         Reservation currentReservation = reservation.get();
 
-        if (currentReservation.isSameTheme(themeId) && currentReservation.isBetween(dateFrom, dateTo)) {
+        if (currentReservation.isSameTheme(themeId) && currentReservation.isBetweenDate(dateFrom, dateTo)) {
             return reservation;
         }
         return Optional.empty();

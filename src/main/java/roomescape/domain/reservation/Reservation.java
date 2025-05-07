@@ -31,7 +31,7 @@ public class Reservation {
         }
     }
 
-    public boolean isBefore(LocalDateTime compareDateTime) {
+    public boolean isBeforeDateTime(LocalDateTime compareDateTime) {
         LocalDateTime reservationDateTime = LocalDateTime.of(date, getStartAt());
         return reservationDateTime.isBefore(compareDateTime);
     }
@@ -40,15 +40,15 @@ public class Reservation {
         return getTheme().isSameTheme(themeId);
     }
 
-    public boolean isBetween(LocalDate dateFrom, LocalDate dateTo) {
-        return isSameOrBefore(dateFrom) && isSameOrAfter(dateTo);
+    public boolean isBetweenDate(LocalDate dateFrom, LocalDate dateTo) {
+        return isSameOrBeforeDate(dateFrom) && isSameOrAfterDate(dateTo);
     }
 
-    private boolean isSameOrAfter(LocalDate dateTo) {
+    private boolean isSameOrAfterDate(LocalDate dateTo) {
         return dateTo.isAfter(date) || dateTo.isEqual(date);
     }
 
-    private boolean isSameOrBefore(LocalDate dateFrom) {
+    private boolean isSameOrBeforeDate(LocalDate dateFrom) {
         return dateFrom.isEqual(date) || dateFrom.isBefore(date);
     }
 

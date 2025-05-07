@@ -1,5 +1,6 @@
 package roomescape.unit.domain.reservation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
@@ -20,6 +21,45 @@ class ReservationTest {
                 () -> new Reservation(1L, "", LocalDate.now(), new ReservationTime(1L, LocalTime.now()),
                         new Theme(1L, "테마", "설명", "썸네일")))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 날짜가_범위_사이에_있는지_확인할_수_있다() {
+        Reservation reservation = new Reservation(null, "tuda", LocalDate.of(2025, 5, 7),
+                new ReservationTime(null, null), null);
+
+        LocalDate from = LocalDate.of(2025, 5, 6);
+        LocalDate to = LocalDate.of(2025, 5, 8);
+
+        boolean result = reservation.isBetweenDate(from, to);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 날짜가_시작_범위보다_이전인지_확인할_수_있다() {
+        Reservation reservation = new Reservation(null, "tuda", LocalDate.of(2025, 5, 5),
+                new ReservationTime(null, null), null);
+
+        LocalDate from = LocalDate.of(2025, 5, 6);
+        LocalDate to = LocalDate.of(2025, 5, 8);
+
+        boolean result = reservation.isBetweenDate(from, to);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void 날짜가_종료_범위보다_이후인지_확인할_수_있다() {
+        Reservation reservation = new Reservation(null, "tuda", LocalDate.of(2025, 5, 9),
+                new ReservationTime(null, null), null);
+
+        LocalDate from = LocalDate.of(2025, 5, 6);
+        LocalDate to = LocalDate.of(2025, 5, 8);
+
+        boolean result = reservation.isBetweenDate(from, to);
+
+        assertThat(result).isFalse();
     }
 }
 
