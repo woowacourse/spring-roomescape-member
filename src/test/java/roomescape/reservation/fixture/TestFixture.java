@@ -9,7 +9,6 @@ import roomescape.theme.domain.Theme;
 
 public class TestFixture {
 
-    private static final String DATE_FORMAT = "%d-%02d-%02d";
     private static final LocalTime TIME = LocalTime.of(10, 0);
 
     public static Theme makeTheme() {

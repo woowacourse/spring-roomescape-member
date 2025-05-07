@@ -1,4 +1,4 @@
-package roomescape.reservationtime.dto.repository;
+package roomescape.reservationtime.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.reservationtime.domain.ReservationTime;
-import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 
 class FakeReservationTimeRepositoryTest {
 
@@ -22,7 +21,7 @@ class FakeReservationTimeRepositoryTest {
     @Test
     void findAll_shouldReturnAllSavedReservationTimes() {
         ReservationTime t1 = ReservationTime.of(1L, LocalTime.of(10, 0));
-        ReservationTime t2 = ReservationTime.of(1L, LocalTime.of(14, 30));
+        ReservationTime t2 = ReservationTime.of(2L, LocalTime.of(14, 30));
 
         repository.save(t1);
         repository.save(t2);
