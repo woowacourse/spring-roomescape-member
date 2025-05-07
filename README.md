@@ -18,8 +18,6 @@
 
 ## 2단계
 
-> 클라이언트 코드를 수정해야 한다.
-
 - 테마 entity가 추가된다.
     - 테마 table추가 및 reservation테이블 수정(제공되는 sql이용)
     - 기존 reservation entity 코드에 theme 추가
@@ -32,8 +30,6 @@
 
 ## 3단계
 
-> 클라이언트 코드를 수정해야 한다.
-
 - 예약 조회
     - `/reservation`요청하면 `reservation.html`반환
     - 날짜와 테마에 따른 예약시간 조회
@@ -43,60 +39,20 @@
     - 최근 일주일 기준 예약이 많은 테마 10개
     - `/`url요청시 `templates/index.html`반환(인기페이지)
 
-    - API 명세
-        - 예약 가능 시간 조회
-            - request
-          ```
-          GET /times/available
-          ```
-            - response
-          ```
-          HTTP/1.1 200
-          Content-Type: application/json
-          [
-            {
-              "id": 1,
-              "start_at": "11:00",
-              "is_reserved": "true"
-            }
-          ]
-          ```
+## 4단계
 
-    - 예약 하기
-        - request
-          ```
-          POST /reservation HTTP/1.1
-          content-type: application/json
-          
-          {
-          "name": "예약자명",
-          "reservation_date": "2025-04-29",
-          "theme_id": "1",
-          "time_id": "1"
-          }
-          ```
-        - response
-          ```
-          HTTP/1.1 201
-          Location: /reservation/1
-          Content-Type: application/json
-          ```
+- 사용자 도메인을 추가합니다.
+- 로그인 기능을 구현하세요.
+- 로그인 후 Cookie를 이용하여 사용자의 정보를 조회하는 API를 구현하세요.
 
-    - 인기 테마 조회
-        - request
-          ```
-          GET /theme/popular
-          ```
-            - response
-          ```
-          HTTP/1.1 200
-          Content-Type: application/json
-          [
-            {
-              "id": 1,
-              "name": "레벨2 탈출",
-              "description": "우테코 레벨2를 탈출하는 내용입니다.",
-              "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
-            }
-          ]
-          ```
+- 사용자는 아래의 정보를 가집니다.
+    - name: 사용자 이름
+    - email: 이메일
+    - password: 비밀번호
+- email을 로그인의 id로, password를 비밀번호로 사용
+
+- 로그인
+    - GET /login 요청 시 로그인 폼이 있는 페이지를 응답합니다.
+        - templates/login.html 파일을 이용하세요.
+    - POST /login 요청 시 로그인 폼에 입력한 email, password 값을 body에 포함하세요.
+        - 응답 Cookie에 "token"값으로 토큰이 포함되도록 하세요.
