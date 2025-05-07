@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record ReservationTimeResponse(
-        long id,
+        String id,
         LocalTime startAt
 ) {
     public static List<ReservationTimeResponse> from(List<ReservationTime> reservationTimes) {

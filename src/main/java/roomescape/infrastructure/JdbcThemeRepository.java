@@ -17,7 +17,7 @@ import java.util.Optional;
 public class JdbcThemeRepository implements ThemeRepository {
 
     private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNum) -> {
-        Long id = resultSet.getLong("id");
+        String id = resultSet.getString("id");
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
         String thumbnail = resultSet.getString("thumbnail");
@@ -30,24 +30,17 @@ public class JdbcThemeRepository implements ThemeRepository {
     public JdbcThemeRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insert = new SimpleJdbcInsert(jdbcTemplate).
-                withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+                withTableName("theme");
     }
 
     @Override
-    public Theme save(Theme theme) {
-        final Number id = insert.executeAndReturnKey(Map.of(
+    public void save(Theme theme) {
+        insert.execute(Map.of(
+                "id", theme.getId(),
                 "name", theme.getName(),
                 "description", theme.getDescription(),
                 "thumbnail", theme.getThumbnail()
         ));
-
-        return Theme.afterSave(
-                id.longValue(),
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail()
-        );
     }
 
     @Override
@@ -78,7 +71,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<Theme> findById(long id) {
+    public Optional<Theme> findById(final String id) {
         final String sql = """
                 SELECT * FROM theme
                 WHERE id = ?
@@ -91,7 +84,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public boolean existById(long id) {
+    public boolean existById(final String id) {
         final String sql = """
                 SELECT COUNT(*) FROM theme
                 WHERE id = ?
@@ -102,7 +95,7 @@ public class JdbcThemeRepository implements ThemeRepository {
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(final String id) {
         final String sql = """
                 DELETE FROM theme
                 WHERE id = ?

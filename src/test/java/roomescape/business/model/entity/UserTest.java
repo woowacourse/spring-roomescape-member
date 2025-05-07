@@ -15,7 +15,7 @@ class UserTest {
     private static final String VALID_NAME = "dompoo";
     private static final String VALID_EMAIL = "test@example.com";
     private static final String VALID_PASSWORD = "password123!";
-    private static final long VALID_ID = 1L;
+    private static final String VALID_ID = "1";
 
     @Nested
     class 사용자_생성_테스트 {

@@ -22,7 +22,7 @@ public class UserService {
             throw new DuplicatedEmailException();
         }
         User user = User.beforeSave(name, email, password);
-        userRepository.saveAndGet(user);
+        userRepository.save(user);
     }
 
     public User getByEmail(final String email) {

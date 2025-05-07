@@ -22,9 +22,9 @@ import java.util.Optional;
 public class JdbcReservationRepository implements ReservationRepository {
 
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.afterSave(
-            resultSet.getLong("reservation_id"),
+            resultSet.getString("reservation_id"),
             User.afterSave(
-                    resultSet.getLong("user_id"),
+                    resultSet.getString("user_id"),
                     resultSet.getString("user_role"),
                     resultSet.getString("user_name"),
                     resultSet.getString("user_email"),
@@ -32,11 +32,11 @@ public class JdbcReservationRepository implements ReservationRepository {
             ),
             resultSet.getDate("date").toLocalDate(),
             ReservationTime.afterSave(
-                    resultSet.getLong("time_id"),
+                    resultSet.getString("time_id"),
                     resultSet.getTime("time_value").toLocalTime()
             ),
             Theme.afterSave(
-                    resultSet.getLong("theme_id"),
+                    resultSet.getString("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"),
                     resultSet.getString("theme_thumbnail")
@@ -71,26 +71,18 @@ public class JdbcReservationRepository implements ReservationRepository {
     public JdbcReservationRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+                .withTableName("reservation");
     }
 
     @Override
-    public Reservation save(final Reservation reservation) {
-        final Number id = insert.executeAndReturnKey(Map.of(
+    public void save(final Reservation reservation) {
+        insert.execute(Map.of(
+                "id", reservation.getId(),
                 "date", reservation.getDate(),
                 "time_id", reservation.getTime().getId(),
                 "theme_id", reservation.getTheme().getId(),
                 "user_id", reservation.getUser().id()
         ));
-
-        return Reservation.afterSave(
-                id.longValue(),
-                reservation.getUser(),
-                reservation.getDate(),
-                reservation.getTime(),
-                reservation.getTheme()
-        );
     }
 
     @Override
@@ -99,7 +91,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findAllWithFilter(final Long themeId, final Long userId, final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<Reservation> findAllWithFilter(final String themeId, final String userId, final LocalDate dateFrom, final LocalDate dateTo) {
         final StringBuilder sql = new StringBuilder(FIND_ALL_QUERY);
 
         List<Object> params = new ArrayList<>();
@@ -128,7 +120,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Optional<Reservation> findById(final long id) {
+    public Optional<Reservation> findById(final String id) {
         try {
             final String sql = FIND_ALL_QUERY + " AND r.id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
@@ -138,21 +130,21 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean existById(final long id) {
+    public boolean existById(final String id) {
         final String sql = "SELECT COUNT(*) FROM reservation WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
     }
 
     @Override
-    public boolean existByTimeId(final long timeId) {
+    public boolean existByTimeId(final String timeId) {
         final String sql = "SELECT COUNT(*) FROM reservation WHERE time_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
         return count != null && count > 0;
     }
 
     @Override
-    public boolean existByThemeId(final long themeId) {
+    public boolean existByThemeId(final String themeId) {
         final String sql = "SELECT COUNT(*) FROM reservation WHERE theme_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
         return count != null && count > 0;
@@ -174,7 +166,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public void deleteById(final long id) {
+    public void deleteById(final String id) {
         final String sql = "DELETE FROM reservation WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

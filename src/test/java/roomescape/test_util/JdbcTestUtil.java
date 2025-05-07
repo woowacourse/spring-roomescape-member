@@ -1,12 +1,8 @@
 package roomescape.test_util;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,78 +16,41 @@ public class JdbcTestUtil {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long insertUser(final String name) {
-        final String sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, name);
-            ps.setString(2, name + "@email.com");
-            ps.setString(3, "password123");
-            ps.setString(4, "USER");
-            return ps;
-        }, keyHolder);
-
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    public void insertUser(final String id, final String name) {
+        final String sql = "INSERT INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, id, name, name + "@email.com", "password123", "USER");
     }
 
-    public long insertReservation(final long userId, final LocalDate date, final long timeId, final long themeId) {
-        final String sql = "INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setDate(1, Date.valueOf(date));
-            ps.setLong(2, timeId);
-            ps.setLong(3, themeId);
-            ps.setLong(4, userId);
-            return ps;
-        }, keyHolder);
-
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    public void insertReservation(final String id, final LocalDate date, final String timeId, final String themeId, final String userId) {
+        final String sql = "INSERT INTO reservation (id, date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, id, Date.valueOf(date), timeId, themeId, userId);
     }
 
-    public long insertReservationTime(final LocalTime time) {
-        final String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setTime(1, Time.valueOf(time));
-            return ps;
-        }, keyHolder);
-
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    public void insertReservationTime(final String id, final LocalTime time) {
+        final String sql = "INSERT INTO reservation_time (id, start_at) VALUES (?, ?)";
+        jdbcTemplate.update(sql, id, Time.valueOf(time));
     }
 
-    public long insertTheme(final String name) {
-        final String sql = "INSERT INTO theme (name, description, thumbnail) VALUES (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, name);
-            ps.setString(2, "");
-            ps.setString(3, "");
-            return ps;
-        }, keyHolder);
-
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    public void insertTheme(final String id, final String name) {
+        final String sql = "INSERT INTO theme (id, name, description, thumbnail) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, id, name, "", "");
     }
 
     public int countReservation() {
-        final Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation WHERE id IS NOT NULL", Integer.class);
+        final String sql = "SELECT COUNT(*) FROM reservation WHERE id IS NOT NULL";
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
         return Objects.requireNonNull(count);
     }
 
     public int countReservationTime() {
-        final Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM reservation_time WHERE id IS NOT NULL", Integer.class);
+        final String sql = "SELECT COUNT(*) FROM reservation_time WHERE id IS NOT NULL";
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
         return Objects.requireNonNull(count);
     }
 
     public int countTheme() {
-        final Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM theme WHERE id IS NOT NULL", Integer.class);
+        final String sql = "SELECT COUNT(*) FROM theme WHERE id IS NOT NULL";
+        final Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
         return Objects.requireNonNull(count);
     }
 

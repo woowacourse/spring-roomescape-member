@@ -16,7 +16,7 @@ import java.util.Optional;
 public class JdbcUserRepository implements UserRepository {
 
     private static final RowMapper<User> ROW_MAPPER = (resultSet, rowNum) -> {
-        long id = resultSet.getLong("id");
+        String id = resultSet.getString("id");
         String userRole = resultSet.getString("role");
         String name = resultSet.getString("name");
         String email = resultSet.getString("email");
@@ -30,20 +30,18 @@ public class JdbcUserRepository implements UserRepository {
     public JdbcUserRepository(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.insert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("users")
-                .usingGeneratedKeyColumns("id");
+                .withTableName("users");
     }
 
     @Override
-    public User saveAndGet(final User user) {
-        final Number id = insert.executeAndReturnKey(Map.of(
+    public void save(final User user) {
+        insert.execute(Map.of(
+                "id", user.id(),
                 "role", user.role(),
                 "email", user.email(),
                 "name", user.name(),
                 "password", user.password()
         ));
-
-        return User.afterSave(id.longValue(), user.role(), user.name(), user.email(), user.password());
     }
 
     @Override
@@ -56,7 +54,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> findById(final long userId) {
+    public Optional<User> findById(final String userId) {
         final String sql = """
                 SELECT * FROM users
                 WHERE id = ?

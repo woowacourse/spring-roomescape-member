@@ -36,10 +36,10 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation addAndGet(
+    public Reservation addAndGetWithEmail(
             final LocalDate date,
-            final long timeId,
-            final long themeId,
+            final String timeId,
+            final String themeId,
             final String userEmail
     ) {
         User user = userRepository.findByEmail(userEmail)
@@ -49,16 +49,16 @@ public class ReservationService {
 
     public Reservation addAndGet(
             final LocalDate date,
-            final long timeId,
-            final long themeId,
-            final long userId
+            final String timeId,
+            final String themeId,
+            final String userId
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
         return addAndGet(date, timeId, themeId, user);
     }
 
-    private Reservation addAndGet(final LocalDate date, final long timeId, final long themeId, final User user) {
+    private Reservation addAndGet(final LocalDate date, final String timeId, final String themeId, final User user) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationNotFoundException::new);
         Theme theme = themeRepository.findById(themeId)
@@ -69,14 +69,15 @@ public class ReservationService {
         }
 
         Reservation reservation = Reservation.beforeSave(user, date, reservationTime, theme);
-        return reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
+        return reservation;
     }
 
-    public List<Reservation> getAll(final Long themeId, final Long userId, final LocalDate dateFrom, final LocalDate dateTo) {
+    public List<Reservation> getAll(final String themeId, final String userId, final LocalDate dateFrom, final LocalDate dateTo) {
         return reservationRepository.findAllWithFilter(themeId, userId, dateFrom, dateTo);
     }
 
-    public void delete(final long id) {
+    public void delete(final String id) {
         if (!reservationRepository.existById(id)) {
             throw new ReservationNotFoundException();
         }

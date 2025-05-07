@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -41,34 +42,49 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_저장할_수_있다() {
-        final ReservationTime result = sut.save(ReservationTime.beforeSave(TIME1));
-
-        assertThat(result).isNotNull();
+        assertThatCode(() -> sut.save(ReservationTime.beforeSave(TIME1)))
+                .doesNotThrowAnyException();
     }
 
     @Test
     void 모든_예약_시간을_찾을_수_있다() {
-        final long id1 = testUtil.insertReservationTime(TIME1);
-        final long id2 = testUtil.insertReservationTime(TIME2);
+        // given
+        String timeId1 = "1";
+        String timeId2 = "2";
 
+        testUtil.insertReservationTime(timeId1, TIME1);
+        testUtil.insertReservationTime(timeId2, TIME2);
+
+        // when
         final List<ReservationTime> result = sut.findAll();
 
+        // then
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).getId()).isEqualTo(id1);
-        assertThat(result.get(1).getId()).isEqualTo(id2);
+        assertThat(result.get(0).getId()).isEqualTo(timeId1);
+        assertThat(result.get(1).getId()).isEqualTo(timeId2);
     }
 
     @Test
     void 해당_날짜와_테마에_예약되지_않은_모든_예약_시간을_찾을_수_있다() {
-        final long timeId1 = testUtil.insertReservationTime(LocalTime.of(10, 0));
-        final long timeId2 = testUtil.insertReservationTime(LocalTime.of(12, 0));
-        final long timeId3 = testUtil.insertReservationTime(LocalTime.of(14, 0));
-        final long themeId = testUtil.insertTheme("주홍색 연구");
-        final long userId = testUtil.insertUser("돔푸");
-        testUtil.insertReservation(userId, LocalDate.now().plusDays(10), timeId1, themeId);
+        // given
+        String timeId1 = generateId();
+        String timeId2 = generateId();
+        String timeId3 = generateId();
+        String themeId = generateId();
+        String userId = generateId();
+        String reservationId = generateId();
 
+        testUtil.insertReservationTime(timeId1, LocalTime.of(10, 0));
+        testUtil.insertReservationTime(timeId2, LocalTime.of(12, 0));
+        testUtil.insertReservationTime(timeId3, LocalTime.of(14, 0));
+        testUtil.insertTheme(themeId, "주홍색 연구");
+        testUtil.insertUser(userId, "돔푸");
+        testUtil.insertReservation(reservationId, LocalDate.now().plusDays(10), timeId1, themeId, userId);
+
+        // when
         final List<ReservationTime> result = sut.findAvailableReservationTimesByDateAndThemeId(LocalDate.now().plusDays(10), themeId);
 
+        // then
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getId()).isEqualTo(timeId2);
         assertThat(result.get(1).getId()).isEqualTo(timeId3);
@@ -76,50 +92,74 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void ID_기준으로_예약_시간을_찾을_수_있다() {
-        final long id = testUtil.insertReservationTime(TIME1);
+        // given
+        String timeId = generateId();
+        testUtil.insertReservationTime(timeId, TIME1);
 
-        final Optional<ReservationTime> result = sut.findById(id);
+        // when
+        final Optional<ReservationTime> result = sut.findById(timeId);
 
+        // then
         assertThat(result.isPresent()).isTrue();
         final ReservationTime reservationTime = result.get();
-        assertThat(reservationTime.getId()).isEqualTo(id);
+        assertThat(reservationTime.getId()).isEqualTo(timeId);
         assertThat(reservationTime.getStartAt()).isEqualTo(TIME1);
     }
 
     @Test
     void ID_기준으로_존재하는지_확인할_수_있다() {
-        final long id = testUtil.insertReservationTime(TIME1);
+        // given
+        String timeId = generateId();
+        testUtil.insertReservationTime(timeId, TIME1);
 
-        final boolean result = sut.existById(id);
+        // when
+        final boolean result = sut.existById(timeId);
 
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     void 시간_기준으로_존재하는지_확인할_수_있다() {
-        testUtil.insertReservationTime(TIME1);
+        // given
+        String timeId = generateId();
+        testUtil.insertReservationTime(timeId, TIME1);
 
+        // when
         final boolean result = sut.existByTime(TIME1);
 
+        // then
         assertThat(result).isTrue();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 29})
     void 두_시간_사이에_존재하는지_확인할_수_있다(int minute) {
-        testUtil.insertReservationTime(LocalTime.of(10, minute));
+        // given
+        String timeId = generateId();
+        testUtil.insertReservationTime(timeId, LocalTime.of(10, minute));
 
+        // when
         final boolean result = sut.existBetween(LocalTime.of(10, 0), LocalTime.of(10, 30));
 
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     void ID를_통해_예약_시간을_삭제할_수_있다() {
-        final long id = testUtil.insertReservationTime(TIME1);
+        // given
+        String timeId = generateId();
+        testUtil.insertReservationTime(timeId, TIME1);
 
-        sut.deleteById(id);
+        // when
+        sut.deleteById(timeId);
 
+        // then
         assertThat(testUtil.countReservationTime()).isEqualTo(0);
+    }
+
+    private String generateId() {
+        return UUID.randomUUID().toString();
     }
 }

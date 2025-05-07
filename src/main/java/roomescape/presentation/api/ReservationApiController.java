@@ -29,7 +29,7 @@ public class ReservationApiController {
     @PostMapping("/reservations")
     @AuthRequired
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request, LoginInfo loginInfo) {
-        Reservation reservation = reservationService.addAndGet(request.date(), request.timeId(), request.themeId(), loginInfo.email());
+        Reservation reservation = reservationService.addAndGetWithEmail(request.date(), request.timeId(), request.themeId(), loginInfo.email());
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations")).body(response);
     }
@@ -46,8 +46,8 @@ public class ReservationApiController {
     @GetMapping("/reservations")
     @AuthRequired
     public ResponseEntity<List<ReservationResponse>> getReservations(
-            @RequestParam(required = false) Long themeId,
-            @RequestParam(required = false, name = "memberId") Long userId,
+            @RequestParam(required = false) String themeId,
+            @RequestParam(required = false, name = "memberId") String userId,
             @RequestParam(required = false) LocalDate dateFrom,
             @RequestParam(required = false) LocalDate dateTo
     ) {
@@ -58,7 +58,7 @@ public class ReservationApiController {
 
     @DeleteMapping("/reservations/{id}")
     @AuthRequired
-    public ResponseEntity<Void> deleteReservation(@PathVariable long id) {
+    public ResponseEntity<Void> deleteReservation(@PathVariable String id) {
         // TODO : 해당 예약을 한 유저가 본인인지 검증
         reservationService.delete(id);
         return ResponseEntity.noContent().build();

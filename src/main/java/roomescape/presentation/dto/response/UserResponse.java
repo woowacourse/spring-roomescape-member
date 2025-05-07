@@ -5,7 +5,7 @@ import roomescape.business.model.entity.User;
 import java.util.List;
 
 public record UserResponse(
-        long id,
+        String id,
         String name,
         String email
 ) {

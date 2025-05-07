@@ -36,15 +36,11 @@ public class Theme {
             final String description,
             final String thumbnail
     ) {
-        return new Theme(Id.nullId(), name, description, thumbnail);
-    }
-
-    public static Theme afterSave(final long id, final Theme theme) {
-        return afterSave(id, theme.name, theme.description, theme.thumbnail);
+        return new Theme(Id.issue(), name, description, thumbnail);
     }
 
     public static Theme afterSave(
-            final long id,
+            final String id,
             final String name,
             final String description,
             final String thumbnail
@@ -52,8 +48,8 @@ public class Theme {
         return new Theme(Id.create(id), name, description, thumbnail);
     }
 
-    public Long getId() {
-        return id.longValue();
+    public String getId() {
+        return id.value();
     }
 
     public String getName() {

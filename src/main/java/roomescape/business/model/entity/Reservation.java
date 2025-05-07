@@ -43,7 +43,7 @@ public class Reservation {
     ) {
         validateDateIsNotPast(date);
         validateDateInterval(date);
-        return new Reservation(Id.nullId(), user, date, time, theme);
+        return new Reservation(Id.issue(), user, date, time, theme);
     }
 
     private static void validateDateInterval(final LocalDate date) {
@@ -60,7 +60,7 @@ public class Reservation {
     }
 
     public static Reservation afterSave(
-            final long id,
+            final String id,
             final User user,
             final LocalDate date,
             final ReservationTime time,
@@ -69,8 +69,8 @@ public class Reservation {
         return new Reservation(Id.create(id), user, date, time, theme);
     }
 
-    public Long getId() {
-        return id.longValue();
+    public String getId() {
+        return id.value();
     }
 
     public String getName() {

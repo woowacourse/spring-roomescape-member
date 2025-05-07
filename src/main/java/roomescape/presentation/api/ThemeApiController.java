@@ -50,7 +50,7 @@ public class ThemeApiController {
     @DeleteMapping("/themes/{id}")
     @AuthRequired
     @Role(UserRole.ADMIN)
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         themeService.delete(id);
         return ResponseEntity.noContent().build();
     }

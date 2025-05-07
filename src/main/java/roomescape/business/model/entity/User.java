@@ -40,10 +40,10 @@ public class User {
     }
 
     public static User beforeSave(final String name, final String email, final String password) {
-        return new User(Id.nullId(), UserRole.USER, name, email, password);
+        return new User(Id.issue(), UserRole.USER, name, email, password);
     }
 
-    public static User afterSave(final long id, final String userRole, final String name, final String email, final String password) {
+    public static User afterSave(final String id, final String userRole, final String name, final String email, final String password) {
         return new User(Id.create(id), UserRole.valueOf(userRole), name, email, password);
     }
 
@@ -51,8 +51,8 @@ public class User {
         return this.password.equals(password);
     }
 
-    public Long id() {
-        return id.longValue();
+    public String id() {
+        return id.value();
     }
 
     public String name() {

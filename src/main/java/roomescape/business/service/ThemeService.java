@@ -26,7 +26,8 @@ public class ThemeService {
 
     public Theme addAndGet(final String name, final String description, final String thumbnail) {
         Theme theme = Theme.beforeSave(name, description, thumbnail);
-        return themeRepository.save(theme);
+        themeRepository.save(theme);
+        return theme;
     }
 
     public List<Theme> getAll() {
@@ -42,7 +43,7 @@ public class ThemeService {
         );
     }
 
-    public void delete(final long id) {
+    public void delete(final String id) {
         if (reservationRepository.existByThemeId(id)) {
             throw new ConnectedReservationExistException();
         }

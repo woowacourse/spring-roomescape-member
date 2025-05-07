@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ReservationResponse(
-        long id,
+        String id,
         UserResponse user,
         LocalDate date,
         ReservationTimeResponse time,

@@ -37,43 +37,38 @@ class JdbcUserRepositoryTest {
         // given
         final User user = User.beforeSave("테스트유저", "test@example.com", "password123");
 
-        // when
-        final User result = sut.saveAndGet(user);
-
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.name()).isEqualTo("테스트유저");
-        assertThat(result.email()).isEqualTo("test@example.com");
-        assertThat(result.role()).isEqualTo("USER");
+        // when & then
+        assertThatCode(() -> sut.save(user))
+                .doesNotThrowAnyException();
     }
 
     @Test
     void 모든_사용자를_조회할_수_있다() {
         // given
-        final long id1 = testUtil.insertUser("유저일");
-        final long id2 = testUtil.insertUser("유저이");
+        testUtil.insertUser("1", "유저일");
+        testUtil.insertUser("2", "유저이");
 
         // when
         final List<User> result = sut.findAll();
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).id()).isEqualTo(id1);
-        assertThat(result.get(1).id()).isEqualTo(id2);
+        assertThat(result.get(0).id()).isEqualTo("1");
+        assertThat(result.get(1).id()).isEqualTo("2");
     }
 
     @Test
     void ID로_사용자를_조회할_수_있다() {
         // given
-        final long id = testUtil.insertUser("유저일");
+        testUtil.insertUser("1", "유저일");
 
         // when
-        final Optional<User> result = sut.findById(id);
+        final Optional<User> result = sut.findById("1");
 
         // then
         assertThat(result).isPresent();
         final User user = result.get();
-        assertThat(user.id()).isEqualTo(id);
+        assertThat(user.id()).isEqualTo("1");
         assertThat(user.name()).isEqualTo("유저일");
         assertThat(user.email()).isEqualTo("유저일@email.com");
     }
@@ -81,7 +76,7 @@ class JdbcUserRepositoryTest {
     @Test
     void 존재하지_않는_ID로_사용자를_조회하면_빈_Optional을_반환한다() {
         // when
-        final Optional<User> result = sut.findById(999L);
+        final Optional<User> result = sut.findById("999");
 
         // then
         assertThat(result).isEmpty();
@@ -92,7 +87,7 @@ class JdbcUserRepositoryTest {
         // given
         final String name = "유저일";
         final String email = name + "@email.com";
-        testUtil.insertUser(name);
+        testUtil.insertUser("1", name);
 
         // when
         final Optional<User> result = sut.findByEmail(email);
@@ -118,7 +113,7 @@ class JdbcUserRepositoryTest {
         // given
         final String name = "유저1";
         final String email = name + "@email.com";
-        testUtil.insertUser(name);
+        testUtil.insertUser("1", name);
 
         // when
         final boolean result = sut.existByEmail(email);

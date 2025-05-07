@@ -27,10 +27,10 @@ public class ReservationTime {
     }
 
     public static ReservationTime beforeSave(final LocalTime startAt) {
-        return new ReservationTime(Id.nullId(), startAt);
+        return new ReservationTime(Id.issue(), startAt);
     }
 
-    public static ReservationTime afterSave(final long id, final LocalTime startAt) {
+    public static ReservationTime afterSave(final String id, final LocalTime startAt) {
         return new ReservationTime(Id.create(id), startAt);
     }
 
@@ -42,8 +42,8 @@ public class ReservationTime {
         return startAt.plusMinutes(MINUTE_INTERVAL);
     }
 
-    public Long getId() {
-        return id.longValue();
+    public String getId() {
+        return id.value();
     }
 
     public LocalTime getStartAt() {

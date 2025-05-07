@@ -32,7 +32,8 @@ public class ReservationTimeService {
         validateNoDuplication(reservationTime);
         validateTimeInterval(reservationTime);
 
-        return reservationTimeRepository.save(reservationTime);
+        reservationTimeRepository.save(reservationTime);
+        return reservationTime;
     }
 
     private void validateNoDuplication(final ReservationTime reservationTime) {
@@ -53,11 +54,11 @@ public class ReservationTimeService {
         return reservationTimeRepository.findAll();
     }
 
-    public List<ReservationTime> getAvailableReservationTimesByDateAndThemeId(final LocalDate date, final long themeId) {
+    public List<ReservationTime> getAvailableReservationTimesByDateAndThemeId(final LocalDate date, final String themeId) {
         return reservationTimeRepository.findAvailableReservationTimesByDateAndThemeId(date, themeId);
     }
 
-    public void delete(final long id) {
+    public void delete(final String id) {
         if (reservationRepository.existByTimeId(id)) {
             throw new ConnectedReservationExistException();
         }

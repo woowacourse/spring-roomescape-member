@@ -8,15 +8,15 @@ import java.util.Optional;
 
 public interface ThemeRepository {
 
-    Theme save(Theme theme);
+    void save(Theme theme);
 
     List<Theme> findAll();
 
     List<Theme> findPopularThemes(LocalDate startInclusive, LocalDate endInclusive, int count);
 
-    Optional<Theme> findById(long id);
+    Optional<Theme> findById(String id);
 
-    boolean existById(long id);
+    boolean existById(String id);
 
-    void deleteById(long id);
+    void deleteById(String id);
 }
