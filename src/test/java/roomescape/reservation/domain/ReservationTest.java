@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
+import roomescape.reservation.exception.InvalidReservationException;
 import roomescape.reservation.fixture.TestFixture;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
@@ -21,7 +22,7 @@ class ReservationTest {
                 LocalDate.now().minusDays(1),
                 ReservationTime.of(1L, LocalTime.now().minusHours(1)),
                 theme, LocalDateTime.now())
-        ).isInstanceOf(IllegalArgumentException.class)
+        ).isInstanceOf(InvalidReservationException.class)
                 .hasMessageContaining("예약 시간이 현재 시간보다 이전일 수 없습니다.");
     }
 
@@ -32,7 +33,7 @@ class ReservationTest {
                 LocalDate.now().minusDays(1),
                 ReservationTime.of(1L, LocalTime.now()),
                 theme)
-        ).isInstanceOf(IllegalArgumentException.class)
+        ).isInstanceOf(InvalidReservationException.class)
                 .hasMessageContaining("이름은 10글자 이내여야 합니다.");
     }
 }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 import roomescape.common.domain.Id;
+import roomescape.reservation.exception.InvalidReservationException;
 import roomescape.reservationtime.domain.ReservationTime;
 import roomescape.theme.domain.Theme;
 
@@ -31,7 +32,8 @@ public class Reservation {
         return new Reservation(Id.assignDatabaseId(id), name, date, time, theme);
     }
 
-    public static Reservation createUpcomingReservationWithUnassignedId(final String name, final LocalDate date, final ReservationTime time,
+    public static Reservation createUpcomingReservationWithUnassignedId(final String name, final LocalDate date,
+                                                                        final ReservationTime time,
                                                                         final Theme theme, final LocalDateTime now) {
         validateDateTime(date, time.getStartAt(), now);
         return new Reservation(Id.unassigned(), name, date, time, theme);
@@ -39,13 +41,13 @@ public class Reservation {
 
     private static void validateDateTime(LocalDate date, LocalTime time, LocalDateTime now) {
         if (LocalDateTime.of(date, time).isBefore(now)) {
-            throw new IllegalArgumentException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
+            throw new InvalidReservationException("예약 시간이 현재 시간보다 이전일 수 없습니다.");
         }
     }
 
     private void validateNameLength(final String value) {
         if (value.length() > 10) {
-            throw new IllegalArgumentException("이름은 10글자 이내여야 합니다.");
+            throw new InvalidReservationException("이름은 10글자 이내여야 합니다.");
         }
     }
 

@@ -369,6 +369,10 @@ HTTP/1.1 204
 ```
 
 ## 예외
+- DateTimeParseException : 날짜(yyyy-MM-dd) & 시간(HH:mm) 파싱 예외시 400 
+- NotFoundException :  예약, 예약 시간이 존재하지 않을 경우 404
+- ReservationTimeInUseException : 해당 예약 시간에 예약이 존재하여 삭제할 수 없는 경우 409
+- AlreadyExistsException : 이미 예약, 예약 시간이 존재하는 경우 400
 
 ### 시간
 

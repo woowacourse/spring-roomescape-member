@@ -1,6 +1,7 @@
 package roomescape.theme.domain;
 
 import roomescape.common.domain.Id;
+import roomescape.theme.exception.InvalidThemeException;
 
 public class Theme {
 
@@ -29,19 +30,19 @@ public class Theme {
 
     private void validateNameLength(final String value) {
         if (value.length() > 10) {
-            throw new IllegalArgumentException("이름은 10글자 이내여야 합니다.");
+            throw new InvalidThemeException("이름은 10글자 이내여야 합니다.");
         }
     }
 
     private void validateDescriptionLength(final String value) {
         if (value.length() > 100) {
-            throw new IllegalArgumentException("설명은 100글자 이내여야 합니다.");
+            throw new InvalidThemeException("설명은 100글자 이내여야 합니다.");
         }
     }
 
     private void validateThumbnailLength(final String value) {
         if (value.length() > 100) {
-            throw new IllegalArgumentException("썸네일은 100글자 이내여야 합니다.");
+            throw new InvalidThemeException("썸네일은 100글자 이내여야 합니다.");
         }
     }
 

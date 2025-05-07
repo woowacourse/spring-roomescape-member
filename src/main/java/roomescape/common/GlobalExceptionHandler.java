@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.AlreadyExistsException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.common.exception.ValidationException;
 import roomescape.reservationtime.exception.ReservationTimeInUseException;
 
 @RestControllerAdvice
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<String> handleAlreadyExistsException(AlreadyExistsException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<String> handleValidationException(ValidationException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
