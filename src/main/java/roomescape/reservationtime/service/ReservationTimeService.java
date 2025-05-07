@@ -1,11 +1,8 @@
 package roomescape.reservationtime.service;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.Reservation;
@@ -60,32 +57,15 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date,
                                                                                final Long themeId) {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
+        Set<Long> reservationTimeIds = reservations.stream()
+                .map(reservation -> reservation.getTime().getId())
+                .collect(Collectors.toSet());
 
-        Map<ReservationTime, Boolean> availabilities = reservationTimes.stream()
-                .map(reservationTime -> mapToDto(reservations, reservationTime))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (o1, o2) -> o1, LinkedHashMap::new));
-
-        return availabilities.entrySet().stream()
-                .map(entry -> {
-                    ReservationTime reservationTime = entry.getKey();
-                    return new AvailableReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt(),
-                            entry.getValue());
-                })
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
+        return reservationTimes.stream()
+                .map(reservationTime -> new AvailableReservationTimeResponse(reservationTime.getId(),
+                        reservationTime.getStartAt(), reservationTimeIds.contains(reservationTime.getId())))
                 .toList();
-    }
-
-    private Entry<ReservationTime, Boolean> mapToDto(final List<Reservation> reservations,
-                                                     final ReservationTime reservationTime) {
-        if (containsTime(reservations, reservationTime.getId())) {
-            return Map.entry(reservationTime, true);
-        }
-        return Map.entry(reservationTime, false);
-    }
-
-    private boolean containsTime(final List<Reservation> reservations, final Long id) {
-        return reservations.stream()
-                .anyMatch(reservation -> Objects.equals(reservation.getTime().getId(), id));
     }
 }
