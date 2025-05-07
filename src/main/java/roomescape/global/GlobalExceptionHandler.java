@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.global;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -8,11 +8,11 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.controller.dto.ErrorResponse;
+import roomescape.global.dto.ErrorResponse;
 import roomescape.exception.InvalidAuthorizationException;
 
 @ControllerAdvice
-public class GlobalControllerAdvice {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(exception = IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {

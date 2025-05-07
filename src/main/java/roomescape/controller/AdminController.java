@@ -2,17 +2,16 @@ package roomescape.controller;
 
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
-import roomescape.dto.request.CreateReservationByAdminRequest;
+import roomescape.dto.request.AdminCreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
 
@@ -22,30 +21,9 @@ public class AdminController {
         this.reservationService = reservationService;
     }
 
-    // TODO: 페이지 컨트롤러 위치 고려해보기
-    @GetMapping
-    public String adminMainPage() {
-        return "admin/index";
-    }
-
-    @GetMapping("/reservation")
-    public String reservationPage() {
-        return "admin/reservation-new";
-    }
-
-    @GetMapping("/time")
-    public String reservationTimePage() {
-        return "admin/time";
-    }
-
-    @GetMapping("/theme")
-    public String themePage() {
-        return "admin/theme";
-    }
-
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservationByAdmin(
-            @RequestBody CreateReservationByAdminRequest request) {
+            @RequestBody AdminCreateReservationRequest request) {
         Reservation addedReservation = reservationService.addReservationByAdmin(request);
 
         ReservationResponse reservationResponse = new ReservationResponse(

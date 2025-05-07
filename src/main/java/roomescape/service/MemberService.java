@@ -16,12 +16,12 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
+    public List<Member> findAll() {
+        return memberRepository.findAll();
+    }
+
     public Member findByEmailAndPassword(LoginRequest request) {
         return memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new InvalidMemberException("유효하지 않은 로그인 정보입니다."));
-    }
-
-    public List<Member> findAll() {
-        return memberRepository.findAll();
     }
 }

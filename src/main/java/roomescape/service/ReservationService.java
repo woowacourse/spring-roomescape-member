@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.dto.request.CreateReservationByAdminRequest;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlots;
@@ -13,6 +12,7 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRanking;
 import roomescape.dto.request.AddReservationRequest;
+import roomescape.dto.request.AdminCreateReservationRequest;
 import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.exception.InvalidMemberException;
 import roomescape.exception.InvalidReservationException;
@@ -58,7 +58,7 @@ public class ReservationService {
     }
 
     // TODO: addReservation 메서드와 중복 로직 분리해보기
-    public Reservation addReservationByAdmin(CreateReservationByAdminRequest request) {
+    public Reservation addReservationByAdmin(AdminCreateReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
         Theme theme = themeRepository.findById(request.themeId())
