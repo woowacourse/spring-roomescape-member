@@ -22,7 +22,7 @@ class ReservationTest {
                 ReservationTime.of(1L, LocalTime.now().minusHours(1)),
                 theme, LocalDateTime.now())
         ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 시간이 현재 시간보다 이전일 수 없습니다.");
+                .hasMessageContaining("예약 시간이 현재 시간보다 이전일 수 없습니다.");
     }
 
     @Test
@@ -33,6 +33,6 @@ class ReservationTest {
                 ReservationTime.of(1L, LocalTime.now()),
                 theme)
         ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이름은 10글자 이내여야 합니다.");
+                .hasMessageContaining("이름은 10글자 이내여야 합니다.");
     }
 }

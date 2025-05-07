@@ -41,8 +41,7 @@ class ReservationServiceTest {
 
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         reservationTimeRepository.save(time);
-        Theme theme = TestFixture.makeTheme();
-        themeRepository.save(theme);
+        themeRepository.save(TestFixture.makeTheme());
     }
 
     @Test

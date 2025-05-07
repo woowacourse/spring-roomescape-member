@@ -51,7 +51,7 @@ public class ReservationTimeService {
 
     private void validateIsTimeUnique(final ReservationTimeCreateRequest request) {
         if (reservationTimeRepository.checkExistsByStartAt(request.startAt())) {
-            throw new ReservationTimeAlreadyExistsException("중복된 예약 시간을 생성할 수 없습니다");
+            throw new ReservationTimeAlreadyExistsException("중복된 예약 시간을 생성할 수 없습니다.");
         }
     }
 

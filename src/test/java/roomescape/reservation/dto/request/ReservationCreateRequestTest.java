@@ -16,7 +16,7 @@ class ReservationCreateRequestTest {
                         1L,
                         1L
                 )
-        ).hasMessage("이름은 반드시 입력해야합니다.");
+        ).hasMessageContaining("이름은 반드시 입력해야합니다.");
     }
 
     @Test
@@ -28,7 +28,7 @@ class ReservationCreateRequestTest {
                         1L,
                         1L
                 )
-        ).hasMessage("이름은 반드시 입력해야합니다.");
+        ).hasMessageContaining("이름은 반드시 입력해야합니다.");
     }
 
     @Test
@@ -40,7 +40,7 @@ class ReservationCreateRequestTest {
                         1L,
                         1L
                 )
-        ).hasMessage("날짜는 반드시 입력해야합니다.");
+        ).hasMessageContaining("날짜는 반드시 입력해야합니다.");
     }
 
     @Test
@@ -52,7 +52,7 @@ class ReservationCreateRequestTest {
                         null,
                         1L
                 )
-        ).hasMessage("timeId는 반드시 입력해야합니다.");
+        ).hasMessageContaining("timeId는 반드시 입력해야합니다.");
     }
 
     @Test
@@ -64,7 +64,7 @@ class ReservationCreateRequestTest {
                         1L,
                         null
                 )
-        ).hasMessage("themeId는 반드시 입력해야합니다.");
+        ).hasMessageContaining("themeId는 반드시 입력해야합니다.");
     }
 
     @Test

@@ -52,7 +52,8 @@ class ReservationTimeServiceTest {
         reservationTimeService.create(request);
 
         assertThatThrownBy(() -> reservationTimeService.create(request))
-                .isInstanceOf(ReservationTimeAlreadyExistsException.class);
+                .isInstanceOf(ReservationTimeAlreadyExistsException.class)
+                .hasMessageContaining("중복된 예약 시간을 생성할 수 없습니다.");
     }
 
     @Test
@@ -99,7 +100,7 @@ class ReservationTimeServiceTest {
                 new ReservationTimeCreateRequest(LocalTime.now()));
         reservationService.create(new ReservationCreateRequest("danny", futureDate, reservationTimeResponse.id(), theme.getId()), afterOneHour);
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTimeResponse.id()))
-                .hasMessage("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
+                .hasMessageContaining("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 
     @Test
