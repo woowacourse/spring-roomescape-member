@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dto.request.CreateReservationByAdminRequest;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlots;
@@ -13,9 +14,11 @@ import roomescape.domain.Theme;
 import roomescape.domain.ThemeRanking;
 import roomescape.dto.request.AddReservationRequest;
 import roomescape.dto.request.AvailableTimeRequest;
+import roomescape.exception.InvalidMemberException;
 import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidReservationTimeException;
 import roomescape.exception.InvalidThemeException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -29,13 +32,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public Reservation addReservation(AddReservationRequest newReservation, Member member) {
@@ -45,6 +50,28 @@ public class ReservationService {
                 .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
 
         Reservation reservation = newReservation.toReservation(member, reservationTime, theme);
+
+        validateDuplicateReservation(reservation);
+        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
+        validateAddReservationDateTime(reservation, currentDateTime);
+        return reservationRepository.add(reservation);
+    }
+
+    public Reservation addReservationByAdmin(CreateReservationByAdminRequest request) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 멤버 id입니다."));
+
+        Reservation reservation = new Reservation(
+                null,
+                member,
+                request.date(),
+                reservationTime,
+                theme
+        );
 
         validateDuplicateReservation(reservation);
         LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());

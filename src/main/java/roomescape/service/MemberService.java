@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
@@ -18,5 +19,9 @@ public class MemberService {
     public Member findByEmailAndPassword(LoginRequest request) {
         return memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new InvalidMemberException("유효하지 않은 로그인 정보입니다."));
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 }

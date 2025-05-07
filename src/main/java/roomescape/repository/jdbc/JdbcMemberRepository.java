@@ -1,5 +1,6 @@
 package roomescape.repository.jdbc;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,14 +28,10 @@ public class JdbcMemberRepository implements MemberRepository {
     );
 
     @Override
-    public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "select id, name, email, password, role from member where email = ? and password = ?";
-        try {
-            Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
-            return Optional.of(member);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+    public List<Member> findAll() {
+        String sql = "select id, name, email, password, role from member";
+
+        return jdbcTemplate.query(sql, memberRowMapper);
     }
 
     @Override
@@ -42,6 +39,17 @@ public class JdbcMemberRepository implements MemberRepository {
         String sql = "select id, name, email, password, role from member where id = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, id);
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "select id, name, email, password, role from member where email = ? and password = ?";
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
             return Optional.of(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
