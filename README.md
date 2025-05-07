@@ -28,7 +28,6 @@
 HTTP/1.1 200
 Content-Type: application/json
 
-[
 {
 "id": 1,
 "name": "브라운",
@@ -92,7 +91,7 @@ Content-Type: application/json
 - 요청 URL : /reservations
 - 설명 : 예약을 삭제한다.
 
-`DELETE /reservations/1 HTTP/1.1`
+`DELETE /reservations/{id} HTTP/1.1`
 
 ### 응답
 
