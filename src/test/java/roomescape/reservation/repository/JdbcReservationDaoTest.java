@@ -13,9 +13,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.reservation.domain.Reservation;
-import roomescape.theme.domain.Theme;
-import roomescape.time.domain.ReservationTime;
-import roomescape.util.TestDataSourceFactory;
+import roomescape.reservation.domain.ReservationTime;
+import roomescape.reservation.domain.Theme;
+import roomescape.util.repository.TestDataSourceFactory;
 
 class JdbcReservationDaoTest {
 
