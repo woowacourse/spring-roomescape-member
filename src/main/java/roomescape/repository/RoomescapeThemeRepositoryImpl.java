@@ -70,6 +70,12 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
         }
     }
 
+    @Override
+    public boolean existsByName(final String name) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_theme WHERE name = ?)";
+        return Boolean.TRUE.equals(template.queryForObject(sql, Boolean.class, name));
+    }
+
     private RowMapper<ReservationTheme> reservationThemeRowMapper() {
         return (rs, rowNum) -> {
             return new ReservationTheme(

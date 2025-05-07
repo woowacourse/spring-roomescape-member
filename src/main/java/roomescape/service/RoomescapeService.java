@@ -80,6 +80,7 @@ public class RoomescapeService {
     public ReservationThemeResponse addReservationTheme(final ReservationThemeRequest request) {
         ReservationTheme reservationTheme = new ReservationTheme(request.name(), request.description(),
                 request.thumbnail());
+        validateUniqueThemes(reservationTheme);
         ReservationTheme saved = roomescapeThemeRepository.save(reservationTheme);
         return ReservationThemeResponse.from(saved);
     }
@@ -115,6 +116,13 @@ public class RoomescapeService {
         if (existsSameReservation(reservation)) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
         }
+    }
+
+    private void validateUniqueThemes(final ReservationTheme reservationTheme) {
+        if (roomescapeThemeRepository.existsByName(reservationTheme.getName())) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 테마 입니다.");
+        }
+
     }
 
     private boolean existsSameReservation(final Reservation reservation) {

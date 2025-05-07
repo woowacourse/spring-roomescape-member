@@ -89,4 +89,19 @@ class RoomescapeThemeRepositoryImplTest {
         //
         assertThat(result).isEqualTo(1);
     }
+
+    @DisplayName("이미 존재하는 테마이므로 true를 반환한다.")
+    @Test
+    void existsByName() {
+        //given
+        final String name = "테마1";
+        final ReservationTheme reservationTheme = new ReservationTheme(name, "디스크립션1", "썸네일1");
+        repository.save(reservationTheme);
+
+        //when
+        final boolean expected = repository.existsByName(name);
+
+        //then
+        assertThat(expected).isTrue();
+    }
 }

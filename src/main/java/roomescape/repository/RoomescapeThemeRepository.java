@@ -14,4 +14,6 @@ public interface RoomescapeThemeRepository {
     ReservationTheme save(final ReservationTheme reservationTheme);
 
     int deleteById(final long id);
+
+    boolean existsByName(final String name);
 }
