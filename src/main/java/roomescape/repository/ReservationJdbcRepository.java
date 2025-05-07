@@ -30,7 +30,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.DESCRIPTION, T.THUMBNAIL
                 FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
@@ -42,7 +42,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByTimeSlotId(final Long id) {
         final String sql = """
-                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.DESCRIPTION, T.THUMBNAIL
                 FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
@@ -55,7 +55,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     @Override
     public List<Reservation> findAllByThemeId(final Long id) {
         final String sql = """
-                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.NAME, T.DESCRIPTION, T.THUMBNAIL
+                SELECT R.ID, R.NAME, R.DATE, R.TIME_ID, R.THEME_ID, RT.START_AT, T.NAME, T.DESCRIPTION, T.THUMBNAIL
                 FROM RESERVATION AS R
                 LEFT JOIN RESERVATION_TIME RT ON RT.ID = R.TIME_ID
                 LEFT JOIN THEME T ON T.ID = R.THEME_ID
