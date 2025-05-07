@@ -10,7 +10,7 @@ import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.RoomThemeCreation;
+import roomescape.service.dto.CreateRoomThemeRequest;
 
 @Service
 public class RoomThemeService {
@@ -26,7 +26,7 @@ public class RoomThemeService {
         this.themeDAO = themeDAO;
     }
 
-    public RoomTheme addTheme(final RoomThemeCreation themeCreation) {
+    public RoomTheme addTheme(final CreateRoomThemeRequest themeCreation) {
         validateThemeNotDuplicated(themeCreation);
         final RoomTheme theme =
                 new RoomTheme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
@@ -35,7 +35,7 @@ public class RoomThemeService {
         return findById(id);
     }
 
-    private void validateThemeNotDuplicated(final RoomThemeCreation themeCreation) {
+    private void validateThemeNotDuplicated(final CreateRoomThemeRequest themeCreation) {
         if (themeDAO.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }

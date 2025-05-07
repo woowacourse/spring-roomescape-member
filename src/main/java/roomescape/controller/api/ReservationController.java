@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.request.CreateReservationRequest;
 import roomescape.controller.dto.response.ReservationResponse;
 import roomescape.domain.reservation.Reservation;
 import roomescape.service.ReservationService;
-import roomescape.service.dto.ReservationCreation;
+import roomescape.service.dto.CreateReservationRequest;
 
 @RequestMapping("/reservations")
 @RestController
@@ -28,8 +27,9 @@ public class ReservationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse addReservation(@RequestBody CreateReservationRequest request) {
-        final ReservationCreation creation = ReservationCreation.from(request);
+    public ReservationResponse addReservation(
+            @RequestBody roomescape.controller.dto.request.CreateReservationRequest request) {
+        final CreateReservationRequest creation = CreateReservationRequest.from(request);
         final Reservation savedReservation = reservationService.addReservation(creation);
         return ReservationResponse.from(savedReservation);
     }

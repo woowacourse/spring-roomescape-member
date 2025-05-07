@@ -18,7 +18,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.ReservationTimeCreation;
+import roomescape.service.dto.CreateReservationTimeRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -31,7 +31,8 @@ class ReservationTimeServiceTest {
     @DisplayName("시간 데이터를 추가할 수 있어야 한다")
     void addReservationTimeTest() {
         // given // when
-        final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(13, 0));
+        final CreateReservationTimeRequest creation = new CreateReservationTimeRequest(
+                LocalTime.of(13, 0));
         reservationTimeService.addReservationTime(creation);
 
         // then
@@ -42,7 +43,8 @@ class ReservationTimeServiceTest {
     @DisplayName("이미 존재하는 시간 데이터일 경우 예외를 던진다")
     void addReservationTimeTest_WhenTimeAlreadyExists() {
         // given
-        final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(10, 0));
+        final CreateReservationTimeRequest creation = new CreateReservationTimeRequest(
+                LocalTime.of(10, 0));
 
         // when // then
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(creation))

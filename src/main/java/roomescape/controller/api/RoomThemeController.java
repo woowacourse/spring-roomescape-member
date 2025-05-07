@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.controller.dto.request.CreateThemeRequest;
+import roomescape.controller.dto.request.CreateRoomThemeRequest;
 import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.service.RoomThemeService;
-import roomescape.service.dto.RoomThemeCreation;
 
 @RequestMapping("/themes")
 @RestController
@@ -29,8 +28,9 @@ public class RoomThemeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomThemeResponse addTheme(@RequestBody CreateThemeRequest request) {
-        final RoomThemeCreation creation = RoomThemeCreation.from(request);
+    public RoomThemeResponse addTheme(@RequestBody CreateRoomThemeRequest request) {
+        final roomescape.service.dto.CreateRoomThemeRequest creation = roomescape.service.dto.CreateRoomThemeRequest.from(
+                request);
         final RoomTheme savedTheme = roomThemeService.addTheme(creation);
         return RoomThemeResponse.from(savedTheme);
     }
