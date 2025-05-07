@@ -11,6 +11,7 @@ import roomescape.repository.ThemeRepository;
 @Service
 public class ThemeService {
 
+    public static final int MAX_THEME_FETCH_COUNT = 10;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
 
@@ -40,8 +41,8 @@ public class ThemeService {
         return themeRepository.removeById(id);
     }
 
-    public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, int count) {
-        count = Math.min(count, 10);
-        return themeRepository.findRankingByPeriod(startDate, endDate, count);
+    public List<Theme> findPopularThemes(final LocalDate startDate, final LocalDate endDate, final int count) {
+        var finalCount = Math.min(count, MAX_THEME_FETCH_COUNT);
+        return themeRepository.findRankingByPeriod(startDate, endDate, finalCount);
     }
 }
