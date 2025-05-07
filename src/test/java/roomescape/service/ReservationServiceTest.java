@@ -21,13 +21,16 @@ class ReservationServiceTest {
     @Autowired
     ReservationService service;
 
+    @Autowired
+    ReservationTimeService timeService;
+
     @DisplayName("같은 날짜 및 시간 예약이 존재하면 예외를 던진다")
     @Test
     void addReservationWithDuplicatedReservation() {
         //given
         LocalDate date = LocalDate.now().plusDays(1);
         
-        ReservationTimeResponse response = service.addReservationTime(
+        ReservationTimeResponse response = timeService.addReservationTime(
                 new ReservationTimeRequest(LocalTime.parse("10:00")));
 
         service.addReservation(new ReservationRequest("test", date, 1L, response.timeId()));
@@ -44,7 +47,7 @@ class ReservationServiceTest {
     @Test
     void addReservationBeforeCurrentDateTime() {
         // given
-        service.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
+        timeService.addReservationTime(new ReservationTimeRequest(LocalTime.parse("10:10")));
         LocalDate date = LocalDate.now().minusDays(1);
         ReservationRequest request = new ReservationRequest("호떡", date, 1L, 1L);
 

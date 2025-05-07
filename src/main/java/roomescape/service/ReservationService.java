@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -10,10 +9,6 @@ import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.dto.ReservationThemeRequest;
-import roomescape.dto.ReservationThemeResponse;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -40,21 +35,6 @@ public class ReservationService {
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 
-    public List<ReservationTimeResponse> findReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        return reservationTimes.stream().map(ReservationTimeResponse::from).toList();
-    }
-
-    public List<ReservationThemeResponse> findReservationThemes() {
-        List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
-        return reservationThemes.stream().map(ReservationThemeResponse::from).toList();
-    }
-
-    public List<ReservationThemeResponse> findPopularThemes() {
-        List<ReservationTheme> popularReservationThemes = reservationThemeRepository.findWeeklyThemeOrderByCountDesc();
-        return popularReservationThemes.stream().map(ReservationThemeResponse::from).toList();
-    }
-
     public ReservationResponse addReservation(final ReservationRequest request) {
         LocalDateTime now = LocalDateTime.now();
         long timeId = request.timeId();
@@ -72,39 +52,10 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
-    public ReservationTimeResponse addReservationTime(final ReservationTimeRequest request) {
-        ReservationTime reservationTime = new ReservationTime(request.startAt());
-        validateUniqueReservationTime(reservationTime);
-        ReservationTime saved = reservationTimeRepository.save(reservationTime);
-        return ReservationTimeResponse.from(saved);
-    }
-
-    public ReservationThemeResponse addReservationTheme(final ReservationThemeRequest request) {
-        ReservationTheme reservationTheme = new ReservationTheme(request.name(), request.description(),
-                request.thumbnail());
-        validateUniqueThemes(reservationTheme);
-        ReservationTheme saved = reservationThemeRepository.save(reservationTheme);
-        return ReservationThemeResponse.from(saved);
-    }
-
     public void removeReservation(final long id) {
         int deleteCounts = reservationRepository.deleteById(id);
         if (deleteCounts == DELETE_FAILED_COUNT) {
             throw new NoSuchElementException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
-        }
-    }
-
-    public void removeReservationTime(final long id) {
-        int deleteCounts = reservationTimeRepository.deleteById(id);
-        if (deleteCounts == DELETE_FAILED_COUNT) {
-            throw new IllegalArgumentException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", id));
-        }
-    }
-
-    public void removeReservationTheme(final long id) {
-        int deleteCounts = reservationThemeRepository.deleteById(id);
-        if (deleteCounts == DELETE_FAILED_COUNT) {
-            throw new IllegalArgumentException(String.format("[ERROR] 예약테마 %d번은 존재하지 않습니다.", id));
         }
     }
 
@@ -117,19 +68,6 @@ public class ReservationService {
     private void validateUniqueReservation(final Reservation reservation) {
         if (existsSameReservation(reservation)) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약시간입니다.");
-        }
-    }
-
-    private void validateUniqueThemes(final ReservationTheme reservationTheme) {
-        if (reservationThemeRepository.existsByName(reservationTheme.getName())) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 테마 입니다.");
-        }
-    }
-
-    private void validateUniqueReservationTime(final ReservationTime reservationTime) {
-        final LocalTime startAt = reservationTime.getStartAt();
-        if (reservationTimeRepository.existsByStartAt(startAt.toString())) {
-            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약 시간 입니다.");
         }
     }
 

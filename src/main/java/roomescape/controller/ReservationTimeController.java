@@ -13,32 +13,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.service.ReservationService;
+import roomescape.service.ReservationTimeService;
 
 @RestController
 @RequestMapping("/times")
 public class ReservationTimeController {
 
-    private final ReservationService reservationService;
+    private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(final ReservationService reservationService) {
-        this.reservationService = reservationService;
+    public ReservationTimeController(final ReservationTimeService reservationService) {
+        this.reservationTimeService = reservationService;
     }
 
     @GetMapping()
     public ResponseEntity<List<ReservationTimeResponse>> reservationTimeList() {
-        return ResponseEntity.status(HttpStatus.OK).body(reservationService.findReservationTimes());
+        return ResponseEntity.status(HttpStatus.OK).body(reservationTimeService.findReservationTimes());
     }
 
     @PostMapping()
     public ResponseEntity<ReservationTimeResponse> reservationTimeAdd(
             @RequestBody @Valid ReservationTimeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.addReservationTime(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationTimeService.addReservationTime(request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> reservationTimeRemove(@PathVariable(name = "id") long id) {
-        reservationService.removeReservationTime(id);
+        reservationTimeService.removeReservationTime(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
