@@ -2,6 +2,7 @@ package roomescape.theme.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import roomescape.reservation.fixture.TestFixture;
 import roomescape.theme.domain.Theme;
 
 class JDBCThemeRepositoryTest {
@@ -39,7 +39,7 @@ class JDBCThemeRepositoryTest {
     @Test
     void findTop10PopularThemesWithinLastWeek_shouldReturnCorrectly() {
         List<Theme> top10PopularThemesWithinLastWeek = themeRepository.findTop10PopularThemesWithinLastWeek(
-                TestFixture.makeFutureDate());
+                LocalDate.now());
 
         List<Long> ids = top10PopularThemesWithinLastWeek.stream()
                 .map(Theme::getId)

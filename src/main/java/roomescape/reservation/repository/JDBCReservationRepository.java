@@ -1,12 +1,11 @@
 package roomescape.reservation.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
@@ -33,6 +32,27 @@ public class JDBCReservationRepository implements ReservationRepository {
             + "inner join theme as th "
             + "on r.theme_id = th.id";
 
+    private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) -> {
+        ReservationTimeEntity timeEntity = new ReservationTimeEntity(
+                resultSet.getLong("time_id"),
+                resultSet.getString("time_value"));
+
+        ThemeEntity themeEntity = new ThemeEntity(
+                resultSet.getLong("theme_id"),
+                resultSet.getString("theme_name"),
+                resultSet.getString("description"),
+                resultSet.getString("thumbnail"));
+
+        ReservationEntity entity = new ReservationEntity(
+                resultSet.getLong("reservation_id"),
+                resultSet.getString("name"),
+                resultSet.getString("date"),
+                timeEntity,
+                themeEntity
+        );
+        return entity.toReservation();
+    };
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -47,9 +67,7 @@ public class JDBCReservationRepository implements ReservationRepository {
     public List<Reservation> findAll() {
         return jdbcTemplate.query(
                 SELECT_RESERVATION_WITH_JOIN,
-                (resultSet, rowNum) -> {
-                    return mapToReservation(resultSet);
-                }
+                RESERVATION_ROW_MAPPER
         );
     }
 
@@ -113,27 +131,9 @@ public class JDBCReservationRepository implements ReservationRepository {
     public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
         return jdbcTemplate.query(
                 SELECT_RESERVATION_WITH_JOIN + " where (date, theme_id) = (?, ?)",
-                (resultSet, rowNum) -> mapToReservation(resultSet), date, themeId);
-    }
-
-    private Reservation mapToReservation(final ResultSet resultSet) throws SQLException {
-        ReservationTimeEntity timeEntity = new ReservationTimeEntity(
-                resultSet.getLong("time_id"),
-                resultSet.getString("time_value"));
-
-        ThemeEntity themeEntity = new ThemeEntity(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail"));
-
-        ReservationEntity entity = new ReservationEntity(
-                resultSet.getLong("reservation_id"),
-                resultSet.getString("name"),
-                resultSet.getString("date"),
-                timeEntity,
-                themeEntity
+                RESERVATION_ROW_MAPPER,
+                date,
+                themeId
         );
-        return entity.toReservation();
     }
 }
