@@ -146,7 +146,7 @@ public class ThemeJdbcDaoTest {
         );
 
         // when
-        List<Theme> popularThemes = themeJdbcDao.findPopularThemes(date, dayRange);
+        List<Theme> popularThemes = themeJdbcDao.getTopReservedThemesSince(date, dayRange, 10);
 
         // then
         assertAll(

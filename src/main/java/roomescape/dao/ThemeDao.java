@@ -14,7 +14,7 @@ public interface ThemeDao {
 
     boolean isDuplicatedNameExisted(String name);
 
-    List<Theme> findPopularThemes(LocalDate today, int dayRange);
+    List<Theme> getTopReservedThemesSince(LocalDate today, int dayRange, int size);
 
     void deleteById(Long id);
 }

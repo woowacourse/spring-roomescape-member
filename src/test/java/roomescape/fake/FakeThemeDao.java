@@ -40,7 +40,7 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopularThemes(LocalDate today, int dayRange) {
+    public List<Theme> getTopReservedThemesSince(LocalDate today, int dayRange, int size) {
         return List.of();
     }
 
