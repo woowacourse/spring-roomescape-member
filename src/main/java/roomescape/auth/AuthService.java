@@ -41,7 +41,7 @@ public class AuthService {
         validateExistsMemberByEmail(email);
         final Member member = memberRepository.findByEmail(email);
 
-        return new LoginMember(member.getId(), member.getName(), member.getEmail());
+        return new LoginMember(member.getId(), member.getName(), member.getEmail(), member.getRole());
     }
 
     private void validateToken(final String token) {
