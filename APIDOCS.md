@@ -41,6 +41,13 @@
       사용자 예약페이지 HTML 문서
       ```
 
+- GET /login
+    - 설명 : 로그인 페이지 응답
+    - 정상 응답 (200)
+      ```
+      로그인 페이지 HTML 문서
+      ```
+
 ### 예약 API
 
 - GET /reservations
@@ -230,3 +237,40 @@
     - 예외 응답 (400)
         - themesId가 NULL인 경우
         - 테마에 대한 예약이 존재할 경우
+
+### 인증 API
+
+- GET /login
+    - 설명 : 로그인
+    - 요청 페이로드
+      ```
+      {
+          "password": "password",
+          "email": "admin@email.com"
+      }
+      ```
+    - 정상 응답 (200)
+        - 응답 헤더
+        ```
+        // 인증 토큰을 쿠키로 전달
+        Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+        ```
+    - 예외 응답 (401)
+        - 인증 정보가 올바르지 않은 경우
+
+- GET /login/check
+    - 설명 : 로그인 여부 확인
+    - 요청 헤더
+      ```
+      // 인증 토큰이 담긴 쿠키를 전달
+      cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+      ```
+    - 정상 응답 (200)
+        - 응답 헤더
+      ```
+      {
+          "name": "어드민"
+      }
+      ```
+    - 예외 응답 (401)
+        - 토큰에 담긴 인증 정보가 올바르지 않은 경우
