@@ -22,12 +22,17 @@ public class PrevRequestHandler implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         boolean isMatchExist = isMatchExist(request);
+        boolean isValidReqeust = true;
         if (isMatchExist) {
             String token = JwtCookieResolver.getTokenFromCookie(request);
             UserInfo userInfo = jwtTokenProvider.resolveToken(token);
-            return userInfo.role().equals(Role.ADMIN) || userInfo.username().equals(SUPER_ADMIN);
+            isValidReqeust = userInfo.role().equals(Role.ADMIN) || userInfo.username().equals(SUPER_ADMIN);
         }
-        return true;
+        
+        if (!isValidReqeust) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+        return isValidReqeust;
     }
 
     private boolean isMatchExist(HttpServletRequest request) {

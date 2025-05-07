@@ -6,7 +6,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.exception.auth.AuthenticationException;
 
 public class AuthenticationPrincipalResolver implements HandlerMethodArgumentResolver {
 
@@ -29,11 +28,7 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-        if (request != null && request.getCookies() != null) {
-            String token = JwtCookieResolver.getTokenFromCookie(request);
-            return jwtTokenProvider.resolveToken(token);
-        }
-
-        throw new AuthenticationException("UserInfo를 파싱하는데 실패하였습니다");
+        String token = JwtCookieResolver.getTokenFromCookie(request);
+        return jwtTokenProvider.resolveToken(token);
     }
 }

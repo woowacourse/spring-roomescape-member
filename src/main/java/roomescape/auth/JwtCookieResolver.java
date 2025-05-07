@@ -8,6 +8,9 @@ import roomescape.exception.auth.AuthenticationException;
 public class JwtCookieResolver {
 
     public static String getTokenFromCookie(HttpServletRequest request) {
+        if (request == null || request.getCookies() == null) {
+            throw new AuthenticationException("유효하지 않은 토큰입니다");
+        }
         String jwtCookieKey = JwtTokenProvider.getCookieKey();
 
         return Arrays.stream(request.getCookies())
