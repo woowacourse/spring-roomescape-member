@@ -2,11 +2,11 @@ package roomescape.reservation.business.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.reservation.business.model.entity.ReservationTime;
-import roomescape.reservation.business.model.repository.ReservationDao;
-import roomescape.reservation.business.model.repository.ReservationTimeDao;
 import roomescape.global.exception.impl.BadRequestException;
 import roomescape.global.exception.impl.NotFoundException;
+import roomescape.reservation.business.domain.ReservationTime;
+import roomescape.reservation.business.repository.ReservationDao;
+import roomescape.reservation.business.repository.ReservationTimeDao;
 import roomescape.reservation.presentation.request.ReservationTimeRequest;
 import roomescape.reservation.presentation.response.ReservationTimeResponse;
 

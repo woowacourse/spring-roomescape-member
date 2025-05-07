@@ -1,59 +1,68 @@
 package roomescape.global.auth.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Date;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import roomescape.global.auth.jwt.dto.TokenDto;
 import roomescape.global.exception.impl.UnauthorizedException;
+import roomescape.member.business.domain.Member;
 
 @Component
 public class JwtHandler {
+
+    public static final String CLAIM_EMAIL_KEY = "email";
+    public static final String CLAIM_ID_KEY = "id";
+    public static final String CLAIM_ROLE_KEY = "role";
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.access.expire-length}")
     private long accessTokenExpireTime;
 
-    public TokenDto createToken(final Long memberId) {
+    public Token createToken(final Member member) {
         Date date = new Date();
         Date accessTokenExpiredAt = new Date(date.getTime() + accessTokenExpireTime);
 
         String accessToken = Jwts.builder()
-                .claim("memberId", memberId)
+                .claim(CLAIM_ID_KEY, member.getId())
+                .claim(CLAIM_EMAIL_KEY, member.getEmail())
+                .claim(CLAIM_ROLE_KEY, member.getRole().toString())
                 .setIssuedAt(date)
                 .setExpiration(accessTokenExpiredAt)
-                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes())
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        return new TokenDto(accessToken);
+        return new Token(accessToken);
     }
 
-    public Long getMemberIdFromToken(final String token) {
-        validateToken(token);
-        return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token)
-                .getBody()
-                .get("memberId", Long.class);
+    public Map<String, String> decode(String token) {
+        Claims claims = parseJwt(token);
+
+        return Map.of(
+                CLAIM_EMAIL_KEY, claims.get(CLAIM_EMAIL_KEY).toString(),
+                CLAIM_ID_KEY, claims.get(CLAIM_ID_KEY).toString(),
+                CLAIM_ROLE_KEY, claims.get(CLAIM_ROLE_KEY).toString()
+        );
     }
 
-    private void validateToken(final String token) {
+    public String decode(String token, String key) {
+        return parseJwt(token)
+                .get(key)
+                .toString();
+    }
+
+    private Claims parseJwt(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException("ExpiredJwtException");
-        } catch (UnsupportedJwtException e) {
-            throw new UnauthorizedException("UnsupportedJwtException");
-        } catch (MalformedJwtException e) {
-            throw new UnauthorizedException("MalformedJwtException");
-        } catch (SignatureException e) {
-            throw new UnauthorizedException("SignatureException");
-        } catch (IllegalArgumentException e) {
-            throw new UnauthorizedException("IllegalArgumentException");
+            return Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (SignatureException exception) {
+            throw new UnauthorizedException("인증 정보가 올바르지 않습니다.");
         }
     }
 }

@@ -2,11 +2,11 @@ package roomescape.theme.business.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.theme.business.model.entity.Theme;
-import roomescape.reservation.business.model.repository.ReservationDao;
-import roomescape.theme.business.model.repository.ThemeDao;
 import roomescape.global.exception.impl.BadRequestException;
 import roomescape.global.exception.impl.NotFoundException;
+import roomescape.reservation.business.repository.ReservationDao;
+import roomescape.theme.business.domain.Theme;
+import roomescape.theme.business.repository.ThemeDao;
 import roomescape.theme.presentation.request.ThemeRequest;
 import roomescape.theme.presentation.response.ThemeResponse;
 

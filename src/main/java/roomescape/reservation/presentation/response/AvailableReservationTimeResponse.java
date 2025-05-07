@@ -1,7 +1,7 @@
 package roomescape.reservation.presentation.response;
 
 import java.time.LocalTime;
-import roomescape.reservation.business.model.entity.ReservationTime;
+import roomescape.reservation.business.domain.ReservationTime;
 
 public record AvailableReservationTimeResponse(
         Long id,

@@ -9,12 +9,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.member.business.model.entity.Member;
-import roomescape.member.business.model.entity.Role;
-import roomescape.reservation.business.model.entity.Reservation;
-import roomescape.reservation.business.model.entity.ReservationTime;
-import roomescape.reservation.business.model.repository.ReservationDao;
-import roomescape.theme.business.model.entity.Theme;
+import roomescape.member.business.domain.Member;
+import roomescape.member.business.domain.Role;
+import roomescape.reservation.business.domain.Reservation;
+import roomescape.reservation.business.domain.ReservationTime;
+import roomescape.reservation.business.repository.ReservationDao;
+import roomescape.theme.business.domain.Theme;
 
 @Repository
 public class ReservationDaoImpl implements ReservationDao {
@@ -39,7 +39,7 @@ public class ReservationDaoImpl implements ReservationDao {
         );
         return new Reservation(
                 rs.getLong("reservation.id"),
-                rs.getObject("reservation.date", LocalDate.class),
+                rs.getDate("reservation.date").toLocalDate(),
                 reservationTime,
                 theme,
                 member);
@@ -117,6 +117,7 @@ public class ReservationDaoImpl implements ReservationDao {
                      WHERE time_id = :time_id
                     )
                 """;
+
         return Boolean.TRUE == jdbcTemplate.queryForObject(
                 sql, new MapSqlParameterSource("time_id", timeId), Boolean.class);
     }
@@ -124,25 +125,7 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
         String sql = """
-                SELECT
-                    r.id AS "reservation.id",
-                    r.date AS "reservation.date",
-                    r.theme_id AS "reservation.theme_id",
-                
-                    rt.id AS "reservation_time.id",
-                    rt.start_at AS "reservation_time.start_at",
-                
-                    t.name AS "theme.name",
-                    t.description AS "theme.description",
-                    t.thumbnail AS "theme.thumbnail",
-                
-                    m.id AS "member.id",
-                    m.name AS "member.name",
-                    m.email AS "member.email",
-                    m.password AS "member.password",
-                    m.role AS "role"
-                
-                FROM reservation r
+                SELECT * FROM reservation r
                 JOIN reservation_time rt ON r.time_id = rt.id
                 JOIN theme t ON r.theme_id = t.id
                 JOIN member m ON r.member_id = m.id
@@ -161,25 +144,7 @@ public class ReservationDaoImpl implements ReservationDao {
                                                                 final LocalDate start,
                                                                 final LocalDate end) {
         String sql = """
-                    SELECT
-                        r.id AS "reservation.id",
-                        r.date AS "reservation.date",
-                        r.theme_id AS "reservation.theme_id",
-                
-                        rt.id AS "reservation_time.id",
-                        rt.start_at AS "reservation_time.start_at",
-                
-                        t.name AS "theme.name",
-                        t.description AS "theme.description",
-                        t.thumbnail AS "theme.thumbnail",
-                
-                        m.id AS "member.id",
-                        m.name AS "member.name",
-                        m.email AS "member.email",
-                        m.password AS "member.password",
-                        m.role AS "role"
-                
-                    FROM reservation r
+                    SELECT * FROM reservation r
                     JOIN reservation_time rt ON r.time_id = rt.id
                     JOIN theme t ON r.theme_id = t.id
                     JOIN member m ON r.member_id = m.id
@@ -193,6 +158,7 @@ public class ReservationDaoImpl implements ReservationDao {
                 .addValue("member_id", memberId)
                 .addValue("start", start)
                 .addValue("end", end);
+
         return jdbcTemplate.query(sql, mapSqlParameterSource, ROW_MAPPER);
     }
 }

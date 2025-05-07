@@ -1,9 +1,7 @@
 package roomescape.reservation.presentation;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.global.auth.annotation.Admin;
-import roomescape.global.auth.annotation.MemberId;
+import roomescape.login.presentation.request.LoginCheckRequest;
 import roomescape.reservation.business.service.ReservationService;
 import roomescape.reservation.presentation.request.UserReservationRequest;
 import roomescape.reservation.presentation.response.AvailableReservationTimeResponse;
@@ -31,7 +28,6 @@ public class UserReservationController {
         this.reservationService = reservationService;
     }
 
-    @Admin
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAll() {
         return ResponseEntity.ok(reservationService.findAll());
@@ -39,12 +35,10 @@ public class UserReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> add(
-            @Valid @RequestBody UserReservationRequest requestDto,
-            @MemberId Long memberId,
-            HttpServletResponse response
+            @Valid @RequestBody UserReservationRequest request,
+            LoginCheckRequest loginCheckRequest
     ) {
-        final ReservationResponse reservationResponse = reservationService.add(requestDto, memberId);
-        response.setHeader(HttpHeaders.LOCATION, "/reservations/" + reservationResponse.id());
+        final ReservationResponse reservationResponse = reservationService.add(request, loginCheckRequest.id());
         return new ResponseEntity<>(reservationResponse, HttpStatus.CREATED);
     }
 

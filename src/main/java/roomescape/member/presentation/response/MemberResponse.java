@@ -1,6 +1,6 @@
 package roomescape.member.presentation.response;
 
-import roomescape.member.business.model.entity.Member;
+import roomescape.member.business.domain.Member;
 
 public record MemberResponse(
         Long id,

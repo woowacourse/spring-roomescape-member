@@ -2,7 +2,7 @@ package roomescape.reservation.presentation.response;
 
 import java.time.LocalDate;
 import roomescape.member.presentation.response.MemberResponse;
-import roomescape.reservation.business.model.entity.Reservation;
+import roomescape.reservation.business.domain.Reservation;
 import roomescape.theme.presentation.response.ThemeResponse;
 
 public record ReservationResponse(

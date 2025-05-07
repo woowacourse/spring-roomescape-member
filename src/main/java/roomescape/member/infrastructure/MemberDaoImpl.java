@@ -9,9 +9,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.member.business.model.entity.Member;
-import roomescape.member.business.model.entity.Role;
-import roomescape.member.business.model.repository.MemberDao;
+import roomescape.member.business.domain.Member;
+import roomescape.member.business.domain.Role;
+import roomescape.member.business.repository.MemberDao;
 
 @Repository
 public class MemberDaoImpl implements MemberDao {

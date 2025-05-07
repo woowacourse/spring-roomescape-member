@@ -9,18 +9,18 @@ import org.springframework.stereotype.Service;
 import roomescape.global.exception.impl.BadRequestException;
 import roomescape.global.exception.impl.ConflictException;
 import roomescape.global.exception.impl.NotFoundException;
-import roomescape.member.business.model.entity.Member;
-import roomescape.member.business.model.repository.MemberDao;
-import roomescape.reservation.business.model.entity.Reservation;
-import roomescape.reservation.business.model.entity.ReservationTime;
-import roomescape.reservation.business.model.repository.ReservationDao;
-import roomescape.reservation.business.model.repository.ReservationTimeDao;
+import roomescape.member.business.domain.Member;
+import roomescape.member.business.repository.MemberDao;
+import roomescape.reservation.business.domain.Reservation;
+import roomescape.reservation.business.domain.ReservationTime;
+import roomescape.reservation.business.repository.ReservationDao;
+import roomescape.reservation.business.repository.ReservationTimeDao;
 import roomescape.reservation.presentation.request.AdminReservationRequest;
 import roomescape.reservation.presentation.request.UserReservationRequest;
 import roomescape.reservation.presentation.response.AvailableReservationTimeResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
-import roomescape.theme.business.model.entity.Theme;
-import roomescape.theme.business.model.repository.ThemeDao;
+import roomescape.theme.business.domain.Theme;
+import roomescape.theme.business.repository.ThemeDao;
 
 @Service
 public class ReservationService {

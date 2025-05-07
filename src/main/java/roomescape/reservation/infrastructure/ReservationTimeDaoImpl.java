@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.reservation.business.model.entity.ReservationTime;
-import roomescape.reservation.business.model.repository.ReservationTimeDao;
+import roomescape.reservation.business.domain.ReservationTime;
+import roomescape.reservation.business.repository.ReservationTimeDao;
 
 @Repository
 public class ReservationTimeDaoImpl implements ReservationTimeDao {

@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import roomescape.theme.business.model.entity.Theme;
-import roomescape.theme.business.model.repository.ThemeDao;
+import roomescape.theme.business.domain.Theme;
+import roomescape.theme.business.repository.ThemeDao;
 
 @Repository
 public class ThemeDaoImpl implements ThemeDao {

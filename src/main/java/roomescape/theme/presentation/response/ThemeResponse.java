@@ -1,6 +1,6 @@
 package roomescape.theme.presentation.response;
 
-import roomescape.theme.business.model.entity.Theme;
+import roomescape.theme.business.domain.Theme;
 
 public record ThemeResponse(
         Long id,

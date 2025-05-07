@@ -3,8 +3,8 @@ package roomescape.member.business.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.global.exception.impl.NotFoundException;
-import roomescape.member.business.model.entity.Member;
-import roomescape.member.business.model.repository.MemberDao;
+import roomescape.member.business.domain.Member;
+import roomescape.member.business.repository.MemberDao;
 import roomescape.member.presentation.response.MemberResponse;
 
 @Service
