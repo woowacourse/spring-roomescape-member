@@ -122,17 +122,16 @@ public class ReservationServiceTest extends BaseTest {
     void 예약을_삭제한다() {
         ReservationTime reservationTime = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-
-        reservationService.createReservation(new ReservationCreateRequest(
+        ReservationResponse created = reservationService.createReservation(new ReservationCreateRequest(
                 ReserverNameFixture.한스.getName(),
                 ReservationDateFixture.예약날짜_25_4_22.getDate(),
                 reservationTime.getId(),
                 theme.getId()
         ));
-        reservationService.deleteReservationById(1L);
+
+        reservationService.deleteReservationById(created.id());
 
         List<ReservationResponse> responses = reservationService.getReservations();
-
         assertThat(responses).hasSize(0);
     }
 
