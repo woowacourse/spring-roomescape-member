@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationSlotTimes;
@@ -89,5 +90,19 @@ public class ReservationService {
 
         ThemeRanking themeRanking = new ThemeRanking(inRangeReservations);
         return themeRanking.getAscendingRanking();
+    }
+
+    public Optional<Reservation> searchReservation(long reservationId, long themeId, LocalDate dateFrom,
+                                                   LocalDate dateTo) {
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        if (reservation.isEmpty()) {
+            return Optional.empty();
+        }
+        Reservation currentReservation = reservation.get();
+
+        if (currentReservation.isSameTheme(themeId) && currentReservation.isBetween(dateFrom, dateTo)) {
+            return reservation;
+        }
+        return Optional.empty();
     }
 }

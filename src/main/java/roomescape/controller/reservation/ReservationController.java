@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthenticationPrincipal;
 import roomescape.auth.UserInfo;
@@ -46,17 +47,28 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationMemberResponseDto>> reservations() {
-        List<ReservationMember> reservationMembers = reservationMemberService.allReservations();
+    public ResponseEntity<List<ReservationMemberResponseDto>> reservations(@RequestParam(required = false) Long themeId,
+                                                                           @RequestParam(required = false) Long memberId,
+                                                                           @RequestParam(required = false) LocalDate dateFrom,
+                                                                           @RequestParam(required = false) LocalDate dateTo) {
+        List<ReservationMember> reservationMembers = null;
+        boolean isFilterMode = true;
+        if (themeId == null && memberId == null && dateFrom == null && dateTo == null) {
+            isFilterMode = false;
+            reservationMembers = reservationMemberService.allReservations();
+        }
+
+        if (isFilterMode) {
+            reservationMembers = reservationMemberService.searchReservations(themeId, memberId, dateFrom, dateTo);
+        }
 
         List<ReservationMemberResponseDto> reservationDtos = reservationMembers.stream()
                 .map((reservationMember) -> new ReservationMemberResponseDto(reservationMember.getReservationId(),
-                        reservationMember.getUsername(),
+                        reservationMember.getName(),
                         reservationMember.getThemeName(),
                         reservationMember.getDate(),
                         reservationMember.getStartAt()))
                 .toList();
-
         return ResponseEntity.ok(reservationDtos);
     }
 

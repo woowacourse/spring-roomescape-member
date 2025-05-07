@@ -1,6 +1,9 @@
 package roomescape.service.reservationmember;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
@@ -46,5 +49,26 @@ public class ReservationMemberService {
 
     public void deleteReservation(long id) {
         reservationMemberRepository.deleteById(id);
+    }
+
+    public List<ReservationMember> searchReservations(Long themeId, Long memberId, LocalDate dateFrom,
+                                                      LocalDate dateTo) {
+        Member member = memberService.getMemberById(memberId);
+
+        List<ReservationMemberIds> memberIds = reservationMemberRepository.findAllByMemberId(memberId);
+        List<Long> reservationIds = memberIds.stream()
+                .map(ReservationMemberIds::getReservationId)
+                .toList();
+
+        List<Reservation> searchResultReservations = new ArrayList<>();
+        for (long reservationId : reservationIds) {
+            Optional<Reservation> reservation = reservationService.searchReservation(reservationId, themeId, dateFrom,
+                    dateTo);
+            reservation.ifPresent(searchResultReservations::add);
+        }
+
+        return searchResultReservations.stream()
+                .map((reservation) -> new ReservationMember(reservation, member))
+                .toList();
     }
 }

@@ -3,8 +3,8 @@ package roomescape.domain.reservation;
 import java.util.Objects;
 
 public class Theme {
-    private final Long id;
 
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
@@ -14,6 +14,10 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public boolean isSameTheme(long themeId) {
+        return id.equals(themeId);
     }
 
     public Long getId() {

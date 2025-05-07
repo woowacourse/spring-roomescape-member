@@ -7,9 +7,11 @@ import roomescape.domain.reservationmember.ReservationMemberIds;
 
 public interface ReservationMemberRepository {
 
-    List<ReservationMemberIds> findAll();
-
     long add(Reservation reservation, Member member);
 
     void deleteById(long id);
+
+    List<ReservationMemberIds> findAllByMemberId(Long memberId);
+
+    List<ReservationMemberIds> findAll();
 }

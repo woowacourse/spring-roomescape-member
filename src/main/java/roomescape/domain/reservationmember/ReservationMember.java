@@ -19,10 +19,6 @@ public class ReservationMember {
         return reservation.getId();
     }
 
-    public String getUsername() {
-        return member.getUsername();
-    }
-
     public String getThemeName() {
         return reservation.getThemeName();
     }
@@ -33,5 +29,9 @@ public class ReservationMember {
 
     public LocalTime getStartAt() {
         return reservation.getStartAt();
+    }
+
+    public String getName() {
+        return member.getName();
     }
 }

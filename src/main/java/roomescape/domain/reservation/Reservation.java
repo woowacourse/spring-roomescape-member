@@ -36,6 +36,22 @@ public class Reservation {
         return reservationDateTime.isBefore(compareDateTime);
     }
 
+    public boolean isSameTheme(long themeId) {
+        return getTheme().isSameTheme(themeId);
+    }
+
+    public boolean isBetween(LocalDate dateFrom, LocalDate dateTo) {
+        return isSameOrBefore(dateFrom) && isSameOrAfter(dateTo);
+    }
+
+    private boolean isSameOrAfter(LocalDate dateTo) {
+        return dateTo.isAfter(date) || dateTo.isEqual(date);
+    }
+
+    private boolean isSameOrBefore(LocalDate dateFrom) {
+        return dateFrom.isEqual(date) || dateFrom.isBefore(date);
+    }
+
     public Long getId() {
         return id;
     }
