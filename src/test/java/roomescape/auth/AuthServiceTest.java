@@ -83,7 +83,7 @@ public class AuthServiceTest {
             final LoginMember actual = authService.findLoginMemberByToken(token);
 
             // then
-            assertThat(actual).isEqualTo(new LoginMember(1L, "부기", "admin@email.com"));
+            assertThat(actual).isEqualTo(new LoginMember(1L, "부기", "admin@email.com", "MEMBER"));
         }
 
         @DisplayName("토큰이 유효하지 않다면, 예외가 발생한다.")

@@ -2,6 +2,7 @@ package roomescape.api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Cookie;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -25,7 +26,6 @@ public class AdminReservationApiTest {
     private static final Map<String, String> RESERVATION_BODY = new HashMap<>();
     private static final Map<String, String> TIME_BODY = new HashMap<>();
     private static final Map<String, String> THEME_BODY = new HashMap<>();
-    private static final Map<String, String> MEMBER_BODY = new HashMap<>();
     private static final Map<String, Object> AUTH_BODY = new HashMap<>();
 
     private final JdbcTemplate jdbcTemplate;
@@ -52,12 +52,8 @@ public class AdminReservationApiTest {
         THEME_BODY.put("description", "dest");
         THEME_BODY.put("thumbnail", "thumbnail");
 
-        MEMBER_BODY.put("name", "브라운");
-        MEMBER_BODY.put("email", "asd@email.com");
-        MEMBER_BODY.put("password", "pass");
-
-        AUTH_BODY.put("email", "asd@email.com");
-        AUTH_BODY.put("password", "pass");
+        AUTH_BODY.put("email", "admin@email.com");
+        AUTH_BODY.put("password", "password");
     }
 
     @BeforeEach
@@ -70,6 +66,8 @@ public class AdminReservationApiTest {
         jdbcTemplate.update("ALTER TABLE reservation_time ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("ALTER TABLE theme ALTER COLUMN id RESTART WITH 1");
         jdbcTemplate.update("ALTER TABLE member ALTER COLUMN id RESTART WITH 1");
+        jdbcTemplate.update("INSERT INTO member (email, password, name, role) VALUES (?, ?, ?, ?)",
+                "admin@email.com", "password", "name", "ADMIN");
     }
 
     @Nested
@@ -81,13 +79,14 @@ public class AdminReservationApiTest {
         @MethodSource
         void post(final Map<String, Object> body, final HttpStatus expectedStatusCode) {
             // given
-            givenCreateMember();
+            final Cookie cookie = givenAdminAuthCookie();
             givenCreateReservationTime();
             givenCreateTheme();
 
             // when & then
             RestAssured.given().port(port)
                     .contentType(ContentType.JSON)
+                    .cookie(cookie)
                     .body(body)
                     .when().post("/admin/reservations")
                     .then().log().all()
@@ -139,32 +138,36 @@ public class AdminReservationApiTest {
                     Arguments.of(Map.of(), HttpStatus.BAD_REQUEST)
             );
         }
-
-        private void givenCreateReservationTime() {
-            RestAssured.given().port(port).log().all()
-                    .contentType(ContentType.JSON)
-                    .body(TIME_BODY)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201);
-        }
-
-        private void givenCreateTheme() {
-            RestAssured.given().port(port).log().all()
-                    .contentType(ContentType.JSON)
-                    .body(THEME_BODY)
-                    .when().post("/themes")
-                    .then().log().all()
-                    .statusCode(201);
-        }
-
-        private void givenCreateMember() {
-            RestAssured.given().port(port).log().all()
-                    .contentType(ContentType.JSON)
-                    .body(MEMBER_BODY)
-                    .when().post("/members")
-                    .then().log().all()
-                    .statusCode(201);
-        }
     }
+
+    private void givenCreateReservationTime() {
+        RestAssured.given().port(port).log().all()
+                .contentType(ContentType.JSON)
+                .body(TIME_BODY)
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    private void givenCreateTheme() {
+        RestAssured.given().port(port).log().all()
+                .contentType(ContentType.JSON)
+                .body(THEME_BODY)
+                .when().post("/themes")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    private Cookie givenAdminAuthCookie() {
+        return RestAssured.given().port(port)
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "email", "admin@email.com",
+                        "password", "password"
+                ))
+                .when().post("/login")
+                .then()
+                .extract().detailedCookie("token");
+    }
+
 }
