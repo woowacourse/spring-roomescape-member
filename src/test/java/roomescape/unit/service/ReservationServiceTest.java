@@ -21,10 +21,12 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.AddReservationRequest;
 import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.exception.InvalidReservationException;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 import roomescape.service.ReservationService;
+import roomescape.unit.repository.FakeMemberRepository;
 import roomescape.unit.repository.FakeReservationRepository;
 import roomescape.unit.repository.FakeReservationTimeRepository;
 import roomescape.unit.repository.FakeThemeRepository;
@@ -37,14 +39,17 @@ class ReservationServiceTest {
     private ReservationTimeRepository reservationTimeRepository;
     private ReservationRepository reservationRepository;
     private ThemeRepository themeRepository;
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setup() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository();
+        memberRepository = new FakeMemberRepository();
 
-        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository,
+                themeRepository, memberRepository);
     }
 
     @Test
