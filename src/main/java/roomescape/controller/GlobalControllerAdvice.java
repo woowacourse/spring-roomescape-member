@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,5 +18,10 @@ public class GlobalControllerAdvice {
     public ResponseEntity<String> handleIllegalArgumentException(MethodArgumentNotValidException e) {
         String errorMessage = e.getBindingResult().getFieldError().getDefaultMessage();
         return ResponseEntity.badRequest().body(errorMessage);
+    }
+
+    @ExceptionHandler(exception = JwtException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(JwtException e) {
+        return ResponseEntity.badRequest().body("재로그인이 필요합니다.");
     }
 }
