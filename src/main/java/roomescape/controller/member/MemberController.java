@@ -20,7 +20,7 @@ public class MemberController {
     @GetMapping
     public List<MemberResponseDto> getMembers() {
         return memberService.findAll().stream()
-                .map((member) -> new MemberResponseDto(member.getName()))
+                .map((member) -> new MemberResponseDto(member.getId(), member.getName()))
                 .toList();
     }
 }

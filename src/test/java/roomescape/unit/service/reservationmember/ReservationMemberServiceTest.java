@@ -99,7 +99,7 @@ class ReservationMemberServiceTest {
 
         assertAll(
                 () -> assertThat(reservationMembers.get(0).getReservationId()).isEqualTo(reservationId),
-                () -> assertThat(reservationMembers.get(0).getUsername()).isEqualTo("test@naver.com")
+                () -> assertThat(reservationMembers.get(0).getName()).isEqualTo("tuda")
         );
     }
 }

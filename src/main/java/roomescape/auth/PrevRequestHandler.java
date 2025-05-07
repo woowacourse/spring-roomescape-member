@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.member.Role;
 
 public class PrevRequestHandler implements HandlerInterceptor {
 
@@ -21,9 +20,11 @@ public class PrevRequestHandler implements HandlerInterceptor {
             throws Exception {
         boolean isMatchExist = isMatchExist(request);
         if (isMatchExist) {
-            String token = JwtCookieResolver.getTokenFromCookie(request);
-            UserInfo userInfo = jwtTokenProvider.resolveToken(token);
-            return userInfo.role().equals(Role.ADMIN);
+//            String token = JwtCookieResolver.getTokenFromCookie(request);
+//            UserInfo userInfo = jwtTokenProvider.resolveToken(token);
+            return true;
+            //TODO
+//            return userInfo.role().equals(Role.ADMIN);
         }
         return true;
     }

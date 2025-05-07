@@ -33,9 +33,6 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
             String token = JwtCookieResolver.getTokenFromCookie(request);
             return jwtTokenProvider.resolveToken(token);
         }
-        if (request != null) {
-            JwtCookieResolver.resetToken(request);
-        }
 
         throw new AuthenticationException("UserInfo를 파싱하는데 실패하였습니다");
     }

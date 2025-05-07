@@ -53,4 +53,10 @@ public class JdbcReservationMemberRepository implements ReservationMemberReposit
         String sql = "delete from reservation_member where id=?";
         jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<ReservationMemberIds> findAllByMemberId(Long memberId) {
+        String sql = "select id,reservation_id,member_id from reservation_member where member_id = ?";
+        return jdbcTemplate.query(sql, reservationMemberIdRowMapper, memberId);
+    }
 }

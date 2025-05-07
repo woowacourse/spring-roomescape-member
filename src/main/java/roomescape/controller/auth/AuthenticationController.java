@@ -52,7 +52,7 @@ public class AuthenticationController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberResponseDto> loginCheck(@CookieValue("token") String token) {
         Member member = memberService.getMemberByToken(token);
-        MemberResponseDto memberResponseDto = new MemberResponseDto(member.getName());
+        MemberResponseDto memberResponseDto = new MemberResponseDto(member.getId(), member.getName());
         return ResponseEntity.ok(memberResponseDto);
     }
 
