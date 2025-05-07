@@ -62,29 +62,19 @@ public class ReservationService {
     private Reservation createReservationWithoutId(ReservationRequest request) {
         ReservationTime findTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new IllegalStateException("해당하는 시간 정보가 존재하지 않습니다."));
-
-        validateDateAndTime(request.date(), findTime.getStartAt());
-        validateDuplicateReservation(request.date(), request.timeId(), request.themeId());
-
         Theme findTheme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+        Reservation reservation = request.toReservationWithoutId(findTime, findTheme);
 
-        return request.toReservationWithoutId(findTime, findTheme);
+        validateDuplicateReservation(request.date(), request.timeId(), request.themeId());
+        reservation.validateNotPast(LocalDate.now(), LocalTime.now());
+
+        return reservation;
     }
 
     private Boolean isAlreadyBooked(Long timeId, List<Reservation> reservations) {
         return reservations.stream()
                 .anyMatch(reservation -> reservation.isSameId(timeId));
-    }
-
-    private void validateDateAndTime(LocalDate date, LocalTime time) {
-        LocalDate now = LocalDate.now();
-        if (date.isBefore(now)) {
-            throw new IllegalArgumentException("지난 날짜는 예약할 수 없습니다.");
-        }
-        if (date.equals(now) && time.isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("지난 시각은 예약할 수 없습니다.");
-        }
     }
 
     private void validateDuplicateReservation(LocalDate localDate, Long timeId, Long themeId) {
