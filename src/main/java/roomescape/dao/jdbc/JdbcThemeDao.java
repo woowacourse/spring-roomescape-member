@@ -28,6 +28,7 @@ public class JdbcThemeDao implements ThemeDao {
             .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Theme add(Theme theme) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", theme.getName());
@@ -38,11 +39,13 @@ public class JdbcThemeDao implements ThemeDao {
         return new Theme(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
+    @Override
     public List<Theme> findAll() {
         String sql = "SELECT id, name, description, thumbnail FROM theme";
         return jdbcTemplate.query(sql, mapResultsToTheme());
     }
 
+    @Override
     public Theme findById(Long id) {
         String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
         try {
@@ -74,6 +77,7 @@ public class JdbcThemeDao implements ThemeDao {
         return jdbcTemplate.query(sql, mapResultsToTheme(), startDate, endDate, limitCount);
     }
 
+    @Override
     public int deleteById(Long id) {
         try {
             String sql = "DELETE FROM theme WHERE id = ?";
@@ -83,6 +87,7 @@ public class JdbcThemeDao implements ThemeDao {
         }
     }
 
+    @Override
     public boolean existByName(String name) {
         String sql = "SELECT EXISTS(SELECT id FROM theme WHERE name = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, name);

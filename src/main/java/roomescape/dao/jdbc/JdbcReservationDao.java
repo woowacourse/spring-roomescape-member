@@ -28,6 +28,7 @@ public class JdbcReservationDao implements ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public Reservation add(Reservation reservation) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", reservation.getName());
@@ -41,6 +42,7 @@ public class JdbcReservationDao implements ReservationDao {
                 reservation.getTime(), reservation.getTheme());
     }
 
+    @Override
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
@@ -81,11 +83,13 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.query(sql, mapResultsToReservation(), date, themeId);
     }
 
+    @Override
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
+    @Override
     public boolean existByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);

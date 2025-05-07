@@ -30,6 +30,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
             .usingGeneratedKeyColumns("id");
     }
 
+    @Override
     public ReservationTime add(ReservationTime reservationTime) {
         Map<String, Object> param = new HashMap<>();
         param.put("start_at", reservationTime.getStartAt());
@@ -38,11 +39,13 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return new ReservationTime(key.longValue(), reservationTime.getStartAt());
     }
 
+    @Override
     public List<ReservationTime> findAll() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(sql, mapResultsToReservationTime());
     }
 
+    @Override
     public ReservationTime findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {
@@ -52,6 +55,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         }
     }
 
+    @Override
     public int deleteById(Long id) {
         try {
             String sql = "DELETE FROM reservation_time WHERE id = ?";
@@ -61,6 +65,7 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         }
     }
 
+    @Override
     public boolean existByStartAt(LocalTime startAt) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation_time WHERE start_at = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
