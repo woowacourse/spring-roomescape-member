@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ReservationServiceTest extends BaseTest {
 
@@ -48,11 +49,13 @@ public class ReservationServiceTest extends BaseTest {
 
         ReservationResponse response = reservationService.createReservation(request);
 
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
-        assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate());
-        assertThat(response.time()).isEqualTo(
-                new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(1L),
+                () -> assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName()),
+                () -> assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate()),
+                () -> assertThat(response.time()).isEqualTo(
+                        new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()))
+        );
     }
 
     @Test
@@ -99,12 +102,14 @@ public class ReservationServiceTest extends BaseTest {
         List<ReservationResponse> responses = reservationService.getReservations();
         ReservationResponse response = responses.getFirst();
 
-        assertThat(responses).hasSize(1);
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
-        assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate());
-        assertThat(response.time()).isEqualTo(
-                new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()));
+        assertAll(
+                () -> assertThat(responses).hasSize(1),
+                () -> assertThat(response.id()).isEqualTo(1L),
+                () -> assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName()),
+                () -> assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate()),
+                () -> assertThat(response.time()).isEqualTo(
+                        new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt().toString()))
+        );
     }
 
     @Test

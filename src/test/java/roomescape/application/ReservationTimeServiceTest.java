@@ -2,6 +2,7 @@ package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -38,8 +39,10 @@ public class ReservationTimeServiceTest extends BaseTest {
 
         ReservationTimeResponse response = reservationTimeService.createReservationTime(request);
 
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.startAt()).isEqualTo("10:00");
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(1L),
+                () -> assertThat(response.startAt()).isEqualTo("10:00")
+        );
     }
 
     @Test
@@ -47,7 +50,10 @@ public class ReservationTimeServiceTest extends BaseTest {
         reservationTimeDbFixture.예약시간_10시();
         List<ReservationTimeResponse> responses = reservationTimeService.getReservationTimes();
 
-        assertThat(responses.get(0).startAt()).isEqualTo("10:00");
+        assertAll(
+                () -> assertThat(responses).hasSize(1),
+                () -> assertThat(responses.get(0).startAt()).isEqualTo("10:00")
+        );
     }
 
     @Test

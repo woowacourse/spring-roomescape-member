@@ -2,6 +2,7 @@ package roomescape.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +40,12 @@ public class ThemeServiceTest extends BaseTest {
 
         ThemeResponse response = themeService.createTheme(request);
 
-        assertThat(response.id()).isEqualTo(1L);
-        assertThat(response.name()).isEqualTo("공포");
-        assertThat(response.description()).isEqualTo("공포 테마");
-        assertThat(response.thumbnail()).isEqualTo("공포.jpg");
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(1L),
+                () -> assertThat(response.name()).isEqualTo("공포"),
+                () -> assertThat(response.description()).isEqualTo("공포 테마"),
+                () -> assertThat(response.thumbnail()).isEqualTo("공포.jpg")
+        );
     }
 
     @Test
@@ -51,12 +54,13 @@ public class ThemeServiceTest extends BaseTest {
         List<ThemeResponse> responses = themeService.getThemes();
         ThemeResponse response = responses.getFirst();
 
-        assertThat(responses).hasSize(1);
-        assertThat(response.id()).isEqualTo(theme.getId());
-        assertThat(response.name()).isEqualTo(theme.getName());
-        assertThat(response.description()).isEqualTo(theme.getDescription());
-        assertThat(response.thumbnail()).isEqualTo(theme.getThumbnail());
-
+        assertAll(
+                () -> assertThat(responses).hasSize(1),
+                () -> assertThat(response.id()).isEqualTo(theme.getId()),
+                () -> assertThat(response.name()).isEqualTo(theme.getName()),
+                () -> assertThat(response.description()).isEqualTo(theme.getDescription()),
+                () ->assertThat(response.thumbnail()).isEqualTo(theme.getThumbnail())
+        );
     }
 
     @Test
