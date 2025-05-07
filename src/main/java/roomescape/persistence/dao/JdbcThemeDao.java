@@ -87,7 +87,7 @@ public class JdbcThemeDao implements ThemeDao {
 
         return jdbcTemplate.query(
                 sql,
-                (rs, rowNum) -> Theme.createWithId(
+                (rs, rowNum) -> new Theme(
                         rs.getLong(1),
                         rs.getString(2),
                         rs.getString(3),

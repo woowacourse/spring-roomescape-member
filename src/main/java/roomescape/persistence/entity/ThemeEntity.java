@@ -19,7 +19,7 @@ public record ThemeEntity(
             );
 
     public Theme toDomain() {
-        return Theme.createWithId(
+        return new Theme(
                 id,
                 name,
                 description,
