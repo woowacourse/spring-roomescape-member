@@ -13,17 +13,15 @@ import roomescape.domain.ReservationTime;
 @Component
 public class ReservationDbFixture {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     public ReservationDbFixture(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Reservation 예약_한스_25_4_22_10시_공포(ReservationTime reservationTime, Theme theme) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
         String name = ReserverNameFixture.한스.getName();
         LocalDate date = ReservationDateFixture.예약날짜_25_4_22.getDate();
 
@@ -38,10 +36,6 @@ public class ReservationDbFixture {
     }
 
     public Reservation 예약_생성_한스(ReservationDate reservationDate, ReservationTime reservationTime, Theme theme) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
-
         String name = ReserverNameFixture.한스.getName();
         LocalDate date = reservationDate.getDate();
 
