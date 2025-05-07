@@ -1,6 +1,8 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Reservation {
 
@@ -26,7 +28,12 @@ public class Reservation {
 
     public Reservation(final String name, final LocalDate date, final ReservationTime time,
                        final ReservationTheme theme) {
-        this(0L, name, date, time, theme);
+        validateFutureDateTime(date, time.getStartAt());
+        this.id = 0L;
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
     }
 
     public Reservation toEntity(long id) {
@@ -55,5 +62,13 @@ public class Reservation {
 
     public ReservationTheme getTheme() {
         return theme;
+    }
+
+    private void validateFutureDateTime(final LocalDate date, final LocalTime time) {
+        final LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+        final LocalDateTime now = LocalDateTime.now();
+        if ( reservationDateTime.isBefore(now) || reservationDateTime.isEqual(now)) {
+            throw new IllegalArgumentException("[ERROR] 이전 시각으로 예약할 수 없습니다.");
+        }
     }
 }

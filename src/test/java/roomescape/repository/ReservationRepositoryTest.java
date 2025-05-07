@@ -35,44 +35,49 @@ class ReservationRepositoryTest {
         template.execute("INSERT INTO reservation_theme (name, description, thumbnail)"
                 + "VALUES ('레벨 1탈출', '우테코 레벨1를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg')");
         template.execute("insert into reservation_time (start_at) values ('15:40')");
-        template.execute("insert into reservation (name, date, time_id, theme_id) values ('브라운', '2023-08-05', 1, 1)");
+        template.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                "브라운", LocalDate.now().plusDays(1).toString(), 1, 1);
     }
 
     @Test
     void findById() {
         //when
+        final LocalDate localDate = LocalDate.now().plusDays(1);
         Reservation reservation = repository.findById(1L).get();
 
         //then
-        assertEqualReservationElements(reservation, 1L, "브라운", "2023-08-05", 1L, "15:40");
+        assertEqualReservationElements(reservation, 1L, "브라운", localDate.toString(), 1L, "15:40");
     }
 
     @Test
     void findByDate() {
         //when
-        List<Reservation> found = repository.findByDate(LocalDate.of(2023, 8, 5));
+        final LocalDate localDate = LocalDate.now().plusDays(1);
+        List<Reservation> found = repository.findByDate(LocalDate.of(localDate.getYear(), localDate.getMonth().getValue(), localDate.getDayOfMonth()));
         List<Reservation> notFound = repository.findByDate(LocalDate.of(2023, 8, 6));
 
         //then
         assertThat(found).hasSize(1);
         assertThat(notFound).isEmpty();
-        assertEqualReservationElements(found.getFirst(), 1L, "브라운", "2023-08-05", 1L, "15:40");
+        assertEqualReservationElements(found.getFirst(), 1L, "브라운", localDate.toString(), 1L, "15:40");
     }
 
     @Test
     void findAll() {
         //when
+        final LocalDate localDate = LocalDate.now().plusDays(1);
         List<Reservation> reservations = repository.findAll();
 
         //then
         assertThat(reservations).isNotEmpty();
-        assertEqualReservationElements(reservations.getFirst(), 1L, "브라운", "2023-08-05", 1L, "15:40");
+        assertEqualReservationElements(reservations.getFirst(), 1L, "브라운", localDate.toString(), 1L, "15:40");
     }
 
     @Test
     void save() {
         //given
-        Reservation reservation = new Reservation("네오", LocalDate.parse("2023-08-05"),
+        final LocalDate localDate = LocalDate.now().plusDays(1);
+        Reservation reservation = new Reservation("네오", localDate,
                 ReservationTime.parse("15:40").toEntity(1L), new ReservationTheme(1L,"테마", "테마", "테마"));
 
         //when
@@ -81,9 +86,9 @@ class ReservationRepositoryTest {
         Reservation secondReservation = repository.findById(2L).get();
 
         //then
-        assertEqualReservationElements(saved, 2L, "네오", "2023-08-05", 1L, "15:40");
-        assertEqualReservationElements(firstReservation, 1L, "브라운", "2023-08-05", 1L, "15:40");
-        assertEqualReservationElements(secondReservation, 2L, "네오", "2023-08-05", 1L, "15:40");
+        assertEqualReservationElements(saved, 2L, "네오",localDate.toString(), 1L, "15:40");
+        assertEqualReservationElements(firstReservation, 1L, "브라운", localDate.toString(), 1L, "15:40");
+        assertEqualReservationElements(secondReservation, 2L, "네오", localDate.toString(), 1L, "15:40");
         assertThat(repository.findAll()).hasSize(2);
     }
 
@@ -100,7 +105,7 @@ class ReservationRepositoryTest {
     @Test
     void existsByDateAndTime() {
         //given
-        LocalDate date = LocalDate.parse("2023-08-05");
+        LocalDate date = LocalDate.now().plusDays(1);
         LocalDate anotherDate = LocalDate.parse("2023-08-06");
         ReservationTime time = ReservationTime.parse("15:40");
         ReservationTime anotherTime = ReservationTime.parse("15:41");

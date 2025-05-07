@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -36,18 +35,13 @@ public class ReservationService {
     }
 
     public ReservationResponse addReservation(final ReservationRequest request) {
-        LocalDateTime now = LocalDateTime.now();
         long timeId = request.timeId();
         final long themeId = request.themeId();
 
         ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
         ReservationTheme theme = reservationThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
         Reservation reservation = new Reservation(request.name(), request.date(), time, theme);
-        LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
-
-        validateFutureDateTime(requestDateTime, now);
         validateUniqueReservation(reservation);
-
         Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
     }
@@ -56,12 +50,6 @@ public class ReservationService {
         int deleteCounts = reservationRepository.deleteById(id);
         if (deleteCounts == DELETE_FAILED_COUNT) {
             throw new NoSuchElementException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
-        }
-    }
-
-    private void validateFutureDateTime(final LocalDateTime requestDateTime, final LocalDateTime now) {
-        if (requestDateTime.isBefore(now) || requestDateTime.isEqual(now)) {
-            throw new IllegalArgumentException("[ERROR] 이전 시각으로 예약할 수 없습니다.");
         }
     }
 
