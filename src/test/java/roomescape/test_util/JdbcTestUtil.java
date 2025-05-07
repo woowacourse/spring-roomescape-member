@@ -20,16 +20,32 @@ public class JdbcTestUtil {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long insertReservation(final String name, final LocalDate date, final long timeId, final long themeId) {
-        final String sql = "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)";
+    public long insertUser(final String name) {
+        final String sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, name);
-            ps.setDate(2, Date.valueOf(date));
-            ps.setLong(3, timeId);
-            ps.setLong(4, themeId);
+            ps.setString(2, name + "@email.com");
+            ps.setString(3, "password123");
+            ps.setString(4, "USER");
+            return ps;
+        }, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public long insertReservation(final long userId, final LocalDate date, final long timeId, final long themeId) {
+        final String sql = "INSERT INTO reservation (date, time_id, theme_id, user_id) VALUES (?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setDate(1, Date.valueOf(date));
+            ps.setLong(2, timeId);
+            ps.setLong(3, themeId);
+            ps.setLong(4, userId);
             return ps;
         }, keyHolder);
 
@@ -81,6 +97,7 @@ public class JdbcTestUtil {
 
     public void deleteAll() {
         jdbcTemplate.update("DELETE FROM reservation WHERE id IS NOT NULL");
+        jdbcTemplate.update("DELETE FROM users WHERE id IS NOT NULL");
         jdbcTemplate.update("DELETE FROM reservation_time WHERE id IS NOT NULL");
         jdbcTemplate.update("DELETE FROM theme WHERE id IS NOT NULL");
     }

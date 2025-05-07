@@ -64,7 +64,8 @@ class JdbcReservationTimeRepositoryTest {
         final long timeId2 = testUtil.insertReservationTime(LocalTime.of(12, 0));
         final long timeId3 = testUtil.insertReservationTime(LocalTime.of(14, 0));
         final long themeId = testUtil.insertTheme("주홍색 연구");
-        testUtil.insertReservation("돔푸", LocalDate.now().plusDays(10), timeId1, themeId);
+        final long userId = testUtil.insertUser("돔푸");
+        testUtil.insertReservation(userId, LocalDate.now().plusDays(10), timeId1, themeId);
 
         final List<ReservationTime> result = sut.findAvailableReservationTimesByDateAndThemeId(LocalDate.now().plusDays(10), themeId);
 

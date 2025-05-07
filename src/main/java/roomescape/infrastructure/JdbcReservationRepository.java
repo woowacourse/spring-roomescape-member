@@ -130,7 +130,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public Optional<Reservation> findById(final long id) {
         try {
-            final String sql = FIND_ALL_QUERY + " AND reservation_id = ?";
+            final String sql = FIND_ALL_QUERY + " AND r.id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

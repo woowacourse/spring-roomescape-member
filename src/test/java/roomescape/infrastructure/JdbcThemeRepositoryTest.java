@@ -61,12 +61,14 @@ class JdbcThemeRepositoryTest {
         final long themeId1 = testUtil.insertTheme("주홍색 연구");
         final long themeId2 = testUtil.insertTheme("아라비아해의 비밀");
         final long themeId3 = testUtil.insertTheme("범위_외부_테마");
-        testUtil.insertReservation("돔푸", DATE, timeId, themeId1);
-        testUtil.insertReservation("돔푸", DATE, timeId, themeId2);
-        testUtil.insertReservation("돔푸", DATE, timeId, themeId2);
-        testUtil.insertReservation("범위_외부_예약", DATE.minusDays(10), timeId, themeId3);
-        testUtil.insertReservation("범위_외부_예약", DATE.minusDays(10), timeId, themeId3);
-        testUtil.insertReservation("범위_외부_예약", DATE.plusDays(10), timeId, themeId3);
+        final long userId1 = testUtil.insertUser("돔푸");
+        final long userId2 = testUtil.insertUser("레몬");
+        testUtil.insertReservation(userId1, DATE, timeId, themeId1);
+        testUtil.insertReservation(userId1, DATE, timeId, themeId2);
+        testUtil.insertReservation(userId1, DATE, timeId, themeId2);
+        testUtil.insertReservation(userId2, DATE.minusDays(10), timeId, themeId3);
+        testUtil.insertReservation(userId2, DATE.minusDays(10), timeId, themeId3);
+        testUtil.insertReservation(userId2, DATE.plusDays(10), timeId, themeId3);
 
         final List<Theme> result = sut.findPopularThemes(DATE.minusDays(5), DATE.plusDays(5), 2);
 

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.business.model.entity.Reservation;
 import roomescape.business.model.entity.ReservationTime;
 import roomescape.business.model.entity.Theme;
+import roomescape.business.model.entity.User;
 import roomescape.test_util.JdbcTestUtil;
 
 import java.time.LocalDate;
@@ -19,23 +20,32 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 @JdbcTest
-@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class})
+@Import({JdbcReservationRepository.class, JdbcReservationTimeRepository.class, JdbcThemeRepository.class, JdbcUserRepository.class})
 class JdbcReservationRepositoryTest {
 
-    private static final LocalDate DATE1 = LocalDate.now().plusDays(5);
-    private static final LocalDate DATE2 = LocalDate.now().plusDays(7);
+    private static final LocalDate DATE1 = LocalDate.now().plusDays(3);
+    private static final LocalDate DATE2 = LocalDate.now().plusDays(4);
+    private static final LocalDate DATE3 = LocalDate.now().plusDays(5);
     private static final LocalTime TIME = LocalTime.of(10, 0);
 
     private final JdbcReservationRepository sut;
     private final JdbcReservationTimeRepository reservationTimeRepository;
     private final JdbcThemeRepository themeRepository;
+    private final JdbcUserRepository userRepository;
     private final JdbcTestUtil testUtil;
 
     @Autowired
-    public JdbcReservationRepositoryTest(final JdbcReservationRepository sut, final JdbcReservationTimeRepository reservationTimeRepository, final JdbcThemeRepository themeRepository, final JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepositoryTest(
+            final JdbcReservationRepository sut,
+            final JdbcReservationTimeRepository reservationTimeRepository,
+            final JdbcThemeRepository themeRepository,
+            final JdbcUserRepository userRepository,
+            final JdbcTemplate jdbcTemplate
+    ) {
         this.sut = sut;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.userRepository = userRepository;
         this.testUtil = new JdbcTestUtil(jdbcTemplate);
     }
 
@@ -46,37 +56,210 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void 예약을_저장할_수_있다() {
+        // given
         final ReservationTime time = reservationTimeRepository.save(ReservationTime.beforeSave(TIME));
         final Theme theme = themeRepository.save(Theme.beforeSave("호러", "", ""));
+        final User user = userRepository.saveAndGet(User.beforeSave("돔푸", "dompu@email.com", "password"));
 
-        final Reservation result = sut.save(Reservation.beforeSave("돔푸", DATE1, time, theme));
+        // when
+        final Reservation result = sut.save(Reservation.beforeSave(user, DATE1, time, theme));
 
+        // then
         assertThat(result).isNotNull();
     }
 
     @Test
     void 모든_예약을_찾을_수_있다() {
-        final long timeId = testUtil.insertTheme("호러");
-        final long themeId = testUtil.insertReservationTime(TIME);
-        final long id1 = testUtil.insertReservation("돔푸", DATE1, timeId, themeId);
-        final long id2 = testUtil.insertReservation("레몬", DATE2, timeId, themeId);
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId1 = testUtil.insertUser("돔푸");
+        final long userId2 = testUtil.insertUser("레몬");
+        final long id1 = testUtil.insertReservation(userId1, DATE1, timeId, themeId);
+        final long id2 = testUtil.insertReservation(userId2, DATE2, timeId, themeId);
 
+        // when
         final List<Reservation> result = sut.findAll();
 
-        assertThat(result.size()).isEqualTo(2);
+        // then
+        assertThat(result).hasSize(2);
         assertThat(result.get(0).getId()).isEqualTo(id1);
         assertThat(result.get(1).getId()).isEqualTo(id2);
     }
 
     @Test
-    void ID_기준으로_예약을_찾을_수_있다() {
-        final long timeId = testUtil.insertTheme("호러");
-        final long themeId = testUtil.insertReservationTime(TIME);
-        final long id = testUtil.insertReservation("돔푸", DATE1, timeId, themeId);
+    void 필터없이_모든_예약을_찾을_수_있다() {
+        // given
+        final long themeId1 = testUtil.insertTheme("호러");
+        final long timeId1 = testUtil.insertReservationTime(TIME);
+        final long userId1 = testUtil.insertUser("돔푸");
+        final long userId2 = testUtil.insertUser("레몬");
+        final long id1 = testUtil.insertReservation(userId1, DATE1, timeId1, themeId1);
+        final long id2 = testUtil.insertReservation(userId2, DATE2, timeId1, themeId1);
 
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(null, null, null, null);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(id1);
+        assertThat(result.get(1).getId()).isEqualTo(id2);
+    }
+
+    @Test
+    void 테마_ID로_필터링_할_수_있다() {
+        // given
+        final long themeId1 = testUtil.insertTheme("호러");
+        final long themeId2 = testUtil.insertTheme("스릴러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        final long id1 = testUtil.insertReservation(userId, DATE1, timeId, themeId1);
+        testUtil.insertReservation(userId, DATE2, timeId, themeId2);
+
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(themeId1, null, null, null);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(id1);
+        assertThat(result.get(0).getTheme().getId()).isEqualTo(themeId1);
+    }
+
+    @Test
+    void 사용자_ID로_필터링_할_수_있다() {
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId1 = testUtil.insertUser("돔푸");
+        final long userId2 = testUtil.insertUser("레몬");
+        testUtil.insertReservation(userId1, DATE1, timeId, themeId);
+        testUtil.insertReservation(userId2, DATE2, timeId, themeId);
+
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(null, userId2, null, null);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUser().name()).isEqualTo("레몬");
+    }
+
+    @Test
+    void 날짜_범위로_필터링_할_수_있다() {
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        testUtil.insertReservation(userId, DATE1, timeId, themeId);
+        final long id2 = testUtil.insertReservation(userId, DATE2, timeId, themeId);
+        final long id3 = testUtil.insertReservation(userId, DATE3, timeId, themeId);
+
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(null, null, DATE2, DATE3);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(id2);
+        assertThat(result.get(1).getId()).isEqualTo(id3);
+    }
+
+    @Test
+    void 시작_날짜만으로_필터링_할_수_있다() {
+        // given
+        final long themeId1 = testUtil.insertTheme("호러");
+        final long timeId1 = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        final long id1 = testUtil.insertReservation(userId, DATE1, timeId1, themeId1);
+        final long id2 = testUtil.insertReservation(userId, DATE2, timeId1, themeId1);
+        final long id3 = testUtil.insertReservation(userId, DATE3, timeId1, themeId1);
+
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(null, null, DATE2, null);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(id2);
+        assertThat(result.get(1).getId()).isEqualTo(id3);
+    }
+
+    @Test
+    void 종료_날짜만으로_필터링_할_수_있다() {
+        // given
+        final long themeId1 = testUtil.insertTheme("호러");
+        final long timeId1 = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        final long id1 = testUtil.insertReservation(userId, DATE1, timeId1, themeId1);
+        final long id2 = testUtil.insertReservation(userId, DATE2, timeId1, themeId1);
+        final long id3 = testUtil.insertReservation(userId, DATE3, timeId1, themeId1);
+
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(null, null, null, DATE2);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(id1);
+        assertThat(result.get(1).getId()).isEqualTo(id2);
+    }
+
+    @Test
+    void 여러_필터를_함께_적용할_수_있다() {
+        // given
+        final long themeId1 = testUtil.insertTheme("호러");
+        final long themeId2 = testUtil.insertTheme("스릴러");
+        final long timeId1 = testUtil.insertReservationTime(TIME);
+        final long userId1 = testUtil.insertUser("돔푸");
+        final long userId2 = testUtil.insertUser("레몬");
+
+        testUtil.insertReservation(userId1, DATE1, timeId1, themeId1);
+        final long id2 = testUtil.insertReservation(userId2, DATE2, timeId1, themeId1);
+        testUtil.insertReservation(userId2, DATE3, timeId1, themeId2);
+
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(themeId1, userId2, null, null);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(id2);
+        assertThat(result.get(0).getTheme().getId()).isEqualTo(themeId1);
+        assertThat(result.get(0).getUser().name()).isEqualTo("레몬");
+    }
+
+    @Test
+    void 모든_필터를_함께_적용할_수_있다() {
+        // given
+        final long themeId1 = testUtil.insertTheme("호러");
+        final long themeId2 = testUtil.insertTheme("스릴러");
+        final long timeId1 = testUtil.insertReservationTime(TIME);
+        final long userId1 = testUtil.insertUser("돔푸");
+        final long userId2 = testUtil.insertUser("레몬");
+        testUtil.insertReservation(userId1, DATE1, timeId1, themeId1);
+        final long id2 = testUtil.insertReservation(userId2, DATE2, timeId1, themeId1);
+        testUtil.insertReservation(userId2, DATE3, timeId1, themeId2);
+        testUtil.insertReservation(userId2, DATE3, timeId1, themeId1);
+
+        // when
+        final List<Reservation> result = sut.findAllWithFilter(themeId1, userId2, DATE2, DATE2);
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(id2);
+        assertThat(result.get(0).getTheme().getId()).isEqualTo(themeId1);
+        assertThat(result.get(0).getUser().name()).isEqualTo("레몬");
+        assertThat(result.get(0).getDate()).isEqualTo(DATE2);
+    }
+
+    @Test
+    void ID_기준으로_예약을_찾을_수_있다() {
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        final long id = testUtil.insertReservation(userId, DATE1, timeId, themeId);
+
+        // when
         final Optional<Reservation> result = sut.findById(id);
 
-        assertThat(result.isPresent()).isTrue();
+        // then
+        assertThat(result).isPresent();
         final Reservation reservation = result.get();
         assertThat(reservation.getId()).isEqualTo(id);
         assertThat(reservation.getDate()).isEqualTo(DATE1);
@@ -86,56 +269,76 @@ class JdbcReservationRepositoryTest {
 
     @Test
     void ID_기준으로_존재하는지_확인할_수_있다() {
-        final long timeId = testUtil.insertTheme("호러");
-        final long themeId = testUtil.insertReservationTime(TIME);
-        final long id = testUtil.insertReservation("돔푸", DATE1, timeId, themeId);
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        final long id = testUtil.insertReservation(userId, DATE1, timeId, themeId);
 
+        // when
         final boolean result = sut.existById(id);
 
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     void 시간_ID_기준으로_존재하는지_확인할_수_있다() {
-        final long timeId = testUtil.insertTheme("호러");
-        final long themeId = testUtil.insertReservationTime(TIME);
-        testUtil.insertReservation("돔푸", DATE1, timeId, themeId);
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        testUtil.insertReservation(userId, DATE1, timeId, themeId);
 
+        // when
         final boolean result = sut.existByTimeId(timeId);
 
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     void 테마_ID_기준으로_존재하는지_확인할_수_있다() {
-        final long timeId = testUtil.insertTheme("호러");
-        final long themeId = testUtil.insertReservationTime(TIME);
-        testUtil.insertReservation("돔푸", DATE1, timeId, themeId);
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        testUtil.insertReservation(userId, DATE1, timeId, themeId);
 
+        // when
         final boolean result = sut.existByThemeId(themeId);
 
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     void 시간_날짜_테마_기준으로_존재하는지_확인할_수_있다() {
+        // given
         final long timeId = testUtil.insertReservationTime(TIME);
         final Theme theme = themeRepository.save(Theme.beforeSave("호러", "", ""));
-        testUtil.insertReservation("돔푸", DATE1, timeId, theme.getId());
+        final long userId = testUtil.insertUser("돔푸");
+        testUtil.insertReservation(userId, DATE1, timeId, theme.getId());
 
+        // when
         final boolean result = sut.isDuplicateDateAndTimeAndTheme(DATE1, TIME, theme);
 
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     void ID를_통해_예약을_삭제할_수_있다() {
-        final long timeId = testUtil.insertTheme("호러");
-        final long themeId = testUtil.insertReservationTime(TIME);
-        final long id = testUtil.insertReservation("돔푸", DATE1, timeId, themeId);
+        // given
+        final long themeId = testUtil.insertTheme("호러");
+        final long timeId = testUtil.insertReservationTime(TIME);
+        final long userId = testUtil.insertUser("돔푸");
+        final long id = testUtil.insertReservation(userId, DATE1, timeId, themeId);
 
+        // when
         sut.deleteById(id);
 
-        assertThat(testUtil.countReservation()).isEqualTo(0);
+        // then
+        assertThat(testUtil.countReservation()).isZero();
     }
 }
