@@ -61,14 +61,14 @@ class AuthorizationInterceptorTest {
     @Test
     void 허용된_역할의_사용자는_true를_반환한다() throws Exception {
         // given
-        String token = "valid.token";
+        String token = "valid.value";
         Cookie cookie = new Cookie("authToken", token);
         Role role = createRoleAnnotation(UserRole.ADMIN);
         LoginInfo loginInfo = new LoginInfo("test@test.com", UserRole.ADMIN);
 
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(role);
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.getAuthorization(token)).willReturn(loginInfo);
+        given(jwtUtil.resolveToken(token)).willReturn(loginInfo);
 
         // when
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -81,14 +81,14 @@ class AuthorizationInterceptorTest {
     @Test
     void 허용되지_않은_역할의_사용자는_ForbiddenException을_던진다() throws Exception {
         // given
-        String token = "valid.token";
+        String token = "valid.value";
         Cookie cookie = new Cookie("authToken", token);
         Role role = createRoleAnnotation(UserRole.ADMIN);
         LoginInfo loginInfo = new LoginInfo("test@test.com", UserRole.USER);
 
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(role);
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.getAuthorization(token)).willReturn(loginInfo);
+        given(jwtUtil.resolveToken(token)).willReturn(loginInfo);
 
         // when, then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))

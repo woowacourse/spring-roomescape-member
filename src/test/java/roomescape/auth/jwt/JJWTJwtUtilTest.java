@@ -5,7 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.business.model.entity.User;
-import roomescape.business.model.vo.Authentication;
+import roomescape.business.model.vo.AuthToken;
 import roomescape.business.model.vo.LoginInfo;
 import roomescape.business.model.vo.UserRole;
 
@@ -35,12 +35,12 @@ class JJWTJwtUtilTest {
     @Test
     void 유효한_사용자정보로_토큰을_생성한다() {
         // when
-        Authentication authentication = jwtUtil.getAuthentication(user);
+        AuthToken authToken = jwtUtil.createToken(user);
 
         // then
-        assertThat(authentication).isNotNull();
-        assertThat(authentication.token()).isNotEmpty();
-        assertThat(jwtUtil.validateToken(authentication.token())).isTrue();
+        assertThat(authToken).isNotNull();
+        assertThat(authToken.value()).isNotEmpty();
+        assertThat(jwtUtil.validateToken(authToken.value())).isTrue();
     }
 
     @Test
@@ -49,7 +49,7 @@ class JJWTJwtUtilTest {
         String token = createToken(UserRole.USER.name());
 
         // when
-        LoginInfo loginInfo = jwtUtil.getAuthorization(token);
+        LoginInfo loginInfo = jwtUtil.resolveToken(token);
 
         // then
         assertThat(loginInfo).isNotNull();
@@ -72,7 +72,7 @@ class JJWTJwtUtilTest {
     @Test
     void 유효하지_않은_토큰을_검증하면_false를_반환한다() {
         // given
-        String invalidToken = "invalid.token.value";
+        String invalidToken = "invalid.value.value";
 
         // when
         boolean result = jwtUtil.validateToken(invalidToken);
@@ -99,8 +99,8 @@ class JJWTJwtUtilTest {
         when(user.role()).thenReturn(UserRole.ADMIN.name());
 
         // when
-        Authentication authentication = jwtUtil.getAuthentication(user);
-        LoginInfo loginInfo = jwtUtil.getAuthorization(authentication.token());
+        AuthToken authToken = jwtUtil.createToken(user);
+        LoginInfo loginInfo = jwtUtil.resolveToken(authToken.value());
 
         // then
         assertThat(loginInfo.userRole()).isEqualTo(UserRole.ADMIN);

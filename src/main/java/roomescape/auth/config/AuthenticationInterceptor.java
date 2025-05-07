@@ -29,7 +29,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
         String token = extractTokenFromCookies(request);
         validateAuthenticated(token);
-        LoginInfo loginInfo = jwtUtil.getAuthorization(token);
+        LoginInfo loginInfo = jwtUtil.resolveToken(token);
         request.setAttribute("authorization", loginInfo);
         return true;
     }

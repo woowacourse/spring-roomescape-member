@@ -16,7 +16,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-class AuthenticationInterceptorTest {
+class AuthTokenInterceptorTest {
 
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -47,7 +47,7 @@ class AuthenticationInterceptorTest {
     @Test
     void 유효한_토큰으로_인증에_성공하면_true를_반환한다() throws Exception {
         // given
-        String token = "valid.jwt.token";
+        String token = "valid.jwt.value";
         Cookie cookie = new Cookie("authToken", token);
         HandlerMethod handlerMethod = mock(HandlerMethod.class);
         LoginInfo loginInfo = mock(LoginInfo.class);
@@ -55,7 +55,7 @@ class AuthenticationInterceptorTest {
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
         given(jwtUtil.validateToken(token)).willReturn(true);
-        given(jwtUtil.getAuthorization(token)).willReturn(loginInfo);
+        given(jwtUtil.resolveToken(token)).willReturn(loginInfo);
 
         // when
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -80,7 +80,7 @@ class AuthenticationInterceptorTest {
     @Test
     void 유효하지_않은_토큰으로_NotAuthenticatedException을_던진다() {
         // given
-        String token = "invalid.jwt.token";
+        String token = "invalid.jwt.value";
         Cookie cookie = new Cookie("authToken", token);
         HandlerMethod handlerMethod = mock(HandlerMethod.class);
 

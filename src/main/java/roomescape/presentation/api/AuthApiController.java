@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.AuthRequired;
 import roomescape.business.model.entity.User;
-import roomescape.business.model.vo.Authentication;
+import roomescape.business.model.vo.AuthToken;
 import roomescape.business.model.vo.LoginInfo;
 import roomescape.business.service.AuthService;
 import roomescape.business.service.UserService;
@@ -29,9 +29,9 @@ public class AuthApiController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request) {
-        Authentication authentication = authService.authenticate(request.email(), request.password());
+        AuthToken authToken = authService.authenticate(request.email(), request.password());
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, "authToken=" + authentication.token());
+        headers.add(HttpHeaders.SET_COOKIE, "authToken=" + authToken.value());
         return ResponseEntity.noContent().headers(headers).build();
     }
 

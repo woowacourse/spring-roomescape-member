@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.business.model.entity.User;
-import roomescape.business.model.vo.Authentication;
+import roomescape.business.model.vo.AuthToken;
 import roomescape.business.model.vo.LoginInfo;
 import roomescape.business.model.vo.UserRole;
 
@@ -23,18 +23,18 @@ public class JJWTJwtUtil implements JwtUtil {
     }
 
     @Override
-    public Authentication getAuthentication(final User user) {
+    public AuthToken createToken(final User user) {
         String tokenValue = Jwts.builder()
                 .subject(user.id())
                 .signWith(key)
                 .claim("role", user.role())
                 .compact();
 
-        return new Authentication(tokenValue);
+        return new AuthToken(tokenValue);
     }
 
     @Override
-    public LoginInfo getAuthorization(final String tokenValue) {
+    public LoginInfo resolveToken(final String tokenValue) {
         validateToken(tokenValue);
         final Claims claims = Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(tokenValue)

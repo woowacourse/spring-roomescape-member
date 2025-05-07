@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.business.model.vo.Authentication;
+import roomescape.business.model.vo.AuthToken;
 import roomescape.exception.auth.LoginFailException;
 
 import java.util.Optional;
@@ -36,18 +36,18 @@ class AuthServiceTest {
         String email = "test@example.com";
         String password = "password123";
         User user = User.restore("user-id", "USER", "Test User", email, password);
-        Authentication expectedAuth = mock(Authentication.class);
+        AuthToken expectedAuth = mock(AuthToken.class);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        when(jwtUtil.getAuthentication(user)).thenReturn(expectedAuth);
+        when(jwtUtil.createToken(user)).thenReturn(expectedAuth);
 
         // when
-        Authentication result = authService.authenticate(email, password);
+        AuthToken result = authService.authenticate(email, password);
 
         // then
         assertThat(result).isEqualTo(expectedAuth);
         verify(userRepository).findByEmail(email);
-        verify(jwtUtil).getAuthentication(user);
+        verify(jwtUtil).createToken(user);
     }
 
     @Test

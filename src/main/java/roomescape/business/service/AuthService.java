@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.repository.UserRepository;
-import roomescape.business.model.vo.Authentication;
+import roomescape.business.model.vo.AuthToken;
 import roomescape.exception.auth.LoginFailException;
 
 @Service
@@ -18,7 +18,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public Authentication authenticate(final String email, final String password) {
+    public AuthToken authenticate(final String email, final String password) {
         final User user = userRepository.findByEmail(email)
                 .orElseThrow(LoginFailException::new);
 
@@ -26,6 +26,6 @@ public class AuthService {
             throw new LoginFailException();
         }
 
-        return jwtUtil.getAuthentication(user);
+        return jwtUtil.createToken(user);
     }
 }
