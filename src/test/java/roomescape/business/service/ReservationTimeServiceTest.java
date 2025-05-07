@@ -1,0 +1,186 @@
+package roomescape.business.service;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.business.model.entity.ReservationTime;
+import roomescape.business.model.repository.ReservationRepository;
+import roomescape.business.model.repository.ReservationTimeRepository;
+import roomescape.exception.business.ConnectedReservationExistException;
+import roomescape.exception.business.HasDuplicatedTimeException;
+import roomescape.exception.business.ReservationTimeIntervalException;
+import roomescape.exception.business.ReservationTimeNotFoundException;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ReservationTimeServiceTest {
+
+    @Mock
+    private ReservationTimeRepository reservationTimeRepository;
+
+    @Mock
+    private ReservationRepository reservationRepository;
+
+    @InjectMocks
+    private ReservationTimeService reservationTimeService;
+
+    @Test
+    @DisplayName("예약 시간을 추가하고 반환한다")
+    void addAndGet_ReturnsReservationTime() {
+        // given
+        LocalTime time = LocalTime.of(10, 0);
+
+        when(reservationTimeRepository.existByTime(time)).thenReturn(false);
+        when(reservationTimeRepository.existBetween(any(LocalTime.class), any(LocalTime.class))).thenReturn(false);
+
+        // when
+        ReservationTime result = reservationTimeService.addAndGet(time);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getStartAt()).isEqualTo(time);
+        verify(reservationTimeRepository).existByTime(time);
+        verify(reservationTimeRepository).existBetween(any(LocalTime.class), any(LocalTime.class));
+        verify(reservationTimeRepository).save(any(ReservationTime.class));
+    }
+
+    @Test
+    @DisplayName("중복된 시간으로 예약 시간 추가 시 예외가 발생한다")
+    void addAndGet_DuplicateTime_ThrowsException() {
+        // given
+        LocalTime time = LocalTime.of(10, 0);
+
+        when(reservationTimeRepository.existByTime(time)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.addAndGet(time))
+                .isInstanceOf(HasDuplicatedTimeException.class);
+
+        verify(reservationTimeRepository).existByTime(time);
+        verify(reservationTimeRepository, never()).existBetween(any(LocalTime.class), any(LocalTime.class));
+        verify(reservationTimeRepository, never()).save(any(ReservationTime.class));
+    }
+
+    @Test
+    @DisplayName("시간 간격이 겹치는 예약 시간 추가 시 예외가 발생한다")
+    void addAndGet_OverlappingInterval_ThrowsException() {
+        // given
+        LocalTime time = LocalTime.of(10, 0);
+
+        when(reservationTimeRepository.existByTime(time)).thenReturn(false);
+        when(reservationTimeRepository.existBetween(any(LocalTime.class), any(LocalTime.class))).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.addAndGet(time))
+                .isInstanceOf(ReservationTimeIntervalException.class);
+
+        verify(reservationTimeRepository).existByTime(time);
+        verify(reservationTimeRepository).existBetween(any(LocalTime.class), any(LocalTime.class));
+        verify(reservationTimeRepository, never()).save(any(ReservationTime.class));
+    }
+
+    @Test
+    @DisplayName("모든 예약 시간을 조회할 수 있다")
+    void getAll_ReturnsAllReservationTimes() {
+        // given
+        List<ReservationTime> expectedTimes = Arrays.asList(
+                ReservationTime.afterSave("time-id-1", LocalTime.of(10, 0)),
+                ReservationTime.afterSave("time-id-2", LocalTime.of(14, 0))
+        );
+
+        when(reservationTimeRepository.findAll()).thenReturn(expectedTimes);
+
+        // when
+        List<ReservationTime> result = reservationTimeService.getAll();
+
+        // then
+        assertThat(result).isEqualTo(expectedTimes);
+        verify(reservationTimeRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("날짜와 테마 ID로 이용 가능한 예약 시간을 조회할 수 있다")
+    void getAvailableReservationTimesByDateAndThemeId_ReturnsAvailableTimes() {
+        // given
+        LocalDate date = LocalDate.now();
+        String themeId = "theme-id";
+        List<ReservationTime> expectedTimes = Arrays.asList(
+                ReservationTime.afterSave("time-id-3", LocalTime.of(11, 0)),
+                ReservationTime.afterSave("time-id-4", LocalTime.of(15, 0))
+        );
+
+        when(reservationTimeRepository.findAvailableReservationTimesByDateAndThemeId(date, themeId))
+                .thenReturn(expectedTimes);
+
+        // when
+        List<ReservationTime> result = reservationTimeService.getAvailableReservationTimesByDateAndThemeId(date, themeId);
+
+        // then
+        assertThat(result).isEqualTo(expectedTimes);
+        verify(reservationTimeRepository).findAvailableReservationTimesByDateAndThemeId(date, themeId);
+    }
+
+    @Test
+    @DisplayName("예약 시간을 삭제할 수 있다")
+    void delete_ExistingReservationTime_DeletesReservationTime() {
+        // given
+        String timeId = "time-id";
+
+        when(reservationRepository.existByTimeId(timeId)).thenReturn(false);
+        when(reservationTimeRepository.existById(timeId)).thenReturn(true);
+
+        // when
+        reservationTimeService.delete(timeId);
+
+        // then
+        verify(reservationRepository).existByTimeId(timeId);
+        verify(reservationTimeRepository).existById(timeId);
+        verify(reservationTimeRepository).deleteById(timeId);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 예약 시간 삭제 시 예외가 발생한다")
+    void delete_NonExistingReservationTime_ThrowsException() {
+        // given
+        String timeId = "non-existing-id";
+
+        when(reservationRepository.existByTimeId(timeId)).thenReturn(false);
+        when(reservationTimeRepository.existById(timeId)).thenReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
+                .isInstanceOf(ReservationTimeNotFoundException.class);
+
+        verify(reservationRepository).existByTimeId(timeId);
+        verify(reservationTimeRepository).existById(timeId);
+        verify(reservationTimeRepository, never()).deleteById(anyString());
+    }
+
+    @Test
+    @DisplayName("예약이 연결된 예약 시간 삭제 시 예외가 발생한다")
+    void delete_ReservationTimeWithReservations_ThrowsException() {
+        // given
+        String timeId = "time-with-reservations";
+
+        when(reservationRepository.existByTimeId(timeId)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> reservationTimeService.delete(timeId))
+                .isInstanceOf(ConnectedReservationExistException.class);
+
+        verify(reservationRepository).existByTimeId(timeId);
+        verify(reservationTimeRepository, never()).existById(anyString());
+        verify(reservationTimeRepository, never()).deleteById(anyString());
+    }
+}
