@@ -20,7 +20,7 @@ public class JdbcReservationMemberRepository implements ReservationMemberReposit
 
     private final RowMapper<ReservationMemberIds> reservationMemberIdRowMapper = (resultSet, rowNum) -> {
         long reservationId = resultSet.getLong("reservation_id");
-        long memberId = resultSet.getLong("reservation_id");
+        long memberId = resultSet.getLong("member_id");
         long id = resultSet.getLong("id");
         return new ReservationMemberIds(id, reservationId, memberId);
     };
