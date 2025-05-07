@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import roomescape.dto.ReservationTimeCreateRequestDto;
-import roomescape.dto.ThemeCreateRequestDto;
+import roomescape.dto.time.ReservationTimeCreateRequestDto;
+import roomescape.dto.theme.ThemeCreateRequestDto;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

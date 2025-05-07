@@ -2,8 +2,8 @@ package roomescape.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ReservationCreateRequestDto;
-import roomescape.dto.ReservationResponseDto;
+import roomescape.dto.reservation.ReservationCreateRequestDto;
+import roomescape.dto.reservation.ReservationResponseDto;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
