@@ -53,9 +53,22 @@ public class LoginController {
                 .body(memberNameResponse);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        Cookie cookie = new Cookie("token", "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie", "token=" + cookie.getValue() + "; Path=/; HttpOnly");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .build();
+    }
+
     private String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
-            System.out.println("cookie = " + cookie);
             if (cookie.getName().equals("token")) {
                 return cookie.getValue();
             }
