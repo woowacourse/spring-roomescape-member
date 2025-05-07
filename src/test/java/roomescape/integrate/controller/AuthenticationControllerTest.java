@@ -108,5 +108,28 @@ class AuthenticationControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
+
+    @Test
+    void 같은_이메일을_가질_수_없음() {
+        Map<String, String> signupParam = Map.of("name", "투다", "email", "token-login@naver.com", "password",
+                "password");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(signupParam)
+                .when().post("/auth/signup")
+                .then().log().all()
+                .statusCode(201);
+
+        Map<String, String> duplicateSignupParam = Map.of("name", "투다2", "email", "token-login@naver.com", "password2",
+                "password");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(duplicateSignupParam)
+                .when().post("/auth/signup")
+                .then().log().all()
+                .statusCode(400);
+    }
 }
 
