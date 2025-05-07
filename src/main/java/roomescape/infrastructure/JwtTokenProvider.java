@@ -9,14 +9,22 @@ import roomescape.service.result.LoginUserResult;
 @Component
 public class JwtTokenProvider {
 
-    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    @Value("${security.jwt.token.secret-key}")
+    private String secretKey;
+
+    @Value("${security.jwt.token.expire-length}")
+    private int validityInMilliseconds;
 
     public String createToken(final LoginUserResult user) {
+        Date now = new Date();
+        Date expirationDate = new Date(now.getTime() + validityInMilliseconds);
+
         return Jwts.builder()
                 .subject(user.id().toString())
                 .claim("name", user.name())
                 .claim("email", user.email())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .expiration(expirationDate)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
     }
 
@@ -31,7 +39,7 @@ public class JwtTokenProvider {
 
     public Long extractIdFromToken(final String token) {
         return Long.valueOf(Jwts.parser()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody().getSubject());
