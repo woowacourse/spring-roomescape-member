@@ -1,7 +1,7 @@
 package roomescape.theme.controller;
 
-import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +38,7 @@ public class ThemeController {
     public ResponseEntity<ThemeResponse> createTheme(
             @RequestBody ThemeCreateRequest request
     ) {
-        return ResponseEntity.created(URI.create("")).body(themeService.create(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(themeService.create(request));
     }
 
     @DeleteMapping("/{id}")

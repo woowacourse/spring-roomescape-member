@@ -1,8 +1,8 @@
 package roomescape.reservationtime.controller;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import roomescape.reservationtime.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
@@ -46,7 +45,7 @@ public class ReservationTimeController {
             @RequestBody ReservationTimeCreateRequest request
     ) {
         ReservationTimeResponse dto = reservationTimeService.create(request);
-        return ResponseEntity.created(makeReservationTimeDto(dto)).body(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @DeleteMapping("/{id}")
@@ -55,13 +54,5 @@ public class ReservationTimeController {
     ) {
         reservationTimeService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private URI makeReservationTimeDto(final ReservationTimeResponse dto) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(dto.id())
-                .toUri();
     }
 }
