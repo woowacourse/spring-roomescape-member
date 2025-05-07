@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,7 @@ public class ReservationTimeServiceTest {
         final List<LocalTime> resultTimes = result.stream()
                 .map(ReservationTimeResponse::startAt)
                 .toList();
+
         assertThat(resultTimes).containsExactlyInAnyOrderElementsOf(localTimes);
     }
 
@@ -71,8 +73,14 @@ public class ReservationTimeServiceTest {
         final ReservationTimeResponse result = reservationTimeService.create(reservationTimeRequest);
 
         // then
-        assertThat(result.id()).isNotNull();
-        assertThat(result.startAt()).isEqualTo(localTime1);
+        final SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.id())
+                .isNotNull();
+        softly.assertThat(result.startAt())
+                .isEqualTo(localTime1);
+
+        softly.assertAll();
     }
 
     @DisplayName("예약 시간을 삭제한다")

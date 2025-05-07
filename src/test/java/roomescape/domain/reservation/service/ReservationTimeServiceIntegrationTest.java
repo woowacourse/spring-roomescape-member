@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,6 @@ class ReservationTimeServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
@@ -94,8 +94,14 @@ class ReservationTimeServiceIntegrationTest {
         final ReservationTimeResponse result = reservationTimeService.create(reservationTimeRequest);
 
         // then
-        assertThat(result.id()).isNotNull();
-        assertThat(result.startAt()).isEqualTo(localTime1);
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.id())
+                .isNotNull();
+        softly.assertThat(result.startAt())
+                .isEqualTo(localTime1);
+
+        softly.assertAll();
     }
 
     @DisplayName("예약 시간을 삭제한다")

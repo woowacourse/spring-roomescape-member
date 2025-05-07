@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,12 +68,21 @@ class ReservationDAOTest {
         final Reservation result = reservationRepository.save(reservation);
 
         // then
-        assertThat(result.getReservationName()).isEqualTo(name);
-        assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
-        assertThat(result.getReservationTime()
-                .getId()).isEqualTo(RESERVATION_TIME_ID);
-        assertThat(result.getTheme()
-                .getId()).isEqualTo(THEME_ID);
+
+        final SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.getReservationName())
+                .isEqualTo(name);
+        softly.assertThat(result.getReservationDate())
+                .isEqualTo(now.toLocalDate());
+        softly.assertThat(result.getReservationTime()
+                        .getId())
+                .isEqualTo(RESERVATION_TIME_ID);
+        softly.assertThat(result.getTheme()
+                        .getId())
+                .isEqualTo(THEME_ID);
+
+        softly.assertAll();
     }
 
     private ReservationTime saveReservationTime(final Long id, final LocalTime time) {
@@ -151,11 +161,20 @@ class ReservationDAOTest {
                 .get();
 
         // then
-        assertThat(result.getName()).isEqualTo(name);
-        assertThat(result.getReservationDate()).isEqualTo(now.toLocalDate());
-        assertThat(result.getReservationTimeId()).isEqualTo(RESERVATION_TIME_ID);
-        assertThat(result.getReservationStartTime()).isEqualTo(now.toLocalTime());
-        assertThat(result.getThemeId()).isEqualTo(THEME_ID);
+        final SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(result.getName())
+                .isEqualTo(name);
+        softly.assertThat(result.getReservationDate())
+                .isEqualTo(now.toLocalDate());
+        softly.assertThat(result.getReservationTimeId())
+                .isEqualTo(RESERVATION_TIME_ID);
+        softly.assertThat(result.getReservationStartTime())
+                .isEqualTo(now.toLocalTime());
+        softly.assertThat(result.getThemeId())
+                .isEqualTo(THEME_ID);
+
+        softly.assertAll();
     }
 
     @DisplayName("모든 예약 정보를 가져온다.")
@@ -194,18 +213,24 @@ class ReservationDAOTest {
                 .map(Theme::getName)
                 .toList();
 
-        assertThat(resultNames).containsAll(names);
+        final SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(resultNames)
+                .containsAll(names);
 
         for (final LocalDate resultDate : resultDates) {
-            assertThat(resultDate).isEqualTo(date);
+            softly.assertThat(resultDate)
+                    .isEqualTo(date);
         }
 
         for (final LocalTime resultTime : resultTimes) {
-            assertThat(resultTime).isEqualTo(RESERVATION_TIME_START_TIME);
+            softly.assertThat(resultTime)
+                    .isEqualTo(RESERVATION_TIME_START_TIME);
         }
 
         for (final String themeName : themeNames) {
-            assertThat(themeName).isEqualTo(THEME_NAME);
+            softly.assertThat(themeName)
+                    .isEqualTo(THEME_NAME);
         }
     }
 
