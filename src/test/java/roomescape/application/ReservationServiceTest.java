@@ -108,8 +108,9 @@ public class ReservationServiceTest extends BaseTest {
                 theme.getId()
         ));
         List<ReservationResponse> responses = reservationService.getReservations();
-        ReservationResponse response = responses.get(0);
+        ReservationResponse response = responses.getFirst();
 
+        assertThat(responses).hasSize(1);
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo(ReserverNameFixture.한스.getName());
         assertThat(response.date()).isEqualTo(ReservationDateFixture.예약날짜_25_4_22.getDate());
