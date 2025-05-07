@@ -48,7 +48,7 @@ public class FakeReservationMemberRepository implements ReservationMemberReposit
     @Override
     public List<ReservationMemberIds> findAllByMemberId(Long memberId) {
         return reservationMemberIds.stream()
-                .filter(currentReservationMemberIds -> currentReservationMemberIds.getId() == memberId)
+                .filter(currentReservationMemberIds -> currentReservationMemberIds.getMemberId() == memberId)
                 .collect(Collectors.toList());
     }
 }
