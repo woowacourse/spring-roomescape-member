@@ -66,15 +66,15 @@ class AdminControllerTest {
         Map<String, String> signupParam = Map.of("name", "투다", "email", "token-login2@email.com", "password",
                 "password");
 
-        String sql = "UPDATE member SET role = ? WHERE name = ?";
-        jdbcTemplate.update(sql, "ADMIN", "투다");
-
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(signupParam)
                 .when().post("/auth/signup")
                 .then()
                 .statusCode(201);
+
+        String sql = "UPDATE member SET role = ? WHERE name = ?";
+        jdbcTemplate.update(sql, "ADMIN", "투다");
 
         Map<String, String> loginParam = Map.of("email", "token-login2@email.com", "password", "password");
         String header = RestAssured.given()
@@ -91,7 +91,7 @@ class AdminControllerTest {
                 .cookie("token", token)
                 .when().get("/admin")
                 .then()
-                .statusCode(403);
+                .statusCode(200);
     }
 
     @Test
