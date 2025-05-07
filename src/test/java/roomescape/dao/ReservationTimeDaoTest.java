@@ -29,13 +29,6 @@ class ReservationTimeDaoTest {
                     resultSet.getTime("start_at").toLocalTime()
             );
 
-    private static final RowMapper<AvailableReservationTime> AVAILABLE_TIME_ROW_MAPPER = (resultSet, rowNum) ->
-            new AvailableReservationTime(
-                    resultSet.getLong("id"),
-                    resultSet.getTime("start_at").toLocalTime(),
-                    resultSet.getBoolean("already_booked")
-            );
-
     @Autowired
     private ReservationTimeJdbcDao reservationTimeJdbcDao;
 
