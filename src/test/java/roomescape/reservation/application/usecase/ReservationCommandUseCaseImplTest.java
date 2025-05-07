@@ -132,11 +132,11 @@ class ReservationCommandUseCaseImplTest {
 
         final ReservationTime validReservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(
-                        now.toLocalTime().plusHours(1)));
+                        now.toLocalTime().plusNanos(1)));
 
         final ReservationTime pastReservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(
-                        now.toLocalTime().minusHours(1)));
+                        now.toLocalTime().minusNanos(1)));
 
         final Theme theme = themeRepository.save(
                 Theme.withoutId(ThemeName.from("공포"),
