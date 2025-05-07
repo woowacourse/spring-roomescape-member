@@ -2,10 +2,10 @@ package roomescape.model;
 
 import static roomescape.util.FormatValidator.validateNameFormat;
 
-public class UserName {
+public class MemberName {
     private final String name;
 
-    public UserName(String name) {
+    public MemberName(String name) {
         validateNotNull(name);
         validateNameFormat(name);
         this.name = name;

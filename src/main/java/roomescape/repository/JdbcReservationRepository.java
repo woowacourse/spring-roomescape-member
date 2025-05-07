@@ -8,11 +8,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.model.MemberName;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
-import roomescape.model.UserName;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository, ReservedTimeChecker, ReservedThemeChecker,
@@ -30,13 +30,13 @@ public class JdbcReservationRepository implements ReservationRepository, Reserve
                 FROM reservation as r inner join reservation_time as t on r.time_id = t.id 
                 inner join theme as th on r.theme_id = th.id""";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            UserName userName = new UserName(rs.getString("name"));
+            MemberName memberName = new MemberName(rs.getString("name"));
             ReservationDateTime dateTime = new ReservationDateTime(LocalDate.parse(rs.getString("date")),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("start_at").toLocalTime()));
             Theme theme = new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("description"),
                     rs.getString("thumbnail"));
 
-            return new Reservation(rs.getLong("id"), userName, dateTime, theme);
+            return new Reservation(rs.getLong("id"), memberName, dateTime, theme);
         });
     }
 

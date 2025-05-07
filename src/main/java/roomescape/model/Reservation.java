@@ -2,21 +2,21 @@ package roomescape.model;
 
 public class Reservation {
     private final Long id;
-    private final UserName userName;
+    private final MemberName memberName;
     private final ReservationDateTime reservationDateTime;
     private final Theme theme;
 
-    public Reservation(Long id, UserName userName, ReservationDateTime reservationDateTime, Theme theme) {
-        validateNotNull(userName, reservationDateTime, theme);
+    public Reservation(Long id, MemberName memberName, ReservationDateTime reservationDateTime, Theme theme) {
+        validateNotNull(memberName, reservationDateTime, theme);
         this.id = id;
-        this.userName = userName;
+        this.memberName = memberName;
         this.reservationDateTime = reservationDateTime;
         this.theme = theme;
     }
 
-    private void validateNotNull(final UserName userName, final ReservationDateTime reservationDateTime,
-                                  final Theme theme) {
-        if (userName == null || reservationDateTime == null || theme == null) {
+    private void validateNotNull(final MemberName memberName, final ReservationDateTime reservationDateTime,
+                                 final Theme theme) {
+        if (memberName == null || reservationDateTime == null || theme == null) {
             throw new IllegalArgumentException("예약 생성 시 사용자, 시간, 테마는 필수입니다.");
         }
     }
@@ -25,8 +25,8 @@ public class Reservation {
         return id;
     }
 
-    public UserName getUserName() {
-        return userName;
+    public MemberName getUserName() {
+        return memberName;
     }
 
     public ReservationDateTime getReservationDateTime() {
