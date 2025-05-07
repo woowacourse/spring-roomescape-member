@@ -363,7 +363,7 @@
     - password: 비밀번호
 
 로그인 기능 구현
-- [ ] /login 요청 시 로그인 페이지 응답
+- [x] /login 요청 시 로그인 페이지 응답
     - 페이지는 templates/login.html 파일을 이용
   
 - [ ] 로그인 API 구현
