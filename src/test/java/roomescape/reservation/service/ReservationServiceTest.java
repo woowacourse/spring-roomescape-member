@@ -68,7 +68,7 @@ class ReservationServiceTest {
                 new Reservation(null, "루키", LocalDate.of(2025, 3, 28), reservationTimeRepository.findById(1L).get(),
                         themeRepository.findById(1L).get()),
                 new Reservation(null, "슬링키", LocalDate.of(2025, 4, 5), reservationTimeRepository.findById(2L).get(),
-                        themeRepository.findById(2L).get()),
+                       themeRepository.findById(2L).get()),
                 new Reservation(null, "범블비", LocalDate.of(2025, 5, 15), reservationTimeRepository.findById(3L).get(),
                         themeRepository.findById(3L).get())
         );
@@ -127,7 +127,7 @@ class ReservationServiceTest {
                 .doesNotThrowAnyException();
     }
 
-    @DisplayName("지난 날짜인 경우 예외가 발생한다")
+    @DisplayName("지난 날짜를 예약하는 경우 예외가 발생한다")
     @Test
     void past_day_exception_test() {
         // given
@@ -151,15 +151,23 @@ class ReservationServiceTest {
                 .hasMessage("지난 시각은 예약할 수 없습니다.");
     }
 
-    @DisplayName("미래 날짜인데 시간이 현재보다 과거인 경우 예외가 발생하지 않는다")
+    @DisplayName("미래 날짜인데 시간이 현재보다 과거인 경우 예약을 저장한다")
     @Test
     void future_test() {
         // given
         ReservationRequest request = new ReservationRequest("루키", LocalDate.now(clock).plusDays(3), 1L, 1L);
 
-        // when & then
-        assertThatCode(() -> reservationService.add(request))
-                .doesNotThrowAnyException();
+        // when
+        ReservationResponse response = reservationService.add(request);
+
+        // then
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(4L),
+                () -> assertThat(response.date()).isEqualTo(LocalDate.now(clock).plusDays(3)),
+                () -> assertThat(response.name()).isEqualTo("루키"),
+                () -> assertThat(response.theme().id()).isEqualTo(1L),
+                () -> assertThat(response.time().id()).isEqualTo(1L)
+        );
     }
 
     @DisplayName("동일한 날짜, 시간, 테마에 대한 중복 예약을 하면 예외가 발생한다")

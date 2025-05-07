@@ -2,8 +2,9 @@ package roomescape.theme.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -99,10 +100,16 @@ class ThemeServiceTest {
     @Test
     void get_themes() {
         // when
-        List<ThemeResponse> actual = themeService.getThemes();
+        List<ThemeResponse> themes = themeService.getThemes();
 
         // then
-        assertThat(actual).hasSize(4);
+        assertAll(
+                () -> assertThat(themes).hasSize(4),
+                () -> assertThat(themes).extracting(ThemeResponse::name)
+                        .containsExactlyInAnyOrder("레벨1 탈출", "레벨2 탈출", "레벨3 탈출", "레벨4 탈출"),
+                () -> assertThat(themes).extracting(ThemeResponse::id)
+                        .containsExactlyInAnyOrder(1L, 2L, 3L, 4L)
+        );
     }
 
     @DisplayName("테마 데이터를 정상적으로 삭제하면 예외가 발생하지 않는다")
@@ -141,7 +148,7 @@ class ThemeServiceTest {
                 new ThemeRankingResponse("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                         "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
         );
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+        assertThat(actual).containsExactlyElementsOf(expected);
     }
 
 }
