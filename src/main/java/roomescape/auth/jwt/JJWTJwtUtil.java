@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.business.model.entity.User;
 import roomescape.business.model.vo.Authentication;
-import roomescape.business.model.vo.Authorization;
+import roomescape.business.model.vo.LoginInfo;
 import roomescape.business.model.vo.UserRole;
 
 import javax.crypto.SecretKey;
@@ -34,7 +34,7 @@ public class JJWTJwtUtil implements JwtUtil {
     }
 
     @Override
-    public Authorization getAuthorization(final String tokenValue) {
+    public LoginInfo getAuthorization(final String tokenValue) {
         validateToken(tokenValue);
         final Claims claims = Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(tokenValue)
@@ -43,7 +43,7 @@ public class JJWTJwtUtil implements JwtUtil {
         final String email = claims.getSubject();
         final UserRole role = UserRole.valueOf(claims.get("role", String.class));
 
-        return new Authorization(email, role);
+        return new LoginInfo(email, role);
     }
 
     @Override

@@ -5,35 +5,31 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.auth.Role;
+import roomescape.auth.AuthRequired;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.LoginInfo;
-import roomescape.business.model.vo.UserRole;
-import roomescape.exception.auth.ForbiddenException;
+import roomescape.exception.auth.NotAuthenticatedException;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class AuthorizationInterceptor implements HandlerInterceptor {
+public class AuthenticationInterceptor implements HandlerInterceptor {
 
     private final JwtUtil jwtUtil;
 
-    public AuthorizationInterceptor(final JwtUtil jwtUtil) {
+    public AuthenticationInterceptor(final JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
     @Override
-    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
+    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
-        Role role = handlerMethod.getMethodAnnotation(Role.class);
-        if (role == null) {
+        AuthRequired authRequired = handlerMethod.getMethodAnnotation(AuthRequired.class);
+        if (authRequired == null) {
             return true;
         }
         String token = extractTokenFromCookies(request);
+        validateAuthenticated(token);
         LoginInfo loginInfo = jwtUtil.getAuthorization(token);
-        validateUserRole(loginInfo, role);
         request.setAttribute("authorization", loginInfo);
         return true;
     }
@@ -52,12 +48,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         return null;
     }
 
-    private static void validateUserRole(final LoginInfo loginInfo, final Role role) {
-        UserRole userRole = loginInfo.userRole();
-        final List<UserRole> allowedRoles = Arrays.asList(role.value());
-
-        if (!allowedRoles.contains(userRole)) {
-            throw new ForbiddenException();
+    private void validateAuthenticated(final String token) {
+        if (token == null || !jwtUtil.validateToken(token)) {
+            throw new NotAuthenticatedException();
         }
     }
 }

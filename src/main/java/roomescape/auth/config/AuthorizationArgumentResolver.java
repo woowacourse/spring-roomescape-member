@@ -6,14 +6,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.business.model.vo.Authorization;
+import roomescape.business.model.vo.LoginInfo;
 import roomescape.exception.auth.NotAuthenticatedException;
 
 public class AuthorizationArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.getParameterType().equals(Authorization.class);
+        return parameter.getParameterType().equals(LoginInfo.class);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package roomescape.business.model.vo;
 
-public record Authorization(
+public record LoginInfo(
         String email,
         UserRole userRole
 ) {
