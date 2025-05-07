@@ -92,6 +92,7 @@ class ReservationMemberServiceTest {
 
         AddReservationDto addReservationDto = new AddReservationDto("asdf", LocalDate.now(), Long.valueOf(timeId),
                 Long.valueOf(themeId));
+
         long memberId = memberService.signup(new SignupRequestDto("test@naver.com", "testtest", "test"));
         long reservationId = reservationMemberService.addReservation(addReservationDto, memberId);
 
@@ -99,7 +100,31 @@ class ReservationMemberServiceTest {
 
         assertAll(
                 () -> assertThat(reservationMembers.get(0).getReservationId()).isEqualTo(reservationId),
-                () -> assertThat(reservationMembers.get(0).getName()).isEqualTo("tuda")
+                () -> assertThat(reservationMembers.get(0).getName()).isEqualTo("test")
         );
+    }
+
+    @Test
+    void 예약정보_검색_테스트() {
+        long timeId = reservationTimeService.addReservationTime(
+                new AddReservationTimeDto(LocalTime.now().plusHours(1L)));
+        long timeId2 = reservationTimeService.addReservationTime(
+                new AddReservationTimeDto(LocalTime.now().plusHours(2L)));
+
+        long themeId = themeService.addTheme(new AddThemeDto("tuda", "asdf", "asdf"));
+        long memberId = memberService.signup(new SignupRequestDto("test@naver.com", "testtest", "test"));
+
+        LocalDate today = LocalDate.now();
+
+        AddReservationDto addReservationDto = new AddReservationDto("asdf", today.plusDays(1L), timeId, themeId);
+        AddReservationDto addReservationDto2 = new AddReservationDto("asdf2", today.plusDays(2L), timeId2, themeId);
+
+        reservationMemberService.addReservation(addReservationDto, memberId);
+        reservationMemberService.addReservation(addReservationDto2, memberId);
+
+        List<ReservationMember> searchedReservations = reservationMemberService.searchReservations(themeId, memberId,
+                today, today.plusDays(1L));
+
+        assertThat(searchedReservations).hasSize(1);
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservationmember.ReservationMemberIds;
@@ -34,5 +35,12 @@ public class FakeReservationMemberRepository implements ReservationMemberReposit
                 .findAny()
                 .orElseThrow(() -> new InvalidReservationException("존재하지 않는 id입니다"));
         reservationMemberIds.remove(deleteReservationMemberId);
+    }
+
+    @Override
+    public List<ReservationMemberIds> findAllByMemberId(Long memberId) {
+        return reservationMemberIds.stream()
+                .filter(currentReservationMemberIds -> currentReservationMemberIds.getId() == memberId)
+                .collect(Collectors.toList());
     }
 }
