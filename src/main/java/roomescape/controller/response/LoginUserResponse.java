@@ -1,10 +1,10 @@
 package roomescape.controller.response;
 
-import roomescape.service.result.LoginUserResult;
+import roomescape.service.result.LoginMemberResult;
 
 public record LoginUserResponse(Long id, String name, String email) {
 
-    public static LoginUserResponse from(LoginUserResult loginUserResult) {
-        return new LoginUserResponse(loginUserResult.id(), loginUserResult.name(), loginUserResult.email());
+    public static LoginUserResponse from(LoginMemberResult loginMemberResult) {
+        return new LoginUserResponse(loginMemberResult.id(), loginMemberResult.name(), loginMemberResult.email());
     }
 }

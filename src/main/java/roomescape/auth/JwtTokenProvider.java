@@ -6,7 +6,7 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.exception.UnAuthorizedException;
-import roomescape.service.result.LoginUserResult;
+import roomescape.service.result.LoginMemberResult;
 
 import java.util.Date;
 
@@ -19,7 +19,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private int validityInMilliseconds;
 
-    public String createToken(final LoginUserResult user) {
+    public String createToken(final LoginMemberResult user) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + validityInMilliseconds);
 

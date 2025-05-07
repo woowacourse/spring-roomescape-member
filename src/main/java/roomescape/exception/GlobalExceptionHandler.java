@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnAuthorizedException.class)
     public ProblemDetail handleUnAuthorizedException(UnAuthorizedException e) {
-        log.error("예외 발생: {}", e.getStackTrace(), e);
+//        log.error("예외 발생: {}", e.getStackTrace(), e);
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다.");
     }
 }

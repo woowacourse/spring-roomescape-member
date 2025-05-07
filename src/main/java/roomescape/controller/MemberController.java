@@ -9,29 +9,29 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.controller.request.LoginUserRequest;
-import roomescape.controller.request.RegisterUserRequest;
+import roomescape.controller.request.LoginMemberRequest;
+import roomescape.controller.request.RegisterMemberRequest;
 import roomescape.controller.response.CheckLoginUserResponse;
 import roomescape.controller.response.LoginUserResponse;
 import roomescape.controller.response.RegisterUserResponse;
 import roomescape.exception.UnAuthorizedException;
 import roomescape.infrastructure.CookieProvider;
 import roomescape.infrastructure.JwtTokenProvider;
-import roomescape.service.UserService;
-import roomescape.service.param.LoginUserParam;
-import roomescape.service.param.RegisterUserParam;
-import roomescape.service.result.LoginUserResult;
+import roomescape.service.MemberService;
+import roomescape.service.param.LoginMemberParam;
+import roomescape.service.param.RegisterMemberParam;
+import roomescape.service.result.LoginMemberResult;
 import roomescape.service.result.RegisterUserResult;
 
 @Controller
-public class UserController {
+public class MemberController {
 
-    private final UserService userService;
+    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
 
-    public UserController(final UserService userService, final JwtTokenProvider jwtTokenProvider, final CookieProvider cookieProvider) {
-        this.userService = userService;
+    public MemberController(final MemberService memberService, final JwtTokenProvider jwtTokenProvider, final CookieProvider cookieProvider) {
+        this.memberService = memberService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.cookieProvider = cookieProvider;
     }
@@ -42,10 +42,10 @@ public class UserController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<RegisterUserResponse> signup(@RequestBody final RegisterUserRequest registerUserRequest) {
+    public ResponseEntity<RegisterUserResponse> signup(@RequestBody final RegisterMemberRequest registerMemberRequest) {
         try {
-            RegisterUserParam registerUserParam = registerUserRequest.toServiceParam();
-            RegisterUserResult registerUserResult = userService.create(registerUserParam);
+            RegisterMemberParam registerMemberParam = registerMemberRequest.toServiceParam();
+            RegisterUserResult registerUserResult = memberService.create(registerMemberParam);
             return ResponseEntity.ok(RegisterUserResponse.from(registerUserResult));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -58,15 +58,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse response) {
+    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginMemberRequest loginMemberRequest, HttpServletResponse response) {
         try {
-            LoginUserParam loginUserParam = loginUserRequest.toServiceParam();
-            LoginUserResult loginUserResult = userService.login(loginUserParam);
+            LoginMemberParam loginMemberParam = loginMemberRequest.toServiceParam();
+            LoginMemberResult loginMemberResult = memberService.login(loginMemberParam);
 
-            String token = jwtTokenProvider.createToken(loginUserResult);
+            String token = authService.createToken(loginMemberResult);
             response.addCookie(cookieProvider.create(token));
 
-            return ResponseEntity.ok().body(LoginUserResponse.from(loginUserResult));
+            return ResponseEntity.ok().body(LoginUserResponse.from(loginMemberResult));
         } catch (Exception e) { //TODO:ExceptionHandler로 처리하기
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -85,7 +85,7 @@ public class UserController {
         }
 
         Long id = jwtTokenProvider.extractIdFromToken(token);
-        return ResponseEntity.ok().body(CheckLoginUserResponse.from(userService.findById(id)));
+        return ResponseEntity.ok().body(CheckLoginUserResponse.from(memberService.findById(id)));
     }
 
     @PostMapping("/logout")
