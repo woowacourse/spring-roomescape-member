@@ -48,7 +48,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                 new Reservation(
-                        resultSet.getLong("id"),
+                        resultSet.getLong("reservation_id"),
                         resultSet.getString("name"),
                         LocalDate.parse(resultSet.getString("date")),
                         new ReservationTime(
@@ -98,7 +98,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) ->
                         new Reservation(
-                                resultSet.getLong("id"),
+                                resultSet.getLong("reservation_id"),
                                 resultSet.getString("name"),
                                 LocalDate.parse(resultSet.getString("date")),
                                 new ReservationTime(
