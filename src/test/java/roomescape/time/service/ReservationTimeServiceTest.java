@@ -63,7 +63,7 @@ class ReservationTimeServiceTest {
         reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
-    @DisplayName("에약 시간 정보를 추가한다")
+    @DisplayName("예약 시간 정보를 추가한다")
     @Test
     void add_test() {
         // given
