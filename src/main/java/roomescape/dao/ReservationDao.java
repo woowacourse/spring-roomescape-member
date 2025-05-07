@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.ThemeName;
 
 @Repository
 public class ReservationDao {
@@ -34,7 +35,7 @@ public class ReservationDao {
 
             var theme = new Theme(
                     rs.getLong("theme_id"),
-                    rs.getString("name"),
+                    new ThemeName(rs.getString("name")),
                     rs.getString("description"),
                     rs.getString("thumbnail")
             );

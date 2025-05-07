@@ -22,6 +22,7 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.ThemeName;
 
 class ReservationServiceTest {
 
@@ -48,7 +49,7 @@ class ReservationServiceTest {
     @Test
     void 예약을_정상적으로_추가() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
+        Theme savedTheme = themeDao.save(new Theme(null, new ThemeName("제목"), "de", "th"));
         ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025, 12, 16), savedTime.getId(),
                 savedTheme.getId());
 
@@ -131,7 +132,7 @@ class ReservationServiceTest {
     @Test
     void 예약을_정상적으로_삭제() {
         ReservationTime savedTime = reservationTimeDao.save(new ReservationTime(null, LocalTime.of(10, 0)));
-        Theme savedTheme = themeDao.save(new Theme(null, "제목", "de", "th"));
+        Theme savedTheme = themeDao.save(new Theme(null, new ThemeName("제목"), "de", "th"));
         ReservationRequest request = new ReservationRequest("이름", LocalDate.of(2025, 12, 16), savedTime.getId(),
                 savedTheme.getId());
         ReservationResponse response = reservationService.addReservation(request);

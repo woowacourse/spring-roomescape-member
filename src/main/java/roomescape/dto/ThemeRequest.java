@@ -2,6 +2,7 @@ package roomescape.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import roomescape.model.Theme;
+import roomescape.model.ThemeName;
 
 public record ThemeRequest(
         @NotBlank String name,
@@ -11,7 +12,7 @@ public record ThemeRequest(
     public Theme toEntity() {
         return new Theme(
                 null,
-                name,
+                new ThemeName(name),
                 description,
                 thumbnail);
     }

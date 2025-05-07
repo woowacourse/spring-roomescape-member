@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Theme;
+import roomescape.model.ThemeName;
 
 @Repository
 public class ThemeDao {
@@ -43,7 +44,7 @@ public class ThemeDao {
 
         Long id = keyHolder.getKey().longValue();
 
-        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        return new Theme(id, new ThemeName(theme.getName()), theme.getDescription(), theme.getThumbnail());
     }
 
     public boolean deleteById(Long id) {
@@ -66,7 +67,7 @@ public class ThemeDao {
                 sql,
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"),
-                        rs.getString("name"),
+                        new ThemeName(rs.getString("name")),
                         rs.getString("description"),
                         rs.getString("thumbnail")
                 )
@@ -84,10 +85,10 @@ public class ThemeDao {
                     sql,
                     Map.of("id", id),
                     (rs, rowNum) -> new Theme(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("description"),
-                    rs.getString("thumbnail")
+                            rs.getLong("id"),
+                            new ThemeName(rs.getString("name")),
+                            rs.getString("description"),
+                            rs.getString("thumbnail")
                     )
             );
             return Optional.ofNullable(theme);
@@ -120,7 +121,7 @@ public class ThemeDao {
                 new MapSqlParameterSource(params),
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"),
-                        rs.getString("name"),
+                        new ThemeName(rs.getString("name")),
                         rs.getString("description"),
                         rs.getString("thumbnail")
                 )
@@ -135,6 +136,6 @@ public class ThemeDao {
                 sql,
                 Map.of("name", name),
                 Boolean.class
-                );
+        );
     }
 }

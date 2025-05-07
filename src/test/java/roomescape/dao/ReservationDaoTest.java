@@ -14,6 +14,7 @@
     import roomescape.model.Reservation;
     import roomescape.model.ReservationTime;
     import roomescape.model.Theme;
+    import roomescape.model.ThemeName;
 
     @JdbcTest
     @Import(ReservationDao.class)
@@ -39,7 +40,7 @@
                     Map.of("id", 1L),
                     (rs, rowNum) -> new Theme(
                             rs.getLong("id"),
-                            rs.getString("name"),
+                            new ThemeName(rs.getString("name")),
                             rs.getString("description"),
                             rs.getString("thumbnail")
                     ));

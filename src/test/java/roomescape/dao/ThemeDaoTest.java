@@ -16,6 +16,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.jdbc.Sql;
 import roomescape.model.Theme;
+import roomescape.model.ThemeName;
 
 @JdbcTest
 @Import(ThemeDao.class)
@@ -38,7 +39,7 @@ class ThemeDaoTest {
     @Test
     void 저장_성공() {
         // given
-        Theme theme = new Theme(null, "test", "testDescript", "testThumb");
+        Theme theme = new Theme(null, new ThemeName("test"), "testDescript", "testThumb");
 
         // when
         Theme saved = dao.save(theme);
@@ -148,7 +149,7 @@ class ThemeDaoTest {
                         """,
                 (rs, rowNum) -> new Theme(
                         rs.getLong("id"),
-                        rs.getString("name"),
+                        new ThemeName(rs.getString("name")),
                         rs.getString("description"),
                         rs.getString("thumbnail")
                 )
