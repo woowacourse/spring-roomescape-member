@@ -6,9 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ReservationTimeRequestTest {
-    
+
     @Test
-    @DisplayName("어떤 필드가 null일 경우 예외가 발생한다.")
+    @DisplayName("시간 필드가 null일 경우 예외가 발생한다.")
     void failIfFieldIsNull() {
         assertThatThrownBy(() -> {
             new ReservationTimeRequest(null);
