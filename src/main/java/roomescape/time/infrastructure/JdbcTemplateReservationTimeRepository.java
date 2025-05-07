@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class H2ReservationTimeRepository implements ReservationTimeRepository {
+public class JdbcTemplateReservationTimeRepository implements ReservationTimeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 

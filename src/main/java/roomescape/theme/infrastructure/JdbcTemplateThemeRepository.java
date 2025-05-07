@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class H2ThemeRepository implements ThemeRepository {
+public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
