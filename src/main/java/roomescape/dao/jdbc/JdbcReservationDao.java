@@ -28,6 +28,19 @@ public class JdbcReservationDao implements ReservationDao {
                 .usingGeneratedKeyColumns("id");
     }
 
+    public Reservation add(Reservation reservation) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("name", reservation.getName());
+        param.put("date", Date.valueOf(reservation.getDate()));
+        param.put("time_id", reservation.getTime().getId());
+        param.put("theme_id", reservation.getTheme().getId());
+
+        Number key = jdbcInsert.executeAndReturnKey(param);
+
+        return new Reservation(key.longValue(), reservation.getName(), reservation.getDate(),
+                reservation.getTime(), reservation.getTheme());
+    }
+
     public List<Reservation> findAll() {
         String sql = """
                 SELECT
@@ -68,27 +81,14 @@ public class JdbcReservationDao implements ReservationDao {
         return jdbcTemplate.query(sql, mapResultsToReservation(), date, themeId);
     }
 
-    public Reservation add(Reservation reservation) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("name", reservation.getName());
-        param.put("date", Date.valueOf(reservation.getDate()));
-        param.put("time_id", reservation.getTime().getId());
-        param.put("theme_id", reservation.getTheme().getId());
-
-        Number key = jdbcInsert.executeAndReturnKey(param);
-
-        return new Reservation(key.longValue(), reservation.getName(), reservation.getDate(),
-                reservation.getTime(), reservation.getTheme());
+    public int deleteById(Long id) {
+        String sql = "DELETE FROM reservation WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
     public boolean existByDateTimeAndTheme(LocalDate date, Long timeId, Long themeId) {
         String sql = "SELECT EXISTS(SELECT id FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?)";
         return jdbcTemplate.queryForObject(sql, Boolean.class, date, timeId, themeId);
-    }
-
-    public int deleteById(Long id) {
-        String sql = "DELETE FROM reservation WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
     }
 
     private RowMapper<Reservation> mapResultsToReservation() {

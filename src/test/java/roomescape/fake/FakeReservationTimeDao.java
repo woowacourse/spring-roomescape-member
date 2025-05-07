@@ -1,23 +1,34 @@
 package roomescape.fake;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 
 public class FakeReservationTimeDao implements ReservationTimeDao {
 
     private final List<ReservationTime> times = new ArrayList<>();
     private final AtomicLong index = new AtomicLong(1);
 
+    @Override
+    public ReservationTime add(ReservationTime reservationTime) {
+        ReservationTime saved = new ReservationTime(
+                index.getAndIncrement(),
+                reservationTime.getStartAt()
+        );
+        times.add(saved);
+        return saved;
+    }
+
+    @Override
     public List<ReservationTime> findAll() {
         return new ArrayList<>(times);
     }
 
+    @Override
     public ReservationTime findById(Long id) {
         return times.stream()
             .filter(time -> time.getId().equals(id))
@@ -26,22 +37,15 @@ public class FakeReservationTimeDao implements ReservationTimeDao {
     }
 
     @Override
-    public List<ReservationTimeWithIsBookedGetResponse> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId) {
-        return List.of();
-    }
-
-    public ReservationTime add(ReservationTime reservationTime) {
-        ReservationTime saved = new ReservationTime(
-            index.getAndIncrement(),
-            reservationTime.getStartAt()
-        );
-        times.add(saved);
-        return saved;
-    }
-
     public int deleteById(Long id) {
-        times.removeIf(time -> time.getId().equals(id));
-        return 1;
+        Optional<ReservationTime> deleteReservationTime = times.stream()
+                .filter(reservationTime -> reservationTime.getId().equals(id))
+                .findFirst();
+        if (deleteReservationTime.isPresent()) {
+            times.remove(deleteReservationTime.get());
+            return 1;
+        }
+        return 0;
     }
 
     @Override

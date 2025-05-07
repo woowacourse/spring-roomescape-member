@@ -28,11 +28,6 @@ public class JdbcThemeDao implements ThemeDao {
             .usingGeneratedKeyColumns("id");
     }
 
-    public List<Theme> findAll() {
-        String sql = "SELECT id, name, description, thumbnail FROM theme";
-        return jdbcTemplate.query(sql, mapResultsToTheme());
-    }
-
     public Theme add(Theme theme) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", theme.getName());
@@ -43,13 +38,9 @@ public class JdbcThemeDao implements ThemeDao {
         return new Theme(key.longValue(), theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
-    public int deleteById(Long id) {
-        try {
-            String sql = "DELETE FROM theme WHERE id = ?";
-            return jdbcTemplate.update(sql, id);
-        } catch (DataIntegrityViolationException exception) {
-            throw new AssociatedReservationExistsException("해당 테마에 이미 저장된 예약이 있으므로 삭제할 수 없다.");
-        }
+    public List<Theme> findAll() {
+        String sql = "SELECT id, name, description, thumbnail FROM theme";
+        return jdbcTemplate.query(sql, mapResultsToTheme());
     }
 
     public Theme findById(Long id) {
@@ -81,6 +72,15 @@ public class JdbcThemeDao implements ThemeDao {
                 LIMIT ?;
             """;
         return jdbcTemplate.query(sql, mapResultsToTheme(), startDate, endDate, limitCount);
+    }
+
+    public int deleteById(Long id) {
+        try {
+            String sql = "DELETE FROM theme WHERE id = ?";
+            return jdbcTemplate.update(sql, id);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AssociatedReservationExistsException("해당 테마에 이미 저장된 예약이 있으므로 삭제할 수 없다.");
+        }
     }
 
     public boolean existByName(String name) {

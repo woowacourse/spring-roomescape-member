@@ -8,13 +8,13 @@ import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
 
 public interface ReservationTimeDao {
 
+    ReservationTime add(ReservationTime reservationTime);
+
     List<ReservationTime> findAll();
 
     ReservationTime findById(Long id);
 
-    ReservationTime add(ReservationTime reservationTime);
+    int deleteById(Long id);
 
     boolean existByStartAt(LocalTime startAt);
-
-    int deleteById(Long id);
 }
