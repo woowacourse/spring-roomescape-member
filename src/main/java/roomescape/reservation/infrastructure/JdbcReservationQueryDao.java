@@ -1,11 +1,11 @@
 package roomescape.reservation.infrastructure;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.infrastructure.dto.ReservationDetailData;
 import roomescape.reservation.presentation.controller.ReservationSearchCondition;
@@ -31,9 +31,9 @@ public class JdbcReservationQueryDao {
                             rs.getTime("start_at").toLocalTime()
                     )
             );
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public JdbcReservationQueryDao(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationQueryDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -66,12 +66,14 @@ public class JdbcReservationQueryDao {
                 JOIN members m ON r.member_id = m.id
                 JOIN theme t ON r.theme_id = t.id
                 JOIN reservation_time rt ON r.time_id = rt.id
-                WHERE r.id = ?
+                WHERE r.id = :id
                 """;
+
+        Map<String, Long> namedParams = Map.of("id", id);
 
         try {
             ReservationDetailData reservationDetailData =
-                    jdbcTemplate.queryForObject(sql, RESERVATION_DETAIL_DATA_ROW_MAPPER, id);
+                    jdbcTemplate.queryForObject(sql, namedParams, RESERVATION_DETAIL_DATA_ROW_MAPPER);
             return Optional.of(reservationDetailData);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -79,7 +81,7 @@ public class JdbcReservationQueryDao {
     }
 
     public List<ReservationDetailData> findByCondition(ReservationSearchCondition condition) {
-        StringBuilder sql = new StringBuilder("""
+        SqlBuilder sql = new SqlBuilder("""
                     SELECT 
                         r.id AS reservation_id,
                         m.id AS member_id, m.name AS member_name,
@@ -93,26 +95,15 @@ public class JdbcReservationQueryDao {
                     WHERE 1=1
                 """);
 
-        List<Object> params = new ArrayList<>();
+        sql.and("m.id = :memberId", "memberId", condition.memberId())
+                .and("t.id = :themeId", "themeId", condition.themeId())
+                .and("r.date >= :dateFrom", "dateFrom", condition.dateFrom())
+                .and("r.date <= :dateTo", "dateTo", condition.dateTo());
 
-        if (condition.memberId() != null) {
-            sql.append(" AND m.id = ?");
-            params.add(condition.memberId());
-        }
-        if (condition.themeId() != null) {
-            sql.append(" AND t.id = ?");
-            params.add(condition.themeId());
-        }
-        if (condition.dateFrom() != null) {
-            sql.append(" AND r.date >= ?");
-            params.add(condition.dateFrom());
-        }
-        if (condition.dateTo() != null) {
-            sql.append(" AND r.date <= ?");
-            params.add(condition.dateTo());
-        }
-
-        return jdbcTemplate.query(sql.toString(), RESERVATION_DETAIL_DATA_ROW_MAPPER,
-                params.toArray());
+        return jdbcTemplate.query(
+                sql.getSql(),
+                sql.getParams(),
+                RESERVATION_DETAIL_DATA_ROW_MAPPER
+        );
     }
 }
