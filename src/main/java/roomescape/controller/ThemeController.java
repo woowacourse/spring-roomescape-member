@@ -60,10 +60,6 @@ public class ThemeController {
                             description = "테마 생성 성공",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ThemeCreateResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "잘못된 요청 형식"
                     )
             }
     )
@@ -92,14 +88,6 @@ public class ThemeController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "테마 삭제 성공"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "테마를 찾을 수 없음"
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "해당 테마에 예약이 존재함"
                     )
             }
     )

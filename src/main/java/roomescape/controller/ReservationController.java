@@ -60,23 +60,10 @@ public class ReservationController {
                             description = "예약 생성 성공",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ReservationCreateResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "잘못된 요청 형식 또는 유효하지 않은 데이터"
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "이미 해당 테마, 시간에 존재하는 예약"
                     )
             }
     )
     public ResponseEntity<ReservationCreateResponse> create(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "예약 생성 정보",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = ReservationCreateRequest.class))
-            )
             @RequestBody final ReservationCreateRequest reservationCreateRequest) {
         final ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest);
 
@@ -96,10 +83,6 @@ public class ReservationController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "예약 삭제 성공"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "예약 정보를 찾을 수 없음"
                     )
             }
     )
