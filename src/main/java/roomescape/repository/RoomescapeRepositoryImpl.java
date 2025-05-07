@@ -75,6 +75,20 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
     }
 
     @Override
+    public boolean existsByThemeId(final Long themeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = :theme_id)";
+        SqlParameterSource param = new MapSqlParameterSource("theme_id", themeId);
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
+
+    @Override
+    public boolean existsByTimeId(final Long timeId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = :time_id)";
+        SqlParameterSource param = new MapSqlParameterSource("time_id", timeId);
+        return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
+    }
+
+    @Override
     public boolean existsByDateAndTime(final LocalDate date, final ReservationTime time) {
         String sql = wrapExistsQuery(joinReservationAndTime("WHERE r.date = :date and t.start_at = :startAt"));
         SqlParameterSource param = new MapSqlParameterSource()

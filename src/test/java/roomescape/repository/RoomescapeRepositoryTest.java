@@ -101,6 +101,36 @@ class RoomescapeRepositoryTest {
     }
 
     @Test
+    void existsByThemeId() {
+        //given
+        long exists = 1L;
+        long nonExists = 9999L;
+
+        //when
+        boolean isExists = repository.existsByThemeId(exists);
+        boolean isNonExists = repository.existsByThemeId(nonExists);
+
+        //then
+        assertThat(isExists).isTrue();
+        assertThat(isNonExists).isFalse();
+    }
+
+    @Test
+    void existsByTimeId() {
+        //given
+        long exists = 1L;
+        long nonExists = 9999L;
+
+        //when
+        boolean isExists = repository.existsByTimeId(exists);
+        boolean isNonExists = repository.existsByTimeId(nonExists);
+
+        //then
+        assertThat(isExists).isTrue();
+        assertThat(isNonExists).isFalse();
+    }
+
+    @Test
     void existsByDateAndTime() {
         //given
         LocalDate date = LocalDate.parse("2023-08-05");

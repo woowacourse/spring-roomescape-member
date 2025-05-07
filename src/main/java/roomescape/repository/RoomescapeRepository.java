@@ -18,5 +18,9 @@ public interface RoomescapeRepository {
 
     boolean deleteById(final Long id);
 
+    boolean existsByThemeId(final Long themeId);
+
+    boolean existsByTimeId(final Long timeId);
+
     boolean existsByDateAndTime(final LocalDate date, final ReservationTime time);
 }
