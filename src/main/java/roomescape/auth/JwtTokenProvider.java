@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.RequiredTypeException;
 import io.jsonwebtoken.security.Keys;
+import roomescape.auth.member.UserInfo;
 import roomescape.domain.member.Member;
 import roomescape.domain.member.Role;
 import roomescape.exception.auth.AuthenticationException;

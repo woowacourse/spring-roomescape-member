@@ -2,11 +2,6 @@ package roomescape.unit.config;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.service.member.MemberService;
-import roomescape.service.reservation.ReservationService;
-import roomescape.service.reservation.ReservationTimeService;
-import roomescape.service.reservation.ThemeService;
-import roomescape.service.reservationmember.ReservationMemberService;
 import roomescape.unit.repository.member.FakeMemberRepository;
 import roomescape.unit.repository.reservation.FakeReservationRepository;
 import roomescape.unit.repository.reservation.FakeReservationTimeRepository;
@@ -39,31 +34,6 @@ public class ServiceFixture {
 
     public static FakeThemeRepository fakeThemeRepository() {
         return new FakeThemeRepository();
-    }
-
-    public static MemberService createMemberService() {
-        return new MemberService(passwordEncoder(), fakeMemberRepository(), jwtTokenProvider());
-    }
-
-    public static ReservationService createReservationService() {
-        return new ReservationService(
-                fakeReservationRepository(),
-                fakeReservationTimeRepository(),
-                fakeThemeRepository()
-        );
-    }
-
-    public static ReservationTimeService createReservationTimeService() {
-        return new ReservationTimeService(fakeReservationRepository(), fakeReservationTimeRepository());
-    }
-
-    public static ThemeService createThemeService() {
-        return new ThemeService(fakeThemeRepository(), fakeReservationRepository());
-    }
-
-    public static ReservationMemberService createReservationMemberService() {
-        return new ReservationMemberService(createMemberService(), createReservationService(),
-                fakeReservationMemberRepository());
     }
 
     public static FakeReservationMemberRepository fakeReservationMemberRepository() {

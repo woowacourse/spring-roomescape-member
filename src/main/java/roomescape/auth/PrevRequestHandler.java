@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.web.servlet.HandlerInterceptor;
+import roomescape.auth.member.UserInfo;
 import roomescape.domain.member.Role;
 
 public class PrevRequestHandler implements HandlerInterceptor {
@@ -28,7 +29,7 @@ public class PrevRequestHandler implements HandlerInterceptor {
             UserInfo userInfo = jwtTokenProvider.resolveToken(token);
             isValidReqeust = userInfo.role().equals(Role.ADMIN) || userInfo.username().equals(SUPER_ADMIN);
         }
-        
+
         if (!isValidReqeust) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }

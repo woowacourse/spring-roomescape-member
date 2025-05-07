@@ -35,7 +35,6 @@ class AdminControllerTest {
     void 어드민_페이지에_접근시_권한이_부족하면_403이_발생한다() {
         Map<String, String> signupParam = Map.of("name", "투다", "email", "token-login2@email.com", "password",
                 "password");
-//        jdbcTemplate.query("update member set ADMIN where name = '투다'");
 
         RestAssured.given()
                 .contentType(ContentType.JSON)

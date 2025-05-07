@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import roomescape.auth.JwtTokenProvider;
-import roomescape.auth.UserInfo;
+import roomescape.auth.member.UserInfo;
 import roomescape.domain.member.Member;
 import roomescape.dto.member.LoginRequestDto;
 import roomescape.dto.member.SignupRequestDto;

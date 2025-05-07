@@ -3,6 +3,7 @@ package roomescape.unit.repository.reservationmember;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import roomescape.domain.member.Member;
@@ -19,6 +20,13 @@ public class FakeReservationMemberRepository implements ReservationMemberReposit
     @Override
     public List<ReservationMemberIds> findAll() {
         return Collections.unmodifiableList(reservationMemberIds);
+    }
+
+    @Override
+    public Optional<ReservationMemberIds> findById(long id) {
+        return reservationMemberIds.stream()
+                .filter((currentReservationMemberIds -> currentReservationMemberIds.getId() == id))
+                .findAny();
     }
 
     @Override
