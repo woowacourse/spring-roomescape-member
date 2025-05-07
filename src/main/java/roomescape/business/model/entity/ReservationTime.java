@@ -42,11 +42,11 @@ public class ReservationTime {
         return startAt.plusMinutes(MINUTE_INTERVAL);
     }
 
-    public String getId() {
+    public String id() {
         return id.value();
     }
 
-    public LocalTime getStartAt() {
+    public LocalTime startAt() {
         return startAt;
     }
 }

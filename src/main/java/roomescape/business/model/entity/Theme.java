@@ -39,19 +39,19 @@ public class Theme {
         return new Theme(Id.create(id), name, description, thumbnail);
     }
 
-    public String getId() {
+    public String id() {
         return id.value();
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public String getDescription() {
+    public String description() {
         return description;
     }
 
-    public String getThumbnail() {
+    public String thumbnail() {
         return thumbnail;
     }
 }

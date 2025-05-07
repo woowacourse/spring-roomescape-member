@@ -49,7 +49,7 @@ class ReservationTimeServiceTest {
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getStartAt()).isEqualTo(time);
+        assertThat(result.startAt()).isEqualTo(time);
         verify(reservationTimeRepository).existByTime(time);
         verify(reservationTimeRepository).existBetween(any(LocalTime.class), any(LocalTime.class));
         verify(reservationTimeRepository).save(any(ReservationTime.class));

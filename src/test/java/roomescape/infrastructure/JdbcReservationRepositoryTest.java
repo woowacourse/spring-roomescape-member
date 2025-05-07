@@ -92,8 +92,8 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId1);
-        assertThat(result.get(1).getId()).isEqualTo(reservationId2);
+        assertThat(result.get(0).id()).isEqualTo(reservationId1);
+        assertThat(result.get(1).id()).isEqualTo(reservationId2);
     }
 
     @Test
@@ -118,8 +118,8 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId1);
-        assertThat(result.get(1).getId()).isEqualTo(reservationId2);
+        assertThat(result.get(0).id()).isEqualTo(reservationId1);
+        assertThat(result.get(1).id()).isEqualTo(reservationId2);
     }
 
     @Test
@@ -144,8 +144,8 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId1);
-        assertThat(result.get(0).getTheme().getId()).isEqualTo(themeId1);
+        assertThat(result.get(0).id()).isEqualTo(reservationId1);
+        assertThat(result.get(0).theme().id()).isEqualTo(themeId1);
     }
 
     @Test
@@ -170,7 +170,7 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getUser().name()).isEqualTo("레몬");
+        assertThat(result.get(0).reserver().name()).isEqualTo("레몬");
     }
 
     @Test
@@ -195,8 +195,8 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId2);
-        assertThat(result.get(1).getId()).isEqualTo(reservationId3);
+        assertThat(result.get(0).id()).isEqualTo(reservationId2);
+        assertThat(result.get(1).id()).isEqualTo(reservationId3);
     }
 
     @Test
@@ -221,8 +221,8 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId2);
-        assertThat(result.get(1).getId()).isEqualTo(reservationId3);
+        assertThat(result.get(0).id()).isEqualTo(reservationId2);
+        assertThat(result.get(1).id()).isEqualTo(reservationId3);
     }
 
     @Test
@@ -247,8 +247,8 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId1);
-        assertThat(result.get(1).getId()).isEqualTo(reservationId2);
+        assertThat(result.get(0).id()).isEqualTo(reservationId1);
+        assertThat(result.get(1).id()).isEqualTo(reservationId2);
     }
 
     @Test
@@ -277,9 +277,9 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId2);
-        assertThat(result.get(0).getTheme().getId()).isEqualTo(themeId1);
-        assertThat(result.get(0).getUser().name()).isEqualTo("레몬");
+        assertThat(result.get(0).id()).isEqualTo(reservationId2);
+        assertThat(result.get(0).theme().id()).isEqualTo(themeId1);
+        assertThat(result.get(0).reserver().name()).isEqualTo("레몬");
     }
 
     @Test
@@ -310,10 +310,10 @@ class JdbcReservationRepositoryTest {
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(reservationId2);
-        assertThat(result.get(0).getTheme().getId()).isEqualTo(themeId1);
-        assertThat(result.get(0).getUser().name()).isEqualTo("레몬");
-        assertThat(result.get(0).getDate()).isEqualTo(DATE2);
+        assertThat(result.get(0).id()).isEqualTo(reservationId2);
+        assertThat(result.get(0).theme().id()).isEqualTo(themeId1);
+        assertThat(result.get(0).reserver().name()).isEqualTo("레몬");
+        assertThat(result.get(0).date()).isEqualTo(DATE2);
     }
 
     @Test
@@ -335,10 +335,10 @@ class JdbcReservationRepositoryTest {
         // then
         assertThat(result).isPresent();
         final Reservation reservation = result.get();
-        assertThat(reservation.getId()).isEqualTo(reservationId);
-        assertThat(reservation.getDate()).isEqualTo(DATE1);
-        assertThat(reservation.getTime().getId()).isEqualTo(timeId);
-        assertThat(reservation.getTheme().getId()).isEqualTo(themeId);
+        assertThat(reservation.id()).isEqualTo(reservationId);
+        assertThat(reservation.date()).isEqualTo(DATE1);
+        assertThat(reservation.time().id()).isEqualTo(timeId);
+        assertThat(reservation.theme().id()).isEqualTo(themeId);
     }
 
     @Test

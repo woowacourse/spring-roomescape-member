@@ -58,27 +58,27 @@ public class Reservation {
         return new Reservation(Id.create(id), user, date, time, theme);
     }
 
-    public String getId() {
+    public String id() {
         return id.value();
     }
 
-    public String getName() {
+    public String reserverName() {
         return user.name();
     }
-    
-    public LocalDate getDate() {
+
+    public LocalDate date() {
         return date;
     }
 
-    public ReservationTime getTime() {
+    public ReservationTime time() {
         return time;
     }
 
-    public Theme getTheme() {
+    public Theme theme() {
         return theme;
     }
 
-    public User getUser() {
+    public User reserver() {
         return user;
     }
 }

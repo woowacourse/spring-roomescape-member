@@ -129,7 +129,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 사용자 ID로 예약 시 예외가 발생한다")
-    void addAndGet_NonExistingUserId_ThrowsException() {
+    void addAndGet_NonExistingReserverId_ThrowsException() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);
         String timeId = "time-id";

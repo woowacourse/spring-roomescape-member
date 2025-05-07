@@ -37,7 +37,7 @@ public class ReservationTimeService {
     }
 
     private void validateNoDuplication(final ReservationTime reservationTime) {
-        boolean isExist = reservationTimeRepository.existByTime(reservationTime.getStartAt());
+        boolean isExist = reservationTimeRepository.existByTime(reservationTime.startAt());
         if (isExist) {
             throw new HasDuplicatedTimeException();
         }

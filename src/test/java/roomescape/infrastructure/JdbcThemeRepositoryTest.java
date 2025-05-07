@@ -50,8 +50,8 @@ class JdbcThemeRepositoryTest {
         final List<Theme> result = sut.findAll();
 
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo("1");
-        assertThat(result.get(1).getId()).isEqualTo("2");
+        assertThat(result.get(0).id()).isEqualTo("1");
+        assertThat(result.get(1).id()).isEqualTo("2");
     }
 
     @Test
@@ -72,8 +72,8 @@ class JdbcThemeRepositoryTest {
         final List<Theme> result = sut.findPopularThemes(DATE.minusDays(5), DATE.plusDays(5), 2);
 
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo("3");
-        assertThat(result.get(1).getId()).isEqualTo("2");
+        assertThat(result.get(0).id()).isEqualTo("3");
+        assertThat(result.get(1).id()).isEqualTo("2");
     }
 
     @Test
@@ -83,8 +83,8 @@ class JdbcThemeRepositoryTest {
         final Optional<Theme> result = sut.findById("1");
 
         assertThat(result.isPresent()).isTrue();
-        assertThat(result.get().getId()).isEqualTo("1");
-        assertThat(result.get().getName()).isEqualTo("주홍색 연구");
+        assertThat(result.get().id()).isEqualTo("1");
+        assertThat(result.get().name()).isEqualTo("주홍색 연구");
     }
 
     @Test

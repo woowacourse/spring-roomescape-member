@@ -60,8 +60,8 @@ class JdbcReservationTimeRepositoryTest {
 
         // then
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).getId()).isEqualTo(timeId1);
-        assertThat(result.get(1).getId()).isEqualTo(timeId2);
+        assertThat(result.get(0).id()).isEqualTo(timeId1);
+        assertThat(result.get(1).id()).isEqualTo(timeId2);
     }
 
     @Test
@@ -86,8 +86,8 @@ class JdbcReservationTimeRepositoryTest {
 
         // then
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).getId()).isEqualTo(timeId2);
-        assertThat(result.get(1).getId()).isEqualTo(timeId3);
+        assertThat(result.get(0).id()).isEqualTo(timeId2);
+        assertThat(result.get(1).id()).isEqualTo(timeId3);
     }
 
     @Test
@@ -102,8 +102,8 @@ class JdbcReservationTimeRepositoryTest {
         // then
         assertThat(result.isPresent()).isTrue();
         final ReservationTime reservationTime = result.get();
-        assertThat(reservationTime.getId()).isEqualTo(timeId);
-        assertThat(reservationTime.getStartAt()).isEqualTo(TIME1);
+        assertThat(reservationTime.id()).isEqualTo(timeId);
+        assertThat(reservationTime.startAt()).isEqualTo(TIME1);
     }
 
     @Test

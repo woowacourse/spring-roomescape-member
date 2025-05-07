@@ -34,8 +34,8 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
     @Override
     public void save(ReservationTime reservationTime) {
         insert.execute(Map.of(
-                "id", reservationTime.getId(),
-                "start_at", reservationTime.getStartAt()
+                "id", reservationTime.id(),
+                "start_at", reservationTime.startAt()
         ));
     }
 

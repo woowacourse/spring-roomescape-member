@@ -32,10 +32,10 @@ class ReservationTest {
 
             // then
             assertThat(reservation).isNotNull();
-            assertThat(reservation.getName()).isEqualTo(NAME);
-            assertThat(reservation.getDate()).isEqualTo(DATE);
-            assertThat(reservation.getTime()).isEqualTo(RESERVATION_TIME);
-            assertThat(reservation.getTheme()).isEqualTo(THEME);
+            assertThat(reservation.reserverName()).isEqualTo(NAME);
+            assertThat(reservation.date()).isEqualTo(DATE);
+            assertThat(reservation.time()).isEqualTo(RESERVATION_TIME);
+            assertThat(reservation.theme()).isEqualTo(THEME);
         }
 
         @Test

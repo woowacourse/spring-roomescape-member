@@ -36,10 +36,10 @@ public class JdbcThemeRepository implements ThemeRepository {
     @Override
     public void save(Theme theme) {
         insert.execute(Map.of(
-                "id", theme.getId(),
-                "name", theme.getName(),
-                "description", theme.getDescription(),
-                "thumbnail", theme.getThumbnail()
+                "id", theme.id(),
+                "name", theme.name(),
+                "description", theme.description(),
+                "thumbnail", theme.thumbnail()
         ));
     }
 

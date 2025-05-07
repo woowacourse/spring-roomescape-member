@@ -64,7 +64,7 @@ public class ReservationService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(ThemeNotFoundException::new);
 
-        if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.getStartAt(), theme)) {
+        if (reservationRepository.isDuplicateDateAndTimeAndTheme(date, reservationTime.startAt(), theme)) {
             throw new AlreadyReservedException();
         }
 

@@ -77,11 +77,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public void save(final Reservation reservation) {
         insert.execute(Map.of(
-                "id", reservation.getId(),
-                "date", reservation.getDate(),
-                "time_id", reservation.getTime().getId(),
-                "theme_id", reservation.getTheme().getId(),
-                "user_id", reservation.getUser().id()
+                "id", reservation.id(),
+                "date", reservation.date(),
+                "time_id", reservation.time().id(),
+                "theme_id", reservation.theme().id(),
+                "user_id", reservation.reserver().id()
         ));
     }
 
@@ -161,7 +161,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 AND t.start_at = ?
                 AND r.theme_id = ?
                 """;
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time, theme.getId());
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, date, time, theme.id());
         return count != null && count > 0;
     }
 

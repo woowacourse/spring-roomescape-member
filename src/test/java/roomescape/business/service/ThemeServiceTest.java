@@ -45,9 +45,9 @@ class ThemeServiceTest {
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(name);
-        assertThat(result.getDescription()).isEqualTo(description);
-        assertThat(result.getThumbnail()).isEqualTo(thumbnail);
+        assertThat(result.name()).isEqualTo(name);
+        assertThat(result.description()).isEqualTo(description);
+        assertThat(result.thumbnail()).isEqualTo(thumbnail);
         verify(themeRepository).save(any(Theme.class));
     }
 
