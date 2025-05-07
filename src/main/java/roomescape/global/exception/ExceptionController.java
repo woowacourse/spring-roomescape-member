@@ -46,4 +46,9 @@ public class ExceptionController {
         return ResponseEntity.badRequest()
                 .body(PREFIX + e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleBasicException() {
+        return ResponseEntity.internalServerError().body(PREFIX + " 알 수 없는 에러가 발생했습니다.");
+    }
 }
