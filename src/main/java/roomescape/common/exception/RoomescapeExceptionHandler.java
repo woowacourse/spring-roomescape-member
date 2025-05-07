@@ -9,21 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RoomescapeExceptionHandler {
 
-    @ExceptionHandler(IllegalStateException.class)
+    @ExceptionHandler({IllegalStateException.class, DataFormatException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleException(IllegalStateException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleException(IllegalArgumentException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(DataFormatException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleException(DataFormatException ex) {
         return ex.getMessage();
     }
 
