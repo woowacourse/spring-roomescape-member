@@ -26,7 +26,7 @@ public class JdbcReservationDaoTest {
 
     @DisplayName("데이터 베이스에 예약을 추가하고 id 값을 반환한다")
     @Test
-    void insertTest1() {
+    void insertTest() {
         // given
         final ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(10, 0));
         final RoomTheme roomTheme = new RoomTheme(1L, "예시 1", "우테코 레벨2를 탈출하는 내용입니다.",
@@ -42,7 +42,7 @@ public class JdbcReservationDaoTest {
 
     @DisplayName("같은 예약이 존재하면 true를 반환한다")
     @Test
-    void existsSameReservationTest1() {
+    void existsSameReservationTest() {
         // given // when
         final boolean result = reservationDAO.existSameReservation(LocalDate.of(2025, 4, 28), 1L, 1L);
 
@@ -52,7 +52,7 @@ public class JdbcReservationDaoTest {
 
     @DisplayName("존재하는 모든 예약을 찾아 반환한다")
     @Test
-    void findAllTest1() {
+    void findAllTest() {
         // given // when
         final List<Reservation> results = reservationDAO.findAll();
 
@@ -68,7 +68,7 @@ public class JdbcReservationDaoTest {
 
     @DisplayName("id에 해당하는 예약을 반환한다")
     @Test
-    void findByIdTest1() {
+    void findByIdTest() {
         // given
         final long id = 1L;
 
@@ -82,7 +82,7 @@ public class JdbcReservationDaoTest {
 
     @DisplayName("주어진 timeId를 활용하는 예약이 있으면 true를 반환한다")
     @Test
-    void existsByTimeIdTest1() {
+    void existsByTimeIdTest() {
         // given
         final long timeId = 1L;
 
@@ -95,7 +95,7 @@ public class JdbcReservationDaoTest {
 
     @DisplayName("주어진 themeId를 활용하는 예약이 있으면 true를 반환한다")
     @Test
-    void existsByThemeIdTest1() {
+    void existsByThemeIdTest() {
         // given
         final long themeId = 1L;
 
@@ -108,7 +108,7 @@ public class JdbcReservationDaoTest {
 
     @DisplayName("주어진 id에 해당하는 예약을 삭제한다")
     @Test
-    void deleteByIdTest1() {
+    void deleteByIdTest() {
         // given
         final long id = 1L;
 

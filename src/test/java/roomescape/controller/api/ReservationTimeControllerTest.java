@@ -52,7 +52,7 @@ class ReservationTimeControllerTest {
 
     @DisplayName("예약 시간 삭제 요청시, 주어진 아이디에 해당하는 예약 시간이 없다면 NOT FOUND를 응답한다.")
     @Test
-    void removeReservationTimeExceptionTest() {
+    void removeReservationTimeTest_WhenReservationTimeDoesNotExisted() {
         RestAssured.given().log().all()
                 .when().delete("/times/1000")
                 .then().log().all()

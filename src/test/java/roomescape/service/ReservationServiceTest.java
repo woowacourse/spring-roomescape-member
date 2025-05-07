@@ -30,7 +30,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 정보를 저장한 다음 저장 정보를 리턴한다")
-    void saveReservation() {
+    void addReservationTest() {
         // given // when
         final ReservationCreation creation = new ReservationCreation("검프", FUTURE_DATE, 1L, 1L);
         final Reservation actual = reservationService.addReservation(creation);
@@ -44,7 +44,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("테마, 날짜, 시간이 같은 예약이 존재하면 예외를 던진다")
-    void exceptionWhenSameDateTime() {
+    void addReservationTest_WhenDuplicatedReservationExists() {
         // given
         reservationService.addReservation(ReservationCreation.from(
                 new CreateReservationRequest("test", FUTURE_DATE, 1L, 1L)));
@@ -59,7 +59,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("과거 시점으로 예약하는 경우 예외를 던진다")
-    void exceptionWhenPastDate() {
+    void addReservationTest_WhenDateIsPast() {
         // given
         final LocalDate pastDate = LocalDate.of(2000, 1, 1);
 
@@ -72,7 +72,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 timeId인 경우 예외를 던진다")
-    void throwExceptionWhenNotExistTimeId() {
+    void addReservationTest_WhenTimeIdDoesNotExist() {
         // given
         final long notExistTimeId = 1000L;
 
@@ -85,7 +85,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 themeId 경우 예외를 던진다")
-    void throwExceptionWhenNotExistThemeId() {
+    void addReservationTest_WhenThemeIdDoesNotExist() {
         // given
         final long notExistThemeId = 1000L;
 
@@ -98,7 +98,7 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약을 조회한다")
-    void findReservation() {
+    void findReservationsTest() {
         // given // when
         final List<Reservation> actual = reservationService.findAllReservations();
 
@@ -108,14 +108,14 @@ class ReservationServiceTest {
 
     @Test
     @DisplayName("예약을 삭제한다")
-    void removeReservationById() {
+    void removeReservationByIdTest() {
         // given // when // then
         assertDoesNotThrow(() -> reservationService.removeReservationById(1L));
     }
 
     @Test
     @DisplayName("존재하지 않는 예약을 삭제하려는 경우 예외를 던진다")
-    void removeNotExistReservationById() {
+    void removeReservationByIdTest_WhenReservationDoesNotExist() {
         // given
         final long notExistId = 1000L;
 

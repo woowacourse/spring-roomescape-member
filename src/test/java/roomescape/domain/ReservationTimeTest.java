@@ -13,7 +13,7 @@ class ReservationTimeTest {
 
     @DisplayName("예약 시간 생성시, 예약 시간이 빈 값이면 예외를 던진다")
     @Test
-    void createReservationTimeTest1() {
+    void createReservationTimeTest_WhenTimeIsNull() {
         // given // when // then
         assertThatThrownBy(() -> new ReservationTime(null))
                 .isInstanceOf(InvalidInputException.class)
@@ -22,7 +22,7 @@ class ReservationTimeTest {
 
     @DisplayName("해당 예약 시간이 현재 시간보다 과거인 경우 true를 반환한다")
     @Test
-    void validatePastTimeTest1() {
+    void validatePastTimeTest_WhenTimeIsPast() {
         // given
         final LocalTime pastTime = LocalTime.now().minusMinutes(1);
         final ReservationTime reservationTime = new ReservationTime(pastTime);
@@ -33,7 +33,7 @@ class ReservationTimeTest {
 
     @DisplayName("해당 예약 시간이 현재 시간보다 미래인 경우 false를 반환한다")
     @Test
-    void validatePastTimeTest2() {
+    void validatePastTimeTest_WhenTimeIsFuture() {
         // given
         final LocalTime futureTime = LocalTime.now().plusMinutes(1);
         final ReservationTime reservationTime = new ReservationTime(futureTime);

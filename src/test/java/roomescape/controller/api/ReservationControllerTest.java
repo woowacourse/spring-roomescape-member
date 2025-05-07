@@ -55,7 +55,7 @@ class ReservationControllerTest {
 
     @DisplayName("예약 삭제 요청시, 주어진 아이디에 해당하는 예약이 없다면 NOT FOUND를 응답한다.")
     @Test
-    void removeReservationExceptionTest() {
+    void removeReservationTest_WhenReservationDoesNotExisted() {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1000")
                 .then().log().all()

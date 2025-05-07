@@ -28,7 +28,7 @@ class PopularThemeSelectionCriteriaTest {
 
     @DisplayName("인기 테마 선택 기준을 생성 시, 시작 기준일이 null이면 예외를 던진다")
     @Test
-    void createPopularThemeSelectionCriteriaExceptionTest() {
+    void createPopularThemeSelectionCriteriaTest_WhenStartBaseDateIsNull() {
         // given
         final int durationInDays = 10;
 
@@ -40,7 +40,7 @@ class PopularThemeSelectionCriteriaTest {
 
     @DisplayName("인기 테마 선택 기준을 생성 시, 인기 테마 선정 기준 기한 일수가 음수나 0이면 예외를 던진다")
     @Test
-    void throwExceptionTest() {
+    void createPopularThemeSelectionCriteriaTest_WhenDurationInDaysIsNegativeOrZero() {
         // given
         final LocalDate startBaseDate = LocalDate.of(2025, 5, 5);
         final int durationInDays = -1;

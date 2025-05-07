@@ -25,7 +25,7 @@ class RoomThemeServiceTest {
 
     @Test
     @DisplayName("테마를 추가한다")
-    void addTheme() {
+    void addThemeTest() {
         // given
         final RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
         // when // then
@@ -35,7 +35,7 @@ class RoomThemeServiceTest {
 
     @Test
     @DisplayName("같은 테마가 존재하면 예외를 던진다")
-    void throwExceptionWhenExistSameTheme() {
+    void addThemeTest_WhenThemeAlreadyExists() {
         // given
         final RoomThemeCreation creation = new RoomThemeCreation("test", "description", "thumbnail");
         roomThemeService.addTheme(creation);
@@ -48,7 +48,7 @@ class RoomThemeServiceTest {
 
     @Test
     @DisplayName("존재하는 모든 테마를 조회한다")
-    void findAllThemes() {
+    void findAllThemesTest() {
         // given // when
         final List<RoomTheme> allThemes = roomThemeService.findAllThemes();
 
@@ -58,7 +58,7 @@ class RoomThemeServiceTest {
 
     @Test
     @DisplayName("테마를 삭제한다")
-    void deleteTheme() {
+    void deleteThemeTest() {
         // given
         roomThemeService.addTheme(new RoomThemeCreation("test", "description", "thumbnail"));
         final long deleteId = 3L;
@@ -70,7 +70,7 @@ class RoomThemeServiceTest {
 
     @Test
     @DisplayName("사용중인 테마를 삭제하는 경우 예외를 던진다")
-    void throwExceptionWhenDeleteUsingTheme() {
+    void deleteThemeTest_WhenThemeIsUsedInReservation() {
         // given
         final long deleteId = 1L;
 
@@ -82,7 +82,7 @@ class RoomThemeServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 테마를 삭제하는 경우 예외를 던진다")
-    void throwExceptionWhenNotExistTheme() {
+    void deleteThemeTest_WhenThemeDoesNotExist() {
         // given
         final long deleteId = 1000L;
 

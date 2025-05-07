@@ -29,7 +29,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("시간 데이터를 추가할 수 있어야 한다")
-    void addReservationTime() {
+    void addReservationTimeTest() {
         // given // when
         final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(13, 0));
         reservationTimeService.addReservationTime(creation);
@@ -40,7 +40,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("이미 존재하는 시간 데이터일 경우 예외를 던진다")
-    void cannotAddReservationTime() {
+    void addReservationTimeTest_WhenTimeAlreadyExists() {
         // given
         final ReservationTimeCreation creation = new ReservationTimeCreation(LocalTime.of(10, 0));
 
@@ -52,7 +52,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("시간 데이터를 조회할 수 있어야 한다")
-    void findAllReservationTimes() {
+    void findAllReservationTimesTest() {
         // given // when
         final List<ReservationTime> result = reservationTimeService.findAllReservationTimes();
 
@@ -62,7 +62,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("이용가능한 예약 시간을 조회한다")
-    void findAvailableTime() {
+    void findAvailableTimeTest() {
         // given // when
         final List<AvailableReservationTime> result = reservationTimeService.findAllAvailableTime(
                 LocalDate.of(2025, 4, 28), 1
@@ -78,7 +78,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("id를 기반으로 시간 데이터를 삭제할 수 있다")
-    void deleteById() {
+    void deleteByIdTest() {
         // given // when // then
         assertThatCode(() -> reservationTimeService.deleteById(2L))
                 .doesNotThrowAnyException();
@@ -86,7 +86,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 시간을 삭제하는 경우 예외를 던진다")
-    void deleteNotExistTimeById() {
+    void deleteTimeByIdTest_WhenTimeDoesNotExist() {
         // given // when // then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1000L))
                 .isInstanceOf(NotExistedValueException.class)
@@ -95,7 +95,7 @@ class ReservationTimeServiceTest {
 
     @Test
     @DisplayName("사용중인 예약 시간을 삭제하려는 경우 예외를 던진다")
-    void deleteUsedTimeById() {
+    void deleteByIdTest_WhenTimeIsUsedInReservation() {
         // given // when // then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))
                 .isInstanceOf(InUseException.class)

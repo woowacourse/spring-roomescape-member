@@ -24,7 +24,7 @@ class AvailableReservationTimeTest {
 
     @DisplayName("이용 가능한 예약 시간 생성시, 예약된 시간 목록이 null이면 예외를 던진다")
     @Test
-    void createAvailableReservationTimeTest1() {
+    void createAvailableReservationTimeTest_WhenBookedTimesIsNull() {
         // given // when // then
         assertThatThrownBy(() -> new AvailableReservationTime(null, RESERVATION_TIME))
                 .isInstanceOf(InvalidInputException.class)
@@ -33,7 +33,7 @@ class AvailableReservationTimeTest {
 
     @DisplayName("이용 가능한 예약 시간 생성시, 예약 시간이 null이면 예외를 던진다")
     @Test
-    void createAvailableReservationTimeTest2() {
+    void createAvailableReservationTimeTest_WhenReservationTimeIsNull() {
         // given // when // then
         assertThatThrownBy(() -> new AvailableReservationTime(BOOKED_TIMES, null))
                 .isInstanceOf(InvalidInputException.class)
@@ -42,7 +42,7 @@ class AvailableReservationTimeTest {
 
     @DisplayName("예약된 시간 목록이 비어 있으면 false를 반환한다")
     @Test
-    void isBookedTest1() {
+    void isBookedTest_WhenBookedTimesIsEmpty() {
         // given
         final List<ReservationTime> emptyBookedTimes = List.of();
 
@@ -56,7 +56,7 @@ class AvailableReservationTimeTest {
 
     @DisplayName("해당 예약 시간이 예약된 시간 목록에 포함되어 있으면 true를 반환한다")
     @Test
-    void isBookedTest2() {
+    void isBookedTest_WhenBookedTimesContainsReservationTime() {
         // given // when
         final AvailableReservationTime availableReservationTime
                 = new AvailableReservationTime(BOOKED_TIMES, RESERVATION_TIME);
@@ -67,7 +67,7 @@ class AvailableReservationTimeTest {
 
     @DisplayName("해당 예약 시간이 예약된 시간 목록에 포함되어 있지 않으면 false를 반환한다")
     @Test
-    void isBookedTest3() {
+    void isBookedTest_WhenBookedTimesNotContainsReservationTime() {
         // given
         final ReservationTime notBookedTime = new ReservationTime(4L, LocalTime.of(13, 0));
 

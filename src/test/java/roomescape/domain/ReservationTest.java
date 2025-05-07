@@ -21,7 +21,7 @@ class ReservationTest {
 
     @DisplayName("예약 생성시, 예약자 명이 빈 값이면 예외를 던진다")
     @Test
-    void createReservationTest1() {
+    void createReservationTest_WhenNameIsNull() {
         // given // when // then
         assertThatThrownBy(() -> new Reservation(null, DATE, RESERVATION_TIME, ROOM_THEME))
                 .isInstanceOf(InvalidInputException.class)
@@ -30,7 +30,7 @@ class ReservationTest {
 
     @DisplayName("예약 생성시, 예약 날짜가 빈 값이면 예외를 던진다")
     @Test
-    void createReservationTest2() {
+    void createReservationTest_WhenDateIsNull() {
         // given // when // then
         assertThatThrownBy(() -> new Reservation(NAME, null, RESERVATION_TIME, ROOM_THEME))
                 .isInstanceOf(InvalidInputException.class)
@@ -39,7 +39,7 @@ class ReservationTest {
 
     @DisplayName("예약 생성시, 예약 시간이 빈 값이면 예외를 던진다")
     @Test
-    void createReservationTest3() {
+    void createReservationTest_WhenReservationTimeIsNull() {
         // given // when // then
         assertThatThrownBy(() -> new Reservation(NAME, DATE, null, ROOM_THEME))
                 .isInstanceOf(InvalidInputException.class)
@@ -48,7 +48,7 @@ class ReservationTest {
 
     @DisplayName("예약 생성시, 예약 테마가 빈 값이면 예외를 던진다")
     @Test
-    void createReservationTest4() {
+    void createReservationTest_WhenRoomThemeIsNull() {
         // given // when // then
         assertThatThrownBy(() -> new Reservation(NAME, DATE, RESERVATION_TIME, null))
                 .isInstanceOf(InvalidInputException.class)
@@ -57,7 +57,7 @@ class ReservationTest {
 
     @DisplayName("해당 예약의 날짜가 과거 시점이면 true를 반환한다")
     @Test
-    void validatePastDateAndTimeTest1() {
+    void validatePastDateAndTimeTest_WhenDateIsPast() {
         // given
         final LocalDate pastDate = LocalDate.now().minusDays(1);
         final Reservation reservation = new Reservation(NAME, pastDate, RESERVATION_TIME, ROOM_THEME);
@@ -68,7 +68,7 @@ class ReservationTest {
 
     @DisplayName("해당 예약의 날짜가 미래 시점이면 false를 반환한다")
     @Test
-    void validatePastDateAndTimeTest2() {
+    void validatePastDateAndTimeTest_WhenDateIsFuture() {
         // given
         final Reservation reservation = new Reservation(NAME, DATE, RESERVATION_TIME, ROOM_THEME);
 
@@ -78,7 +78,7 @@ class ReservationTest {
 
     @DisplayName("해당 예약의 날짜가 오늘 날짜이고, 시간이 과거 시간대 이면 true를 반환한다")
     @Test
-    void validatePastDateAndTimeTest3() {
+    void validatePastDateAndTimeTest_WhenDateIsTodayAndTimeIsPast() {
         // given
         final ReservationTime pastTime = new ReservationTime(2L, LocalTime.now().minusHours(1));
         final Reservation reservation = new Reservation(NAME, LocalDate.now(), pastTime, ROOM_THEME);
@@ -89,7 +89,7 @@ class ReservationTest {
 
     @DisplayName("해당 예약의 날짜가 오늘 날짜이고, 시간이 미래 시간대 이면 false를 반환한다")
     @Test
-    void validatePastDateAndTimeTest4() {
+    void validatePastDateAndTimeTest_WhenDateIsTodayAndTimeIsFuture() {
         // given
         final ReservationTime futureTime = new ReservationTime(2L, LocalTime.now().plusMinutes(1));
         final Reservation reservation = new Reservation(NAME, LocalDate.now(), futureTime, ROOM_THEME);

@@ -54,7 +54,7 @@ class RoomThemeControllerTest {
 
     @DisplayName("방 테마 삭제 요청시, 주어진 아이디에 해당하는 방 테마가 없다면 NOT FOUND를 응답한다.")
     @Test
-    void removeRoomThemeExceptionTest() {
+    void removeRoomThemeTest_WhenRoomThemeDoesNotExisted() {
         RestAssured.given().log().all()
                 .when().delete("/themes/1000")
                 .then().log().all()
