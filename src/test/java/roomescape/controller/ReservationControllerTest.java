@@ -40,6 +40,8 @@ import roomescape.dto.ThemeResponseDto;
 @Import(TestDaoConfiguration.class)
 class ReservationControllerTest {
 
+    private static final LocalDate NOW_DATE = LocalDate.now().plusDays(1);
+
     @Autowired
     private FakeReservationDaoImpl reservationDao;
 
@@ -63,7 +65,7 @@ class ReservationControllerTest {
         //given
         reservationTimeDao.saveReservationTime(new ReservationTime(LocalTime.of(10, 0)));
         themeDao.saveTheme(new Theme("테마", "설명", "썸네일"));
-        ReservationRequestDto request = new ReservationRequestDto("도기", "2025-05-07", 1L, 1L);
+        ReservationRequestDto request = new ReservationRequestDto("도기", NOW_DATE.toString(), 1L, 1L);
 
         //when
         ReservationResponseDto actual = RestAssured
@@ -85,7 +87,7 @@ class ReservationControllerTest {
                 .containsExactly(
                         1L,
                         "도기",
-                        "2025-05-07",
+                        NOW_DATE.toString(),
                         new ReservationTimeResponseDto(
                                 1L,
                                 "10:00"),
@@ -109,13 +111,13 @@ class ReservationControllerTest {
 
         reservationDao.saveReservation(new Reservation(
                 new Person("도기"),
-                new ReservationDate(LocalDate.of(2025, 5, 8)),
+                new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));
 
         reservationDao.saveReservation(new Reservation(
                 new Person("도기"),
-                new ReservationDate(LocalDate.of(2025, 5, 9)),
+                new ReservationDate(NOW_DATE.plusDays(1)),
                 reservationTime,
                 theme));
 
@@ -138,14 +140,14 @@ class ReservationControllerTest {
                 new ReservationResponseDto(
                         1L,
                         "도기",
-                        "2025-05-08",
+                        NOW_DATE.toString(),
                         new ReservationTimeResponseDto(1L, "10:00"),
                         new ThemeResponseDto(1L, "테마", "설명", "썸네일")
                 ),
                 new ReservationResponseDto(
                         2L,
                         "도기",
-                        "2025-05-09",
+                        NOW_DATE.plusDays(1).toString(),
                         new ReservationTimeResponseDto(1L, "10:00"),
                         new ThemeResponseDto(1L, "테마", "설명", "썸네일")
                 )
@@ -167,7 +169,7 @@ class ReservationControllerTest {
 
         reservationDao.saveReservation(new Reservation(
                 new Person("도기"),
-                new ReservationDate(LocalDate.of(2025, 5, 8)),
+                new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));
 
@@ -202,12 +204,11 @@ class ReservationControllerTest {
 
         reservationDao.saveReservation(new Reservation(
                 new Person("도기"),
-                new ReservationDate(LocalDate.of(2025, 5, 8)),
+                new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme));
 
-        AvailableReservationTimeRequestDto request = new AvailableReservationTimeRequestDto(
-                LocalDate.of(2025, 5, 8), 1L);
+        AvailableReservationTimeRequestDto request = new AvailableReservationTimeRequestDto(NOW_DATE, 1L);
 
         //when
         List<AvailableReservationTimeResponseDto> actual = RestAssured

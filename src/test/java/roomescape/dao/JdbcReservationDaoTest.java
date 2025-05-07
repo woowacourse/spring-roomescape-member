@@ -21,6 +21,8 @@ import roomescape.domain.Theme;
 
 public class JdbcReservationDaoTest {
 
+    private static final LocalDate NOW_DATE = LocalDate.now().plusDays(1);
+
     private ReservationTime reservationTime;
     private DataSource datasource;
     private JdbcTemplate jdbcTemplate;
@@ -59,7 +61,7 @@ public class JdbcReservationDaoTest {
         //given
         Reservation reservation = new Reservation(
                 new Person("james"),
-                new ReservationDate(LocalDate.of(2025, 12, 25)),
+                new ReservationDate(NOW_DATE),
                 reservationTime,
                 theme);
 
@@ -76,15 +78,15 @@ public class JdbcReservationDaoTest {
     void get_all_reservation() {
         //given
         Reservation reservation1 = new Reservation(new Person("james"),
-                new ReservationDate(LocalDate.of(2025, 12, 25)),
+                new ReservationDate(NOW_DATE.plusDays(1)),
                 reservationTime, theme);
         reservationDao.saveReservation(reservation1);
         Reservation reservation2 = new Reservation(new Person("james"),
-                new ReservationDate(LocalDate.of(2025, 12, 26)),
+                new ReservationDate(NOW_DATE.plusDays(2)),
                 reservationTime, theme);
         reservationDao.saveReservation(reservation2);
         Reservation reservation3 = new Reservation(new Person("james"),
-                new ReservationDate(LocalDate.of(2025, 12, 27)),
+                new ReservationDate(NOW_DATE.plusDays(3)),
                 reservationTime, theme);
         reservationDao.saveReservation(reservation3);
 
@@ -99,7 +101,7 @@ public class JdbcReservationDaoTest {
     void given_reservation_id_then_delete_data() {
         //given
         Reservation reservation = new Reservation(new Person("james"),
-                new ReservationDate(LocalDate.of(2025, 12, 25)),
+                new ReservationDate(NOW_DATE),
                 reservationTime, theme);
         reservationDao.saveReservation(reservation);
 

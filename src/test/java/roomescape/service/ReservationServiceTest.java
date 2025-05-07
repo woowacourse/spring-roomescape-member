@@ -3,6 +3,7 @@ package roomescape.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +19,8 @@ import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 
 public class ReservationServiceTest {
+
+    private static final LocalDate NOW_DATE = LocalDate.now().plusDays(1);
 
     private ReservationService reservationService;
     private ReservationDao reservationDao;
@@ -39,7 +42,7 @@ public class ReservationServiceTest {
         reservationTimeDao.saveReservationTime(new ReservationTime(1L, LocalTime.of(10, 30)));
         themeDao.saveTheme(new Theme(1L, "name", "description", "thumbnail"));
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(
-                "james", "2025-05-12", 1L, 1L);
+                "james", NOW_DATE.toString(), 1L, 1L);
 
         //when
         reservationService.saveReservation(reservationRequestDto);
@@ -60,11 +63,11 @@ public class ReservationServiceTest {
 
         //given
         ReservationRequestDto reservationRequestDto1 = new ReservationRequestDto(
-                "james", "2025-05-12", 1L, 1L);
+                "james", NOW_DATE.toString(), 1L, 1L);
         ReservationRequestDto reservationRequestDto2 = new ReservationRequestDto(
-                "james", "2025-05-13", 2L, 2L);
+                "james", NOW_DATE.plusDays(1).toString(), 2L, 2L);
         ReservationRequestDto reservationRequestDto3 = new ReservationRequestDto(
-                "james", "2025-05-14", 3L, 3L);
+                "james", NOW_DATE.plusDays(2).toString(), 3L, 3L);
 
         //when
         reservationService.saveReservation(reservationRequestDto1);
@@ -83,7 +86,7 @@ public class ReservationServiceTest {
         themeDao.saveTheme(new Theme(1L, "name", "description", "thumbnail"));
 
         ReservationRequestDto reservationRequestDto = new ReservationRequestDto(
-                "james", "2025-05-12", 1L, 1L);
+                "james", NOW_DATE.toString(), 1L, 1L);
         reservationService.saveReservation(reservationRequestDto);
 
         //when
