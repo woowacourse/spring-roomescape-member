@@ -11,7 +11,7 @@ public class ThemeId extends DomainId {
     }
 
     public static ThemeId unassigned() {
-        return new ThemeId(UUID.randomUUID().getMostSignificantBits(), false);
+        return new ThemeId(null, false);
     }
 
     public static ThemeId from(final Long id) {

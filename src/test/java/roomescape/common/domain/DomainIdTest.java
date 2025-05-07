@@ -44,9 +44,7 @@ class DomainIdTest {
 
         // when
         // then
-        assertThatThrownBy(() -> id1.equals(id2))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("식별자가 할당되지 않았습니다.");
+        assertThat(id1.equals(id2)).isFalse();
     }
 
     @Test

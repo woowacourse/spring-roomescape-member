@@ -11,7 +11,7 @@ public class ReservationId extends DomainId {
     }
 
     public static ReservationId unassigned() {
-        return new ReservationId(UUID.randomUUID().getMostSignificantBits(), false);
+        return new ReservationId(null, false);
     }
 
     public static ReservationId from(final Long id) {
