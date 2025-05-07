@@ -1,6 +1,8 @@
 package roomescape.common.exception;
 
 import java.util.zip.DataFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -9,27 +11,33 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RoomescapeExceptionHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(RoomescapeExceptionHandler.class);
+
     @ExceptionHandler({IllegalStateException.class, DataFormatException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleException(IllegalStateException ex) {
+        logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleException(NotFoundException ex) {
+        logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
     @ExceptionHandler(DuplicatedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleException(DuplicatedException ex) {
+        logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
     @ExceptionHandler(ResourceInUseException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public String handleException(ResourceInUseException ex) {
+        logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 }
