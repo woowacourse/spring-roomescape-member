@@ -53,6 +53,17 @@ class FakeThemeRepositoryTest {
 
     @Test
     void findTop10PopularThemesWithinLastWeek() {
+        themeRepository.save(Theme.of(1L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(2L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(3L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(4L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(5L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(6L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(7L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(8L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(9L, "name", "des", "thumbnail"));
+        themeRepository.save(Theme.of(10L, "name", "des", "thumbnail"));
+
         List<Theme> themes = themeRepository.findTop10PopularThemesWithinLastWeek(
                 LocalDate.now());
 
