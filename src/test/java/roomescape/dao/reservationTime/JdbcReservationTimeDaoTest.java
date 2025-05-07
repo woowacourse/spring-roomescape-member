@@ -1,0 +1,138 @@
+package roomescape.dao.reservationTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
+import roomescape.dao.reservation.JdbcReservationDao;
+import roomescape.dao.theme.JdbcThemeDao;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+
+@JdbcTest
+@Import({JdbcReservationTimeDao.class, JdbcReservationDao.class, JdbcThemeDao.class})
+class JdbcReservationTimeDaoTest {
+
+    @Autowired
+    private JdbcReservationTimeDao jdbcReservationTimeDao;
+    @Autowired
+    private JdbcReservationDao jdbcReservationDao;
+    @Autowired
+    private JdbcThemeDao jdbcThemeDao;
+
+    @DisplayName("예약 시간을 데이터베이스에 추가한다.")
+    @Test
+    void addTest() {
+
+        // given
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+
+        // when
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+
+        // then
+        assertThat(savedReservationTime.getStartAt()).isEqualTo(LocalTime.of(10, 10));
+    }
+
+    @DisplayName("데이터이스에 있는 예약 시간 정보들을 가져온다.")
+    @Test
+    void findAllTest() {
+
+        // given
+        final ReservationTime reservationTime1 = new ReservationTime(LocalTime.of(10, 10));
+        jdbcReservationTimeDao.create(reservationTime1);
+        final ReservationTime reservationTime2 = new ReservationTime(LocalTime.of(11, 10));
+        jdbcReservationTimeDao.create(reservationTime2);
+
+        // when
+        final List<ReservationTime> reservationTimes = jdbcReservationTimeDao.findAll();
+
+        // then
+        assertThat(reservationTimes.size()).isEqualTo(2);
+    }
+
+    @DisplayName("데이터베이스에서 예약 시간이 삭제될 경우 true를 반환한다.")
+    @Test
+    void deleteIfNoExistReservationReturnTrueTest() {
+
+        // given
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.of(10, 10));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+
+        // when
+        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("데이터베이스에서 예약이 존재하여 예약 시간이 삭제되지 않을 경우 false를 반환한다.")
+    @Test
+    void deleteIfExistReservationReturnFalseTest() {
+
+        // given
+        final ReservationTime reservationTime = new ReservationTime(LocalTime.now().plusHours(1));
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(reservationTime);
+        final Theme theme = new Theme("test", "test", "test");
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        jdbcReservationDao.create(
+                Reservation.create("test", LocalDate.now(), savedReservationTime, savedTheme));
+
+        // when
+        final boolean result = jdbcReservationTimeDao.deleteIfNoReservation(savedReservationTime.getId());
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @DisplayName("데이터베이스에서 id, 테마, 날짜로 시간을 찾는다.")
+    @Test
+    void findAllReservedByThemeAndDateTest() {
+
+        // given
+        final LocalTime time = LocalTime.of(10, 10);
+        final LocalDate date = LocalDate.now().plusDays(1);
+        final Theme theme = new Theme("test", "test", "test");
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+        final Theme savedTheme = jdbcThemeDao.create(theme);
+        final Reservation reservation = Reservation.create("test", date, savedReservationTime, savedTheme);
+        final Reservation savedReservation = jdbcReservationDao.create(reservation);
+
+        // when
+        final List<ReservationTime> optionalReservationTime = jdbcReservationTimeDao.findAllReservedByThemeAndDate(
+                savedTheme.getId(), date);
+
+        // then
+        assertAll(
+                () -> assertThat(optionalReservationTime.getFirst()).isEqualTo(savedReservationTime)
+        );
+    }
+
+    @DisplayName("데이터베이스에 존재할 경우 true를 반환한다.")
+    @Test
+    void existsByIdReturnTrueTest() {
+
+        // given
+        final LocalTime time = LocalTime.of(10, 10);
+        final ReservationTime savedReservationTime = jdbcReservationTimeDao.create(new ReservationTime(time));
+
+        // when & then
+        assertThat(jdbcReservationTimeDao.existsById(savedReservationTime.getId())).isTrue();
+    }
+
+    @DisplayName("데이터베이스에 존재하지 않을 경우 false를 반환한다.")
+    @Test
+    void nonExistsByIdReturnFalseTest() {
+
+        // when & then
+        assertThat(jdbcReservationTimeDao.existsById(1L)).isFalse();
+    }
+}
