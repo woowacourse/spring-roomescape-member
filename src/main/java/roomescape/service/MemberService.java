@@ -21,7 +21,6 @@ public class MemberService {
     public void validateMemberExistence(LoginRequest login) {
         boolean hasMember = memberDao.existsByEmailAndPassword(login.email(), login.password());
         if (!hasMember) {
-            //TODO : signup으로 넘어가나?
             throw new IllegalArgumentException("이메일 또는 비밀번호가 틀렸습니다.");
         }
     }
@@ -32,7 +31,6 @@ public class MemberService {
     }
 
     public AuthorizationResponse findMember(AccessToken accessToken) {
-        //TODO : 왜 바로 name을 안 꺼내오고 id를 가져오는가? -> 식별자를 가져오는 것이 더 안전하지 않을까? 그리고 name을 가져오기로 했다가 바뀔수도 있다.
         try {
             long memberId = accessToken.findSubject();
             Member member = memberDao.findById(memberId);

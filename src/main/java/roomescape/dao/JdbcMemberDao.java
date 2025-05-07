@@ -26,7 +26,6 @@ public class JdbcMemberDao implements MemberDao {
                     memberId
             );
         } catch (EmptyResultDataAccessException e) {
-            //TODO : 에러 발생 맥락 : 토큰에서 발췌한 id에 맞는 멤버가 존재하지 않음
             throw new MemberNotFoundException();
         }
     }
