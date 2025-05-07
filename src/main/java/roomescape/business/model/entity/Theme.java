@@ -31,20 +31,11 @@ public class Theme {
         }
     }
 
-    public static Theme beforeSave(
-            final String name,
-            final String description,
-            final String thumbnail
-    ) {
+    public static Theme create(final String name, final String description, final String thumbnail) {
         return new Theme(Id.issue(), name, description, thumbnail);
     }
 
-    public static Theme afterSave(
-            final String id,
-            final String name,
-            final String description,
-            final String thumbnail
-    ) {
+    public static Theme restore(final String id, final String name, final String description, final String thumbnail) {
         return new Theme(Id.create(id), name, description, thumbnail);
     }
 

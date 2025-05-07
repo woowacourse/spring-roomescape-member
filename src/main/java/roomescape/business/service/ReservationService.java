@@ -68,7 +68,7 @@ public class ReservationService {
             throw new AlreadyReservedException();
         }
 
-        Reservation reservation = Reservation.beforeSave(user, date, reservationTime, theme);
+        Reservation reservation = Reservation.create(user, date, reservationTime, theme);
         reservationRepository.save(reservation);
         return reservation;
     }

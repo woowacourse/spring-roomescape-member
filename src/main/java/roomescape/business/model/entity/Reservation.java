@@ -35,15 +35,16 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public static Reservation beforeSave(
-            final User user,
-            final LocalDate date,
-            final ReservationTime time,
-            final Theme theme
-    ) {
+    public static Reservation create(final User user, final LocalDate date, final ReservationTime time, final Theme theme) {
         validateDateIsNotPast(date);
         validateDateInterval(date);
         return new Reservation(Id.issue(), user, date, time, theme);
+    }
+
+    private static void validateDateIsNotPast(final LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new PastDateException();
+        }
     }
 
     private static void validateDateInterval(final LocalDate date) {
@@ -53,19 +54,7 @@ public class Reservation {
         }
     }
 
-    private static void validateDateIsNotPast(final LocalDate date) {
-        if (date.isBefore(LocalDate.now())) {
-            throw new PastDateException();
-        }
-    }
-
-    public static Reservation afterSave(
-            final String id,
-            final User user,
-            final LocalDate date,
-            final ReservationTime time,
-            final Theme theme
-    ) {
+    public static Reservation restore(final String id, final User user, final LocalDate date, final ReservationTime time, final Theme theme) {
         return new Reservation(Id.create(id), user, date, time, theme);
     }
 
@@ -76,11 +65,7 @@ public class Reservation {
     public String getName() {
         return user.name();
     }
-
-    public String getUserEmail() {
-        return user.email();
-    }
-
+    
     public LocalDate getDate() {
         return date;
     }

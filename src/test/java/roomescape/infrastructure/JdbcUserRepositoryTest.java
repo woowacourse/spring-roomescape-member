@@ -35,7 +35,7 @@ class JdbcUserRepositoryTest {
     @Test
     void 사용자를_저장하고_조회할_수_있다() {
         // given
-        final User user = User.beforeSave("테스트유저", "test@example.com", "password123");
+        final User user = User.create("테스트유저", "test@example.com", "password123");
 
         // when & then
         assertThatCode(() -> sut.save(user))

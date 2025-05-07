@@ -38,7 +38,7 @@ class JdbcThemeRepositoryTest {
 
     @Test
     void 테마를_저장할_수_있다() {
-        assertThatCode(() -> sut.save(Theme.beforeSave("주홍색 연구", "", "")))
+        assertThatCode(() -> sut.save(Theme.create("주홍색 연구", "", "")))
                 .doesNotThrowAnyException();
     }
 

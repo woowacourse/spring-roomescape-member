@@ -69,7 +69,7 @@ class UserServiceTest {
     void getByEmail_ExistingEmail_ReturnsUser() {
         // given
         String email = "test@example.com";
-        User expectedUser = User.afterSave("user-id", "USER", "Test User", email, "password123");
+        User expectedUser = User.restore("user-id", "USER", "Test User", email, "password123");
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(expectedUser));
 
@@ -101,8 +101,8 @@ class UserServiceTest {
     void getAll_ReturnsAllUsers() {
         // given
         List<User> expectedUsers = Arrays.asList(
-                User.afterSave("user-id-1", "USER", "User One", "user1@example.com", "password1"),
-                User.afterSave("user-id-2", "USER", "User Two", "user2@example.com", "password2")
+                User.restore("user-id-1", "USER", "User One", "user1@example.com", "password1"),
+                User.restore("user-id-2", "USER", "User Two", "user2@example.com", "password2")
         );
 
         when(userRepository.findAll()).thenReturn(expectedUsers);

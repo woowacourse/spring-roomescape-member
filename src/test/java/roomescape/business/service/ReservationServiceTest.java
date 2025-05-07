@@ -55,9 +55,9 @@ class ReservationServiceTest {
         String themeId = "theme-id";
         String userEmail = "test@example.com";
 
-        User user = User.afterSave("user-id", "USER", "Test User", userEmail, "password");
-        ReservationTime reservationTime = ReservationTime.afterSave(timeId, LocalTime.of(10, 0));
-        Theme theme = Theme.afterSave(themeId, "Test Theme", "Description", "thumbnail.jpg");
+        User user = User.restore("user-id", "USER", "Test User", userEmail, "password");
+        ReservationTime reservationTime = ReservationTime.restore(timeId, LocalTime.of(10, 0));
+        Theme theme = Theme.restore(themeId, "Test Theme", "Description", "thumbnail.jpg");
 
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
         when(reservationTimeRepository.findById(timeId)).thenReturn(Optional.of(reservationTime));
@@ -105,9 +105,9 @@ class ReservationServiceTest {
         String themeId = "theme-id";
         String userId = "user-id";
 
-        User user = User.afterSave(userId, "USER", "Test User", "test@example.com", "password");
-        ReservationTime reservationTime = ReservationTime.afterSave(timeId, LocalTime.of(10, 0));
-        Theme theme = Theme.afterSave(themeId, "Test Theme", "Description", "thumbnail.jpg");
+        User user = User.restore(userId, "USER", "Test User", "test@example.com", "password");
+        ReservationTime reservationTime = ReservationTime.restore(timeId, LocalTime.of(10, 0));
+        Theme theme = Theme.restore(themeId, "Test Theme", "Description", "thumbnail.jpg");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(reservationTimeRepository.findById(timeId)).thenReturn(Optional.of(reservationTime));
@@ -157,7 +157,7 @@ class ReservationServiceTest {
         String themeId = "theme-id";
         String userId = "user-id";
 
-        User user = User.afterSave(userId, "USER", "Test User", "test@example.com", "password");
+        User user = User.restore(userId, "USER", "Test User", "test@example.com", "password");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(reservationTimeRepository.findById(timeId)).thenReturn(Optional.empty());
@@ -181,8 +181,8 @@ class ReservationServiceTest {
         String themeId = "nonexistent-theme-id";
         String userId = "user-id";
 
-        User user = User.afterSave(userId, "USER", "Test User", "test@example.com", "password");
-        ReservationTime reservationTime = ReservationTime.afterSave(timeId, LocalTime.of(10, 0));
+        User user = User.restore(userId, "USER", "Test User", "test@example.com", "password");
+        ReservationTime reservationTime = ReservationTime.restore(timeId, LocalTime.of(10, 0));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(reservationTimeRepository.findById(timeId)).thenReturn(Optional.of(reservationTime));
@@ -207,9 +207,9 @@ class ReservationServiceTest {
         String themeId = "theme-id";
         String userId = "user-id";
 
-        User user = User.afterSave(userId, "USER", "Test User", "test@example.com", "password");
-        ReservationTime reservationTime = ReservationTime.afterSave(timeId, LocalTime.of(10, 0));
-        Theme theme = Theme.afterSave(themeId, "Test Theme", "Description", "thumbnail.jpg");
+        User user = User.restore(userId, "USER", "Test User", "test@example.com", "password");
+        ReservationTime reservationTime = ReservationTime.restore(timeId, LocalTime.of(10, 0));
+        Theme theme = Theme.restore(themeId, "Test Theme", "Description", "thumbnail.jpg");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(reservationTimeRepository.findById(timeId)).thenReturn(Optional.of(reservationTime));
@@ -237,16 +237,16 @@ class ReservationServiceTest {
         LocalDate dateFrom = LocalDate.now();
         LocalDate dateTo = LocalDate.now().plusDays(7);
 
-        User user1 = User.afterSave("user-id-1", "USER", "User One", "user1@example.com", "password1");
-        User user2 = User.afterSave("user-id-2", "USER", "User Two", "user2@example.com", "password2");
-        ReservationTime time1 = ReservationTime.afterSave("time-id-1", LocalTime.of(10, 0));
-        ReservationTime time2 = ReservationTime.afterSave("time-id-2", LocalTime.of(14, 0));
-        Theme theme1 = Theme.afterSave("theme-id-1", "Theme One", "Description One", "thumbnail1.jpg");
-        Theme theme2 = Theme.afterSave("theme-id-2", "Theme Two", "Description Two", "thumbnail2.jpg");
+        User user1 = User.restore("user-id-1", "USER", "User One", "user1@example.com", "password1");
+        User user2 = User.restore("user-id-2", "USER", "User Two", "user2@example.com", "password2");
+        ReservationTime time1 = ReservationTime.restore("time-id-1", LocalTime.of(10, 0));
+        ReservationTime time2 = ReservationTime.restore("time-id-2", LocalTime.of(14, 0));
+        Theme theme1 = Theme.restore("theme-id-1", "Theme One", "Description One", "thumbnail1.jpg");
+        Theme theme2 = Theme.restore("theme-id-2", "Theme Two", "Description Two", "thumbnail2.jpg");
 
         List<Reservation> expectedReservations = Arrays.asList(
-                Reservation.afterSave("reservation-id-1", user1, dateFrom, time1, theme1),
-                Reservation.afterSave("reservation-id-2", user2, dateFrom.plusDays(1), time2, theme2)
+                Reservation.restore("reservation-id-1", user1, dateFrom, time1, theme1),
+                Reservation.restore("reservation-id-2", user2, dateFrom.plusDays(1), time2, theme2)
         );
 
         when(reservationRepository.findAllWithFilter(themeId, userId, dateFrom, dateTo))

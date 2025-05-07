@@ -35,7 +35,7 @@ class AuthServiceTest {
         // given
         String email = "test@example.com";
         String password = "password123";
-        User user = User.afterSave("user-id", "USER", "Test User", email, password);
+        User user = User.restore("user-id", "USER", "Test User", email, password);
         Authentication expectedAuth = mock(Authentication.class);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
@@ -73,7 +73,7 @@ class AuthServiceTest {
         // given
         String email = "test@example.com";
         String password = "wrongPassword";
-        User user = User.afterSave("user-id", "USER", "Test User", email, "correctPassword");
+        User user = User.restore("user-id", "USER", "Test User", email, "correctPassword");
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 

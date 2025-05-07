@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.afterSave(
+    private static final RowMapper<ReservationTime> ROW_MAPPER = (resultSet, rowNum) -> ReservationTime.restore(
             resultSet.getString("id"),
             resultSet.getTime("start_at").toLocalTime()
     );

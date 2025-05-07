@@ -28,7 +28,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addAndGet(final LocalTime time) {
-        ReservationTime reservationTime = ReservationTime.beforeSave(time);
+        ReservationTime reservationTime = ReservationTime.create(time);
         validateNoDuplication(reservationTime);
         validateTimeInterval(reservationTime);
 

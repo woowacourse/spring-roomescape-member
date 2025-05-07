@@ -26,11 +26,11 @@ public class ReservationTime {
         }
     }
 
-    public static ReservationTime beforeSave(final LocalTime startAt) {
+    public static ReservationTime create(final LocalTime startAt) {
         return new ReservationTime(Id.issue(), startAt);
     }
 
-    public static ReservationTime afterSave(final String id, final LocalTime startAt) {
+    public static ReservationTime restore(final String id, final LocalTime startAt) {
         return new ReservationTime(Id.create(id), startAt);
     }
 

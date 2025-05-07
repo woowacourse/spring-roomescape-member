@@ -21,9 +21,9 @@ import java.util.Optional;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.afterSave(
+    private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> Reservation.restore(
             resultSet.getString("reservation_id"),
-            User.afterSave(
+            User.restore(
                     resultSet.getString("user_id"),
                     resultSet.getString("user_role"),
                     resultSet.getString("user_name"),
@@ -31,11 +31,11 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getString("user_password")
             ),
             resultSet.getDate("date").toLocalDate(),
-            ReservationTime.afterSave(
+            ReservationTime.restore(
                     resultSet.getString("time_id"),
                     resultSet.getTime("time_value").toLocalTime()
             ),
-            Theme.afterSave(
+            Theme.restore(
                     resultSet.getString("theme_id"),
                     resultSet.getString("theme_name"),
                     resultSet.getString("theme_description"),

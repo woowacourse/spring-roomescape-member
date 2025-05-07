@@ -21,7 +21,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
         String thumbnail = resultSet.getString("thumbnail");
-        return Theme.afterSave(id, name, description, thumbnail);
+        return Theme.restore(id, name, description, thumbnail);
     };
 
     private final JdbcTemplate jdbcTemplate;

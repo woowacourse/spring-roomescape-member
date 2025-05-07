@@ -17,7 +17,7 @@ class ReservationTimeTest {
         @ParameterizedTest
         @CsvSource({"09:59", "23:01"})
         void 예약_가능한_시간이_아닐_때_예약하면_예외가_발생한다(String timeStrValue) {
-            assertThatThrownBy(() -> ReservationTime.beforeSave(LocalTime.parse(timeStrValue)))
+            assertThatThrownBy(() -> ReservationTime.create(LocalTime.parse(timeStrValue)))
                     .isInstanceOf(InvalidReservationTimeException.class);
         }
     }

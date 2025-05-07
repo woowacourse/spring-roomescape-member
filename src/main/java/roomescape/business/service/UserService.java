@@ -21,7 +21,7 @@ public class UserService {
         if (userRepository.existByEmail(email)) {
             throw new DuplicatedEmailException();
         }
-        User user = User.beforeSave(name, email, password);
+        User user = User.create(name, email, password);
         userRepository.save(user);
     }
 

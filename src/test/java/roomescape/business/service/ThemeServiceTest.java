@@ -56,8 +56,8 @@ class ThemeServiceTest {
     void getAll_ReturnsAllThemes() {
         // given
         List<Theme> expectedThemes = Arrays.asList(
-                Theme.afterSave("theme-id-1", "Theme One", "Description One", "thumbnail1.jpg"),
-                Theme.afterSave("theme-id-2", "Theme Two", "Description Two", "thumbnail2.jpg")
+                Theme.restore("theme-id-1", "Theme One", "Description One", "thumbnail1.jpg"),
+                Theme.restore("theme-id-2", "Theme Two", "Description Two", "thumbnail2.jpg")
         );
 
         when(themeRepository.findAll()).thenReturn(expectedThemes);
@@ -76,9 +76,9 @@ class ThemeServiceTest {
         // given
         int size = 3;
         List<Theme> expectedThemes = Arrays.asList(
-                Theme.afterSave("theme-id-1", "Popular Theme One", "Description One", "thumbnail1.jpg"),
-                Theme.afterSave("theme-id-2", "Popular Theme Two", "Description Two", "thumbnail2.jpg"),
-                Theme.afterSave("theme-id-3", "Popular Theme Three", "Description Three", "thumbnail3.jpg")
+                Theme.restore("theme-id-1", "Popular Theme One", "Description One", "thumbnail1.jpg"),
+                Theme.restore("theme-id-2", "Popular Theme Two", "Description Two", "thumbnail2.jpg"),
+                Theme.restore("theme-id-3", "Popular Theme Three", "Description Three", "thumbnail3.jpg")
         );
 
         when(themeRepository.findPopularThemes(any(LocalDate.class), any(LocalDate.class), eq(size)))

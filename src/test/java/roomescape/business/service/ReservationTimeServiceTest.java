@@ -95,8 +95,8 @@ class ReservationTimeServiceTest {
     void getAll_ReturnsAllReservationTimes() {
         // given
         List<ReservationTime> expectedTimes = Arrays.asList(
-                ReservationTime.afterSave("time-id-1", LocalTime.of(10, 0)),
-                ReservationTime.afterSave("time-id-2", LocalTime.of(14, 0))
+                ReservationTime.restore("time-id-1", LocalTime.of(10, 0)),
+                ReservationTime.restore("time-id-2", LocalTime.of(14, 0))
         );
 
         when(reservationTimeRepository.findAll()).thenReturn(expectedTimes);
@@ -116,8 +116,8 @@ class ReservationTimeServiceTest {
         LocalDate date = LocalDate.now();
         String themeId = "theme-id";
         List<ReservationTime> expectedTimes = Arrays.asList(
-                ReservationTime.afterSave("time-id-3", LocalTime.of(11, 0)),
-                ReservationTime.afterSave("time-id-4", LocalTime.of(15, 0))
+                ReservationTime.restore("time-id-3", LocalTime.of(11, 0)),
+                ReservationTime.restore("time-id-4", LocalTime.of(15, 0))
         );
 
         when(reservationTimeRepository.findAvailableReservationTimesByDateAndThemeId(date, themeId))

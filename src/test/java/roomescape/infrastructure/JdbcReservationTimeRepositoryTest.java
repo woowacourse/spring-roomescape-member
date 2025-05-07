@@ -42,7 +42,7 @@ class JdbcReservationTimeRepositoryTest {
 
     @Test
     void 예약_시간을_저장할_수_있다() {
-        assertThatCode(() -> sut.save(ReservationTime.beforeSave(TIME1)))
+        assertThatCode(() -> sut.save(ReservationTime.create(TIME1)))
                 .doesNotThrowAnyException();
     }
 

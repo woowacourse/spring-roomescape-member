@@ -58,15 +58,15 @@ class JdbcReservationRepositoryTest {
     @Test
     void 예약을_저장할_수_있다() {
         // given
-        final ReservationTime time = ReservationTime.beforeSave(TIME);
-        final Theme theme = Theme.beforeSave("호러", "", "");
-        final User user = User.beforeSave("돔푸", "dompu@email.com", "password");
+        final ReservationTime time = ReservationTime.create(TIME);
+        final Theme theme = Theme.create("호러", "", "");
+        final User user = User.create("돔푸", "dompu@email.com", "password");
         reservationTimeRepository.save(time);
         themeRepository.save(theme);
         userRepository.save(user);
 
         // when & then
-        assertThatCode(() -> sut.save(Reservation.beforeSave(user, DATE1, time, theme)))
+        assertThatCode(() -> sut.save(Reservation.create(user, DATE1, time, theme)))
                 .doesNotThrowAnyException();
     }
 
@@ -415,7 +415,7 @@ class JdbcReservationRepositoryTest {
         testUtil.insertReservation(reservationId, DATE1, timeId, themeId, userId);
 
         // Theme 객체 생성
-        Theme theme = Theme.afterSave(themeId, "호러", "", "");
+        Theme theme = Theme.restore(themeId, "호러", "", "");
 
         // when
         final boolean result = sut.isDuplicateDateAndTimeAndTheme(DATE1, TIME, theme);

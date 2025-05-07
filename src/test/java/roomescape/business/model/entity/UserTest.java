@@ -23,7 +23,7 @@ class UserTest {
         @Test
         void 유효한_정보로_사용자를_생성할_수_있다() {
             // when
-            User user = User.beforeSave(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+            User user = User.create(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // then
             assertThat(user).isNotNull();
@@ -36,7 +36,7 @@ class UserTest {
         @Test
         void 저장_후_사용자_객체를_생성할_수_있다() {
             // when
-            User user = User.afterSave(VALID_ID, UserRole.ADMIN.name(), VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+            User user = User.restore(VALID_ID, UserRole.ADMIN.name(), VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // then
             assertThat(user).isNotNull();
@@ -56,7 +56,7 @@ class UserTest {
             // when, then
             final String tooLongName = "이름이너무길어서예외가발생합니다";
 
-            assertThatThrownBy(() -> User.beforeSave(tooLongName, VALID_EMAIL, VALID_PASSWORD))
+            assertThatThrownBy(() -> User.create(tooLongName, VALID_EMAIL, VALID_PASSWORD))
                     .isInstanceOf(UserNameLengthExceedException.class);
         }
 
@@ -64,7 +64,7 @@ class UserTest {
         @ValueSource(strings = {"홍길동1", "user123", "tester99"})
         void 이름에_숫자가_포함되면_예외가_발생한다(String nameWithNumber) {
             // when, then
-            assertThatThrownBy(() -> User.beforeSave(nameWithNumber, VALID_EMAIL, VALID_PASSWORD))
+            assertThatThrownBy(() -> User.create(nameWithNumber, VALID_EMAIL, VALID_PASSWORD))
                     .isInstanceOf(NameContainsNumberException.class);
         }
 
@@ -72,7 +72,7 @@ class UserTest {
         void 이름은_정확히_10자까지_허용된다() {
             // when
             final String exactlyTenChars = "열자까지만됩니다";
-            User user = User.beforeSave(exactlyTenChars, VALID_EMAIL, VALID_PASSWORD);
+            User user = User.create(exactlyTenChars, VALID_EMAIL, VALID_PASSWORD);
 
             // then
             assertThat(user.name()).isEqualTo(exactlyTenChars);
@@ -85,7 +85,7 @@ class UserTest {
         @Test
         void 올바른_비밀번호로_검증에_성공한다() {
             // given
-            User user = User.beforeSave(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+            User user = User.create(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // when
             boolean result = user.isPasswordCorrect(VALID_PASSWORD);
@@ -97,7 +97,7 @@ class UserTest {
         @Test
         void 잘못된_비밀번호로_검증에_실패한다() {
             // given
-            User user = User.beforeSave(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+            User user = User.create(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // when
             boolean result = user.isPasswordCorrect("wrong_password");
@@ -113,7 +113,7 @@ class UserTest {
         @Test
         void 생성된_사용자의_기본_역할은_USER이다() {
             // when
-            User user = User.beforeSave(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+            User user = User.create(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // then
             assertThat(user.role()).isEqualTo(UserRole.USER.name());
@@ -122,7 +122,7 @@ class UserTest {
         @Test
         void afterSave_메서드로_ADMIN_역할의_사용자를_생성할_수_있다() {
             // when
-            User adminUser = User.afterSave(VALID_ID, UserRole.ADMIN.name(), VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+            User adminUser = User.restore(VALID_ID, UserRole.ADMIN.name(), VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // then
             assertThat(adminUser.role()).isEqualTo(UserRole.ADMIN.name());
@@ -135,7 +135,7 @@ class UserTest {
         @Test
         void 사용자_정보에_접근할_수_있다() {
             // given
-            User user = User.beforeSave(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
+            User user = User.create(VALID_NAME, VALID_EMAIL, VALID_PASSWORD);
 
             // when, then
             assertThat(user.name()).isEqualTo(VALID_NAME);

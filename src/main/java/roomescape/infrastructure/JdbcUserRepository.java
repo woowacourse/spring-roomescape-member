@@ -21,7 +21,7 @@ public class JdbcUserRepository implements UserRepository {
         String name = resultSet.getString("name");
         String email = resultSet.getString("email");
         String password = resultSet.getString("password");
-        return User.afterSave(id, userRole, name, email, password);
+        return User.restore(id, userRole, name, email, password);
     };
 
     private final JdbcTemplate jdbcTemplate;

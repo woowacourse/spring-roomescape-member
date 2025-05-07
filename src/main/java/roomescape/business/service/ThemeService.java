@@ -25,7 +25,7 @@ public class ThemeService {
     }
 
     public Theme addAndGet(final String name, final String description, final String thumbnail) {
-        Theme theme = Theme.beforeSave(name, description, thumbnail);
+        Theme theme = Theme.create(name, description, thumbnail);
         themeRepository.save(theme);
         return theme;
     }

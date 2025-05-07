@@ -25,6 +25,12 @@ public class User {
         this.password = password;
     }
 
+    private void validateMaxNameLength(final String name) {
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new UserNameLengthExceedException();
+        }
+    }
+
     private void validateNameDoesNotContainsNumber(final String name) {
         for (char c : name.toCharArray()) {
             if (Character.isDigit(c)) {
@@ -33,17 +39,11 @@ public class User {
         }
     }
 
-    private void validateMaxNameLength(final String name) {
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new UserNameLengthExceedException();
-        }
-    }
-
-    public static User beforeSave(final String name, final String email, final String password) {
+    public static User create(final String name, final String email, final String password) {
         return new User(Id.issue(), UserRole.USER, name, email, password);
     }
 
-    public static User afterSave(final String id, final String userRole, final String name, final String email, final String password) {
+    public static User restore(final String id, final String userRole, final String name, final String email, final String password) {
         return new User(Id.create(id), UserRole.valueOf(userRole), name, email, password);
     }
 
