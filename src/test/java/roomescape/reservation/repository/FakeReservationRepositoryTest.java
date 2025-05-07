@@ -28,7 +28,7 @@ class FakeReservationRepositoryTest {
         reservation = Reservation.of(1L, "브라운", futureDate, ReservationTime.of(1L, "15:40"),
                 theme);
 
-        themeRepository.put(theme);
+        themeRepository.save(theme);
     }
 
     @Test
@@ -52,6 +52,7 @@ class FakeReservationRepositoryTest {
 
     @Test
     void deleteById_shouldRemoveReservation() {
+        reservationRepository.save(reservation);
         reservationRepository.deleteById(1L);
 
         assertThat(reservationRepository.findAll()).isEmpty();

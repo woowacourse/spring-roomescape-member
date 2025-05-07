@@ -7,10 +7,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import roomescape.reservation.dto.request.ReservationCreateRequest;
 import roomescape.reservation.dto.response.ReservationResponse;
+import roomescape.reservation.exception.ReservationAlreadyExistsException;
 import roomescape.reservation.exception.ReservationNotFoundException;
 import roomescape.reservation.fixture.TestFixture;
 import roomescape.reservation.repository.FakeReservationRepository;
@@ -39,8 +41,8 @@ class ReservationServiceTest {
 
         ReservationTime time = ReservationTime.of(1L, LocalTime.of(10, 0));
         reservationTimeRepository.save(time);
-        Theme theme = Theme.of(1L, "추리", "셜록 추리 게임 with Danny", "image.png");
-        themeRepository.put(theme);
+        Theme theme = TestFixture.makeTheme();
+        themeRepository.save(theme);
     }
 
     @Test
@@ -48,9 +50,11 @@ class ReservationServiceTest {
         ReservationCreateRequest request = new ReservationCreateRequest("홍길동", futureDate, 1L, 1L);
         ReservationResponse response = reservationService.create(request, afterOneHour);
 
-        assertThat(response.name()).isEqualTo("홍길동");
-        assertThat(response.date()).isEqualTo(futureDate);
-        assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0));
+        Assertions.assertAll(
+                () -> assertThat(response.name()).isEqualTo("홍길동"),
+                () -> assertThat(response.date()).isEqualTo(futureDate),
+                () -> assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0))
+        );
     }
 
     @Test
@@ -83,17 +87,21 @@ class ReservationServiceTest {
     }
 
     @Test
+    void createReservation_shouldThrowException_WhenDuplicated() {
+        ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L, 1L);
+        reservationService.create(request, afterOneHour);
+
+        assertThatThrownBy(() -> reservationService.create(request, afterOneHour))
+                .isInstanceOf(ReservationAlreadyExistsException.class)
+                .hasMessageContaining("해당 시간에 이미 예약이 존재합니다.");
+    }
+
+    @Test
     void createReservation_shouldThrowException_WhenTimeIdNotFound() {
         ReservationCreateRequest request = new ReservationCreateRequest("대니", futureDate, 99L, 1L);
 
         assertThatThrownBy(() -> reservationService.create(request, afterOneHour))
-                .isInstanceOf(ReservationNotFoundException.class);
-    }
-
-    @Test
-    void createReservation_shouldThrowException_WhenDuplicated() {
-        ReservationCreateRequest request = new ReservationCreateRequest("밍트", futureDate, 1L, 1L);
-        reservationService.create(request, afterOneHour);
-        assertThatThrownBy(() -> reservationService.create(request, afterOneHour));
+                .isInstanceOf(ReservationNotFoundException.class)
+                .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
     }
 }
