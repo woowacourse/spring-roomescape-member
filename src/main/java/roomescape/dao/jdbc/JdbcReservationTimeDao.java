@@ -35,28 +35,6 @@ public class JdbcReservationTimeDao implements ReservationTimeDao {
         return jdbcTemplate.query(sql, mapResultsToReservationTime());
     }
 
-    public List<ReservationTimeWithIsBookedGetResponse> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId) {
-        String sql = """
-            SELECT
-              rt.id,
-              rt.start_at,
-              EXISTS(
-                SELECT r.id
-                FROM reservation as r
-                WHERE r.time_id = rt.id
-                    AND r.theme_id = ?
-                    AND r.date = ?
-              ) as isBooked
-            FROM reservation_time as rt
-            ORDER BY rt.start_at;
-            """;
-        return jdbcTemplate.query(sql, (resultSet, rowNum) -> new ReservationTimeWithIsBookedGetResponse(
-                resultSet.getLong("id"),
-                resultSet.getObject("start_at", LocalTime.class),
-                resultSet.getBoolean("isBooked")
-        ), themeId, date);
-    }
-
     public ReservationTime findById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
         try {

@@ -8,6 +8,8 @@ public interface ReservationDao {
 
     List<Reservation> findAll();
 
+    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
+
     Reservation add(Reservation reservation);
 
     int deleteById(Long id);

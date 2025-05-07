@@ -41,13 +41,31 @@ public class JdbcReservationDao implements ReservationDao {
                     t.description,
                     t.thumbnail
                 FROM reservation as r
-                INNER JOIN reservation_time as rt
-                INNER JOIN theme as t
-                ON r.time_id = rt.id
-                ON r.theme_id = t.id
+                    INNER JOIN reservation_time as rt ON r.time_id = rt.id
+                    INNER JOIN theme as t ON r.theme_id = t.id
                 """;
-
         return jdbcTemplate.query(sql, mapResultsToReservation());
+    }
+
+    @Override
+    public List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId) {
+        String sql = """
+                SELECT
+                    r.id as reservation_id,
+                    r.name as reservation_name,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail
+                FROM reservation as r
+                    INNER JOIN reservation_time as rt ON r.time_id = rt.id
+                    INNER JOIN theme as t ON r.theme_id = t.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, mapResultsToReservation(), date, themeId);
     }
 
     public Reservation add(Reservation reservation) {

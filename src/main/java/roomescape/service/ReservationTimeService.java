@@ -2,9 +2,13 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.request.ReservationTimeCreateRequest;
 import roomescape.dto.response.ReservationTimeWithIsBookedGetResponse;
@@ -15,9 +19,11 @@ import roomescape.exception.InvalidInputException;
 public class ReservationTimeService {
 
     private final ReservationTimeDao reservationTimeDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationTimeService(ReservationTimeDao reservationTimeDao) {
+    public ReservationTimeService(ReservationTimeDao reservationTimeDao, ReservationDao reservationDao) {
         this.reservationTimeDao = reservationTimeDao;
+        this.reservationDao = reservationDao;
     }
 
     public ReservationTime createReservationTime(ReservationTimeCreateRequest reservationTimeCreateRequest) {
@@ -37,7 +43,23 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTimeWithIsBookedGetResponse> findReservationTimeByDateAndThemeIdWithIsBooked(LocalDate date, Long themeId) {
-        return reservationTimeDao.findByDateAndThemeIdWithIsBookedOrderByStartAt(date, themeId);
+        List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
+        List<ReservationTime> reservedTimes = findAlreadyReservedTimeWithThemeInDate(date, themeId);
+        return reservationTimes.stream()
+                .map(reservationTime -> new ReservationTimeWithIsBookedGetResponse(
+                        reservationTime.getId(),
+                        reservationTime.getStartAt(),
+                        reservedTimes.contains(reservationTime)
+                ))
+                .sorted(Comparator.comparing(ReservationTimeWithIsBookedGetResponse::startAt))
+                .toList();
+    }
+
+    private List<ReservationTime> findAlreadyReservedTimeWithThemeInDate(LocalDate date, Long themeId) {
+        List<Reservation> reservationsWithThemeInDate = reservationDao.findByDateAndThemeId(date, themeId);
+        return reservationsWithThemeInDate.stream()
+                .map(Reservation::getTime)
+                .toList();
     }
 
     public void deleteReservationTimeById(Long id) {

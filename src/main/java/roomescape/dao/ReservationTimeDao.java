@@ -12,8 +12,6 @@ public interface ReservationTimeDao {
 
     ReservationTime findById(Long id);
 
-    List<ReservationTimeWithIsBookedGetResponse> findByDateAndThemeIdWithIsBookedOrderByStartAt(LocalDate date, Long themeId);
-
     ReservationTime add(ReservationTime reservationTime);
 
     boolean existByStartAt(LocalTime startAt);
