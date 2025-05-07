@@ -12,6 +12,7 @@ import roomescape.business.Reservation;
 import roomescape.business.ReservationTheme;
 import roomescape.business.fakerepository.FakeReservationRepository;
 import roomescape.business.fakerepository.FakeReservationThemeRepository;
+import roomescape.exception.ReservationThemeException;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.presentation.dto.ReservationThemeRequestDto;
@@ -39,7 +40,7 @@ class ReservationThemeServiceTest {
         // when
         // then
         assertThatCode(() -> reservationThemeService.createTheme(reservationThemeRequest))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationThemeException.class)
                 .hasMessage("동일한 이름의 테마를 추가할 수 없습니다.");
     }
 
@@ -69,7 +70,7 @@ class ReservationThemeServiceTest {
         // when
         // then
         assertThatCode(() -> reservationThemeService.deleteTheme(themeId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ReservationThemeException.class)
                 .hasMessage("해당 테마의 예약이 존재하여 삭제할 수 없습니다.");
     }
 }

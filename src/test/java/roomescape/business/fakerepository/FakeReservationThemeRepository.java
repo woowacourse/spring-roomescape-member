@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.dao.DataIntegrityViolationException;
 import roomescape.business.ReservationTheme;
 import roomescape.persistence.ReservationThemeRepository;
 
@@ -26,6 +27,9 @@ public final class FakeReservationThemeRepository implements ReservationThemeRep
                 reservationTheme.getDescription(),
                 reservationTheme.getThumbnail()
         );
+        if (themes.stream().anyMatch(theme -> theme.getName().equals(savedReservationTheme.getName()))) {
+            throw new DataIntegrityViolationException("duplicated name");
+        }
         themes.add(savedReservationTheme);
         return savedReservationTheme.getId();
     }
