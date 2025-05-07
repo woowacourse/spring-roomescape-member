@@ -29,4 +29,12 @@ public class MemberDao {
                 email,
                 password);
     }
+
+    public Member findById(final Long memberId) {
+        String query = "SELECT id, name, email, password FROM member WHERE id = ?";
+        return jdbcTemplate.queryForObject(
+                query,
+                ROW_MAPPER,
+                memberId);
+    }
 }

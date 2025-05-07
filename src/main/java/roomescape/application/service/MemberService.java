@@ -1,15 +1,19 @@
 package roomescape.application.service;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+import roomescape.domain.exception.UnauthorizedException;
 import roomescape.domain.model.Member;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.presentation.dto.request.TokenRequest;
+import roomescape.presentation.dto.response.MemberNameResponse;
 
 @Service
 public class MemberService {
 
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
     private final MemberRepository memberRepository;
 
     public MemberService(final MemberRepository memberRepository) {
@@ -22,13 +26,28 @@ public class MemberService {
     }
 
     private String createToken(final Member member) {
-        String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
         String accessToken = Jwts.builder()
                 .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("email", member.getEmail())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
         return accessToken;
+    }
+
+    public MemberNameResponse check(final String token) {
+        Long memberId;
+        try {
+            memberId = Long.valueOf(Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody().getSubject());
+        } catch (JwtException e) {
+            throw new UnauthorizedException();
+        }
+
+        Member member = memberRepository.findById(memberId);
+        return new MemberNameResponse(member.getName());
     }
 }

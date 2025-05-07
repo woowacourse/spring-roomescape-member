@@ -7,15 +7,15 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.domain.exception.MemberNotExistException;
 import roomescape.domain.exception.ResourceNotExistException;
+import roomescape.domain.exception.UnauthorizedException;
 
 import java.net.URI;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MemberNotExistException.class)
+    @ExceptionHandler(UnauthorizedException.class)
     public ProblemDetail handleMemberNotExistException(Exception e, HttpServletRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         problemDetail.setTitle("로그인 오류");
