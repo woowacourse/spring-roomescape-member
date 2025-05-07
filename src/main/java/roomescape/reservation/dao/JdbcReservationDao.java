@@ -246,18 +246,21 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Theme> findTop10Themes() {
+    public List<Theme> findTop10Themes(LocalDate currentDate) {
         String sql = """
                 SELECT t.*, COUNT(r.theme_id) as reservation_count
                 FROM theme AS t
                 JOIN reservation AS r ON r.theme_id = t.id
-                WHERE r.date > CURRENT_DATE - INTERVAL '8' DAY AND r.date < CURRENT_DATE
+                WHERE r.date > ? AND r.date < ?
                 GROUP BY t.id, t.name, t.description, t.thumbnail
                 ORDER BY COUNT(r.theme_id) DESC
                 LIMIT 10;
                 """;
 
+        LocalDate startDate = currentDate.minusDays(8);
+
         return jdbcTemplate.query(sql,
+                new Object[]{startDate, currentDate},
                 (rs, rowNum) ->
                         new Theme(
                                 rs.getLong("id"),
@@ -266,6 +269,5 @@ public class JdbcReservationDao implements ReservationDao {
                                 rs.getString("thumbnail")
                         )
         );
-
     }
 }

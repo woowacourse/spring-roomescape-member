@@ -1,5 +1,6 @@
 package roomescape.theme.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,8 @@ public class ThemeService {
     }
 
     public List<ThemeResponse> getTop10Themes() {
-        List<Theme> top10Themes = reservationDao.findTop10Themes();
+        LocalDate currentDate = LocalDate.now();
+        List<Theme> top10Themes = reservationDao.findTop10Themes(currentDate);
 
         return top10Themes.stream()
                 .map(theme -> new ThemeResponse(

@@ -7,14 +7,15 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
+import org.junit.jupiter.api.Test;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql("/sql/data.sql")
+@Sql("/sql/test-data.sql")
 public class ReservationControllerTest {
 
     @Test
@@ -33,7 +34,7 @@ public class ReservationControllerTest {
                 .statusCode(201)
                 .extract().as(Long.class);
 
-        assertThat(id).isEqualTo(5L);
+        assertThat(id).isEqualTo(6L);
     }
 
     @Test
@@ -42,7 +43,7 @@ public class ReservationControllerTest {
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(4));
+                .body("size()", is(5));
     }
 
     @Test

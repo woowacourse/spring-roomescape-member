@@ -82,10 +82,10 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<Theme> findTop10Themes() {
-        LocalDate startDate = LocalDate.now().minusDays(8);
+    public List<Theme> findTop10Themes(LocalDate currentDate) {
+        LocalDate startDate = currentDate.minusDays(8);
         Map<Theme, Long> themeCounts = fakeReservations.stream()
-                .filter(reservation -> reservation.getDate().isBefore(LocalDate.now()))
+                .filter(reservation -> reservation.getDate().isBefore(currentDate))
                 .filter(reservation -> reservation.getDate().isAfter(startDate))
                 .collect(Collectors.groupingBy(reservation -> reservation.getTheme(), Collectors.counting()));
 

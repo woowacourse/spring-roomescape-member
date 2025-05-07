@@ -26,4 +26,6 @@ INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('포포', '2025-1-3', 2, 1);
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('리사', '2025-1-4', 2, 2);
+INSERT INTO reservation (name, date, time_id, theme_id)
+VALUES ('브라운', '2025-1-4', 3, 2);
 

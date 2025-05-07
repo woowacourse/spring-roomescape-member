@@ -23,6 +23,6 @@ public interface ReservationDao {
 
     List<ReservationTime> findAvailableTimesByDateAndThemeId(LocalDate date, Long themeId);
 
-    List<Theme> findTop10Themes();
+    List<Theme> findTop10Themes(LocalDate currentDate);
 }
 

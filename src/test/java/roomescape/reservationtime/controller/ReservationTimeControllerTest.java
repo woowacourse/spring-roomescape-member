@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql("/sql/data.sql")
+@Sql("/sql/test-data.sql")
 public class ReservationTimeControllerTest {
     @Test
     void 예약시간_추가_테스트() {
@@ -45,7 +45,7 @@ public class ReservationTimeControllerTest {
     @Test
     void 예약시간_삭제_테스트() {
         RestAssured.given().log().all()
-                .when().delete("/times/3")
+                .when().delete("/times/4")
                 .then().log().all()
                 .statusCode(204);
 
