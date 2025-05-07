@@ -17,7 +17,7 @@ public class CookieProvider {
     }
 
     public Cookie invalidate(Cookie[] cookies) {
-        if (cookies != null) {
+        if (cookies == null) {
             throw new UnAuthorizedException();
         }
         for (Cookie cookie : cookies) {
