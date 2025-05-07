@@ -55,10 +55,10 @@ public class ReservationMemberService {
         ReservationMemberIds reservationMemberIds = reservationMemberRepository.findById(id)
                 .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약입니다"));
 
+        reservationMemberRepository.deleteById(id);
+
         long reservationId = reservationMemberIds.getReservationId();
         reservationService.deleteReservation(reservationId);
-        
-        reservationMemberRepository.deleteById(id);
     }
 
     public List<ReservationMember> searchReservations(Long themeId, Long memberId, LocalDate dateFrom,
