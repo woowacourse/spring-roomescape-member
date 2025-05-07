@@ -3,11 +3,13 @@ package roomescape.time.presentation.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 import static roomescape.testFixture.Fixture.MEMBER_1;
 import static roomescape.testFixture.Fixture.RESERVATION_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_2;
-import static roomescape.testFixture.Fixture.RESERVATION_TIME_3;
 import static roomescape.testFixture.Fixture.THEME_1;
 
 import io.restassured.RestAssured;
@@ -19,25 +21,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import roomescape.time.domain.ReservationTime;
+import roomescape.AbstractRestDocsTest;
 import roomescape.reservation.domain.repository.dto.TimeDataWithBookingInfo;
 import roomescape.testFixture.JdbcHelper;
+import roomescape.time.domain.ReservationTime;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TimeControllerTest {
-    @LocalServerPort
-    int port;
+class TimeControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void cleanDatabase() {
-        RestAssured.port = port;
-
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE reservation");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
@@ -56,7 +52,7 @@ class TimeControllerTest {
     void getAllTimesApiTest() {
         JdbcHelper.insertReservationTimes(jdbcTemplate, RESERVATION_TIME_1, RESERVATION_TIME_2);
 
-        RestAssured.given().log().all()
+        givenWithDocs("times-getAll")
                 .when().get("/times")
                 .then().log().all()
                 .statusCode(200)
@@ -70,7 +66,7 @@ class TimeControllerTest {
         Map<String, String> params = new HashMap<>();
         params.put("startAt", "10:00");
 
-        RestAssured.given().log().all()
+        givenWithDocs("times-add")
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/times")
@@ -85,7 +81,7 @@ class TimeControllerTest {
         JdbcHelper.insertReservationTime(jdbcTemplate, reservationTime);
 
         Long id = reservationTime.getId();
-        RestAssured.given().log().all()
+        givenWithDocs("times-deleteById")
                 .when().delete("/times/" + id)
                 .then().log().all()
                 .statusCode(204);
@@ -113,13 +109,22 @@ class TimeControllerTest {
     @Test
     void getTimesWithBookingInfo() {
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
-        JdbcHelper.insertReservationTimes(jdbcTemplate, RESERVATION_TIME_1, RESERVATION_TIME_2, RESERVATION_TIME_3);
+        JdbcHelper.insertReservationTimes(jdbcTemplate, RESERVATION_TIME_1, RESERVATION_TIME_2);
         JdbcHelper.insertMember(jdbcTemplate, MEMBER_1);
         JdbcHelper.insertReservationOnly(jdbcTemplate, RESERVATION_1);
 
         String date = RESERVATION_1.getReservationDate().toString();
 
-        List<TimeDataWithBookingInfo> timesData = RestAssured.given().log().all()
+        List<TimeDataWithBookingInfo> timesData =
+                RestAssured.given(documentationSpec)
+                        .filter(document("times-bookingStatus",
+                                queryParameters(
+                                        parameterWithName("themeId").description("시작 날짜"),
+//                                                .attributes(key("defaultValue").value("일주일 전 (7일 전)")),
+                                        parameterWithName("date").description("종료 날짜")
+//                                                .attributes(key("defaultValue").value("어제 (1일 전)")),
+                                )
+                        ))
                 .when().get(String.format("/times/booking-status?date=%s&themeId=%d", date, THEME_1.getId()))
                 .then().log().all()
                 .statusCode(200)
@@ -131,7 +136,7 @@ class TimeControllerTest {
                 .count();
 
         assertAll(
-                () -> assertThat(timesData).hasSize(3),
+                () -> assertThat(timesData).hasSize(2),
                 () -> assertThat(bookedCount).isEqualTo(1)
         );
     }

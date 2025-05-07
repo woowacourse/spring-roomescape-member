@@ -3,6 +3,10 @@ package roomescape.theme.presentation.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static roomescape.testFixture.Fixture.THEME_1;
 import static roomescape.testFixture.Fixture.THEME_2;
 
@@ -16,25 +20,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.AbstractRestDocsTest;
 import roomescape.testFixture.JdbcHelper;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ThemeControllerTest {
-
-    @LocalServerPort
-    int port;
+public class ThemeControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void cleanDatabase() {
-        RestAssured.port = port;
-
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE reservation");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
@@ -50,7 +46,7 @@ public class ThemeControllerTest {
     void getAllThemes() {
         JdbcHelper.insertThemes(jdbcTemplate, THEME_1, THEME_2);
 
-        RestAssured.given().log().all()
+        givenWithDocs("themes-getAll")
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
@@ -67,7 +63,8 @@ public class ThemeControllerTest {
         params.put("thumbnail", "썸네일");
 
         // when & then
-        ExtractableResponse<Response> extractedResponse = RestAssured.given().log().all()
+        ExtractableResponse<Response> extractedResponse =
+                givenWithDocs("themes-add")
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/themes")
@@ -93,7 +90,7 @@ public class ThemeControllerTest {
         assertThat(addedCount).isEqualTo(1);
 
         //when & then
-        RestAssured.given().log().all()
+        givenWithDocs("themes-deleteById")
                 .when().delete("/themes/1")
                 .then().log().all()
                 .statusCode(204);
@@ -105,7 +102,22 @@ public class ThemeControllerTest {
     @DisplayName("테마 랭킹 조회 시 200 OK")
     @Test
     void getThemeRanking() {
-        RestAssured.given().log().all()
+        // given
+        JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
+        JdbcHelper.insertTheme(jdbcTemplate, THEME_2);
+
+        // when & then
+        RestAssured.given(documentationSpec)
+                .filter(document("themes-ranking",
+                        queryParameters(
+                                parameterWithName("startDate").description("시작 날짜").optional()
+                                        .attributes(key("defaultValue").value("일주일 전 (7일 전)")),
+                                parameterWithName("endDate").description("종료 날짜").optional()
+                                        .attributes(key("defaultValue").value("어제 (1일 전)")),
+                                parameterWithName("limit").description("조회할 개수").optional()
+                                        .attributes(key("defaultValue").value("10"))
+                        )
+                ))
                 .when().get("/themes/ranking")
                 .then().log().all()
                 .statusCode(200);

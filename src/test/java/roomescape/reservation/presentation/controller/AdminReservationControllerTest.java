@@ -5,7 +5,6 @@ import static roomescape.testFixture.Fixture.MEMBER_1;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.THEME_1;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,19 +13,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.AbstractRestDocsTest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
 import roomescape.testFixture.JdbcHelper;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class AdminReservationControllerTest {
-
-    @LocalServerPort
-    int port;
+class AdminReservationControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -36,8 +29,6 @@ class AdminReservationControllerTest {
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE reservation");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
@@ -61,7 +52,7 @@ class AdminReservationControllerTest {
         String payload = String.valueOf(memberId);
         String token = jwtTokenProvider.createToken(payload, Role.ADMIN);
 
-        RestAssured.given().log().all()
+        givenWithDocs("adminReservation-add")
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
                 .body(createAdminReservationBody())

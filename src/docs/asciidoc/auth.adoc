@@ -1,0 +1,13 @@
+== 인증 (Auth)
+
+=== 로그인 요청 API
+==== request
+include::{snippets}/login-with-token/http-request.adoc[]
+==== response
+include::{snippets}/login-with-token/http-response.adoc[]
+
+=== 로그인 확인 요청 API
+==== request
+include::{snippets}/login-check/http-request.adoc[]
+==== response
+include::{snippets}/login-check/http-response.adoc[]

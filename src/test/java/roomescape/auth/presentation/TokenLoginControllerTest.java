@@ -1,29 +1,22 @@
 package roomescape.auth.presentation;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static roomescape.testFixture.Fixture.MEMBER_1;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.AbstractRestDocsTest;
 import roomescape.auth.dto.TokenRequest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
 import roomescape.testFixture.JdbcHelper;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TokenLoginControllerTest {
-
-    @LocalServerPort
-    int port;
+class TokenLoginControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -33,8 +26,6 @@ class TokenLoginControllerTest {
 
     @BeforeEach
     void cleanDatabase() {
-        RestAssured.port = this.port;
-
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE members");
         jdbcTemplate.execute("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");
@@ -50,7 +41,7 @@ class TokenLoginControllerTest {
         TokenRequest request = new TokenRequest(MEMBER_1.getEmail(), MEMBER_1.getPassword());
 
         // when & then
-        given().log().all()
+        givenWithDocs("login-with-token")
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when().post("/login")
@@ -68,8 +59,7 @@ class TokenLoginControllerTest {
         String token = jwtTokenProvider.createToken(payload, Role.USER);
 
         // when & then
-        RestAssured
-                .given().log().all()
+        givenWithDocs("login-check")
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
                 .when()

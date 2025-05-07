@@ -3,33 +3,24 @@ package roomescape.member.presentation.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.testFixture.Fixture.createMemberByIdAndName;
 
-import io.restassured.RestAssured;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.AbstractRestDocsTest;
 import roomescape.member.domain.Member;
 import roomescape.member.presentation.dto.response.MemberResponse;
 import roomescape.testFixture.JdbcHelper;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class MemberControllerTest {
-
-    @LocalServerPort
-    int port;
+class MemberControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE reservation");
         jdbcTemplate.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");
@@ -52,7 +43,7 @@ class MemberControllerTest {
 
         // when & then
         List<MemberResponse> responses =
-                RestAssured.given().log().all()
+                givenWithDocs("member-getAll")
                         .when().get("/members")
                         .then().log().all()
                         .statusCode(200).extract()

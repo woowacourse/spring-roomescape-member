@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static roomescape.testFixture.Fixture.MEMBER_1;
 import static roomescape.testFixture.Fixture.RESERVATION_1;
 import static roomescape.testFixture.Fixture.RESERVATION_2;
-import static roomescape.testFixture.Fixture.RESERVATION_3;
 import static roomescape.testFixture.Fixture.RESERVATION_BODY;
 import static roomescape.testFixture.Fixture.RESERVATION_TIME_1;
 import static roomescape.testFixture.Fixture.THEME_1;
@@ -17,20 +16,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import roomescape.AbstractRestDocsTest;
 import roomescape.auth.infrastructure.JwtTokenProvider;
 import roomescape.member.domain.Role;
 import roomescape.reservation.presentation.dto.response.ReservationDetailResponse;
 import roomescape.testFixture.JdbcHelper;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class ReservationControllerTest {
-
-    @LocalServerPort
-    int port;
+class ReservationControllerTest extends AbstractRestDocsTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -40,7 +33,6 @@ class ReservationControllerTest {
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
 
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE");
         jdbcTemplate.execute("TRUNCATE TABLE reservation");
@@ -59,13 +51,13 @@ class ReservationControllerTest {
     public void request_addReservation() {
         JdbcHelper.insertReservationTime(jdbcTemplate, RESERVATION_TIME_1);
         JdbcHelper.insertTheme(jdbcTemplate, THEME_1);
-        JdbcHelper.insertMember(jdbcTemplate,  MEMBER_1);
+        JdbcHelper.insertMember(jdbcTemplate, MEMBER_1);
         long memberId = MEMBER_1.getId();
 
         String payload = String.valueOf(memberId);
         String token = jwtTokenProvider.createToken(payload, Role.USER);
 
-        RestAssured.given().log().all()
+        givenWithDocs("reservation-add")
                 .contentType(ContentType.JSON)
                 .cookie("token", token)
                 .body(RESERVATION_BODY)
@@ -82,7 +74,7 @@ class ReservationControllerTest {
         JdbcHelper.prepareAndInsertReservation(jdbcTemplate, RESERVATION_1);
 
         Long id = RESERVATION_1.getId();
-        RestAssured.given().log().all()
+        givenWithDocs("reservation-deleteById")
                 .when().delete("/reservations/" + id)
                 .then().log().all()
                 .statusCode(204);
@@ -91,16 +83,16 @@ class ReservationControllerTest {
     @DisplayName("모든 예약을 조회하는 api")
     @Test
     void getAllReservations() {
-        JdbcHelper.insertReservations(jdbcTemplate, RESERVATION_1, RESERVATION_2, RESERVATION_3);
+        JdbcHelper.insertReservations(jdbcTemplate, RESERVATION_1, RESERVATION_2);
 
         List<ReservationDetailResponse> responses =
-                RestAssured.given().log().all()
+                givenWithDocs("reservation-getAll")
                         .when().get("/reservations")
                         .then().log().all()
                         .statusCode(200).extract()
                         .jsonPath().getList(".", ReservationDetailResponse.class);
 
-        assertThat(responses.size()).isEqualTo(3);
+        assertThat(responses.size()).isEqualTo(2);
     }
 
     @DisplayName("중복된 일시와 테마로 예약 생성 시 예외 발생")
