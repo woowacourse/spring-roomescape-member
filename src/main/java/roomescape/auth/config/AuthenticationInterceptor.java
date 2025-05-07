@@ -8,7 +8,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.AuthRequired;
 import roomescape.auth.jwt.JwtUtil;
 import roomescape.business.model.vo.LoginInfo;
-import roomescape.exception.auth.NotAuthenticatedException;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
@@ -28,8 +27,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
         String token = extractTokenFromCookies(request);
-        validateAuthenticated(token);
-        LoginInfo loginInfo = jwtUtil.resolveToken(token);
+        LoginInfo loginInfo = jwtUtil.validateAndResolveToken(token);
         request.setAttribute("authorization", loginInfo);
         return true;
     }
@@ -46,11 +44,5 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         return null;
-    }
-
-    private void validateAuthenticated(final String token) {
-        if (token == null || !jwtUtil.validateToken(token)) {
-            throw new NotAuthenticatedException();
-        }
     }
 }

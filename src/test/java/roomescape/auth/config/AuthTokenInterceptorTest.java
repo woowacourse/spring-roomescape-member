@@ -54,8 +54,7 @@ class AuthTokenInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.validateToken(token)).willReturn(true);
-        given(jwtUtil.resolveToken(token)).willReturn(loginInfo);
+        given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
 
         // when
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -71,6 +70,7 @@ class AuthTokenInterceptorTest {
         HandlerMethod handlerMethod = mock(HandlerMethod.class);
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(null);
+        given(jwtUtil.validateAndResolveToken(null)).willThrow(NotAuthenticatedException.class);
 
         // when, then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))
@@ -86,7 +86,7 @@ class AuthTokenInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(AuthRequired.class)).willReturn(mock(AuthRequired.class));
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.validateToken(token)).willReturn(false);
+        given(jwtUtil.validateAndResolveToken(token)).willThrow(NotAuthenticatedException.class);
 
         // when, then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))

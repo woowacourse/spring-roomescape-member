@@ -68,7 +68,7 @@ class AuthorizationInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(role);
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.resolveToken(token)).willReturn(loginInfo);
+        given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
 
         // when
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -88,7 +88,7 @@ class AuthorizationInterceptorTest {
 
         given(handlerMethod.getMethodAnnotation(Role.class)).willReturn(role);
         given(request.getCookies()).willReturn(new Cookie[]{cookie});
-        given(jwtUtil.resolveToken(token)).willReturn(loginInfo);
+        given(jwtUtil.validateAndResolveToken(token)).willReturn(loginInfo);
 
         // when, then
         assertThatThrownBy(() -> interceptor.preHandle(request, response, handlerMethod))

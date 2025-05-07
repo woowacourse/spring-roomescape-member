@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.exception.auth.ForbiddenException;
+import roomescape.exception.auth.LoginExpiredException;
 import roomescape.exception.auth.LoginFailException;
 import roomescape.exception.auth.NotAuthenticatedException;
 
@@ -17,14 +18,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotAuthenticatedException.class)
     public ResponseEntity<ErrorResponse> handle(NotAuthenticatedException e) {
-        logger.warn("Handled ForbiddenException: {}", e.getMessage(), e);
+        logger.warn("Handled NotAuthenticatedException: {}", e.getMessage(), e);
         return createResponse(HttpStatus.UNAUTHORIZED, e);
     }
 
     @ExceptionHandler(LoginFailException.class)
     public ResponseEntity<ErrorResponse> handle(LoginFailException e) {
-        logger.warn("Handled ForbiddenException: {}", e.getMessage(), e);
+        logger.warn("Handled LoginFailException: {}", e.getMessage(), e);
         return createResponse(HttpStatus.UNAUTHORIZED, e);
+    }
+
+    @ExceptionHandler(LoginExpiredException.class)
+    public ResponseEntity<ErrorResponse> handle(LoginExpiredException e) {
+        logger.warn("Handled LoginExpiredException: {}", e.getMessage(), e);
+        return createResponse(HttpStatus.FORBIDDEN, e);
     }
 
     @ExceptionHandler(ForbiddenException.class)

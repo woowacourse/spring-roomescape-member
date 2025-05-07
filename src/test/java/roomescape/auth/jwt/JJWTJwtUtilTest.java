@@ -8,39 +8,37 @@ import roomescape.business.model.entity.User;
 import roomescape.business.model.vo.AuthToken;
 import roomescape.business.model.vo.LoginInfo;
 import roomescape.business.model.vo.UserRole;
+import roomescape.exception.auth.NotAuthenticatedException;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class JJWTJwtUtilTest {
 
     private static final String SECRET_KEY = "thisisasecretkeyfortestingpurposesonly12345678901234567890";
+    private static final long expirationMinute = 15L;
     private JJWTJwtUtil jwtUtil;
-    private User user;
     private SecretKey key;
 
     @BeforeEach
     void setUp() {
-        jwtUtil = new JJWTJwtUtil(SECRET_KEY);
+        jwtUtil = new JJWTJwtUtil(SECRET_KEY, expirationMinute);
         key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-        user = mock(User.class);
-        when(user.email()).thenReturn("1");
-        when(user.role()).thenReturn(UserRole.USER.name());
     }
 
     @Test
     void 유효한_사용자정보로_토큰을_생성한다() {
+        // given
+        User user = User.restore("1", UserRole.USER.name(), "dompoo", "dompoo@email.com", "password");
+
         // when
         AuthToken authToken = jwtUtil.createToken(user);
 
         // then
         assertThat(authToken).isNotNull();
         assertThat(authToken.value()).isNotEmpty();
-        assertThat(jwtUtil.validateToken(authToken.value())).isTrue();
     }
 
     @Test
@@ -49,7 +47,7 @@ class JJWTJwtUtilTest {
         String token = createToken(UserRole.USER.name());
 
         // when
-        LoginInfo loginInfo = jwtUtil.resolveToken(token);
+        LoginInfo loginInfo = jwtUtil.validateAndResolveToken(token);
 
         // then
         assertThat(loginInfo).isNotNull();
@@ -58,64 +56,46 @@ class JJWTJwtUtilTest {
     }
 
     @Test
-    void 유효한_토큰을_검증하면_true를_반환한다() {
+    void 유효한_토큰을_검증하면_예외를_던지지_않는다() {
         // given
         String token = createToken(UserRole.USER.name());
 
-        // when
-        boolean result = jwtUtil.validateToken(token);
-
-        // then
-        assertThat(result).isTrue();
+        // when & then
+        assertThatCode(() -> jwtUtil.validateAndResolveToken(token))
+                .doesNotThrowAnyException();
     }
 
     @Test
-    void 유효하지_않은_토큰을_검증하면_false를_반환한다() {
+    void 유효하지_않은_토큰을_검증하면_예외를_던진다() {
         // given
         String invalidToken = "invalid.value.value";
 
         // when
-        boolean result = jwtUtil.validateToken(invalidToken);
-
-        // then
-        assertThat(result).isFalse();
+        assertThatThrownBy(() -> jwtUtil.validateAndResolveToken(invalidToken))
+                .isInstanceOf(NotAuthenticatedException.class);
     }
 
     @Test
-    void 만료된_토큰을_검증하면_false를_반환한다() {
+    void 널_토큰을_검증하면_예외를_던진다() {
         // given
-        String expiredToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZSI6IlVTRVIiLCJleHAiOjE1MTYyMzkwMjJ9.signature";
+        String invalidToken = null;
 
         // when
-        boolean result = jwtUtil.validateToken(expiredToken);
-
-        // then
-        assertThat(result).isFalse();
+        assertThatThrownBy(() -> jwtUtil.validateAndResolveToken(invalidToken))
+                .isInstanceOf(NotAuthenticatedException.class);
     }
 
     @Test
     void 어드민_역할의_토큰을_생성하고_검증한다() {
         // given
-        when(user.role()).thenReturn(UserRole.ADMIN.name());
+        User user = User.restore("1", UserRole.ADMIN.name(), "dompoo", "dompoo@email.com", "password");
 
         // when
         AuthToken authToken = jwtUtil.createToken(user);
-        LoginInfo loginInfo = jwtUtil.resolveToken(authToken.value());
+        LoginInfo loginInfo = jwtUtil.validateAndResolveToken(authToken.value());
 
         // then
         assertThat(loginInfo.userRole()).isEqualTo(UserRole.ADMIN);
-    }
-
-    @Test
-    void 예외가_발생해도_false를_반환한다() {
-        // given
-        String nullToken = null;
-
-        // when, then
-        assertThatCode(() -> {
-            boolean result = jwtUtil.validateToken(nullToken);
-            assertThat(result).isFalse();
-        }).doesNotThrowAnyException();
     }
 
     private String createToken(String role) {
