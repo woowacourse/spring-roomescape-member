@@ -6,11 +6,11 @@ import roomescape.model.TimeSlot;
 
 public interface TimeSlotRepository {
 
-    Optional<TimeSlot> findById(final long id);
+    Optional<TimeSlot> findById(long id);
 
-    long save(final TimeSlot timeSlot);
+    long save(TimeSlot timeSlot);
 
-    boolean removeById(final long id);
+    boolean removeById(long id);
 
     List<TimeSlot> findAll();
 }
