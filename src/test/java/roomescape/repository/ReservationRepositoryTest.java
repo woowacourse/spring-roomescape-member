@@ -17,15 +17,15 @@ import roomescape.domain.ReservationTime;
 
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-class RoomescapeRepositoryTest {
+class ReservationRepositoryTest {
 
-    RoomescapeRepository repository;
+    ReservationRepository repository;
     @Autowired
     JdbcTemplate template;
 
     @BeforeEach
     void setUp() {
-        repository = new RoomescapeRepositoryImpl(template);
+        repository = new ReservationRepositoryImpl(template);
         template.execute("DELETE FROM reservation");
         template.execute("DELETE FROM reservation_time");
         template.execute("DELETE FROM reservation_theme");

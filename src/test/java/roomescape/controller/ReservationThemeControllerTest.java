@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import roomescape.domain.ReservationTheme;
 import roomescape.dto.ReservationThemeRequest;
 import roomescape.dto.ReservationThemeResponse;
-import roomescape.service.RoomescapeService;
+import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationThemeController.class)
 class ReservationThemeControllerTest {
@@ -29,7 +29,7 @@ class ReservationThemeControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private RoomescapeService roomescapeService;
+    private ReservationService reservationService;
 
 
     @BeforeEach
@@ -45,7 +45,7 @@ class ReservationThemeControllerTest {
         final ReservationTheme reservationTheme2 = new ReservationTheme(2L, "테마2", "디스크립션2", "썸네일2");
         final List<ReservationThemeResponse> reservationThemeResponses = List.of(
                 ReservationThemeResponse.from(reservationTheme1), ReservationThemeResponse.from(reservationTheme2));
-        given(roomescapeService.findReservationThemes()).willReturn(reservationThemeResponses);
+        given(reservationService.findReservationThemes()).willReturn(reservationThemeResponses);
 
         // when & then
         RestAssuredMockMvc.given().log().all()
@@ -64,7 +64,7 @@ class ReservationThemeControllerTest {
         final ReservationTheme reservationTheme2 = new ReservationTheme(2L, "테마2", "디스크립션2", "썸네일2");
         final List<ReservationThemeResponse> reservationThemeResponses = List.of(
                 ReservationThemeResponse.from(reservationTheme1), ReservationThemeResponse.from(reservationTheme2));
-        given(roomescapeService.findPopularThemes()).willReturn(reservationThemeResponses);
+        given(reservationService.findPopularThemes()).willReturn(reservationThemeResponses);
 
         // when & then
         RestAssuredMockMvc.given().log().all()
@@ -83,7 +83,7 @@ class ReservationThemeControllerTest {
         final ReservationThemeResponse reservationThemeResponse = ReservationThemeResponse.from(reservationTheme1);
         final ReservationThemeRequest reservationThemeRequest = new ReservationThemeRequest("테마1", "디스크립션1", "썸네일1");
 
-        given(roomescapeService.addReservationTheme(any(ReservationThemeRequest.class))).willReturn(reservationThemeResponse);
+        given(reservationService.addReservationTheme(any(ReservationThemeRequest.class))).willReturn(reservationThemeResponse);
 
         // when & then
         RestAssuredMockMvc.given().log().all()
@@ -100,7 +100,7 @@ class ReservationThemeControllerTest {
     void reservationThemeRemove() {
         //given
         final long pathVariable = 1L;
-        doNothing().when(roomescapeService).removeReservationTheme(pathVariable);
+        doNothing().when(reservationService).removeReservationTheme(pathVariable);
 
         // when & then
         RestAssuredMockMvc.given().log().all()

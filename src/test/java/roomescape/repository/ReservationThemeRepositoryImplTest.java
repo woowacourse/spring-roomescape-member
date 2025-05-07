@@ -13,16 +13,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import roomescape.domain.ReservationTheme;
 
 @JdbcTest
-class RoomescapeThemeRepositoryImplTest {
+class ReservationThemeRepositoryImplTest {
 
     @Autowired
     private JdbcTemplate template;
 
-    private RoomescapeThemeRepository repository;
+    private ReservationThemeRepository repository;
 
     @BeforeEach
     void setUp() {
-        repository = new RoomescapeThemeRepositoryImpl(template);
+        repository = new ReservationThemeRepositoryImpl(template);
     }
 
 

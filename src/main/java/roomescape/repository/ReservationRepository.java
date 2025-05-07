@@ -6,7 +6,7 @@ import java.util.Optional;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 
-public interface RoomescapeRepository {
+public interface ReservationRepository {
 
     Optional<Reservation> findById(final long id);
 

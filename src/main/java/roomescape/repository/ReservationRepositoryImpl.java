@@ -14,11 +14,11 @@ import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 
 @Repository
-public class RoomescapeRepositoryImpl implements RoomescapeRepository {
+public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final JdbcTemplate template;
 
-    public RoomescapeRepositoryImpl(final JdbcTemplate template) {
+    public ReservationRepositoryImpl(final JdbcTemplate template) {
         this.template = template;
     }
 

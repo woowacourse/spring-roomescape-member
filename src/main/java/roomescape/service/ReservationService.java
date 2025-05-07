@@ -14,44 +14,44 @@ import roomescape.dto.ReservationThemeRequest;
 import roomescape.dto.ReservationThemeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.repository.RoomescapeRepository;
-import roomescape.repository.RoomescapeThemeRepository;
-import roomescape.repository.RoomescapeTimeRepository;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationThemeRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @Service
-public class RoomescapeService {
+public class ReservationService {
 
     public static final int DELETE_FAILED_COUNT = 0;
 
-    private final RoomescapeRepository roomescapeRepository;
-    private final RoomescapeTimeRepository roomescapeTimeRepository;
-    private final RoomescapeThemeRepository roomescapeThemeRepository;
+    private final ReservationRepository reservationRepository;
+    private final ReservationTimeRepository reservationTimeRepository;
+    private final ReservationThemeRepository reservationThemeRepository;
 
-    public RoomescapeService(final RoomescapeRepository roomescapeRepository,
-                             final RoomescapeTimeRepository roomescapeTimeRepository,
-                             final RoomescapeThemeRepository roomescapeThemeRepository) {
-        this.roomescapeRepository = roomescapeRepository;
-        this.roomescapeTimeRepository = roomescapeTimeRepository;
-        this.roomescapeThemeRepository = roomescapeThemeRepository;
+    public ReservationService(final ReservationRepository reservationRepository,
+                              final ReservationTimeRepository reservationTimeRepository,
+                              final ReservationThemeRepository reservationThemeRepository) {
+        this.reservationRepository = reservationRepository;
+        this.reservationTimeRepository = reservationTimeRepository;
+        this.reservationThemeRepository = reservationThemeRepository;
     }
 
     public List<ReservationResponse> findReservations() {
-        List<Reservation> reservations = roomescapeRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 
     public List<ReservationTimeResponse> findReservationTimes() {
-        List<ReservationTime> reservationTimes = roomescapeTimeRepository.findAll();
+        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
         return reservationTimes.stream().map(ReservationTimeResponse::from).toList();
     }
 
     public List<ReservationThemeResponse> findReservationThemes() {
-        List<ReservationTheme> reservationThemes = roomescapeThemeRepository.findAll();
+        List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
         return reservationThemes.stream().map(ReservationThemeResponse::from).toList();
     }
 
     public List<ReservationThemeResponse> findPopularThemes() {
-        List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository.findWeeklyThemeOrderByCountDesc();
+        List<ReservationTheme> popularReservationThemes = reservationThemeRepository.findWeeklyThemeOrderByCountDesc();
         return popularReservationThemes.stream().map(ReservationThemeResponse::from).toList();
     }
 
@@ -60,22 +60,22 @@ public class RoomescapeService {
         long timeId = request.timeId();
         final long themeId = request.themeId();
 
-        ReservationTime time = roomescapeTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
-        ReservationTheme theme = roomescapeThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
+        ReservationTime time = reservationTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
+        ReservationTheme theme = reservationThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
         Reservation reservation = new Reservation(request.name(), request.date(), time, theme);
         LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 
         validateFutureDateTime(requestDateTime, now);
         validateUniqueReservation(reservation);
 
-        Reservation saved = roomescapeRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
         return ReservationResponse.from(saved);
     }
 
     public ReservationTimeResponse addReservationTime(final ReservationTimeRequest request) {
         ReservationTime reservationTime = new ReservationTime(request.startAt());
         validateUniqueReservationTime(reservationTime);
-        ReservationTime saved = roomescapeTimeRepository.save(reservationTime);
+        ReservationTime saved = reservationTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(saved);
     }
 
@@ -83,26 +83,26 @@ public class RoomescapeService {
         ReservationTheme reservationTheme = new ReservationTheme(request.name(), request.description(),
                 request.thumbnail());
         validateUniqueThemes(reservationTheme);
-        ReservationTheme saved = roomescapeThemeRepository.save(reservationTheme);
+        ReservationTheme saved = reservationThemeRepository.save(reservationTheme);
         return ReservationThemeResponse.from(saved);
     }
 
     public void removeReservation(final long id) {
-        int deleteCounts = roomescapeRepository.deleteById(id);
+        int deleteCounts = reservationRepository.deleteById(id);
         if (deleteCounts == DELETE_FAILED_COUNT) {
             throw new NoSuchElementException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTime(final long id) {
-        int deleteCounts = roomescapeTimeRepository.deleteById(id);
+        int deleteCounts = reservationTimeRepository.deleteById(id);
         if (deleteCounts == DELETE_FAILED_COUNT) {
             throw new IllegalArgumentException(String.format("[ERROR] 예약시간 %d번은 존재하지 않습니다.", id));
         }
     }
 
     public void removeReservationTheme(final long id) {
-        int deleteCounts = roomescapeThemeRepository.deleteById(id);
+        int deleteCounts = reservationThemeRepository.deleteById(id);
         if (deleteCounts == DELETE_FAILED_COUNT) {
             throw new IllegalArgumentException(String.format("[ERROR] 예약테마 %d번은 존재하지 않습니다.", id));
         }
@@ -121,20 +121,20 @@ public class RoomescapeService {
     }
 
     private void validateUniqueThemes(final ReservationTheme reservationTheme) {
-        if (roomescapeThemeRepository.existsByName(reservationTheme.getName())) {
+        if (reservationThemeRepository.existsByName(reservationTheme.getName())) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 테마 입니다.");
         }
     }
 
     private void validateUniqueReservationTime(final ReservationTime reservationTime) {
         final LocalTime startAt = reservationTime.getStartAt();
-        if (roomescapeTimeRepository.existsByStartAt(startAt.toString())) {
+        if (reservationTimeRepository.existsByStartAt(startAt.toString())) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약 시간 입니다.");
         }
     }
 
     private boolean existsSameReservation(final Reservation reservation) {
-        List<Reservation> reservations = roomescapeRepository.findByDate(reservation.getDate());
+        List<Reservation> reservations = reservationRepository.findByDate(reservation.getDate());
         return reservations.stream()
                 .anyMatch(candidate -> candidate.isDuplicateReservation(reservation));
     }

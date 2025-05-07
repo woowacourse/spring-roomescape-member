@@ -16,9 +16,9 @@ import roomescape.domain.ReservationTime;
 
 @JdbcTest
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-class RoomescapeTimeRepositoryTest {
+class ReservationTimeRepositoryTest {
 
-    RoomescapeTimeRepository timeRepository;
+    ReservationTimeRepository timeRepository;
 
     @Autowired
     JdbcTemplate template;
@@ -26,7 +26,7 @@ class RoomescapeTimeRepositoryTest {
     @BeforeEach
     void setUp() {
 
-        timeRepository = new RoomescapeTimeRepositoryImpl(template);
+        timeRepository = new ReservationTimeRepositoryImpl(template);
         template.execute("DELETE FROM reservation");
         template.execute("DELETE FROM reservation_time");
         template.execute("ALTER TABLE reservation ALTER COLUMN id RESTART WITH 1");

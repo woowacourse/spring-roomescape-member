@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.ReservationTime;
 
 @Repository
-public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
+public class ReservationTimeRepositoryImpl implements ReservationTimeRepository {
 
     private final JdbcTemplate template;
 
-    public RoomescapeTimeRepositoryImpl(final JdbcTemplate template) {
+    public ReservationTimeRepositoryImpl(final JdbcTemplate template) {
         this.template = template;
     }
 

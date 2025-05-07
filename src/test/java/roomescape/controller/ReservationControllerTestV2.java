@@ -21,7 +21,7 @@ import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationThemeResponse;
 import roomescape.dto.ReservationTimeResponse;
-import roomescape.service.RoomescapeService;
+import roomescape.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
 public class ReservationControllerTestV2 {
@@ -30,7 +30,7 @@ public class ReservationControllerTestV2 {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private RoomescapeService roomescapeService;
+    private ReservationService reservationService;
 
 
     @BeforeEach
@@ -65,7 +65,7 @@ public class ReservationControllerTestV2 {
             final ReservationResponse response = new ReservationResponse(1L, "제프리", LocalDate.now(),
                     new ReservationTimeResponse(1L, LocalTime.now()),
                     new ReservationThemeResponse(1L, "테마", "설명", "썸네일"));
-            given(roomescapeService.addReservation(any(ReservationRequest.class))).willReturn(response);
+            given(reservationService.addReservation(any(ReservationRequest.class))).willReturn(response);
             final Map<String, String> request = Map.of("name", "제프리", "date", "2023-08-05", "timeId", "1");
 
             RestAssuredMockMvc.given().log().all()
