@@ -57,7 +57,7 @@ class ThemeServiceTest {
             themeRepository.saveAndReturnId(theme);
         }
 
-        Reservation reservation = new Reservation(null, "루키", LocalDate.of(2025, 4, 29),
+        Reservation reservation = new Reservation(null, "루키", LocalDate.now().minusDays(1),
                 reservationTimeRepository.findById(1L).get(), themeRepository.findById(1L).get());
 
         reservationRepository.saveAndReturnId(reservation);
