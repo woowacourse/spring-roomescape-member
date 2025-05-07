@@ -18,6 +18,7 @@ import roomescape.reservationtime.dto.request.ReservationTimeCreateRequest;
 import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservationtime.dto.response.ReservationTimeResponse;
 import roomescape.reservationtime.exception.ReservationTimeAlreadyExistsException;
+import roomescape.reservationtime.exception.ReservationTimeInUseException;
 import roomescape.reservationtime.exception.ReservationTimeNotFoundException;
 import roomescape.reservationtime.repository.FakeReservationTimeRepository;
 import roomescape.reservationtime.repository.ReservationTimeRepository;
@@ -77,13 +78,6 @@ class ReservationTimeServiceTest {
     }
 
     @Test
-    void deleteReservationTime_shouldThrowException_WhenIdNotFound() {
-        assertThatThrownBy(() -> reservationTimeService.delete(999L))
-                .isInstanceOf(ReservationTimeNotFoundException.class)
-                .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
-    }
-
-    @Test
     void deleteReservationTime_shouldRemoveSuccessfully() {
         ReservationTimeCreateRequest request = new ReservationTimeCreateRequest(LocalTime.of(13, 30));
         ReservationTimeResponse response = reservationTimeService.create(request);
@@ -95,11 +89,19 @@ class ReservationTimeServiceTest {
     }
 
     @Test
+    void deleteReservationTime_shouldThrowException_WhenIdNotFound() {
+        assertThatThrownBy(() -> reservationTimeService.delete(999L))
+                .isInstanceOf(ReservationTimeNotFoundException.class)
+                .hasMessageContaining("요청한 id와 일치하는 예약 시간 정보가 없습니다.");
+    }
+
+    @Test
     void deleteReservationTime_shouldThrowException_WhenReservationExists() {
         ReservationTimeResponse reservationTimeResponse = reservationTimeService.create(
                 new ReservationTimeCreateRequest(LocalTime.now()));
         reservationService.create(new ReservationCreateRequest("danny", futureDate, reservationTimeResponse.id(), theme.getId()), afterOneHour);
         assertThatThrownBy(() -> reservationTimeService.delete(reservationTimeResponse.id()))
+                .isInstanceOf(ReservationTimeInUseException.class)
                 .hasMessageContaining("해당 시간에 대한 예약이 존재하여 삭제할 수 없습니다.");
     }
 
