@@ -22,23 +22,23 @@ class ReservationTimeTest {
 
     @DisplayName("해당 예약 시간이 현재 시간보다 과거인 경우 true를 반환한다")
     @Test
-    void validatePastTimeTest_WhenTimeIsPast() {
+    void isPastTimeTest_WhenTimeIsPast() {
         // given
         final LocalTime pastTime = LocalTime.now().minusMinutes(1);
         final ReservationTime reservationTime = new ReservationTime(pastTime);
 
         // when // then
-        assertThat(reservationTime.validatePastTime()).isTrue();
+        assertThat(reservationTime.isPastTime()).isTrue();
     }
 
     @DisplayName("해당 예약 시간이 현재 시간보다 미래인 경우 false를 반환한다")
     @Test
-    void validatePastTimeTest_WhenTimeIsFuture() {
+    void isPastTimeTest_WhenTimeIsFuture() {
         // given
         final LocalTime futureTime = LocalTime.now().plusMinutes(1);
         final ReservationTime reservationTime = new ReservationTime(futureTime);
 
         // when // then
-        assertThat(reservationTime.validatePastTime()).isFalse();
+        assertThat(reservationTime.isPastTime()).isFalse();
     }
 }

@@ -51,7 +51,7 @@ public class ReservationService {
     }
 
     private void validatePastDateAndTime(final Reservation reservation) {
-        if (reservation.validatePastDateAndTime()) {
+        if (reservation.isPastDateAndTime()) {
             throw new BusinessRuleViolationException("과거 시점은 예약할 수 없습니다");
         }
     }

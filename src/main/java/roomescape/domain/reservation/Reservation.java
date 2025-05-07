@@ -37,15 +37,6 @@ public class Reservation {
         this(NON_SAVED_STATUS, name, date, reservationTime, theme);
     }
 
-    public boolean validatePastDateAndTime() {
-        final LocalDate currentDate = LocalDate.now();
-
-        final boolean isPastDate = date.isBefore(currentDate);
-        final boolean isPastTime = date.isEqual(currentDate) && time.validatePastTime();
-
-        return isPastDate || isPastTime;
-    }
-
     private void validateInvalidInput(final String name, final LocalDate date,
                                       final ReservationTime reservationTime, final RoomTheme theme) {
         validateNotNull(name, date, reservationTime, theme);
@@ -72,6 +63,15 @@ public class Reservation {
         if (name.length() > MAX_LENGTH) {
             throw new InvalidInputException("예약자 명은 255자를 초과할 수 없습니다.");
         }
+    }
+
+    public boolean isPastDateAndTime() {
+        final LocalDate currentDate = LocalDate.now();
+
+        final boolean isPastDate = date.isBefore(currentDate);
+        final boolean isPastTime = date.isEqual(currentDate) && time.isPastTime();
+
+        return isPastDate || isPastTime;
     }
 
     public long getId() {

@@ -57,45 +57,45 @@ class ReservationTest {
 
     @DisplayName("해당 예약의 날짜가 과거 시점이면 true를 반환한다")
     @Test
-    void validatePastDateAndTimeTest_WhenDateIsPast() {
+    void isPastDateAndTimeTest_WhenDateIsPast() {
         // given
         final LocalDate pastDate = LocalDate.now().minusDays(1);
         final Reservation reservation = new Reservation(NAME, pastDate, RESERVATION_TIME, ROOM_THEME);
 
         // when // then
-        assertThat(reservation.validatePastDateAndTime()).isTrue();
+        assertThat(reservation.isPastDateAndTime()).isTrue();
     }
 
     @DisplayName("해당 예약의 날짜가 미래 시점이면 false를 반환한다")
     @Test
-    void validatePastDateAndTimeTest_WhenDateIsFuture() {
+    void isPastDateAndTimeTest_WhenDateIsFuture() {
         // given
         final Reservation reservation = new Reservation(NAME, DATE, RESERVATION_TIME, ROOM_THEME);
 
         // when // then
-        assertThat(reservation.validatePastDateAndTime()).isFalse();
+        assertThat(reservation.isPastDateAndTime()).isFalse();
     }
 
     @DisplayName("해당 예약의 날짜가 오늘 날짜이고, 시간이 과거 시간대 이면 true를 반환한다")
     @Test
-    void validatePastDateAndTimeTest_WhenDateIsTodayAndTimeIsPast() {
+    void isPastDateAndTimeTest_WhenDateIsTodayAndTimeIsPast() {
         // given
         final ReservationTime pastTime = new ReservationTime(2L, LocalTime.now().minusHours(1));
         final Reservation reservation = new Reservation(NAME, LocalDate.now(), pastTime, ROOM_THEME);
 
         // when // then
-        assertThat(reservation.validatePastDateAndTime()).isTrue();
+        assertThat(reservation.isPastDateAndTime()).isTrue();
     }
 
     @DisplayName("해당 예약의 날짜가 오늘 날짜이고, 시간이 미래 시간대 이면 false를 반환한다")
     @Test
-    void validatePastDateAndTimeTest_WhenDateIsTodayAndTimeIsFuture() {
+    void isPastDateAndTimeTest_WhenDateIsTodayAndTimeIsFuture() {
         // given
         final ReservationTime futureTime = new ReservationTime(2L, LocalTime.now().plusMinutes(1));
         final Reservation reservation = new Reservation(NAME, LocalDate.now(), futureTime, ROOM_THEME);
 
         // when // then
-        assertThat(reservation.validatePastDateAndTime()).isFalse();
+        assertThat(reservation.isPastDateAndTime()).isFalse();
     }
 
 }
