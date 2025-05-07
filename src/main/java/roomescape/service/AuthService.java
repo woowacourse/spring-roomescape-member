@@ -1,31 +1,22 @@
 package roomescape.service;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.AuthenticatedUserResponse;
 import roomescape.exception.LoginFailedException;
 
 @Service
 public class AuthService {
 
+    private final JwtTokenProvider tokenProvider;
     private final MemberDao memberDao;
-    private final String secretKey;
-    private final Long tokenValidTime;
 
-    public AuthService(
-            MemberDao memberDao,
-            @Value("${auth.jwt.secret-key}") String secretKey,
-            @Value("${auth.jwt.valid-time}") Long tokenValidTime
-    ) {
+
+    public AuthService(JwtTokenProvider jwtTokenProvider, MemberDao memberDao) {
+        this.tokenProvider = jwtTokenProvider;
         this.memberDao = memberDao;
-        this.secretKey = secretKey;
-        this.tokenValidTime = tokenValidTime;
     }
 
     public String createToken(LoginRequest loginRequest) {
@@ -33,10 +24,13 @@ public class AuthService {
                 .orElseThrow(LoginFailedException::new);
         member.validatePassword(loginRequest.password());
 
-        return Jwts.builder()
-                .subject(member.getId().toString())
-                .expiration(new Date(new Date().getTime() + tokenValidTime))
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
-                .compact();
+        return tokenProvider.createToken(String.valueOf(member.getId()));
+    }
+
+    public AuthenticatedUserResponse getAuthenticatedUserFromToken(String token) {
+        String subject = tokenProvider.extractSubject(token);
+        Member member = memberDao.findById(Long.parseLong(subject))
+                .orElseThrow();
+        return new AuthenticatedUserResponse(member.getName());
     }
 }

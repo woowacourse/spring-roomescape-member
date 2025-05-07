@@ -24,6 +24,11 @@ public class FakeMemberDao implements MemberDao {
     }
 
     @Override
+    public Optional<Member> findById(Long id) {
+        return members.stream().filter(member -> member.getId().equals(id)).findFirst();
+    }
+
+    @Override
     public Optional<Member> findByEmail(String email) {
         return members.stream().filter(member -> member.getEmail().equals(email)).findFirst();
     }

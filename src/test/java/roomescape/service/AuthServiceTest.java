@@ -17,11 +17,10 @@ class AuthServiceTest {
 
     public AuthServiceTest() {
         this.memberDao = new FakeMemberDao();
-        authService = new AuthService(
-                memberDao,
-                "secretKeyfjdlsfksjfkjdsfdsjfdjls",
-                1800000L
-        );
+        JwtTokenProvider tokenProvider = new JwtTokenProvider(
+                "secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey",
+                1000000000000L);
+        authService = new AuthService(tokenProvider, memberDao);
     }
 
     @Test

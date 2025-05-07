@@ -15,7 +15,7 @@ import roomescape.domain.Member;
 @Repository
 public class JdbcMemberDao implements MemberDao {
 
-    private static final RowMapper<Member> MEMBER_ROW_MAPPER = (rs, rowNum) ->
+    private static final RowMapper<Member> ROW_MAPPER = (rs, rowNum) ->
             new Member(
                     rs.getLong("id"),
                     rs.getString("name"),
@@ -44,12 +44,26 @@ public class JdbcMemberDao implements MemberDao {
         return member.withId(newId);
     }
 
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "SELECT * FROM member WHERE id = :id";
+        SqlParameterSource parameter = new MapSqlParameterSource()
+                .addValue("id", id);
+        try {
+            Member member = jdbcTemplate.queryForObject(sql, parameter, ROW_MAPPER);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Member> findByEmail(String email) {
         String sql = "SELECT * FROM member WHERE email = :email";
         SqlParameterSource parameter = new MapSqlParameterSource()
                 .addValue("email", email);
         try {
-            Member member = jdbcTemplate.queryForObject(sql, parameter, MEMBER_ROW_MAPPER);
+            Member member = jdbcTemplate.queryForObject(sql, parameter, ROW_MAPPER);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
