@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Reservation {
 
-    private Long id;
+    private final long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
@@ -21,19 +21,12 @@ public class Reservation {
 
     public Reservation(final long id, final String name, final String date, final ReservationTime time,
                        final ReservationTheme theme) {
-        this.id = id;
-        this.name = name;
-        this.date = LocalDate.parse(date);
-        this.time = time;
-        this.theme = theme;
+        this(id, name, LocalDate.parse(date), time, theme);
     }
 
     public Reservation(final String name, final LocalDate date, final ReservationTime time,
                        final ReservationTheme theme) {
-        this.name = name;
-        this.date = date;
-        this.time = time;
-        this.theme = theme;
+        this(0L, name, date, time, theme);
     }
 
     public Reservation toEntity(long id) {
