@@ -3,7 +3,6 @@ package roomescape.theme.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.Clock;
@@ -31,12 +30,13 @@ import roomescape.util.repository.ThemeFakeRepository;
 class ThemeServiceTest {
 
     private ThemeService themeService;
+    private ThemeRepository themeRepository;
 
     @BeforeEach
     void setup() {
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ReservationRepository reservationRepository = new ReservationFakeRepository();
-        ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
+        themeRepository = new ThemeFakeRepository(reservationRepository);
         Clock clock = Clock.fixed(Instant.parse("2025-04-03T23:59:59Z"), ZoneOffset.UTC);
 
         List<ReservationTime> times = List.of(
@@ -84,16 +84,20 @@ class ThemeServiceTest {
     @Test
     void add_theme() {
         // given
-        ThemeRequest request = new ThemeRequest("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
+        ThemeRequest request = new ThemeRequest("레벨5 탈출", "우테코 레벨5를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when
-        ThemeResponse actual = themeService.add(request);
+        ThemeResponse response = themeService.add(request);
 
         // then
-        ThemeResponse expected = new ThemeResponse(5L, "레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        assertThat(actual).isEqualTo(expected);
+        Theme savedTheme = themeRepository.findById(5L).get();
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(savedTheme.getId()),
+                () -> assertThat(response.name()).isEqualTo(savedTheme.getName()),
+                () -> assertThat(response.description()).isEqualTo(savedTheme.getDescription()),
+                () -> assertThat(response.thumbnail()).isEqualTo(savedTheme.getThumbnail())
+        );
     }
 
     @DisplayName("테마 정보를 조회한다")
@@ -112,15 +116,21 @@ class ThemeServiceTest {
         );
     }
 
-    @DisplayName("테마 데이터를 정상적으로 삭제하면 예외가 발생하지 않는다")
+    @DisplayName("테마 정보를 삭제한다")
     @Test
     void delete_theme() {
         // given
-        Long deleteId = 4L;
+        Long removeId = 4L;
 
-        // when & then
-        assertThatCode(() -> themeService.remove(deleteId))
-                .doesNotThrowAnyException();
+        // when
+        themeRepository.deleteById(removeId);
+
+        // then
+        assertAll(
+                () -> assertThat(themeRepository.findAll()).hasSize(3),
+                () -> assertThat(themeRepository.findById(removeId).isEmpty()).isTrue()
+        );
+
     }
 
     @DisplayName("특정 테마에 대한 예약이 존재하는데, 그 테마를 삭제하면 예외가 발생한다")

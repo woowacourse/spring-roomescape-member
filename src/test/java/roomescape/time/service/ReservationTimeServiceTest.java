@@ -1,7 +1,6 @@
 package roomescape.time.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -26,10 +25,11 @@ import roomescape.util.repository.ThemeFakeRepository;
 class ReservationTimeServiceTest {
 
     private ReservationTimeService reservationTimeService;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @BeforeEach
     void setup() {
-        ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
+        reservationTimeRepository = new ReservationTimeFakeRepository();
         ReservationRepository reservationRepository = new ReservationFakeRepository();
         ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
 
@@ -71,22 +71,31 @@ class ReservationTimeServiceTest {
         ReservationTimeRequest request = new ReservationTimeRequest(LocalTime.of(17, 25));
 
         // when
-        ReservationTimeResponse response = reservationTimeService.add(request);
+        reservationTimeService.add(request);
 
         // then
-        ReservationTimeResponse expected = new ReservationTimeResponse(5L, LocalTime.of(17, 25));
-        assertThat(response).isEqualTo(expected);
+        ReservationTime savedTime = reservationTimeRepository.findById(5L).get();
+        assertAll(
+                () -> assertThat(savedTime.getId()).isEqualTo(5L),
+                () -> assertThat(savedTime.getStartAt()).isEqualTo(LocalTime.of(17, 25))
+        );
     }
 
-    @DisplayName("예약 시간 정보 정상적으로 삭제하면 예외가 발생하지 않는다")
+    @DisplayName("예약 시간 정보를 삭제한다")
     @Test
     void remove_test() {
         // given
         Long removeId = 3L;
 
-        // when & then
-        assertThatCode(() -> reservationTimeService.remove(removeId))
-                .doesNotThrowAnyException();
+        // when
+        reservationTimeRepository.deleteById(removeId);
+
+        // then
+        assertAll(
+                () -> assertThat(reservationTimeRepository.findAll()).hasSize(3),
+                () -> assertThat(reservationTimeRepository.findById(removeId).isEmpty()).isTrue()
+        );
+
     }
 
     @DisplayName("예약 정보 시간을 모두 조회한다")

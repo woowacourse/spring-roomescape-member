@@ -1,7 +1,6 @@
 package roomescape.reservation.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -18,11 +17,9 @@ import roomescape.reservation.controller.dto.ReservationRequest;
 import roomescape.reservation.controller.dto.ReservationResponse;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.repository.ReservationRepository;
-import roomescape.theme.controller.dto.ThemeResponse;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.controller.dto.AvailableTimeResponse;
-import roomescape.time.controller.dto.ReservationTimeResponse;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.repository.ReservationTimeRepository;
 import roomescape.util.repository.ReservationFakeRepository;
@@ -32,11 +29,12 @@ import roomescape.util.repository.ThemeFakeRepository;
 class ReservationServiceTest {
 
     private ReservationService reservationService;
+    private ReservationRepository reservationRepository;
     private Clock clock;
 
     @BeforeEach
     void setup() {
-        ReservationRepository reservationRepository = new ReservationFakeRepository();
+        reservationRepository = new ReservationFakeRepository();
         ReservationTimeRepository reservationTimeRepository = new ReservationTimeFakeRepository();
         ThemeRepository themeRepository = new ThemeFakeRepository(reservationRepository);
         clock = Clock.fixed(Instant.parse("2025-03-28T23:59:59Z"), ZoneOffset.UTC);
@@ -88,13 +86,24 @@ class ReservationServiceTest {
         List<ReservationResponse> reservationResponses = reservationService.getAll();
 
         // then
-        assertThat(reservationResponses)
-                .extracting(ReservationResponse::date)
-                .containsExactlyInAnyOrder(
-                        LocalDate.of(2025, 3, 28),
-                        LocalDate.of(2025, 4, 5),
-                        LocalDate.of(2025, 5, 15)
-                );
+        List<Reservation> reservations = reservationRepository.findAll();
+        List<LocalDate> expectedDates = reservations.stream()
+                .map(Reservation::getDate)
+                .toList();
+
+        List<String> expectedNames = reservations.stream()
+                .map(Reservation::getName)
+                .toList();
+
+        assertAll(
+                () -> assertThat(reservationResponses).hasSize(reservations.size()),
+                () -> assertThat(reservationResponses)
+                        .extracting(ReservationResponse::date)
+                        .containsExactlyInAnyOrderElementsOf(expectedDates),
+                () -> assertThat(reservationResponses)
+                        .extracting(ReservationResponse::name)
+                        .containsExactlyInAnyOrderElementsOf(expectedNames)
+        );
     }
 
     @DisplayName("예약 정보를 추가한다")
@@ -107,24 +116,26 @@ class ReservationServiceTest {
         ReservationResponse response = reservationService.add(request);
 
         // then
-        ReservationTimeResponse expectedTimeResponse = new ReservationTimeResponse(4L, LocalTime.of(23, 53));
-        ThemeResponse expectedThemeResponse = new ThemeResponse(3L, "레벨3 탈출", "우테코 레벨3를 탈출하는 내용입니다.",
-                "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        ReservationResponse expected = new ReservationResponse(4L, "루키", LocalDate.of(2025, 5, 3), expectedTimeResponse,
-                expectedThemeResponse);
-        assertThat(response).isEqualTo(expected);
+        Reservation savedReservation = reservationRepository.findById(4L).get();
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(savedReservation.getId()),
+                () -> assertThat(response.theme().id()).isEqualTo(savedReservation.getThemeId()),
+                () -> assertThat(response.time().id()).isEqualTo(savedReservation.getTimeId()),
+                () -> assertThat(response.name()).isEqualTo(savedReservation.getName())
+        );
     }
 
-    @DisplayName("성공적으로 예약 정보를 삭제하면 예외가 발생하지 않는다")
+    @DisplayName("예약 정보를 삭제한다")
     @Test
     void remove_test() {
         // given
         Long removeId = 3L;
 
-        // when & then
-        assertThatCode(() -> reservationService.remove(removeId))
-                .doesNotThrowAnyException();
+        // when
+        reservationService.remove(removeId);
+
+        // then
+        assertThat(reservationRepository.findById(removeId).isEmpty()).isTrue();
     }
 
     @DisplayName("지난 날짜를 예약하는 경우 예외가 발생한다")
@@ -161,12 +172,13 @@ class ReservationServiceTest {
         ReservationResponse response = reservationService.add(request);
 
         // then
+        Reservation savedReservation = reservationRepository.findById(4L).get();
         assertAll(
-                () -> assertThat(response.id()).isEqualTo(4L),
-                () -> assertThat(response.date()).isEqualTo(LocalDate.now(clock).plusDays(3)),
-                () -> assertThat(response.name()).isEqualTo("루키"),
-                () -> assertThat(response.theme().id()).isEqualTo(1L),
-                () -> assertThat(response.time().id()).isEqualTo(1L)
+                () -> assertThat(response.id()).isEqualTo(savedReservation.getId()),
+                () -> assertThat(response.date()).isEqualTo(savedReservation.getDate()),
+                () -> assertThat(response.name()).isEqualTo(savedReservation.getName()),
+                () -> assertThat(response.theme().id()).isEqualTo(savedReservation.getThemeId()),
+                () -> assertThat(response.time().id()).isEqualTo(savedReservation.getTimeId())
         );
     }
 
