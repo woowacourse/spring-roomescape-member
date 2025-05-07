@@ -104,6 +104,20 @@ class JdbcReservationDaoTest {
     }
 
     @Test
+    void 예약_가능한_시간을_조회할_수_있다() {
+        // given
+        LocalDate date = LocalDate.of(2025, 1, 4);
+        Long themeId = 2L;
+
+        // when
+        List<ReservationTime> availableTimes = reservationDao.findAvailableTimesByDateAndThemeId(date, themeId);
+
+        // then
+        assertThat(availableTimes.size()).isEqualTo(2);
+
+    }
+
+    @Test
     void 최근_일주일_기준으로_인기테마_10개를_가져올_수_있다() {
         // given
         LocalDate currentDate = LocalDate.of(2025, 1, 6);
