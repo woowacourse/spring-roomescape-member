@@ -16,12 +16,12 @@ public class Theme {
         this.thumbnail = thumbnail;
     }
 
-    public Theme(String name, String description, String thumbnail) {
-        this(null, name, description, thumbnail);
+    public static Theme createWithoutId(String name, String description, String thumbnail) {
+        return new Theme(null, name, description, thumbnail);
     }
 
-    public Theme withId(Long id) {
-        return new Theme(id, this.name, this.description, this.thumbnail);
+    public static Theme createWithId(Long id, String name, String description, String thumbnail) {
+        return new Theme(id, name, description, thumbnail);
     }
 
     private void validate(String name, String description, String thumbnail) {

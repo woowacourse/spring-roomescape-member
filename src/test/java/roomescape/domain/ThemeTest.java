@@ -17,7 +17,7 @@ class ThemeTest {
         String thumbnail = "/image/star";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(name, description, thumbnail))
+        assertThatThrownBy(() -> Theme.createWithoutId(name, description, thumbnail))
                 .isInstanceOf(ThemeFieldRequiredException.class);
     }
 
@@ -30,7 +30,7 @@ class ThemeTest {
         String thumbnail = "/image/star";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(name, description, thumbnail))
+        assertThatThrownBy(() -> Theme.createWithoutId(name, description, thumbnail))
                 .isInstanceOf(ThemeFieldRequiredException.class);
     }
 
@@ -43,7 +43,7 @@ class ThemeTest {
         String thumbnail = "";
 
         // when & then
-        assertThatThrownBy(() -> new Theme(name, description, thumbnail))
+        assertThatThrownBy(() -> Theme.createWithoutId(name, description, thumbnail))
                 .isInstanceOf(ThemeFieldRequiredException.class);
     }
 }

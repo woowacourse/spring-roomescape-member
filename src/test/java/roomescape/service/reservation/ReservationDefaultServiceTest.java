@@ -12,9 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequest;
-import roomescape.entity.ReservationTimeEntity;
-import roomescape.entity.ThemeEntity;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
@@ -24,7 +24,7 @@ import roomescape.repository.reservationtime.ReservationTimeRepository;
 import roomescape.repository.theme.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationServiceImplTest {
+class ReservationDefaultServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -36,7 +36,7 @@ class ReservationServiceImplTest {
     private ThemeRepository themeRepository;
 
     @InjectMocks
-    private ReservationServiceImpl reservationService;
+    private ReservationDefaultService reservationService;
 
     @DisplayName("예약 시간이 존재하지 않으면 예약을 생성할 수 없다")
     @Test
@@ -68,7 +68,7 @@ class ReservationServiceImplTest {
 
         // when
         when(timeRepository.findById(timeId)).thenReturn(
-                Optional.of(new ReservationTimeEntity(timeId, LocalTime.now().plusHours(1))));
+                Optional.of(ReservationTime.createWithId(timeId, LocalTime.now().plusHours(1))));
 
         when(themeRepository.findById(themeId)).thenReturn(Optional.empty());
         //then
@@ -88,10 +88,10 @@ class ReservationServiceImplTest {
 
         // when
         when(timeRepository.findById(timeId)).thenReturn(
-                Optional.of(new ReservationTimeEntity(timeId, LocalTime.now().plusHours(1))));
+                Optional.of(ReservationTime.createWithId(timeId, LocalTime.now().plusHours(1))));
 
         when(themeRepository.findById(themeId)).thenReturn(
-                Optional.of(new ThemeEntity(themeId, "test", "test", "test")));
+                Optional.of(Theme.createWithId(themeId, "test", "test", "test")));
         when(reservationRepository.existsByDateAndTime(today, timeId)).thenReturn(true);
 
         //then

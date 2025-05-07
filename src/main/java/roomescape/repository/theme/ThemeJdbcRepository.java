@@ -9,12 +9,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Theme;
-import roomescape.entity.ThemeEntity;
 
 @Repository
 public class ThemeJdbcRepository implements ThemeRepository {
-    private static final RowMapper<ThemeEntity> ROW_MAPPER = (resultSet, rowNumber) ->
-            new ThemeEntity(
+    private static final RowMapper<Theme> ROW_MAPPER = (resultSet, rowNumber) ->
+            Theme.createWithId(
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("description"),
@@ -32,24 +31,23 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public ThemeEntity add(Theme theme) {
+    public Theme add(Theme theme) {
         Map<String, String> params = new HashMap<>();
         params.put("name", theme.getName());
         params.put("description", theme.getDescription());
         params.put("thumbnail", theme.getThumbnail());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return ThemeEntity.of(id, theme);
+        return Theme.createWithId(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override
-    public List<ThemeEntity> findAll() {
+    public List<Theme> findAll() {
         String sql = "select * from theme";
-        List<ThemeEntity> themes = jdbcTemplate.query(
+        return jdbcTemplate.query(
                 sql,
                 ROW_MAPPER
         );
-        return themes;
     }
 
     @Override
@@ -59,9 +57,9 @@ public class ThemeJdbcRepository implements ThemeRepository {
     }
 
     @Override
-    public Optional<ThemeEntity> findById(Long id) {
+    public Optional<Theme> findById(Long id) {
         String sql = "select * from theme where id=?";
-        List<ThemeEntity> theme = jdbcTemplate.query(
+        List<Theme> theme = jdbcTemplate.query(
                 sql,
                 ROW_MAPPER,
                 id

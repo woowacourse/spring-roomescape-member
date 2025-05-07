@@ -3,8 +3,8 @@ package roomescape.service.theme.popular;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Theme;
 import roomescape.dto.theme.PopularThemeResponse;
-import roomescape.entity.ThemeEntity;
 import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;
@@ -28,9 +28,9 @@ public class PopularThemeService implements PopularThemeUseCase {
                 .toList();
 
         return themeIds.stream().map(themeId -> {
-            ThemeEntity themeEntity = themeRepository.findById(themeId)
+            Theme theme = themeRepository.findById(themeId)
                     .orElseThrow(ThemeNotFoundException::new);
-            return PopularThemeResponse.of(themeEntity);
+            return PopularThemeResponse.of(theme);
         }).toList();
     }
 }

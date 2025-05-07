@@ -1,10 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import roomescape.exception.reservation.ReservationFieldRequiredException;
-import roomescape.exception.reservation.ReservationInPastException;
 
 public class Reservation {
     private final Long id;
@@ -22,22 +19,19 @@ public class Reservation {
         this.theme = theme;
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public static Reservation createWithoutId(String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(null, name, date, time, theme);
+    }
+
+    public static Reservation createWithId(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+        return new Reservation(id, name, date, time, theme);
     }
 
     private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
         validateName(name);
         validateDate(date);
         validateTime(time);
-        validateInPast(date, time.getStartAt());
         validateTheme(theme);
-    }
-
-    private void validateInPast(LocalDate date, LocalTime startAt) {
-        if (LocalDateTime.now().isAfter(LocalDateTime.of(date, startAt))) {
-            throw new ReservationInPastException();
-        }
     }
 
     private void validateName(String name) {

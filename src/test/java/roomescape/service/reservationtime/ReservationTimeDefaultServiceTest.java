@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.AvailableTimeResponse;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
-import roomescape.entity.ReservationTimeEntity;
 import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.reservationtime.UsingReservationTimeException;
@@ -24,7 +23,7 @@ import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.reservationtime.ReservationTimeRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationTimeServiceImplTest {
+class ReservationTimeDefaultServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
@@ -32,7 +31,7 @@ class ReservationTimeServiceImplTest {
     private ReservationTimeRepository timeRepository;
 
     @InjectMocks
-    private ReservationTimeServiceImpl reservationTimeService;
+    private ReservationTimeDefaultService reservationTimeService;
 
     @DisplayName("중복되는 시간은 생성할 수 없다")
     @Test
@@ -79,13 +78,14 @@ class ReservationTimeServiceImplTest {
         // given
         LocalDate date = LocalDate.now();
         Long themeId = 1L;
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.now());
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.now());
+        ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.now());
+        ReservationTime reservationTime2 = ReservationTime.createWithoutId(LocalTime.now());
 
         // when
         when(reservationRepository.findTimeIdsByDateAndTheme(date, themeId)).thenReturn(List.of(1L));
-        when(timeRepository.findAll()).thenReturn(List.of(ReservationTimeEntity.of(1L, reservationTime1),
-                ReservationTimeEntity.of(2L, reservationTime2)));
+        when(timeRepository.findAll()).thenReturn(
+                List.of(ReservationTime.createWithId(1L, reservationTime1.getStartAt()),
+                        ReservationTime.createWithId(2L, reservationTime2.getStartAt())));
         List<AvailableTimeResponse> actual = reservationTimeService.getAvailableTimes(date, themeId);
 
         // then

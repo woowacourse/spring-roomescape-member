@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.reservation.ReservationFieldRequiredException;
-import roomescape.exception.reservation.ReservationInPastException;
 
 class ReservationTest {
 
@@ -17,11 +16,11 @@ class ReservationTest {
         // given
         String name = "";
         LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
-        Theme theme = new Theme("무서운 방", "무섭습니다", "/image/scary");
+        ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
+        Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time, theme))
+        assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme))
                 .isInstanceOf(ReservationFieldRequiredException.class);
     }
 
@@ -31,11 +30,11 @@ class ReservationTest {
         // given
         String name = "슬링키";
         LocalDate date = null;
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
-        Theme theme = new Theme("무서운 방", "무섭습니다", "/image/scary");
+        ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
+        Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time, theme)).isInstanceOf(
+        assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme)).isInstanceOf(
                 ReservationFieldRequiredException.class);
     }
 
@@ -46,10 +45,10 @@ class ReservationTest {
         String name = "슬링키";
         LocalDate date = LocalDate.now();
         ReservationTime time = null;
-        Theme theme = new Theme("무서운 방", "무섭습니다", "/image/scary");
+        Theme theme = Theme.createWithoutId("무서운 방", "무섭습니다", "/image/scary");
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time, theme)).isInstanceOf(
+        assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme)).isInstanceOf(
                 ReservationFieldRequiredException.class);
     }
 
@@ -59,25 +58,11 @@ class ReservationTest {
         // given
         String name = "슬링키";
         LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().plusHours(1));
+        ReservationTime time = ReservationTime.createWithoutId(LocalTime.now().plusHours(1));
         Theme theme = null;
 
         // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time, theme)).isInstanceOf(
+        assertThatThrownBy(() -> Reservation.createWithoutId(name, date, time, theme)).isInstanceOf(
                 ReservationFieldRequiredException.class);
-    }
-
-    @DisplayName("예약은 이미 지난 시간으로 할 수 없다")
-    @Test
-    void reservationInPastTest() {
-        // given
-        String name = "슬링키";
-        LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().minusMinutes(1));
-        Theme theme = null;
-
-        // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time, theme))
-                .isInstanceOf(ReservationInPastException.class);
     }
 }

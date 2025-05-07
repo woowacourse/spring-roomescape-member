@@ -1,15 +1,15 @@
 package roomescape.dto.theme;
 
 import java.util.List;
-import roomescape.entity.ThemeEntity;
+import roomescape.domain.Theme;
 
 public record ThemeResponse(Long id, String name, String description, String thumbnail) {
-    public static ThemeResponse from(ThemeEntity themeEntity) {
-        return new ThemeResponse(themeEntity.id(), themeEntity.name(), themeEntity.description(),
-                themeEntity.thumbnail());
+    public static ThemeResponse from(Theme theme) {
+        return new ThemeResponse(theme.getId(), theme.getName(), theme.getDescription(),
+                theme.getThumbnail());
     }
 
-    public static List<ThemeResponse> from(List<ThemeEntity> themeEntities) {
+    public static List<ThemeResponse> from(List<Theme> themeEntities) {
         return themeEntities.stream()
                 .map(ThemeResponse::from)
                 .toList();

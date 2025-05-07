@@ -15,7 +15,7 @@ class ReservationTimeTest {
         // given
         LocalTime time = null;
         // when & then
-        assertThatThrownBy(() -> new ReservationTime(time))
+        assertThatThrownBy(() -> ReservationTime.createWithoutId(time))
                 .isInstanceOf(ReservationTimeFieldRequiredException.class);
     }
 }

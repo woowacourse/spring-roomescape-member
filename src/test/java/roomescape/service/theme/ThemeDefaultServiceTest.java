@@ -13,12 +13,12 @@ import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.repository.theme.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ThemeServiceImplTest {
+class ThemeDefaultServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
     @InjectMocks
-    private ThemeServiceImpl themeService;
+    private ThemeDefaultService themeService;
 
     @DisplayName("존재하지 않는 테마 삭제를 시도하면 예외를 발생시킨다")
     @Test
