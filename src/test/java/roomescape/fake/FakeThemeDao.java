@@ -57,6 +57,7 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public boolean existByName(String name) {
-        return false;
+        return themes.stream()
+                .anyMatch(theme -> theme.getName().equalsIgnoreCase(name));
     }
 }

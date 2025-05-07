@@ -14,6 +14,6 @@ public class TimeCreateRequestTest {
     void validateNull() {
         assertThatThrownBy(() -> new ReservationTimeCreateRequest(null))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("시간을 선택해라.");
+            .hasMessage("시간이 입력되지 않았다.");
     }
 }

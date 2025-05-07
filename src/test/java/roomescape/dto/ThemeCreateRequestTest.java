@@ -14,7 +14,7 @@ class ThemeCreateRequestTest {
     void validateNullOfName() {
         assertThatThrownBy(() -> new ThemeCreateRequest(null, "설명", "썸네일"))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("값을 모두 선택해라.");
+            .hasMessage("예약할 날짜가 입력되지 않았다.");
     }
 
     @Test
@@ -22,7 +22,7 @@ class ThemeCreateRequestTest {
     void validateNullOfDescription() {
         assertThatThrownBy(() -> new ThemeCreateRequest("이름", null, "썸네일"))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("값을 모두 선택해라.");
+            .hasMessage("예약자 이름이 입력되지 않았다.");
     }
 
     @Test
@@ -30,7 +30,7 @@ class ThemeCreateRequestTest {
     void validateNullOfThumbnail() {
         assertThatThrownBy(() -> new ThemeCreateRequest("이름", "설명", null))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("값을 모두 선택해라.");
+            .hasMessage("예약할 시간이 입력되지 않았다.");
     }
 
     @Test
@@ -38,7 +38,7 @@ class ThemeCreateRequestTest {
     void validateNameLength() {
         assertThatThrownBy(() -> new ThemeCreateRequest("", "설명", "썸네일"))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("입력되지 않은 값이 있다.");
+            .hasMessage("이름은 한 글자 이상이어야 한다.");
     }
 
     @Test
@@ -46,7 +46,7 @@ class ThemeCreateRequestTest {
     void validateDescriptionLength() {
         assertThatThrownBy(() -> new ThemeCreateRequest("이름", "", "썸네일"))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("입력되지 않은 값이 있다.");
+            .hasMessage("테마 설명은 한 글자 이상이어야 한다.");
     }
 
     @Test
@@ -54,6 +54,6 @@ class ThemeCreateRequestTest {
     void validateThumbnailLength() {
         assertThatThrownBy(() -> new ThemeCreateRequest("이름", "설명", ""))
             .isInstanceOf(InvalidInputException.class)
-            .hasMessage("입력되지 않은 값이 있다.");
+            .hasMessage("테마 썸네일 URL은 한 글자 이상이어야 한다.");
     }
 }
