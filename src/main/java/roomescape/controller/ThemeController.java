@@ -40,8 +40,12 @@ public class ThemeController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ThemeResponse>> getTopTenTheme() {
-        return ResponseEntity.ok(themeService.getTopTenTheme());
+    public ResponseEntity<List<ThemeResponse>> getTopTenTheme(
+            @RequestParam(defaultValue = "10") int count,
+            @RequestParam(defaultValue = "7") int startDaysAgo,
+            @RequestParam(defaultValue = "1") int endDaysAgo
+    ) {
+        return ResponseEntity.ok(themeService.getTopTheme(count, startDaysAgo, endDaysAgo));
     }
 
     @GetMapping("/{id}/times")

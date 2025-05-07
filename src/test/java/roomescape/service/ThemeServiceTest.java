@@ -15,7 +15,6 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -88,7 +87,7 @@ public class ThemeServiceTest {
     @Test
     void 일주일동안_가장_인기있는_테마_10개_조회() {
         // when
-        List<ThemeResponse> topTenResponses = service.getTopTenTheme();
+        List<ThemeResponse> topTenResponses = service.getTopTheme(10,7,1);
 
         // then
         assertThat(topTenResponses).hasSize(6);

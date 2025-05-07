@@ -47,11 +47,11 @@ public class ThemeService {
                 .toList();
     }
 
-    public List<ThemeResponse> getTopTenTheme() {
+    public List<ThemeResponse> getTopTheme(int count, int startDaysAgo, int endDaysAgo) {
         List<Theme> topTenTheme = themeDao.getPopularThemeByRankAndDuration(
-                10,
-                LocalDate.now(clock).minusDays(7),
-                LocalDate.now(clock).minusDays(1)
+                count   ,
+                LocalDate.now(clock).minusDays(startDaysAgo),
+                LocalDate.now(clock).minusDays(endDaysAgo)
         );
         return topTenTheme.stream()
                 .map(ThemeResponse::from)
