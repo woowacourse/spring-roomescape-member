@@ -29,7 +29,7 @@ public class ReservationApiController {
     @PostMapping("/reservations")
     @AuthRequired
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody @Valid ReservationRequest request, LoginInfo loginInfo) {
-        Reservation reservation = reservationService.addAndGetWithEmail(request.date(), request.timeId(), request.themeId(), loginInfo.email());
+        Reservation reservation = reservationService.addAndGet(request.date(), request.timeId(), request.themeId(), loginInfo.id());
         ReservationResponse response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations")).body(response);
     }

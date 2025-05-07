@@ -25,7 +25,7 @@ public class JJWTJwtUtil implements JwtUtil {
     @Override
     public Authentication getAuthentication(final User user) {
         String tokenValue = Jwts.builder()
-                .subject(user.email())
+                .subject(user.id())
                 .signWith(key)
                 .claim("role", user.role())
                 .compact();
@@ -40,10 +40,10 @@ public class JJWTJwtUtil implements JwtUtil {
                 .parseSignedClaims(tokenValue)
                 .getPayload();
 
-        final String email = claims.getSubject();
+        final String id = claims.getSubject();
         final UserRole role = UserRole.valueOf(claims.get("role", String.class));
 
-        return new LoginInfo(email, role);
+        return new LoginInfo(id, role);
     }
 
     @Override

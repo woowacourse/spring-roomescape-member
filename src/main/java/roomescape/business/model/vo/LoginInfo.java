@@ -1,7 +1,7 @@
 package roomescape.business.model.vo;
 
 public record LoginInfo(
-        String email,
+        String id,
         UserRole userRole
 ) {
 }

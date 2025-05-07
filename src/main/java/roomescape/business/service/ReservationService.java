@@ -36,29 +36,9 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
-    public Reservation addAndGetWithEmail(
-            final LocalDate date,
-            final String timeId,
-            final String themeId,
-            final String userEmail
-    ) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(UserNotFoundException::new);
-        return addAndGet(date, timeId, themeId, user);
-    }
-
-    public Reservation addAndGet(
-            final LocalDate date,
-            final String timeId,
-            final String themeId,
-            final String userId
-    ) {
+    public Reservation addAndGet(final LocalDate date, final String timeId, final String themeId, final String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        return addAndGet(date, timeId, themeId, user);
-    }
-
-    private Reservation addAndGet(final LocalDate date, final String timeId, final String themeId, final User user) {
         ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationNotFoundException::new);
         Theme theme = themeRepository.findById(themeId)

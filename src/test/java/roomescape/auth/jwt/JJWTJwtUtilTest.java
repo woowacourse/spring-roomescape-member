@@ -28,7 +28,7 @@ class JJWTJwtUtilTest {
         jwtUtil = new JJWTJwtUtil(SECRET_KEY);
         key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         user = mock(User.class);
-        when(user.email()).thenReturn("test@example.com");
+        when(user.email()).thenReturn("1");
         when(user.role()).thenReturn(UserRole.USER.name());
     }
 
@@ -46,21 +46,21 @@ class JJWTJwtUtilTest {
     @Test
     void 토큰에서_로그인정보를_추출한다() {
         // given
-        String token = createToken("user@example.com", UserRole.USER.name());
+        String token = createToken(UserRole.USER.name());
 
         // when
         LoginInfo loginInfo = jwtUtil.getAuthorization(token);
 
         // then
         assertThat(loginInfo).isNotNull();
-        assertThat(loginInfo.email()).isEqualTo("user@example.com");
+        assertThat(loginInfo.id()).isEqualTo("1");
         assertThat(loginInfo.userRole()).isEqualTo(UserRole.USER);
     }
 
     @Test
     void 유효한_토큰을_검증하면_true를_반환한다() {
         // given
-        String token = createToken("user@example.com", UserRole.USER.name());
+        String token = createToken(UserRole.USER.name());
 
         // when
         boolean result = jwtUtil.validateToken(token);
@@ -118,9 +118,9 @@ class JJWTJwtUtilTest {
         }).doesNotThrowAnyException();
     }
 
-    private String createToken(String email, String role) {
+    private String createToken(String role) {
         return Jwts.builder()
-                .subject(email)
+                .subject("1")
                 .signWith(key)
                 .claim("role", role)
                 .compact();

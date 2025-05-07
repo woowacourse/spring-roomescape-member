@@ -48,56 +48,6 @@ class ReservationServiceTest {
     private ReservationService reservationService;
 
     @Test
-    void 이메일로_예약을_추가하고_반환한다() {
-        // given
-        LocalDate date = LocalDate.now().plusDays(1);
-        String timeId = "time-id";
-        String themeId = "theme-id";
-        String userEmail = "test@example.com";
-
-        User user = User.restore("user-id", "USER", "Test User", userEmail, "password");
-        ReservationTime reservationTime = ReservationTime.restore(timeId, LocalTime.of(10, 0));
-        Theme theme = Theme.restore(themeId, "Test Theme", "Description", "thumbnail.jpg");
-
-        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
-        when(reservationTimeRepository.findById(timeId)).thenReturn(Optional.of(reservationTime));
-        when(themeRepository.findById(themeId)).thenReturn(Optional.of(theme));
-        when(reservationRepository.isDuplicateDateAndTimeAndTheme(eq(date), any(LocalTime.class), eq(theme)))
-                .thenReturn(false);
-
-        // when
-        Reservation result = reservationService.addAndGetWithEmail(date, timeId, themeId, userEmail);
-
-        // then
-        assertThat(result).isNotNull();
-        verify(userRepository).findByEmail(userEmail);
-        verify(reservationTimeRepository).findById(timeId);
-        verify(themeRepository).findById(themeId);
-        verify(reservationRepository).isDuplicateDateAndTimeAndTheme(eq(date), any(LocalTime.class), eq(theme));
-        verify(reservationRepository).save(any(Reservation.class));
-    }
-
-    @Test
-    void 존재하지_않는_이메일로_예약_시_예외가_발생한다() {
-        // given
-        LocalDate date = LocalDate.now().plusDays(1);
-        String timeId = "time-id";
-        String themeId = "theme-id";
-        String userEmail = "nonexistent@example.com";
-
-        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.addAndGetWithEmail(date, timeId, themeId, userEmail))
-                .isInstanceOf(UserNotFoundException.class);
-
-        verify(userRepository).findByEmail(userEmail);
-        verifyNoInteractions(reservationTimeRepository);
-        verifyNoInteractions(themeRepository);
-        verifyNoInteractions(reservationRepository);
-    }
-
-    @Test
     void 사용자_ID로_예약을_추가하고_반환한다() {
         // given
         LocalDate date = LocalDate.now().plusDays(1);

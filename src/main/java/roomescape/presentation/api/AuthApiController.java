@@ -38,7 +38,7 @@ public class AuthApiController {
     @GetMapping("/login/check")
     @AuthRequired
     public ResponseEntity<UserResponse> check(LoginInfo loginInfo) {
-        User user = userService.getByEmail(loginInfo.email());
+        User user = userService.getById(loginInfo.id());
         return ResponseEntity.ok(UserResponse.from(user));
     }
 }

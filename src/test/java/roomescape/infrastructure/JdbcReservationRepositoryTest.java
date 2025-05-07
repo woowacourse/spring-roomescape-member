@@ -60,7 +60,7 @@ class JdbcReservationRepositoryTest {
         // given
         final ReservationTime time = ReservationTime.create(TIME);
         final Theme theme = Theme.create("호러", "", "");
-        final User user = User.create("돔푸", "dompu@email.com", "password");
+        final User user = User.create("돔푸", "dompoo@email.com", "password");
         reservationTimeRepository.save(time);
         themeRepository.save(theme);
         userRepository.save(user);
