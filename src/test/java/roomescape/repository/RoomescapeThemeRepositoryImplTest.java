@@ -33,7 +33,7 @@ class RoomescapeThemeRepositoryImplTest {
         final long id = 1L;
 
         //when
-        final ReservationTheme theme = repository.findById(id);
+        final ReservationTheme theme = repository.findById(id).get();
 
         //then
         assertThat(theme.getId()).isEqualTo(id);

@@ -2,6 +2,7 @@ package roomescape.repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,9 +20,13 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
     }
 
     @Override
-    public ReservationTheme findById(final Long id) {
-        String sql = "select * from reservation_theme where id=?";
-        return template.queryForObject(sql, reservationThemeRowMapper(), id);
+    public Optional<ReservationTheme> findById(final Long id) {
+        String sql = "SELECT * FROM reservation_theme WHERE id = ?";
+        final List<ReservationTheme> reservationThemes = template.query(sql, reservationThemeRowMapper(), id);
+        if (reservationThemes.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(reservationThemes.getFirst());
     }
 
     @Override

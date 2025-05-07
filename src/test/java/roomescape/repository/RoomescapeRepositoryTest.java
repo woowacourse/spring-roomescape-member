@@ -41,7 +41,7 @@ class RoomescapeRepositoryTest {
     @Test
     void findById() {
         //when
-        Reservation reservation = repository.findById(1L);
+        Reservation reservation = repository.findById(1L).get();
 
         //then
         assertEqualReservationElements(reservation, 1L, "브라운", "2023-08-05", 1L, "15:40");
@@ -77,8 +77,8 @@ class RoomescapeRepositoryTest {
 
         //when
         Reservation saved = repository.save(reservation);
-        Reservation firstReservation = repository.findById(1L);
-        Reservation secondReservation = repository.findById(2L);
+        Reservation firstReservation = repository.findById(1L).get();
+        Reservation secondReservation = repository.findById(2L).get();
 
         //then
         assertEqualReservationElements(saved, 2L, "네오", "2023-08-05", 1L, "15:40");

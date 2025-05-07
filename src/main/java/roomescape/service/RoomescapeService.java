@@ -60,8 +60,8 @@ public class RoomescapeService {
         long timeId = request.timeId();
         final long themeId = request.themeId();
 
-        ReservationTime time = roomescapeTimeRepository.findById(timeId);
-        ReservationTheme theme = roomescapeThemeRepository.findById(themeId);
+        ReservationTime time = roomescapeTimeRepository.findById(timeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 예약 시간 입니다."));
+        ReservationTheme theme = roomescapeThemeRepository.findById(themeId).orElseThrow(() -> new NoSuchElementException("[ERROR] 존재하지 않는 테마 입니다."));
         Reservation reservation = new Reservation(request.name(), request.date(), time, theme);
         LocalDateTime requestDateTime = LocalDateTime.of(request.date(), time.getStartAt());
 

@@ -39,7 +39,7 @@ class RoomescapeTimeRepositoryTest {
     @Test
     void findById() {
         //when
-        ReservationTime time = timeRepository.findById(1L);
+        ReservationTime time = timeRepository.findById(1L).get();
 
         //then
         assertThat(time.getStartAt()).isEqualTo(LocalTime.parse("15:40"));
@@ -66,8 +66,8 @@ class RoomescapeTimeRepositoryTest {
 
         //when
         ReservationTime saved = timeRepository.save(reservationTime);
-        ReservationTime firstTime = timeRepository.findById(1L);
-        ReservationTime secondTime = timeRepository.findById(2L);
+        ReservationTime firstTime = timeRepository.findById(1L).get();
+        ReservationTime secondTime = timeRepository.findById(2L).get();
 
         //then
         assertThat(saved.getId()).isEqualTo(2L);
