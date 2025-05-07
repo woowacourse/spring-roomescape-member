@@ -68,7 +68,6 @@
   ```
   ```http request
   HTTP/1.1 201
-  Location: /themes/1
   Content-Type: application/json
   
   {
@@ -97,10 +96,33 @@
 
 # 4단계
 
-- [ ] 사용자 도메인을 추가한다
-    - [ ] 사용자는 이름을 가진다
-    - [ ] 사용자는 이메일을 가진다
-    - [ ] 사용자는 비밀번호를 가진다
+- [x] 사용자 도메인을 추가한다
+    - [x] 사용자는 이름을 가진다
+    - [x] 사용자는 이메일을 가진다
+    - [x] 사용자는 비밀번호를 가진다
+- [x] 회원가입 API를 구현한다
+  ```http request
+    POST /members HTTP/1.1
+    content-type: application/json
+    host: localhost:8080
+  
+    {
+        "name": "name",
+        "email": "admin@email.com",
+        "password": "password"
+    }
+  ```
+  ```http request
+    HTTP/1.1 200
+          Content-Type: application/json
+  
+    {
+        "id": 1,
+        "name": "name",
+        "email": "email"
+    }
+  ```
+
 - [ ] 로그인 API를 구현한다
     - [ ] 로그인의 id로는 사용자의 이메일, password로는 사용자의 비밀번호를 사용한다
       ```http request
@@ -139,4 +161,5 @@
   }
   ```
 
-- [ ] `GET /login` 요청시 로그인 폼 페이지를 응답한다
+- [x] `GET /login` 요청시 로그인 폼 페이지를 응답한다
+- [x] `GET /signup` 요청시 회원가입 폼 페이지를 응답한다
