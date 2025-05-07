@@ -21,44 +21,44 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(code = BAD_REQUEST)
     public ProblemDetail handleMethodArgumentNotValid(final MethodArgumentNotValidException ex) {
-        var pd = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), "유효성 검증에 실패했습니다.");
+        var problemDetail = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), "유효성 검증에 실패했습니다.");
         var fieldErrors = ex.getFieldErrors()
             .stream()
             .collect(toMap(FieldError::getField, err -> (Object) err.getDefaultMessage()));
-        pd.setProperties(Map.of("message", fieldErrors));
-        return pd;
+        problemDetail.setProperties(Map.of("message", fieldErrors));
+        return problemDetail;
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(code = BAD_REQUEST)
     public ProblemDetail handleHttpMessageNotReadable(final HttpMessageNotReadableException ex) {
-        var pd = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "해석할 수 없는 요청입니다.");
+        var problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "해석할 수 없는 요청입니다.");
         if (ex.getCause() instanceof InvalidFormatException ife) {
             var invalidFields = ife.getPath().stream().collect(toMap(Reference::getFieldName, r -> ife.getValue()));
-            pd.setProperties(Map.of("message", invalidFields));
+            problemDetail.setProperties(Map.of("message", invalidFields));
         }
-        return pd;
+        return problemDetail;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(code = BAD_REQUEST)
     public ProblemDetail handleIllegalArgument(final IllegalArgumentException ex) {
-        var pd = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "잘못된 요청 매개변수입니다.");
-        pd.setProperties(Map.of("message", ex.getMessage()));
-        return pd;
+        var problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "잘못된 요청 매개변수입니다.");
+        problemDetail.setProperties(Map.of("message", ex.getMessage()));
+        return problemDetail;
     }
 
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(code = BAD_REQUEST)
     public ProblemDetail handleIllegalState(final IllegalStateException ex) {
-        var pd = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "요청을 처리하는 과정에서 실패했습니다.");
-        pd.setProperties(Map.of("message", ex.getMessage()));
-        return pd;
+        var problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "요청을 처리하는 과정에서 실패했습니다.");
+        problemDetail.setProperties(Map.of("message", ex.getMessage()));
+        return problemDetail;
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(code = INTERNAL_SERVER_ERROR)
     public ProblemDetail handleException(final Exception ex) {
-        return ProblemDetail.forStatusAndDetail(BAD_REQUEST, "예기치 못한 오류가 발생했습니다.");
+        return ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, "예기치 못한 오류가 발생했습니다.");
     }
 }
