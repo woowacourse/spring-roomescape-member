@@ -32,4 +32,9 @@ public class RoomescapeController {
     public String getReservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
 }
