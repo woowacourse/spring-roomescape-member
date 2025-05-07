@@ -3,6 +3,7 @@ package roomescape.theme.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,11 +19,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.global.config.TestConfig;
 import roomescape.theme.controller.dto.ThemeRankingResponse;
 import roomescape.theme.controller.dto.ThemeResponse;
+import roomescape.theme.domain.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 @Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -30,7 +32,7 @@ import roomescape.theme.controller.dto.ThemeResponse;
 class ThemeIntegrationTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ThemeRepository themeRepository;
 
     @DisplayName("테마 목록의 조회 시 DB에 저장된 테마 목록을 반환한다")
     @Test
@@ -43,9 +45,23 @@ class ThemeIntegrationTest {
                 .jsonPath().getList(".", ThemeResponse.class);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from theme", Integer.class);
+        List<Theme> savedThemes = themeRepository.findAll();
+        assertAll(
+                () -> assertThat(themes).hasSize(savedThemes.size()),
+                () -> assertThat(themes).extracting(ThemeResponse::name)
+                        .containsExactlyInAnyOrderElementsOf(
+                                savedThemes.stream()
+                                        .map(Theme::getName)
+                                        .toList()
+                        ),
+                () -> assertThat(themes).extracting(ThemeResponse::description)
+                        .containsExactlyInAnyOrderElementsOf(
+                                savedThemes.stream()
+                                        .map(Theme::getDescription)
+                                        .toList()
+                        )
+        );
 
-        assertThat(themes.size()).isEqualTo(count);
     }
 
     @DisplayName("인기 테마의 목록을 조회한다")
@@ -90,9 +106,15 @@ class ThemeIntegrationTest {
                 .body("id", is(7));
 
         // then
-        String name = jdbcTemplate.queryForObject("SELECT name FROM theme WHERE id = ?", String.class, 7L);
+        Theme savedTheme = themeRepository.findById(7L).get();
 
-        assertThat(name).isEqualTo("레벨7 탈출");
+        assertAll(
+                () -> assertThat(savedTheme.getId()).isEqualTo(7L),
+                () -> assertThat(savedTheme.getName()).isEqualTo("레벨7 탈출"),
+                () -> assertThat(savedTheme.getDescription()).isEqualTo("우테코 레벨7를 탈출하는 내용입니다."),
+                () -> assertThat(savedTheme.getThumbnail()).isEqualTo(
+                        "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg")
+        );
     }
 
     @DisplayName("테마를 삭제하면 DB의 테마 데이터가 삭제된다")
@@ -104,11 +126,11 @@ class ThemeIntegrationTest {
                 .then().log().all()
                 .statusCode(204);
 
-        Boolean actual = jdbcTemplate.queryForObject("SELECT EXISTS(SELECT 1 FROM theme WHERE id = ?)",
-                Boolean.class, 6);
-
         // then
-        assertThat(actual).isFalse();
+        assertAll(
+                () -> assertThat(themeRepository.findAll()).hasSize(5),
+                () -> assertThat(themeRepository.findById(6L).isEmpty()).isTrue()
+        );
     }
 
     @DisplayName("테마 생성 시 입력 값이 존재하지 않거나 공백이면 예외가 발생한다")

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +19,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.global.config.TestConfig;
 import roomescape.time.controller.dto.ReservationTimeResponse;
+import roomescape.time.domain.ReservationTime;
+import roomescape.time.repository.ReservationTimeRepository;
 
 @Import(TestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -29,7 +31,7 @@ import roomescape.time.controller.dto.ReservationTimeResponse;
 class ReservationTimeIntegrationTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationTimeRepository reservationTimeRepository;
 
     @DisplayName("예약 시간 목록 조회 시 DB에 저장된 예약 시간 목록을 반환한다")
     @Test
@@ -42,9 +44,22 @@ class ReservationTimeIntegrationTest {
                 .jsonPath().getList(".", ReservationTimeResponse.class);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation_time", Integer.class);
-
-        assertThat(times.size()).isEqualTo(count);
+        List<ReservationTime> savedTimes = reservationTimeRepository.findAll();
+        assertAll(
+                () -> assertThat(times).hasSize(savedTimes.size()),
+                () -> assertThat(times).extracting(ReservationTimeResponse::id)
+                        .containsExactlyInAnyOrderElementsOf(
+                                savedTimes.stream()
+                                        .map(ReservationTime::getId)
+                                        .toList()
+                        ),
+                () -> assertThat(times).extracting(ReservationTimeResponse::startAt)
+                        .containsExactlyInAnyOrderElementsOf(
+                                savedTimes.stream()
+                                        .map(ReservationTime::getStartAt)
+                                        .toList()
+                        )
+        );
     }
 
     @DisplayName("예약 시간를 생성하면 DB에 예약 시간 데이터가 저장된다")
@@ -64,9 +79,12 @@ class ReservationTimeIntegrationTest {
                 .body("id", is(7));
 
         // then
-        String startAt = jdbcTemplate.queryForObject("SELECT start_at FROM reservation_time WHERE id = ?", String.class,
-                7L);
-        assertThat(startAt).isEqualTo("10:20");
+        ReservationTime savedTime = reservationTimeRepository.findById(7L).get();
+
+        assertAll(
+                () -> assertThat(savedTime.getId()).isEqualTo(7L),
+                () -> assertThat(savedTime.getStartAt()).isEqualTo(LocalTime.of(10, 20))
+        );
     }
 
     @DisplayName("예약 시간을 삭제하면 DB의 예약 시간 데이터가 삭제된다")
@@ -79,14 +97,9 @@ class ReservationTimeIntegrationTest {
                 .statusCode(204);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM reservation_time", Integer.class);
-
-        Boolean isExist = jdbcTemplate.queryForObject("SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = ?)",
-                Boolean.class, 6);
-
         assertAll(
-                () -> assertThat(count).isEqualTo(5),
-                () -> assertThat(isExist).isFalse()
+                () -> assertThat(reservationTimeRepository.findAll()).hasSize(5),
+                () -> assertThat(reservationTimeRepository.findById(6L).isEmpty()).isTrue()
         );
     }
 

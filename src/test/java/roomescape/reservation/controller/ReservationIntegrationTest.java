@@ -3,9 +3,11 @@ package roomescape.reservation.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +21,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.global.config.TestConfig;
 import roomescape.reservation.controller.dto.ReservationResponse;
+import roomescape.reservation.domain.Reservation;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.time.controller.dto.AvailableTimeResponse;
 
 @Import(TestConfig.class)
@@ -31,7 +34,7 @@ import roomescape.time.controller.dto.AvailableTimeResponse;
 class ReservationIntegrationTest {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private ReservationRepository reservationRepository;
 
     @DisplayName("예약 목록의 조회 시 DB에 저장된 예약 목록을 반환한다")
     @Test
@@ -44,14 +47,24 @@ class ReservationIntegrationTest {
                 .jsonPath().getList(".", ReservationResponse.class);
 
         // then
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        List<Reservation> savedReservations = reservationRepository.findAll();
+        assertAll(
+                () -> assertThat(reservations)
+                        .extracting(ReservationResponse::name)
+                        .containsExactlyInAnyOrderElementsOf(
+                                savedReservations.stream()
+                                        .map(Reservation::getName)
+                                        .toList()
+                        ),
+                () -> assertThat(reservations)
+                        .extracting(ReservationResponse::date)
+                        .containsExactlyInAnyOrderElementsOf(
+                                savedReservations.stream()
+                                        .map(Reservation::getDate)
+                                        .toList()
+                        )
+        );
 
-        List<String> names = jdbcTemplate.query("SELECT name FROM reservation", (rs, rowNum) -> rs.getString("name"));
-
-        assertThat(reservations.size()).isEqualTo(count);
-        assertThat(reservations)
-                .extracting(ReservationResponse::name)
-                .containsExactlyElementsOf(names);
     }
 
     @DisplayName("예약을 생성하면 DB에 예약 데이터가 저장된다")
@@ -74,9 +87,15 @@ class ReservationIntegrationTest {
                 .body("id", is(17));
 
         // then
-        String name = jdbcTemplate.queryForObject("SELECT name FROM reservation WHERE id = ?", String.class, 17L);
+        Reservation savedReservation = reservationRepository.findById(17L).get();
 
-        assertThat(name).isEqualTo("브라운");
+        assertAll(
+                () -> assertThat(savedReservation.getId()).isEqualTo(17L),
+                () -> assertThat(savedReservation.getName()).isEqualTo("브라운"),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2026, 8, 5)),
+                () -> assertThat(savedReservation.getTimeId()).isEqualTo(6L),
+                () -> assertThat(savedReservation.getThemeId()).isEqualTo(2L)
+        );
     }
 
     @DisplayName("예약을 삭제하면 DB의 예약 데이터가 삭제된다")
@@ -95,10 +114,7 @@ class ReservationIntegrationTest {
                 .statusCode(200)
                 .body("size()", is(15));
 
-        Boolean actual = jdbcTemplate.queryForObject("SELECT EXISTS(SELECT 1 FROM reservation WHERE id = ?)",
-                Boolean.class, 1);
-
-        assertThat(actual).isFalse();
+        assertThat(reservationRepository.findById(1L).isEmpty()).isTrue();
     }
 
     @DisplayName("특정 날짜와 테마에 대해 이용가능한 시간 목록을 반환한다")
