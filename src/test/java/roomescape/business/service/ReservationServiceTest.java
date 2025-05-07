@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicateException;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
 import roomescape.fake.FakePlayTimeDao;
@@ -106,7 +106,7 @@ public class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(DuplicateReservationException.class);
+                .isInstanceOf(DuplicateException.class);
     }
 
     @DisplayName("저장하려는 예약이 현재 날짜/시간보다 과거라면 예외가 발생한다.")

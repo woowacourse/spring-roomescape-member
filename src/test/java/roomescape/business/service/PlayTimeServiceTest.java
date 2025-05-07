@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.domain.PlayTime;
-import roomescape.exception.DuplicatePlayTimeException;
+import roomescape.exception.DuplicateException;
 import roomescape.fake.FakePlayTimeDao;
 import roomescape.presentation.dto.PlayTimeRequest;
 import roomescape.presentation.dto.PlayTimeResponse;
@@ -60,7 +60,7 @@ class PlayTimeServiceTest {
 
         // when & then
         assertThatThrownBy(() -> playTimeService.create(playTimeRequest))
-                .isInstanceOf(DuplicatePlayTimeException.class);
+                .isInstanceOf(DuplicateException.class);
     }
 
     @DisplayName("조회하려는 방탈출 시간 id가 없다면 예외가 발생한다.")

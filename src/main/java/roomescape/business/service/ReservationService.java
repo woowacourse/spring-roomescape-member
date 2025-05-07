@@ -3,12 +3,11 @@ package roomescape.business.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
-import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.persistence.dao.ReservationDao;
@@ -52,7 +51,7 @@ public class ReservationService {
             final Theme theme
     ) {
         if (reservationDao.existsByDateAndTimeAndTheme(date, playTime, theme)) {
-            throw new DuplicateReservationException(date, playTime, theme);
+            throw new DuplicateException("추가 하려는 예약과 같은 날짜, 시간, 테마의 예약이 이미 존재합니다.");
         }
     }
 

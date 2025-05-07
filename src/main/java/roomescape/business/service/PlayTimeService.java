@@ -4,9 +4,9 @@ import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
-import roomescape.exception.DuplicatePlayTimeException;
-import roomescape.persistence.dao.PlayTimeDao;
+import roomescape.exception.DuplicateException;
 import roomescape.exception.PlayTimeNotFoundException;
+import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.presentation.dto.PlayTimeRequest;
 import roomescape.presentation.dto.PlayTimeResponse;
 
@@ -34,7 +34,7 @@ public class PlayTimeService {
 
     private void validateIsDuplicate(final LocalTime startAt) {
         if (playTimeDao.existsByStartAt(startAt)) {
-            throw new DuplicatePlayTimeException(startAt);
+            throw new DuplicateException("추가 하려는 시간이 이미 존재합니다.");
         }
     }
 

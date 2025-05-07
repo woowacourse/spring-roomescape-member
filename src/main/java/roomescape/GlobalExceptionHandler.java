@@ -5,8 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.exception.DuplicatePlayTimeException;
-import roomescape.exception.DuplicateReservationException;
+import roomescape.exception.DuplicateException;
 import roomescape.exception.PlayTimeNotFoundException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
@@ -14,14 +13,15 @@ import roomescape.exception.ThemeNotFoundException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = {ReservationNotFoundException.class, PlayTimeNotFoundException.class, ThemeNotFoundException.class})
+    @ExceptionHandler(value = {ReservationNotFoundException.class, PlayTimeNotFoundException.class,
+            ThemeNotFoundException.class})
     public ResponseEntity<Void> handleNotFoundException(final NoSuchElementException e) {
         e.printStackTrace();
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(value = {DuplicateReservationException.class, DuplicatePlayTimeException.class})
-    public ResponseEntity<Void> handleDuplicateException(final IllegalStateException e) {
+    @ExceptionHandler(value = {DuplicateException.class})
+    public ResponseEntity<Void> handleDuplicateException(final DuplicateException e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
