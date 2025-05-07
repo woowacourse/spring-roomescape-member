@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -45,7 +46,7 @@ public class ThemeDao {
             return ps;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public Optional<Theme> findById(Long id) {
@@ -60,7 +61,7 @@ public class ThemeDao {
 
     public boolean isDuplicatedNameExisted(String name) {
         String sql = "SELECT EXISTS (SELECT * FROM theme WHERE name = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, name);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, name));
     }
 
     public List<Theme> findThemesByReservationVolumeBetweenDates(LocalDate baseDate, int dayRange, int limit) {

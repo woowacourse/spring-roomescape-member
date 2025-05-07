@@ -69,7 +69,7 @@ public class ReservationTimeDao {
 
     public boolean isDuplicatedStartAtExisted(LocalTime startAt) {
         String sql = "SELECT EXISTS (SELECT * FROM reservation_time WHERE start_at = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, startAt);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, startAt));
     }
 
     public List<AvailableReservationTime> findAvailableTimes(String date, Long themeId) {

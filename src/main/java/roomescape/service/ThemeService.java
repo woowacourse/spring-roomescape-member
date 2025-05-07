@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
@@ -12,7 +11,6 @@ import roomescape.dao.ReservationDao;
 import roomescape.dao.ThemeDao;
 import roomescape.dto.theme.ThemeRequestDto;
 import roomescape.dto.theme.ThemeResponseDto;
-import roomescape.model.Reservation;
 import roomescape.model.Theme;
 
 @Service
@@ -68,15 +66,5 @@ public class ThemeService {
         if (duplicatedNameExisted) {
             throw new DuplicatedException("중복된 테마는 등록할 수 없습니다.");
         }
-    }
-
-    public void deleteTheme(Long id) {
-        themeDao.deleteById(id);
-    }
-
-    public List<ThemeResponseDto> findPopularThemes(final LocalDate today) {
-        return themeDao.findPopularThemes(today).stream()
-                .map(ThemeResponseDto::from)
-                .toList();
     }
 }
