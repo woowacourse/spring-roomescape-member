@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationSlotTimes;
 import roomescape.domain.reservation.ReservationTime;
@@ -35,6 +36,7 @@ public class ReservationService {
         this.themeRepository = themeRepository;
     }
 
+    @Transactional
     public long addReservation(AddReservationDto newReservation) {
         ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));

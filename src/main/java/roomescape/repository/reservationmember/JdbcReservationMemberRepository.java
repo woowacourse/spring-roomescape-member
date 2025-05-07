@@ -2,6 +2,8 @@ package roomescape.repository.reservationmember;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,6 +33,16 @@ public class JdbcReservationMemberRepository implements ReservationMemberReposit
     public List<ReservationMemberIds> findAll() {
         String sql = "select id,reservation_id,member_id from reservation_member";
         return jdbcTemplate.query(sql, reservationMemberIdRowMapper);
+    }
+
+    @Override
+    public Optional<ReservationMemberIds> findById(long id) {
+        try {
+            String sql = "select id,reservation_id,member_id from reservation_member where id = ?";
+            return Optional.of(jdbcTemplate.queryForObject(sql, reservationMemberIdRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
