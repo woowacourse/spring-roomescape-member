@@ -25,7 +25,7 @@ public class PrevRequestHandler implements HandlerInterceptor {
         if (isMatchExist) {
             String token = JwtCookieResolver.getTokenFromCookie(request);
             UserInfo userInfo = jwtTokenProvider.resolveToken(token);
-            isValidReqeust = userInfo.role().equals(Role.ADMIN) || userInfo.username().equals(SUPER_ADMIN);
+            isValidReqeust = userInfo.role().equals(Role.ADMIN);
         }
 
         if (!isValidReqeust) {
