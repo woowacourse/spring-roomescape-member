@@ -26,6 +26,10 @@ public class RoomTheme {
         this(NON_SAVED_STATUS, name, description, thumbnail);
     }
 
+    public RoomTheme(final long id, final RoomTheme savedRoomTheme) {
+        this(id, savedRoomTheme.getName(), savedRoomTheme.getDescription(), savedRoomTheme.getThumbnail());
+    }
+
     private void validateInvalidInput(final String name, final String description, final String thumbnail) {
         validateNotNull(name, description, thumbnail);
         validateValidLength(name, description, thumbnail);

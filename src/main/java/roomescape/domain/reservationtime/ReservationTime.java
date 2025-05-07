@@ -21,6 +21,10 @@ public class ReservationTime {
         this(NON_SAVED_STATUS, startAt);
     }
 
+    public ReservationTime(final long id, final ReservationTime savedReservationTime) {
+        this(id, savedReservationTime.getStartAt());
+    }
+
     private void validateInvalidInput(final LocalTime startAt) {
         if (startAt == null) {
             throw new InvalidInputException("시간은 빈 값이 입력될 수 없습니다");

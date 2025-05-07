@@ -31,19 +31,14 @@ public class RoomThemeService {
         final RoomTheme theme =
                 new RoomTheme(themeCreation.name(), themeCreation.description(), themeCreation.thumbnail());
 
-        final long id = themeDAO.insert(theme);
-        return findById(id);
+        final long savedId = themeDAO.insert(theme);
+        return new RoomTheme(savedId, theme);
     }
 
     private void validateThemeNotDuplicated(final CreateRoomThemeServiceRequest themeCreation) {
         if (themeDAO.existsByName(themeCreation.name())) {
             throw new ExistedDuplicateValueException("이미 존재하는 테마입니다");
         }
-    }
-
-    private RoomTheme findById(final long id) {
-        return themeDAO.findById(id)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 테마입니다"));
     }
 
     public List<RoomTheme> findAllThemes() {

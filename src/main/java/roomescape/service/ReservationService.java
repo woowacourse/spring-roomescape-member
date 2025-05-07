@@ -37,7 +37,7 @@ public class ReservationService {
         validateDuplicateReservation(reservation);
 
         final long savedId = reservationDAO.insert(reservation);
-        return findById(savedId);
+        return new Reservation(savedId, reservation);
     }
 
     private ReservationTime findReservationTimeByTimeId(final long timeId) {
@@ -66,11 +66,6 @@ public class ReservationService {
     private boolean existsSameReservation(final Reservation reservation) {
         return reservationDAO.existSameReservation(
                 reservation.getDate(), reservation.getTime().getId(), reservation.getTheme().getId());
-    }
-
-    private Reservation findById(final long savedId) {
-        return reservationDAO.findById(savedId)
-                .orElseThrow(() -> new NotExistedValueException("존재하지 않는 예약입니다"));
     }
 
     public List<Reservation> findAllReservations() {

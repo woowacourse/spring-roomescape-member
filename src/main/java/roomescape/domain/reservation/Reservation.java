@@ -37,6 +37,11 @@ public class Reservation {
         this(NON_SAVED_STATUS, name, date, reservationTime, theme);
     }
 
+    public Reservation(final long id, final Reservation savedReservation) {
+        this(id, savedReservation.getName(), savedReservation.getDate(),
+                savedReservation.getTime(), savedReservation.getTheme());
+    }
+
     private void validateInvalidInput(final String name, final LocalDate date,
                                       final ReservationTime reservationTime, final RoomTheme theme) {
         validateNotNull(name, date, reservationTime, theme);
