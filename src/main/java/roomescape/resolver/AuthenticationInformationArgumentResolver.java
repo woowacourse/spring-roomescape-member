@@ -41,7 +41,10 @@ public class AuthenticationInformationArgumentResolver implements HandlerMethodA
     }
 
     private String getAccessTokenInCookie(HttpServletRequest request) {
-        List<Cookie> cookies = List.of(request.getCookies());
+        List<Cookie> cookies = List.of();
+        if (request.getCookies() != null) {
+            cookies = List.of(request.getCookies());
+        }
         Optional<Cookie> accessTokenCookie = cookies.stream()
                 .filter(cookie -> cookie.getName().equals("access"))
                 .findFirst();
