@@ -52,13 +52,13 @@ class ReservationTest {
     @Test
     void 지나간_시간에_예약을_생성할_경우_예외가_발생한다() {
         // when & then
-        Assertions.assertThatThrownBy(
-                        () -> Reservation.createWithoutId(
-                                "짱구",
-                                LocalDate.of(2024, 1, 1),
-                                new ReservationTime(1L, LocalTime.of(9, 0)),
-                                Theme.createWithoutId("themeName", "des", "th")
-                        ))
+        Reservation reservation = Reservation.createWithoutId(
+                "짱구",
+                LocalDate.of(2024, 1, 1),
+                new ReservationTime(1L, LocalTime.of(9, 0)),
+                Theme.createWithoutId("themeName", "des", "th")
+        );
+        Assertions.assertThatThrownBy(() -> reservation.validateDateTime())
                 .isInstanceOf(PastDateTimeReservationException.class);
     }
 

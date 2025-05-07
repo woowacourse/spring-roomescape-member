@@ -15,6 +15,7 @@ public class Reservation {
 
     private Reservation(final Long id, final String name, final LocalDate date, final ReservationTime reservationTime,
                         final Theme theme) {
+        validateNull(name, date, reservationTime, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -24,14 +25,11 @@ public class Reservation {
 
     public static Reservation of(final Long id, final String name, final LocalDate date,
                                  final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
         return new Reservation(id, name, date, reservationTime, theme);
     }
 
     public static Reservation createWithoutId(final String name, final LocalDate date,
                                               final ReservationTime reservationTime, final Theme theme) {
-        validateNull(name, date, reservationTime, theme);
-        validateDateTime(date, reservationTime);
         return new Reservation(null, name, date, reservationTime, theme);
     }
 
@@ -50,7 +48,7 @@ public class Reservation {
         }
     }
 
-    private static void validateDateTime(LocalDate date, ReservationTime reservationTime) {
+    public void validateDateTime() {
         LocalDateTime dateTime = LocalDateTime.of(date, reservationTime.getStartAt());
         if (LocalDateTime.now().isAfter(dateTime)) {
             throw new PastDateTimeReservationException();

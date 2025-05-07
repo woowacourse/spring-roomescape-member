@@ -4,19 +4,19 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.dao.ReservationDao;
+import roomescape.dao.ReservationTimeDao;
+import roomescape.dao.ThemeDao;
+import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
+import roomescape.dto.request.ReservationCreateRequest;
+import roomescape.dto.response.ReservationResponse;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationNotFoundException;
 import roomescape.exception.ReservationTimeNotFoundException;
 import roomescape.exception.ThemeNotFoundException;
-import roomescape.domain.Reservation;
-import roomescape.dao.ReservationDao;
-import roomescape.dto.request.ReservationCreateRequest;
-import roomescape.dto.response.ReservationResponse;
-import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.domain.Theme;
-import roomescape.dao.ThemeDao;
 
 @Service
 public class ReservationService {
@@ -48,6 +48,7 @@ public class ReservationService {
                 reservationTime,
                 theme
         );
+        reservation.validateDateTime();
         validateDuplicate(request.date(), reservationTime.getStartAt());
         Reservation savedReservation = reservationDao.create(reservation);
         return new ReservationResponse(
