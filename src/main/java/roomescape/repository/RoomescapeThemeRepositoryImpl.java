@@ -1,9 +1,9 @@
 package roomescape.repository;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -78,8 +78,8 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
             String sql = "delete from reservation_theme where id=:id";
             SqlParameterSource param = new MapSqlParameterSource("id", id);
             return template.update(sql, param) == SUCCESS_COUNT;
-        } catch (DataIntegrityViolationException e) {
-            throw new DeletionNotAllowedException("예약 테마를 지울 수 없습니다.");
+        } catch (ConstraintViolationException e) {
+            throw new DeletionNotAllowedException("[ERROR] 예약이 연결된 테마는 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요.");
         }
     }
 
