@@ -10,6 +10,7 @@ public interface ReservationRepository {
     Reservation findById(Long id);
     List<Reservation> findAll();
     List<Reservation> findAllByThemeIdAndDate(Long themeId, LocalDate date);
+    List<Reservation> findAllByMemberIdAndThemeIdAndDateRange(Long memberId, Long themeId, LocalDate from, LocalDate to);
 
     void delete(Long id);
 

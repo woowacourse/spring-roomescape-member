@@ -70,6 +70,17 @@ public class ReservationService {
         return reservationRepository.findAll().stream().map(ReservationResponse::from).toList();
     }
 
+    public List<ReservationResponse> readAllByMemberAndThemeAndDateRange(
+            final Long memberId,
+            final Long themeId,
+            final LocalDate from,
+            final LocalDate to
+    ) {
+        return reservationRepository.findAllByMemberIdAndThemeIdAndDateRange(memberId, themeId, from, to).stream()
+                .map(ReservationResponse::from)
+                .toList();
+    }
+
     public void deleteById(final Long id) {
         if (!reservationRepository.existsById(id)) {
             throw new ReservationNotFoundException();
