@@ -1,12 +1,10 @@
 package roomescape.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dto.ReservationRequest;
 import roomescape.model.Reservation;
-import roomescape.model.ReservationDateTime;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.repository.ReservationRepository;
@@ -33,23 +31,12 @@ public class ReservationService {
 
     public Reservation addReservation(ReservationRequest reservationRequest) {
         ReservationTime reservationTime = reservationTimeService.getReservationTimeById(reservationRequest.timeId());
-        validateFutureDateTime(new ReservationDateTime(reservationRequest.date(), reservationTime));
-
         Theme theme = themeService.getThemeById(reservationRequest.themeId());
-        Reservation reservationWithNoId = reservationRequest.toEntity(null, reservationTime, theme);
+        Reservation reservationWithNoId = Reservation.createWithNoId(reservationRequest, reservationTime, theme);
 
         validateUniqueReservation(reservationRequest.date(), reservationRequest.timeId(),
                 reservationRequest.themeId());
         return reservationRepository.addReservation(reservationWithNoId);
-    }
-
-    private void validateFutureDateTime(ReservationDateTime reservationDateTime) {
-        LocalDateTime dateTime = LocalDateTime.of(reservationDateTime.getDate(),
-                reservationDateTime.getTime().getStartAt());
-        LocalDateTime now = LocalDateTime.now();
-        if (dateTime.isBefore(now)) {
-            throw new IllegalArgumentException("과거 예약은 불가능합니다.");
-        }
     }
 
     private void validateUniqueReservation(LocalDate reservationDate, Long timeId, Long themeId) {
