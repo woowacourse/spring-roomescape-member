@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -70,6 +71,38 @@ public class JdbcReservationDao implements ReservationRepository {
     public int deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long reservationId) {
+        String sql = """
+                SELECT
+                    r.id AS reservation_id,
+                    r.name AS reservation_name,
+                    r.date AS reservation_date,
+                    t.id AS time_id,
+                    t.start_at AS time_start_at,
+                    th.id AS theme_id,
+                    th.name AS theme_name,
+                    th.description AS theme_des,
+                    th.thumbnail AS theme_thumb
+                FROM reservation AS r
+                INNER JOIN reservation_time AS t 
+                ON r.time_id = t.id
+                INNER JOIN theme AS th
+                ON r.theme_id = th.id
+                WHERE r.id = ?
+                """;
+
+        List<Reservation> findReservations = jdbcTemplate.query(sql, rowMapper, reservationId);
+
+        if (findReservations.isEmpty()) {
+            return Optional.empty();
+        }
+        if (findReservations.size() > 1) {
+            throw new IllegalStateException("조회 결과가 2개 이상입니다.");
+        }
+        return Optional.of(findReservations.getFirst());
     }
 
     @Override

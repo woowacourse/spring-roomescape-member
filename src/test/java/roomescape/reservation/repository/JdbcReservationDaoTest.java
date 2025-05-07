@@ -47,18 +47,20 @@ class JdbcReservationDaoTest {
         Reservation reservation = new Reservation(null, name, date, time, theme);
 
         // when
-        Long id = jdbcReservationDao.saveAndReturnId(reservation);
+        Long savedId = jdbcReservationDao.saveAndReturnId(reservation);
 
         // then
-        String existsSql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE id = ?)";
-        Boolean isExist = jdbcTemplate.queryForObject(existsSql, Boolean.class, id);
+        Reservation savedReservation = jdbcReservationDao.findById(savedId).get();
+
         assertAll(
-                () -> assertThat(id).isEqualTo(17L),
-                () -> assertThat(isExist).isTrue()
+                () -> assertThat(savedReservation.getName()).isEqualTo("루키"),
+                () -> assertThat(savedReservation.getDate()).isEqualTo(LocalDate.of(2024, 12, 31)),
+                () -> assertThat(savedReservation.getThemeId()).isEqualTo(3L),
+                () -> assertThat(savedReservation.getTimeId()).isEqualTo(6L)
         );
     }
 
-    @DisplayName("Reservation 데이터를 정상적으로 삭제한다")
+    @DisplayName("Reservation 데이터를 삭제한다")
     @Test
     void delete_by_id_test() {
         // given
@@ -68,15 +70,29 @@ class JdbcReservationDaoTest {
         jdbcReservationDao.deleteById(id);
 
         // then
-        String countSql = "SELECT COUNT(1) FROM reservation";
-        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class);
-
-        String existsSql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE id= ?)";
-        Boolean isExist = jdbcTemplate.queryForObject(existsSql, Boolean.class, id);
-
         assertAll(
-                () -> assertThat(count).isEqualTo(15),
-                () -> assertThat(isExist).isFalse()
+                () -> assertThat(jdbcReservationDao.findAll()).hasSize(15),
+                () -> assertThat(jdbcReservationDao.findById(id).isEmpty()).isTrue()
+        );
+
+    }
+
+    @DisplayName("해당하는 ID Reservation 정보를 조회한다")
+    @Test
+    void find_by_id_test() {
+        // given
+        Long findId = 10L;
+
+        // when
+        Reservation findReservation = jdbcReservationDao.findById(findId).get();
+
+        // then
+        assertAll(
+                () -> assertThat(findReservation.getId()).isEqualTo(10L),
+                () -> assertThat(findReservation.getTimeId()).isEqualTo(2L),
+                () -> assertThat(findReservation.getThemeId()).isEqualTo(3L),
+                () -> assertThat(findReservation.getName()).isEqualTo("하루"),
+                () -> assertThat(findReservation.getDate()).isEqualTo(LocalDate.of(2025, 4, 30))
         );
     }
 
@@ -87,11 +103,12 @@ class JdbcReservationDaoTest {
         List<Reservation> reservations = jdbcReservationDao.findAll();
 
         // then
-        Reservation reservation = reservations.get(0);
         assertAll(
                 () -> assertThat(reservations).hasSize(16),
-                () -> assertThat(reservation.getId()).isEqualTo(1L),
-                () -> assertThat(reservation.getTheme().getId()).isEqualTo(1L)
+                () -> assertThat(reservations).extracting(Reservation::getThemeId)
+                        .contains(1L, 2L, 3L, 4L, 5L),
+                () -> assertThat(reservations).extracting(Reservation::getTimeId)
+                        .contains(1L, 2L, 3L, 4L)
         );
 
     }

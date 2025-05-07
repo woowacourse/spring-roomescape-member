@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,14 +41,13 @@ class JdbcReservationTimeDaoTest {
         ReservationTime time = new ReservationTime(null, startAt);
 
         // when
-        Long id = jdbcReservationTimeDao.saveAndReturnId(time);
+        Long savedId = jdbcReservationTimeDao.saveAndReturnId(time);
 
         // then
-        String savedStartAt = jdbcTemplate.queryForObject("SELECT start_at FROM reservation_time WHERE id = ?",
-                String.class, 7L);
+        ReservationTime savedTime = jdbcReservationTimeDao.findById(savedId).get();
         assertAll(
-                () -> assertThat(id).isEqualTo(7L),
-                () -> assertThat(savedStartAt).isEqualTo("15:21")
+                () -> assertThat(savedTime.getId()).isEqualTo(7L),
+                () -> assertThat(savedTime.getStartAt()).isEqualTo(startAt)
         );
 
     }
@@ -61,12 +59,17 @@ class JdbcReservationTimeDaoTest {
         List<ReservationTime> times = jdbcReservationTimeDao.findAll();
 
         // then
-        List<String> startAts = jdbcTemplate.query("SELECT start_at FROM reservation_time",
-                (rs, rowNum) -> rs.getString("start_at"));
         assertAll(
                 () -> assertThat(times).hasSize(6),
-                () -> assertThat(times).extracting(time -> time.getStartAt().toString())
-                        .containsExactlyInAnyOrderElementsOf(startAts)
+                () -> assertThat(times).extracting(ReservationTime::getStartAt)
+                        .containsExactlyInAnyOrder(
+                                LocalTime.of(10, 0),
+                                LocalTime.of(10, 10),
+                                LocalTime.of(12, 0),
+                                LocalTime.of(15, 30),
+                                LocalTime.of(18, 0),
+                                LocalTime.of(20, 30)
+                        )
         );
 
     }
@@ -75,20 +78,16 @@ class JdbcReservationTimeDaoTest {
     @Test
     void delete_time_test() {
         // given
-        Long id = 6L;
+        Long removeId = 6L;
 
         // when
-        jdbcReservationTimeDao.deleteById(id);
+        jdbcReservationTimeDao.deleteById(removeId);
 
         // then
-        String countSql = "SELECT COUNT(1) FROM reservation_time";
-        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class);
 
-        String existSql = "SELECT EXISTS(SELECT 1 FROM reservation_time WHERE id = ?)";
-        Boolean isExist = jdbcTemplate.queryForObject(existSql, Boolean.class, id);
         assertAll(
-                () -> assertThat(count).isEqualTo(5),
-                () -> assertThat(isExist).isFalse()
+                () -> assertThat(jdbcReservationTimeDao.findAll()).hasSize(5),
+                () -> assertThat(jdbcReservationTimeDao.findById(removeId).isEmpty()).isTrue()
         );
     }
 
@@ -116,7 +115,7 @@ class JdbcReservationTimeDaoTest {
         Boolean actual = jdbcReservationTimeDao.existSameStartAt(time);
 
         // then
-        Assertions.assertThat(actual).isTrue();
+        assertThat(actual).isTrue();
     }
 
 }

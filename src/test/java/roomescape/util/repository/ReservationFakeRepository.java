@@ -2,6 +2,7 @@ package roomescape.util.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservation.domain.Reservation;
@@ -26,6 +27,11 @@ public class ReservationFakeRepository implements ReservationRepository {
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    public Optional<Reservation> findById(Long reservationId) {
+        return Optional.ofNullable(reservations.get(reservationId));
     }
 
     @Override

@@ -17,7 +17,6 @@ import roomescape.util.TestDataSourceFactory;
 class JdbcThemeDaoTest {
 
     private JdbcThemeDao jdbcThemeDao;
-
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -43,13 +42,15 @@ class JdbcThemeDaoTest {
         Theme theme = new Theme(null, name, description, thumbnail);
 
         // when
-        Long id = jdbcThemeDao.saveAndReturnId(theme);
+        Long savedId = jdbcThemeDao.saveAndReturnId(theme);
 
         // then
-        String savedName = jdbcTemplate.queryForObject("SELECT name FROM theme WHERE id = ?", String.class, id);
+        Theme savedTheme = jdbcThemeDao.findById(savedId).get();
         assertAll(
-                () -> assertThat(id).isEqualTo(7L),
-                () -> assertThat(savedName).isEqualTo("레벨1 탈출")
+                () -> assertThat(savedTheme.getId()).isEqualTo(savedId),
+                () -> assertThat(savedTheme.getName()).isEqualTo(name),
+                () -> assertThat(savedTheme.getDescription()).isEqualTo(description),
+                () -> assertThat(savedTheme.getThumbnail()).isEqualTo(thumbnail)
         );
 
     }
@@ -61,12 +62,17 @@ class JdbcThemeDaoTest {
         List<Theme> themes = jdbcThemeDao.findAll();
 
         // then
-        String sql = "SELECT description FROM theme";
-        List<String> descriptions = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("description"));
         assertAll(
                 () -> assertThat(themes).hasSize(6),
                 () -> assertThat(themes).extracting(Theme::getDescription)
-                        .containsExactlyElementsOf(descriptions)
+                        .containsExactlyInAnyOrder(
+                                "우테코 레벨1를 탈출하는 내용입니다.",
+                                "우테코 레벨2를 탈출하는 내용입니다.",
+                                "우테코 레벨3를 탈출하는 내용입니다.",
+                                "우테코 레벨4를 탈출하는 내용입니다.",
+                                "우테코 레벨5를 탈출하는 내용입니다.",
+                                "우테코 레벨6를 탈출하는 내용입니다."
+                        )
         );
 
     }
@@ -81,15 +87,9 @@ class JdbcThemeDaoTest {
         jdbcThemeDao.deleteById(deleteId);
 
         // then
-        String countSql = "SELECT COUNT(1) FROM theme";
-        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class);
-
-        String existSql = "SELECT EXISTS(SELECT 1 FROM theme WHERE id = ?)";
-        Boolean isExist = jdbcTemplate.queryForObject(existSql, Boolean.class, deleteId);
-
         assertAll(
-                () -> assertThat(count).isEqualTo(5),
-                () -> assertThat(isExist).isFalse()
+                () -> assertThat(jdbcThemeDao.findAll()).hasSize(5),
+                () -> assertThat(jdbcThemeDao.findById(6L).isEmpty()).isTrue()
         );
 
     }
@@ -137,8 +137,16 @@ class JdbcThemeDaoTest {
         List<Theme> themes = jdbcThemeDao.findByIdIn(ids);
 
         // then
-        assertThat(themes).extracting(Theme::getDescription)
-                .containsExactlyInAnyOrder("우테코 레벨2를 탈출하는 내용입니다.", "우테코 레벨5를 탈출하는 내용입니다.");
+        assertAll(
+                () -> assertThat(themes).extracting(Theme::getDescription)
+                        .containsExactlyInAnyOrder(
+                                "우테코 레벨2를 탈출하는 내용입니다.",
+                                "우테코 레벨5를 탈출하는 내용입니다."
+                        ),
+                () -> assertThat(themes).extracting(Theme::getId)
+                        .containsExactlyInAnyOrder(2L, 5L)
+        );
+
     }
 
 }
