@@ -26,7 +26,7 @@ public class ReservationController {
 
     @GetMapping()
     public ResponseEntity<List<ReservationResponse>> reservationList() {
-        return ResponseEntity.ok(roomescapeService.findReservations());
+        return ResponseEntity.status(HttpStatus.OK).body(roomescapeService.findReservations());
     }
 
     @PostMapping()
@@ -37,6 +37,6 @@ public class ReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> reservationRemove(@PathVariable(name = "id") long id) {
         roomescapeService.removeReservation(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

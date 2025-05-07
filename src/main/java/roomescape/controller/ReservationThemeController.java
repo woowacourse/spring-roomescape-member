@@ -26,12 +26,12 @@ public class ReservationThemeController {
 
     @GetMapping()
     public ResponseEntity<List<ReservationThemeResponse>> reservationThemeList() {
-        return ResponseEntity.ok(roomescapeService.findReservationThemes());
+        return ResponseEntity.status(HttpStatus.OK).body(roomescapeService.findReservationThemes());
     }
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ReservationThemeResponse>> reservationThemeRankingList() {
-        return ResponseEntity.ok(roomescapeService.findPopularReservations());
+        return ResponseEntity.status(HttpStatus.OK).body(roomescapeService.findPopularReservations());
     }
 
     @PostMapping()
@@ -41,7 +41,7 @@ public class ReservationThemeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> reservationThemeRemove(@PathVariable(name = "id") long id) {
+    public ResponseEntity<Void> reservationThemeRemove(@PathVariable(name = "id") long id) {
         roomescapeService.removeReservationTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
