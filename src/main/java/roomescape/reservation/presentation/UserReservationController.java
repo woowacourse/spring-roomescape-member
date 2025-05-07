@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +27,6 @@ public class UserReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findAll() {
-        return ResponseEntity.ok(reservationService.findAll());
-    }
-
     @PostMapping
     public ResponseEntity<ReservationResponse> add(
             @Valid @RequestBody UserReservationRequest request,
@@ -42,11 +36,6 @@ public class UserReservationController {
         return new ResponseEntity<>(reservationResponse, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        reservationService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
 
     @GetMapping("/themes/{themeId}/times")
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTime(

@@ -17,7 +17,7 @@ import roomescape.reservation.business.repository.ReservationDao;
 import roomescape.theme.business.domain.Theme;
 
 @Repository
-public class ReservationDaoImpl implements ReservationDao {
+public class JdbcReservationDao implements ReservationDao {
 
     private static final RowMapper<Reservation> ROW_MAPPER = (rs, rowNum) -> {
         ReservationTime reservationTime = new ReservationTime(
@@ -47,7 +47,7 @@ public class ReservationDaoImpl implements ReservationDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ReservationDaoImpl(final NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

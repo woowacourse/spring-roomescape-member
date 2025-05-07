@@ -14,7 +14,7 @@ import roomescape.member.business.domain.Role;
 import roomescape.member.business.repository.MemberDao;
 
 @Repository
-public class MemberDaoImpl implements MemberDao {
+public class JdbcMemberDao implements MemberDao {
 
     private final static RowMapper<Member> ROW_MAPPER = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
@@ -26,7 +26,7 @@ public class MemberDaoImpl implements MemberDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public MemberDaoImpl(final NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcMemberDao(final NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

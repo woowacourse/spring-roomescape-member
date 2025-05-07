@@ -12,7 +12,7 @@ import roomescape.theme.business.domain.Theme;
 import roomescape.theme.business.repository.ThemeDao;
 
 @Repository
-public class ThemeDaoImpl implements ThemeDao {
+public class JdbcThemeDao implements ThemeDao {
 
     private static final RowMapper<Theme> ROW_MAPPER = (rs, rowNum) -> new Theme(
             rs.getLong("id"),
@@ -23,7 +23,7 @@ public class ThemeDaoImpl implements ThemeDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ThemeDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcThemeDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

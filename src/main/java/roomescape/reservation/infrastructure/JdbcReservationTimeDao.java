@@ -13,7 +13,7 @@ import roomescape.reservation.business.domain.ReservationTime;
 import roomescape.reservation.business.repository.ReservationTimeDao;
 
 @Repository
-public class ReservationTimeDaoImpl implements ReservationTimeDao {
+public class JdbcReservationTimeDao implements ReservationTimeDao {
 
     private static final RowMapper<ReservationTime> ROW_MAPPER = (rs, rowNum) -> new ReservationTime(
             rs.getLong("id"),
@@ -22,7 +22,7 @@ public class ReservationTimeDaoImpl implements ReservationTimeDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public ReservationTimeDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public JdbcReservationTimeDao(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
