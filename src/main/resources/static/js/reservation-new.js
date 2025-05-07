@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   requestRead(RESERVATION_API_ENDPOINT)
       .then(render)
-      .catch(error => console.error('Error fetching reservations:', error));
+      .catch(error => console.error(error.message));
 
   fetchTimes();
   fetchThemes();
@@ -43,7 +43,7 @@ function fetchTimes() {
       .then(data => {
         timesOptions.push(...data);
       })
-      .catch(error => console.error('Error fetching time:', error));
+      .catch(error => console.error(error.message));
 }
 
 function fetchThemes() {
@@ -51,7 +51,7 @@ function fetchThemes() {
       .then(data => {
         themesOptions.push(...data);
       })
-      .catch(error => console.error('Error fetching theme:', error));
+      .catch(error => console.error(error.message));
 }
 
 function createSelect(options, defaultText, selectId, textProperty) {
@@ -150,7 +150,7 @@ function saveRow(event) {
       .then(() => {
         location.reload();
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error(error.message));
 
   isEditing = false;  // isEditing 값을 false로 설정
 }
@@ -161,38 +161,35 @@ function deleteRow(event) {
 
   requestDelete(reservationId)
       .then(() => row.remove())
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error(error.message));
 }
 
-function requestCreate(reservation) {
+async function requestCreate(reservation) {
   const requestOptions = {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(reservation)
   };
 
-  return fetch(RESERVATION_API_ENDPOINT, requestOptions)
-      .then(response => {
-        if (response.status === 201) return response.json();
-        throw new Error('Create failed');
-      });
+  const response = await fetch(RESERVATION_API_ENDPOINT, requestOptions);
+  if (response.status === 201)
+      return await response.json();
+  throw new Error(await response.text());
 }
 
-function requestDelete(id) {
+async function requestDelete(id) {
   const requestOptions = {
     method: 'DELETE',
   };
 
-  return fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions)
-      .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
-      });
+  const response = await fetch(`${RESERVATION_API_ENDPOINT}/${id}`, requestOptions);
+  if (response.status !== 204)
+      throw new Error(await response.text());
 }
 
-function requestRead(endpoint) {
-  return fetch(endpoint)
-      .then(response => {
-        if (response.status === 200) return response.json();
-        throw new Error('Read failed');
-      });
+async function requestRead(endpoint) {
+  const response = await fetch(endpoint);
+  if (response.status === 200)
+      return await response.json();
+  throw new Error(await response.text());
 }
