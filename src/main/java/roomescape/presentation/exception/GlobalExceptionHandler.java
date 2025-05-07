@@ -3,6 +3,8 @@ package roomescape.presentation.exception;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,9 @@ import roomescape.presentation.dto.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String PREFIX_FOR_ERROR_MESSAGE = "알 수 없는 문제 발생, ";
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Void> handleNoSuchElementException(NoSuchElementException e) {
@@ -36,5 +41,13 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.BAD_REQUEST, message);
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception e) {
+        String message = PREFIX_FOR_ERROR_MESSAGE + e.getMessage();
+        log.error(message, e);
+        ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, message);
+        return ResponseEntity.internalServerError().body(errorResponse);
     }
 }
