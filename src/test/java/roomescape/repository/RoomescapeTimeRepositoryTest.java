@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -34,6 +35,7 @@ class RoomescapeTimeRepositoryTest {
 
     }
 
+    @DisplayName("id로 예약 시간을 조회한다.")
     @Test
     void findById() {
         //when
@@ -43,6 +45,7 @@ class RoomescapeTimeRepositoryTest {
         assertThat(time.getStartAt()).isEqualTo(LocalTime.parse("15:40"));
     }
 
+    @DisplayName("모든 예약 시간을 조회한다.")
     @Test
     void findAll() {
         //when
@@ -55,6 +58,7 @@ class RoomescapeTimeRepositoryTest {
         assertThat(time.getStartAt()).isEqualTo(LocalTime.parse("15:40"));
     }
 
+    @DisplayName("예약 시간을 저장한다.")
     @Test
     void save() {
         //given
@@ -74,6 +78,7 @@ class RoomescapeTimeRepositoryTest {
         assertThat(secondTime.getStartAt()).isEqualTo(LocalTime.parse("16:30"));
     }
 
+    @DisplayName("id로 예약시간을 삭제한다.")
     @Test
     void deleteById() {
         //when
@@ -84,4 +89,18 @@ class RoomescapeTimeRepositoryTest {
         assertThat(timeRepository.findAll()).isEmpty();
     }
 
+    @DisplayName("이미 존재하는 예약 시간이므로 true를 반환한다.")
+    @Test
+    void existByStartAt() {
+        //given
+        final String startAt = "16:30";
+        ReservationTime reservationTime = ReservationTime.parse(startAt);
+        timeRepository.save(reservationTime);
+
+        //when
+        final boolean expected = timeRepository.existsByStartAt(startAt);
+
+        //then
+        assertThat(expected).isTrue();
+    }
 }

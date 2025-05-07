@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ class RoomescapeServiceTest {
         LocalDate date = LocalDate.now().plusDays(1);
         
         ReservationTimeResponse response = service.addReservationTime(
-                new ReservationTimeRequest(LocalTime.parse("10:10")));
+                new ReservationTimeRequest(LocalTime.parse("10:00")));
 
         service.addReservation(new ReservationRequest("test", date, 1L, response.timeId()));
 
@@ -61,7 +62,7 @@ class RoomescapeServiceTest {
 
         //when & then
         assertThatThrownBy(() -> service.removeReservation(notExistId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("[ERROR] 예약번호 999번은 존재하지 않습니다.");
     }
 

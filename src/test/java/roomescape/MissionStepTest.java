@@ -59,7 +59,7 @@ class MissionStepTest {
     @Test
     void level3() {
         Map<String, String> timeParams = Map.of(
-                "startAt", "15:40"
+                "startAt", "15:30"
         );
 
         RestAssured.given().log().all()
@@ -119,7 +119,7 @@ class MissionStepTest {
     @Test
     void level5() {
         Map<String, String> timeParams = Map.of(
-                "startAt", "15:40"
+                "startAt", "15:30"
         );
 
         RestAssured.given().log().all()
@@ -148,7 +148,7 @@ class MissionStepTest {
     @Test
     void level6() {
         Map<String, String> timeParams = Map.of(
-                "startAt", "15:40"
+                "startAt", "15:30"
         );
 
         RestAssured.given().log().all()
@@ -215,7 +215,7 @@ class MissionStepTest {
     @Test
     void level8() {
         Map<String, String> timeParams = Map.of(
-                "startAt", "15:40"
+                "startAt", "15:30"
         );
 
         RestAssured.given().log().all()

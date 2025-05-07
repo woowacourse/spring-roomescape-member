@@ -11,5 +11,7 @@ public interface RoomescapeTimeRepository {
 
     ReservationTime save(final ReservationTime reservationTime);
 
+    boolean existsByStartAt(final String startAt);
+
     int deleteById(final long id);
 }

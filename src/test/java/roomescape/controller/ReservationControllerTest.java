@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.Map;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,21 +31,9 @@ class ReservationControllerTest {
                     .statusCode(404);
         }
 
-        @DisplayName("이전 시각으로 예약을 요청하는 경우 404 Not Found를 던진다")
+        @DisplayName("이전 시각으로 예약을 요청하는 경우 400 Bad Request를 던진다")
         @Test
         void reservationAddBeforeCurrentDateTime() {
-            Map<String, String> timeParams = Map.of(
-                    "startAt", "15:40"
-            );
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(timeParams)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201)
-                    .body("timeId", Matchers.greaterThan(0));
-
             Map<String, String> params = Map.of(
                     "name", "브라운",
                     "date", LocalDate.now().minusDays(1).toString(),
@@ -59,24 +46,13 @@ class ReservationControllerTest {
                     .body(params)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(400);
         }
 
-        @DisplayName("같은 날짜 및 시간 예약이 존재하면 404 Not Found를 던진다")
+        @DisplayName("같은 날짜 및 시간 예약이 존재하면 400 Bad Request를 던진다")
         @Test
         void reservationAddDuplicatedTest() {
             //given
-            Map<String, String> timeParams = Map.of(
-                    "startAt", "15:40"
-            );
-
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(timeParams)
-                    .when().post("/times")
-                    .then().log().all()
-                    .statusCode(201);
-
             Map<String, String> params = Map.of(
                     "name", "브라운",
                     "date", LocalDate.now().plusDays(1).toString(),
@@ -104,7 +80,7 @@ class ReservationControllerTest {
                     .body(duplicated)
                     .when().post("/reservations")
                     .then().log().all()
-                    .statusCode(404);
+                    .statusCode(400);
         }
     }
 }

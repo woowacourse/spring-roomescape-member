@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,7 @@ public class RoomescapeService {
 
     public ReservationTimeResponse addReservationTime(final ReservationTimeRequest request) {
         ReservationTime reservationTime = new ReservationTime(request.startAt());
+        validateUniqueReservationTime(reservationTime);
         ReservationTime saved = roomescapeTimeRepository.save(reservationTime);
         return ReservationTimeResponse.from(saved);
     }
@@ -122,7 +124,13 @@ public class RoomescapeService {
         if (roomescapeThemeRepository.existsByName(reservationTheme.getName())) {
             throw new IllegalArgumentException("[ERROR] 이미 존재하는 테마 입니다.");
         }
+    }
 
+    private void validateUniqueReservationTime(final ReservationTime reservationTime) {
+        final LocalTime startAt = reservationTime.getStartAt();
+        if (roomescapeTimeRepository.existsByStartAt(startAt.toString())) {
+            throw new IllegalArgumentException("[ERROR] 이미 존재하는 예약 시간 입니다.");
+        }
     }
 
     private boolean existsSameReservation(final Reservation reservation) {

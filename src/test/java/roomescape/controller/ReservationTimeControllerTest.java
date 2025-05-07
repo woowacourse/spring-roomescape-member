@@ -35,15 +35,6 @@ class ReservationTimeControllerTest {
         @DisplayName("이미 예약이 된 시간을 삭제하여 예외가 발생한다")
         @Test
         void reservationTimeRemoveTest() {
-            Map<String, String> request = Map.of("startAt", "12:00");
-            RestAssured.given().log().all()
-                    .contentType(ContentType.JSON)
-                    .body(request)
-                    .when()
-                    .post("/times")
-                    .then().log().all()
-                    .statusCode(HttpStatus.CREATED.value());
-
             Map<String, String> params = Map.of(
                     "name", "브라운",
                     "date", LocalDate.now().plusDays(2).toString(),
@@ -60,7 +51,6 @@ class ReservationTimeControllerTest {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .body(request)
                     .when()
                     .delete("/times/1")
                     .then().log().all()

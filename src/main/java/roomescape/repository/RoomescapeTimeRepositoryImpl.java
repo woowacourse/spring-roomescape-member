@@ -54,6 +54,12 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
         }
     }
 
+    @Override
+    public boolean existsByStartAt(final String startAt) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)";
+        return Boolean.TRUE.equals(template.queryForObject(sql, Boolean.class, startAt));
+    }
+
     private RowMapper<ReservationTime> reservationTimeRowMapper() {
         return (rs, rowNum) -> {
             return new ReservationTime(
