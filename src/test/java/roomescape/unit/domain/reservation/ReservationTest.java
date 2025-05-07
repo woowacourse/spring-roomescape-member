@@ -25,11 +25,12 @@ class ReservationTest {
 
     @Test
     void 날짜가_범위_사이에_있는지_확인할_수_있다() {
-        Reservation reservation = new Reservation(null, "tuda", LocalDate.of(2025, 5, 7),
-                new ReservationTime(null, null), null);
+        LocalDate today = LocalDate.now();
+        Reservation reservation = new Reservation(null, "tuda", today,
+                new ReservationTime(null, LocalTime.now().plusHours(1L)), null);
 
-        LocalDate from = LocalDate.of(2025, 5, 6);
-        LocalDate to = LocalDate.of(2025, 5, 8);
+        LocalDate from = today.minusDays(1);
+        LocalDate to = today.plusDays(1);
 
         boolean result = reservation.isBetweenDate(from, to);
 
@@ -38,11 +39,18 @@ class ReservationTest {
 
     @Test
     void 날짜가_시작_범위보다_이전인지_확인할_수_있다() {
-        Reservation reservation = new Reservation(null, "tuda", LocalDate.of(2025, 5, 5),
-                new ReservationTime(null, null), null);
+        LocalDate today = LocalDate.now();
 
-        LocalDate from = LocalDate.of(2025, 5, 6);
-        LocalDate to = LocalDate.of(2025, 5, 8);
+        Reservation reservation = new Reservation(
+                null,
+                "tuda",
+                today.minusDays(2),
+                new ReservationTime(null, LocalTime.now().plusHours(1L)),
+                null
+        );
+
+        LocalDate from = today.minusDays(1);
+        LocalDate to = today.plusDays(1);
 
         boolean result = reservation.isBetweenDate(from, to);
 
@@ -51,11 +59,18 @@ class ReservationTest {
 
     @Test
     void 날짜가_종료_범위보다_이후인지_확인할_수_있다() {
-        Reservation reservation = new Reservation(null, "tuda", LocalDate.of(2025, 5, 9),
-                new ReservationTime(null, null), null);
+        LocalDate today = LocalDate.now();
 
-        LocalDate from = LocalDate.of(2025, 5, 6);
-        LocalDate to = LocalDate.of(2025, 5, 8);
+        Reservation reservation = new Reservation(
+                null,
+                "tuda",
+                today.plusDays(2),
+                new ReservationTime(null, LocalTime.now().plusHours(1L)),
+                null
+        );
+
+        LocalDate from = today.minusDays(1);
+        LocalDate to = today.plusDays(1);
 
         boolean result = reservation.isBetweenDate(from, to);
 
