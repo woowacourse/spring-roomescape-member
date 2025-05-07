@@ -212,9 +212,9 @@
 - [x] 시간 관리 API, 예약 관리 API가 적절한 응답을 하도록 변경
 
 발생할 수 있는 예외 상황에 대한 처리를 하여, 사용자에게 적절한 응답을 합니다.
-- [ ] 예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력 되었을 때
+- [x] 예약 생성 시 예약자명, 날짜, 시간에 유효하지 않은 값이 입력 되었을 때
 - [x] 특정 시간에 대한 예약이 존재하는데, 그 시간을 삭제하려 할 때
-- [ ] 시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때
+- [x] 시간 생성 시 시작 시간에 유효하지 않은 값이 입력되었을 때
 
 서비스 정책을 반영합니다.
 - [x] 지나간 날짜와 시간에 대한 예약 생성은 불가능하다.
@@ -353,3 +353,61 @@
 
 - [x] "/" 요청 시 인기 테마 페이지를 응답
   - 페이지는 templates/index.html 파일을 이용
+
+
+## 4단계
+
+사용자 로그인
+- [ ] 로그인 페이지 호출 시 GET /login 요청이 호출되고, login.html 페이지가 응답됩니다.
+
+- [ ] 로그인 요청(POST /login) API 구현
+  - [ ] email과 password를 이용해서 멤버를 조회합니다.
+  - [ ] 조회한 멤버로 토큰을 만듭니다.
+  - [ ] Cookie를 만들어 응답합니다.
+  - Request
+    ```
+    POST /login HTTP/1.1
+    content-type: application/json
+    host: localhost:8080
+    
+    {
+        "password": "password",
+        "email": "admin@email.com"
+    }    
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Keep-Alive: timeout=60
+    Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+    ```
+
+- [ ] 인증 정보 조회(GET /login/check) API 구현
+  - [ ] Cookie에서 토큰 정보를 추출합니다.
+  - [ ] 멤버를 찾아 멤버 정보를 응답합니다.
+
+인증 정보 조회
+- [ ] 로그인 상태를 표현해주기 위해 사용자의 정보를 조회하는 API 구현
+  - [ ] Cookie를 이용하여 로그인 사용자의 정보 확인
+  - Request
+    ```
+    GET /login/check HTTP/1.1
+    cookie: _ga=GA1.1.48222725.1666268105; _ga_QD3BVX7MKT=GS1.1.1687746261.15.1.1687747186.0.0.0; Idea-25a74f9c=3cbc3411-daca-48c1-8201-51bdcdd93164; token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6IuyWtOuTnOuvvCIsInJvbGUiOiJBRE1JTiJ9.vcK93ONRQYPFCxT5KleSM6b7cl1FE-neSLKaFyslsZM
+    host: localhost:8080  
+    ```
+
+  - Response
+    ```
+    HTTP/1.1 200 OK
+    Connection: keep-alive
+    Content-Type: application/json
+    Date: Sun, 03 Mar 2024 19:16:56 GMT
+    Keep-Alive: timeout=60
+    Transfer-Encoding: chunked
+    
+    {
+        "name": "어드민"
+    }
+    ```
