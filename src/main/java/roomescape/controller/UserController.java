@@ -3,6 +3,7 @@ package roomescape.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,9 @@ import roomescape.controller.request.RegisterUserRequest;
 import roomescape.controller.response.CheckLoginUserResponse;
 import roomescape.controller.response.LoginUserResponse;
 import roomescape.controller.response.RegisterUserResponse;
+import roomescape.exception.UnAuthorizedException;
+import roomescape.infrastructure.CookieProvider;
+import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.UserService;
 import roomescape.service.param.LoginUserParam;
 import roomescape.service.param.RegisterUserParam;
@@ -24,10 +28,12 @@ public class UserController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CookieProvider cookieProvider;
 
-    public UserController(final UserService userService, final JwtTokenProvider jwtTokenProvider) {
+    public UserController(final UserService userService, final JwtTokenProvider jwtTokenProvider, final CookieProvider cookieProvider) {
         this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.cookieProvider = cookieProvider;
     }
 
     @GetMapping("/signup")
@@ -37,10 +43,13 @@ public class UserController {
 
     @PostMapping("/members")
     public ResponseEntity<RegisterUserResponse> signup(@RequestBody final RegisterUserRequest registerUserRequest) {
-        RegisterUserParam registerUserParam = registerUserRequest.toServiceParam();
-        RegisterUserResult registerUserResult = userService.create(registerUserParam);
-
-        return ResponseEntity.ok(RegisterUserResponse.from(registerUserResult));
+        try {
+            RegisterUserParam registerUserParam = registerUserRequest.toServiceParam();
+            RegisterUserResult registerUserResult = userService.create(registerUserParam);
+            return ResponseEntity.ok(RegisterUserResponse.from(registerUserResult));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @GetMapping("/login")
@@ -50,16 +59,17 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest loginUserRequest, HttpServletResponse response) {
-        LoginUserParam loginUserParam = loginUserRequest.toServiceParam();
-        LoginUserResult user = userService.login(loginUserParam);
+        try {
+            LoginUserParam loginUserParam = loginUserRequest.toServiceParam();
+            LoginUserResult loginUserResult = userService.login(loginUserParam);
 
-        String token = jwtTokenProvider.createToken(user);
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+            String token = jwtTokenProvider.createToken(loginUserResult);
+            response.addCookie(cookieProvider.create(token));
 
-        return ResponseEntity.ok().body(LoginUserResponse.from(user));
+            return ResponseEntity.ok().body(LoginUserResponse.from(loginUserResult));
+        } catch (Exception e) { //TODO:ExceptionHandler로 처리하기
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @GetMapping("/login/check")
@@ -75,7 +85,13 @@ public class UserController {
         }
 
         Long id = jwtTokenProvider.extractIdFromToken(token);
-
         return ResponseEntity.ok().body(CheckLoginUserResponse.from(userService.findById(id)));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        response.addCookie(cookieProvider.invalidate(cookies));
+        return ResponseEntity.ok().build();
     }
 }
