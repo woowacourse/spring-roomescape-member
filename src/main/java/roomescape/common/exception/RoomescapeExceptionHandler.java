@@ -13,6 +13,13 @@ public class RoomescapeExceptionHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RoomescapeExceptionHandler.class);
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleException(Exception ex) {
+        logger.error(ex.getMessage(), ex);
+        return "서버 내부에서 알 수 없는 문제가 발생했습니다.";
+    }
+
     @ExceptionHandler({IllegalStateException.class, DataFormatException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleException(IllegalStateException ex) {
