@@ -128,7 +128,7 @@ public class JDBCReservationRepository implements ReservationRepository {
                 resultSet.getString("thumbnail"));
 
         ReservationEntity entity = new ReservationEntity(
-                resultSet.getLong("id"),
+                resultSet.getLong("reservation_id"),
                 resultSet.getString("name"),
                 resultSet.getString("date"),
                 timeEntity,
