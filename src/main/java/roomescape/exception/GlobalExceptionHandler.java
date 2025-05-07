@@ -42,6 +42,11 @@ public class GlobalExceptionHandler {
         return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<FailureResponse> handleException(final Exception ex) {
+        return createFailureResponse(ex, HttpStatus.BAD_REQUEST);
+    }
+
     private ResponseEntity<FailureResponse> createFailureResponse(final Exception ex, final HttpStatus status) {
         return new ResponseEntity<>(new FailureResponse(status, ex.getMessage()), status);
     }
