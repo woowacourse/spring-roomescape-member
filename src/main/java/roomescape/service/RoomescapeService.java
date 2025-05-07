@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
@@ -86,7 +87,7 @@ public class RoomescapeService {
     public void removeReservation(final long id) {
         int deleteCounts = roomescapeRepository.deleteById(id);
         if (deleteCounts == DELETE_FAILED_COUNT) {
-            throw new IllegalArgumentException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
+            throw new NoSuchElementException(String.format("[ERROR] 예약번호 %d번은 존재하지 않습니다.", id));
         }
     }
 
