@@ -57,15 +57,6 @@ public class ReservationTimeService {
 
     public List<AvailableReservationTimeResponse> getAvailableReservationTimes(final LocalDate date,
                                                                                final Long themeId) {
-        List<Reservation> reservations = reservationRepository.findByDateAndThemeId(date, themeId);
-        Set<Long> reservationTimeIds = reservations.stream()
-                .map(reservation -> reservation.getTime().getId())
-                .collect(Collectors.toSet());
-
-        List<ReservationTime> reservationTimes = reservationTimeRepository.findAll();
-        return reservationTimes.stream()
-                .map(reservationTime -> new AvailableReservationTimeResponse(reservationTime.getId(),
-                        reservationTime.getStartAt(), reservationTimeIds.contains(reservationTime.getId())))
-                .toList();
+        return reservationRepository.findAvailableTimesByDateAndThemeId(date, themeId);
     }
 }

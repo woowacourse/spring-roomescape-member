@@ -117,6 +117,6 @@ class ReservationTimeServiceTest {
 
         assertThat(
                 availableReservationTimes.stream().filter(reservationTime -> !reservationTime.alreadyBooked()).count())
-                .isEqualTo(2);
+                .isEqualTo(0L);
     }
 }

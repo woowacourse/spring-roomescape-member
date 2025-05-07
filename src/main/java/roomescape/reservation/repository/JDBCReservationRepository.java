@@ -1,6 +1,7 @@
 package roomescape.reservation.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.entity.ReservationEntity;
+import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
 import roomescape.reservationtime.entity.ReservationTimeEntity;
 import roomescape.theme.entity.ThemeEntity;
 
@@ -52,6 +54,14 @@ public class JDBCReservationRepository implements ReservationRepository {
         );
         return entity.toReservation();
     };
+    private static final String RESERVATION_TIME_ALREADY_BOOKED = "SELECT rt.id, rt.start_at, "
+            + "CASE WHEN r.id IS NOT NULL THEN true ELSE false END AS already_booked "
+            + "FROM reservation_time AS rt "
+            + "LEFT JOIN ( "
+            + "    SELECT time_id, id FROM reservation "
+            + "    WHERE date = ? AND theme_id = ? "
+            + ") r ON rt.id = r.time_id "
+            + "ORDER BY rt.start_at";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -128,12 +138,12 @@ public class JDBCReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        return jdbcTemplate.query(
-                SELECT_RESERVATION_WITH_JOIN + " where (date, theme_id) = (?, ?)",
-                RESERVATION_ROW_MAPPER,
-                date,
-                themeId
-        );
+    public List<AvailableReservationTimeResponse> findAvailableTimesByDateAndThemeId(final LocalDate date,
+                                                                                     final Long themeId) {
+        return jdbcTemplate.query(RESERVATION_TIME_ALREADY_BOOKED, (rs, rowNum) -> new AvailableReservationTimeResponse(
+                rs.getLong("id"),
+                LocalTime.parse(rs.getString("start_at")),
+                rs.getBoolean("already_booked")
+        ), date, themeId);
     }
 }

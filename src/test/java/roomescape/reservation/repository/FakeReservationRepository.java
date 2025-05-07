@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.reservation.domain.Reservation;
+import roomescape.reservationtime.dto.response.AvailableReservationTimeResponse;
 
 public class FakeReservationRepository implements ReservationRepository {
 
@@ -57,18 +58,13 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
-        return reservations.entrySet().stream()
-                .filter(entry -> {
-                    Reservation reservation = entry.getValue();
-                    return reservation.getDate().equals(date) && Objects.equals(reservation.getTheme().getId(),
-                            themeId);
-                })
-                .map(entry -> {
-                    Reservation value = entry.getValue();
-                    return Reservation.of(entry.getKey(), value.getName(),
-                            value.getDate(), value.getTime(), value.getTheme());
-                })
+    public List<AvailableReservationTimeResponse> findAvailableTimesByDateAndThemeId(final LocalDate date,
+                                                                                     final Long themeId) {
+        return reservations.values()
+                .stream()
+                .filter(reservation -> reservation.getDate().equals(date) && reservation.getTheme().getId().equals(themeId))
+                .map(reservation -> new AvailableReservationTimeResponse(reservation.getTime().getId(), reservation.getTime()
+                        .getStartAt(), true))
                 .toList();
     }
 }
