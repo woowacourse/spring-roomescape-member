@@ -26,7 +26,7 @@ public class ReservationTimeService {
 
     public ReservationTimeCreateResponse create(final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         final ReservationTime reservationTime = reservationTimeDao.create(
-                new ReservationTime(reservationTimeCreateRequest.getLocalTime()));
+                new ReservationTime(reservationTimeCreateRequest.startAt()));
         return ReservationTimeCreateResponse.from(reservationTime);
     }
 

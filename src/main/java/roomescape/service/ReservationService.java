@@ -33,7 +33,7 @@ public class ReservationService {
         final Theme theme = themeService.findById(reservationCreateRequest.themeId());
         final Reservation reservation = Reservation.create(
                 reservationCreateRequest.name(),
-                reservationCreateRequest.getLocalDate(),
+                reservationCreateRequest.date(),
                 time,
                 theme);
 

@@ -95,7 +95,6 @@ public class TimeController {
     public ResponseEntity<ReservationTimeCreateResponse> create(
             @RequestBody @Valid final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         final ReservationTimeCreateResponse response = reservationTimeService.create(reservationTimeCreateRequest);
-
         final URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
