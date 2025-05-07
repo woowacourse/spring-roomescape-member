@@ -20,6 +20,7 @@ import roomescape.fake.FakeThemeDao;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ThemeEntity;
 import roomescape.presentation.dto.PlayTimeResponse;
+import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
 import roomescape.presentation.dto.ThemeResponse;
@@ -32,7 +33,8 @@ public class ReservationServiceTest {
     private ReservationService reservationService;
 
     private final FakePlayTimeDao timeDaoFixture = new FakePlayTimeDao(new ArrayList<>(List.of(
-            new PlayTimeEntity(1L, FORMATTED_MAX_LOCAL_TIME.toString())
+            new PlayTimeEntity(1L, FORMATTED_MAX_LOCAL_TIME.toString()),
+            new PlayTimeEntity(2L, FORMATTED_MAX_LOCAL_TIME.minusHours(1).toString())
     )));
     private final FakeThemeDao themeDaoFixture = new FakeThemeDao(new ArrayList<>(List.of(
             new ThemeEntity(1L, "테마", "소개", "썸네일")
@@ -45,7 +47,10 @@ public class ReservationServiceTest {
         reservationService = new ReservationService(
                 playTimeServiceFixture,
                 themeServiceFixture,
-                new FakeReservationDao(timeDaoFixture.getTimes())
+                new FakeReservationDao(
+                        timeDaoFixture.getTimes(),
+                        themeDaoFixture.getThemes()
+                )
         );
     }
 
@@ -161,11 +166,39 @@ public class ReservationServiceTest {
         assertThat(reservationService.findAll()).isEmpty();
     }
 
-    @DisplayName("석재하려는 예약이 존재하지 않으면 예외가 발생한다.")
+    @DisplayName("삭제하려는 예약이 존재하지 않으면 예외가 발생한다.")
     @Test
     void removeOrThrowIfIdNotExists() {
         // given & when & then
         assertThatThrownBy(() -> reservationService.remove(1L))
                 .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @DisplayName("방탈출 시간에 대해 날짜와 테마에 따라 예약 가능 여부를 구분하여 조회한다.")
+    @Test
+    void findAvailableTimes() {
+        // given
+        reservationService.create(new ReservationRequest(
+                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+        ));
+
+        // when
+        final List<ReservationAvailableTimeResponse> actual =
+                reservationService.findAvailableTimes(FORMATTED_MAX_LOCAL_DATE, 1L);
+
+        // then
+        assertThat(actual)
+                .contains(
+                        new ReservationAvailableTimeResponse(
+                                FORMATTED_MAX_LOCAL_TIME.toString(),
+                                1L,
+                                true
+                        ),
+                        new ReservationAvailableTimeResponse(
+                                FORMATTED_MAX_LOCAL_TIME.minusHours(1).toString(),
+                                2L,
+                                false
+                        )
+                );
     }
 }

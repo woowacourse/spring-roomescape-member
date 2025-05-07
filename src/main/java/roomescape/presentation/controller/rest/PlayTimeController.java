@@ -31,7 +31,6 @@ public class PlayTimeController {
         final PlayTimeResponse playTimeResponse = playTimeService.create(playTimeRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(playTimeResponse);
-
     }
 
     @GetMapping

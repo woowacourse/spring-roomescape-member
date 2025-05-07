@@ -39,6 +39,17 @@ class PlayTimeServiceTest {
                 .isEqualTo(expected);
     }
 
+    @DisplayName("조회하려는 방탈출 시간 id가 없다면 예외가 발생한다.")
+    @Test
+    void findOrThrowIfIdNotExists() {
+        // given
+        final Long id = 1L;
+
+        // when & then
+        assertThatThrownBy(() -> playTimeService.find(id))
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
     @DisplayName("방탈출 시간을 저장한다.")
     @Test
     void create() {
@@ -61,18 +72,6 @@ class PlayTimeServiceTest {
         // when & then
         assertThatThrownBy(() -> playTimeService.create(playTimeRequest))
                 .isInstanceOf(DuplicatePlayTimeException.class);
-    }
-
-    @DisplayName("조회하려는 방탈출 시간 id가 없다면 예외가 발생한다.")
-    @Test
-    void findOrThrowIfIdNotExists() {
-        // given
-        final Long id = 1L;
-        final PlayTime expected = PlayTime.createWithId(1L, FORMATTED_MAX_LOCAL_TIME);
-
-        // when & then
-        assertThatThrownBy(() -> playTimeService.find(id))
-                .isInstanceOf(NoSuchElementException.class);
     }
 
     @DisplayName("모든 방탈출 시간을 조회한다.")

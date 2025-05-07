@@ -73,4 +73,8 @@ public class FakeThemeDao implements ThemeDao {
             return false;
         }
     }
+
+    public List<ThemeEntity> getThemes() {
+        return themes;
+    }
 }

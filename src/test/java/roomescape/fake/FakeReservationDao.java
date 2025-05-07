@@ -10,17 +10,23 @@ import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ReservationEntity;
+import roomescape.persistence.entity.ThemeEntity;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 public class FakeReservationDao implements ReservationDao {
 
     private final List<ReservationEntity> reservations = new ArrayList<>();
     private final List<PlayTimeEntity> times;
+    private final List<ThemeEntity> themes;
 
     private int index = 1;
 
-    public FakeReservationDao(final List<PlayTimeEntity> times) {
+    public FakeReservationDao(
+            final List<PlayTimeEntity> times,
+            final List<ThemeEntity> themes
+    ) {
         this.times = times;
+        this.themes = themes;
         final ReservationEntity dummy = new ReservationEntity(null, null, null, null, null);
         reservations.add(dummy);
     }
@@ -43,7 +49,8 @@ public class FakeReservationDao implements ReservationDao {
                 .filter(reservationEntity -> reservationEntity.id() != null)
                 .filter(reservationEntity -> times.stream()
                         .filter(timeEntity -> timeEntity.id() != null)
-                        .anyMatch(timeEntity -> Objects.equals(reservationEntity.playTimeEntity().id(), timeEntity.id()))
+                        .anyMatch(
+                                timeEntity -> Objects.equals(reservationEntity.playTimeEntity().id(), timeEntity.id()))
                 )
                 .map(ReservationEntity::toDomain)
                 .toList();
@@ -80,8 +87,37 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(final LocalDate date,
-                                                                                   final Theme theme) {
-        return List.of();
+    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(
+            final LocalDate date,
+            final Theme theme
+    ) {
+        final ThemeEntity themeEntity = ThemeEntity.from(theme);
+        final String formatDate = ReservationEntity.formatDate(date);
+
+        final List<ReservationAvailableTimeResponse> result = new ArrayList<>();
+        int timeIndex = 0;
+        for (final PlayTimeEntity time : times) {
+            if (time.id() == null) {
+                timeIndex ++;
+                continue;
+            }
+            boolean alreadyBooked = false;
+
+            for (final ReservationEntity reservation : reservations) {
+                if (reservation.id() == null) {
+                    continue;
+                }
+                if (reservation.playTimeEntity().equals(time)
+                    && reservation.date().equals(formatDate)
+                    && reservation.themeEntity().equals(themeEntity)) {
+                    alreadyBooked = true;
+                    break;
+                }
+            }
+            result.add(new ReservationAvailableTimeResponse(time.startAt(), (long) timeIndex, alreadyBooked));
+            timeIndex++;
+        }
+
+        return result;
     }
 }
