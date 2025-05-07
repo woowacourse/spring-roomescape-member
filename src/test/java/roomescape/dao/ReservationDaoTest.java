@@ -15,6 +15,7 @@
     import roomescape.model.ReservationTime;
     import roomescape.model.Theme;
     import roomescape.model.ThemeName;
+    import roomescape.model.UserName;
 
     @JdbcTest
     @Import(ReservationDao.class)
@@ -44,7 +45,7 @@
                             rs.getString("description"),
                             rs.getString("thumbnail")
                     ));
-            Reservation reservation = new Reservation(null, "이름", LocalDate.of(2025, 12, 16), reservationTime, theme);
+            Reservation reservation = new Reservation(null, new UserName("이름"), LocalDate.of(2025, 12, 16), reservationTime, theme);
 
             // when
             Reservation saved = reservationDao.save(reservation);

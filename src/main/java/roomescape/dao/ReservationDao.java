@@ -16,6 +16,7 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 import roomescape.model.ThemeName;
+import roomescape.model.UserName;
 
 @Repository
 public class ReservationDao {
@@ -42,7 +43,7 @@ public class ReservationDao {
 
             return new Reservation(
                     rs.getLong("reservation_id"),
-                    rs.getString("name"),
+                    new UserName(rs.getString("name")),
                     rs.getDate("date").toLocalDate(),
                     reservationTime,
                     theme
@@ -71,7 +72,7 @@ public class ReservationDao {
 
         return new Reservation(
                 id,
-                reservation.getName(),
+                new UserName(reservation.getName()),
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme()

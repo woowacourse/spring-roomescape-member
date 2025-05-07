@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
+import roomescape.model.UserName;
 
 
 public record ReservationRequest(
@@ -18,7 +19,7 @@ public record ReservationRequest(
     public Reservation toEntityWithReservationTime(ReservationTime reservationTime, Theme theme) {
         return new Reservation(
                 null,
-                name,
+                new UserName(name),
                 date,
                 reservationTime,
                 theme
