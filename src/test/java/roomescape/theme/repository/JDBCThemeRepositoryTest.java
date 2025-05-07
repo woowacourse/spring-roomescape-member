@@ -1,5 +1,7 @@
 package roomescape.theme.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +26,7 @@ class JDBCThemeRepositoryTest {
                 .build();
         jdbcTemplate = new JdbcTemplate(database);
         themeRepository = new JDBCThemeRepository(jdbcTemplate);
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('Mint', '2025-05-05', 1, 1)");
-        jdbcTemplate.update(
-                "INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('Mint', '2025-05-05', 2, 1)");
+
     }
 
     @AfterEach
@@ -41,8 +40,10 @@ class JDBCThemeRepositoryTest {
     void findTop10PopularThemesWithinLastWeek_shouldReturnCorrectly() {
         List<Theme> top10PopularThemesWithinLastWeek = themeRepository.findTop10PopularThemesWithinLastWeek(
                 TestFixture.makeFutureDate());
-        for (Theme theme : top10PopularThemesWithinLastWeek) {
-            System.out.println(theme.getId());
-        }
+
+        List<Long> ids = top10PopularThemesWithinLastWeek.stream()
+                .map(Theme::getId)
+                .toList();
+        assertThat(ids).containsExactly(12L, 11L, 3L, 4L, 5L, 8L, 9L, 7L, 10L, 6L);
     }
 }
