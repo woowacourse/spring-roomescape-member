@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -56,17 +57,21 @@ public class JDBCThemeRepository implements ThemeRepository {
 
     @Override
     public Optional<Theme> findById(final Long id) {
-        ThemeEntity themeEntity = jdbcTemplate.queryForObject(
-                "SELECT id, name, description, thumbnail FROM theme WHERE id = ?",
-                (resultSet, rowNum) -> new ThemeEntity(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getString("thumbnail")
-                ), id
-        );
-        return Optional.ofNullable(themeEntity)
-                .map(ThemeEntity::toTheme);
+        try {
+            ThemeEntity themeEntity = jdbcTemplate.queryForObject(
+                    "SELECT id, name, description, thumbnail FROM theme WHERE id = ?",
+                    (resultSet, rowNum) -> new ThemeEntity(
+                            resultSet.getLong("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getString("thumbnail")
+                    ), id
+            );
+            return Optional.ofNullable(themeEntity)
+                    .map(ThemeEntity::toTheme);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

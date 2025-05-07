@@ -3,6 +3,7 @@ package roomescape.reservation.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -84,30 +85,42 @@ public class JDBCReservationRepository implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(final Long id) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-                "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)",
-                Boolean.class,
-                id
-        ));
+        try {
+            return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                    "SELECT EXISTS (SELECT 1 FROM reservation WHERE time_id = ?)",
+                    Boolean.class,
+                    id
+            ));
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
     @Override
     public boolean existsByThemeId(final Long id) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-                "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)",
-                Boolean.class,
-                id
-        ));
+        try {
+            return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                    "SELECT EXISTS (SELECT 1 FROM reservation WHERE theme_id = ?)",
+                    Boolean.class,
+                    id
+            ));
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
     @Override
     public boolean existsByDateAndTimeId(final LocalDate date, final Long timeId) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-                "SELECT EXISTS (SELECT 1 FROM reservation WHERE (date, time_id) = (?,?))",
-                Boolean.class,
-                date,
-                timeId
-        ));
+        try {
+            return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+                    "SELECT EXISTS (SELECT 1 FROM reservation WHERE (date, time_id) = (?,?))",
+                    Boolean.class,
+                    date,
+                    timeId
+            ));
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
     @Override

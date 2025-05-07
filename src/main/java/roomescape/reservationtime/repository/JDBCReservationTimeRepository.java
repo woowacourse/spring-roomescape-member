@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -52,25 +53,33 @@ public class JDBCReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public Optional<ReservationTime> findById(final Long id) {
-        ReservationTimeEntity reservationTimeEntity = jdbcTemplate.queryForObject(
-                "SELECT id, start_at FROM reservation_time WHERE id = ?",
-                (resultSet, rowNum) -> new ReservationTimeEntity(
-                        resultSet.getLong("id"),
-                        resultSet.getString("start_at")
-                ),
-                id
-        );
-        return Optional.ofNullable(reservationTimeEntity)
-                .map(ReservationTimeEntity::toReservationTime);
+        try {
+            ReservationTimeEntity reservationTimeEntity = jdbcTemplate.queryForObject(
+                    "SELECT id, start_at FROM reservation_time WHERE id = ?",
+                    (resultSet, rowNum) -> new ReservationTimeEntity(
+                            resultSet.getLong("id"),
+                            resultSet.getString("start_at")
+                    ),
+                    id
+            );
+            return Optional.ofNullable(reservationTimeEntity)
+                    .map(ReservationTimeEntity::toReservationTime);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public boolean checkExistsByStartAt(final LocalTime time) {
-        Boolean exists = jdbcTemplate.queryForObject(
-                "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)",
-                Boolean.class,
-                time
-        );
-        return Boolean.TRUE.equals(exists);
+        try {
+            Boolean exists = jdbcTemplate.queryForObject(
+                    "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?)",
+                    Boolean.class,
+                    time
+            );
+            return Boolean.TRUE.equals(exists);
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 }
