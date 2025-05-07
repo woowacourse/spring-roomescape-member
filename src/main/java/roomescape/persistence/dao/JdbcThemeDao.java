@@ -1,68 +1,83 @@
 package roomescape.persistence.dao;
 
-import java.sql.PreparedStatement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.Theme;
-import roomescape.persistence.entity.ThemeEntity;
 
 @Repository
 public class JdbcThemeDao implements ThemeDao {
 
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String THUMBNAIL = "thumbnail";
+    private static final RowMapper<Theme> themeRowMapper =
+            (rs, rowNum) -> new Theme(
+                    rs.getLong(ID),
+                    rs.getString(NAME),
+                    rs.getString(DESCRIPTION),
+                    rs.getString(THUMBNAIL)
+            );
+
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcThemeDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
     public Long save(final Theme theme) {
-        final ThemeEntity themeEntity = ThemeEntity.from(theme);
-        final String sql = "INSERT INTO THEME (name, description, thumbnail) values (?, ?, ?)";
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, themeEntity.name());
-            ps.setString(2, themeEntity.description());
-            ps.setString(3, themeEntity.thumbnail());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", theme.getName());
+        parameters.put("description", theme.getDescription());
+        parameters.put("thumbnail", theme.getThumbnail());
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return id;
     }
 
     @Override
     public Optional<Theme> find(final Long id) {
-        final String sql = "SELECT id, name, description, thumbnail FROM theme WHERE id = ?";
+        final String sql = """
+                SELECT id, name, description, thumbnail 
+                FROM theme 
+                WHERE id = ?
+                """;
         try {
-            final ThemeEntity themeEntity = jdbcTemplate.queryForObject(sql, ThemeEntity.getDefaultRowMapper(), id);
-            return Optional.of(themeEntity.toDomain());
-        } catch (EmptyResultDataAccessException e) {
+            final Theme theme = jdbcTemplate.queryForObject(sql, themeRowMapper, id);
+            return Optional.of(theme);
+        } catch (DataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
     public List<Theme> findAll() {
-        final String sql = "SELECT id, name, description, thumbnail FROM theme";
-
-        return jdbcTemplate.query(sql, ThemeEntity.getDefaultRowMapper()).stream()
-                .map(ThemeEntity::toDomain)
-                .toList();
+        final String sql = """
+                SELECT id, name, description, thumbnail 
+                FROM theme
+                """;
+        return jdbcTemplate.query(sql, themeRowMapper);
     }
 
     @Override
     public boolean remove(final Long id) {
-        final String sql = "DELETE FROM theme WHERE id = ?";
-        final int rowNum = jdbcTemplate.update(sql, id);
-
-        return rowNum == 1;
+        final String sql = """
+                DELETE FROM theme 
+                WHERE id = ?
+                """;
+        final int updatedRowCount = jdbcTemplate.update(sql, id);
+        return updatedRowCount >= 0;
     }
 
     @Override
