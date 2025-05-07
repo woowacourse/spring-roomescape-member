@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     requestRead(RESERVATION_API_ENDPOINT)
         .then(render)
-        .catch(error => console.error('Error fetching reservations:', error));
+        .catch(error => {
+            console.error('Error fetching reservations:', error)
+            alert(error.message);
+        });
 
     fetchTimes();
 });
@@ -35,7 +38,10 @@ function fetchTimes() {
         .then(data => {
             timesOptions.push(...data);
         })
-        .catch(error => console.error('Error fetching time:', error));
+        .catch(error => {
+            console.error('Error fetching time:', error)
+            alert(error.message);
+        });
 }
 
 function createSelect(options, defaultText, selectId, textProperty) {
