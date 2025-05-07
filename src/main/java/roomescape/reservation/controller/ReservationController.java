@@ -28,13 +28,13 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservations());
     }
 
-    // TODO : URI 헤더에 등장하지 않는 문제 해결
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody ReservationCreateRequest request
     ) {
-        URI location = URI.create("http://localhost:8080");
-        return ResponseEntity.created(location).body(reservationService.create(request));
+        ReservationResponse response = reservationService.create(request);
+        URI location = URI.create("http://localhost:8080/reservations/" + response.id());
+        return ResponseEntity.created(location).body(response);
     }
 
     @DeleteMapping("/{id}")
