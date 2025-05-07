@@ -1,8 +1,10 @@
 package roomescape.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import roomescape.entity.Member;
+import roomescape.exception.MemberNotFoundException;
 import roomescape.mapper.MemberMapper;
 
 @Component
@@ -12,6 +14,21 @@ public class JdbcMemberDao implements MemberDao {
 
     public JdbcMemberDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Member findById(long memberId) {
+        try {
+            String sql = "select * from member where id = ?";
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    new MemberMapper(),
+                    memberId
+            );
+        } catch (EmptyResultDataAccessException e) {
+            //TODO : 에러 발생 맥락 : 토큰에서 발췌한 id에 맞는 멤버가 존재하지 않음
+            throw new MemberNotFoundException();
+        }
     }
 
     @Override

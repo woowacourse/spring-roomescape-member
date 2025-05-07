@@ -5,6 +5,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.exception.InvalidAccessTokenException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,8 +21,8 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ExceptionResponse handleIllegalArgumentException(IllegalArgumentException ex) {
+    @ExceptionHandler({InvalidAccessTokenException.class, IllegalArgumentException.class})
+    public ExceptionResponse handleIllegalArgumentException(RuntimeException ex) {
         return new ExceptionResponse(ex.getMessage());
     }
 }
