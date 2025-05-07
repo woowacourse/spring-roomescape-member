@@ -3,6 +3,7 @@ package roomescape.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.member.controller.request.LoginRequest;
+import roomescape.member.controller.response.MemberNameResponse;
 import roomescape.member.domain.Member;
 import roomescape.member.infrastructure.jwt.JwtHandler;
 import roomescape.member.infrastructure.repository.MemberRepository;
@@ -22,5 +23,14 @@ public class MemberService {
                 });
 
         return jwtHandler.createToken(member.getId());
+    }
+
+    public MemberNameResponse check(String token) {
+        Long memberId = jwtHandler.getMemberId(token);
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
+
+        return new MemberNameResponse(member.getName());
     }
 }

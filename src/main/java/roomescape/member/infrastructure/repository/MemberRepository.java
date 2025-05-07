@@ -48,4 +48,21 @@ public class MemberRepository {
                 .stream()
                 .findFirst();
     }
+
+    public Optional<Member> findById(Long memberId) {
+        String sql = """
+                SELECT id, name, email, password
+                FROM member
+                WHERE id = ?
+                """;
+        return jdbcTemplate.query(sql,
+                        (rs, rowNum) -> Member.load(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("email"),
+                                rs.getString("password")
+                        ), memberId)
+                .stream()
+                .findFirst();
+    }
 }
