@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.controller.ReservationController;
+import roomescape.controller.api.ReservationController;
 import roomescape.controller.response.ReservationResponse;
 
 @Sql(scripts = {"/test-schema.sql"})

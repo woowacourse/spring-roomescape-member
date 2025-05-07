@@ -1,23 +1,22 @@
-package roomescape.controller;
+package roomescape.controller.api;
 
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.request.CreateTimeSlotRequest;
 import roomescape.controller.response.AvailableTimeSlotResponse;
 import roomescape.controller.response.TimeSlotResponse;
 import roomescape.service.TimeSlotService;
 
-@Controller
+@RestController
 public class TimeSlotController {
 
     private final TimeSlotService service;
@@ -27,7 +26,7 @@ public class TimeSlotController {
     }
 
     @PostMapping("/times")
-    public ResponseEntity<TimeSlotResponse> register(@RequestBody @Valid final CreateTimeSlotRequest request) {
+    public ResponseEntity<TimeSlotResponse> register(@Valid final CreateTimeSlotRequest request) {
         var timeSlot = service.register(request.startAt());
         var response = TimeSlotResponse.from(timeSlot);
         return ResponseEntity.created(URI.create("/times/" + timeSlot.id())).body(response);
