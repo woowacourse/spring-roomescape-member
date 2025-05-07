@@ -4,20 +4,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.user.LoginRequestDto;
-import roomescape.service.UserService;
+import roomescape.dto.customer.LoginRequestDto;
+import roomescape.service.CustomerService;
 
 @RestController
-public class UserController {
+public class CustomerController {
 
-    private final UserService userService;
+    private final CustomerService customerService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     @PostMapping("login")
     public void userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        userService.verifyLogin(loginRequestDto);
+        customerService.verifyLogin(loginRequestDto);
     }
 }
