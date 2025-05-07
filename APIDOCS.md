@@ -240,7 +240,7 @@
 
 ### 인증 API
 
-- GET /login
+- POST /login
     - 설명 : 로그인
     - 요청 페이로드
       ```

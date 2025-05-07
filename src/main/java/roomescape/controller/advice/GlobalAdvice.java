@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import roomescape.exception.BadRequestException;
 import roomescape.exception.NotFoundException;
+import roomescape.exception.UnauthorizedException;
 
 @ControllerAdvice
 public class GlobalAdvice {
@@ -25,6 +26,11 @@ public class GlobalAdvice {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> badRequestExceptionHandler(BadRequestException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> unauthorizedExceptionHandler(UnauthorizedException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

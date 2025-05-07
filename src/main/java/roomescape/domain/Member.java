@@ -24,6 +24,10 @@ public class Member {
         return new Member(DEFAULT_ID, name, email, password);
     }
 
+    public boolean comparePassword(String password) {
+        return this.password.equals(password);
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,6 +1,8 @@
 package roomescape.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,5 +96,19 @@ class MemberTest {
         assertThatThrownBy(() -> new Member(1L, "이름", "test@test.com", tooLongPassword))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 최대길이를 초과한 비밀번호로는 멤버를 생성할 수 없습니다.");
+    }
+
+    @DisplayName("비밀번호가 동일한지 확인할 수 있다")
+    @Test
+    void testMethodNameHere() {
+        // given
+        Member member = new Member(1L, "이름", "test@test.com", "asdf1234!");
+
+        // when & then
+        assertAll(
+                () -> assertThat(member.comparePassword("asdf1234!")).isTrue(),
+                () -> assertThat(member.comparePassword("zxcv5678!")).isFalse()
+        );
+
     }
 }
