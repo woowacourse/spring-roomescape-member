@@ -1,5 +1,6 @@
 package roomescape.entity;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import roomescape.exception.InvalidAccessTokenException;
@@ -32,7 +33,7 @@ public class AccessToken {
                     .parseClaimsJws(value)
                     .getBody()
                     .getSubject());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | JwtException e) {
             //TODO : 이 에러를 잡는 이유를 이해할까? 예외처리가 진짜 예외처리가 맞나?
             //TODO 파싱 자체에 실패한 경우
             throw new InvalidAccessTokenException();
