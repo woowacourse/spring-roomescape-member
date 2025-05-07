@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JWTProvider {
+public class JWTManager {
 
     @Value("${auth.jwt.secret-key}")
     private String secretKey;
@@ -18,9 +18,9 @@ public class JWTProvider {
     @Value("${auth.jwt.expire-length}")
     private int validityInMilliseconds;
 
-    public String createToken(final String payload) {
+    public String createToken(final long userId) {
         final Claims claims = Jwts.claims()
-                .setSubject(payload);
+                .setSubject(String.valueOf(userId));
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -32,12 +32,12 @@ public class JWTProvider {
                 .compact();
     }
 
-    public String getPayload(final String token) {
-        return Jwts.parser()
+    public Long parseUserId(final String token) {
+        return Long.valueOf(Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject();
+                .getSubject());
     }
 
     public boolean validateToken(final String token) {
