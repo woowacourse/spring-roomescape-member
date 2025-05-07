@@ -9,14 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import roomescape.auth.AuthService;
+import roomescape.auth.CookieProvider;
 import roomescape.controller.request.LoginMemberRequest;
 import roomescape.controller.request.RegisterMemberRequest;
 import roomescape.controller.response.CheckLoginUserResponse;
 import roomescape.controller.response.LoginUserResponse;
 import roomescape.controller.response.RegisterUserResponse;
 import roomescape.exception.UnAuthorizedException;
-import roomescape.infrastructure.CookieProvider;
-import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.MemberService;
 import roomescape.service.param.LoginMemberParam;
 import roomescape.service.param.RegisterMemberParam;
@@ -27,12 +27,12 @@ import roomescape.service.result.RegisterUserResult;
 public class MemberController {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
     private final CookieProvider cookieProvider;
 
-    public MemberController(final MemberService memberService, final JwtTokenProvider jwtTokenProvider, final CookieProvider cookieProvider) {
+    public MemberController(final MemberService memberService, final AuthService authService, final CookieProvider cookieProvider) {
         this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.authService = authService;
         this.cookieProvider = cookieProvider;
     }
 
@@ -78,13 +78,7 @@ public class MemberController {
         if (cookies == null) {
             throw new UnAuthorizedException();
         }
-
-        String token = jwtTokenProvider.extractTokenFromCookie(cookies);
-        if (token == null) {
-            throw new UnAuthorizedException();
-        }
-
-        Long id = jwtTokenProvider.extractIdFromToken(token);
+        Long id = authService.extractSubjectFromToken(cookies);
         return ResponseEntity.ok().body(CheckLoginUserResponse.from(memberService.findById(id)));
     }
 

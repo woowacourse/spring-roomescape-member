@@ -3,7 +3,9 @@ package roomescape.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import roomescape.auth.LoginMember;
 import roomescape.controller.request.CreateReservationRequest;
+import roomescape.controller.request.LoginMemberInfo;
 import roomescape.controller.response.ReservationResponse;
 import roomescape.service.ReservationService;
 import roomescape.service.result.ReservationResult;
@@ -32,8 +34,10 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
-            @RequestBody CreateReservationRequest createReservationRequest) {
-        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(), LocalDateTime.now());
+            @RequestBody CreateReservationRequest createReservationRequest,
+            @LoginMember LoginMemberInfo loginMemberInfo) {
+
+        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(loginMemberInfo), LocalDateTime.now());
         ReservationResult reservationResult = reservationService.findById(reservationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservationResult));
     }

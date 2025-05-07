@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.auth;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -24,8 +24,7 @@ public class JwtTokenProvider {
         Date expirationDate = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .subject(user.id().toString())
-                .claim("name", user.name())
+                .subject(user.id().toString()) //TODO: 어떤 값이 들어가야 할지 고민
                 .claim("email", user.email())
                 .expiration(expirationDate)
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
