@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,9 @@ public class JWTManager {
     @Value("${auth.jwt.expire-length}")
     private int validityInMilliseconds;
 
-    public String createToken(final long userId) {
+    public String createToken(final Long userId) {
         final Claims claims = Jwts.claims()
-                .setSubject(String.valueOf(userId));
+                .setSubject(userId.toString());
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -28,13 +29,14 @@ public class JWTManager {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public Long parseUserId(final String token) {
-        return Long.valueOf(Jwts.parser()
-                .setSigningKey(secretKey)
+        return Long.valueOf(Jwts.parserBuilder()
+                .setSigningKey(secretKey.getBytes())
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject());
@@ -42,8 +44,9 @@ public class JWTManager {
 
     public boolean validateToken(final String token) {
         try {
-            final Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(secretKey)
+            final Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
                     .parseClaimsJws(token);
 
             return !claims.getBody()

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class AuthExceptionHandlerAdvice {
 
-    @ExceptionHandler(UserNotFoundForTokenException.class)
-    public ResponseEntity<String> handleUserNotFoundForTokenException(final UserNotFoundForTokenException e) {
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundForTokenException(final UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("유효하지 않은 계정입니다.");
     }

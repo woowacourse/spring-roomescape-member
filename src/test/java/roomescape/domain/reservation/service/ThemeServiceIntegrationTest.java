@@ -8,13 +8,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
@@ -31,7 +31,6 @@ import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
 import roomescape.domain.reservation.utils.FixedClock;
 
-@ActiveProfiles("test")
 @JdbcTest
 @Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
 class ThemeServiceIntegrationTest {
@@ -90,10 +89,19 @@ class ThemeServiceIntegrationTest {
         final ThemeResponse response = themeService.create(request);
 
         // then
-        assertThat(response.id()).isNotNull();
-        assertThat(response.name()).isEqualTo("테마1");
-        assertThat(response.description()).isEqualTo("테마1");
-        assertThat(response.thumbnail()).isEqualTo("www.m.com");
+
+        final SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(response.id())
+                .isNotNull();
+        softly.assertThat(response.name())
+                .isEqualTo("테마1");
+        softly.assertThat(response.description())
+                .isEqualTo("테마1");
+        softly.assertThat(response.thumbnail())
+                .isEqualTo("www.m.com");
+
+        softly.assertAll();
     }
 
     @DisplayName("테마를 삭제한다")

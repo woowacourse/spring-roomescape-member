@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
@@ -30,7 +29,6 @@ import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
 
-@ActiveProfiles("test")
 @JdbcTest
 @Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
 class ReservationTimeServiceIntegrationTest {
@@ -94,7 +92,7 @@ class ReservationTimeServiceIntegrationTest {
         final ReservationTimeResponse result = reservationTimeService.create(reservationTimeRequest);
 
         // then
-        SoftAssertions softly = new SoftAssertions();
+        final SoftAssertions softly = new SoftAssertions();
 
         softly.assertThat(result.id())
                 .isNotNull();

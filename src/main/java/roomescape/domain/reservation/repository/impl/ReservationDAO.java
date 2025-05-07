@@ -97,7 +97,7 @@ public class ReservationDAO implements ReservationRepository {
 
     @Override
     public boolean existsByDateAndTimeId(final LocalDate date, final Long timeId) {
-        final String sql = "select exists(select 1 from reservation where date = :date and time_id = :time_id)";
+        final String sql = "select exists(select 1 from " + TABLE_NAME + " where date = :date and time_id = :time_id)";
         final Map<String, Object> params = Map.of("date", date, "time_id", timeId);
 
         return jdbcTemplate.queryForObject(sql, params, Boolean.class);
@@ -105,7 +105,7 @@ public class ReservationDAO implements ReservationRepository {
 
     @Override
     public boolean existsByTimeId(final Long timeId) {
-        final String selectSql = "select exists(select 1 from reservation where time_id = :time_id)";
+        final String selectSql = "select exists(select 1 from " + TABLE_NAME + " where time_id = :time_id)";
         final Map<String, Long> params = Map.of("time_id", timeId);
 
         return jdbcTemplate.queryForObject(selectSql, params, Boolean.class);
@@ -113,7 +113,7 @@ public class ReservationDAO implements ReservationRepository {
 
     @Override
     public boolean existsByThemeId(final Long themeId) {
-        final String selectSql = "select exists(select 1 from reservation where theme_id = :theme_id)";
+        final String selectSql = "select exists(select 1 from " + TABLE_NAME + " where theme_id = :theme_id)";
 
         final Map<String, Long> params = Map.of("theme_id", themeId);
 
