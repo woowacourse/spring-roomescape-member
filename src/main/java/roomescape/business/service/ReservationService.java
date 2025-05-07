@@ -72,8 +72,8 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public List<Reservation> getAll() {
-        return reservationRepository.findAll();
+    public List<Reservation> getAll(final Long themeId, final Long userId, final LocalDate dateFrom, final LocalDate dateTo) {
+        return reservationRepository.findAllWithFilter(themeId, userId, dateFrom, dateTo);
     }
 
     public void delete(final long id) {

@@ -35,6 +35,7 @@ public class JJWTJwtUtil implements JwtUtil {
 
     @Override
     public Authorization getAuthorization(final String tokenValue) {
+        validateToken(tokenValue);
         final Claims claims = Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(tokenValue)
                 .getPayload();

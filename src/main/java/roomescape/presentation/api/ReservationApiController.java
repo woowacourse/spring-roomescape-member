@@ -14,6 +14,7 @@ import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -44,8 +45,13 @@ public class ReservationApiController {
 
     @GetMapping("/reservations")
     @AuthRequired
-    public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<Reservation> reservations = reservationService.getAll();
+    public ResponseEntity<List<ReservationResponse>> getReservations(
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false, name = "memberId") Long userId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo
+    ) {
+        List<Reservation> reservations = reservationService.getAll(themeId, userId, dateFrom, dateTo);
         List<ReservationResponse> responses = ReservationResponse.from(reservations);
         return ResponseEntity.ok(responses);
     }

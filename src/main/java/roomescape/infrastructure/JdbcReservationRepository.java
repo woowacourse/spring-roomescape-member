@@ -13,6 +13,7 @@ import roomescape.business.model.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,28 @@ public class JdbcReservationRepository implements ReservationRepository {
                     resultSet.getString("theme_thumbnail")
             )
     );
+
+    private static final String FIND_ALL_QUERY = """
+            SELECT
+             r.id as reservation_id,
+             r.date,
+             rt.id as time_id,
+             rt.start_at as time_value,
+             t.id as theme_id,
+             t.name as theme_name,
+             t.description as theme_description,
+             t.thumbnail as theme_thumbnail,
+             u.id as user_id,
+             u.role as user_role,
+             u.name as user_name,
+             u.email as user_email,
+             u.password as user_password
+            FROM reservation as r
+            INNER JOIN reservation_time as rt ON r.time_id = rt.id
+            INNER JOIN theme as t ON r.theme_id = t.id
+            INNER JOIN users as u ON r.user_id = u.id
+            WHERE 1 = 1
+            """;
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert insert;
@@ -72,53 +95,42 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-        final String sql = """
-                SELECT
-                 r.id as reservation_id,
-                 r.date,
-                 rt.id as time_id,
-                 rt.start_at as time_value,
-                 t.id as theme_id,
-                 t.name as theme_name,
-                 t.description as theme_description,
-                 t.thumbnail as theme_thumbnail,
-                 u.id as user_id,
-                 u.role as user_role,
-                 u.name as user_name,
-                 u.email as user_email,
-                 u.password as user_password
-                FROM reservation as r
-                INNER JOIN reservation_time as rt ON r.time_id = rt.id
-                INNER JOIN theme as t ON r.theme_id = t.id
-                INNER JOIN users as u ON r.user_id = u.id
-                """;
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        return jdbcTemplate.query(FIND_ALL_QUERY, ROW_MAPPER);
+    }
+
+    @Override
+    public List<Reservation> findAllWithFilter(final Long themeId, final Long userId, final LocalDate dateFrom, final LocalDate dateTo) {
+        final StringBuilder sql = new StringBuilder(FIND_ALL_QUERY);
+
+        List<Object> params = new ArrayList<>();
+
+        if (themeId != null) {
+            sql.append(" AND t.id = ?");
+            params.add(themeId);
+        }
+
+        if (userId != null) {
+            sql.append(" AND u.id = ?");
+            params.add(userId);
+        }
+
+        if (dateFrom != null) {
+            sql.append(" AND r.date >= ?");
+            params.add(dateFrom);
+        }
+
+        if (dateTo != null) {
+            sql.append(" AND r.date <= ?");
+            params.add(dateTo);
+        }
+
+        return jdbcTemplate.query(sql.toString(), ROW_MAPPER, params.toArray());
     }
 
     @Override
     public Optional<Reservation> findById(final long id) {
         try {
-            final String sql = """
-                    SELECT
-                     r.id as reservation_id,
-                     r.date,
-                     rt.id as time_id,
-                     rt.start_at as time_value,
-                     t.id as theme_id,
-                     t.name as theme_name,
-                     t.description as theme_description,
-                     t.thumbnail as theme_thumbnail,
-                     u.id as user_id,
-                     u.role as user_role,
-                     u.name as user_name,
-                     u.email as user_email,
-                     u.password as user_password
-                    FROM reservation as r
-                    INNER JOIN reservation_time as rt ON r.time_id = rt.id
-                    INNER JOIN theme as t ON r.theme_id = t.id
-                    INNER JOIN users as u ON r.user_id = u.id
-                    WHERE r.id = ?
-                    """;
+            final String sql = FIND_ALL_QUERY + " AND reservation_id = ?";
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, ROW_MAPPER, id));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
