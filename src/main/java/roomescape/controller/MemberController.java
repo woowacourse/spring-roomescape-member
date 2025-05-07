@@ -22,6 +22,7 @@ public class MemberController {
     @GetMapping
     public ResponseEntity<List<Member>> getMembers() {
         List<Member> members = memberService.findAll();
+        // TODO: Member 객체 그대로 반환하는 것 변경해보기
         List<MemberResponse> responses = members.stream()
                 .map(MemberResponse::from)
                 .toList();

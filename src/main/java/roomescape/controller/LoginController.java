@@ -27,6 +27,7 @@ public class LoginController {
         this.authService = authService;
     }
 
+    // TODO: 페이지 컨트롤러 위치 고려해보기
     @GetMapping
     public String getLoginPage() {
         return "login";
@@ -40,6 +41,7 @@ public class LoginController {
         Member member = memberService.findByEmailAndPassword(request);
         String accessToken = authService.createTokenByMember(member);
 
+        // TODO: 쿠키 설정 위치 생각해보기
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");

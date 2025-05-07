@@ -22,6 +22,7 @@ public class AdminController {
         this.reservationService = reservationService;
     }
 
+    // TODO: 페이지 컨트롤러 위치 고려해보기
     @GetMapping
     public String adminMainPage() {
         return "admin/index";

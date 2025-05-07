@@ -57,6 +57,7 @@ public class ReservationService {
         return reservationRepository.add(reservation);
     }
 
+    // TODO: addReservation 메서드와 중복 로직 분리해보기
     public Reservation addReservationByAdmin(CreateReservationByAdminRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
