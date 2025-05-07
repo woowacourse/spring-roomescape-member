@@ -2,7 +2,7 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.domain.*;
-import roomescape.global.ReservationException;
+import roomescape.exception.ReservationException;
 import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
 import roomescape.service.result.ReservationResult;

@@ -1,10 +1,14 @@
-package roomescape.controller;
+package roomescape.infrastructure;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.exception.UnAuthorizedException;
 import roomescape.service.result.LoginUserResult;
+
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
@@ -34,7 +38,7 @@ public class JwtTokenProvider {
                 return cookie.getValue();
             }
         }
-        throw new IllegalArgumentException("인증 정보를 찾을 수 없습니다.");
+        throw new UnAuthorizedException();
     }
 
     public Long extractIdFromToken(final String token) {

@@ -65,8 +65,15 @@ public class UserController {
     @GetMapping("/login/check")
     public ResponseEntity<CheckLoginUserResponse> loginCheck(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new UnAuthorizedException();
+        }
 
         String token = jwtTokenProvider.extractTokenFromCookie(cookies);
+        if (token == null) {
+            throw new UnAuthorizedException();
+        }
+
         Long id = jwtTokenProvider.extractIdFromToken(token);
 
         return ResponseEntity.ok().body(CheckLoginUserResponse.from(userService.findById(id)));

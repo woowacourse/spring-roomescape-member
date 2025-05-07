@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRepository;
-import roomescape.global.ReservationException;
+import roomescape.exception.ReservationException;
 import roomescape.service.param.CreateThemeParam;
 import roomescape.service.result.ThemeResult;
 

@@ -5,7 +5,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.ReservationTimeRepository;
-import roomescape.global.ReservationException;
+import roomescape.exception.ReservationException;
 import roomescape.service.param.CreateReservationTimeParam;
 import roomescape.service.result.AvailableReservationTimeResult;
 import roomescape.service.result.ReservationTimeResult;

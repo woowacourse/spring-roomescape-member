@@ -3,7 +3,7 @@ package roomescape.service;
 import org.springframework.stereotype.Service;
 import roomescape.domain.User;
 import roomescape.domain.UserRepository;
-import roomescape.global.ReservationException;
+import roomescape.exception.ReservationException;
 import roomescape.persistence.query.CreateUserQuery;
 import roomescape.service.param.LoginUserParam;
 import roomescape.service.param.RegisterUserParam;
