@@ -31,7 +31,7 @@ public class ReservationThemeController {
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ReservationThemeResponse>> reservationThemeRankingList() {
-        return ResponseEntity.status(HttpStatus.OK).body(roomescapeService.findPopularReservations());
+        return ResponseEntity.status(HttpStatus.OK).body(roomescapeService.findPopularThemes());
     }
 
     @PostMapping()

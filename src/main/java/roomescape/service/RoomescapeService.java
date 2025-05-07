@@ -49,7 +49,7 @@ public class RoomescapeService {
         return reservationThemes.stream().map(ReservationThemeResponse::from).toList();
     }
 
-    public List<ReservationThemeResponse> findPopularReservations() {
+    public List<ReservationThemeResponse> findPopularThemes() {
         List<ReservationTheme> popularReservationThemes = roomescapeThemeRepository.findWeeklyThemeOrderByCountDesc();
         return popularReservationThemes.stream().map(ReservationThemeResponse::from).toList();
     }

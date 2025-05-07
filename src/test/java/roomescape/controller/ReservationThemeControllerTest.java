@@ -64,7 +64,7 @@ class ReservationThemeControllerTest {
         final ReservationTheme reservationTheme2 = new ReservationTheme(2L, "테마2", "디스크립션2", "썸네일2");
         final List<ReservationThemeResponse> reservationThemeResponses = List.of(
                 ReservationThemeResponse.from(reservationTheme1), ReservationThemeResponse.from(reservationTheme2));
-        given(roomescapeService.findPopularReservations()).willReturn(reservationThemeResponses);
+        given(roomescapeService.findPopularThemes()).willReturn(reservationThemeResponses);
 
         // when & then
         RestAssuredMockMvc.given().log().all()
