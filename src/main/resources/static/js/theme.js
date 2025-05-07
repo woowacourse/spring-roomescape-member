@@ -129,7 +129,14 @@ function requestDelete(id) {
   };
 
   return fetch(`${API_ENDPOINT}/${id}`, requestOptions)
-      .then(response => {
-        if (response.status !== 204) throw new Error('Delete failed');
-      });
+      .then(async response => {
+        if (response.status !== 204) {
+          const errorBody = await response.json();
+            throw new Error(errorBody.message || '삭제에 실패했습니다.');
+        }
+      })
+        .catch(error => {
+            alert(error.message);
+            throw new Error('Delete failed');
+        });
 }
