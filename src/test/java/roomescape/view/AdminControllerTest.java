@@ -1,4 +1,4 @@
-package roomescape.admin.presentation;
+package roomescape.view;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;

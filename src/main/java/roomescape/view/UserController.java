@@ -10,4 +10,10 @@ public class UserController {
     ) {
         return "/reservation";
     }
+
+    @GetMapping("/login")
+    public String login(
+    ) {
+        return "/login";
+    }
 }
