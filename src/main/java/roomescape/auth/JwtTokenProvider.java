@@ -17,7 +17,6 @@ public class JwtTokenProvider {
 
     private final String secretKey;
 
-
     public JwtTokenProvider(String secretKey) {
         this.secretKey = secretKey;
     }

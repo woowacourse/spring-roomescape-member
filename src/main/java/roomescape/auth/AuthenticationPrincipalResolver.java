@@ -1,9 +1,6 @@
 package roomescape.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -33,30 +30,13 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         if (request != null && request.getCookies() != null) {
-            String token = getTokenFromCookie(request);
+            String token = JwtCookieResolver.getTokenFromCookie(request);
             return jwtTokenProvider.resolveToken(token);
         }
         if (request != null) {
-            resetToken(request);
+            JwtCookieResolver.resetToken(request);
         }
 
         throw new AuthenticationException("UserInfo를 파싱하는데 실패하였습니다");
-    }
-
-    private void resetToken(HttpServletRequest request) {
-        String jwtCookieKey = JwtTokenProvider.getCookieKey();
-        Optional<Cookie> tokenCookie = Arrays.stream(request.getCookies())
-                .filter((cookie) -> jwtCookieKey.equals(cookie.getName()))
-                .findAny();
-        tokenCookie.ifPresent(cookie -> cookie.setMaxAge(0));
-    }
-
-    private String getTokenFromCookie(HttpServletRequest request) {
-        String jwtCookieKey = JwtTokenProvider.getCookieKey();
-        return Arrays.stream(request.getCookies())
-                .filter((cookie) -> jwtCookieKey.equals(cookie.getName()))
-                .findAny()
-                .map(Cookie::getValue)
-                .orElseThrow(() -> new AuthenticationException("유효하지 않은 토큰입니다"));
     }
 }
