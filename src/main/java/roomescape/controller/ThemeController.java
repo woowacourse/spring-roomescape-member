@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -64,12 +65,7 @@ public class ThemeController {
             }
     )
     public ResponseEntity<ThemeCreateResponse> create(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "테마 생성 정보",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = ThemeCreateRequest.class))
-            )
-            @RequestBody final ThemeCreateRequest themeCreateRequest) {
+            @RequestBody @Valid final ThemeCreateRequest themeCreateRequest) {
         final ThemeCreateResponse themeCreateResponse = themeService.create(themeCreateRequest);
 
         final URI location = ServletUriComponentsBuilder

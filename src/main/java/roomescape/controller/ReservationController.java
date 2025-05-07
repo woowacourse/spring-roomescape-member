@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +65,7 @@ public class ReservationController {
             }
     )
     public ResponseEntity<ReservationCreateResponse> create(
-            @RequestBody final ReservationCreateRequest reservationCreateRequest) {
+            @RequestBody @Valid final ReservationCreateRequest reservationCreateRequest) {
         final ReservationCreateResponse reservationCreateResponse = reservationService.create(reservationCreateRequest);
 
         final URI location = ServletUriComponentsBuilder

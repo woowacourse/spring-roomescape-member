@@ -1,34 +1,12 @@
 package roomescape.dto.request;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
 
 public record ReservationTimeCreateRequest(
+
+        @NotBlank
+        @JsonFormat(pattern = "HH:mm")
         String startAt
 ) {
-
-    public ReservationTimeCreateRequest {
-        validateBlank(startAt);
-        validateTimeFormat(startAt);
-    }
-
-    public LocalTime getLocalTime() {
-        return LocalTime.parse(startAt);
-    }
-
-
-    private void validateBlank(final String startAt) {
-        if (startAt == null || startAt.isBlank()) {
-            throw new IllegalArgumentException("빈 값으로 예약할 수 없습니다.");
-        }
-    }
-
-    private void validateTimeFormat(final String startAt) {
-        try {
-            LocalTime.parse(startAt, DateTimeFormatter.ofPattern("HH:mm"));
-        } catch (final DateTimeParseException e) {
-            throw new IllegalArgumentException("예약 시간 형식은 HH:mm 입니다.");
-        }
-    }
 }

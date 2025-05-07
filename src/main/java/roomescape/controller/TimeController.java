@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -92,7 +93,7 @@ public class TimeController {
             }
     )
     public ResponseEntity<ReservationTimeCreateResponse> create(
-            @RequestBody final ReservationTimeCreateRequest reservationTimeCreateRequest) {
+            @RequestBody @Valid final ReservationTimeCreateRequest reservationTimeCreateRequest) {
         final ReservationTimeCreateResponse response = reservationTimeService.create(reservationTimeCreateRequest);
 
         final URI location = ServletUriComponentsBuilder
