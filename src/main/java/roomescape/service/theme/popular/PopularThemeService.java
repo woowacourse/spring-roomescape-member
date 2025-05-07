@@ -23,9 +23,8 @@ public class PopularThemeService implements PopularThemeUseCase {
     public List<PopularThemeResponse> getPopularThemes() {
         LocalDate endDate = LocalDate.now().minusDays(1);
         LocalDate startDate = endDate.minusDays(7);
-        List<Long> themeIds = reservationRepository.findThemeIdsOrderByReservationCountBetween(startDate, endDate)
+        List<Long> themeIds = reservationRepository.findThemeIdsOrderByReservationCountBetween(startDate, endDate, 10)
                 .stream()
-                .limit(10)
                 .toList();
 
         return themeIds.stream().map(themeId -> {

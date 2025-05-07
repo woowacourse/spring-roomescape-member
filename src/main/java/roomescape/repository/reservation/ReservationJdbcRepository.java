@@ -109,19 +109,20 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<Long> findThemeIdsOrderByReservationCountBetween(LocalDate startDate, LocalDate endDate) {
+    public List<Long> findThemeIdsOrderByReservationCountBetween(LocalDate startDate, LocalDate endDate, int limit) {
         String sql = """
                 SELECT theme_id
                 FROM reservation
                 WHERE date BETWEEN ? AND ?
                 GROUP BY theme_id
-                ORDER BY COUNT(*) DESC
+                ORDER BY COUNT(?) DESC
                 """;
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> resultSet.getLong("theme_id"),
                 startDate,
-                endDate
+                endDate,
+                limit
         );
     }
 }
