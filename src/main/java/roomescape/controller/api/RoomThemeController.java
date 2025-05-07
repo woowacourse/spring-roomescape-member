@@ -15,6 +15,7 @@ import roomescape.controller.dto.response.PopularThemeResponse;
 import roomescape.controller.dto.response.RoomThemeResponse;
 import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.service.RoomThemeService;
+import roomescape.service.dto.CreateRoomThemeServiceRequest;
 
 @RequestMapping("/themes")
 @RestController
@@ -29,7 +30,7 @@ public class RoomThemeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RoomThemeResponse addTheme(@RequestBody CreateRoomThemeRequest request) {
-        final roomescape.service.dto.CreateRoomThemeRequest creation = roomescape.service.dto.CreateRoomThemeRequest.from(
+        final CreateRoomThemeServiceRequest creation = CreateRoomThemeServiceRequest.from(
                 request);
         final RoomTheme savedTheme = roomThemeService.addTheme(creation);
         return RoomThemeResponse.from(savedTheme);

@@ -11,7 +11,7 @@ import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.exception.custom.BusinessRuleViolationException;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.CreateReservationRequest;
+import roomescape.service.dto.CreateReservationServiceRequest;
 
 @Service
 public class ReservationService {
@@ -28,7 +28,7 @@ public class ReservationService {
         this.themeDAO = themeDAO;
     }
 
-    public Reservation addReservation(final CreateReservationRequest creation) {
+    public Reservation addReservation(final CreateReservationServiceRequest creation) {
         final ReservationTime reservationTime = findReservationTimeByTimeId(creation.timeId());
         final RoomTheme theme = findThemeByThemeId(creation.themeId());
         final Reservation reservation = new Reservation(creation.name(), creation.date(), reservationTime, theme);

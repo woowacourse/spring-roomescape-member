@@ -14,7 +14,7 @@ import roomescape.domain.roomtheme.RoomTheme;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.CreateRoomThemeRequest;
+import roomescape.service.dto.CreateRoomThemeServiceRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -27,7 +27,7 @@ class RoomThemeServiceTest {
     @DisplayName("테마를 추가한다")
     void addThemeTest() {
         // given
-        final CreateRoomThemeRequest creation = new CreateRoomThemeRequest("test", "description",
+        final CreateRoomThemeServiceRequest creation = new CreateRoomThemeServiceRequest("test", "description",
                 "thumbnail");
         // when // then
         assertThatCode(() -> roomThemeService.addTheme(creation))
@@ -38,7 +38,7 @@ class RoomThemeServiceTest {
     @DisplayName("같은 테마가 존재하면 예외를 던진다")
     void addThemeTest_WhenThemeAlreadyExists() {
         // given
-        final CreateRoomThemeRequest creation = new CreateRoomThemeRequest("test", "description",
+        final CreateRoomThemeServiceRequest creation = new CreateRoomThemeServiceRequest("test", "description",
                 "thumbnail");
         roomThemeService.addTheme(creation);
 
@@ -62,7 +62,7 @@ class RoomThemeServiceTest {
     @DisplayName("테마를 삭제한다")
     void deleteThemeTest() {
         // given
-        roomThemeService.addTheme(new CreateRoomThemeRequest("test", "description", "thumbnail"));
+        roomThemeService.addTheme(new CreateRoomThemeServiceRequest("test", "description", "thumbnail"));
         final long deleteId = 3L;
 
         // when // then

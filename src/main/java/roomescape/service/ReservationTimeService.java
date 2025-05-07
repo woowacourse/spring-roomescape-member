@@ -10,7 +10,7 @@ import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.exception.custom.ExistedDuplicateValueException;
 import roomescape.exception.custom.InUseException;
 import roomescape.exception.custom.NotExistedValueException;
-import roomescape.service.dto.CreateReservationTimeRequest;
+import roomescape.service.dto.CreateReservationTimeServiceRequest;
 
 @Service
 public class ReservationTimeService {
@@ -24,7 +24,7 @@ public class ReservationTimeService {
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
-    public ReservationTime addReservationTime(final CreateReservationTimeRequest creation) {
+    public ReservationTime addReservationTime(final CreateReservationTimeServiceRequest creation) {
         validateTimeNotDuplicated(creation);
         final ReservationTime reservationTime = new ReservationTime(creation.startAt());
 
@@ -32,7 +32,7 @@ public class ReservationTimeService {
         return findById(id);
     }
 
-    private void validateTimeNotDuplicated(final CreateReservationTimeRequest creation) {
+    private void validateTimeNotDuplicated(final CreateReservationTimeServiceRequest creation) {
         if (reservationTimeDAO.existsByStartAt(creation.startAt())) {
             throw new ExistedDuplicateValueException("이미 존재하는 예약 가능 시간입니다: %s".formatted(creation.startAt()));
         }

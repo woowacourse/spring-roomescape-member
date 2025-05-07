@@ -17,7 +17,7 @@ import roomescape.controller.dto.response.ReservationTimeResponse;
 import roomescape.domain.reservationtime.AvailableReservationTime;
 import roomescape.domain.reservationtime.ReservationTime;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.CreateReservationTimeRequest;
+import roomescape.service.dto.CreateReservationTimeServiceRequest;
 
 @RequestMapping("/times")
 @RestController
@@ -33,7 +33,7 @@ public class ReservationTimeController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationTimeResponse addReservationTime(
             @RequestBody roomescape.controller.dto.request.CreateReservationTimeRequest request) {
-        final CreateReservationTimeRequest creation = CreateReservationTimeRequest.from(request);
+        final CreateReservationTimeServiceRequest creation = CreateReservationTimeServiceRequest.from(request);
         final ReservationTime savedReservationTime = reservationTimeService.addReservationTime(creation);
         return ReservationTimeResponse.from(savedReservationTime);
     }
