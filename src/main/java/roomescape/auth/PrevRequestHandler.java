@@ -11,8 +11,6 @@ public class PrevRequestHandler implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final List<RequestMatcher> adminRoleRequestMatcher;
-    //bad code
-    private static final String SUPER_ADMIN = "praisebak@naver.com";
 
     public PrevRequestHandler(JwtTokenProvider jwtTokenProvider, List<RequestMatcher> adminRoleRequestMatcher) {
         this.jwtTokenProvider = jwtTokenProvider;
