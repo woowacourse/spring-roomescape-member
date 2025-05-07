@@ -1,33 +1,45 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.dao.FakeMemberDao;
-import roomescape.dao.MemberDao;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.Member;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.AuthenticatedUserResponse;
 import roomescape.exception.LoginFailedException;
+import roomescape.fake.FakeMemberRepository;
+import roomescape.infrastructure.JwtTokenProvider;
 
+@ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-    private final AuthService authService;
-    private final MemberDao memberDao;
+    private AuthService authService;
+    private MemberRepository memberRepository;
 
-    public AuthServiceTest() {
-        this.memberDao = new FakeMemberDao();
-        JwtTokenProvider tokenProvider = new JwtTokenProvider(
-                "secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey",
-                1000000000000L);
-        authService = new AuthService(tokenProvider, memberDao);
+    @Mock
+    private JwtTokenProvider tokenProvider;
+
+    @BeforeEach
+    void setUp() {
+        this.memberRepository = new FakeMemberRepository();
+        this.authService = new AuthService(tokenProvider, memberRepository);
     }
 
     @Test
     void 이메일과_비밀번호로_토큰을_생성한다() {
         // given
         Member member = new Member(null, "name1", "email1@domain.com", "password1");
-        memberDao.save(member);
+        memberRepository.save(member);
+        given(tokenProvider.createToken(any())).willReturn(any());
         LoginRequest request = new LoginRequest("email1@domain.com", "password1");
         // when & then
         assertThatCode(() -> authService.createToken(request)).doesNotThrowAnyException();
@@ -46,10 +58,22 @@ class AuthServiceTest {
     void 잘못된_비밀번호인_경우_예외가_발생한다() {
         // given
         Member member = new Member(null, "name1", "email1@domain.com", "password1");
-        memberDao.save(member);
+        memberRepository.save(member);
         LoginRequest request = new LoginRequest("email1@domain.com", "password2");
         // when & then
         assertThatThrownBy(() -> authService.createToken(request))
                 .isInstanceOf(LoginFailedException.class);
+    }
+
+    @Test
+    void 토큰을_분해해서_사용자_정보를_조회한다() {
+        // given
+        given(tokenProvider.extractSubject("token")).willReturn("1");
+        Member member = new Member(null, "name1", "email1@domain.com", "password1");
+        memberRepository.save(member);
+        // when
+        AuthenticatedUserResponse token = authService.getAuthenticatedUserFromToken("token");
+        // then
+        assertThat(token.name()).isEqualTo("name1");
     }
 }

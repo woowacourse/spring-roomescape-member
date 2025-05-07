@@ -9,9 +9,6 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import roomescape.dao.FakeReservationDao;
-import roomescape.dao.FakeReservationTimeDao;
-import roomescape.dao.FakeThemeDao;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -19,12 +16,15 @@ import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationNotFoundException;
+import roomescape.fake.FakeReservationRepository;
+import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.fake.FakeThemeRepository;
 
 class ReservationServiceTest {
 
-    private FakeReservationDao fakeReservationDao;
-    private FakeReservationTimeDao fakeReservationTimeDao;
-    private FakeThemeDao fakeThemeDao;
+    private FakeReservationRepository fakeReservationDao;
+    private FakeReservationTimeRepository fakeReservationTimeDao;
+    private FakeThemeRepository fakeThemeDao;
     private ReservationService reservationService;
 
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
@@ -39,9 +39,9 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        fakeReservationTimeDao = new FakeReservationTimeDao(fakeReservationTime1, fakeReservationTime2);
-        fakeReservationDao = new FakeReservationDao(fakeReservation1, fakeReservation2);
-        fakeThemeDao = new FakeThemeDao(theme1, theme2);
+        fakeReservationTimeDao = new FakeReservationTimeRepository(fakeReservationTime1, fakeReservationTime2);
+        fakeReservationDao = new FakeReservationRepository(fakeReservation1, fakeReservation2);
+        fakeThemeDao = new FakeThemeRepository(theme1, theme2);
         reservationService = new ReservationService(fakeReservationDao, fakeReservationTimeDao, fakeThemeDao);
     }
 

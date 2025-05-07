@@ -9,20 +9,20 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import roomescape.exception.ExistedReservationException;
 import roomescape.domain.Reservation;
-import roomescape.dao.FakeReservationDao;
 import roomescape.domain.ReservationTime;
-import roomescape.dao.FakeReservationTimeDao;
+import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
-import roomescape.domain.Theme;
+import roomescape.exception.ExistedReservationException;
+import roomescape.fake.FakeReservationRepository;
+import roomescape.fake.FakeReservationTimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest {
 
-    private FakeReservationTimeDao fakeReservationTimeDao;
-    private FakeReservationDao fakeReservationDao;
+    private FakeReservationTimeRepository fakeReservationTimeDao;
+    private FakeReservationRepository fakeReservationDao;
     private ReservationTimeService reservationTimeService;
 
     private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
@@ -36,8 +36,8 @@ class ReservationTimeServiceTest {
 
     @BeforeEach
     void setUp() {
-        fakeReservationTimeDao = new FakeReservationTimeDao(fakeReservationTime1, fakeReservationTime2);
-        fakeReservationDao = new FakeReservationDao(fakeReservation1, fakeReservation2);
+        fakeReservationTimeDao = new FakeReservationTimeRepository(fakeReservationTime1, fakeReservationTime2);
+        fakeReservationDao = new FakeReservationRepository(fakeReservation1, fakeReservation2);
         reservationTimeService = new ReservationTimeService(fakeReservationTimeDao, fakeReservationDao);
     }
 

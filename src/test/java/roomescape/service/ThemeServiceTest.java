@@ -5,23 +5,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import roomescape.dao.FakeThemeDao;
-import roomescape.dao.ThemeDao;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ExistedThemeException;
+import roomescape.fake.FakeThemeRepository;
 
 public class ThemeServiceTest {
 
     private final ThemeService themeService;
-    private final ThemeDao themeDao;
+    private final ThemeRepository themeRepository;
     Theme theme1 = new Theme(1L, "테마1", "description1", "thumbnail1");
     Theme theme2 = new Theme(2L, "테마2", "description2", "thumbnail2");
 
     public ThemeServiceTest() {
-        this.themeDao = new FakeThemeDao(theme1, theme2);
-        this.themeService = new ThemeService(themeDao);
+        this.themeRepository = new FakeThemeRepository(theme1, theme2);
+        this.themeService = new ThemeService(themeRepository);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ThemeServiceTest {
         // when
         themeService.delete(1L);
         // then
-        assertThat(themeDao.findAll()).hasSize(1);
+        assertThat(themeRepository.findAll()).hasSize(1);
     }
 
     @Test
