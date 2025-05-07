@@ -21,10 +21,10 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
-import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -36,6 +36,9 @@ class ReservationIntegrateTest {
     private final String PASSWORD = "pwd";
 
     private String token;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @BeforeEach
     void setUp() {
@@ -207,7 +210,8 @@ class ReservationIntegrateTest {
                 .extract().jsonPath().getLong("id");
 
         // TODO: token을 이용한 member로 변경
-        Member member = new Member(1L, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.findByEmailAndPassword(EMAIL, PASSWORD)
+                .orElse(null);
 
         Reservation reservation1 = new Reservation(null, member, LocalDate.now().minusDays(1),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));

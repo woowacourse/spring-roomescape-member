@@ -66,19 +66,14 @@ class AvailableReservationTimeTest {
                 "thumbnail", "thumbnail"
         );
 
-        Map<String, Object> reservation = Map.of(
-                "name", "브라운",
-                "date", todayDateString,
-                "timeId", 1,
-                "themeId", 1
-        );
 
-        RestAssured.given().log().all()
+        long timeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(timeParam)
                 .when().post("/times")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().jsonPath().getLong("id");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -101,6 +96,12 @@ class AvailableReservationTimeTest {
                 .then().log().all()
                 .statusCode(201)
                 .extract().jsonPath().getLong("id");
+
+        Map<String, Object> reservation = Map.of(
+                "date", todayDateString,
+                "timeId", timeId,
+                "themeId", themeId
+        );
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
