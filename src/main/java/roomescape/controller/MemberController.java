@@ -38,7 +38,6 @@ public class MemberController {
 
         response.addCookie(tokenCookie);
         response.addHeader("Content-Type", "application/json");
-        response.addIntHeader("Keep-Alive", 60);
     }
 
     @GetMapping("/login/check")
