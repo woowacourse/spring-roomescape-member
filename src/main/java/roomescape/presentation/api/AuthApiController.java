@@ -1,7 +1,9 @@
 package roomescape.presentation.api;
 
 import jakarta.validation.Valid;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +32,13 @@ public class AuthApiController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest request) {
         AuthToken authToken = authService.authenticate(request.email(), request.password());
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, "authToken=" + authToken.value());
+        ResponseCookie cookie = ResponseCookie.from("authToken", authToken.value())
+                .httpOnly(true)
+                .sameSite(Cookie.SameSite.STRICT.name())
+                .build();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.noContent().headers(headers).build();
     }
 
