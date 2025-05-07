@@ -1,7 +1,5 @@
 package roomescape.persistence;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.Reservation;
-import roomescape.business.ReservationTheme;
-import roomescape.business.ReservationTime;
+import roomescape.persistence.mapper.ReservationMapper;
 
 @Repository
 public class H2ReservationRepository implements ReservationRepository {
@@ -40,22 +37,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 JOIN theme AS th
                 ON r.time_id = t.id AND r.theme_id = th.id
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new Reservation(
-                        rs.getLong("reservation_id"),
-                        rs.getString("name"),
-                        rs.getObject("date", LocalDate.class),
-                        new ReservationTime(
-                                rs.getLong("time_id"),
-                                rs.getObject("start_at", LocalTime.class)
-                        ),
-                        new ReservationTheme(
-                                rs.getLong("theme_id"),
-                                rs.getString("theme_name"),
-                                rs.getString("description"),
-                                rs.getString("thumbnail")
-                        )
-                )
-        );
+        return jdbcTemplate.query(query, new ReservationMapper());
     }
 
     @Override
@@ -71,24 +53,7 @@ public class H2ReservationRepository implements ReservationRepository {
                 ON r.time_id = t.id AND r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.query(query,
-                        (rs, rowNum) -> new Reservation(
-                                rs.getLong("reservation_id"),
-                                rs.getString("name"),
-                                rs.getObject("date", LocalDate.class),
-                                new ReservationTime(
-                                        rs.getLong("time_id"),
-                                        rs.getObject("start_at", LocalTime.class)
-                                ),
-                                new ReservationTheme(
-                                        rs.getLong("theme_id"),
-                                        rs.getString("theme_name"),
-                                        rs.getString("description"),
-                                        rs.getString("thumbnail")
-                                )
-                        ),
-                        id
-                )
+        return jdbcTemplate.query(query, new ReservationMapper(), id)
                 .stream()
                 .findFirst();
     }
