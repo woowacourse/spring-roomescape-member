@@ -1,3 +1,6 @@
+INSERT INTO member(name, email, password, role) VALUES
+('test', 'test@email.com', '1234', 'ADMIN');
+
 INSERT INTO reservation_time(start_at) VALUES
 ('10:00'),
 ('12:00');

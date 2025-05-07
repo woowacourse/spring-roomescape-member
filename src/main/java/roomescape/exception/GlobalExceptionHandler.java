@@ -1,5 +1,6 @@
 package roomescape.exception;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,15 +29,20 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorMessageResponse> handleNotExistedValueException(NotFoundValueException e) {
+    public ResponseEntity<ErrorMessageResponse> handleNotFoundValueException(NotFoundValueException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorMessageResponse(ERROR_PREFIX + e.getMessage()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorMessageResponse> handlePharmaceuticalViolationException(
-            BusinessRuleViolationException e) {
+    public ResponseEntity<ErrorMessageResponse> handleBusinessRuleViolationException(BusinessRuleViolationException e) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new ErrorMessageResponse(ERROR_PREFIX + e.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorMessageResponse> handleJwtException(JwtException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(ERROR_PREFIX + e.getMessage()));
     }
 }
