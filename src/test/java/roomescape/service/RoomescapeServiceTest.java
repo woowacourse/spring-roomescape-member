@@ -38,7 +38,7 @@ class RoomescapeServiceTest {
         ReservationRequest duplicated = new ReservationRequest("test2", date, 1L, response.timeId());
         assertThatThrownBy(() -> service.addReservation(duplicated))
                 .isInstanceOf(DuplicateReservationException.class)
-                .hasMessage("[ERROR] 이미 존재하는 예약시간입니다.");
+                .hasMessage("[ERROR] 이미 존재하는 예약입니다. 다른 시간을 선택해 주세요.");
 
     }
 
@@ -53,7 +53,7 @@ class RoomescapeServiceTest {
         // then & when
         assertThatThrownBy(() -> service.addReservation(request))
                 .isInstanceOf(PastReservationTimeException.class)
-                .hasMessage("[ERROR] 이전 시각으로 예약할 수 없습니다.");
+                .hasMessage("[ERROR] 현재 시각 이후로 예약해 주세요.");
     }
 
     @DisplayName("존재하지 않는 예약을 삭제하려는 경우 예외를 던진다")
@@ -65,7 +65,7 @@ class RoomescapeServiceTest {
         //when & then
         assertThatThrownBy(() -> service.removeReservation(notExistId))
                 .isInstanceOf(DataNotFoundException.class)
-                .hasMessage("[ERROR] 예약번호 999번은 존재하지 않습니다.");
+                .hasMessage("[ERROR] 예약번호 999번에 해당하는 예약이 없습니다.");
     }
 
 }

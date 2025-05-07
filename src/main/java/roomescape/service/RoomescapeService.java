@@ -13,6 +13,7 @@ import roomescape.dto.ReservationThemeResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
 import roomescape.exception.exception.DataNotFoundException;
+import roomescape.exception.exception.DeletionNotAllowedException;
 import roomescape.exception.exception.DuplicateReservationException;
 import roomescape.exception.exception.PastReservationTimeException;
 import roomescape.repository.RoomescapeRepository;
@@ -86,15 +87,21 @@ public class RoomescapeService {
         }
     }
 
-    public void removeReservationTime(final long id) {
-        if (!roomescapeTimeRepository.deleteById(id)) {
-            throw new DataNotFoundException(String.format("[ERROR] 예약 시간 %d번에 해당하는 시간이 없습니다.", id));
+    public void removeReservationTime(final long timeId) {
+        if (roomescapeRepository.existsByTimeId(timeId)) {
+            throw new DeletionNotAllowedException("[ERROR] 예약이 연결된 시간은 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요.");
+        }
+        if (!roomescapeTimeRepository.deleteById(timeId)) {
+            throw new DataNotFoundException(String.format("[ERROR] 예약 시간 %d번에 해당하는 시간이 없습니다.", timeId));
         }
     }
 
-    public void removeReservationTheme(final long id) {
-        if (!roomescapeThemeRepository.deleteById(id)) {
-            throw new DataNotFoundException(String.format("[ERROR] 예약테마 %d번애 해당하는 테마가 없습니다.", id));
+    public void removeReservationTheme(final long themeId) {
+        if (roomescapeRepository.existsByThemeId(themeId)) {
+            throw new DeletionNotAllowedException("[ERROR] 예약이 연결된 테마는 삭제할 수 없습니다. 관련 예약을 먼저 삭제해주세요.");
+        }
+        if (!roomescapeThemeRepository.deleteById(themeId)) {
+            throw new DataNotFoundException(String.format("[ERROR] 예약 테마 %d번애 해당하는 테마가 없습니다.", themeId));
         }
     }
 
@@ -120,7 +127,7 @@ public class RoomescapeService {
     private ReservationTheme findThemeById(final long themeId) {
         return roomescapeThemeRepository.findById(themeId)
                 .orElseThrow(
-                        () -> new DataNotFoundException(String.format("[ERROR] 예약테마 %d번애 해당하는 테마가 없습니다.", themeId)));
+                        () -> new DataNotFoundException(String.format("[ERROR] 예약 테마 %d번애 해당하는 테마가 없습니다.", themeId)));
     }
 
     private ReservationTime findTimeById(final long timeId) {
