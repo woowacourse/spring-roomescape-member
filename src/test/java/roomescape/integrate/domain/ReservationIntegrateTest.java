@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
+import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.repository.ReservationRepository;
 
@@ -29,6 +31,23 @@ import roomescape.repository.ReservationRepository;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ReservationIntegrateTest {
+
+    private final String EMAIL = "test@test.com";
+    private final String PASSWORD = "pwd";
+
+    private String token;
+
+    @BeforeEach
+    void setUp() {
+        LoginRequest loginRequest = new LoginRequest(EMAIL, PASSWORD);
+
+        token = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when().post("/login")
+                .then().log().all()
+                .extract().cookie("token");
+    }
 
     @Test
     void 예약_추가_테스트() {
@@ -53,6 +72,7 @@ class ReservationIntegrateTest {
 
         long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()
@@ -68,6 +88,7 @@ class ReservationIntegrateTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -97,6 +118,7 @@ class ReservationIntegrateTest {
 
         long themeId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(themeParam)
                 .when().post("/themes")
                 .then().log().all()
@@ -112,6 +134,7 @@ class ReservationIntegrateTest {
 
         long reservationId = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", token)
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
