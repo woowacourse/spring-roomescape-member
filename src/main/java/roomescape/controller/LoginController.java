@@ -1,11 +1,6 @@
 package roomescape.controller;
 
-import java.util.Map;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +28,7 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> loginAndIssueToken(@RequestBody LoginRequest request, HttpServletResponse response) {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
 
@@ -44,7 +39,7 @@ public class LoginController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<Member> checkLogin(@Auth Member member) {
+    public ResponseEntity<Member> checkToken(@Auth Member member) {
         if (member == null) {
             return ResponseEntity.status(401).build();
         }

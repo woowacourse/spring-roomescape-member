@@ -67,7 +67,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void deleteReservation() {
+    void deleteReservationReservation() {
         RestAssured.given().log().all()
                 .when().delete("/reservations/1")
                 .then().log().all()

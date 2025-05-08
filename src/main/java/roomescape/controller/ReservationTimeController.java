@@ -41,12 +41,6 @@ public class ReservationTimeController {
         return ResponseEntity.ok(reservationTimes);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationTimeService.deleteReservationTime(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/search")
     public ResponseEntity<List<ReservationTimeResponseWithBookedStatus>> readAll(
             @RequestParam(required = false) LocalDate date,
@@ -54,5 +48,11 @@ public class ReservationTimeController {
         List<ReservationTimeResponseWithBookedStatus> response = reservationTimeService.readAvailableTimesBy(
                 date, themeId);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        reservationTimeService.deleteReservationTime(id);
+        return ResponseEntity.noContent().build();
     }
 }

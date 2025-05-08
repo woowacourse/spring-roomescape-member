@@ -97,7 +97,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void deleteReservationTest() {
+    void deleteReservationReservationTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
         CreateReservationRequest request = new CreateReservationRequest("히스타", givenDate, 1L, 1L);
@@ -105,7 +105,7 @@ public class ReservationServiceTest {
 
         // when
         List<ReservationResponse> reservationResponsesBeforeDelete = reservationService.readReservations();
-        reservationService.delete(reservationResponsesBeforeDelete.get(0).id());
+        reservationService.deleteReservation(reservationResponsesBeforeDelete.get(0).id());
         List<ReservationResponse> reservationResponsesAfterDelete = reservationService.readReservations();
 
         // then
@@ -158,13 +158,13 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void deleteReservationWithInvalidIdTest() {
+    void deleteReservationReservationWithInvalidIdTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
         CreateReservationRequest request = new CreateReservationRequest("히스타", givenDate, 1L, 1L);
         reservationService.saveReservation(request);
 
         // when
-        Assertions.assertThrows(NotAbleDeleteException.class, () -> reservationService.delete(2L));
+        Assertions.assertThrows(NotAbleDeleteException.class, () -> reservationService.deleteReservation(2L));
     }
 }

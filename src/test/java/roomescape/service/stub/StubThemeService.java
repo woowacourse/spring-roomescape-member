@@ -12,17 +12,17 @@ public class StubThemeService extends ThemeService {
     }
 
     @Override
-    public Theme save(Theme theme) {
+    public Theme saveTheme(Theme theme) {
         return testTheme;
     }
 
     @Override
-    public List<Theme> read() {
+    public List<Theme> readTheme() {
         return List.of(testTheme);
     }
 
     @Override
-    public void delete(Long id) {}
+    public void deleteTheme(Long id) {}
 
     @Override
     public List<Theme> readLists(String orderType, Long listNum) {

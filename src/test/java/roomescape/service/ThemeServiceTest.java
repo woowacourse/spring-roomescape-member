@@ -23,15 +23,15 @@ class ThemeServiceTest {
     }
 
     @Test
-    void saveTest() {
+    void saveThemeTest() {
         // given
         Theme theme = new Theme(1L, "Test Theme", "Test Description", "image.jpg");
 
         // when
-        themeService.save(theme);
+        themeService.saveTheme(theme);
 
         // then
-        List<Theme> themes = themeService.read();
+        List<Theme> themes = themeService.readTheme();
         Assertions.assertAll(
             () -> assertThat(themes).hasSize(1),
             () -> assertThat(themes.getFirst().equals(theme)).isTrue()
@@ -39,15 +39,15 @@ class ThemeServiceTest {
     }
 
     @Test
-    void readTest() {
+    void readThemeTest() {
         // given
         Theme theme1 = new Theme(1L, "Test Theme 1", "Test Description 1", "image1.jpg");
         Theme theme2 = new Theme(2L, "Test Theme 2", "Test Description 2", "image2.jpg");
-        themeService.save(theme1);
-        themeService.save(theme2);
+        themeService.saveTheme(theme1);
+        themeService.saveTheme(theme2);
 
         // when
-        List<Theme> themes = themeService.read();
+        List<Theme> themes = themeService.readTheme();
 
         // then
         Assertions.assertAll(
@@ -58,28 +58,28 @@ class ThemeServiceTest {
     }
 
     @Test
-    void deleteTest() {
+    void deleteThemeTest() {
         // given
         Theme theme = new Theme(1L, "Test Theme", "Test Description", "image.jpg");
-        themeService.save(theme);
+        themeService.saveTheme(theme);
 
         // when
-        themeService.delete(theme.getId());
+        themeService.deleteTheme(theme.getId());
 
         // then
-        List<Theme> themes = themeService.read();
+        List<Theme> themes = themeService.readTheme();
         Assertions.assertAll(
             () -> assertThat(themes).hasSize(0)
         );
     }
 
     @Test
-    void readListsTest() {
+    void readThemeListsTest() {
         // given
         Theme theme1 = new Theme(1L, "Test Theme 1", "Test Description 1", "image1.jpg");
         Theme theme2 = new Theme(2L, "Test Theme 2", "Test Description 2", "image2.jpg");
-        themeService.save(theme1);
-        themeService.save(theme2);
+        themeService.saveTheme(theme1);
+        themeService.saveTheme(theme2);
 
         // when
         List<Theme> themesAsc = themeService.readLists("popular_asc", 10L);

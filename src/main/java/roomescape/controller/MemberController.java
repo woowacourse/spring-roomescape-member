@@ -36,7 +36,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createMember(@RequestBody CreateMemberRequest request) {
+    public ResponseEntity<Void> create(@RequestBody CreateMemberRequest request) {
         Member createdMember = memberService.signUp(request)
                 .orElseThrow(() -> new IllegalArgumentException("이미 존재하는 회원입니다."));
 

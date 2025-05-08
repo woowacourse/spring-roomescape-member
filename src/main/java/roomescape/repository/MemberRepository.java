@@ -13,5 +13,5 @@ public interface MemberRepository {
 
     Optional<Member> findById(Long id);
 
-    List<Member> readMembers();
+    List<Member> readAll();
 }

@@ -39,14 +39,6 @@ public class ReservationService {
     }
 
     public ReservationResponse saveReservation(CreateReservationRequest request) {
-        /*
-         * 1. 멤버 ID가 존재하는 지 확인해야 한다
-         * 2. 예약 시간 ID가 존재하는 지 확인해야 한다
-         * 3. 방탈출 테마 ID가 존재하는 지 확인해야 한다
-         * 4. 과거 시점 검증을 해야한다.
-         * 5. 중복 예약이 아닌지 확인해야 한다.
-         * 이 복잡한 검증 로직을 어떻게 처리할 것인가?
-         */
         Member member = memberRepository.findById(request.memberId())
                 .orElseThrow(() -> new NotFoundMemberException("올바른 멤버가 아닙니다."));
 
@@ -90,7 +82,7 @@ public class ReservationService {
         return reservations.stream().map(ReservationResponse::from).toList();
     }
 
-    public void delete(Long id) {
+    public void deleteReservation(Long id) {
         reservationRepository.delete(id);
     }
 }

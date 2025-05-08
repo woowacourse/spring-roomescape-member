@@ -23,7 +23,7 @@ public class JdbcMemberRepository implements MemberRepository {
                 .usingGeneratedKeyColumns("id");
     }
 
-    public List<Member> readMembers() {
+    public List<Member> readAll() {
         final String query = """
                 SELECT id, name, email
                 FROM member

@@ -15,15 +15,15 @@ public class ThemeService {
         this.themeRepository = themeRepository;
     }
 
-    public Theme save(Theme theme) {
+    public Theme saveTheme(Theme theme) {
         return themeRepository.save(theme);
     }
 
-    public List<Theme> read() {
+    public List<Theme> readTheme() {
         return themeRepository.read();
     }
 
-    public void delete(Long id) {
+    public void deleteTheme(Long id) {
         themeRepository.delete(id);
     }
 

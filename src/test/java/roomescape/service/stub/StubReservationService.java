@@ -23,7 +23,7 @@ public class StubReservationService extends ReservationService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteReservation(Long id) {
     }
 
     @Override

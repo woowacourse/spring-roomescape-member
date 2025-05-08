@@ -1,8 +1,6 @@
 package roomescape.controller;
 
 import java.util.List;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.common.annotation.Auth;
+import roomescape.domain.Member;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.AuthService;
@@ -29,15 +30,8 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<ReservationResponse> createWithToken(@RequestBody CreateReservationRequest createReservationRequest, HttpServletRequest request) {
-        // JWT 토큰에서 사용자 정보 추출
-        Cookie[] cookies = request.getCookies();
-        String memberId = authService.getVerifiedPayloadFrom(cookies)
-                .getSubject();
-
-        CreateReservationRequest requestWithAuthor = CreateReservationRequest.setMember(createReservationRequest,
-                Long.valueOf(memberId));
-
+    public ResponseEntity<ReservationResponse> createByAuth(@Auth Member member, @RequestParam CreateReservationRequest request) {
+        CreateReservationRequest requestWithAuthor = CreateReservationRequest.setMember(request, member.getId());
         ReservationResponse response = reservationService.saveReservation(requestWithAuthor);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -45,7 +39,7 @@ public class ReservationController {
 
     // TODO: 관리자 전용 API - 분리 필요
     @PostMapping("admin/reservations")
-    public ResponseEntity<ReservationResponse> createWithMemberId(@RequestBody CreateReservationRequest request) {
+    public ResponseEntity<ReservationResponse> createByMemberId(@RequestBody CreateReservationRequest request) {
         ReservationResponse response = reservationService.saveReservation(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -57,8 +51,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        reservationService.delete(id);
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+        reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
 }
