@@ -1,0 +1,29 @@
+package roomescape.member.domain;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.experimental.FieldNameConstants;
+import roomescape.common.utils.Validator;
+
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@FieldNameConstants(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode
+public class MemberEmail {
+
+    // TODO: Add email validation logic
+    private final String value;
+
+    public static MemberEmail from(final String name) {
+        validate(name);
+        return new MemberEmail(name);
+    }
+
+    private static void validate(final String value) {
+        Validator.of(MemberEmail.class)
+                .notNullField(MemberEmail.Fields.value, value)
+                .notBlankField(MemberEmail.Fields.value, value.strip());
+    }
+}
