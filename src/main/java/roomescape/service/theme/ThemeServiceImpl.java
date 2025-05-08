@@ -30,7 +30,7 @@ public class ThemeServiceImpl implements ThemeService {
 
     @Override
     public List<ThemeResponse> getAll() {
-        List<ThemeEntity> themes = themeRepository.findAll();
+        List<Theme> themes = themeRepository.findAll();
         return ThemeResponse.from(themes);
     }
 
@@ -49,9 +49,9 @@ public class ThemeServiceImpl implements ThemeService {
         List<Long> themeIds = reservationRepository.findTopThemesByReservationCountBetween(startDate, endDate);
 
         return themeIds.stream().map(themeId -> {
-            ThemeEntity themeEntity = themeRepository.findById(themeId)
+            Theme theme = themeRepository.findById(themeId)
                     .orElseThrow(() -> new ThemeNotFoundException(themeId));
-            return PopularThemeResponse.of(themeEntity);
+            return PopularThemeResponse.of(theme);
         }).toList();
     }
 }

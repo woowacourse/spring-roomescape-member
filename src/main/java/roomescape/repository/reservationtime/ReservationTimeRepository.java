@@ -8,13 +8,13 @@ import roomescape.domain.ReservationTime;
 import roomescape.entity.ReservationTimeEntity;
 
 public interface ReservationTimeRepository {
-    ReservationTimeEntity add(ReservationTime time);
+    ReservationTime add(ReservationTime time);
 
-    List<ReservationTimeEntity> findAll();
+    List<ReservationTime> findAll();
 
     int deleteById(Long id);
 
-    Optional<ReservationTimeEntity> findById(Long timeId);
+    Optional<ReservationTime> findById(Long timeId);
 
     boolean existsByStartAt(@NotNull LocalTime localTime);
 }

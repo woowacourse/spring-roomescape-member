@@ -55,12 +55,12 @@ public class ReservationTimeServiceImpl implements ReservationTimeService {
 
     public List<AvailableTimeResponse> getAvailableTimes(LocalDate date, Long themeId) {
         List<Long> bookedTimeIds = reservationRepository.findTimeIdsByDateAndTheme(date, themeId);
-        List<ReservationTimeEntity> reservationTimeEntities = timeRepository.findAll();
+        List<ReservationTime> reservationTimes = timeRepository.findAll();
 
-        List<AvailableTimeResponse> availableTimeResponses = reservationTimeEntities.stream()
-                .map(timeEntity -> {
-                    boolean alreadyBooked = bookedTimeIds.contains(timeEntity.id());
-                    return AvailableTimeResponse.of(timeEntity, alreadyBooked);
+        List<AvailableTimeResponse> availableTimeResponses = reservationTimes.stream()
+                .map(reservationTime -> {
+                    boolean alreadyBooked = bookedTimeIds.contains(reservationTime.getId());
+                    return AvailableTimeResponse.of(reservationTime, alreadyBooked);
                 })
                 .toList();
 

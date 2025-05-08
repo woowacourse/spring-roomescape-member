@@ -8,7 +8,7 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    private Theme(Long id, String name, String description, String thumbnail) {
+    public Theme(Long id, String name, String description, String thumbnail) {
         validate(name, description, thumbnail);
         this.id = id;
         this.name = name;

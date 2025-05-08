@@ -1,10 +1,10 @@
 package roomescape.repository.member;
 
-import roomescape.entity.MemberEntity;
+import roomescape.domain.Member;
 
 public interface MemberRepository {
 
-    MemberEntity findMember(MemberEntity memberRequest);
+    Member findMember(Member memberRequest);
 
-    MemberEntity findMemberById(Long id);
+    Member findMemberById(Long id);
 }

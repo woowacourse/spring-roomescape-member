@@ -3,6 +3,8 @@ package roomescape.service.reservation;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
 import roomescape.entity.ReservationTimeEntity;
@@ -29,16 +31,16 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public ReservationResponse create(ReservationRequest request) {
-        ReservationTimeEntity timeEntity = timeRepository.findById(request.timeId())
+        ReservationTime reservationTime = timeRepository.findById(request.timeId())
                 .orElseThrow(() -> new ReservationTimeNotFoundException(request.timeId()));
 
-        ThemeEntity themeEntity = themeRepository.findById(request.themeId())
+        Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
 
         Reservation newReservation = new Reservation(request.name(), request.date(),
-                timeEntity.toDomain(), themeEntity.toDomain());
+                reservationTime, theme);
 
-        if (reservationRepository.existsByDateAndTime(request.date(), timeEntity.id())) {
+        if (reservationRepository.existsByDateAndTime(request.date(), reservationTime.getId())) {
             throw new ReservationAlreadyExistsException();
         }
 

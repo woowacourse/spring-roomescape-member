@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTime;
+import roomescape.domain.Theme;
 import roomescape.entity.ReservationEntity;
 import roomescape.entity.ReservationTimeEntity;
 import roomescape.entity.ThemeEntity;
@@ -25,7 +27,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public ReservationEntity add(Reservation reservation) {
+    public Reservation add(Reservation reservation) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", reservation.getName());
         params.put("date", reservation.getDate());
@@ -33,7 +35,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
         params.put("theme_id", reservation.getTheme().getId());
 
         Long id = jdbcInsert.executeAndReturnKey(params).longValue();
-        return ReservationEntity.of(id, reservation);
+        return reservation.withId(id);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class ReservationJdbcRepository implements ReservationRepository {
     }
 
     @Override
-    public List<ReservationEntity> findAll() {
+    public List<Reservation> findAll() {
         String sql = """
                 SELECT
                     r.id AS reservation_id,
@@ -64,23 +66,22 @@ public class ReservationJdbcRepository implements ReservationRepository {
         return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
-                    ReservationTimeEntity reservationTimeEntity = new ReservationTimeEntity(
+                    ReservationTime reservationTime = new ReservationTime(
                             resultSet.getLong("time_id"),
-                            resultSet.getTime("time_value").toLocalTime()
-                    );
+                            resultSet.getTime("time_value").toLocalTime());
 
-                    ThemeEntity themeEntity = new ThemeEntity(
+                    Theme theme = new Theme(
                             resultSet.getLong("theme_id"),
                             resultSet.getString("theme_name"),
                             resultSet.getString("theme_description"),
                             resultSet.getString("theme_thumbnail"));
 
-                    return new ReservationEntity(
+                    return new Reservation(
                             resultSet.getLong("reservation_id"),
                             resultSet.getString("reservation_name"),
                             resultSet.getDate("reservation_date").toLocalDate(),
-                            reservationTimeEntity,
-                            themeEntity
+                            reservationTime,
+                            theme
                     );
                 }
         );

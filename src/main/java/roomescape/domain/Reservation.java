@@ -13,7 +13,7 @@ public class Reservation {
     private final ReservationTime time;
     private final Theme theme;
 
-    private Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
         validate(name, date, time, theme);
         this.id = id;
         this.name = name;
@@ -30,7 +30,7 @@ public class Reservation {
         validateName(name);
         validateDate(date);
         validateTime(time);
-        validateInPast(date, time.getStartAt());
+//        validateInPast(date, time.getStartAt());
         validateTheme(theme);
     }
 
@@ -82,5 +82,9 @@ public class Reservation {
 
     public Theme getTheme() {
         return theme;
+    }
+
+    public Reservation withId(Long id) {
+        return new Reservation(id,name,date,time,theme);
     }
 }

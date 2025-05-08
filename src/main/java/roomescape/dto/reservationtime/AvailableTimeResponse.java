@@ -1,10 +1,11 @@
 package roomescape.dto.reservationtime;
 
 import java.time.LocalTime;
-import roomescape.entity.ReservationTimeEntity;
+import roomescape.domain.ReservationTime;
 
 public record AvailableTimeResponse(Long id, LocalTime startAt, boolean alreadyBooked) {
-    public static AvailableTimeResponse of(ReservationTimeEntity timeEntity, boolean alreadyBooked) {
-        return new AvailableTimeResponse(timeEntity.id(), timeEntity.startAt(), alreadyBooked);
+
+    public static AvailableTimeResponse of(ReservationTime reservationTime, boolean alreadyBooked) {
+        return new AvailableTimeResponse(reservationTime.getId(), reservationTime.getStartAt(), alreadyBooked);
     }
 }

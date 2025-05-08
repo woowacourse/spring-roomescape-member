@@ -4,9 +4,9 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import roomescape.CookieManager;
 import roomescape.JwtTokenProvider;
+import roomescape.domain.Member;
 import roomescape.dto.login.TokenRequest;
 import roomescape.dto.member.MemberResponse;
-import roomescape.entity.MemberEntity;
 import roomescape.repository.member.MemberRepository;
 
 @Service
@@ -21,13 +21,14 @@ public class JwtLoginService implements LoginService {
     }
 
     @Override
-    public MemberEntity findMember(TokenRequest tokenRequest) {
-        return memberRepository.findMember(tokenRequest.toMemberEntity());
+    public Member findMember(TokenRequest tokenRequest) {
+        Member foundMember = memberRepository.findMember(tokenRequest.toMember());
+        return foundMember;
     }
 
     @Override
     public String createToken(TokenRequest tokenRequest) {
-        MemberEntity member = findMember(tokenRequest);
+        Member member = findMember(tokenRequest);
         String token = jwtTokenProvider.createToken(member);
         return token;
     }

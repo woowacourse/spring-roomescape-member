@@ -6,11 +6,11 @@ import roomescape.domain.Reservation;
 import roomescape.entity.ReservationEntity;
 
 public interface ReservationRepository {
-    ReservationEntity add(Reservation reservation);
+    Reservation add(Reservation reservation);
 
     int deleteById(Long id);
 
-    List<ReservationEntity> findAll();
+    List<Reservation> findAll();
 
     boolean existsByDateAndTime(LocalDate date, Long timeId);
 
