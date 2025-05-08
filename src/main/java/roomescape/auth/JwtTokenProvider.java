@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,30 +34,20 @@ public class JwtTokenProvider {
         if (token == null || token.isBlank()) {
             throw new UnAuthorizedException();
         }
-        validateExpirationDate(token);
 
         Claims claims = extractAllClaimsFromToken(token);
         return Long.valueOf(claims.getSubject());
     }
 
-    private void validateExpirationDate(final String token) {
-        if(extractExpirationDateFromToken(token).before(new Date())) {
-            throw new UnAuthorizedException();
-        };
-    }
-
-    private Date extractExpirationDateFromToken(final String token) {
-        Claims claims = extractAllClaimsFromToken(token);
-        return claims.getExpiration();
-    }
-
     private Claims extractAllClaimsFromToken(final String token) {
-        return Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new UnAuthorizedException();
+        }
     }
-
-    //TODO: 토큰 검증 추가
 }
