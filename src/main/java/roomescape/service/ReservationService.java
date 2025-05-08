@@ -62,7 +62,8 @@ public class ReservationService {
         Theme foundTheme = themeDao.findById(reservationRequestDto.themeId())
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 존재하지 않습니다."));
 
-        return reservationRequestDto.convertToReservation(foundTime, foundTheme);
+        // TODO: 수정하기
+        return reservationRequestDto.convertToReservation(foundTime, foundTheme, null);
     }
 
     private void assertReservationIsNotDuplicated(Reservation reservation) {

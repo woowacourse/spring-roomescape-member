@@ -9,7 +9,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import roomescape.dto.request.ReservationRequestDto;
+import roomescape.model.Member;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 
 class ReservationRequestDtoTest {
@@ -30,7 +32,8 @@ class ReservationRequestDtoTest {
         // when & then
         assertThatThrownBy(
                 () -> reservationRequestDto.convertToReservation(new ReservationTime(1L, LocalTime.of(12, 30)),
-                        new Theme(1L, "공포", "무서워요", "image")))
+                        new Theme(1L, "공포", "무서워요", "image"),
+                        new Member(1L, "히로", "example@gmail.com", "password", Role.ADMIN)))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("날짜");
 

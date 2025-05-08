@@ -32,6 +32,7 @@ public class ReservationJdbcDaoTest {
                     resultSet.getString("name"),
                     resultSet.getDate("date").toLocalDate(),
                     null,
+                    null,
                     null
             );
 
@@ -58,7 +59,9 @@ public class ReservationJdbcDaoTest {
         this.reservationTime = new ReservationTime(reservationTimeId, tempReservationTime.getStartAt());
 
         this.date = LocalDate.now().plusDays(1);
-        this.savedReservation = new Reservation("히로", date, reservationTime, theme);
+
+        // TODO: 추후 수정
+        this.savedReservation = new Reservation("히로", date, reservationTime, theme, null);
         this.savedId = saveNewReservation(savedReservation);
     }
 
@@ -82,7 +85,9 @@ public class ReservationJdbcDaoTest {
     @DisplayName("예약을 저장한다")
     void test2() {
         // given
-        Reservation reservation = new Reservation("히로", date, reservationTime, theme);
+
+        // TODO: 추후 수정
+        Reservation reservation = new Reservation("히로", date, reservationTime, theme, null);
 
         // when
         Long savedId = reservationDao.saveReservation(reservation);
@@ -107,7 +112,9 @@ public class ReservationJdbcDaoTest {
     void test3() {
         // when
         Optional<Reservation> foundReservation = reservationDao.findByDateAndTime(
-                new Reservation("히로", this.date, this.reservationTime, this.theme)
+
+                // TODO: 추후 수정
+                new Reservation("히로", this.date, this.reservationTime, this.theme, null)
         );
 
         // then

@@ -21,13 +21,16 @@ public class FakeReservationDao implements ReservationDao {
         Long id = nextId.getAndIncrement();
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
+
+        // TODO: 추후 수정
         Reservation savedReservation = new Reservation(
                 id,
                 reservation.getName(),
                 reservation.getDate(),
                 new ReservationTime(time.getId(), time.getStartAt()),
                 new Theme(theme.getId(), theme.getName(),
-                        theme.getDescription(), theme.getThumbnail())
+                        theme.getDescription(), theme.getThumbnail()),
+                null
         );
         database.put(id, savedReservation);
         return id;

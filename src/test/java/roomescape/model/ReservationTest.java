@@ -14,11 +14,13 @@ class ReservationTest {
         LocalDateTime dateTime = LocalDateTime.now().minusDays(1);
 
         // when & then
+
+        // TODO: 추후 수정
         assertThatThrownBy(() -> new Reservation(
                 "히로",
                 dateTime.toLocalDate(),
                 new ReservationTime(dateTime.toLocalTime()),
-                new Theme(1L, "공포", "무서워요", "image")))
+                new Theme(1L, "공포", "무서워요", "image"), null))
                 .isInstanceOf(IllegalStateException.class);
     }
 }

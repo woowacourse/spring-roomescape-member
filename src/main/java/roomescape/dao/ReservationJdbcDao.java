@@ -9,8 +9,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 
 @Repository
@@ -26,10 +28,16 @@ public class ReservationJdbcDao implements ReservationDao {
                 t.id AS theme_id, 
                 t.name AS theme_name, 
                 t.description AS theme_description, 
-                t.thumbnail AS theme_thumbnail
+                t.thumbnail AS theme_thumbnail,
+                m.id AS member_id,
+                m.name AS member_name,
+                m.email AS member_email,
+                m.password AS member_password,
+                m.role AS member_role
             FROM reservation AS r
             INNER JOIN reservation_time AS rt ON r.time_id = rt.id
             INNER JOIN theme AS t ON t.id = r.theme_id 
+            INNER JOIN member AS m ON m.id = r.member_id 
             """;
 
     private static final RowMapper<Reservation> RESERVATION_ROW_MAPPER = (resultSet, rowNum) ->
@@ -44,7 +52,14 @@ public class ReservationJdbcDao implements ReservationDao {
                             resultSet.getLong("theme_id"),
                             resultSet.getString("theme_name"),
                             resultSet.getString("theme_description"),
-                            resultSet.getString("theme_thumbnail"))
+                            resultSet.getString("theme_thumbnail")),
+                    new Member(
+                            resultSet.getLong("member_id"),
+                            resultSet.getString("member_name"),
+                            resultSet.getString("member_email"),
+                            resultSet.getString("password"),
+                            Role.fromValue(resultSet.getString("role"))
+                    )
             );
 
     private final JdbcTemplate jdbcTemplate;
