@@ -1,18 +1,32 @@
 package roomescape.repository;
 
+import java.util.Optional;
 import javax.sql.DataSource;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.domain.Member;
 import roomescape.domain.RegistrationDetails;
 
 @Repository
 public class JdbcMemberDao implements MemberRepository {
 
+    private static final RowMapper<Member> rowMapper = ((rs, rowNum) -> {
+        String name = rs.getString("name");
+        String email = rs.getString("email");
+        String password = rs.getString("password");
+        return new Member(name, email, password);
+    });
+
+    private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
-    public JdbcMemberDao(DataSource source) {
+    public JdbcMemberDao(JdbcTemplate jdbcTemplate, DataSource source) {
+        this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(source)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
@@ -26,5 +40,25 @@ public class JdbcMemberDao implements MemberRepository {
                 .addValue("password", registrationDetails.password());
 
         jdbcInsert.executeAndReturnKey(params).longValue();
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        String sql = "SELECT * FROM member WHERE email = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Member> findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT * FROM member WHERE email = ? AND password = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sql, rowMapper, email, password));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

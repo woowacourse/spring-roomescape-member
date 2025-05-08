@@ -51,4 +51,9 @@ public class GlobalExceptionHandler {
 
         return GlobalProblemDetail.of(HttpStatus.BAD_REQUEST, errors, request.getRequestURI());
     }
+
+    @ExceptionHandler(InvalidAuthorizationException.class)
+    public ProblemDetail handleUnauthorizedException(InvalidAuthorizationException ex, HttpServletRequest request) {
+        return GlobalProblemDetail.of(HttpStatus.UNAUTHORIZED, List.of(ex.getMessage()), request.getRequestURI());
+    }
 }
