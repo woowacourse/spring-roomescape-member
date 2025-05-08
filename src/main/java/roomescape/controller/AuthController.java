@@ -37,10 +37,7 @@ public class AuthController {
 
     @GetMapping("/check")
     @ResponseStatus(HttpStatus.OK)
-    public CustomerResponseDto loginCheck(HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        CustomerResponseDto customerResponseDto = authService.findByToken(token);
+    public CustomerResponseDto loginCheck(CustomerResponseDto customerResponseDto){
         return customerResponseDto;
     }
 

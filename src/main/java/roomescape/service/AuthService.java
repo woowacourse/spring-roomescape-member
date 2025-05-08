@@ -8,7 +8,7 @@ import roomescape.dao.CustomerDao;
 import roomescape.dto.auth.LoginRequestDto;
 import roomescape.dto.customer.CustomerResponseDto;
 import roomescape.model.Customer;
-import roomescape.util.JwtProvider;
+import roomescape.common.util.JwtProvider;
 
 @Service
 public class AuthService {
