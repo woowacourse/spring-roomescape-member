@@ -1,0 +1,31 @@
+package roomescape.controller;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.customer.LoginRequestDto;
+import roomescape.service.AuthService;
+
+@RestController
+public class AuthController {
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("login")
+    @ResponseStatus(HttpStatus.OK)
+    public void userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        String token = authService.loginAndGenerateToken(loginRequestDto);
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+}
