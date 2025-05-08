@@ -17,11 +17,9 @@ import roomescape.member.presentation.dto.MemberResponse;
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthorizationExtractor authorizationExtractor;
-    private final TokenProvider tokenProvider;
     private final MemberService memberService;
 
-    public MemberArgumentResolver(TokenProvider tokenProvider, MemberService memberService) {
-        this.tokenProvider = tokenProvider;
+    public MemberArgumentResolver(MemberService memberService) {
         this.authorizationExtractor = new CookieAuthorizationExtractor();
         this.memberService = memberService;
     }
