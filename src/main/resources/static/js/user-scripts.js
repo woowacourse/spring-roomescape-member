@@ -73,19 +73,35 @@ function login() {
             password: password
         })
     })
+        // .then(response => {
+        //     if (200 === !response.status) {
+        //         alert('Login failed'); // 로그인 실패 시 경고창 표시
+        //         throw new Error('Login failed');
+        //     }
+        // })
+        // .then(() => {
+        //     updateUIBasedOnLogin(); // UI 업데이트
+        //     window.location.href = '/';
+        // })
+        // .catch(error => {
+        //     console.error('Error during login:', error);
+        // });
+
         .then(response => {
-            if (200 === !response.status) {
-                alert('Login failed'); // 로그인 실패 시 경고창 표시
-                throw new Error('Login failed');
+            if (response.ok) {
+                updateUIBasedOnLogin(); // UI 업데이트
+                window.location.href = '/';
+                return response.json();
             }
         })
         .then(() => {
-            updateUIBasedOnLogin(); // UI 업데이트
-            window.location.href = '/';
+            alert('Login failed'); // 로그인 실패 시 경고창 표시
+            throw new Error('Login failed');
         })
         .catch(error => {
             console.error('Error during login:', error);
         });
+
 }
 
 function signup() {
