@@ -110,3 +110,5 @@ INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-04-30', 3, 1);
 
 INSERT INTO reservation(name, date, time_id, theme_id) VALUES ('mimi', '2025-05-20', 3, 1);
+
+INSERT INTO users(name, email, password) VALUES ('어드민', 'admin@email.com', 'password');

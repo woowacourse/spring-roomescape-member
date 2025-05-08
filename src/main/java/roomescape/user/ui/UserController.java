@@ -1,10 +1,11 @@
-package roomescape.user;
+package roomescape.user.ui;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class UserController {
+
     @GetMapping("/reservation")
     public String showReservation() {
         return "reservation";
@@ -13,5 +14,10 @@ public class UserController {
     @GetMapping
     public String showWeeklyTop10PopularTheme() {
         return "index";
+    }
+
+    @GetMapping("/login")
+    public String showLogin() {
+        return "login";
     }
 }

@@ -14,6 +14,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(value = BusinessException.class)
+    public ResponseEntity<String> handleBusinessException(BusinessException e) {
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(errorCode.getMessage());
+    }
+
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
