@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginRequest;
@@ -37,9 +38,9 @@ class AuthServiceTest {
     @Test
     void 이메일과_비밀번호로_토큰을_생성한다() {
         // given
-        Member member = new Member(null, "name1", "email1@domain.com", "password1");
+        Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member);
-        given(tokenProvider.createToken(any())).willReturn(any());
+        given(tokenProvider.createToken(any(), any(Role.class))).willReturn("token");
         LoginRequest request = new LoginRequest("email1@domain.com", "password1");
         // when & then
         assertThatCode(() -> authService.createToken(request)).doesNotThrowAnyException();
@@ -57,7 +58,7 @@ class AuthServiceTest {
     @Test
     void 잘못된_비밀번호인_경우_예외가_발생한다() {
         // given
-        Member member = new Member(null, "name1", "email1@domain.com", "password1");
+        Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member);
         LoginRequest request = new LoginRequest("email1@domain.com", "password2");
         // when & then
@@ -68,7 +69,7 @@ class AuthServiceTest {
     @Test
     void 토큰을_분해해서_사용자_정보를_조회한다() {
         // given
-        Member member = new Member(null, "name1", "email1@domain.com", "password1");
+        Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member);
         // when
         AuthenticatedUserResponse token = authService.getAuthenticatedUserFromToken(1L);

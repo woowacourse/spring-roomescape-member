@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
 
@@ -22,7 +23,8 @@ public class JdbcMemberRepository implements MemberRepository {
                     rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("email"),
-                    rs.getString("password")
+                    rs.getString("password"),
+                    Role.valueOf(rs.getString("role"))
             );
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -40,7 +42,8 @@ public class JdbcMemberRepository implements MemberRepository {
         Map<String, Object> parameter = Map.of(
                 "name", member.getName(),
                 "email", member.getEmail(),
-                "password", member.getPassword()
+                "password", member.getPassword(),
+                "role", member.getRole().toString()
         );
         long newId = jdbcInsert.executeAndReturnKey(parameter).longValue();
         return member.withId(newId);

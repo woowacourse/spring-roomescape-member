@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -42,7 +43,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
         Theme savedTheme = themeRepository.create(theme);
-        Member member = new Member(null, "name1", "email1@domain.com", "password1");
+        Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
                 savedMember,
@@ -66,7 +67,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
         Theme savedTheme = themeRepository.create(theme);
-        Member member = new Member(null, "포라", "email1@domain.com", "password1");
+        Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
                 savedMember,
@@ -91,7 +92,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
         Theme savedTheme = themeRepository.create(theme);
-        Member member = new Member(null, "name1", "email1@domain.com", "password1");
+        Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
                 savedMember,
@@ -118,7 +119,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
         Theme savedTheme = themeRepository.create(theme);
-        Member member = new Member(null, "포라", "email1@domain.com", "password1");
+        Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
                 savedMember,
@@ -140,7 +141,7 @@ class JdbcReservationRepositoryTest {
         ReservationTime savedReservationTime = reservationTimeRepository.create(reservationTime);
         Theme theme = new Theme(null, "themeName", "des", "th");
         Theme savedTheme = themeRepository.create(theme);
-        Member member = new Member(null, "포라", "email1@domain.com", "password1");
+        Member member = new Member(null, "포라", "email1@domain.com", "password1", Role.MEMBER);
         Member savedMember = memberRepository.save(member);
         Reservation reservation = Reservation.createWithoutId(
                 savedMember,

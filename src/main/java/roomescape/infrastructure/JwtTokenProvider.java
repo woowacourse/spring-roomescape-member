@@ -10,6 +10,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import roomescape.auth.Role;
 import roomescape.exception.ExpiredTokenException;
 import roomescape.exception.InvalidTokenException;
 
@@ -27,9 +28,10 @@ public class JwtTokenProvider {
         this.tokenValidTime = tokenValidTime;
     }
 
-    public String createToken(String payload) {
+    public String createToken(String payload, Role role) {
         return Jwts.builder()
                 .subject(payload)
+                .claim("role", role)
                 .expiration(new Date(System.currentTimeMillis() + tokenValidTime))
                 .signWith(secretKey)
                 .compact();
@@ -43,7 +45,15 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token).getPayload().getSubject();
     }
 
-    public void validateToken(String token) {
+    public Role extractRole(String token) {
+        validateToken(token);
+        return Role.valueOf(Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token).getPayload().get("role", String.class));
+    }
+
+    private void validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
             Date now = new Date();

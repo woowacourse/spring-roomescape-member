@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.repository.MemberRepository;
 
@@ -24,7 +25,7 @@ class AuthControllerTest {
     @Test
     void 로그인_성공() {
         //given
-        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1"));
+        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER));
         Map<String, Object> body = new HashMap<>();
         body.put("email", "email1@domain.com");
         body.put("password", "password1");
@@ -41,7 +42,7 @@ class AuthControllerTest {
     @Test
     void 로그인_비밀번호_불일치로_실패() {
         //given
-        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1"));
+        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER));
         Map<String, Object> body = new HashMap<>();
         body.put("email", "email1@domain.com");
         body.put("password", "password2");
@@ -74,7 +75,7 @@ class AuthControllerTest {
     @Test
     void 인증_정보_조회_성공() {
         //given
-        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1"));
+        memberRepository.save(new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER));
         Map<String, Object> body = Map.of(
                 "email", "email1@domain.com",
                 "password", "password1"

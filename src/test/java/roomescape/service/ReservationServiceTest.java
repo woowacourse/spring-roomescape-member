@@ -9,6 +9,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
@@ -52,17 +53,17 @@ class ReservationServiceTest {
         reservationTimeRepository.create(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
         themeRepository.create(theme1);
-        Member member1 = new Member(1L, "포라", "email1@domain.com", "password1");
+        Member member1 = new Member(1L, "포라", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member1);
         Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
                 reservationTime1, theme1);
         reservationRepository.create(reservation1);
         // when
-        List<ReservationResponse> all = reservationService.findAll();
+        List<ReservationResponse> all = reservationService.findReservations(null);
 
         // then
         assertThat(all.size()).isEqualTo(1);
-        assertThat(all.get(0).name()).isEqualTo("포라");
+        assertThat(all.get(0).memberName()).isEqualTo("포라");
     }
 
     @Test
@@ -72,7 +73,7 @@ class ReservationServiceTest {
         reservationTimeRepository.create(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
         themeRepository.create(theme1);
-        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1");
+        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member1);
         Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
                 reservationTime1, theme1);
@@ -80,9 +81,9 @@ class ReservationServiceTest {
         reservationRepository.create(reservation1);
 
         // then
-        List<ReservationResponse> all = reservationService.findAll();
+        List<ReservationResponse> all = reservationService.findReservations(null);
         assertThat(all.size()).isEqualTo(1);
-        assertThat(all.getLast().name()).isEqualTo("name1");
+        assertThat(all.getLast().memberName()).isEqualTo("name1");
     }
 
     @Test
@@ -92,7 +93,7 @@ class ReservationServiceTest {
         reservationTimeRepository.create(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
         themeRepository.create(theme1);
-        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1");
+        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member1);
         Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
                 reservationTime1, theme1);
@@ -101,7 +102,7 @@ class ReservationServiceTest {
         reservationService.delete(savedReservation.getId());
 
         // then
-        List<ReservationResponse> all = reservationService.findAll();
+        List<ReservationResponse> all = reservationService.findReservations(null);
         assertThat(all.size()).isEqualTo(0);
     }
 
@@ -119,7 +120,7 @@ class ReservationServiceTest {
         reservationTimeRepository.create(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
         themeRepository.create(theme1);
-        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1");
+        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member1);
         Reservation reservation1 = Reservation.of(null, member1, LocalDate.of(2025, 7, 25),
                 reservationTime1, theme1);

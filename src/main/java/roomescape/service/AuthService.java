@@ -25,7 +25,7 @@ public class AuthService {
                 .orElseThrow(LoginFailedException::new);
         member.validatePassword(loginRequest.password());
 
-        return tokenProvider.createToken(String.valueOf(member.getId()));
+        return tokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
     }
 
     public AuthenticatedUserResponse getAuthenticatedUserFromToken(Long memberId) {

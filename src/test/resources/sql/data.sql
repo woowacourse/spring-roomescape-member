@@ -18,14 +18,16 @@ VALUES ('테마4', 'desc4', 'thumb4');
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('테마5', 'desc5', 'thumb5');
 
-INSERT INTO member (name, email, password)
-VALUES ('포비', 'email1@domain.com', 'password1');
-INSERT INTO member (name, email, password)
-VALUES ('포라', 'email2@domain.com', 'password2');
-INSERT INTO member (name, email, password)
-VALUES ('포포', 'email3@domain.com', 'password3');
-INSERT INTO member (name, email, password)
-VALUES ('리사', 'email4@domain.com', 'password4');
+INSERT INTO member (name, email, password, role)
+VALUES ('포비', 'email1@domain.com', 'password1', 'MEMBER');
+INSERT INTO member (name, email, password, role)
+VALUES ('포라', 'email2@domain.com', 'password2', 'MEMBER');
+INSERT INTO member (name, email, password, role)
+VALUES ('포포', 'email3@domain.com', 'password3', 'MEMBER');
+INSERT INTO member (name, email, password, role)
+VALUES ('리사', 'email4@domain.com', 'password4', 'MEMBER');
+INSERT INTO member (name, email, password, role)
+VALUES ('admin', 'admin@domain.com', 'admin', 'ADMIN');
 
 
 INSERT INTO reservation (member_id, date, time_id, theme_id)

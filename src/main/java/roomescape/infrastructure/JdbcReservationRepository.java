@@ -2,6 +2,7 @@ package roomescape.infrastructure;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,11 +14,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.repository.ReservationRepository;
+import roomescape.dto.request.ReservationCondition;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -37,7 +40,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                 resultSet.getLong("member_id"),
                 resultSet.getString("member_name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role"))
         );
         return Reservation.of(
                 resultSet.getLong("id"),
@@ -73,7 +77,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email,
-                    m.password as password
+                    m.password as password,
+                    m.role
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
@@ -122,7 +127,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email,
-                    m.password
+                    m.password,
+                    m.role
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
@@ -152,7 +158,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email,
-                    m.password
+                    m.password,
+                    m.role
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
@@ -188,7 +195,8 @@ public class JdbcReservationRepository implements ReservationRepository {
                     m.id as member_id,
                     m.name as member_name,
                     m.email,
-                    m.password
+                    m.password,
+                    m.role
                 FROM reservation AS r
                 JOIN reservation_time AS rt
                 ON r.time_id = rt.id
@@ -207,5 +215,49 @@ public class JdbcReservationRepository implements ReservationRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Reservation> findByCondition(ReservationCondition cond) {
+        String sql = """
+                SELECT
+                    r.id,
+                    r.date,
+                    rt.id as time_id,
+                    rt.start_at,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description,
+                    t.thumbnail,
+                    m.id as member_id,
+                    m.name as member_name,
+                    m.email,
+                    m.password,
+                    m.role
+                FROM reservation AS r
+                JOIN reservation_time AS rt
+                ON r.time_id = rt.id
+                JOIN theme AS t
+                ON r.theme_id = t.id
+                JOIN member AS m
+                ON r.member_id = m.id
+                WHERE 1 = 1
+                """;
+        StringBuilder sqlBuilder = new StringBuilder(sql);
+        Map<String, Object> parameter = new HashMap<>();
+        if (cond.memberId() != null) {
+            sqlBuilder.append("AND member_id = :memberId");
+            parameter.put("memberId", cond.memberId());
+        }
+        if (cond.themeId() != null) {
+            sqlBuilder.append("AND theme_id = : themeId");
+            parameter.put("themeId", cond.themeId());
+        }
+        if (cond.dateFrom() != null && cond.dateTo() != null) {
+            sqlBuilder.append("AND date BETWEEN :dateFrom AND :dateTo");
+            parameter.put("dateFrom", cond.dateFrom());
+            parameter.put("dateTo", cond.dateTo());
+        }
+        return jdbcTemplate.query(sqlBuilder.toString(), parameter, RESERVATION_ROW_MAPPER);
     }
 }

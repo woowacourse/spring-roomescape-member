@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.auth.Role;
 import roomescape.exception.ArgumentNullException;
 import roomescape.exception.PastDateTimeReservationException;
 
@@ -26,7 +27,7 @@ class ReservationTest {
     @Test
     void 예약날짜가_null일_경우_예외가_발생한다() {
         // given
-        Member member = new Member(1L, "name1", "email1@email.com", "password1");
+        Member member = new Member(1L, "name1", "email1@email.com", "password1", Role.MEMBER);
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
@@ -41,7 +42,7 @@ class ReservationTest {
     @Test
     void 예약시간이_null일_경우_예외가_발생한다() {
         // given
-        Member member = new Member(1L, "name1", "email1@email.com", "password1");
+        Member member = new Member(1L, "name1", "email1@email.com", "password1", Role.MEMBER);
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
@@ -56,7 +57,7 @@ class ReservationTest {
     @Test
     void 지나간_시간에_예약을_생성할_경우_예외가_발생한다() {
         // given
-        Member member = new Member(1L, "name1", "email1@email.com", "password1");
+        Member member = new Member(1L, "name1", "email1@email.com", "password1", Role.MEMBER);
         // when & then
         Reservation reservation = Reservation.createWithoutId(
                 member,
@@ -71,7 +72,7 @@ class ReservationTest {
     @Test
     void 테마가_null일_경우_예외가_발생한다() {
         // given
-        Member member = new Member(1L, "name1", "email1@email.com", "password1");
+        Member member = new Member(1L, "name1", "email1@email.com", "password1", Role.MEMBER);
         // when & then
         Assertions.assertThatThrownBy(
                         () -> Reservation.createWithoutId(
