@@ -5,6 +5,7 @@ import roomescape.auth.entity.User;
 import roomescape.auth.repository.UserRepository;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.LoginResponse;
+import roomescape.exception.unauthorized.UserUnauthorizedException;
 
 @Service
 public class UserAuthService {
@@ -17,7 +18,8 @@ public class UserAuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        User user = new User(1L, request.email(), request.password());
+        User user = userRepository.findByEmailAndPassword(request.email(), request.password())
+                .orElseThrow(UserUnauthorizedException::new);
         String token = jwtTokenProvider.createToken(user);
         return new LoginResponse(token);
     }
