@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 @Repository
 public class JdbcReservationDao implements ReservationDao {
@@ -120,6 +119,31 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        final String sql = """
+                SELECT 
+                    r.id AS id,
+                    r.name AS name,
+                    r.date AS date,
+                
+                    rt.id AS time_id,
+                    rt.start_at AS time_start_at,
+                
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                    INNER JOIN reservation_time AS rt
+                        ON r.time_id = rt.id 
+                    INNER JOIN theme AS t 
+                        ON r.theme_id = t.id
+                WHERE r.date = ? AND r.theme_id = ?
+                """;
+        return jdbcTemplate.query(sql, reservationFullRowMapper, date, themeId);
+    }
+
+    @Override
     public boolean deleteById(final Long id) {
         final String sql = """
                 DELETE FROM reservation 
@@ -140,34 +164,5 @@ public class JdbcReservationDao implements ReservationDao {
                 """;
         final int flag = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
         return flag == 1;
-    }
-
-    @Override
-    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndThemeId(final LocalDate date,
-                                                                                     final Long themeId) {
-        final String sql = """
-                SELECT 
-                    start_at, 
-                    t.id AS time_id,                 
-                    r.id AS reservation_id
-                FROM
-                    reservation_time AS t
-                    LEFT JOIN ( 
-                        SELECT *
-                        FROM reservation
-                        WHERE date = ? and theme_id = ?
-                    ) AS r 
-                    ON t.id = r.time_id
-                """;
-        return jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> new ReservationAvailableTimeResponse(
-                        rs.getString(1),
-                        rs.getLong(2),
-                        rs.getLong(3) != 0
-                ),
-                date,
-                themeId
-        );
     }
 }

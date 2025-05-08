@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import roomescape.business.domain.Reservation;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 public interface ReservationDao {
 
@@ -14,9 +13,9 @@ public interface ReservationDao {
 
     Optional<Reservation> findById(Long id);
 
+    List<Reservation> findByDateAndThemeId(LocalDate date, Long themeId);
+
     boolean deleteById(Long id);
 
     boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
-
-    List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndThemeId(LocalDate date, Long themeId);
 }

@@ -3,6 +3,7 @@ package roomescape.business.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
@@ -88,6 +89,25 @@ public class ReservationService {
     }
 
     public List<ReservationAvailableTimeResponse> findAvailableTimes(final LocalDate date, final Long themeId) {
-        return reservationDao.findAvailableTimesByDateAndThemeId(date, themeId);
+        // 날짜 + 테마에 해당하는 모든 예약 가져오기
+        final List<Reservation> reservations = reservationDao.findByDateAndThemeId(date, themeId);
+
+        // 모든 예약 시간 가져오기
+        final List<PlayTime> playTimes = playTimeDao.findAll();
+
+        // 모든 시간을 순회하면서 예약 시간과 예약이 매칭 = 불가능, 예약 시간과 예약이 미매칭 = 가능
+        final List<ReservationAvailableTimeResponse> availableTimes = new ArrayList<>();
+        for (final PlayTime playTime : playTimes) {
+            boolean isAlreadyBooked = false;
+            for (final Reservation reservation : reservations) {
+                if (reservation.getPlayTime().getId().equals(playTime.getId())) {
+                    isAlreadyBooked = true;
+                    break;
+                }
+            }
+            availableTimes.add(new ReservationAvailableTimeResponse(playTime.getStartAt().toString(), playTime.getId(),
+                    isAlreadyBooked));
+        }
+        return availableTimes;
     }
 }

@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.persistence.dao.ReservationDao;
-import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 public class FakeReservationDao implements ReservationDao {
 
@@ -46,6 +45,12 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
+    public List<Reservation> findByDateAndThemeId(final LocalDate date, final Long themeId) {
+        // TODO: DAO 테스트 추가하면서 페이크 본문 구현
+        return null;
+    }
+
+    @Override
     public boolean deleteById(final Long id) {
         int beforeSize = reservations.size();
         reservations.removeIf(reservation -> reservation.getId().equals(id));
@@ -63,11 +68,5 @@ public class FakeReservationDao implements ReservationDao {
                                 reservation.getPlayTime().getId().equals(timeId) &&
                                 reservation.getTheme().getId().equals(themeId)
                 );
-    }
-
-    @Override
-    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndThemeId(final LocalDate date,
-                                                                                     final Long themeId) {
-        return null;
     }
 }
