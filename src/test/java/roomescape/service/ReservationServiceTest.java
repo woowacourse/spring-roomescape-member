@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -37,14 +38,13 @@ class ReservationServiceTest {
         timeDao.create(time);
 
         ReservationResponse reservation = reservationService.createReservation(new ReservationRequest(
-                "moda", LocalDate.of(2025, 4, 27), 1L, 1L
-        ));
+                LocalDate.of(2025, 4, 27), 1L, 1L
+        ), new LoginMember(1L));
 
         assertAll(
                 () -> assertThat(reservation.id()).isEqualTo(1),
-                () -> assertThat(reservation.name()).isEqualTo("moda"),
                 () -> assertThat(reservation.date()).isEqualTo(LocalDate.of(2025, 4, 27)),
-                () -> assertThat(reservation.time()).isEqualTo(ReservationTimeResponse.from(time))
+                () -> assertThat(reservation.time()).isEqualTo(new ReservationTimeResponse(time))
         );
     }
 

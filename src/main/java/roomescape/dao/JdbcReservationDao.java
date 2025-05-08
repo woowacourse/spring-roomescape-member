@@ -23,7 +23,7 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public List<Reservation> findAll() {
         String sql = """
-                select r.id, r.name as reservation_name, r.date, 
+                select r.id, r.date, 
                     member_id, m.name as member_name, m.email, m.password,
                     time_id, rt.start_at, 
                     theme_id, t.name as theme_name, t.description, t.thumbnail
@@ -41,18 +41,17 @@ public class JdbcReservationDao implements ReservationDao {
     @Override
     public Long create(Reservation newReservation) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "insert into reservation (name, date, member_id, time_id, theme_id) values (?, ?, ?, ?, ?)";
+        String sql = "insert into reservation (date, member_id, time_id, theme_id) values (?, ?, ?, ?)";
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(
                             sql,
                             new String[]{"id"}
                     );
-                    ps.setString(1, newReservation.getName());
-                    ps.setObject(2, newReservation.getDate());
-                    ps.setLong(3, newReservation.getMember().getId());
-                    ps.setLong(4, newReservation.getTime().getId());
-                    ps.setLong(5, newReservation.getTheme().getId());
+                    ps.setObject(1, newReservation.getDate());
+                    ps.setLong(2, newReservation.getMember().getId());
+                    ps.setLong(3, newReservation.getTime().getId());
+                    ps.setLong(4, newReservation.getTheme().getId());
                     return ps;
                 },
                 keyHolder

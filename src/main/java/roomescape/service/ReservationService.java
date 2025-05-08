@@ -2,6 +2,7 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
+import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
@@ -35,8 +36,8 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse createReservation(ReservationRequest reservationRequest) {
-        Member member = memberDao.findById(reservationRequest.memberId());
+    public ReservationResponse createReservation(ReservationRequest reservationRequest, LoginMember memberInfo) {
+        Member member = memberDao.findById(memberInfo.getId());
         ReservationTime reservationTime = reservationTimeDao.findById(reservationRequest.timeId());
         Theme theme = themeDao.findById(reservationRequest.themeId());
         Reservation reservationWithoutId = reservationRequest.toReservationWith(member, reservationTime, theme);
