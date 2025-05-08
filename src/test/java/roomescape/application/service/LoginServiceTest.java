@@ -7,12 +7,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import roomescape.application.dto.LoginRequest;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
@@ -25,6 +27,12 @@ class LoginServiceTest {
 
     @Mock
     private MemberDao memberDao;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(loginService, "secretKey",
+                "HabQK/WQPor/4qDcxy4Nw8gzdixE/sIEsieNlVmzR554kzF5EyMCL6de3TSsW4AsVQ+87rxaymg9HbYSopAngw==");
+    }
 
     @Test
     @DisplayName("일치하는 회원인 경우 토큰을 반환한다")
