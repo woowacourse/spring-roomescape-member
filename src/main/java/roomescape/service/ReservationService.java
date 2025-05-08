@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import roomescape.dto.request.CreateReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 import lombok.RequiredArgsConstructor;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
@@ -12,8 +14,6 @@ import roomescape.domain.ReservationTime;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationThemeRepository;
 import roomescape.repository.ReservationTimeRepository;
-import roomescape.service.dto.request.CreateReservationServiceRequest;
-import roomescape.service.dto.response.ReservationServiceResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ReservationThemeRepository reservationThemeRepository;
 
-    public ReservationServiceResponse create(CreateReservationServiceRequest request) {
+    public ReservationResponse create(CreateReservationRequest request) {
         ReservationTime reservationTime = reservationTimeRepository.getById(request.timeId());
         LocalDateTime requestedDateTime = LocalDateTime.of(request.date(), reservationTime.startAt());
         if (requestedDateTime.isBefore(LocalDateTime.now())) {
@@ -35,13 +35,13 @@ public class ReservationService {
         ReservationTheme reservationTheme = reservationThemeRepository.getById(request.themeId());
         Reservation reservation = request.toReservation(reservationTime, reservationTheme);
         Reservation savedReservation = reservationRepository.save(reservation);
-        return ReservationServiceResponse.from(savedReservation);
+        return ReservationResponse.from(savedReservation);
     }
 
-    public List<ReservationServiceResponse> getAll() {
+    public List<ReservationResponse> getAll() {
         List<Reservation> reservations = reservationRepository.getAll();
         return reservations.stream()
-                .map(ReservationServiceResponse::from)
+                .map(ReservationResponse::from)
                 .toList();
     }
 

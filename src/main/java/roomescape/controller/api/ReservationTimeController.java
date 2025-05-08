@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.dto.request.CreateReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import lombok.RequiredArgsConstructor;
-import roomescape.controller.api.dto.request.CreateReservationTimeRequest;
-import roomescape.controller.api.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
-import roomescape.service.dto.response.ReservationTimeServiceResponse;
 
 @RestController
 @RequestMapping("/times")
@@ -29,19 +28,14 @@ public class ReservationTimeController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ReservationTimeResponse create(
-            @RequestBody CreateReservationTimeRequest request) {
-        ReservationTimeServiceResponse response = reservationTimeService.create(request.toServiceRequest());
-        return ReservationTimeResponse.from(response);
+    public ReservationTimeResponse create(@RequestBody CreateReservationTimeRequest request) {
+        return reservationTimeService.create(request);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationTimeResponse> getAll() {
-        List<ReservationTimeServiceResponse> reservationTimes = reservationTimeService.getAll();
-        return reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+        return reservationTimeService.getAll();
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -50,10 +44,7 @@ public class ReservationTimeController {
             @RequestParam(value = "themeId") Long themeId,
             @RequestParam(value = "date") LocalDate date
     ) {
-        List<ReservationTimeServiceResponse> reservationTimes = reservationTimeService.getAllByThemeIdAndDate(themeId, date);
-        return reservationTimes.stream()
-                .map(ReservationTimeResponse::from)
-                .toList();
+        return reservationTimeService.getAllByThemeIdAndDate(themeId, date);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.dto.request.CreateReservationThemeRequest;
+import roomescape.dto.response.ReservationThemeResponse;
 import lombok.RequiredArgsConstructor;
-import roomescape.controller.api.dto.request.CreateReservationThemeRequest;
-import roomescape.controller.api.dto.response.ReservationThemeResponse;
 import roomescape.service.ReservationThemeService;
-import roomescape.service.dto.response.ReservationThemeServiceResponse;
 
 @RestController
 @RequestMapping("/themes")
@@ -29,17 +28,13 @@ public class ReservationThemeController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ReservationThemeResponse create(@RequestBody CreateReservationThemeRequest request) {
-        ReservationThemeServiceResponse response = reservationThemeService.create(request.toServiceRequest());
-        return ReservationThemeResponse.from(response);
+        return reservationThemeService.create(request);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<ReservationThemeResponse> getAll() {
-        List<ReservationThemeServiceResponse> reservationThemes = reservationThemeService.getAll();
-        return reservationThemes.stream()
-                .map(ReservationThemeResponse::from)
-                .toList();
+        return reservationThemeService.getAll();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -51,9 +46,6 @@ public class ReservationThemeController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/popular")
     public List<ReservationThemeResponse> getPopularThemes(@RequestParam(value = "limit", defaultValue = "10") int limit) {
-        List<ReservationThemeServiceResponse> responses = reservationThemeService.getPopularThemes(limit);
-        return responses.stream()
-                .map(ReservationThemeResponse::from)
-                .toList();
+        return reservationThemeService.getPopularThemes(limit);
     }
 }

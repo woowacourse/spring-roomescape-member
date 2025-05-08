@@ -15,13 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.dto.request.CreateReservationThemeRequest;
+import roomescape.dto.response.ReservationThemeResponse;
 import roomescape.DataBasedTest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DBFKException;
-import roomescape.service.dto.request.CreateReservationThemeServiceRequest;
-import roomescape.service.dto.response.ReservationThemeServiceResponse;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationThemeRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationThemeServiceTest extends DataBasedTest {
@@ -41,7 +44,7 @@ class ReservationThemeServiceTest extends DataBasedTest {
     @Test
     void create() {
         // given
-        CreateReservationThemeServiceRequest request = new CreateReservationThemeServiceRequest("theme", "desc",
+        CreateReservationThemeRequest request = new CreateReservationThemeRequest("theme", "desc",
                 "thumb");
 
         // when
@@ -54,7 +57,7 @@ class ReservationThemeServiceTest extends DataBasedTest {
     @Test
     void getAll() {
         // when
-        List<ReservationThemeServiceResponse> responses = reservationThemeService.getAll();
+        List<ReservationThemeResponse> responses = reservationThemeService.getAll();
 
         // then
         assertThat(reservationThemeRepository.getAll()).hasSize(responses.size());
@@ -114,7 +117,7 @@ class ReservationThemeServiceTest extends DataBasedTest {
         reservationRepository.save(new Reservation("moko", LocalDate.now().plusDays(6), time, theme3));
 
         // when
-        List<ReservationThemeServiceResponse> popularThemes = reservationThemeService.getPopularThemes(3);
+        List<ReservationThemeResponse> popularThemes = reservationThemeService.getPopularThemes(3);
 
         // then
         assertThat(popularThemes.get(0).id()).isEqualTo(theme3.id());

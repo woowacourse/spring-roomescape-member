@@ -1,5 +1,6 @@
 package roomescape.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static roomescape.constant.TestData.RESERVATION_COUNT;
 
@@ -13,11 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.dto.request.CreateReservationRequest;
+import roomescape.dto.response.ReservationResponse;
 import roomescape.DataBasedTest;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.service.dto.request.CreateReservationServiceRequest;
-import roomescape.service.dto.response.ReservationServiceResponse;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationThemeRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationServiceTest extends DataBasedTest {
@@ -39,7 +43,7 @@ class ReservationServiceTest extends DataBasedTest {
         // given
         ReservationTime time = reservationTimeRepository.save(new ReservationTime(LocalTime.now()));
         ReservationTheme theme = reservationThemeRepository.save(new ReservationTheme("theme", "desc", "thumb"));
-        CreateReservationServiceRequest request = new CreateReservationServiceRequest("moko",
+        CreateReservationRequest request = new CreateReservationRequest("moko",
                 LocalDate.now().plusDays(1), time.id(), theme.id());
 
         // when
@@ -52,7 +56,7 @@ class ReservationServiceTest extends DataBasedTest {
     @Test
     void getAll() {
         // when
-        List<ReservationServiceResponse> responses = reservationService.getAll();
+        List<ReservationResponse> responses = reservationService.getAll();
 
         // then
         assertThat(reservationRepository.getAll()).hasSize(responses.size());

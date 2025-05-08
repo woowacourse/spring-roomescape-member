@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.LoginCheckResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import roomescape.auth.UserId;
-import roomescape.controller.api.dto.request.LoginRequest;
-import roomescape.controller.api.dto.response.LoginCheckResponse;
 import roomescape.service.UserService;
 
 @RestController
@@ -39,7 +39,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String token = userService.login(request.toServiceRequest());
+        String token = userService.login(request);
         Cookie cookie = new Cookie("token", token);
         // cookie.setPath("/");
         // cookie.setHttpOnly(true);

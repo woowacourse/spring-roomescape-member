@@ -1,8 +1,8 @@
-package roomescape.service.dto.request;
+package roomescape.dto.request;
 
 import roomescape.domain.ReservationTheme;
 
-public record CreateReservationThemeServiceRequest(
+public record CreateReservationThemeRequest(
         String name,
         String description,
         String thumbnail

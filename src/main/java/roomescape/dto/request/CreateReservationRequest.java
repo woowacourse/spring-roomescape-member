@@ -1,8 +1,10 @@
-package roomescape.controller.api.dto.request;
+package roomescape.dto.request;
 
 import java.time.LocalDate;
 
-import roomescape.service.dto.request.CreateReservationServiceRequest;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationTheme;
+import roomescape.domain.ReservationTime;
 
 public record CreateReservationRequest(
         String name,
@@ -26,7 +28,7 @@ public record CreateReservationRequest(
         }
     }
 
-    public CreateReservationServiceRequest toServiceRequest() {
-        return new CreateReservationServiceRequest(name, date, timeId, themeId);
+    public Reservation toReservation(ReservationTime reservationTime, ReservationTheme reservationTheme) {
+        return new Reservation(name, date, reservationTime, reservationTheme);
     }
 }

@@ -16,13 +16,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import roomescape.dto.request.CreateReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.DataBasedTest;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DBFKException;
-import roomescape.service.dto.request.CreateReservationTimeServiceRequest;
-import roomescape.service.dto.response.ReservationTimeServiceResponse;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ReservationThemeRepository;
+import roomescape.repository.ReservationTimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest extends DataBasedTest {
@@ -44,7 +47,7 @@ class ReservationTimeServiceTest extends DataBasedTest {
     @Test
     void create() {
         // given
-        CreateReservationTimeServiceRequest request = new CreateReservationTimeServiceRequest(LocalTime.now());
+        CreateReservationTimeRequest request = new CreateReservationTimeRequest(LocalTime.now());
 
         // when
         reservationTimeService.create(request);
@@ -56,7 +59,7 @@ class ReservationTimeServiceTest extends DataBasedTest {
     @Test
     void getAll() {
         // when
-        List<ReservationTimeServiceResponse> responses = reservationTimeService.getAll();
+        List<ReservationTimeResponse> responses = reservationTimeService.getAll();
 
         // then
         assertThat(reservationTimeRepository.getAll()).hasSize(responses.size());
@@ -72,7 +75,7 @@ class ReservationTimeServiceTest extends DataBasedTest {
         reservationRepository.save(new Reservation("moko", date, time1, theme));
 
         // when
-        List<ReservationTimeServiceResponse> all = reservationTimeService.getAllByThemeIdAndDate(theme.id(), date);
+        List<ReservationTimeResponse> all = reservationTimeService.getAllByThemeIdAndDate(theme.id(), date);
 
         // then
         assertThat(all).hasSize(RESERVATION_TIME_COUNT + 2);
@@ -80,7 +83,7 @@ class ReservationTimeServiceTest extends DataBasedTest {
         assertThat(findById(all, time2.id()).isBooked()).isFalse();
     }
 
-    private ReservationTimeServiceResponse findById(List<ReservationTimeServiceResponse> all, Long id) {
+    private ReservationTimeResponse findById(List<ReservationTimeResponse> all, Long id) {
         return all.stream()
                 .filter(response -> Objects.equals(response.id(), id))
                 .findAny()
