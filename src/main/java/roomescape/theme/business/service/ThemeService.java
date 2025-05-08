@@ -38,7 +38,7 @@ public class ThemeService {
     }
 
     public void deleteById(Long id) {
-        if (reservationDao.existByTimeId(id)) {
+        if (reservationDao.existByThemeId(id)) {
             throw new BadRequestException("이 테마의 예약이 존재합니다.");
         }
         int affectedRows = themeDao.deleteById(id);

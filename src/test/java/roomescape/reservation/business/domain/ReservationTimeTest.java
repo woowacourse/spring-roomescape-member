@@ -1,4 +1,4 @@
-package roomescape.business.model.entity;
+package roomescape.reservation.business.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.time.Duration;
 import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
-import roomescape.reservation.business.model.entity.ReservationTime;
 
 class ReservationTimeTest {
 

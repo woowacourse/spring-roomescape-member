@@ -16,7 +16,7 @@ import roomescape.reservation.business.domain.ReservationTime;
 import roomescape.reservation.business.repository.ReservationDao;
 import roomescape.reservation.business.repository.ReservationTimeDao;
 import roomescape.reservation.presentation.request.AdminReservationRequest;
-import roomescape.reservation.presentation.request.UserReservationRequest;
+import roomescape.reservation.presentation.request.MemberReservationRequest;
 import roomescape.reservation.presentation.response.AvailableReservationTimeResponse;
 import roomescape.reservation.presentation.response.ReservationResponse;
 import roomescape.theme.business.domain.Theme;
@@ -46,20 +46,12 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse add(UserReservationRequest request, Long memberId) {
-        ReservationTime reservationTime = getReservationTime(request.timeId());
-        Theme theme = getTheme(request.themeId());
-        Member member = getMember(memberId);
+    public ReservationResponse addMemberReservation(MemberReservationRequest request, Long memberId) {
+        return addReservation(request.timeId(), request.themeId(), memberId, request.date());
+    }
 
-        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(request.date(),
-                request.themeId());
-
-        validateIsBooked(sameTimeReservations, reservationTime, theme);
-        validatePastDateTime(request.date(), reservationTime.getStartAt());
-
-        Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
-        Reservation saved = reservationDao.save(reservation);
-        return ReservationResponse.of(saved);
+    public ReservationResponse addAdminReservation(AdminReservationRequest request) {
+        return addReservation(request.timeId(), request.themeId(), request.memberId(), request.date());
     }
 
     public void deleteById(Long id) {
@@ -71,25 +63,37 @@ public class ReservationService {
 
     public List<AvailableReservationTimeResponse> findAvailableReservationTime(Long themeId, String date) {
         List<ReservationTime> reservationTimes = reservationTimeDao.findAll();
-        Theme selectedTheme = themeDao.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다."));
+        Theme selectedTheme = getTheme(themeId);
         List<Reservation> bookedReservations = reservationDao.findByDateAndThemeId(LocalDate.parse(date), themeId);
         return getAvailableReservationTimeResponses(reservationTimes, bookedReservations, selectedTheme);
     }
 
-    private ReservationTime getReservationTime(Long timeId) {
-        return reservationTimeDao.findById(timeId)
-                .orElseThrow(() -> new NotFoundException("선택한 예약 시간이 존재하지 않습니다."));
+    public List<ReservationResponse> findReservationByTimeAndDateInDuration(
+            final long themeId,
+            final long memberId,
+            final LocalDate start,
+            final LocalDate end
+    ) {
+        List<Reservation> reservations = reservationDao
+                .findByThemeIdAndMemberIdInDuration(themeId, memberId, start, end);
+        return reservations.stream()
+                .map(ReservationResponse::of)
+                .toList();
     }
 
-    private Theme getTheme(Long themeId) {
-        return themeDao.findById(themeId)
-                .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다."));
-    }
+    private ReservationResponse addReservation(Long timeId, Long themeId, Long memberId, LocalDate date) {
+        ReservationTime reservationTime = getReservationTime(timeId);
+        Theme theme = getTheme(themeId);
+        Member member = getMember(memberId);
 
-    private Member getMember(Long memberId) {
-        return memberDao.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("선택한 멤버가 존재하지 않습니다."));
+        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(date, themeId);
+
+        validateIsBooked(sameTimeReservations, reservationTime, theme);
+        validatePastDateTime(date, reservationTime.getStartAt());
+
+        Reservation reservation = new Reservation(date, reservationTime, theme, member);
+        Reservation saved = reservationDao.save(reservation);
+        return ReservationResponse.of(saved);
     }
 
     private void validateIsBooked(List<Reservation> sameTimeReservations, ReservationTime reservationTime,
@@ -110,41 +114,33 @@ public class ReservationService {
     }
 
     private List<AvailableReservationTimeResponse> getAvailableReservationTimeResponses(
-            List<ReservationTime> reservationTimes, List<Reservation> bookedReservations, Theme selectedTheme) {
+            List<ReservationTime> reservationTimes,
+            List<Reservation> bookedReservations,
+            Theme selectedTheme
+    ) {
         List<AvailableReservationTimeResponse> responses = new ArrayList<>();
         for (ReservationTime reservationTime : reservationTimes) {
             boolean isBooked = bookedReservations.stream()
                     .anyMatch(reservation -> reservation.hasConflictWith(reservationTime, selectedTheme));
-            AvailableReservationTimeResponse response = AvailableReservationTimeResponse.from(reservationTime,
-                    isBooked);
+            AvailableReservationTimeResponse response = AvailableReservationTimeResponse
+                    .from(reservationTime, isBooked);
             responses.add(response);
         }
         return responses;
     }
 
-    public ReservationResponse addAdminReservation(AdminReservationRequest request) {
-        ReservationTime reservationTime = getReservationTime(request.timeId());
-        Theme theme = getTheme(request.themeId());
-        Member member = getMember(request.memberId());
-
-        List<Reservation> sameTimeReservations = reservationDao.findByDateAndThemeId(request.date(),
-                request.themeId());
-
-        validateIsBooked(sameTimeReservations, reservationTime, theme);
-        validatePastDateTime(request.date(), reservationTime.getStartAt());
-
-        Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
-        Reservation saved = reservationDao.save(reservation);
-        return ReservationResponse.of(saved);
+    private ReservationTime getReservationTime(Long timeId) {
+        return reservationTimeDao.findById(timeId)
+                .orElseThrow(() -> new NotFoundException("선택한 예약 시간이 존재하지 않습니다."));
     }
 
-    public List<ReservationResponse> findReservationByTimeAndDateInDuration(final long themeId, final long memberId,
-                                                                            final LocalDate start,
-                                                                            final LocalDate end) {
-        List<Reservation> reservations = reservationDao.findByThemeIdAndMemberIdInDuration(themeId, memberId, start,
-                end);
-        return reservations.stream()
-                .map(ReservationResponse::of)
-                .toList();
+    private Theme getTheme(Long themeId) {
+        return themeDao.findById(themeId)
+                .orElseThrow(() -> new NotFoundException("선택한 테마가 존재하지 않습니다."));
+    }
+
+    private Member getMember(Long memberId) {
+        return memberDao.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("선택한 멤버가 존재하지 않습니다."));
     }
 }

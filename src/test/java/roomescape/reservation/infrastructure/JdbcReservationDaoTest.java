@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.reservation.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -15,17 +15,18 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.reservation.business.model.entity.Reservation;
-import roomescape.reservation.business.model.entity.ReservationTime;
-import roomescape.theme.business.model.entity.Theme;
-import roomescape.reservation.business.model.repository.ReservationDao;
-import roomescape.reservation.infrastructure.ReservationDaoImpl;
+import roomescape.member.business.domain.Member;
+import roomescape.member.business.domain.Role;
+import roomescape.reservation.business.domain.Reservation;
+import roomescape.reservation.business.domain.ReservationTime;
+import roomescape.reservation.business.repository.ReservationDao;
+import roomescape.theme.business.domain.Theme;
 
 @JdbcTest
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationDaoImplTest {
+class JdbcReservationDaoTest {
 
     private ReservationDao reservationDao;
 
@@ -34,7 +35,7 @@ class ReservationDaoImplTest {
 
     @BeforeEach
     void setUp() {
-        reservationDao = new ReservationDaoImpl(jdbcTemplate);
+        reservationDao = new JdbcReservationDao(jdbcTemplate);
     }
 
     @Test
@@ -46,15 +47,20 @@ class ReservationDaoImplTest {
 
     @Test
     void 예약을_추가한다() {
-        Reservation reservation = new Reservation("드라고", LocalDate.now().plusDays(1),
+        Reservation reservation = new Reservation(
+                LocalDate.now().plusDays(1),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
-                new Theme(1L, "", "", ""));
+                new Theme(1L, "", "", ""),
+                new Member(1L, "엠제이", "", "", Role.MEMBER)
+        );
 
         Reservation saved = reservationDao.save(reservation);
 
-        Reservation expected = new Reservation(7L, "드라고", LocalDate.now().plusDays(1),
+        Reservation expected = new Reservation(7L, LocalDate.now().plusDays(1),
                 new ReservationTime(1L, LocalTime.of(10, 0)),
-                new Theme(1L, "", "", ""));
+                new Theme(1L, "", "", ""),
+                new Member(1L, "엠제이", "", "", Role.MEMBER)
+        );
         assertThat(saved).isEqualTo(expected);
     }
 
@@ -71,9 +77,12 @@ class ReservationDaoImplTest {
         Optional<Reservation> findReservation = reservationDao.findById(1L);
 
         assertThat(findReservation.get())
-                .isEqualTo(new Reservation(1L, "드라고", LocalDate.now().plusDays(1),
-                        new ReservationTime(1L, LocalTime.of(10, 0)),
-                        new Theme(1L, "", "", "")));
+                .isEqualTo(new Reservation(1L, LocalDate.now().plusDays(1),
+                                new ReservationTime(1L, LocalTime.of(10, 0)),
+                                new Theme(1L, "", "", ""),
+                                new Member(1L, "엠제이", "", "", Role.MEMBER)
+                        )
+                );
     }
 
     @Test
@@ -89,11 +98,24 @@ class ReservationDaoImplTest {
         List<Reservation> findReservation = reservationDao.findByDateAndThemeId(LocalDate.now().minusDays(4), 2L);
 
         List<Reservation> expected = List.of(
-                new Reservation(2L, "", LocalDate.now().minusDays(4),
+                new Reservation(
+                        2L,
+                        LocalDate.now().minusDays(4),
                         new ReservationTime(2L, LocalTime.of(12, 0)),
-                        new Theme(2L, "", "", "")
+                        new Theme(2L, "", "", ""),
+                        new Member(1L, "엠제이", "", "", Role.MEMBER)
                 )
         );
         assertThat(findReservation).isEqualTo(expected);
+    }
+
+    @Test
+    void theme_id와_member_id로_기간에_해당하는_예약을_조회한다() {
+        // given
+        final List<Reservation> findReservations = reservationDao.findByThemeIdAndMemberIdInDuration(2, 1,
+                LocalDate.now().minusDays(5), LocalDate.now().minusDays(1));
+
+        // when & then
+        assertThat(findReservations).hasSize(2);
     }
 }

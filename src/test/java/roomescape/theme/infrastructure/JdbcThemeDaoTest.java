@@ -1,4 +1,4 @@
-package roomescape.infrastructure;
+package roomescape.theme.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -12,15 +12,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.theme.business.model.entity.Theme;
-import roomescape.theme.business.model.repository.ThemeDao;
-import roomescape.theme.infrastructure.ThemeDaoImpl;
+import roomescape.theme.business.domain.Theme;
+import roomescape.theme.business.repository.ThemeDao;
 
 @JdbcTest
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeDaoImplTest {
+class JdbcThemeDaoTest {
 
     private ThemeDao themeDao;
 
@@ -29,7 +28,7 @@ class ThemeDaoImplTest {
 
     @BeforeEach
     public void setUp() {
-        themeDao = new ThemeDaoImpl(jdbcTemplate);
+        themeDao = new JdbcThemeDao(jdbcTemplate);
     }
 
     @Test
