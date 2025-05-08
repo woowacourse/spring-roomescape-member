@@ -18,7 +18,7 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long save(final Theme theme) {
+    public Long insert(final Theme theme) {
         long id = atomicLong.getAndIncrement();
         final Theme savedTheme = new Theme(
                 id,
@@ -31,24 +31,19 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Optional<Theme> find(final Long id) {
+    public List<Theme> findAll() {
+        return Collections.unmodifiableList(themes);
+    }
+
+    @Override
+    public Optional<Theme> findById(final Long id) {
         return themes.stream()
                 .filter(theme -> theme.getId().equals(id))
                 .findFirst();
     }
 
     @Override
-    public List<Theme> findPopularThemesBetween(final String startDate, final String endDate) {
-        return List.of();
-    }
-
-    @Override
-    public List<Theme> findAll() {
-        return Collections.unmodifiableList(themes);
-    }
-
-    @Override
-    public boolean remove(final Long id) {
+    public boolean deleteById(final Long id) {
         final int beforeSize = themes.size();
         themes.removeIf(theme -> theme.getId().equals(id));
         final int afterSize = themes.size();
@@ -58,6 +53,12 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public boolean existsByName(final String name) {
-        return false;
+        return themes.stream()
+                .anyMatch(theme -> theme.getName().equals(name));
+    }
+
+    @Override
+    public List<Theme> findPopularThemesBetween(final String startDate, final String endDate) {
+        return null;
     }
 }

@@ -38,7 +38,7 @@ public class ReservationServiceTest {
                 new PlayTime(1L, FORMATTED_MAX_LOCAL_TIME)
         );
         final ThemeDao fakeThemeDao = new FakeThemeDao();
-        fakeThemeDao.save(
+        fakeThemeDao.insert(
                 new Theme(1L, "테마", "소개", "썸네일")
         );
         reservationService = new ReservationService(

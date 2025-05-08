@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.Theme;
+import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.persistence.dao.ThemeDao;
 import roomescape.presentation.dto.ThemeRequest;
@@ -21,13 +22,13 @@ public class ThemeService {
     public ThemeResponse insert(final ThemeRequest themeRequest) {
         validateNameIsNotDuplicate(themeRequest.name());
         final Theme theme = themeRequest.toDomain();
-        final Long id = themeDao.save(theme);
+        final Long id = themeDao.insert(theme);
         return ThemeResponse.withId(id, theme);
     }
 
     private void validateNameIsNotDuplicate(final String name) {
         if (themeDao.existsByName(name)) {
-            throw new NotFoundException("추가 하려는 테마 이름이 이미 존재합니다.");
+            throw new DuplicateException("추가 하려는 테마 이름이 이미 존재합니다.");
         }
     }
 
@@ -39,12 +40,12 @@ public class ThemeService {
 
     // TODO: ThemeResponse 반환하도록 수정
     public Theme findById(final Long id) {
-        return themeDao.find(id)
+        return themeDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id)));
     }
 
     public void deleteById(final Long id) {
-        if (!themeDao.remove(id)) {
+        if (!themeDao.deleteById(id)) {
             throw new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id));
         }
     }

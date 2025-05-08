@@ -24,15 +24,15 @@ class JdbcThemeDaoTest {
 
     @Test
     @DisplayName("데이터베이스에 테마를 저장하고 조회하여 확인한다")
-    void saveAndFindById() {
+    void insertAndFindByIdById() {
         // given
         final Theme theme = new Theme("테마", "소개", "썸네일");
 
         // when
-        final Long id = themeDao.save(theme);
+        final Long id = themeDao.insert(theme);
 
         // then
-        final Optional<Theme> findTheme = themeDao.find(id);
+        final Optional<Theme> findTheme = themeDao.findById(id);
         assertAll(
                 () -> assertThat(findTheme).isPresent(),
                 () -> assertThat(findTheme.get().getId()).isEqualTo(id),
@@ -47,26 +47,26 @@ class JdbcThemeDaoTest {
     void deleteById() {
         // given
         final Theme theme = new Theme("테마", "소개", "썸네일");
-        final Long id = themeDao.save(theme);
+        final Long id = themeDao.insert(theme);
 
         // when
-        final boolean isDeleted = themeDao.remove(id);
+        final boolean isDeleted = themeDao.deleteById(id);
 
         // then
         assertAll(
                 () -> assertThat(isDeleted).isTrue(),
-                () -> assertThat(themeDao.find(id)).isEmpty()
+                () -> assertThat(themeDao.findById(id)).isEmpty()
         );
     }
 
     @Test
     @DisplayName("데이터베이스의 모든 테마를 조회한다")
-    void findAll() {
+    void findByIdAll() {
         // given
         final Theme theme1 = new Theme("테마1", "소개1", "썸네일1");
         final Theme theme2 = new Theme("테마2", "소개2", "썸네일2");
-        themeDao.save(theme1);
-        themeDao.save(theme2);
+        themeDao.insert(theme1);
+        themeDao.insert(theme2);
 
         // when
         final List<Theme> themes = themeDao.findAll();
@@ -82,7 +82,7 @@ class JdbcThemeDaoTest {
         final Long notExistId = 999L;
 
         // when
-        final boolean isDeleted = themeDao.remove(notExistId);
+        final boolean isDeleted = themeDao.deleteById(notExistId);
 
         // then
         assertThat(isDeleted).isFalse();
@@ -95,10 +95,10 @@ class JdbcThemeDaoTest {
         final String existThemeName = "테마";
         final String notExistThemeName = "존재하지 않는 테마";
         final Theme theme = new Theme(existThemeName, "소개", "썸네일");
-        themeDao.save(theme);
+        themeDao.insert(theme);
 
         // when
-        final boolean existTheme = themeDao.existsByName(theme.getName());
+        final boolean existTheme = themeDao.existsByName(existThemeName);
         final boolean notExistTheme = themeDao.existsByName(notExistThemeName);
 
         // then

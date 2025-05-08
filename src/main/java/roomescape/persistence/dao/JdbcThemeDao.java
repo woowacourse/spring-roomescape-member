@@ -33,21 +33,21 @@ public class JdbcThemeDao implements ThemeDao {
         this.jdbcTemplate = jdbcTemplate;
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+                .usingGeneratedKeyColumns(ID);
     }
 
     @Override
-    public Long save(final Theme theme) {
+    public Long insert(final Theme theme) {
         final Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", theme.getName());
-        parameters.put("description", theme.getDescription());
-        parameters.put("thumbnail", theme.getThumbnail());
+        parameters.put(NAME, theme.getName());
+        parameters.put(DESCRIPTION, theme.getDescription());
+        parameters.put(THUMBNAIL, theme.getThumbnail());
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return id;
     }
 
     @Override
-    public Optional<Theme> find(final Long id) {
+    public Optional<Theme> findById(final Long id) {
         final String sql = """
                 SELECT id, name, description, thumbnail 
                 FROM theme 
@@ -71,7 +71,7 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public boolean remove(final Long id) {
+    public boolean deleteById(final Long id) {
         final String sql = """
                 DELETE FROM theme 
                 WHERE id = ?
@@ -87,7 +87,7 @@ public class JdbcThemeDao implements ThemeDao {
                     SELECT 1
                     FROM theme
                     WHERE name = ?
-                )
+                ) AS is_exist
                 """;
         final int flag = jdbcTemplate.queryForObject(sql, Integer.class, name);
         return flag == 1;

@@ -5,13 +5,13 @@ import java.util.Optional;
 import roomescape.business.domain.Theme;
 
 public interface ThemeDao {
-    Long save(Theme theme);
+    Long insert(Theme theme);
 
     List<Theme> findAll();
 
-    boolean remove(Long id);
+    boolean deleteById(Long id);
 
-    Optional<Theme> find(Long id);
+    Optional<Theme> findById(Long id);
 
     List<Theme> findPopularThemesBetween(String startDate, String endDate);
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.business.domain.Theme;
+import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.fake.FakeThemeDao;
 import roomescape.presentation.dto.ThemeRequest;
@@ -38,6 +39,18 @@ class ThemeServiceTest {
                 () -> assertThat(themeResponse.description()).isEqualTo(themeRequest.description()),
                 () -> assertThat(themeResponse.thumbnail()).isEqualTo(themeRequest.thumbnail())
         );
+    }
+
+    @Test
+    @DisplayName("저장하려는 테마의 이름과 동일한 이름이 이미 존재한다면 예외가 발생한다")
+    void insertWhenNameIsDuplicate() {
+        // given
+        final ThemeRequest themeRequest = new ThemeRequest("테마", "소개", "썸네일");
+        themeService.insert(themeRequest);
+
+        // when & then
+        assertThatThrownBy(() -> themeService.insert(themeRequest))
+                .isInstanceOf(DuplicateException.class);
     }
 
     @Test
