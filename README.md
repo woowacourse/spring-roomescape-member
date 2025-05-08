@@ -358,7 +358,7 @@
 ## 4단계
 
 사용자 로그인
-- [ ] 로그인 페이지 호출 시 GET /login 요청이 호출되고, login.html 페이지가 응답됩니다.
+- [x] 로그인 페이지 호출 시 GET /login 요청이 호출되고, login.html 페이지가 응답됩니다.
 
 - [ ] 로그인 요청(POST /login) API 구현
   - [ ] email과 password를 이용해서 멤버를 조회합니다.
