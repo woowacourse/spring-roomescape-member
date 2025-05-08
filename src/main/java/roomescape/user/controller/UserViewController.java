@@ -15,4 +15,9 @@ public class UserViewController {
     public String getHomePage() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
 }
