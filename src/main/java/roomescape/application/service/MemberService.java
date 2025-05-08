@@ -8,7 +8,6 @@ import roomescape.domain.exception.UnauthorizedException;
 import roomescape.domain.model.Member;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.presentation.dto.request.TokenRequest;
-import roomescape.presentation.dto.response.MemberNameResponse;
 
 @Service
 public class MemberService {
@@ -35,7 +34,7 @@ public class MemberService {
         return accessToken;
     }
 
-    public MemberNameResponse check(final String token) {
+    public Member check(final String token) {
         Long memberId;
         try {
             memberId = Long.valueOf(Jwts.parserBuilder()
@@ -47,7 +46,6 @@ public class MemberService {
             throw new UnauthorizedException();
         }
 
-        Member member = memberRepository.findById(memberId);
-        return new MemberNameResponse(member.getName());
+        return memberRepository.findById(memberId);
     }
 }

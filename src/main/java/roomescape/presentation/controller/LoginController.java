@@ -1,7 +1,6 @@
 package roomescape.presentation.controller;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import roomescape.application.service.MemberService;
+import roomescape.domain.model.Member;
+import roomescape.presentation.annotation.MemberAuthorization;
 import roomescape.presentation.dto.request.TokenRequest;
 import roomescape.presentation.dto.response.MemberNameResponse;
 
@@ -40,17 +41,16 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<MemberNameResponse> check(HttpServletRequest request) {
-        String token = extractTokenFromCookie(request.getCookies());
-        MemberNameResponse memberNameResponse = memberService.check(token);
-
+    public ResponseEntity<MemberNameResponse> check(@MemberAuthorization Member member) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Keep-Alive", "timeout=" + 60);
         headers.add("Transfer-Encoding", "chunked");
 
+        MemberNameResponse response = new MemberNameResponse(member.getName());
+
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(memberNameResponse);
+                .body(response);
     }
 
     @PostMapping("/logout")
@@ -67,13 +67,4 @@ public class LoginController {
                 .build();
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-
-        return "";
-    }
 }
