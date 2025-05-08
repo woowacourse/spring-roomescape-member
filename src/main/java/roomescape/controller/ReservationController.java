@@ -17,31 +17,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
+import roomescape.service.AuthService;
 import roomescape.service.ReservationService;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
+    private final AuthService authService;
 
     @Autowired
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, AuthService authService) {
         this.reservationService = reservationService;
+        this.authService = authService;
     }
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@RequestBody CreateReservationRequest createReservationRequest, HttpServletRequest request) {
         // JWT 토큰에서 사용자 정보 추출
-        String token = extractTokenFromCookie(request.getCookies());
-        if (token.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String memberId = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(LoginController.SECRET_KEY.getBytes()))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
+        Cookie[] cookies = request.getCookies();
+        String memberId = authService.getVerifiedPayloadFrom(cookies)
                 .getSubject();
 
         CreateReservationRequest requestWithAuthor = CreateReservationRequest.setMember(createReservationRequest,

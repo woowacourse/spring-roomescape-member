@@ -17,19 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
 import roomescape.repository.MemberRepository;
+import roomescape.service.AuthService;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
     private final MemberRepository memberRepository;
-
-    // !TODO: 배포 이전 SECRET_KEY 하드코딩 방식을 변경하고, KEY 값 변경하기
-    public static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
-
+    private final AuthService authService;
 
     @Autowired
-    public LoginController(MemberRepository memberRepository) {
+    public LoginController(MemberRepository memberRepository, AuthService authService) {
         this.memberRepository = memberRepository;
+        this.authService = authService;
     }
 
     @PostMapping
@@ -37,16 +36,7 @@ public class LoginController {
         Member member = memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
 
-        String token = Jwts.builder()
-                .subject(member.getId().toString())
-                .claim("name", member.getName())
-                .claim("email", member.getEmail())
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                .compact();
-
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = authService.generateTokenCookie(member);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
@@ -55,36 +45,13 @@ public class LoginController {
     @GetMapping("/check")
     public ResponseEntity<?> checkLogin(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String token = extractTokenFromCookie(cookies);
-        if (token.isEmpty()) {
-            return ResponseEntity.status(401).build();
-        }
-
         try {
-            String name = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
+            String name = authService.getVerifiedPayloadFrom(cookies)
                     .get("name", String.class);
 
-            Map<String, String> response = Map.of("name", name);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of("name", name));
         } catch (Exception e) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
         }
-    }
-
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return "";
-        }
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                return cookie.getValue();
-            }
-        }
-        return "";
     }
 }
