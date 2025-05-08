@@ -30,7 +30,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    @DisplayName("/reservations POST 요청에 정상적으로 응답한다")
+    @DisplayName("/reservations POST 요청시 사용자의 입장에서 예약을 생성할 수 있다")
     void reservation_post_api() {
         String accessToken = getToken();
 
@@ -72,28 +72,6 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
-    }
-
-    @Test
-    @DisplayName("/reservations POST 요청시 사용자의 입장에서 예약을 생성할 수 있다")
-    void reservation_post_by_member() {
-        String accessToken = getToken();
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("date", LocalDate.now().plusDays(1));
-        params.put("timeId", 1);
-        params.put("themeId", 1);
-
-        RestAssured
-                .given().log().all()
-                .cookie("token", accessToken)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(ContentType.JSON)
-                .body(params)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201)
-                .body("id", is(1));
     }
 
     @Test

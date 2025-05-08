@@ -2,6 +2,7 @@ package roomescape.fake;
 
 import roomescape.domain.model.Member;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,5 +22,9 @@ public class FakeMemberDao {
 
     public Member findById(final Long memberId) {
         return MEMBERS.get(memberId);
+    }
+
+    public List<Member> findAll() {
+        return MEMBERS.values().stream().toList();
     }
 }

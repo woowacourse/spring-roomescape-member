@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import roomescape.domain.model.Member;
 
+import java.util.List;
+
 @Repository
 public class MemberDao {
 
@@ -36,5 +38,10 @@ public class MemberDao {
                 query,
                 ROW_MAPPER,
                 memberId);
+    }
+
+    public List<Member> findAll() {
+        String query = "SELECT id, name, email, password FROM member";
+        return jdbcTemplate.query(query, ROW_MAPPER);
     }
 }

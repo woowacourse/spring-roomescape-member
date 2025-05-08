@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import roomescape.application.service.MemberService;
+import roomescape.application.service.TokenLoginService;
 import roomescape.domain.model.Member;
 import roomescape.presentation.annotation.MemberAuthorization;
 import roomescape.presentation.dto.request.TokenRequest;
@@ -17,15 +17,15 @@ import roomescape.presentation.dto.response.MemberNameResponse;
 @Controller
 public class LoginController {
 
-    private final MemberService memberService;
+    private final TokenLoginService tokenLoginService;
 
-    public LoginController(final MemberService memberService) {
-        this.memberService = memberService;
+    public LoginController(final TokenLoginService tokenLoginService) {
+        this.tokenLoginService = tokenLoginService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Validated @RequestBody TokenRequest request) {
-        String accessToken = memberService.login(request);
+        String accessToken = tokenLoginService.login(request);
 
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);

@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public record ReservationResponse(
         Long id,
-        Member member,
+        MemberResponse member,
         LocalDate date,
         StartAtResponse time,
         ReservationThemeResponse theme
@@ -16,7 +16,7 @@ public record ReservationResponse(
     public static ReservationResponse of(final Reservation reservation, final Member member) {
         return new ReservationResponse(
                 reservation.getId(),
-                member,
+                MemberResponse.from(member),
                 reservation.getDate(),
                 StartAtResponse.from(reservation.getTime()),
                 ReservationThemeResponse.from(reservation.getTheme())

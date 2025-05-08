@@ -7,6 +7,8 @@ import roomescape.domain.model.Member;
 import roomescape.domain.repository.MemberRepository;
 import roomescape.infrastructure.dao.MemberDao;
 
+import java.util.List;
+
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
 
@@ -32,5 +34,10 @@ public class JdbcMemberRepository implements MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new UnauthorizedException();
         }
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return memberDao.findAll();
     }
 }

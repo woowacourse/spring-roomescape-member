@@ -12,6 +12,7 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.presentation.dto.request.AdminReservationRequest;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
 
@@ -51,20 +52,20 @@ public class ReservationService {
         }
     }
 
-//    @Transactional
-//    public ReservationResponse save(ReservationRequest request) {
-//        ReservationTime reservationTime = getReservationTime(request.timeId());
-//        Theme theme = getTheme(request.themeId());
-//
-//        validateSaveReservation(request, reservationTime);
-//        Reservation reservation = new Reservation(
-//                request.name(),
-//                request.date(),
-//                reservationTime,
-//                theme
-//        );
-//        return getReservationResponse(reservation);
-//    }
+    @Transactional
+    public ReservationResponse save(AdminReservationRequest request) {
+        ReservationTime reservationTime = getReservationTime(request.timeId());
+        Theme theme = getTheme(request.themeId());
+
+        validateSaveReservation(request.date(), request.timeId(), request.timeId(), reservationTime);
+        Reservation reservation = new Reservation(
+                request.memberId(),
+                request.date(),
+                reservationTime,
+                theme
+        );
+        return getReservationResponse(reservation);
+    }
 
     @Transactional
     public ReservationResponse save(final Member member, final ReservationRequest request) {

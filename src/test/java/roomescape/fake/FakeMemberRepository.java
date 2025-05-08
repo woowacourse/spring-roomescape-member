@@ -3,6 +3,8 @@ package roomescape.fake;
 import roomescape.domain.model.Member;
 import roomescape.domain.repository.MemberRepository;
 
+import java.util.List;
+
 public class FakeMemberRepository implements MemberRepository {
 
     private final FakeMemberDao memberDao;
@@ -19,5 +21,10 @@ public class FakeMemberRepository implements MemberRepository {
     @Override
     public Member findById(final Long memberId) {
         return memberDao.findById(memberId);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        return memberDao.findAll();
     }
 }

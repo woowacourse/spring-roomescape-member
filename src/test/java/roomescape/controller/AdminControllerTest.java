@@ -1,39 +1,99 @@
 package roomescape.controller;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.is;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AdminControllerTest {
-    
+
     @Test
-    @DisplayName("/ GET 요청에 응답한다")
-    void welcome_page() {
+    @DisplayName("/admin/reservations POST 요청시 관리자의 입장에서 예약을 생성할 수 있다")
+    void admin_reservation_post_api() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("memberId", 1);
+        params.put("date", LocalDate.now().plusDays(1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
         RestAssured.given().log().all()
-                .when().get("/")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(201)
+                .body("id", is(1));
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(1));
     }
 
     @Test
-    @DisplayName("/admin GET 요청에 응답한다")
-    void admin_page() {
+    @DisplayName("/admin/reservations POST 요청시 날짜 형식이 올바르지 않을 경우 400을 응답한다")
+    void admin_reservation_post_format_not_proper() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("memberId", 1);
+        params.put("date", "1월 1일");
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
         RestAssured.given().log().all()
-                .when().get("/admin")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(400);
     }
 
     @Test
-    @DisplayName("/admin/reservation GET 요청에 응답한다")
-    void admin_reservation_page() {
+    @DisplayName("/admin/reservations POST 요청시 과거에 대한 예약을 시도하는 경우 400을 응답한다")
+    void admin_reservation_post_past() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("memberId", 1);
+        params.put("date", LocalDate.now().plusDays(-1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
         RestAssured.given().log().all()
-                .when().get("/admin/reservation")
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
                 .then().log().all()
-                .statusCode(200);
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("/admin/reservations POST 요청시 중복 예약이 존재할 경우 400을 응답한다")
+    void admin_reservation_post_duplication() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("memberId", 1);
+        params.put("date", LocalDate.now().plusDays(1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/admin/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 }
