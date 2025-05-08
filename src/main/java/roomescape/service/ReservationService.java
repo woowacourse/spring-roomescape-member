@@ -1,7 +1,6 @@
 package roomescape.service;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -45,25 +44,48 @@ public class ReservationService {
         return ReservationResponse.from(reservations);
     }
 
-    public ReservationResponse createReservation(ReservationCreateRequest request, Member member) {
-        ReservationDateTime dateTime = convertReservationDateTime(request.date(), request.timeId());
-        validateReservationAvailability(dateTime);
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new NoSuchElementException("해당 테마가 존재하지 않습니다."));
-        Reservation created = reservationRepository.save(member, dateTime, theme);
-        return ReservationResponse.from(created);
-    }
-
     public void deleteReservationById(Long id) {
         Reservation reservation = getReservation(id);
         reservationRepository.deleteById(reservation.getId());
     }
 
-    private ReservationDateTime convertReservationDateTime(final LocalDate date, final Long timeId) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
+    public ReservationResponse createReservation(ReservationCreateRequest request, Long memberId) {
+        Reservation created = createReservation(
+                new ReservationDate(request.date()),
+                request.timeId(),
+                request.themeId(),
+                memberId
+        );
+        return ReservationResponse.from(created);
+    }
+
+    public ReservationResponse createReservationByAdmin(final AdminCreateReservationRequest request) {
+        Reservation created = createReservation(
+                new ReservationDate(request.date()),
+                request.timeId(),
+                request.themeId(),
+                request.memberId()
+        );
+        return ReservationResponse.from(created);
+    }
+
+    private Reservation createReservation(
+            final ReservationDate date,
+            final Long timeId,
+            final Long themeId,
+            final Long memberId
+    ) {
+        ReservationTime time = reservationTimeRepository.findById(timeId)
                 .orElseThrow(() -> new NoSuchElementException("예약 시간을 찾을 수 없습니다."));
-        ReservationDate reservationDate = new ReservationDate(date);
-        return new ReservationDateTime(reservationDate, reservationTime, clock);
+        ReservationDateTime dateTime = new ReservationDateTime(date, time, clock);
+        validateReservationAvailability(dateTime);
+
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 테마가 존재하지 않습니다."));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NoSuchElementException("해당 멤버가 존재하지 않습니다."));
+
+        return reservationRepository.save(member, dateTime, theme);
     }
 
     private void validateReservationAvailability(ReservationDateTime dateTime) {
@@ -71,20 +93,8 @@ public class ReservationService {
             throw new IllegalArgumentException("이미 예약이 찼습니다.");
         }
     }
-
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다."));
-    }
-
-    public ReservationResponse createReservationByAdmin(final AdminCreateReservationRequest request) {
-        Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 멤버입니다."));
-        ReservationDateTime dateTime = convertReservationDateTime(request.date(), request.timeId());
-        validateReservationAvailability(dateTime);
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new NoSuchElementException("해당 테마가 존재하지 않습니다."));
-        Reservation created = reservationRepository.save(member, dateTime, theme);
-        return ReservationResponse.from(created);
     }
 }

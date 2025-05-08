@@ -1,4 +1,4 @@
-package roomescape.controller.rest;
+package roomescape.controller.rest.normal;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -41,7 +41,6 @@ public class ReservationTimeController {
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getTimes() {
         List<ReservationTimeResponse> responses = reservationTimeService.findAllReservationTimes();
-
         return ResponseEntity.ok(responses);
     }
 
@@ -58,7 +57,6 @@ public class ReservationTimeController {
     ) {
         List<AvailableReservationTimeResponse> responses =
                 reservationTimeService.findAvailableReservationTimes(request);
-
         return ResponseEntity.ok(responses);
     }
 }

@@ -15,7 +15,6 @@ import roomescape.domain.member.MemberName;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationDateTime;
-import roomescape.domain.reservation.ReserverName;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
 import roomescape.integration.fixture.MemberDbFixture;

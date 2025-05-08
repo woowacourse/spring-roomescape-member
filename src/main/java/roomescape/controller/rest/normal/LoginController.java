@@ -1,4 +1,4 @@
-package roomescape.controller.rest;
+package roomescape.controller.rest.normal;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,10 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpSession httpSession) {
-        loginService.login(request, httpSession);
+    public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpSession session) {
+        LoginService member = loginService;
+        member.login(request);
+        session.setAttribute("LOGIN_MEMBER", member);
         return ResponseEntity.ok().build();
     }
 
@@ -34,5 +36,4 @@ public class LoginController {
         LoginCheckResponse loginCheckResponse = new LoginCheckResponse(member.getName().name());
         return ResponseEntity.ok(loginCheckResponse);
     }
-
 }

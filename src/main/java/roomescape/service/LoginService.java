@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import jakarta.servlet.http.HttpSession;
 import java.util.NoSuchElementException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,13 +20,13 @@ public class LoginService {
         this.memberRepository = memberRepository;
     }
 
-    public void login(final LoginRequest request, final HttpSession session) {
+    public Member login(final LoginRequest request) {
         Member member = memberRepository.findByEmail(new MemberEmail(request.email()))
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 멤버입니다."));
         MemberPassword rawPassword = new MemberPassword(request.password());
         if (!member.isMatchPassword(rawPassword, passwordEncoder)) {
             throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
         }
-        session.setAttribute("LOGIN_MEMBER", member);
+        return member;
     }
 }

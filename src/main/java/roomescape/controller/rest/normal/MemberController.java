@@ -1,4 +1,4 @@
-package roomescape.controller.rest;
+package roomescape.controller.rest.normal;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;

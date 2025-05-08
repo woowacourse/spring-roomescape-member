@@ -2,7 +2,6 @@ package roomescape.domain.member;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public record MemberPassword(String password) {
 

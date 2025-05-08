@@ -1,4 +1,4 @@
-package roomescape.controller.rest;
+package roomescape.controller.rest.normal;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -33,7 +33,6 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<ThemeResponse> createTheme(@RequestBody @Valid CreateThemeRequest request) {
         ThemeResponse response = themeService.createTheme(request);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

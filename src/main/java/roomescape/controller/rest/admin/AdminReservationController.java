@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.member.Member;
+import roomescape.domain.member.MemberRole;
+import roomescape.global.Auth;
 import roomescape.service.ReservationService;
 import roomescape.service.request.AdminCreateReservationRequest;
 import roomescape.service.response.ReservationResponse;
@@ -25,10 +27,9 @@ public class AdminReservationController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody @Valid AdminCreateReservationRequest request,
-            Member member
+            @Auth(allowedRoles = {MemberRole.ADMIN}) Member member
     ) {
         ReservationResponse response = reservationService.createReservationByAdmin(request);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
