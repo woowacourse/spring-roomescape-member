@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.exception.ReservationTimeException;
-import roomescape.presentation.mapper.ReservationTimeMapper;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
@@ -30,14 +29,14 @@ public class ReservationTimeService {
     public List<ReservationTimeResponseDto> getAllTimes() {
         return reservationTimeRepository.findAll()
                 .stream()
-                .map(ReservationTimeMapper::toResponse)
+                .map(ReservationTimeResponseDto::toResponse)
                 .toList();
     }
 
     public ReservationTimeResponseDto getTimeById(Long id) {
         ReservationTime reservationTime = reservationTimeRepository.findById(id)
                 .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
-        return ReservationTimeMapper.toResponse(reservationTime);
+        return ReservationTimeResponseDto.toResponse(reservationTime);
     }
 
     public List<AvailableTimesResponseDto> findAvailableTimes(LocalDate date, Long themeId) {

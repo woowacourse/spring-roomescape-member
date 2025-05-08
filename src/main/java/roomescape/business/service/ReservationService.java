@@ -16,7 +16,6 @@ import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
-import roomescape.presentation.mapper.ReservationMapper;
 
 @Service
 public class ReservationService {
@@ -37,14 +36,14 @@ public class ReservationService {
     public List<ReservationResponseDto> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream()
-                .map(ReservationMapper::toResponse)
+                .map(ReservationResponseDto::toResponse)
                 .toList();
     }
 
     public ReservationResponseDto getReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationException("존재하지 않는 예약입니다."));
-        return ReservationMapper.toResponse(reservation);
+        return ReservationResponseDto.toResponse(reservation);
     }
 
     @Transactional

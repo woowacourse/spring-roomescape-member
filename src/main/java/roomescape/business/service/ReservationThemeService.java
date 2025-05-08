@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.exception.ReservationThemeException;
-import roomescape.presentation.mapper.ReservationThemeMapper;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.presentation.dto.ReservationThemeRequestDto;
@@ -33,7 +32,7 @@ public class ReservationThemeService {
     public List<ReservationThemeResponseDto> getAllThemes() {
         List<ReservationTheme> reservationThemes = reservationThemeRepository.findAll();
         return reservationThemes.stream()
-                .map(ReservationThemeMapper::toResponse)
+                .map(ReservationThemeResponseDto::toResponse)
                 .toList();
     }
 
@@ -43,7 +42,7 @@ public class ReservationThemeService {
         LocalDate end = calculateEndDate(now);
         return getBestReservedThemes(start, end)
                 .stream()
-                .map(ReservationThemeMapper::toResponse)
+                .map(ReservationThemeResponseDto::toResponse)
                 .toList();
     }
 
@@ -71,7 +70,7 @@ public class ReservationThemeService {
                         reservationThemeDto.thumbnail()
                 )
         );
-        return ReservationThemeMapper.toResponse(
+        return ReservationThemeResponseDto.toResponse(
                 new ReservationTheme(
                         id,
                         reservationThemeDto.name(),
