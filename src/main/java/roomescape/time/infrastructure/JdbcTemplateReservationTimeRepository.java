@@ -10,7 +10,6 @@ import roomescape.common.jdbc.JdbcUtils;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
 import roomescape.time.domain.ReservationTimeRepository;
-import roomescape.time.infrastructure.entity.ReservationTimeDBEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.Time;
@@ -25,10 +24,11 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ReservationTimeDBEntity> reservationTimeMapper = (resultSet, rowNum) -> ReservationTimeDBEntity.of(
-            resultSet.getLong("id"),
-            resultSet.getTime("start_at")
-    );
+    private final RowMapper<ReservationTime> reservationTimeMapper = (resultSet, rowNum) ->
+            ReservationTime.withId(
+                    ReservationTimeId.from(resultSet.getLong("id")),
+                    resultSet.getTime("start_at").toLocalTime()
+            );
 
     @Override
     public boolean existsById(final ReservationTimeId id) {
@@ -55,8 +55,7 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
     @Override
     public Optional<ReservationTime> findById(final ReservationTimeId id) {
         final String sql = "select id, start_at from reservation_time where id = ?";
-        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationTimeMapper, id.getValue())
-                .map(ReservationTimeDBEntity::toDomain);
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationTimeMapper, id.getValue());
     }
 
     @Override
@@ -64,7 +63,6 @@ public class JdbcTemplateReservationTimeRepository implements ReservationTimeRep
         final String sql = "select id, start_at from reservation_time";
 
         return jdbcTemplate.query(sql, reservationTimeMapper).stream()
-                .map(ReservationTimeDBEntity::toDomain)
                 .toList();
     }
 

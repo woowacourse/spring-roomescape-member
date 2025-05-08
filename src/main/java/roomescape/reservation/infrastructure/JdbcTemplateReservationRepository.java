@@ -11,15 +11,14 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.reservation.infrastructure.entity.ReservationDBEntity;
+import roomescape.reservation.domain.ReserverName;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeThumbnail;
-import roomescape.theme.infrastructure.entity.ThemeDBEntity;
+import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
-import roomescape.time.infrastructure.entity.ReservationTimeDBEntity;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -40,23 +39,23 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ReservationDBEntity> reservationMapper = (resultSet, rowNum) -> {
-        ReservationTimeDBEntity time = ReservationTimeDBEntity.of(
-                resultSet.getLong("time_id"),
-                resultSet.getTime("start_at")
+    private final RowMapper<Reservation> reservationMapper = (resultSet, rowNum) -> {
+        ReservationTime time = ReservationTime.withId(
+                ReservationTimeId.from(resultSet.getLong("time_id")),
+                resultSet.getTime("start_at").toLocalTime()
         );
 
-        ThemeDBEntity theme = ThemeDBEntity.of(
-                resultSet.getLong("theme_id"),
-                resultSet.getString("theme_name"),
-                resultSet.getString("description"),
-                resultSet.getString("thumbnail")
+        Theme theme = Theme.withId(
+                ThemeId.from(resultSet.getLong("theme_id")),
+                ThemeName.from(resultSet.getString("theme_name")),
+                ThemeDescription.from(resultSet.getString("description")),
+                ThemeThumbnail.from(resultSet.getString("thumbnail"))
         );
 
-        return ReservationDBEntity.of(
-                resultSet.getLong("id"),
-                resultSet.getString("name"),
-                resultSet.getDate("date"),
+        return Reservation.withId(
+                ReservationId.from(resultSet.getLong("id")),
+                ReserverName.from(resultSet.getString("name")),
+                ReservationDate.from(resultSet.getDate("date").toLocalDate()),
                 time,
                 theme
         );
@@ -119,8 +118,7 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 where r.id = ?
                 """;
 
-        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationMapper, id.getValue())
-                .map(ReservationDBEntity::toDomain);
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, reservationMapper, id.getValue());
     }
 
     @Override
@@ -167,7 +165,6 @@ public class JdbcTemplateReservationRepository implements ReservationRepository 
                 """;
 
         return jdbcTemplate.query(sql, reservationMapper).stream()
-                .map(ReservationDBEntity::toDomain)
                 .toList();
     }
 

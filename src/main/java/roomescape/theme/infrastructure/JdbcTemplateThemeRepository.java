@@ -8,10 +8,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import roomescape.common.jdbc.JdbcUtils;
 import roomescape.theme.domain.Theme;
+import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.domain.ThemeName;
 import roomescape.theme.domain.ThemeRepository;
-import roomescape.theme.infrastructure.entity.ThemeDBEntity;
+import roomescape.theme.domain.ThemeThumbnail;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -24,12 +25,12 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ThemeDBEntity> themeMapper = (resultSet, rowNum) ->
-            ThemeDBEntity.of(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getString("thumbnail")
+    private final RowMapper<Theme> themeMapper = (resultSet, rowNum) ->
+            Theme.withId(
+                    ThemeId.from(resultSet.getLong("id")),
+                    ThemeName.from(resultSet.getString("name")),
+                    ThemeDescription.from(resultSet.getString("description")),
+                    ThemeThumbnail.from(resultSet.getString("thumbnail"))
             );
 
     @Override
@@ -61,7 +62,6 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
                 """;
 
         return jdbcTemplate.query(sql, themeMapper).stream()
-                .map(ThemeDBEntity::toDomain)
                 .toList();
     }
 
@@ -71,8 +71,7 @@ public class JdbcTemplateThemeRepository implements ThemeRepository {
                 select id, name, description, thumbnail from theme where id = ?
                 """;
 
-        return JdbcUtils.queryForOptional(jdbcTemplate, sql, themeMapper, id.getValue())
-                .map(ThemeDBEntity::toDomain);
+        return JdbcUtils.queryForOptional(jdbcTemplate, sql, themeMapper, id.getValue());
     }
 
     @Override
