@@ -25,14 +25,13 @@ public class PlayTimeService {
     }
 
     public PlayTimeResponse create(final PlayTimeRequest playTimeRequest) {
-        validateIsDuplicate(playTimeRequest.startAt());
+        validateStartAtIsDuplicate(playTimeRequest.startAt());
         final PlayTime playTime = playTimeRequest.toDomain();
         final Long id = playTimeDao.save(playTime);
-
         return PlayTimeResponse.withId(id, playTime);
     }
 
-    private void validateIsDuplicate(final LocalTime startAt) {
+    private void validateStartAtIsDuplicate(final LocalTime startAt) {
         if (playTimeDao.existsByStartAt(startAt)) {
             throw new DuplicateException("추가 하려는 시간이 이미 존재합니다.");
         }
