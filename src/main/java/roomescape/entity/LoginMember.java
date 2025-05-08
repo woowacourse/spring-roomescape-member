@@ -1,6 +1,6 @@
 package roomescape.entity;
 
-public class Member {
+public class LoginMember {
 
     private final Long id;
     private final String name;
@@ -8,7 +8,7 @@ public class Member {
     private final String password;
     private final Role role;
 
-    public Member(Long id, String name, String email, String password, Role role) {
+    public LoginMember(Long id, String name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -16,7 +16,7 @@ public class Member {
         this.role = role;
     }
 
-    public Member(String name, String email, String password, Role role) {
+    public LoginMember(String name, String email, String password, Role role) {
         this.id = null;
         this.name = name;
         this.email = email;
@@ -40,7 +40,7 @@ public class Member {
         return password;
     }
 
-    public String getRole() {
-        return role.toString();
+    public Role getRole() {
+        return role;
     }
 }

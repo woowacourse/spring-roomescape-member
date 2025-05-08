@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.LoginResponse;
-import roomescape.entity.Member;
+import roomescape.entity.LoginMember;
 import roomescape.exception.AuthenticationException;
 import roomescape.repository.MemberDao;
 
@@ -23,7 +23,7 @@ public class MemberService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        Member loginMember = memberDao.findByEmailAndPassword(request.email(), request.password())
+        LoginMember loginMember = memberDao.findByEmailAndPassword(request.email(), request.password())
             .orElseThrow(() -> new AuthenticationException("로그인 정보를 찾을 수 없습니다."));
 
         String accessToken = Jwts.builder()
@@ -43,8 +43,8 @@ public class MemberService {
             .parseClaimsJws(token)
             .getBody().getSubject());
 
-        Member findMember = memberDao.findById(memberId)
+        LoginMember findLoginMember = memberDao.findById(memberId)
             .orElseThrow(() -> new AuthenticationException("로그인 정보가 일치하지 않습니다."));
-        return LoginCheckResponse.of(findMember.getName());
+        return LoginCheckResponse.of(findLoginMember.getName());
     }
 }

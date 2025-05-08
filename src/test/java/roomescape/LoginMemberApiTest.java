@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.notNullValue;
 @Sql(scripts = {"/schema.sql", "/test.sql"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class MemberApiTest {
+public class LoginMemberApiTest {
 
     @Test
     void 로그인_페이지로_접근할_수_있다() {
