@@ -1,5 +1,6 @@
 package roomescape.infrastructure;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -43,6 +44,12 @@ public class JdbcMemberRepository implements MemberRepository {
         );
         long newId = jdbcInsert.executeAndReturnKey(parameter).longValue();
         return member.withId(newId);
+    }
+
+    @Override
+    public List<Member> findAll() {
+        String sql = "SELECT * FROM member";
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
     @Override
