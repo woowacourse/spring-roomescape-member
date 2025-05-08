@@ -1,5 +1,6 @@
 package roomescape.common.exception.handler;
 
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -26,6 +27,15 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(exceptionResponse);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ExceptionResponse> handleSignature(final SignatureException exception, final HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                401, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+        );
+
+        return ResponseEntity.status(401).body(exceptionResponse);
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
