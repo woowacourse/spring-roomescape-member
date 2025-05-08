@@ -89,12 +89,12 @@ class PlayTimeServiceTest {
 
     @Test
     @DisplayName("id를 통해 방탈출 예약 시간을 조회할 때 대상이 없다면 예외가 발생한다")
-    void findByIdWhenNotExist() {
+    void findByIdWhenNotExists() {
         // given
-        final Long notExistId = 999L;
+        final Long notExistsId = 999L;
 
         // when & then
-        assertThatThrownBy(() -> playTimeService.findById(notExistId))
+        assertThatThrownBy(() -> playTimeService.findById(notExistsId))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -117,12 +117,12 @@ class PlayTimeServiceTest {
 
     @Test
     @DisplayName("id를 통해 방탈출 예약 시간을 삭제할 때 대상이 없다면 예외가 발생한다")
-    void deleteByIdWhenNotExist() {
+    void deleteByIdWhenNotExists() {
         // given
-        final Long notExistId = 999L;
+        final Long notExistsId = 999L;
 
         // when & then
-        assertThatThrownBy(() -> playTimeService.deleteById(notExistId))
+        assertThatThrownBy(() -> playTimeService.deleteById(notExistsId))
                 .isInstanceOf(NotFoundException.class);
     }
 }
