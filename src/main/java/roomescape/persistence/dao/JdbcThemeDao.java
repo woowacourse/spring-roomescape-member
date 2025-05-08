@@ -77,7 +77,7 @@ public class JdbcThemeDao implements ThemeDao {
                 WHERE id = ?
                 """;
         final int updatedRowCount = jdbcTemplate.update(sql, id);
-        return updatedRowCount >= 0;
+        return updatedRowCount >= 1;
     }
 
     @Override

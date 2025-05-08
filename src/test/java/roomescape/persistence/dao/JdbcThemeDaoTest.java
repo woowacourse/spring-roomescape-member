@@ -74,4 +74,17 @@ class JdbcThemeDaoTest {
         // then
         assertThat(themes).hasSize(2);
     }
+
+    @Test
+    @DisplayName("데이터베이스에서 id를 통해 테마를 삭제할 때 대상이 없다면 false 반환한다")
+    void deleteByIdWhenNotExist() {
+        // given
+        final Long notExistId = 999L;
+
+        // when
+        final boolean isDeleted = themeDao.remove(notExistId);
+
+        // then
+        assertThat(isDeleted).isFalse();
+    }
 }
