@@ -22,9 +22,9 @@ import roomescape.reservation.domain.Theme;
 import roomescape.reservation.repository.ReservationRepository;
 import roomescape.reservation.repository.ReservationTimeRepository;
 import roomescape.reservation.repository.ThemeRepository;
-import roomescape.util.repository.ReservationFakeRepository;
-import roomescape.util.repository.ReservationTimeFakeRepository;
-import roomescape.util.repository.ThemeFakeRepository;
+import roomescape.reservation.repository.fake.ReservationFakeRepository;
+import roomescape.reservation.repository.fake.ReservationTimeFakeRepository;
+import roomescape.reservation.repository.fake.ThemeFakeRepository;
 
 class ReservationServiceTest {
 
