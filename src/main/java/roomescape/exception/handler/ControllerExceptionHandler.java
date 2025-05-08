@@ -31,4 +31,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<String> handlePastReservationTimeException(final PastReservationTimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(final Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    }
 }
