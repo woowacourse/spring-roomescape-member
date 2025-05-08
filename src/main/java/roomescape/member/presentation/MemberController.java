@@ -19,7 +19,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/members")
+    @PostMapping("/signUp")
     public ResponseEntity<SignUpResponse> signUp(
             @RequestBody SignUpRequest signUpRequest
     ) {
