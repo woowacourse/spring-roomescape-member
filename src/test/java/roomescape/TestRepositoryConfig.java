@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.persistence.fakerepository.FakeMemberRepository;
 import roomescape.persistence.fakerepository.FakeReservationRepository;
 import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
@@ -30,5 +31,10 @@ public class TestRepositoryConfig {
     @Bean
     public ReservationThemeRepository reservationThemeRepository() {
         return new FakeReservationThemeRepository();
+    }
+
+    @Bean
+    public FakeMemberRepository memberRepository() {
+        return new FakeMemberRepository();
     }
 }

@@ -5,8 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.member.Member;
+import roomescape.config.LoginMember;
 import roomescape.persistence.MemberRepository;
-import roomescape.presentation.dto.LoginCheckResponseDto;
 import roomescape.presentation.dto.LoginRequestDto;
 import roomescape.presentation.dto.MemberRequestDto;
 
@@ -22,9 +22,9 @@ public class MemberService {
 
     public Long registerMember(MemberRequestDto memberRequestDto) {
         Member member = new Member(
+                memberRequestDto.name(),
                 memberRequestDto.email(),
-                memberRequestDto.password(),
-                memberRequestDto.name()
+                memberRequestDto.password()
         );
         return memberRepository.save(member);
     }
@@ -47,11 +47,16 @@ public class MemberService {
                 .compact();
     }
 
-    public LoginCheckResponseDto getMemberFromToken(String accessToken) {
+    public LoginMember getMemberFromToken(String accessToken) {
         Long memberIdFromToken = parseMemberIdAccessToken(accessToken);
         Member member = memberRepository.findById(memberIdFromToken)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
-        return new LoginCheckResponseDto(member.getName());
+        return new LoginMember(
+                member.getId(),
+                member.getName(),
+                member.getEmail(),
+                member.getRole()
+        );
     }
 
     private Long parseMemberIdAccessToken(String accesToken) {

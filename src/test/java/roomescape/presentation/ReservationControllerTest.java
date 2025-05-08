@@ -14,10 +14,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import roomescape.business.domain.member.Member;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.exception.ErrorResponseDto;
+import roomescape.persistence.fakerepository.FakeMemberRepository;
 import roomescape.persistence.fakerepository.FakeReservationRepository;
 import roomescape.persistence.fakerepository.FakeReservationThemeRepository;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
@@ -25,6 +27,8 @@ import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
 
 class ReservationControllerTest extends AbstractControllerTest {
+
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWQiOjF9.041-SGT29HUufB_TiIkK6ZJ8Oy8NIHVntFsLZsMyTVU";
 
     @LocalServerPort
     private int port;
@@ -38,9 +42,13 @@ class ReservationControllerTest extends AbstractControllerTest {
     @Autowired
     private FakeReservationThemeRepository reservationThemeRepository;
 
+    @Autowired
+    private FakeMemberRepository memberRepository;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        memberRepository.save(new Member("벨로", "bello@email.com", "1234"));
     }
 
     @AfterEach
@@ -69,6 +77,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         List<ReservationResponseDto> response = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", TOKEN)
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/reservations")
@@ -109,6 +118,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         ReservationResponseDto response = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", TOKEN)
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/reservations/" + id)
@@ -137,7 +147,6 @@ class ReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         ReservationRequestDto requestDto = new ReservationRequestDto(
-                "예약1",
                 LocalDate.now().plusDays(1),
                 1L,
                 1L
@@ -147,6 +156,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         ReservationResponseDto response = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", TOKEN)
                 .contentType(ContentType.JSON)
                 .body(requestDto)
                 .when()
@@ -160,7 +170,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         // then
         assertAll(
                 () -> assertThat(response.id()).isNotNull(),
-                () -> assertThat(response.name()).isEqualTo("예약1"),
+                () -> assertThat(response.name()).isEqualTo("벨로"),
                 () -> assertThat(response.date()).isEqualTo(LocalDate.now().plusDays(1)),
                 () -> assertThat(response.time().startAt()).isEqualTo(LocalTime.of(10, 0)),
                 () -> assertThat(response.theme().name()).isEqualTo("테마1"),
@@ -176,7 +186,6 @@ class ReservationControllerTest extends AbstractControllerTest {
         reservationTimeRepository.add(new ReservationTime(LocalTime.of(10, 0)));
         reservationThemeRepository.add(new ReservationTheme("테마1", "설명1", "테마1.jpg"));
         ReservationRequestDto requestDto = new ReservationRequestDto(
-                "예약1",
                 LocalDate.now().minusDays(1),
                 1L,
                 1L
@@ -186,6 +195,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         ErrorResponseDto errorResponseDto = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", TOKEN)
                 .contentType(ContentType.JSON)
                 .body(requestDto)
                 .when()
@@ -216,7 +226,6 @@ class ReservationControllerTest extends AbstractControllerTest {
         );
 
         ReservationRequestDto requestDto = new ReservationRequestDto(
-                "예약2",
                 LocalDate.now().plusDays(1),
                 1L,
                 1L
@@ -226,6 +235,7 @@ class ReservationControllerTest extends AbstractControllerTest {
         ErrorResponseDto errorResponseDto = RestAssured
                 .given()
                 .log().all()
+                .cookie("token", TOKEN)
                 .contentType(ContentType.JSON)
                 .body(requestDto)
                 .when()

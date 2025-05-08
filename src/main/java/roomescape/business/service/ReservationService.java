@@ -7,15 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.business.domain.reservation.Reservation;
 import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.business.domain.reservation.ReservationTime;
+import roomescape.config.LoginMember;
 import roomescape.exception.ReservationException;
 import roomescape.exception.ReservationThemeException;
 import roomescape.exception.ReservationTimeException;
-import roomescape.presentation.mapper.ReservationMapper;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.ReservationRequestDto;
 import roomescape.presentation.dto.ReservationResponseDto;
+import roomescape.presentation.mapper.ReservationMapper;
 
 @Service
 public class ReservationService {
@@ -47,7 +48,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Long createReservation(ReservationRequestDto reservationDto) {
+    public Long createReservation(ReservationRequestDto reservationDto, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeRepository.findById(reservationDto.timeId())
                 .orElseThrow(() -> new ReservationTimeException("존재하지 않는 예약 시간입니다."));
         ReservationTheme theme = reservationThemeRepository.findById(reservationDto.themeId())
@@ -55,7 +56,7 @@ public class ReservationService {
         if (reservationTime.isInThePast(reservationDto.date())) {
             throw new ReservationException("과거 일시로 예약을 생성할 수 없습니다.");
         }
-        Reservation reservation = new Reservation(reservationDto.name(), reservationDto.date(), reservationTime, theme);
+        Reservation reservation = new Reservation(loginMember.name(), reservationDto.date(), reservationTime, theme);
         validateDuplicatedReservation(reservation);
         return reservationRepository.add(reservation);
     }
