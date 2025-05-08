@@ -13,7 +13,7 @@ import roomescape.controller.dto.request.MemberLoginRequest;
 import roomescape.controller.dto.request.MemberSignUpRequest;
 import roomescape.controller.dto.request.MemberSignUpResponse;
 import roomescape.controller.dto.response.MemberLoginCheckResponse;
-import roomescape.service.MemberLoginService;
+import roomescape.service.MemberService;
 import roomescape.service.dto.request.MemberLoginCreation;
 import roomescape.service.dto.request.MemberSignUpCreation;
 import roomescape.service.dto.response.MemberLoginCheckResult;
@@ -22,23 +22,23 @@ import roomescape.service.dto.response.MemberSignUpResult;
 @RestController
 public class MemberController {
 
-    private final MemberLoginService memberLoginService;
+    private final MemberService memberService;
 
-    public MemberController(final MemberLoginService memberLoginService) {
-        this.memberLoginService = memberLoginService;
+    public MemberController(final MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/members")
     public MemberSignUpResponse signup(@RequestBody @Valid MemberSignUpRequest request) {
         MemberSignUpCreation creation = MemberSignUpCreation.from(request);
-        MemberSignUpResult signUpResult = memberLoginService.signup(creation);
+        MemberSignUpResult signUpResult = memberService.signup(creation);
         return MemberSignUpResponse.from(signUpResult);
     }
 
     @PostMapping("/login")
     public void login(@RequestBody @Valid final MemberLoginRequest request,
                       final HttpServletResponse servletResponse) {
-        String loginToken = memberLoginService.login(MemberLoginCreation.from(request));
+        String loginToken = memberService.login(MemberLoginCreation.from(request));
         addCookieToken(servletResponse, loginToken);
     }
 
@@ -53,7 +53,7 @@ public class MemberController {
     @GetMapping("/login/check")
     public ResponseEntity<MemberLoginCheckResponse> checkLogin(HttpServletRequest request) {
         String tokenCookie = getTokenCookie(request);
-        MemberLoginCheckResult memberLoginCheckResult = memberLoginService.varifyToken(tokenCookie);
+        MemberLoginCheckResult memberLoginCheckResult = memberService.varifyToken(tokenCookie);
         return ResponseEntity.ok(MemberLoginCheckResponse.from(memberLoginCheckResult));
     }
 
