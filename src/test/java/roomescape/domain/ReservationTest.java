@@ -20,7 +20,7 @@ class ReservationTest {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 21));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
-        Reservation reservation = new Reservation(new Person("james"), reservationDate,
+        Reservation reservation = new Reservation(new Member("james"), reservationDate,
             reservationTime, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 20);
 
@@ -38,7 +38,7 @@ class ReservationTest {
         //given
         ReservationTime reservationTime = new ReservationTime(1L, LocalTime.of(9, 21));
         ReservationDate reservationDate = new ReservationDate(LocalDate.of(2025, 2, 5));
-        Reservation reservation = new Reservation(new Person("james"), reservationDate,
+        Reservation reservation = new Reservation(new Member("james"), reservationDate,
             reservationTime, theme);
         LocalDateTime currentDateTime = LocalDateTime.of(2025, 2, 5, 9, 22);
 

@@ -7,23 +7,23 @@ import java.util.Objects;
 public class Reservation {
 
     private Long id;
-    private final Person person;
+    private final Member member;
     private final ReservationDate date;
     private final ReservationTime reservationTime;
     private final Theme theme;
 
-    public Reservation(Long id, Person person, ReservationDate date,
+    public Reservation(Long id, Member member, ReservationDate date,
         ReservationTime reservationTime, Theme theme) {
         this.id = id;
-        this.person = person;
+        this.member = member;
         this.date = date;
         this.reservationTime = reservationTime;
         this.theme = theme;
     }
 
-    public Reservation(Person person, ReservationDate date, ReservationTime reservationTime,
+    public Reservation(Member member, ReservationDate date, ReservationTime reservationTime,
         Theme theme) {
-        this(null, person, date, reservationTime, theme);
+        this(null, member, date, reservationTime, theme);
     }
 
     public void validateDateTime(LocalDateTime currentDateTime) {
@@ -42,7 +42,7 @@ public class Reservation {
     }
 
     public String getPersonName() {
-        return person.getName();
+        return member.getName();
     }
 
     public LocalDate getDate() {

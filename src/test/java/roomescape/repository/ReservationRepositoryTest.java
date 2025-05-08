@@ -15,7 +15,7 @@ import roomescape.dao.FakeThemeDaoImpl;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.Person;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -86,7 +86,7 @@ public class ReservationRepositoryTest {
 
     private Reservation createReservation(Theme theme, ReservationTime reservationTime) {
         return new Reservation(
-            new Person("jenson"),
+            new Member("jenson"),
             new ReservationDate(LocalDate.of(2025, 5, 5)),
             reservationTime,
             theme

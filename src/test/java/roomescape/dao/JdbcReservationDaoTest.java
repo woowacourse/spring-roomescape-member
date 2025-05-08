@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.domain.Person;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -48,7 +48,7 @@ public class JdbcReservationDaoTest {
         long savedReservationTimeId = reservationTimeDao.save(reservationTime);
         reservationTime.setId(savedReservationTimeId);
         reservation = new Reservation(
-            new Person("james"),
+            new Member("james"),
             new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime,
             theme);
@@ -76,15 +76,15 @@ public class JdbcReservationDaoTest {
     @DisplayName("db에 존재하는 모든 reservation을 가져올 수 있어야 한다.")
     @Test
     void get_all_reservation() {
-        Reservation reservation1 = new Reservation(new Person("james"),
+        Reservation reservation1 = new Reservation(new Member("james"),
             new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime, theme);
         reservationDao.save(reservation1);
-        Reservation reservation2 = new Reservation(new Person("james"),
+        Reservation reservation2 = new Reservation(new Member("james"),
             new ReservationDate(LocalDate.of(2025, 12, 26)),
             reservationTime, theme);
         reservationDao.save(reservation2);
-        Reservation reservation3 = new Reservation(new Person("james"),
+        Reservation reservation3 = new Reservation(new Member("james"),
             new ReservationDate(LocalDate.of(2025, 12, 27)),
             reservationTime, theme);
         reservationDao.save(reservation3);
@@ -96,7 +96,7 @@ public class JdbcReservationDaoTest {
     @Test
     void given_reservation_id_then_delete_data() {
         //given
-        Reservation reservation = new Reservation(new Person("james"),
+        Reservation reservation = new Reservation(new Member("james"),
             new ReservationDate(LocalDate.of(2025, 12, 25)),
             reservationTime, theme);
         long savedId = reservationDao.save(reservation);

@@ -1,14 +1,9 @@
 package roomescape.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.domain.Person;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.dto.ReservationResponseDto;
 import roomescape.exception.InvalidReservationException;
@@ -54,14 +49,18 @@ public class ReservationService {
     }
 
     private Reservation createReservationFrom(ReservationRequestDto reservationRequestDto) {
+        /*
         LocalDateTime currentDateTimeInfo = currentDateTime.get();
-        Person person = new Person(reservationRequestDto.name());
+        Member member = new Member(reservationRequestDto.name());
         ReservationDate date = new ReservationDate(LocalDate.parse(reservationRequestDto.date()));
         date.validateDate(currentDateTimeInfo.toLocalDate());
         ReservationTime reservationTime = reservationTimeRepository.findById(
             reservationRequestDto.timeId());
         Theme theme = themeRepository.findById(reservationRequestDto.themeId());
-        return new Reservation(person, date, reservationTime, theme);
+        return new Reservation(member, date, reservationTime, theme);
+
+         */
+        return null;
     }
 
     private void validateAlreadyExistDateTime(ReservationRequestDto reservationRequestDto,

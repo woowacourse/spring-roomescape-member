@@ -1,0 +1,24 @@
+package roomescape.service;
+
+import org.springframework.stereotype.Service;
+import roomescape.domain.Member;
+import roomescape.dto.MemberRequestDto;
+import roomescape.dto.MemberResponseDto;
+import roomescape.repository.MemberRepository;
+
+@Service
+public class MemberService {
+
+    private final MemberRepository memberRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    public MemberResponseDto saveMember(MemberRequestDto memberRequestDto) {
+        Member member = new Member(memberRequestDto.name(), memberRequestDto.email(),
+            memberRequestDto.password());
+        memberRepository.save(member);
+        return MemberResponseDto.from(member);
+    }
+}

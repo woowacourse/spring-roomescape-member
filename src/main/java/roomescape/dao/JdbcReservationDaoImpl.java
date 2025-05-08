@@ -8,11 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.domain.Person;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -33,7 +31,9 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     @Override
     public List<Reservation> findAll() {
+        /*
         String sql = """
+
                select r.id as reservation_id, 
                       r.name, 
                       r.date,
@@ -58,16 +58,22 @@ public class JdbcReservationDaoImpl implements ReservationDao {
                     createReservationTime(resultSet),
                     createTheme(resultSet)
                 ));
+
+         */
+        return null;
     }
 
     private ReservationDate createReservationDate(ResultSet resultSet) throws SQLException {
         return new ReservationDate(LocalDate.parse(resultSet.getString("date")));
     }
 
-    private Person createPerson(ResultSet resultSet) throws SQLException {
-        return new Person(resultSet.getString("name"));
+    /*
+    private Member createPerson(ResultSet resultSet) throws SQLException {
+        return new Member(resultSet.getString("name"));
     }
 
+
+     */
     private Theme createTheme(ResultSet resultSet) throws SQLException {
         return new Theme(
             resultSet.getLong("theme_id"),
@@ -103,6 +109,7 @@ public class JdbcReservationDaoImpl implements ReservationDao {
 
     @Override
     public Optional<Reservation> findById(Long id) {
+        /*
         String query = """
                 SELECT r.id AS reservation_id,
                        r.name,
@@ -136,6 +143,9 @@ public class JdbcReservationDaoImpl implements ReservationDao {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+
+         */
+        return null;
     }
 
     @Override

@@ -14,7 +14,7 @@ import roomescape.dao.FakeThemeDaoImpl;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.domain.Person;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationDate;
 import roomescape.domain.ReservationTime;
@@ -67,7 +67,7 @@ public class ReservationServiceTest {
         reservationTime.setId(savedReservationTimeId);
 
         Reservation reservation = new Reservation(
-            new Person("젠슨"),
+            new Member("젠슨"),
             reservationDate,
             reservationTime,
             theme);
