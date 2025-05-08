@@ -31,3 +31,6 @@ VALUES ('브라운', 1, '2025-04-29', 1),
        ('브리10', 9, '2025-04-23', 1),
        ('브리11', 11, '2025-04-23', 1),
        ('브리12', 11, '2025-04-23', 1);
+
+INSERT INTO member (name, email, password)
+VALUES ('어드민', 'admin@email.com', 'password')
