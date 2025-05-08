@@ -35,6 +35,18 @@ public class H2MemberDao implements MemberDao {
         return findMembers.stream().findFirst();
     }
 
+    @Override
+    public Optional<Member> findById(Long memberId) {
+        String sql = """
+            SELECT *
+            FROM member
+            WHERE id = :id
+            """;
+
+        List<Member> findMembers = jdbcTemplate.query(sql, new MapSqlParameterSource("id", memberId), getMemberRowMapper());
+        return findMembers.stream().findFirst();
+    }
+
     private RowMapper<Member> getMemberRowMapper() {
         return (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),

@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface MemberDao {
 
     Optional<Member> findByEmailAndPassword(String email, String password);
+
+    Optional<Member> findById(Long memberId);
 }

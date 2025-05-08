@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.response.LoginCheckResponse;
 import roomescape.dto.response.LoginResponse;
 import roomescape.entity.Member;
 import roomescape.exception.AuthenticationException;
@@ -33,5 +34,17 @@ public class MemberService {
             .compact();
 
         return LoginResponse.from(accessToken);
+    }
+
+    public LoginCheckResponse findByToken(String token) {
+        Long memberId = Long.valueOf(Jwts.parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+            .build()
+            .parseClaimsJws(token)
+            .getBody().getSubject());
+
+        Member findMember = memberDao.findById(memberId)
+            .orElseThrow(() -> new AuthenticationException("로그인 정보가 일치하지 않습니다."));
+        return LoginCheckResponse.of(findMember.getName());
     }
 }
