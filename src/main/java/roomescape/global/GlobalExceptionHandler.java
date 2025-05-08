@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
         return new ExceptionResponse("잘못된 요청 형식입니다.");
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({InvalidAccessTokenException.class, IllegalArgumentException.class})
     public ExceptionResponse handleIllegalArgumentException(RuntimeException ex) {
         return new ExceptionResponse(ex.getMessage());
