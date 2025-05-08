@@ -25,12 +25,6 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.ReservationRepository;
 import roomescape.domain.reservation.utils.JdbcTemplateUtils;
 
-/**
- * DAO 테스트 비활성화
- * 단순한 SQL 쿼리에 대하여 검증하는 구간이라고 느끼게 되서 DAO 대한 테스트 비활성화
- * 대신, Fake를 활용한 서비스 테스트와 서비스 + 실제 레포지토리를 함친 테스트를 하여 테스트 문제점을 파악할 수 있다고 보았음
- */
-
 @JdbcTest
 @Import(ReservationDAO.class)
 class ReservationDAOTest {
@@ -232,6 +226,74 @@ class ReservationDAOTest {
             softly.assertThat(themeName)
                     .isEqualTo(THEME_NAME);
         }
+        softly.assertAll();
+    }
+
+    @DisplayName("특정 날짜에 대하여만 조회한다.")
+    @Test
+    void findReservationsByDateTest() {
+        // given
+        final LocalDateTime now = LocalDateTime.of(2025, 4, 25, 10, 0);
+        saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
+        saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        saveReservation(1L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(2L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(3L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(4L, "꾹", now.toLocalDate()
+                .plusDays(1), RESERVATION_TIME_ID, THEME_ID);
+
+        // when
+        final List<Reservation> result = reservationRepository.findReservations(null, null, now.toLocalDate(),
+                now.toLocalDate());
+
+        // then
+        assertThat(result).hasSize(3);
+    }
+
+    @DisplayName("특정 회원에 대하여만 조회한다")
+    @Test
+    void findReservationByNameTest() {
+        // given
+        final LocalDateTime now = LocalDateTime.of(2025, 4, 25, 10, 0);
+        saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
+        saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        saveReservation(1L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(2L, "헤일러", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(3L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(4L, "부기", now.toLocalDate()
+                .plusDays(1), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(5L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        // when
+        final List<Reservation> result = reservationRepository.findReservations(null, "꾹", null, null);
+
+        // then
+        assertThat(result).hasSize(3);
+    }
+
+    @DisplayName("특정 테마에 대하여만 조회한다")
+    @Test
+    void findReservationByThemeTest() {
+        // given
+        final LocalDateTime now = LocalDateTime.of(2025, 4, 25, 10, 0);
+        saveReservationTime(RESERVATION_TIME_ID, now.toLocalTime());
+        saveTheme(THEME_ID, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+        saveTheme(THEME_ID + 1, THEME_NAME, THEME_DESCRIPTION, THEME_THUMBNAIL);
+
+        saveReservation(1L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(2L, "헤일러", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(3L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(4L, "부기", now.toLocalDate()
+                .plusDays(1), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(5L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID);
+        saveReservation(6L, "꾹", now.toLocalDate(), RESERVATION_TIME_ID, THEME_ID + 1);
+
+        // when
+        final List<Reservation> result = reservationRepository.findReservations(THEME_ID, null, null, null);
+
+        // then
+        assertThat(result).hasSize(5);
     }
 
     @DisplayName("예약 정보를 삭제한다.")

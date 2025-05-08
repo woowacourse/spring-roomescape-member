@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.auth.config.AuthenticationPrincipal;
 import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
@@ -30,8 +31,13 @@ public class ReservationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> readAllReservations() {
-        final List<ReservationResponse> response = reservationService.getAll();
+    public ResponseEntity<List<ReservationResponse>> readAllReservations(
+            @RequestParam(value = "themeId", required = false) final Long themeId,
+            @RequestParam(value = "memberId", required = false) final Long memberId,
+            @RequestParam(value = "dataFrom", required = false) final LocalDate dataFrom,
+            @RequestParam(value = "dataTo", required = false) final LocalDate dataTo
+    ) {
+        final List<ReservationResponse> response = reservationService.getAll(themeId, memberId, dataFrom, dataTo);
 
         return ResponseEntity.ok(response);
     }
@@ -46,7 +52,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(@Valid @RequestBody final ReservationRequest request,
-                                                      final LoginUserDto userDto) {
+                                                      @AuthenticationPrincipal final LoginUserDto userDto) {
         final ReservationResponse response = reservationService.create(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -71,7 +71,7 @@ public class ReservationControllerTest {
                 .toList();
 
         // when
-        when(reservationService.getAll()).thenReturn(responses);
+        when(reservationService.getAll(any(), any(), any(), any())).thenReturn(responses);
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.get("/reservations"))

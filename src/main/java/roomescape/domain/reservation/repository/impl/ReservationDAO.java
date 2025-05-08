@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class ReservationDAO implements ReservationRepository {
     @Override
     public List<Reservation> findAll() {
         final String sql = """
-                select rs.id as reservation_id, rs.name, rs.date, 
+                  select rs.id as reservation_id, rs.name, rs.date,
                        rst.id as reservation_time_id, rst.start_at,
                        th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
                 from reservation rs
@@ -48,6 +49,39 @@ public class ReservationDAO implements ReservationRepository {
                 """;
 
         return jdbcTemplate.query(sql, (resultSet, rowNum) -> reservationOf(resultSet));
+    }
+
+    @Override
+    public List<Reservation> findReservations(final Long themeId, final String name, final LocalDate dateFrom,
+                                              final LocalDate dateTo) {
+        final String sql = """
+                select rs.id as reservation_id, rs.name, rs.date,
+                       rst.id as reservation_time_id, rst.start_at,
+                       th.id as theme_id, th.name as theme_name, th.description, th.thumbnail
+                from reservation rs
+                INNER JOIN reservation_time rst ON rs.time_id = rst.id
+                INNER JOIN theme th ON rs.theme_id = th.id
+                WHERE (:themeId IS NULL OR th.id = :themeId)
+                  AND (:name IS NULL OR rs.name = :name)
+                  AND (:dateFrom IS NULL OR rs.date >= :dateFrom)
+                  AND (:dateTo IS NULL OR rs.date <= :dateTo)
+                """;
+
+        final Map<String, Object> params = findAllParamsOf(themeId, name, dateFrom, dateTo);
+
+        return jdbcTemplate.query(sql, params, (resultSet, rowNum) -> reservationOf(resultSet));
+    }
+
+    private Map<String, Object> findAllParamsOf(final Long themeId, final String name, final LocalDate dateFrom,
+                                                final LocalDate dateTo) {
+        final HashMap<String, Object> params = new HashMap<>();
+
+        params.put("themeId", themeId);
+        params.put("name", name);
+        params.put("dateFrom", dateFrom);
+        params.put("dateTo", dateTo);
+
+        return params;
     }
 
     @Override
