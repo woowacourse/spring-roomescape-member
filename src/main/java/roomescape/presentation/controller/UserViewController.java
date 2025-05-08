@@ -14,4 +14,9 @@ public class UserViewController {
     public String reservationPage() {
         return "reservation";
     }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 }
