@@ -16,6 +16,11 @@ public class ViewMappingController {
         return "login";
     }
 
+    @GetMapping("/signup")
+    public String signUp() {
+        return "signup";
+    }
+
     @GetMapping("/admin")
     public String admin() {
         return "admin/index";
