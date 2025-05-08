@@ -60,6 +60,10 @@ public class Reservation {
         return theme;
     }
 
+    public boolean isEqualThemeId(Long themeId) {
+        return theme.getId().equals(themeId);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {

@@ -3,10 +3,10 @@ package roomescape.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.BusinessRuleViolationException;
 import roomescape.common.exception.NotFoundEntityException;
+import roomescape.domain.DailyThemeReservations;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationRepository;
 import roomescape.domain.ReservationTime;
@@ -50,10 +50,9 @@ public class ReservationTimeService {
         List<Reservation> reservations = reservationRepository.findByThemeIdAndReservationDate(themeId,
                 reservationDate);
 
-        Set<ReservationTime> bookedTimes = reservations.stream()
-                .map(Reservation::getTime)
-                .filter(reservationTimes::contains)
-                .collect(Collectors.toSet());
+        DailyThemeReservations dailyThemeReservations = new DailyThemeReservations(reservations, themeId,
+                reservationDate);
+        Set<ReservationTime> bookedTimes = dailyThemeReservations.calculateBookedTimes();
 
         return reservationTimes.stream()
                 .map(reservationTime ->

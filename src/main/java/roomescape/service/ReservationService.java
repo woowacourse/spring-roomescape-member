@@ -26,7 +26,8 @@ public class ReservationService {
     private final Clock clock;
 
     public ReservationService(ReservationTimeRepository reservationTImeRepository,
-                              ReservationRepository reservationRepository, final ThemeRepository themeRepository,
+                              ReservationRepository reservationRepository,
+                              ThemeRepository themeRepository,
                               Clock clock) {
         this.reservationTImeRepository = reservationTImeRepository;
         this.reservationRepository = reservationRepository;
@@ -46,8 +47,11 @@ public class ReservationService {
             throw new BusinessRuleViolationException("날짜와 시간이 중복된 예약이 존재합니다.");
         }
 
-        Reservation reservation = new Reservation(createReservationParam.name(), createReservationParam.date(),
-                reservationTime, theme);
+        Reservation reservation = new Reservation(
+                createReservationParam.name(),
+                createReservationParam.date(),
+                reservationTime,
+                theme);
         reservation.validateReservable(LocalDateTime.now(clock));
 
         return reservationRepository.create(reservation);
