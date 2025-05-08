@@ -30,7 +30,7 @@ public class JwtTokenProvider implements TokenProvider {
     @Override
     public String resolve(String token) {
         return Jwts.parser()
-                .decryptWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
