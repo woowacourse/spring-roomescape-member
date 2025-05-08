@@ -1,7 +1,6 @@
 package roomescape.reservationTime.domain;
 
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class ReservationTime {
 
@@ -46,6 +45,6 @@ public class ReservationTime {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return (id != null) ? id.hashCode() : 0;
     }
 }
