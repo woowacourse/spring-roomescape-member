@@ -1,4 +1,4 @@
-package roomescape.presentation.controller.rest;
+package roomescape.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +21,7 @@ import roomescape.presentation.dto.ReservationResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ReservationControllerTest {
+class ReservationIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

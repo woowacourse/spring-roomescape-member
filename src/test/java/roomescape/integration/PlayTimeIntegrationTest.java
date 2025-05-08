@@ -1,4 +1,4 @@
-package roomescape.presentation.controller.rest;
+package roomescape.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +20,7 @@ import roomescape.presentation.dto.PlayTimeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class PlayTimeControllerTest {
+class PlayTimeIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

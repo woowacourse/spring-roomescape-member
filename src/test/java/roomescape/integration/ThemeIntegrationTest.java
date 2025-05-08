@@ -1,4 +1,4 @@
-package roomescape.presentation.controller.rest;
+package roomescape.integration;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +22,7 @@ import roomescape.presentation.dto.ThemeResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ThemeControllerTest {
+class ThemeIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
