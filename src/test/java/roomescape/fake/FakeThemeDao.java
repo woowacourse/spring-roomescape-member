@@ -2,6 +2,7 @@ package roomescape.fake;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ThemeDao;
@@ -51,11 +52,6 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public List<Theme> findPopularThemesBetweenWithLimit(final String startDate, final String endDate, final int limit) {
-        return List.of();
-    }
-
-    @Override
     public List<Theme> findAll() {
         return themes.stream()
                 .filter(themeEntity -> themeEntity.id() != null)
@@ -74,7 +70,32 @@ public class FakeThemeDao implements ThemeDao {
         }
     }
 
-    public List<ThemeEntity> getThemes() {
-        return themes;
+    @Override
+    public List<Theme> findPopularThemesBetweenWithLimit(
+            final String startDate,
+            final String endDate,
+            final int limit
+    ) {
+        final Map<Long, Integer> reservations = Map.of(
+                1L, 5,
+                2L, 3,
+                3L, 10,
+                4L, 2
+        );
+
+        return themes.stream()
+                .filter(themeEntity -> themeEntity.id() != null)
+                .map(ThemeEntity::toDomain)
+                .sorted((t1, t2) -> {
+                    int count1 = reservations.getOrDefault(t1.getId(), 0);
+                    int count2 = reservations.getOrDefault(t2.getId(), 0);
+
+                    if (count1 == count2) {
+                        return Long.compare(t1.getId(), t2.getId());
+                    }
+                    return Integer.compare(count2, count1);
+                })
+                .limit(limit)
+                .toList();
     }
 }

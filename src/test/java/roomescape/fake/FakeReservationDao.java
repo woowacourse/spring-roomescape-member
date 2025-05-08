@@ -17,16 +17,11 @@ public class FakeReservationDao implements ReservationDao {
 
     private final List<ReservationEntity> reservations = new ArrayList<>();
     private final List<PlayTimeEntity> times;
-    private final List<ThemeEntity> themes;
 
     private int index = 1;
 
-    public FakeReservationDao(
-            final List<PlayTimeEntity> times,
-            final List<ThemeEntity> themes
-    ) {
+    public FakeReservationDao(final List<PlayTimeEntity> times) {
         this.times = times;
-        this.themes = themes;
         final ReservationEntity dummy = new ReservationEntity(null, null, null, null, null);
         reservations.add(dummy);
     }

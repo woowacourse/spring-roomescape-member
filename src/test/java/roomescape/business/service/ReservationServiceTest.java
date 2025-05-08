@@ -47,10 +47,7 @@ public class ReservationServiceTest {
         reservationService = new ReservationService(
                 playTimeServiceFixture,
                 themeServiceFixture,
-                new FakeReservationDao(
-                        timeDaoFixture.getTimes(),
-                        themeDaoFixture.getThemes()
-                )
+                new FakeReservationDao(timeDaoFixture.getTimes())
         );
     }
 
@@ -79,7 +76,7 @@ public class ReservationServiceTest {
     void createOrThrowIfTimeIdNotExists() {
         // given
         final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 2L, 1L
+                "hotteok", FORMATTED_MAX_LOCAL_DATE, 3L, 1L
         );
 
         // when & then
