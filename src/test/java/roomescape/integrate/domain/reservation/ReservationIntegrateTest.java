@@ -8,109 +8,42 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import roomescape.domain.reservation.Reservation;
-import roomescape.domain.reservation.ReservationTime;
-import roomescape.domain.reservation.Theme;
 import roomescape.dto.reservation.ThemeResponseDto;
-import roomescape.repository.reservation.ReservationRepository;
+import roomescape.integrate.fixture.RequestFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class ReservationIntegrateTest {
 
-    static Map<String, String> params;
+    private final RequestFixture requestFixture = new RequestFixture();
+
     private static Map<String, String> cookies;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    static {
-        params = new HashMap<>();
-        params.put("name", "브라운");
-        params.put("date", LocalDate.now().plusDays(1).toString());
-        params.put("time", "15:40");
-    }
+    private long themeId;
+    private long timeId;
 
     @BeforeEach
     void setup() {
-        Map<String, String> signupParam = Map.of("name", "투다", "email", "test@email.com", "password",
-                "testtest");
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(signupParam)
-                .log().all()
-                .when().post("/auth/signup")
-                .then()
-                .statusCode(201);
-
-        Map<String, String> loginParam = Map.of("email", "test@email.com", "password", "testtest");
-        cookies = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(loginParam)
-                .when().post("/auth/login")
-                .then().log().all()
-                .extract().cookies();
-    }
-
-    @AfterEach
-    void cleanup() {
-        jdbcTemplate.execute("drop all objects");
+        requestFixture.reqeustSignup("투다", "test@email.com", "testtest");
+        cookies = requestFixture.requestLogin("test@email.com", "testtest");
+        themeId = requestFixture.requestAddTheme("테마 명", "description", "thumbnail");
+        LocalTime afterTime = LocalTime.now().plusHours(1L);
+        timeId = requestFixture.requestAddTime(afterTime.toString());
     }
 
     @Test
     void 예약_추가_테스트() {
-        Map<String, String> timeParam = new HashMap<>();
-        LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
-
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
-
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1).toString());
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookies(cookies)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        requestFixture.requestAddReservation("예약", LocalDate.now().toString(), themeId, timeId, cookies);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -121,44 +54,8 @@ class ReservationIntegrateTest {
 
     @Test
     void 예약_삭제_테스트() {
-        long deleteReservationId = 1L;
-
-        Map<String, String> timeParam = new HashMap<>();
-        LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
-
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
-
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", LocalDate.now().plusDays(1).toString());
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .cookies(cookies)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        long reservationId = requestFixture.requestAddReservation("예약", LocalDate.now().toString(), themeId, timeId,
+                cookies);
 
         RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -168,85 +65,43 @@ class ReservationIntegrateTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
-                .body(reservation)
                 .cookies(cookies)
-                .when().delete("/reservations/" + deleteReservationId)
+                .when().delete("/reservations/" + reservationId)
                 .then().log().all()
                 .statusCode(204);
+
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200)
+                .body("size()", is(0));
     }
 
     @Test
-    void 테마_랭킹_테스트(@Autowired ReservationRepository reservationRepository) {
-        Map<String, String> timeParam = new HashMap<>();
-        LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
+    void 테마_랭킹_테스트() {
+        LocalTime afterTime = LocalTime.now().plusHours(1);
+        long timeId = requestFixture.requestAddTime(afterTime.toString());
 
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명1");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
+        long themeId1 = requestFixture.requestAddTheme("테마 명1", "description", "thumbnail");
+        long themeId2 = requestFixture.requestAddTheme("테마 명2", "description", "thumbnail");
+        long themeId3 = requestFixture.requestAddTheme("테마 명3", "description", "thumbnail");
 
-        Map<String, String> themeParam2 = new HashMap<>();
-        themeParam2.put("name", "테마 명2");
-        themeParam2.put("description", "description");
-        themeParam2.put("thumbnail", "thumbnail");
+        requestFixture.requestAddReservation("테마1예약이름1", String.valueOf(LocalDate.now().minusDays(1)), timeId, themeId1,
+                cookies);
+        requestFixture.requestAddReservation("테마1예약이름2", String.valueOf(LocalDate.now().minusDays(2)), timeId, themeId1,
+                cookies);
+        requestFixture.requestAddReservation("테마1예약이름3", String.valueOf(LocalDate.now().minusDays(3)), timeId, themeId1,
+                cookies);
+        requestFixture.requestAddReservation("테마2예약이름1", String.valueOf(LocalDate.now().minusDays(1)), timeId, themeId2,
+                cookies);
+        requestFixture.requestAddReservation("테마2예약이름2", String.valueOf(LocalDate.now().minusDays(2)), timeId, themeId2,
+                cookies);
+        requestFixture.requestAddReservation("테마3예약이름1", String.valueOf(LocalDate.now().minusDays(1)), timeId, themeId3,
+                cookies);
 
-        Map<String, String> themeParam3 = new HashMap<>();
-        themeParam3.put("name", "테마 명3");
-        themeParam3.put("description", "description");
-        themeParam3.put("thumbnail", "thumbnail");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam2)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam3)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        Reservation reservation1 = new Reservation(null, "이름", LocalDate.now().minusDays(1),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
-        Reservation reservation2 = new Reservation(null, "이름", LocalDate.now().minusDays(2),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
-        Reservation reservation3 = new Reservation(null, "이름", LocalDate.now().minusDays(3),
-                new ReservationTime(1L, afterTime), new Theme(1L, "테마 명1", "description", "thumbnail"));
-        Reservation reservation4 = new Reservation(null, "이름", LocalDate.now().minusDays(4),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
-        Reservation reservation5 = new Reservation(null, "이름", LocalDate.now().minusDays(5),
-                new ReservationTime(1L, afterTime), new Theme(2L, "테마 명2", "description", "thumbnail"));
-        Reservation reservation6 = new Reservation(null, "이름", LocalDate.now().minusDays(6),
-                new ReservationTime(1L, afterTime), new Theme(3L, "테마 명3", "description", "thumbnail"));
-
-        reservationRepository.add(reservation1);
-        reservationRepository.add(reservation2);
-        reservationRepository.add(reservation3);
-        reservationRepository.add(reservation4);
-        reservationRepository.add(reservation5);
-        reservationRepository.add(reservation6);
-
-        Response response = RestAssured.given().log().all()
+        Response response = RestAssured.given()
                 .when().get("/reservations/popular-themes")
-                .then().log().all()
+                .then()
                 .extract().response();
 
         List<ThemeResponseDto> rankingThemes = response.jsonPath().getList("", ThemeResponseDto.class);
@@ -254,6 +109,6 @@ class ReservationIntegrateTest {
                 .map(ThemeResponseDto::id)
                 .toList();
 
-        assertThat(rankingThemeIds).containsExactlyElementsOf(List.of(1L, 2L, 3L));
+        assertThat(rankingThemeIds).containsExactlyElementsOf(List.of(themeId1, themeId2, themeId3));
     }
 }

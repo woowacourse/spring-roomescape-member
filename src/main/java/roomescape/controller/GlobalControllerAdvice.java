@@ -5,12 +5,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import roomescape.infrastructure.log.logger.RoomEscapeLog;
 
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
+    private final RoomEscapeLog roomEscapeLog;
+
+    public GlobalControllerAdvice(RoomEscapeLog roomEscapeLog) {
+        this.roomEscapeLog = roomEscapeLog;
+    }
+
     @ExceptionHandler(exception = IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        roomEscapeLog.printLog(e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

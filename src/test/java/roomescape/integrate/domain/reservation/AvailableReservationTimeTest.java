@@ -7,114 +7,37 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import roomescape.integrate.fixture.RequestFixture;
 
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class AvailableReservationTimeTest {
 
-    private static String todayDateString;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @AfterEach
-    void cleanup() {
-        jdbcTemplate.execute("drop all objects");
-    }
+    private final RequestFixture requestFixture = new RequestFixture();
+    private String todayDateString;
 
     @BeforeEach
     void setup() {
-        Map<String, String> signupParam = Map.of("name", "투다", "email", "reservation-add@email.com", "password",
-                "password");
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(signupParam)
-                .when().post("/auth/signup")
-                .then()
-                .statusCode(201);
-        Map<String, String> loginParam = Map.of("email", "reservation-add@email.com", "password", "password");
-
-        Map<String, String> cookies = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(loginParam)
-                .when().post("/auth/login")
-                .then().log().all()
-                .extract().cookies();
-
         todayDateString = LocalDate.now().plusDays(1).toString();
-        Map<String, String> timeParam = new HashMap<>();
-        LocalTime afterTime = LocalTime.now().plusHours(1L);
-        timeParam.put("startAt", afterTime.toString());
 
-        Map<String, String> timeParam2 = new HashMap<>();
-        LocalTime afterTime2 = LocalTime.now().plusHours(2L);
-        timeParam2.put("startAt", afterTime2.toString());
-
-        Map<String, String> timeParam3 = new HashMap<>();
-        LocalTime afterTime3 = LocalTime.now().plusHours(3L);
-        timeParam3.put("startAt", afterTime3.toString());
-
-        Map<String, String> themeParam = new HashMap<>();
-        themeParam.put("name", "테마 명");
-        themeParam.put("description", "description");
-        themeParam.put("thumbnail", "thumbnail");
-
-        Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
-        reservation.put("date", todayDateString);
-        reservation.put("timeId", 1);
-        reservation.put("themeId", 1);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam2)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(timeParam3)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(themeParam)
-                .when().post("/themes")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .cookies(cookies)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        requestFixture.reqeustSignup("투다", "reservation-add@email.com", "password");
+        Map<String, String> cookies = requestFixture.requestLogin("reservation-add@email.com", "password");
+        requestFixture.requestAddTime(LocalTime.now().plusHours(1).toString());
+        requestFixture.requestAddTime(LocalTime.now().plusHours(2).toString());
+        long timeId = requestFixture.requestAddTime(LocalTime.now().plusHours(3).toString());
+        long themeId = requestFixture.requestAddTheme("테마 명", "description", "thumbnail");
+        requestFixture.requestAddReservation("브라운", todayDateString, timeId, themeId, cookies);
     }
 
     @Test
