@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlot;
@@ -55,7 +56,9 @@ class ReservationServiceTest {
     @Test
     void 예약을_추가하고_조회할_수_있다() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
@@ -67,7 +70,7 @@ class ReservationServiceTest {
                 themeId);
 
         // when
-        reservationService.addReservation(request, member);
+        reservationService.addReservation(request, loginMember);
 
         //then
         assertThat(reservationService.allReservations()).hasSize(1);
@@ -76,7 +79,9 @@ class ReservationServiceTest {
     @Test
     void 이전_날짜에_예약할_수_없다() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
@@ -88,14 +93,16 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new CreateReservationRequest(yesterday, reservationTimeId, themeId), member))
+                new CreateReservationRequest(yesterday, reservationTimeId, themeId), loginMember))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 같은날짜일시_이전_시간에_예약할_수_없다() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         ReservationTime pastTime = new ReservationTime(null, LocalTime.now().minusHours(1L));
         long pastTimeId = reservationTimeRepository.add(pastTime).getId();
@@ -107,14 +114,16 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new CreateReservationRequest(today, pastTimeId, themeId), member))
+                new CreateReservationRequest(today, pastTimeId, themeId), loginMember))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void 이후_날짜에_예약할_수_있다() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
@@ -126,14 +135,16 @@ class ReservationServiceTest {
 
         // when & then
         assertThatCode(() -> reservationService.addReservation(
-                new CreateReservationRequest(today, reservationTimeId, themeId), member))
+                new CreateReservationRequest(today, reservationTimeId, themeId), loginMember))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void 같은날짜일시_이후_시간_예약할_수_있다() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
@@ -145,14 +156,16 @@ class ReservationServiceTest {
 
         // when & then
         assertThatCode(() -> reservationService.addReservation(
-                new CreateReservationRequest(today, reservationTimeId, themeId), member))
+                new CreateReservationRequest(today, reservationTimeId, themeId), loginMember))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void 예약을_삭제하고_조회할_수_있다() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
@@ -164,7 +177,7 @@ class ReservationServiceTest {
                 LocalDate.now().plusDays(1L), reservationTimeId, themeId);
 
         // when
-        Reservation reservation = reservationService.addReservation(request, member);
+        Reservation reservation = reservationService.addReservation(request, loginMember);
         int beforeAddSize = reservationService.allReservations().size();
         reservationService.deleteReservation(reservation.getId());
         int afterDeleteSize = reservationService.allReservations().size();
@@ -177,7 +190,9 @@ class ReservationServiceTest {
     @Test
     void 중복_예약은_불가능하다() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
@@ -186,18 +201,20 @@ class ReservationServiceTest {
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
-                new CreateReservationRequest(LocalDate.now(), reservationTimeId, themeId), member);
+                new CreateReservationRequest(LocalDate.now(), reservationTimeId, themeId), loginMember);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new CreateReservationRequest(LocalDate.now(), reservationTimeId, themeId), member))
+                new CreateReservationRequest(LocalDate.now(), reservationTimeId, themeId), loginMember))
                 .isInstanceOf(InvalidReservationException.class);
     }
 
     @Test
     void 선택된_테마와_날짜에_대해서_가능한_시간들을_확인할_수_있다2() {
         // given
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         LocalDate today = LocalDate.now();
         LocalTime firstTime = LocalTime.now().plusHours(1L);
@@ -212,7 +229,7 @@ class ReservationServiceTest {
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
-                new CreateReservationRequest(today, firstReservationTime.getId(), themeId), member);
+                new CreateReservationRequest(today, firstReservationTime.getId(), themeId), loginMember);
 
         // when
         AvailableTimeRequest availableTimeRequest = new AvailableTimeRequest(today, themeId);
@@ -243,25 +260,27 @@ class ReservationServiceTest {
             reservationTimeRepository.add(new ReservationTime(null, localTime));
         }
 
-        Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member member = memberRepository.add(beforeAddMember);
+        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
         // 테마 1 예약 3개
         reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 1L),
-                member);
+                loginMember);
         reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 2L, 1L),
-                member);
+                loginMember);
         reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 3L, 1L),
-                member);
+                loginMember);
 
         // 테마 2 예약 2개
         reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 2L),
-                member);
+                loginMember);
         reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 2L, 2L),
-                member);
+                loginMember);
 
         // 테마 3 예약 1개
         reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 3L),
-                member);
+                loginMember);
 
         // when
         List<Theme> themeRanking = reservationService.getRankingThemes(LocalDate.now().plusDays(6));

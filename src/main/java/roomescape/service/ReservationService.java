@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationSlots;
@@ -46,11 +47,13 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public Reservation addReservation(CreateReservationRequest request, Member member) {
+    public Reservation addReservation(CreateReservationRequest request, LoginMember loginMember) {
         ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
+        Member member = memberRepository.findById(loginMember.getId())
+                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 멤버 id입니다."));
 
         Reservation reservation = request.toReservation(member, reservationTime, theme);
 

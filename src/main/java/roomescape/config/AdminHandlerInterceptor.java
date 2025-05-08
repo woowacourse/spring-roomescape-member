@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import roomescape.domain.Member;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Role;
 import roomescape.exception.ForbiddenException;
 import roomescape.service.AuthService;
@@ -19,11 +19,10 @@ public class AdminHandlerInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String token = JwtExtractor.extractFromRequest(request);
-        Member member = authService.getMemberByToken(token);
-        if (member.getRole() == Role.ADMIN) {
+        LoginMember loginMember = authService.getLoginMemberByToken(token);
+        if (loginMember.getRole() == Role.ADMIN) {
             return true;
         }
         throw new ForbiddenException("어드민만 접근 가능한 페이지입니다.");

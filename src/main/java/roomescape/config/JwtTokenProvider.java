@@ -1,5 +1,6 @@
 package roomescape.config;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -19,11 +20,11 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Long getMemberIdByToken(String token) {
-        return Long.valueOf(Jwts.parserBuilder()
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().getSubject());
+                .getBody();
     }
 }

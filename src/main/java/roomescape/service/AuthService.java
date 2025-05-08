@@ -1,19 +1,18 @@
 package roomescape.service;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import roomescape.config.JwtTokenProvider;
+import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
-import roomescape.exception.UnauthorizedException;
-import roomescape.repository.MemberRepository;
+import roomescape.domain.Role;
 
 @Service
 public class AuthService {
 
-    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
-        this.memberRepository = memberRepository;
+    public AuthService(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -21,9 +20,12 @@ public class AuthService {
         return jwtTokenProvider.createTokenByMember(member);
     }
 
-    public Member getMemberByToken(String token) {
-        long memberId = jwtTokenProvider.getMemberIdByToken(token);
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new UnauthorizedException("존재하지 않는 멤버 ID입니다."));
+    public LoginMember getLoginMemberByToken(String token) {
+        Claims claims = jwtTokenProvider.getClaimsFromToken(token);
+        long memberId = Long.parseLong(claims.getSubject());
+        String name = claims.get("name", String.class);
+        String role = claims.get("role", String.class);
+
+        return new LoginMember(memberId, name, Role.valueOf(role));
     }
 }
