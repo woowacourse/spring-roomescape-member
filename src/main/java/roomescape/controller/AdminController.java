@@ -23,18 +23,13 @@ public class AdminController {
 
     @PostMapping("/reservations")
     public ResponseEntity<ReservationResponse> createReservationByAdmin(
-            @RequestBody AdminCreateReservationRequest request) {
-        Reservation addedReservation = reservationService.addReservationByAdmin(request);
+            @RequestBody AdminCreateReservationRequest request
+    ) {
+        Reservation reservation = reservationService.addReservationByAdmin(request);
+        ReservationResponse response = ReservationResponse.from(reservation);
 
-        ReservationResponse reservationResponse = new ReservationResponse(
-                addedReservation.getId(),
-                addedReservation.getName(),
-                addedReservation.getStartAt(),
-                addedReservation.getDate(),
-                addedReservation.getThemeName()
-        );
-        return ResponseEntity.created(URI.create("/reservations/" + reservationResponse.id()))
-                .body(reservationResponse);
+        return ResponseEntity.created(URI.create("/reservations/" + response.id()))
+                .body(response);
     }
 }
 

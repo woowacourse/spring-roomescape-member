@@ -18,7 +18,7 @@ import roomescape.domain.ReservationSlot;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.dto.request.AddReservationRequest;
+import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.exception.InvalidReservationException;
 import roomescape.repository.MemberRepository;
@@ -63,7 +63,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(null, "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
-        AddReservationRequest request = new AddReservationRequest(LocalDate.now().plusDays(1L), reservationTimeId,
+        CreateReservationRequest request = new CreateReservationRequest(LocalDate.now().plusDays(1L), reservationTimeId,
                 themeId);
 
         // when
@@ -88,7 +88,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new AddReservationRequest(yesterday, reservationTimeId, themeId), member))
+                new CreateReservationRequest(yesterday, reservationTimeId, themeId), member))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -107,7 +107,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new AddReservationRequest(today, pastTimeId, themeId), member))
+                new CreateReservationRequest(today, pastTimeId, themeId), member))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -126,7 +126,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatCode(() -> reservationService.addReservation(
-                new AddReservationRequest(today, reservationTimeId, themeId), member))
+                new CreateReservationRequest(today, reservationTimeId, themeId), member))
                 .doesNotThrowAnyException();
     }
 
@@ -145,7 +145,7 @@ class ReservationServiceTest {
 
         // when & then
         assertThatCode(() -> reservationService.addReservation(
-                new AddReservationRequest(today, reservationTimeId, themeId), member))
+                new CreateReservationRequest(today, reservationTimeId, themeId), member))
                 .doesNotThrowAnyException();
     }
 
@@ -160,7 +160,7 @@ class ReservationServiceTest {
         Theme theme = new Theme(null, "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
-        AddReservationRequest request = new AddReservationRequest(
+        CreateReservationRequest request = new CreateReservationRequest(
                 LocalDate.now().plusDays(1L), reservationTimeId, themeId);
 
         // when
@@ -186,11 +186,11 @@ class ReservationServiceTest {
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
-                new AddReservationRequest(LocalDate.now(), reservationTimeId, themeId), member);
+                new CreateReservationRequest(LocalDate.now(), reservationTimeId, themeId), member);
 
         // when & then
         assertThatThrownBy(() -> reservationService.addReservation(
-                new AddReservationRequest(LocalDate.now(), reservationTimeId, themeId), member))
+                new CreateReservationRequest(LocalDate.now(), reservationTimeId, themeId), member))
                 .isInstanceOf(InvalidReservationException.class);
     }
 
@@ -212,7 +212,7 @@ class ReservationServiceTest {
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
-                new AddReservationRequest(today, firstReservationTime.getId(), themeId), member);
+                new CreateReservationRequest(today, firstReservationTime.getId(), themeId), member);
 
         // when
         AvailableTimeRequest availableTimeRequest = new AvailableTimeRequest(today, themeId);
@@ -246,21 +246,21 @@ class ReservationServiceTest {
         Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
 
         // 테마 1 예약 3개
-        reservationService.addReservation(new AddReservationRequest(LocalDate.now().plusDays(1), 1L, 1L),
+        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 1L),
                 member);
-        reservationService.addReservation(new AddReservationRequest(LocalDate.now().plusDays(1), 2L, 1L),
+        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 2L, 1L),
                 member);
-        reservationService.addReservation(new AddReservationRequest(LocalDate.now().plusDays(1), 3L, 1L),
+        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 3L, 1L),
                 member);
 
         // 테마 2 예약 2개
-        reservationService.addReservation(new AddReservationRequest(LocalDate.now().plusDays(1), 1L, 2L),
+        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 2L),
                 member);
-        reservationService.addReservation(new AddReservationRequest(LocalDate.now().plusDays(1), 2L, 2L),
+        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 2L, 2L),
                 member);
 
         // 테마 3 예약 1개
-        reservationService.addReservation(new AddReservationRequest(LocalDate.now().plusDays(1), 1L, 3L),
+        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 3L),
                 member);
 
         // when

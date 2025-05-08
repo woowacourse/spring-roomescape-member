@@ -15,7 +15,7 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.dto.request.AddReservationTimeRequest;
+import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.exception.InvalidReservationTimeException;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
@@ -41,7 +41,7 @@ class ReservationTimeServiceTest {
 
     @Test
     void 예약시간을_추가하고_조회할_수_있다() {
-        reservationTimeService.addReservationTime(new AddReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
+        reservationTimeService.addReservationTime(new CreateReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
         assertThat(reservationTimeService.allReservationTimes()).hasSize(1);
     }
 
@@ -49,7 +49,7 @@ class ReservationTimeServiceTest {
     void 예약시간을_삭제하고_조회할_수_있다() {
         // given
         ReservationTime reservationTime = reservationTimeService.addReservationTime(
-                new AddReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
+                new CreateReservationTimeRequest(LocalTime.now().plusMinutes(30L)));
 
         // when
         int before = reservationTimeService.allReservationTimes().size();
@@ -69,7 +69,7 @@ class ReservationTimeServiceTest {
         Member member = new Member(0L, "Hula", "test@test.com", "test", Role.USER);
 
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
-        AddReservationTimeRequest requset = new AddReservationTimeRequest(startAt);
+        CreateReservationTimeRequest requset = new CreateReservationTimeRequest(startAt);
         ReservationTime reservationTime = reservationTimeService.addReservationTime(requset);
 
         Theme theme = new Theme(0L, "공포", "공포테마입니다.", "thumbnail");
@@ -87,11 +87,11 @@ class ReservationTimeServiceTest {
     void 중복_시간을_설정할_수_없다() {
         // given
         LocalTime startAt = LocalTime.now().plusMinutes(30L);
-        AddReservationTimeRequest initialReservationTime = new AddReservationTimeRequest(startAt);
+        CreateReservationTimeRequest initialReservationTime = new CreateReservationTimeRequest(startAt);
         reservationTimeService.addReservationTime(initialReservationTime);
 
         // when
-        AddReservationTimeRequest duplicateAddReservationTime = new AddReservationTimeRequest(startAt);
+        CreateReservationTimeRequest duplicateAddReservationTime = new CreateReservationTimeRequest(startAt);
 
         //then
         assertThatThrownBy(() -> reservationTimeService.addReservationTime(duplicateAddReservationTime))

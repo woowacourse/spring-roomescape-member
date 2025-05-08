@@ -11,7 +11,7 @@ import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.domain.ThemeRanking;
-import roomescape.dto.request.AddReservationRequest;
+import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.request.AdminCreateReservationRequest;
 import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.exception.InvalidMemberException;
@@ -34,22 +34,25 @@ public class ReservationService {
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationRepository reservationRepository,
-                              ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository, MemberRepository memberRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationTimeRepository reservationTimeRepository,
+            ThemeRepository themeRepository,
+            MemberRepository memberRepository
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
     }
 
-    public Reservation addReservation(AddReservationRequest newReservation, Member member) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(newReservation.timeId())
+    public Reservation addReservation(CreateReservationRequest request, Member member) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
                 .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
-        Theme theme = themeRepository.findById(newReservation.themeId())
+        Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
 
-        Reservation reservation = newReservation.toReservation(member, reservationTime, theme);
+        Reservation reservation = request.toReservation(member, reservationTime, theme);
 
         validateDuplicateReservation(reservation);
         LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
@@ -86,8 +89,8 @@ public class ReservationService {
         }
     }
 
-    private void validateAddReservationDateTime(Reservation newReservation, LocalDateTime currentDateTime) {
-        if (newReservation.isBefore(currentDateTime)) {
+    private void validateAddReservationDateTime(Reservation reservation, LocalDateTime currentDateTime) {
+        if (reservation.isBefore(currentDateTime)) {
             throw new InvalidReservationException("과거 시간에 예약할 수 없습니다.");
         }
     }
@@ -105,11 +108,11 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public ReservationSlots getReservationSlots(AvailableTimeRequest availableTimeRequest) {
+    public ReservationSlots getReservationSlots(AvailableTimeRequest request) {
         List<ReservationTime> times = reservationTimeRepository.findAll();
 
         List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
-                availableTimeRequest.date(), availableTimeRequest.themeId());
+                request.date(), request.themeId());
 
         return new ReservationSlots(times, alreadyReservedReservations);
     }

@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.JwtTokenProvider;
 import roomescape.domain.Member;
 import roomescape.exception.InvalidAuthorizationException;
 import roomescape.repository.MemberRepository;

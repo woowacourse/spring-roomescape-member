@@ -11,9 +11,9 @@ import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
-import roomescape.dto.request.AddReservationRequest;
-import roomescape.dto.request.AddReservationTimeRequest;
-import roomescape.dto.request.AddThemeRequest;
+import roomescape.dto.request.CreateReservationRequest;
+import roomescape.dto.request.CreateReservationTimeRequest;
+import roomescape.dto.request.CreateThemeRequest;
 import roomescape.exception.InvalidThemeException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -52,7 +52,7 @@ class ThemeServiceTest {
     @Test
     void 테마를_추가할_수_있다() {
         // given
-        AddThemeRequest request = new AddThemeRequest("방탈출", "게임입니다.", "thumbnail");
+        CreateThemeRequest request = new CreateThemeRequest("방탈출", "게임입니다.", "thumbnail");
 
         // when
         Theme addedTheme = themeService.addTheme(request);
@@ -93,9 +93,9 @@ class ThemeServiceTest {
         Long themeId = themeRepository.add(theme).getId();
 
         ReservationTime reservationTime = reservationTimeService.addReservationTime(
-                new AddReservationTimeRequest(LocalTime.now()));
+                new CreateReservationTimeRequest(LocalTime.now()));
         reservationService.addReservation(
-                new AddReservationRequest(LocalDate.now().plusDays(1L), reservationTime.getId(), themeId),
+                new CreateReservationRequest(LocalDate.now().plusDays(1L), reservationTime.getId(), themeId),
                 member);
 
         // when & then

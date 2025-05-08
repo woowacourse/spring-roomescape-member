@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.ReservationSlot;
 import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
-import roomescape.dto.request.AddReservationTimeRequest;
+import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ReservationTimeSlotResponse;
@@ -29,8 +29,10 @@ public class ReservationTimeController {
     private final ReservationService reservationService;
     private final ReservationTimeService reservationTimeService;
 
-    public ReservationTimeController(ReservationService reservationService,
-                                     ReservationTimeService reservationTimeService) {
+    public ReservationTimeController(
+            ReservationService reservationService,
+            ReservationTimeService reservationTimeService
+    ) {
         this.reservationService = reservationService;
         this.reservationTimeService = reservationTimeService;
     }
@@ -38,51 +40,49 @@ public class ReservationTimeController {
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
         List<ReservationTime> reservationTimes = reservationTimeService.allReservationTimes();
-        List<ReservationTimeResponse> reservationTimeResponses = reservationTimes.stream()
-                .map((reservationTime) -> new ReservationTimeResponse(reservationTime.getId(),
-                        reservationTime.getTime()))
+        List<ReservationTimeResponse> responses = reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
                 .toList();
 
-        return ResponseEntity.ok(reservationTimeResponses);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservationTimeResponse> getReservationTimeById(@PathVariable Long id) {
         ReservationTime reservationTimeById = reservationTimeService.getReservationTimeById(id);
-        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(
-                reservationTimeById.getId(),
-                reservationTimeById.getTime()
-        );
-        return ResponseEntity.ok(reservationTimeResponse);
+        ReservationTimeResponse response = ReservationTimeResponse.from(reservationTimeById);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/available")
     public ResponseEntity<List<ReservationTimeSlotResponse>> getAvailableReservationTimes(
-            @ModelAttribute @Valid AvailableTimeRequest availableTimeRequest) {
-        ReservationSlots reservationSlotTimes = reservationService.getReservationSlots(
-                availableTimeRequest);
+            @ModelAttribute @Valid AvailableTimeRequest request
+    ) {
+        ReservationSlots reservationSlotTimes = reservationService.getReservationSlots(request);
         List<ReservationSlot> reservationSlots = reservationSlotTimes.getReservationSlots();
-
-        List<ReservationTimeSlotResponse> reservationTimeSlotResponses = reservationSlots.stream()
-                .map((time) -> new ReservationTimeSlotResponse(time.getId(), time.getTime(), time.isReserved()))
+        List<ReservationTimeSlotResponse> responses = reservationSlots.stream()
+                .map(ReservationTimeSlotResponse::from)
                 .toList();
-        return ResponseEntity.ok(reservationTimeSlotResponses);
+
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
     public ResponseEntity<ReservationTimeResponse> addReservationTime(
-            @RequestBody @Valid AddReservationTimeRequest addReservationTimeRequest) {
-        ReservationTime addedReservationTime = reservationTimeService.addReservationTime(addReservationTimeRequest);
-        ReservationTimeResponse reservationTimeResponse = new ReservationTimeResponse(
-                addedReservationTime.getId(), addedReservationTime.getTime());
+            @RequestBody @Valid CreateReservationTimeRequest request
+    ) {
+        ReservationTime reservationTime = reservationTimeService.addReservationTime(request);
+        ReservationTimeResponse response = ReservationTimeResponse.from(reservationTime);
 
-        return ResponseEntity.created(URI.create("/times/" + reservationTimeResponse.id()))
-                .body(reservationTimeResponse);
+        return ResponseEntity.created(URI.create("/times/" + response.id()))
+                .body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationTimeService.deleteReservationTime(id);
+
         return ResponseEntity.noContent().build();
     }
 }
