@@ -21,6 +21,9 @@ INSERT INTO theme (name, description, thumbnail)
 VALUES ('컨저링', '실화 기반의 공포가 현실이 된다, 악령이 도사린 집에서 탈출하라!',
         'https://upload.wikimedia.org/wikipedia/ko/c/c6/%EC%BB%A8%EC%A0%80%EB%A7%81.jpg');
 
+INSERT INTO member (name, email, password, role)
+VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN');
+
 -- 2 -> 1 -> 3
 
 INSERT INTO reservation (name, date, time_id, theme_id)

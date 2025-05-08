@@ -1,11 +1,14 @@
 package roomescape;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+
+import static org.hamcrest.Matchers.notNullValue;
 
 @ActiveProfiles("test")
 @Sql(scripts = {"/schema.sql", "/test.sql"})
@@ -19,5 +22,20 @@ public class MemberApiTest {
             .when().get("/login")
             .then().log().all()
             .statusCode(200);
+    }
+
+    @Test
+    void 로그인_할_수_있다() {
+        RestAssured.given().log().all()
+            .contentType(ContentType.JSON)
+            .body("""
+                {
+                    "email": "admin@email.com",
+                    "password": "password"
+                }
+                """)
+            .when().post("/login")
+            .then().statusCode(200).cookie("token", notNullValue());
+
     }
 }

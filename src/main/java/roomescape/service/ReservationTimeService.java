@@ -1,8 +1,8 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.entity.ReservationTime;
 import roomescape.exception.EntityNotFoundException;
 import roomescape.exception.ReservationExistException;

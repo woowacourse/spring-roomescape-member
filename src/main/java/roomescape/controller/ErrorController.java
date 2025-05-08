@@ -57,4 +57,12 @@ public class ErrorController {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ProblemDetail> handleAuthenticationException(AuthenticationException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        problemDetail.setDetail(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problemDetail);
+    }
 }

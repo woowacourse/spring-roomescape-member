@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import roomescape.dto.ReservationTimeRequest;
-import roomescape.dto.ReservationTimeResponse;
+import roomescape.dto.request.ReservationTimeRequest;
+import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.service.ReservationTimeService;
 
 import java.util.List;
