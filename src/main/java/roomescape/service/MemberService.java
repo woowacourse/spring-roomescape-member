@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.request.MemberRequest;
+import roomescape.error.MemberException;
 import roomescape.repository.MemberRepository;
 
 @Service
@@ -13,6 +14,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public void saveMember(final MemberRequest request) {
+        if (memberRepository.existsByEmail(request.email())) {
+            throw new MemberException("이미 존재하는 이메일입니다.");
+        }
         memberRepository.save(new Member(request.name(), request.email(), request.password()));
     }
 }

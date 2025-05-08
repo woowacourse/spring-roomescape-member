@@ -38,4 +38,17 @@ public class JdbcMemberRepository implements MemberRepository {
         final Long newId = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return new Member(newId, member.getName(), member.getEmail(), member.getPassword());
     }
+
+    @Override
+    public boolean existsByEmail(final String email) {
+        final String existsSql = """
+                    select exists(
+                        select 1
+                        from member as m
+                        where m.email = ?
+                    )
+                """;
+        final Boolean exists = jdbcTemplate.queryForObject(existsSql, Boolean.class, email);
+        return Boolean.TRUE.equals(exists);
+    }
 }
