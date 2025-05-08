@@ -1,18 +1,24 @@
 package roomescape.integration;
 
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        properties = {
-                "spring.sql.init.mode=always",
-                "spring.sql.init.data-locations=classpath:/test-data.sql"
-        })
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ViewIntegrationTest {
+
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void beforeEach() {
+        RestAssured.port = this.port;
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"/admin", "/admin/reservation", "/admin/time", "/admin/theme", "/reservation", "/"})
