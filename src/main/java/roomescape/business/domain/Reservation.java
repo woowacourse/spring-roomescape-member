@@ -45,20 +45,6 @@ public class Reservation {
         return reservationDateTime.isBefore(dateTime);
     }
 
-    public static Reservation createWithId(
-            final Long id,
-            final String name,
-            final LocalDate date,
-            final PlayTime playTime,
-            final Theme theme
-    ) {
-        if (id == null) {
-            throw new IllegalArgumentException("id가 null 입니다.");
-        }
-
-        return new Reservation(id, name, date, playTime, theme);
-    }
-
     public Long getId() {
         return id;
     }
