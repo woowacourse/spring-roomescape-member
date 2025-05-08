@@ -1,5 +1,6 @@
 package roomescape.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -42,5 +43,15 @@ public class MemberController {
     public CheckResponseDto checkLogin(HttpServletRequest request) {
         String token = Cookies.get(request.getCookies());
         return memberService.validate(token);
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        String token = Cookies.get(request.getCookies());
+        Cookie jwtCookie = new Cookie("token", token);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+        httpServletResponse.addCookie(jwtCookie);
     }
 }
