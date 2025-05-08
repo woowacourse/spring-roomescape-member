@@ -1,16 +1,19 @@
 package roomescape.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import roomescape.application.dto.LoginRequest;
 import roomescape.dao.MemberDao;
 import roomescape.domain.Member;
 
@@ -25,16 +28,17 @@ class LoginServiceTest {
 
     @Test
     @DisplayName("일치하는 회원인 경우 토큰을 반환한다")
-    void test() {
+    void createTokenForValidMember() {
         // given
         String email = "test@email.com";
+        LoginRequest request = new LoginRequest("password", email);
         Member member = new Member(1L, "name", email, "password");
 
         doReturn(member).when(memberDao)
                 .findByEmail(email);
 
         // when
-        String token = loginService.createToken(email);
+        String token = loginService.createTokenForAuthenticatedMember(request);
 
         // then
         assertThat(token)
@@ -43,6 +47,26 @@ class LoginServiceTest {
                 .hasSizeGreaterThan(10);
 
         // verify
-        verify(loginService, times(1)).createToken(email);
+        verify(memberDao, times(1)).findByEmail(email);
+    }
+
+    @Test
+    @DisplayName("일치하지 회원인 경우 예외가 발생한다")
+    void createTokenForInvalidMember() {
+        // given
+        String email = "test@email.com";
+        LoginRequest request = new LoginRequest("password", email);
+        Optional<Member> member = Optional.empty();
+
+        doReturn(member).when(memberDao)
+                .findByEmail(email);
+
+        // when && then
+        assertThatThrownBy(() -> loginService.createTokenForAuthenticatedMember(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("로그인을 실패했습니다. 정보를 다시 확인해 주세요.");
+
+        // verify
+        verify(memberDao, times(1)).findByEmail(email);
     }
 }
