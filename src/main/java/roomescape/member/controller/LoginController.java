@@ -14,11 +14,11 @@ import roomescape.member.dto.response.TokenResponse;
 import roomescape.member.service.AuthService;
 
 @RestController
-public class MemberController {
+public class LoginController {
 
     private final AuthService authService;
 
-    public MemberController(AuthService authService) {
+    public LoginController(AuthService authService) {
         this.authService = authService;
     }
 
@@ -34,6 +34,7 @@ public class MemberController {
         Cookie cookie = new Cookie("token", token.accessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setMaxAge(60);
         response.addCookie(cookie);
     }
 
