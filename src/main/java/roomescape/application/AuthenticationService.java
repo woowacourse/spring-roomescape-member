@@ -1,6 +1,7 @@
 package roomescape.application;
 
 import org.springframework.stereotype.Service;
+import roomescape.domain.AuthenticationTokenProvider;
 import roomescape.domain.User;
 import roomescape.domain.repository.UserRepository;
 

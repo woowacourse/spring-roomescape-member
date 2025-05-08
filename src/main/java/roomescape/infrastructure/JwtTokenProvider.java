@@ -7,7 +7,7 @@ import io.jsonwebtoken.Jwts.SIG;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
-import roomescape.application.AuthenticationTokenProvider;
+import roomescape.domain.AuthenticationTokenProvider;
 
 @Component
 public class JwtTokenProvider implements AuthenticationTokenProvider {

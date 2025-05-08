@@ -1,4 +1,4 @@
-package roomescape.application;
+package roomescape.domain;
 
 public interface AuthenticationTokenProvider {
 
