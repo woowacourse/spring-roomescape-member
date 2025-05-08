@@ -27,8 +27,6 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-
-
     @Transactional(readOnly = true)
     public TokenResponse login(final LoginRequest loginRequest) {
         final User user = userRepository.findByEmail(loginRequest.email())
@@ -52,15 +50,17 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginUserDto getLoginUser(final Cookie[] cookies) {
-        if (cookies != null) {
-            for (final Cookie cookie : cookies) {
-                if (TOKEN_NAME.equals(cookie.getName())) {
-                    final String token = cookie.getValue();
-                    log.info("token = {}", token);
-                    return getLoginUser(token);
-                }
+        if (cookies == null) {
+            return null;
+        }
+
+        for (final Cookie cookie : cookies) {
+            if (TOKEN_NAME.equals(cookie.getName())) {
+                final String token = cookie.getValue();
+                return getLoginUser(token);
             }
         }
+
         return null;
     }
 
