@@ -32,7 +32,7 @@ public class ReservationController {
         return reservationService.getAll();
     }
 
-    @GetMapping("/available")
+    @GetMapping("/available-times")
     public List<AvailableTimeResponse> getAvailableTimes(@RequestParam("date") LocalDate date,
                                                          @RequestParam("themeId") Long themeId) {
         validateDate(date);

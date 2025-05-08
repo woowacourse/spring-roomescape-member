@@ -122,7 +122,7 @@
 
 - Request
   ```
-  GET /themes/ranking HTTP/1.1
+  GET /themes/rankings HTTP/1.1
   ```
 
 - Response

@@ -30,7 +30,7 @@ public class ThemeController {
         return themeService.getThemes();
     }
 
-    @GetMapping("/ranking")
+    @GetMapping("/rankings")
     public List<ThemeRankingResponse> getThemeRankings() {
         return themeService.getThemeRankings();
     }
