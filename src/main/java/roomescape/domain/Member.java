@@ -17,4 +17,8 @@ public class Member {
     public Member(String name, String email, String password) {
         this(null, name, email, password);
     }
+
+    public Long getId() {
+        return id;
+    }
 }
