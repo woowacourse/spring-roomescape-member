@@ -30,7 +30,7 @@ public class FakeReservationTimeRepository implements ReservationTimeRepository 
     public ReservationTime create(ReservationTime reservationTime) {
         ReservationTime reservationTimeWithId = new ReservationTime(index.getAndIncrement(),
                 reservationTime.getStartAt());
-        fakeReservationTimes.add(reservationTime);
+        fakeReservationTimes.add(reservationTimeWithId);
         return reservationTimeWithId;
     }
 
