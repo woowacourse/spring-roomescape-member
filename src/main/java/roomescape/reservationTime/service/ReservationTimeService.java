@@ -42,7 +42,8 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public List<AvailableReservationTimeResponseDto> findAllAvailableTimes(Long themeId, LocalDate date) {
+    public List<AvailableReservationTimeResponseDto> findReservationTimesWithAvailableStatus(Long themeId,
+                                                                                             LocalDate date) {
         List<ReservationTime> allTime = repository.findAll();
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마입니다."));
