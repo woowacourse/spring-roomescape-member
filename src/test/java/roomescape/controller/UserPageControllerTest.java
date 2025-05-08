@@ -25,4 +25,13 @@ class UserPageControllerTest {
                 .then().log().all()
                 .statusCode(200);
     }
+
+    @DisplayName("Signup Page 테스트")
+    @Test
+    void signupPageTest() {
+        RestAssured.given().log().all()
+                .when().get("/signup")
+                .then().log().all()
+                .statusCode(200);
+    }
 }
