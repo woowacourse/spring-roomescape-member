@@ -38,9 +38,10 @@ public class PlayTimeService {
                 .toList();
     }
 
-    public PlayTime findById(final Long id) {
-        return playTimeDao.findById(id)
+    public PlayTimeResponse findById(final Long id) {
+        final PlayTime playTime = playTimeDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당하는 방탈출 시간을 찾을 수 없습니다. 방탈출 id: %d".formatted(id)));
+        return PlayTimeResponse.from(playTime);
     }
 
     public void deleteById(final Long id) {

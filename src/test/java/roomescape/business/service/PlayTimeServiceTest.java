@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.business.domain.PlayTime;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.fake.FakePlayTimeDao;
@@ -78,12 +77,12 @@ class PlayTimeServiceTest {
         final Long id = playTimeResponse.id();
 
         // when
-        final PlayTime findPlayTime = playTimeService.findById(id);
+        final PlayTimeResponse findPlayTimeResponse = playTimeService.findById(id);
 
         // then
         assertAll(
-                () -> assertThat(findPlayTime.getId()).isEqualTo(id),
-                () -> assertThat(findPlayTime.getStartAt()).isEqualTo(startAt)
+                () -> assertThat(findPlayTimeResponse.id()).isEqualTo(id),
+                () -> assertThat(findPlayTimeResponse.startAt()).isEqualTo(startAt)
         );
     }
 

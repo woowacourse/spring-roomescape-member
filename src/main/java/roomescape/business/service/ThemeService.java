@@ -38,10 +38,10 @@ public class ThemeService {
                 .toList();
     }
 
-    // TODO: ThemeResponse 반환하도록 수정
-    public Theme findById(final Long id) {
-        return themeDao.findById(id)
+    public ThemeResponse findById(final Long id) {
+        final Theme theme = themeDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(id)));
+        return ThemeResponse.from(theme);
     }
 
     public void deleteById(final Long id) {

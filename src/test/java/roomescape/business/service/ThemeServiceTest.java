@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.NotFoundException;
 import roomescape.fake.FakeThemeDao;
@@ -78,14 +77,14 @@ class ThemeServiceTest {
         final Long id = themeResponse.id();
 
         // when
-        final Theme theme = themeService.findById(id);
+        final ThemeResponse findThemeResponse = themeService.findById(id);
 
         // then
         assertAll(
-                () -> assertThat(theme.getId()).isEqualTo(id),
-                () -> assertThat(theme.getName()).isEqualTo(themeRequest.name()),
-                () -> assertThat(theme.getDescription()).isEqualTo(themeRequest.description()),
-                () -> assertThat(theme.getThumbnail()).isEqualTo(themeRequest.thumbnail())
+                () -> assertThat(findThemeResponse.id()).isEqualTo(id),
+                () -> assertThat(findThemeResponse.name()).isEqualTo(themeRequest.name()),
+                () -> assertThat(findThemeResponse.description()).isEqualTo(themeRequest.description()),
+                () -> assertThat(findThemeResponse.thumbnail()).isEqualTo(themeRequest.thumbnail())
         );
     }
 
