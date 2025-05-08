@@ -1,7 +1,6 @@
 package roomescape.member.presentation;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,32 +10,33 @@ import org.springframework.web.bind.annotation.RestController;
 import roomescape.member.application.service.MemberService;
 import roomescape.member.infrastructure.CookieAuthorizationExtractor;
 import roomescape.member.presentation.dto.MemberResponse;
-import roomescape.member.presentation.dto.SignUpRequest;
-import roomescape.member.presentation.dto.SignUpResponse;
 import roomescape.member.presentation.dto.TokenRequest;
 
 @RestController
-public class MemberController {
+public class LoginController {
     private final MemberService memberService;
+    private final AuthorizationExtractor authorizationExtractor;
 
-    public MemberController(MemberService memberService) {
+    public LoginController(MemberService memberService) {
         this.memberService = memberService;
+        this.authorizationExtractor = new CookieAuthorizationExtractor();
     }
 
-    @PostMapping("/members")
-    public ResponseEntity<SignUpResponse> signUp(
-            @RequestBody SignUpRequest signUpRequest
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(
+            @RequestBody TokenRequest tokenRequest
     ) {
-        return ResponseEntity.ok().body(
-                memberService.signUp(signUpRequest)
-        );
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, memberService.createToken(tokenRequest))
+                .build();
     }
 
-    @GetMapping("/members")
-    public ResponseEntity<List<MemberResponse>> getMembers(
+    @GetMapping("/login/check")
+    public ResponseEntity<MemberResponse> loginCheck(
+            HttpServletRequest request
     ) {
         return ResponseEntity.ok().body(
-                memberService.getMembers()
+                memberService.findByToken(authorizationExtractor.extract(request))
         );
     }
 }
