@@ -9,7 +9,7 @@ import roomescape.service.param.LoginMemberParam;
 import roomescape.service.param.RegisterMemberParam;
 import roomescape.service.result.CheckLoginUserResult;
 import roomescape.service.result.LoginMemberResult;
-import roomescape.service.result.RegisterUserResult;
+import roomescape.service.result.RegisterMemberResult;
 
 @Service
 public class MemberService {
@@ -22,11 +22,11 @@ public class MemberService {
 
     public LoginMemberResult login(final LoginMemberParam loginMemberParam) {
         Member member = memberRepository.findByEmailAndPassword(loginMemberParam.email(), loginMemberParam.password())
-                .orElseThrow(() -> new ReservationException(loginMemberParam.email() + loginMemberParam.password() + "에 해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new ReservationException(loginMemberParam.email() + " " + loginMemberParam.password() + "에 해당하는 유저가 없습니다."));
         return LoginMemberResult.from(member);
     }
 
-    public RegisterUserResult create(final RegisterMemberParam registerMemberParam) {
+    public RegisterMemberResult create(final RegisterMemberParam registerMemberParam) {
         Long id = memberRepository.create(new CreateMemberQuery(
                 registerMemberParam.name(),
                 registerMemberParam.email(),
@@ -35,7 +35,7 @@ public class MemberService {
 
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ReservationException(id + "에 해당하는 유저가 없습니다."));
-        return RegisterUserResult.from(member);
+        return RegisterMemberResult.from(member);
     }
 
     public CheckLoginUserResult findById(final Long id) {
