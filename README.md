@@ -95,10 +95,11 @@
 
 ### 회원 관련 API
 
-| Method | URL          | Description | HTTP Status |
-|--------|--------------|-------------|-------------|
-| GET    | /members     | 전체 회원 조회    | 200 OK      |
-| GET    | /login/check | 로그인 상태 확인   | 200 OK      |
-| POST   | /login       | 사용자 로그인 처리  | 200 OK      |
-| POST   | /logout      | 사용자 로그아웃 처리 | 200 OK      |
-| POST   | /members     | 회원가입 처리     | 201 CREATED |
+| Method | URL          | Description   | HTTP Status |
+|--------|--------------|---------------|-------------|
+| GET    | /members     | 전체 회원 조회      | 200 OK      |
+| GET    | /login/check | 로그인 상태 확인     | 200 OK      |
+| GET    | /signup      | 회원가입 및 로그인 처리 | 200 OK      |
+| POST   | /login       | 사용자 로그인 처리    | 200 OK      |
+| POST   | /logout      | 사용자 로그아웃 처리   | 200 OK      |
+| POST   | /members     | 회원가입 처리       | 201 CREATED |
