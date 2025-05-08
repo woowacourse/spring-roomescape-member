@@ -10,20 +10,22 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.application.AuthenticationService;
 import roomescape.presentation.request.LoginRequest;
 import roomescape.presentation.response.UserResponse;
 
 @Controller
-public class LoginController {
+@RequestMapping("/login")
+public class LoginApiController {
 
     private final AuthenticationService authenticationService;
 
-    public LoginController(final AuthenticationService authenticationService) {
+    public LoginApiController(final AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/login")
+    @PostMapping
     public ResponseEntity<Void> performLogin(
         @RequestBody @Valid final LoginRequest request,
         final HttpServletResponse response
@@ -45,7 +47,7 @@ public class LoginController {
         return tokenCookie;
     }
 
-    @GetMapping("/login/check")
+    @GetMapping("/check")
     public ResponseEntity<UserResponse> getUser(@CookieValue("token") final String token) {
         var user = authenticationService.findUserByToken(token);
         var response = UserResponse.from(user);
