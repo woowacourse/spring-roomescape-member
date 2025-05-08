@@ -160,7 +160,7 @@ public class ThemeRepositoryTest extends RepositoryBaseTest {
     private void addReservation(int count, ReservationDate date, ReservationTime time, Theme theme) {
         Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
         for (int i = 0; i < count; i++) {
-            reservationDbFixture.예약_생성_한스(date, time, theme, member);
+            reservationDbFixture.예약_생성(date, time, theme, member);
         }
     }
 }

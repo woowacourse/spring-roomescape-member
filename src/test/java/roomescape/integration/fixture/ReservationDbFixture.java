@@ -1,6 +1,5 @@
 package roomescape.integration.fixture;
 
-import java.time.LocalDate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,52 +12,42 @@ import roomescape.domain.time.ReservationTime;
 
 @Component
 public class ReservationDbFixture {
-
-    private JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationDbFixture(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public Reservation 예약_한스_25_4_22(ReservationTime reservationTime, Theme theme, Member member) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reservation")
                 .usingGeneratedKeyColumns("id");
-
-        String name = ReserverNameFixture.한스.getName();
-        LocalDate date = ReservationDateFixture.예약날짜_25_4_22.date();
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("date", date)
-                .addValue("time_id", reservationTime.getId())
-                .addValue("theme_id", theme.getId())
-        ).longValue();
-
-        return new Reservation(id, member, date, reservationTime, theme);
     }
 
-    public Reservation 예약_생성_한스(
-            ReservationDate reservationDate,
-            ReservationTime reservationTime,
+    public Reservation 예약_25_4_22(ReservationTime time, Theme theme, Member member) {
+        ReservationDate date = ReservationDateFixture.예약날짜_25_4_22;
+        return createReservation(date, time, theme, member);
+    }
+
+    public Reservation 예약_생성(
+            ReservationDate date,
+            ReservationTime time,
             Theme theme,
             Member member
     ) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+        return createReservation(date, time, theme, member);
+    }
 
-        String name = ReserverNameFixture.한스.getName();
-        LocalDate date = reservationDate.date();
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
+    public Reservation createReservation(
+            ReservationDate date,
+            ReservationTime time,
+            Theme theme,
+            Member member
+    ) {
+        Long id = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("member_id", member.getId())
-                .addValue("date", date)
-                .addValue("time_id", reservationTime.getId())
+                .addValue("date", date.getDate())
+                .addValue("time_id", time.getId())
                 .addValue("theme_id", theme.getId())
         ).longValue();
+        return new Reservation(id, member, date, time, theme);
 
-        return new Reservation(id, member, date, reservationTime, theme);
     }
 
 

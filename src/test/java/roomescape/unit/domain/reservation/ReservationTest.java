@@ -1,4 +1,4 @@
-package roomescape.unit.domain;
+package roomescape.unit.domain.reservation;
 
 import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
@@ -10,6 +10,7 @@ import roomescape.domain.member.MemberEncodedPassword;
 import roomescape.domain.member.MemberName;
 import roomescape.domain.member.MemberRole;
 import roomescape.domain.reservation.Reservation;
+import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
@@ -29,7 +30,7 @@ public class ReservationTest {
     @Test
     void reserverName은_null일_수_없다() {
         assertThatThrownBy(() ->
-                new Reservation(1L, null, LocalDate.now(), time, theme)
+                new Reservation(1L, null, new ReservationDate(LocalDate.now()), time, theme)
         ).isInstanceOf(NullPointerException.class);
     }
 
@@ -57,7 +58,7 @@ public class ReservationTest {
                 MemberRole.MEMBER
         );
         assertThatThrownBy(() ->
-                new Reservation(1L, member, LocalDate.now(), null, theme)
+                new Reservation(1L, member,new ReservationDate(LocalDate.now()), null, theme)
         ).isInstanceOf(NullPointerException.class);
     }
 
@@ -71,7 +72,7 @@ public class ReservationTest {
                 MemberRole.MEMBER
         );
         assertThatThrownBy(() ->
-                new Reservation(1L, member, LocalDate.now(), time, null)
+                new Reservation(1L, member,new ReservationDate(LocalDate.now()), time, null)
         ).isInstanceOf(NullPointerException.class);
     }
 }

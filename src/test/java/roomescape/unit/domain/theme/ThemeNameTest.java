@@ -1,4 +1,4 @@
-package roomescape.unit.domain;
+package roomescape.unit.domain.theme;
 
 import org.junit.jupiter.api.Test;
 import roomescape.domain.theme.ThemeName;

@@ -11,23 +11,29 @@ import roomescape.domain.theme.ThemeThumbnail;
 
 @Component
 public class ThemeDbFixture {
-
-    private JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ThemeDbFixture(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("theme")
+                .usingGeneratedKeyColumns("id");
     }
 
     public Theme 공포() {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
+        return createTheme("공포", "공포 테마", "공포.jpg");
 
-        String name = "공포";
-        String description = "공포 테마";
-        String thumbnail = "공포.jpg";
+    }
 
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
+    public Theme 로맨스() {
+        return createTheme("로멘스", "로멘스 테마", "로멭스.jpg");
+    }
+
+    public Theme 커스텀_테마(String name) {
+        return createTheme(name, name + "테마", name + ".jpg");
+    }
+
+    public Theme createTheme(String name, String description, String thumbnail) {
+        Long id = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", name)
                 .addValue("description", description)
                 .addValue("thumbnail", thumbnail)
@@ -40,48 +46,4 @@ public class ThemeDbFixture {
                 new ThemeThumbnail(thumbnail)
         );
     }
-
-    public Theme 로맨스() {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
-        String name = "로멘스";
-        String description = "로멘스 테마";
-        String thumbnail = "로멘스.jpg";
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("description", description)
-                .addValue("thumbnail", thumbnail)
-        ).longValue();
-
-        return new Theme(
-                id,
-                new ThemeName(name),
-                new ThemeDescription(description),
-                new ThemeThumbnail(thumbnail)
-        );    }
-
-    public Theme 커스텀_테마(String customName) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("theme")
-                .usingGeneratedKeyColumns("id");
-
-        String name = customName;
-        String description = customName + "테마";
-        String thumbnail = customName + ".jpg";
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("name", name)
-                .addValue("description", description)
-                .addValue("thumbnail", thumbnail)
-        ).longValue();
-
-        return new Theme(
-                id,
-                new ThemeName(name),
-                new ThemeDescription(description),
-                new ThemeThumbnail(thumbnail)
-        );    }
 }

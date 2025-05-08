@@ -19,7 +19,7 @@ public class ReservationDateTime {
 
     private void validatePast(ReservationDate reservationDate, ReservationTime reservationTime, Clock clock) {
         LocalDateTime reservationDateTime = LocalDateTime.of(
-                reservationDate.date(),
+                reservationDate.getDate(),
                 reservationTime.getStartAt()
         );
         LocalDateTime now = LocalDateTime.now(clock);

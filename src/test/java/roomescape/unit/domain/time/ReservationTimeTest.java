@@ -1,4 +1,4 @@
-package roomescape.unit.domain;
+package roomescape.unit.domain.time;
 
 import static org.assertj.core.api.Assertions.*;
 import java.time.LocalTime;

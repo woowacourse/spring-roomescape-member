@@ -48,8 +48,8 @@ public class RepositoryTestConfig {
     }
 
     @Bean
-    public MemberDbFixture memberDbFixture(JdbcTemplate jdbcTemplate, PasswordEncoder encoder) {
-        return new MemberDbFixture(jdbcTemplate, encoder);
+    public MemberDbFixture memberDbFixture(JdbcTemplate jdbcTemplate) {
+        return new MemberDbFixture(jdbcTemplate);
     }
 
     @Bean

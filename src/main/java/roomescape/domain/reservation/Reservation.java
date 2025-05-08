@@ -18,7 +18,7 @@ public class Reservation {
     public Reservation(
             Long id,
             final Member member,
-            LocalDate reservationDate,
+            ReservationDate reservationDate,
             ReservationTime reservationTime,
             Theme theme
     ) {
@@ -27,10 +27,10 @@ public class Reservation {
                 member,
                 "예약자 이름은 null일 수 없습니다."
         );
-        this.reservationDate = new ReservationDate(Objects.requireNonNull(
+        this.reservationDate = Objects.requireNonNull(
                 reservationDate,
                 "예약일은 null일 수 없습니다."
-        ));
+        );
         this.reservationTime = Objects.requireNonNull(reservationTime, "예약 시간은 null일 수 없습니다.");
         this.theme = Objects.requireNonNull(theme, "테마는 null일 수 없습니다.");
     }
@@ -44,7 +44,7 @@ public class Reservation {
     }
 
     public LocalDate getDate() {
-        return reservationDate.date();
+        return reservationDate.getDate();
     }
 
     public LocalTime getStartAt() {

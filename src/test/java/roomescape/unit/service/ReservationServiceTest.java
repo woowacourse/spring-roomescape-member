@@ -27,6 +27,7 @@ import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
 import roomescape.domain.theme.ThemeThumbnail;
 import roomescape.domain.time.ReservationTime;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
@@ -39,10 +40,12 @@ public class ReservationServiceTest {
     private ReservationRepository reservationRepository = mock(ReservationRepository.class);;
     private ReservationTimeRepository reservationTimeRepository = mock(ReservationTimeRepository.class);
     private ThemeRepository themeRepository = mock(ThemeRepository.class);
+    private MemberRepository memberRepository = mock(MemberRepository.class);
     private ReservationService service = new ReservationService(
             reservationRepository,
             reservationTimeRepository,
             themeRepository,
+            memberRepository,
             FIXED_CLOCK
     );
 
@@ -65,7 +68,7 @@ public class ReservationServiceTest {
                 new MemberEncodedPassword("dsadsa"),
                 MemberRole.MEMBER
         );
-        Reservation reservation = new Reservation(1L, member, 예약날짜_오늘.date(), reservationTime, theme);
+        Reservation reservation = new Reservation(1L, member, 예약날짜_오늘, reservationTime, theme);
         when(reservationRepository.findAll()).thenReturn(List.of(reservation));
 
         // when
@@ -76,7 +79,7 @@ public class ReservationServiceTest {
         softly.assertThat(all).hasSize(1);
         ReservationResponse response = all.get(0);
         softly.assertThat(response.name()).isEqualTo("홍길동");
-        softly.assertThat(response.date()).isEqualTo(예약날짜_오늘.date());
+        softly.assertThat(response.date()).isEqualTo(예약날짜_오늘.getDate());
         softly.assertThat(response.time().startAt()).isEqualTo(time);
         softly.assertThat(response.theme().id()).isEqualTo(theme.getId());
         softly.assertThat(response.theme().name()).isEqualTo(theme.getName().name());
@@ -94,7 +97,7 @@ public class ReservationServiceTest {
                 new MemberEncodedPassword("dsadsa"),
                 MemberRole.MEMBER
         );
-        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.date(), 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.getDate(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, time);
         Theme theme = new Theme(
                 1L,
@@ -106,7 +109,7 @@ public class ReservationServiceTest {
         when(reservationRepository.existSameDateTime(any(), anyLong())).thenReturn(false);
         when(themeRepository.findById(1L)).thenReturn(Optional.of(theme));
         when(reservationRepository.save(any(), any(), any())).thenReturn(
-                new Reservation(1L, member, 예약날짜_오늘.date(), reservationTime, theme)
+                new Reservation(1L, member, 예약날짜_오늘, reservationTime, theme)
         );
 
         ReservationResponse response = service.createReservation(request, member);
@@ -123,7 +126,7 @@ public class ReservationServiceTest {
                 new MemberEncodedPassword("dsadsa"),
                 MemberRole.MEMBER
         );
-        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.date(), 999L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.getDate(), 999L, 1L);
         when(reservationTimeRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.createReservation(request, member))
@@ -139,7 +142,7 @@ public class ReservationServiceTest {
                 new MemberEncodedPassword("dsadsa"),
                 MemberRole.MEMBER
         );
-        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.date(), 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.getDate(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, time);
 
         when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(reservationTime));
@@ -158,7 +161,7 @@ public class ReservationServiceTest {
                 new MemberEncodedPassword("dsadsa"),
                 MemberRole.MEMBER
         );
-        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.date(), 1L, 1L);
+        ReservationCreateRequest request = new ReservationCreateRequest(예약날짜_오늘.getDate(), 1L, 1L);
         ReservationTime reservationTime = new ReservationTime(1L, time);
 
         when(reservationTimeRepository.findById(1L)).thenReturn(Optional.of(reservationTime));

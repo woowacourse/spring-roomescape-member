@@ -19,10 +19,10 @@ import roomescape.domain.reservation.ReserverName;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.time.ReservationTime;
 import roomescape.integration.fixture.MemberDbFixture;
+import roomescape.integration.fixture.MemberNameFixture;
 import roomescape.integration.fixture.ReservationDateFixture;
 import roomescape.integration.fixture.ReservationDbFixture;
 import roomescape.integration.fixture.ReservationTimeDbFixture;
-import roomescape.integration.fixture.ReserverNameFixture;
 import roomescape.integration.fixture.ThemeDbFixture;
 import roomescape.repository.ReservationRepository;
 
@@ -53,7 +53,7 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
         ReservationDate date = ReservationDateFixture.예약날짜_오늘;
         ReservationTime time = reservationTimeDbFixture.예약시간_10시();
         Theme theme = themeDbFixture.공포();
-        ReserverName name = ReserverNameFixture.한스;
+        MemberName name = MemberNameFixture.한스;
         ReservationDateTime dateTime = new ReservationDateTime(date, time, FIXED_CLOCK);
         Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
 
@@ -64,7 +64,7 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
         Map<String, Object> row = jdbcTemplate.queryForMap(SELECT_RESERVATION_BY_ID, saved.getId());
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(row.get("member_id")).isEqualTo(member.getId());
-        softly.assertThat(row.get("date")).isEqualTo(date.date().toString());
+        softly.assertThat(row.get("date")).isEqualTo(date.getDate().toString());
         softly.assertThat(row.get("time_id")).isEqualTo(time.getId());
         softly.assertThat(row.get("theme_id")).isEqualTo(theme.getId());
         softly.assertAll();
@@ -73,14 +73,14 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
     @Test
     void 예약을_모두_조회할_수_있다() {
         // given
-        Reservation 예약1 = reservationDbFixture.예약_생성_한스(
+        Reservation 예약1 = reservationDbFixture.예약_생성(
                 ReservationDateFixture.예약날짜_오늘,
                 reservationTimeDbFixture.예약시간_10시(),
                 themeDbFixture.공포(),
                 memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버()
         );
 
-        Reservation 예약2 = reservationDbFixture.예약_생성_한스(
+        Reservation 예약2 = reservationDbFixture.예약_생성(
                 ReservationDateFixture.예약날짜_7일전,
                 reservationTimeDbFixture.예약시간_11시(),
                 themeDbFixture.로맨스(),
@@ -110,7 +110,7 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
     @Test
     void ID로_예약을_조회할_수_있다() {
         // given
-        Reservation 예약 = reservationDbFixture.예약_생성_한스(
+        Reservation 예약 = reservationDbFixture.예약_생성(
                 ReservationDateFixture.예약날짜_오늘,
                 reservationTimeDbFixture.예약시간_10시(),
                 themeDbFixture.공포(),
@@ -128,7 +128,7 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
     @Test
     void 예약을_삭제할_수_있다() {
         // given
-        Reservation 예약 = reservationDbFixture.예약_생성_한스(
+        Reservation 예약 = reservationDbFixture.예약_생성(
                 ReservationDateFixture.예약날짜_오늘,
                 reservationTimeDbFixture.예약시간_10시(),
                 themeDbFixture.공포(),
@@ -149,7 +149,7 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
         ReservationDate date = ReservationDateFixture.예약날짜_오늘;
         ReservationTime time = reservationTimeDbFixture.예약시간_10시();
         Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
-        reservationDbFixture.예약_생성_한스(date, time, themeDbFixture.공포(), member);
+        reservationDbFixture.예약_생성(date, time, themeDbFixture.공포(), member);
 
         // when
         boolean exists = reservationRepository.existSameDateTime(date, time.getId());
@@ -176,7 +176,7 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
         // given
         ReservationTime time = reservationTimeDbFixture.예약시간_10시();
         Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
-        reservationDbFixture.예약_생성_한스(
+        reservationDbFixture.예약_생성(
                 ReservationDateFixture.예약날짜_오늘, time, themeDbFixture.공포(), member
         );
 
@@ -204,7 +204,7 @@ public class ReservationRepositoryTest extends RepositoryBaseTest {
         // given
         Theme theme = themeDbFixture.공포();
         Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
-        reservationDbFixture.예약_생성_한스(
+        reservationDbFixture.예약_생성(
                 ReservationDateFixture.예약날짜_오늘, reservationTimeDbFixture.예약시간_10시(), theme, member
         );
 

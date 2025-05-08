@@ -135,11 +135,11 @@ public class ReservationTimeRepositoryTest extends RepositoryBaseTest {
         reservationTimeDbFixture.예약시간_11시();
         Theme 공포 = themeDbFixture.공포();
         Member member = memberDbFixture.한스_leehyeonsu4888_지메일_일반_멤버();
-        reservationDbFixture.예약_한스_25_4_22(예약시간, 공포, member);
+        reservationDbFixture.예약_25_4_22(예약시간, 공포, member);
 
         // when
         List<AvailableReservationTime> available = repository.findAllAvailableReservationTimes(
-                ReservationDateFixture.예약날짜_25_4_22.date(), 공포.getId());
+                ReservationDateFixture.예약날짜_25_4_22.getDate(), 공포.getId());
 
         // then
         SoftAssertions softly = new SoftAssertions();

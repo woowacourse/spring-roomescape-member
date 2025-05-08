@@ -9,38 +9,25 @@ import roomescape.domain.time.ReservationTime;
 
 @Component
 public class ReservationTimeDbFixture {
-
-    private JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public ReservationTimeDbFixture(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns("id");
     }
 
     public ReservationTime 예약시간_10시() {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
-
-        LocalTime startAt = LocalTime.of(10, 0);
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("start_at", startAt)
-        ).longValue();
-
-        return new ReservationTime(id, startAt);
+        return 예약시간(LocalTime.of(10, 0));
     }
 
     public ReservationTime 예약시간_11시() {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+        return 예약시간(LocalTime.of(11, 0));
+    }
 
-        LocalTime startAt = LocalTime.of(11, 0);
-
-        Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
-                .addValue("start_at", startAt)
-        ).longValue();
-
+    public ReservationTime 예약시간(LocalTime startAt) {
+        Long id = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
+                .addValue("start_at", startAt)).longValue();
         return new ReservationTime(id, startAt);
     }
 }

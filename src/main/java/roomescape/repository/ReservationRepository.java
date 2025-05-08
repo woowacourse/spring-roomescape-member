@@ -1,6 +1,5 @@
 package roomescape.repository;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +16,6 @@ import roomescape.domain.member.MemberRole;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationDateTime;
-import roomescape.domain.reservation.ReserverName;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeDescription;
 import roomescape.domain.theme.ThemeName;
@@ -64,7 +62,7 @@ public class ReservationRepository {
                                 new MemberEncodedPassword(resultSet.getString("member_password")),
                                 MemberRole.from(resultSet.getString("member_role"))
                         ),
-                        LocalDate.parse(resultSet.getString("date")),
+                        new ReservationDate(resultSet.getString("date")),
                         new ReservationTime(
                                 resultSet.getLong("time_id"),
                                 LocalTime.parse(resultSet.getString("time_value"))
@@ -84,12 +82,12 @@ public class ReservationRepository {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("member_id", member.getId())
-                .addValue("date", reservationDateTime.getReservationDate().date())
+                .addValue("date", reservationDateTime.getReservationDate().getDate())
                 .addValue("time_id", reservationDateTime.getReservationTime().getId())
                 .addValue("theme_id", theme.getId());
         Long id = jdbcInsert.executeAndReturnKey(parameters).longValue();
 
-        return new Reservation(id, member, reservationDateTime.getReservationDate().date(),
+        return new Reservation(id, member, reservationDateTime.getReservationDate(),
                 new ReservationTime(reservationDateTime.getReservationTime().getId(),
                         reservationDateTime.getReservationTime().getStartAt()),
                 theme);
@@ -127,7 +125,7 @@ public class ReservationRepository {
                                         new MemberEncodedPassword(resultSet.getString("member_password")),
                                         MemberRole.from(resultSet.getString("member_role"))
                                 ),
-                                LocalDate.parse(resultSet.getString("date")),
+                                new ReservationDate(resultSet.getString("date")),
                                 new ReservationTime(
                                         resultSet.getLong("time_id"),
                                         LocalTime.parse(resultSet.getString("time_value"))
@@ -149,7 +147,7 @@ public class ReservationRepository {
 
     public boolean existSameDateTime(ReservationDate reservationDate, Long timeId) {
         String sql = "SELECT EXISTS(SELECT 1 FROM reservation WHERE date = ? AND time_id = ?)";
-        return jdbcTemplate.queryForObject(sql, boolean.class, reservationDate.date(), timeId);
+        return jdbcTemplate.queryForObject(sql, boolean.class, reservationDate.getDate(), timeId);
     }
 
     public boolean existReservationByTimeId(Long timeId) {
