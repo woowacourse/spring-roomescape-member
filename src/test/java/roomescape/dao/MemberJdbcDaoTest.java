@@ -23,7 +23,7 @@ public class MemberJdbcDaoTest {
                     resultSet.getString("name"),
                     resultSet.getString("email"),
                     resultSet.getString("password"),
-                    Role.fromString(resultSet.getString("role"))
+                    Role.fromValue(resultSet.getString("role"))
             );
 
     @Autowired

@@ -37,4 +37,8 @@ public class Member {
     public String getPassword() {
         return password;
     }
+
+    public Role getRole() {
+        return role;
+    }
 }

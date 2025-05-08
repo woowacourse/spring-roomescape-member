@@ -24,7 +24,7 @@ public class AuthServiceTest {
     void setUp() {
         this.email = "john@example.com";
         this.password = "password";
-        fakeUserDao.add(new Member("John", this.email, this.password, Role.fromString("ADMIN")));
+        fakeUserDao.add(new Member("John", this.email, this.password, Role.fromValue("ADMIN")));
     }
 
     @Test

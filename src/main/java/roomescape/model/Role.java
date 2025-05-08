@@ -12,7 +12,7 @@ public enum Role {
         this.value = value;
     }
 
-    public static Role fromString(String role) {
+    public static Role fromValue(String role) {
         return Arrays.stream(Role.values())
                 .filter(roleName -> roleName.name().equalsIgnoreCase(role))
                 .findAny()
