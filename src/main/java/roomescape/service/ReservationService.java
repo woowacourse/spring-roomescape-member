@@ -73,7 +73,7 @@ public class ReservationService {
     private ReservationTheme findThemeById(final long themeId) {
         return roomescapeThemeRepository.findById(themeId)
                 .orElseThrow(
-                        () -> new DataNotFoundException(String.format("[ERROR] 예약 테마 %d번애 해당하는 테마가 없습니다.", themeId)));
+                        () -> new DataNotFoundException(String.format("[ERROR] 예약 테마 %d번에 해당하는 테마가 없습니다.", themeId)));
     }
 
     private ReservationTime findTimeById(final long timeId) {
