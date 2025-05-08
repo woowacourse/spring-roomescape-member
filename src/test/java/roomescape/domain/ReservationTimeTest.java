@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,5 +23,21 @@ class ReservationTimeTest {
         //then
         assertThat(isSameTime).isTrue();
         assertThat(isNotSameTime).isFalse();
+    }
+
+    @DisplayName("시간 문자열 포맷이 올바르지 않을 시 에러를 발생한다.")
+    @Test
+    void validateTimeFormat() {
+        // given
+        String invalidTimeFormatWithColon = "10;30";
+        String invalidTimeFormatWithNumber = "10:302";
+
+        // when & then
+        assertThatThrownBy(() -> new ReservationTime(invalidTimeFormatWithColon))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 시간 형식을 HH:mm 으로 수정해 주세요");
+        assertThatThrownBy(() -> new ReservationTime(invalidTimeFormatWithNumber))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("[ERROR] 시간 형식을 HH:mm 으로 수정해 주세요");
     }
 }

@@ -1,6 +1,7 @@
 package roomescape.domain;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -22,7 +23,7 @@ public class ReservationTime {
     }
 
     public ReservationTime(final String input) {
-        this(null, LocalTime.parse(input));
+        this(null, parseTime(input));
     }
 
     public ReservationTime assignId(final Long id) {
@@ -31,5 +32,13 @@ public class ReservationTime {
 
     public boolean isSameTime(final ReservationTime other) {
         return this.startAt.equals(other.startAt);
+    }
+
+    private static LocalTime parseTime(final String input) {
+        try {
+            return LocalTime.parse(input);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("[ERROR] 시간 형식을 HH:mm 으로 수정해 주세요");
+        }
     }
 }
