@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -9,30 +8,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.LoginCheckResponse;
-import roomescape.service.LoginService;
+import roomescape.service.MemberService;
+import roomescape.util.CookieUtil;
+import roomescape.util.TokenUtil;
 
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-    private final LoginService loginService;
+    private final MemberService memberService;
 
-    public LoginController(final LoginService loginService) {
-        this.loginService = loginService;
+    public LoginController(final MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping
-    public void login(
-            @RequestBody LoginRequest request, HttpServletResponse response) {
-        Cookie loginCookie = loginService.doLogin(request);
-        response.addCookie(loginCookie);
+    public ResponseEntity<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        Member member = memberService.findMemberWithEmailAndPassword(request);
+        String token = TokenUtil.makeToken(member);
+        CookieUtil.add(response, token);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check")
     public ResponseEntity<LoginCheckResponse> checkMember(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        LoginCheckResponse loginCheckResponse = new LoginCheckResponse(loginService.getNameFromCookie(cookies));
+        LoginCheckResponse loginCheckResponse = memberService.checkMember(request);
         return ResponseEntity.ok().body(loginCheckResponse);
     }
 }
