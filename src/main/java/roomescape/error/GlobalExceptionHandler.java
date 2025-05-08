@@ -25,4 +25,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 null, request);
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleInternalServerError(final Exception ex, final WebRequest request) {
+        final ProblemDetail body = super.createProblemDetail(ex, HttpStatus.INTERNAL_SERVER_ERROR,
+                "서버에서 알 수 없는 오류가 발생했습니다.", null, null, request);
+        return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
 }
