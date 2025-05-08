@@ -34,13 +34,13 @@ class JwtProviderTest {
     void generateToken() {
         //given
         Date issueDate = new Date(0);
-        JwtRequest jwtRequest = new JwtRequest("test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
 
         //when
         String actual = jwtProvider.generateToken(jwtRequest);
 
         //then
-        String expected = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsIm5hbWUiOiJ0ZXN0IiwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlzcyI6InJvb21lc2NhcGUiLCJpYXQiOjAsImV4cCI6ODY0MDB9.y1iN4Rm18gUCX3We1vIF0V37M5K3RNUHhDorC6JBkeA";
+        String expected = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAZW1haWwuY29tIiwicm9sZSI6IkFETUlOIiwiaXNzIjoicm9vbWVzY2FwZSIsImlhdCI6MCwiZXhwIjo4NjQwMH0.lKGpfTtTZCy6snEXZXiNsE2XkwC0Y9-7i7k8_lPOL_E";
         assertAll(
                 () -> assertThat(actual).isNotNull(),
                 () -> assertThat(actual).isEqualTo(expected)
@@ -52,10 +52,10 @@ class JwtProviderTest {
     void verifyToken() {
         //given
         Date issueDate = new Date();
-        JwtRequest jwtRequest = new JwtRequest("test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
         SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(SECRET_KEY));
         String token = Jwts.builder()
-                .subject(jwtRequest.email())
+                .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
                 .claim("role", jwtRequest.memberRoleType())
@@ -85,10 +85,10 @@ class JwtProviderTest {
     void throwExceptionWhenExpiredToken() {
         //given
         Date issueDate = new Date();
-        JwtRequest jwtRequest = new JwtRequest("test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
         SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(SECRET_KEY));
         String token = Jwts.builder()
-                .subject(jwtRequest.email())
+                .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
                 .claim("role", jwtRequest.memberRoleType())
@@ -108,10 +108,10 @@ class JwtProviderTest {
     void throwExceptionWhenWrongSecretKey() {
         //given
         Date issueDate = new Date();
-        JwtRequest jwtRequest = new JwtRequest("test", "test@email.com", MemberRoleType.ADMIN, issueDate);
+        JwtRequest jwtRequest = new JwtRequest(1, "test", "test@email.com", MemberRoleType.ADMIN, issueDate);
         SecretKey wrongSecretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(SECRET_KEY + "A"));
         String token = Jwts.builder()
-                .subject(jwtRequest.email())
+                .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
                 .claim("role", jwtRequest.memberRoleType())

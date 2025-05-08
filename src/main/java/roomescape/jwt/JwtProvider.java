@@ -27,7 +27,7 @@ public class JwtProvider {
 
     public String generateToken(JwtRequest jwtRequest) {
         return Jwts.builder()
-                .subject(jwtRequest.email())
+                .subject(Long.toString(jwtRequest.id()))
                 .claim("name", jwtRequest.name())
                 .claim("email", jwtRequest.email())
                 .claim("role", jwtRequest.memberRoleType())
@@ -50,7 +50,8 @@ public class JwtProvider {
                     .requireIssuer(ISSUER)
                     .build()
                     .parseSignedClaims(jwtToken);
-            return new JwtRequest(claimsJws.getPayload().get("name", String.class),
+            return new JwtRequest(Long.parseLong(claimsJws.getPayload().getSubject()),
+                    claimsJws.getPayload().get("name", String.class),
                     claimsJws.getPayload().get("email", String.class),
                     MemberRoleType.from(claimsJws.getPayload().get("role", String.class)),
                     claimsJws.getPayload().getIssuedAt());

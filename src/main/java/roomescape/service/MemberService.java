@@ -45,12 +45,13 @@ public class MemberService {
     }
 
     public String publishToken(final Member member) {
-        JwtRequest jwtRequest = new JwtRequest(member.getName(), member.getEmail(), member.getRole(), new Date());
+        JwtRequest jwtRequest = new JwtRequest(member.getId(), member.getName(), member.getEmail(),
+                member.getRole(), new Date());
         return jwtProvider.generateToken(jwtRequest);
     }
 
     public MemberLoginCheckResult varifyToken(final String token) {
         JwtRequest jwtRequest = jwtProvider.verifyToken(token);
-        return new MemberLoginCheckResult(jwtRequest.name());
+        return MemberLoginCheckResult.from(jwtRequest);
     }
 }
