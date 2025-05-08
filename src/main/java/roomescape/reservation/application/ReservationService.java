@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.exception.AlreadyExistException;
 import roomescape.exception.ResourceNotFoundException;
+import roomescape.member.domain.Member;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReservationTime;
@@ -26,7 +27,7 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
 
-    public CreateReservationResponse create(final CreateReservationRequest request) {
+    public CreateReservationResponse create(final CreateReservationRequest request, final Member member) {
         if (reservationRepository.existsByDateAndTimeIdAndThemeId(request.date(), request.timeId(),
                 request.themeId())) {
             throw new AlreadyExistException("해당 시간에 이미 예약된 테마입니다.");
@@ -36,7 +37,7 @@ public class ReservationService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 예약 시간 데이터가 존재하지 않습니다. id = " + request.timeId()));
         final Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ResourceNotFoundException("해당 테마 데이터가 존재하지 않습니다. id = " + request.themeId()));
-        final Reservation reservation = new Reservation(request.name(), request.date(), reservationTime, theme);
+        final Reservation reservation = new Reservation(request.date(), reservationTime, theme, member);
 
         final Long id = reservationRepository.save(reservation);
         final Reservation found = reservationRepository.findById(id)
