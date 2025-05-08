@@ -2,7 +2,7 @@ package roomescape.persistence;
 
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.domain.Reservation;
+import roomescape.business.domain.reservation.Reservation;
 
 public interface ReservationRepository {
 

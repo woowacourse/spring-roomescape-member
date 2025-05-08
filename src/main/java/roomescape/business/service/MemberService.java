@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import roomescape.business.domain.Member;
+import roomescape.business.domain.member.Member;
 import roomescape.persistence.MemberRepository;
 import roomescape.presentation.dto.LoginCheckResponseDto;
 import roomescape.presentation.dto.LoginRequestDto;

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.business.domain.Member;
+import roomescape.business.domain.member.Member;
 import roomescape.persistence.MemberRepository;
 import roomescape.persistence.entity.MemberEntity;
 

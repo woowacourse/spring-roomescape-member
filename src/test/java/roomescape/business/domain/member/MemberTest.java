@@ -1,4 +1,4 @@
-package roomescape.business.domain;
+package roomescape.business.domain.member;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 

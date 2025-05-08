@@ -1,7 +1,7 @@
 package roomescape.persistence.entity;
 
 import java.util.Objects;
-import roomescape.business.domain.Member;
+import roomescape.business.domain.member.Member;
 
 public final class MemberEntity {
 

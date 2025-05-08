@@ -1,4 +1,4 @@
-package roomescape.business.domain;
+package roomescape.business.domain.reservation;
 
 public final class ReservationTheme {
 

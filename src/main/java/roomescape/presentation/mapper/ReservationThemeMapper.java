@@ -1,6 +1,6 @@
 package roomescape.presentation.mapper;
 
-import roomescape.business.domain.ReservationTheme;
+import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.presentation.dto.ReservationThemeResponseDto;
 
 public final class ReservationThemeMapper {

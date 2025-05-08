@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.business.domain.ReservationTime;
+import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
-import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.ReservationTimeEntity;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 

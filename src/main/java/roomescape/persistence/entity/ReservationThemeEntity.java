@@ -1,7 +1,7 @@
 package roomescape.persistence.entity;
 
 import java.util.Objects;
-import roomescape.business.domain.ReservationTheme;
+import roomescape.business.domain.reservation.ReservationTheme;
 
 public final class ReservationThemeEntity {
 

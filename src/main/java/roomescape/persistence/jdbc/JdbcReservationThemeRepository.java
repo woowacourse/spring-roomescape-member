@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.business.domain.ReservationTheme;
+import roomescape.business.domain.reservation.ReservationTheme;
 import roomescape.persistence.ReservationThemeRepository;
 import roomescape.persistence.entity.ReservationThemeEntity;
 

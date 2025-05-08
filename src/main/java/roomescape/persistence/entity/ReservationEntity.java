@@ -1,8 +1,8 @@
 package roomescape.persistence.entity;
 
 import java.util.Objects;
-import roomescape.business.domain.Reservation;
-import roomescape.business.domain.ReservationDateTimeFormatter;
+import roomescape.business.domain.reservation.Reservation;
+import roomescape.business.domain.reservation.ReservationDateTimeFormatter;
 
 public final class ReservationEntity {
 

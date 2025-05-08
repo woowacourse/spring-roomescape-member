@@ -13,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import roomescape.business.domain.ReservationTime;
+import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.exception.ErrorResponseDto;
 import roomescape.persistence.fakerepository.FakeReservationTimeRepository;
 import roomescape.presentation.dto.ReservationTimeRequestDto;

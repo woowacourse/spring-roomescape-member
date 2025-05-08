@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
-import roomescape.business.domain.Reservation;
+import roomescape.business.domain.reservation.Reservation;
 import roomescape.persistence.ReservationRepository;
 import roomescape.persistence.entity.ReservationEntity;
 

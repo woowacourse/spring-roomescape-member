@@ -3,7 +3,7 @@ package roomescape.persistence;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.domain.ReservationTheme;
+import roomescape.business.domain.reservation.ReservationTheme;
 
 public interface ReservationThemeRepository {
 

@@ -1,7 +1,7 @@
 package roomescape.persistence;
 
 import java.util.Optional;
-import roomescape.business.domain.Member;
+import roomescape.business.domain.member.Member;
 
 public interface MemberRepository {
 
