@@ -112,7 +112,7 @@ class JdbcReservationDaoTest {
     @Test
     void theme_id와_member_id로_기간에_해당하는_예약을_조회한다() {
         // given
-        final List<Reservation> findReservations = reservationDao.findByThemeIdAndMemberIdInDuration(2, 1,
+        final List<Reservation> findReservations = reservationDao.findReservationByThemeIdAndMemberIdInDuration(2, 1,
                 LocalDate.now().minusDays(5), LocalDate.now().minusDays(1));
 
         // when & then
