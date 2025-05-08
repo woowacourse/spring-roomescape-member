@@ -1,5 +1,6 @@
 package roomescape.global.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
@@ -20,11 +21,15 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("name", member.getName())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+    public String getMemberId(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return claims.getSubject();
     }
 }
 

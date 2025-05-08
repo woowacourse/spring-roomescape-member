@@ -47,4 +47,20 @@ public class MemberJdbcRepository implements MemberRepository {
         );
         return members.stream().findFirst();
     }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        String sql = "select * from member where id = ?";
+        List<Member> members = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) ->
+                        Member.createWithId(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("email"),
+                                resultSet.getString("password")),
+                id
+        );
+        return members.stream().findFirst();
+    }
 }

@@ -5,6 +5,7 @@ import roomescape.auth.exception.LoginFailException;
 import roomescape.member.domain.Member;
 import roomescape.member.dto.MemberRequest;
 import roomescape.member.dto.MemberResponse;
+import roomescape.member.exception.MemberNotFoundException;
 import roomescape.member.repository.MemberRepository;
 
 @Service
@@ -25,5 +26,11 @@ public class MemberDefaultService implements MemberService {
     public Member findByEmailAndPassword(String email, String password) {
         return memberRepository.findIdByEmailAndPassword(email, password)
                 .orElseThrow(LoginFailException::new);
+    }
+
+    @Override
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(MemberNotFoundException::new);
     }
 }

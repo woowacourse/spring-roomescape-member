@@ -1,6 +1,7 @@
 package roomescape.auth.service;
 
 import org.springframework.stereotype.Service;
+import roomescape.auth.dto.LoginCheckResponse;
 import roomescape.auth.dto.LoginRequest;
 import roomescape.global.security.JwtTokenProvider;
 import roomescape.member.domain.Member;
@@ -21,4 +22,9 @@ public class AuthService {
         return jwtTokenProvider.createToken(member);
     }
 
+    public LoginCheckResponse loginCheck(String token) {
+        Long memberId = Long.parseLong(jwtTokenProvider.getMemberId(token));
+        Member member = memberService.findById(memberId);
+        return LoginCheckResponse.from(member);
+    }
 }

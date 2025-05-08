@@ -7,4 +7,6 @@ public interface MemberRepository {
     Member add(Member member);
 
     Optional<Member> findIdByEmailAndPassword(String email, String password);
+
+    Optional<Member> findById(Long id);
 }
