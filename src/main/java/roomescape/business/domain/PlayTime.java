@@ -18,6 +18,11 @@ public class PlayTime {
         this(null, startAt);
     }
 
+    public PlayTime(final Long id) {
+        this.id = id;
+        this.startAt = null;
+    }
+
     public static PlayTime createWithId(final Long id, final LocalTime startAt) {
         if (id == null) {
             throw new IllegalArgumentException("id가 null 입니다.");

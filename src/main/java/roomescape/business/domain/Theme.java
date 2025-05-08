@@ -7,10 +7,6 @@ public class Theme {
     private final String description;
     private final String thumbnail;
 
-    public Theme(final String name, final String description, final String thumbnail) {
-        this(null, name, description, thumbnail);
-    }
-
     public Theme(final Long id, final String name, final String description, final String thumbnail) {
         validateName(name);
         validateDescription(description);
@@ -20,6 +16,17 @@ public class Theme {
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
+    }
+
+    public Theme(final String name, final String description, final String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
+    public Theme(final Long id) {
+        this.id = id;
+        this.name = null;
+        this.description = null;
+        this.thumbnail = null;
     }
 
     private void validateName(final String name) {

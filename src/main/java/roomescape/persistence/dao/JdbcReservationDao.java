@@ -1,11 +1,15 @@
 package roomescape.persistence.dao;
 
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
@@ -16,78 +20,133 @@ import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 @Repository
 public class JdbcReservationDao implements ReservationDao {
 
+    private static final String RESERVATION_ID = "id";
+    private static final String RESERVATION_NAME = "name";
+    private static final String RESERVATION_DATE = "date";
+    private static final String TIME_ID = "time_id";
+    private static final String TIME_START_AT = "time_start_at";
+    private static final String THEME_ID = "theme_id";
+    private static final String THEME_NAME = "theme_name";
+    private static final String THEME_DESCRIPTION = "theme_description";
+    private static final String THEME_THUMBNAIL = "theme_thumbnail";
+    private static final RowMapper<Reservation> reservationStubRowMapper =
+            (rs, rowNum) -> new Reservation(
+                    rs.getLong(RESERVATION_ID),
+                    rs.getString(RESERVATION_NAME),
+                    LocalDate.parse(rs.getString(RESERVATION_DATE)),
+                    new PlayTime(rs.getLong(TIME_ID)),
+                    new Theme(rs.getLong(THEME_ID))
+            );
+    private static final RowMapper<Reservation> reservationFullRowMapper =
+            (rs, rowNum) -> new Reservation(
+                    rs.getLong(RESERVATION_ID),
+                    rs.getString(RESERVATION_NAME),
+                    LocalDate.parse(rs.getString(RESERVATION_DATE)),
+                    new PlayTime(rs.getLong(TIME_ID),
+                            LocalTime.parse(rs.getString(TIME_START_AT))),
+                    new Theme(
+                            rs.getLong(THEME_ID),
+                            rs.getString(THEME_NAME),
+                            rs.getString(THEME_DESCRIPTION),
+                            rs.getString(THEME_THUMBNAIL)
+                    )
+            );
+
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcReservationDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns(RESERVATION_ID);
     }
 
     @Override
     public Long save(final Reservation reservation) {
-        final ReservationEntity reservationEntity = ReservationEntity.from(reservation);
-        final String sql = "INSERT INTO RESERVATION (name, date, time_id, theme_id) values (?, ?, ?, ?)";
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, reservationEntity.name());
-            ps.setString(2, reservationEntity.date());
-            ps.setLong(3, reservationEntity.playTimeEntity().id());
-            ps.setLong(4, reservationEntity.themeEntity().id());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put(RESERVATION_NAME, reservation.getName());
+        parameters.put(RESERVATION_DATE, reservation.getDate().toString());
+        parameters.put(TIME_ID, reservation.getPlayTime().getId());
+        parameters.put(THEME_ID, reservation.getTheme().getId());
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return id;
     }
 
     @Override
     public List<Reservation> findAll() {
-        final String sql =
-                """
-                        SELECT
-                        r.id AS reservation_id,
-                        r.name,
-                        r.date,
-                        rt.id AS time_id,
-                        rt.start_at AS time_value,
-                        t.id AS theme_id,
-                        t.name AS theme_name,
-                        t.description AS theme_description,
-                        t.thumbnail AS theme_thumbnail
-                        FROM reservation AS r
-                        INNER JOIN reservation_time AS rt
+        final String sql = """
+                SELECT
+                    r.id AS id,
+                    r.name AS name,
+                    r.date AS date,
+                
+                    rt.id AS time_id,
+                    rt.start_at AS time_start_at,
+                
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                    INNER JOIN reservation_time AS rt
                         ON r.time_id = rt.id 
-                        INNER JOIN theme AS t 
+                    INNER JOIN theme AS t 
                         ON r.theme_id = t.id
-                        """;
+                """;
+        return jdbcTemplate.query(sql, reservationFullRowMapper);
+    }
 
-        return jdbcTemplate.query(sql, ReservationEntity.getDefaultRowMapper()).stream()
-                .map(ReservationEntity::toDomain)
-                .toList();
+    @Override
+    public Optional<Reservation> findById(final Long id) {
+        final String sql = """
+                SELECT
+                    r.id AS id,
+                    r.name AS name,
+                    r.date AS date,
+                
+                    rt.id AS time_id,
+                    rt.start_at AS time_start_at,
+                
+                    t.id AS theme_id,
+                    t.name AS theme_name,
+                    t.description AS theme_description,
+                    t.thumbnail AS theme_thumbnail
+                FROM reservation AS r
+                    INNER JOIN reservation_time AS rt
+                        ON r.time_id = rt.id 
+                    INNER JOIN theme AS t 
+                        ON r.theme_id = t.id
+                WHERE r.id = ?
+                """;
+        try {
+            final Reservation reservation = jdbcTemplate.queryForObject(sql, reservationFullRowMapper, id);
+            return Optional.of(reservation);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public boolean remove(final Long id) {
-        final String sql = "DELETE FROM RESERVATION WHERE id = ?";
-        final int rowNum = jdbcTemplate.update(sql, id);
-
-        return rowNum == 1;
+        final String sql = """
+                DELETE FROM reservation 
+                WHERE id = ?
+                """;
+        final int updatedRowCount = jdbcTemplate.update(sql, id);
+        return updatedRowCount >= 1;
     }
 
     @Override
-    public boolean existsByDateAndTimeAndTheme(
-            final LocalDate date,
-            final PlayTime time,
-            final Theme theme
-    ) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation WHERE date = ? AND time_id = ? AND theme_id = ?) AS is_exists";
-        final int flag = jdbcTemplate.queryForObject(
-                sql, Integer.class,
-                ReservationEntity.formatDate(date),
-                time.getId(),
-                theme.getId()
-        );
-
+    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final PlayTime time, final Theme theme) {
+        final String sql = """
+                SELECT EXISTS (
+                    SELECT 1 
+                    FROM reservation 
+                    WHERE date = ? AND time_id = ? AND theme_id = ?
+                ) AS is_exists
+                """;
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, date, time.getId(), theme.getId());
         return flag == 1;
     }
 
@@ -110,7 +169,6 @@ public class JdbcReservationDao implements ReservationDao {
                     ) AS r 
                     ON t.id = r.time_id
                 """;
-
         return jdbcTemplate.query(
                 sql,
                 (rs, rowNum) -> new ReservationAvailableTimeResponse(
