@@ -1,9 +1,10 @@
 package roomescape.login.presentation;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +44,17 @@ public class LoginController {
     }
 
     @GetMapping("/login/check")
-    public ResponseEntity<LoginCheckResponse> checkLogin(@CookieValue(name = "token") String token) {
+    public ResponseEntity<LoginCheckResponse> checkLogin(final HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            throw new IllegalStateException("인증할 수 없습니다.");
+        }
+
+        String token = Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals("token"))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("인증할 수 없습니다."))
+                .getValue();
+
         Member member = memberService.findById(JwtTokenManager.getMemberId(token));
         if (member == null) {
             return ResponseEntity.status(401).build();
