@@ -33,10 +33,10 @@ class RoomescapeServiceTest {
         ReservationTimeResponse response = service.addReservationTime(
                 new ReservationTimeRequest(LocalTime.parse("10:10")));
 
-        service.addReservation(new ReservationRequest("test", date, 1L, response.timeId()));
+        service.addReservation(new ReservationRequest("제프리", date, 1L, response.timeId()));
 
         //when & then
-        ReservationRequest duplicated = new ReservationRequest("test2", date, 1L, response.timeId());
+        ReservationRequest duplicated = new ReservationRequest("플린트", date, 1L, response.timeId());
         assertThatThrownBy(() -> service.addReservation(duplicated))
                 .isInstanceOf(DuplicateReservationException.class)
                 .hasMessage("[ERROR] 이미 존재하는 예약입니다. 다른 시간을 선택해 주세요.");
