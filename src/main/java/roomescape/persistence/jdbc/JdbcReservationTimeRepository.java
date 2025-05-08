@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.persistence.jdbc;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.business.ReservationTime;
+import roomescape.business.domain.ReservationTime;
+import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 
 @Repository

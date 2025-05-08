@@ -1,6 +1,6 @@
 package roomescape.presentation.mapper;
 
-import roomescape.business.ReservationTime;
+import roomescape.business.domain.ReservationTime;
 import roomescape.presentation.dto.ReservationTimeResponseDto;
 
 public final class ReservationTimeMapper {

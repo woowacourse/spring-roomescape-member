@@ -1,4 +1,4 @@
-package roomescape.persistence;
+package roomescape.persistence.jdbc;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.business.ReservationTheme;
+import roomescape.business.domain.ReservationTheme;
+import roomescape.persistence.ReservationThemeRepository;
 
 @Repository
 public class JdbcReservationThemeRepository implements ReservationThemeRepository {

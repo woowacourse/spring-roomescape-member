@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.business.ReservationTime;
+import roomescape.business.domain.ReservationTime;
 import roomescape.exception.ReservationTimeException;
 import roomescape.presentation.mapper.ReservationTimeMapper;
 import roomescape.persistence.ReservationRepository;

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.ReservationTime;
+import roomescape.business.domain.ReservationTime;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 
 public interface ReservationTimeRepository {

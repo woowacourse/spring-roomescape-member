@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Repository;
-import roomescape.business.ReservationTime;
+import roomescape.business.domain.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 
