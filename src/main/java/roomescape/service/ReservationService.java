@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.NotFoundException;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
@@ -11,6 +12,8 @@ import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 import roomescape.dto.response.ThemeResponseDto;
+import roomescape.model.LoginMember;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
@@ -21,23 +24,27 @@ public class ReservationService {
     private final ReservationDao reservationDao;
     private final ReservationTimeDao reservationTimeDao;
     private final ThemeDao themeDao;
+    private final MemberDao memberDao;
 
-    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao) {
+    public ReservationService(ReservationDao reservationDao, ReservationTimeDao reservationTimeDao, ThemeDao themeDao,
+                              MemberDao memberDao) {
         this.reservationDao = reservationDao;
         this.reservationTimeDao = reservationTimeDao;
         this.themeDao = themeDao;
+        this.memberDao = memberDao;
     }
 
-    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto) {
-        Reservation reservation = createReservation(reservationRequestDto);
+    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto,
+                                                  LoginMember loginMember) {
+        Reservation reservation = createReservation(reservationRequestDto, loginMember);
         assertReservationIsNotDuplicated(reservation);
 
-        Long id = reservationDao.saveReservation(reservation);
+        Long reservationId = reservationDao.saveReservation(reservation);
 
         ReservationTime time = reservation.getTime();
         Theme theme = reservation.getTheme();
         return new ReservationResponseDto(
-                id,
+                reservationId,
                 reservation.getName(),
                 reservation.getDate(),
                 new ReservationTimeResponseDto(time.getId(), time.getStartAt()),
@@ -55,15 +62,15 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private Reservation createReservation(ReservationRequestDto reservationRequestDto) {
+    private Reservation createReservation(ReservationRequestDto reservationRequestDto, LoginMember loginMember) {
         ReservationTime foundTime = reservationTimeDao.findById(reservationRequestDto.timeId())
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 예약 시각이 존재하지 않습니다."));
 
         Theme foundTheme = themeDao.findById(reservationRequestDto.themeId())
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 존재하지 않습니다."));
 
-        // TODO: 수정하기
-        return reservationRequestDto.convertToReservation(foundTime, foundTheme, null);
+        Member member = findMemberById(loginMember.id());
+        return reservationRequestDto.convertToReservation(foundTime, foundTheme, member);
     }
 
     private void assertReservationIsNotDuplicated(Reservation reservation) {
@@ -71,5 +78,10 @@ public class ReservationService {
                 .ifPresent(foundReservation -> {
                     throw new DuplicatedException("이미 예약이 존재합니다.");
                 });
+    }
+
+    private Member findMemberById(final Long id) {
+        return memberDao.findById(id)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자에 대한 예약 요청입니다."));
     }
 }

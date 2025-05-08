@@ -29,4 +29,9 @@ public class FakeMemberDao implements MemberDao {
         ));
         return id;
     }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(database.get(id));
+    }
 }

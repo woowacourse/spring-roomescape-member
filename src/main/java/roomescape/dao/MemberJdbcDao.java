@@ -25,8 +25,15 @@ public class MemberJdbcDao implements MemberDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Optional<Member> findByEmail(final String email) {
         String sql = "SELECT * FROM member WHERE email = ?";
         return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER, email).stream().findAny();
+    }
+
+    @Override
+    public Optional<Member> findById(final Long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+        return jdbcTemplate.query(sql, MEMBER_ROW_MAPPER, id).stream().findAny();
     }
 }

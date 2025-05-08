@@ -9,9 +9,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import roomescape.dto.response.MemberResponseDto;
 import roomescape.model.LoginMember;
-import roomescape.model.Member;
-import roomescape.service.AuthService;
 import roomescape.presentation.support.CookieUtils;
+import roomescape.service.AuthService;
 
 @Component
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
@@ -26,7 +25,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Member.class);
+        return parameter.getParameterType().equals(LoginMember.class);
     }
 
     @Override

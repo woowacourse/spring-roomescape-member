@@ -10,13 +10,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.DuplicatedException;
-import roomescape.fake.FakeReservationDao;
-import roomescape.fake.FakeReservationTimeDao;
-import roomescape.fake.FakeThemeDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dto.request.ReservationRequestDto;
 import roomescape.dto.response.ReservationResponseDto;
+import roomescape.fake.FakeMemberDao;
+import roomescape.fake.FakeReservationDao;
+import roomescape.fake.FakeReservationTimeDao;
+import roomescape.fake.FakeThemeDao;
+import roomescape.model.LoginMember;
+import roomescape.model.Member;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 
 class ReservationServiceTest {
@@ -24,21 +28,28 @@ class ReservationServiceTest {
     private final ReservationService reservationService;
     private final ReservationTimeDao reservationTimeDao;
     private final FakeThemeDao themeDao;
+    private final FakeMemberDao memberDao;
+    private final LoginMember loginMember;
 
     public ReservationServiceTest() {
         this.reservationTimeDao = new FakeReservationTimeDao();
         this.themeDao = new FakeThemeDao();
+        this.memberDao = new FakeMemberDao();
         this.reservationService = new ReservationService(
                 new FakeReservationDao(),
                 reservationTimeDao,
-                themeDao
+                themeDao,
+                memberDao
         );
+        this.loginMember = new LoginMember(1L, "히로", "example@gmail.com", Role.ADMIN);
     }
 
     @BeforeEach
     void setUp() {
         reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(20, 0)));
+
         themeDao.saveTheme(new Theme("공포", "무서워요", "image-url"));
+        memberDao.add(new Member("히로", "example@gmail.com", "password", Role.ADMIN));
     }
 
     @DisplayName("예약을 정상적으로 저장한다.")
@@ -54,7 +65,7 @@ class ReservationServiceTest {
         );
 
         // when
-        ReservationResponseDto response = reservationService.saveReservation(request);
+        ReservationResponseDto response = reservationService.saveReservation(request, loginMember);
 
         // then
         assertAll(
@@ -71,8 +82,8 @@ class ReservationServiceTest {
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
         ReservationRequestDto request2 = new ReservationRequestDto(
                 "에러", LocalDate.now().plusDays(2).toString(), 1L, 1L);
-        reservationService.saveReservation(request1);
-        reservationService.saveReservation(request2);
+        reservationService.saveReservation(request1, loginMember);
+        reservationService.saveReservation(request2, loginMember);
 
         // when
         List<ReservationResponseDto> reservations = reservationService.getAllReservations();
@@ -89,7 +100,7 @@ class ReservationServiceTest {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
-        ReservationResponseDto saved = reservationService.saveReservation(request);
+        ReservationResponseDto saved = reservationService.saveReservation(request, loginMember);
 
         // when
         reservationService.cancelReservation(saved.id());
@@ -105,13 +116,13 @@ class ReservationServiceTest {
         // given
         ReservationRequestDto request = new ReservationRequestDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
-        reservationService.saveReservation(request);
+        reservationService.saveReservation(request, loginMember);
         ReservationRequestDto savedRequest = new ReservationRequestDto(
                 "히로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
 
         // when && then
         assertThatThrownBy(
-                () -> reservationService.saveReservation(savedRequest))
+                () -> reservationService.saveReservation(savedRequest, loginMember))
                 .isInstanceOf(DuplicatedException.class);
     }
 
@@ -123,7 +134,7 @@ class ReservationServiceTest {
                 "다로", LocalDate.now().toString(), 1L, 1L);
         // when && then
         assertThatThrownBy(
-                () -> reservationService.saveReservation(request))
+                () -> reservationService.saveReservation(request, loginMember))
                 .isInstanceOf(IllegalStateException.class);
     }
 
