@@ -4,9 +4,11 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -73,9 +75,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     };
 
     private final JdbcTemplate jdbcTemplate;
+    private final StringHttpMessageConverter stringHttpMessageConverter;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate, StringHttpMessageConverter stringHttpMessageConverter) {
         this.jdbcTemplate = jdbcTemplate;
+        this.stringHttpMessageConverter = stringHttpMessageConverter;
     }
 
     @Override
@@ -128,6 +132,28 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
         String sql = DEFUALT_SELECT_SQL + " where r.`date` between ? and ?";
         return jdbcTemplate.query(sql, reservationRowMapper, start, end);
+    }
+
+    @Override
+    public List<Reservation> findAllByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        String sql = DEFUALT_SELECT_SQL;
+        List<String> args = new ArrayList<>();
+
+        if (memberId != null) {
+            sql += " where r.member_id = ?";
+            args.add(String.valueOf(memberId));
+        }
+        if (themeId != null) {
+            sql += " and r.theme_id = ?";
+            args.add(String.valueOf(themeId));
+        }
+        if (dateFrom != null && dateTo != null) {
+            sql += " and r.`date` between ? and ?";
+            args.add(String.valueOf(dateFrom));
+            args.add(String.valueOf(dateTo));
+        }
+
+        return jdbcTemplate.query(sql, reservationRowMapper, args.toArray(new String[0]));
     }
 
     @Override

@@ -99,6 +99,10 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
+    public List<Reservation> findAllByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        return reservationRepository.findAllByFilter(memberId, themeId, dateFrom, dateTo);
+    }
+
     public Reservation getReservationById(long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new InvalidReservationException("존재하지 않는 예약입니다."));

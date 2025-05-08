@@ -17,6 +17,8 @@ public interface ReservationRepository {
 
     List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end);
 
+    List<Reservation> findAllByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo);
+
     boolean existsByTimeId(Long id);
 
     boolean existsByThemeId(long id);

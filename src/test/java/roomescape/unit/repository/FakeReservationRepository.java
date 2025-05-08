@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import roomescape.domain.Reservation;
 import roomescape.exception.InvalidReservationException;
 import roomescape.repository.ReservationRepository;
@@ -60,6 +61,27 @@ public class FakeReservationRepository implements ReservationRepository {
             }
         }
         return reservationsInRange;
+    }
+
+    @Override
+    public List<Reservation> findAllByFilter(Long memberId, Long themeId, LocalDate dateFrom, LocalDate dateTo) {
+        Predicate<Reservation> reservationPredicate = reservation -> {
+            boolean matches = true;
+            if (memberId != null) {
+                matches &= reservation.getMember().getId().equals(memberId);
+            }
+            if (themeId != null) {
+                matches &= reservation.getTheme().getId().equals(themeId);
+            }
+            if (dateFrom != null && dateTo != null) {
+                matches &= reservation.getDate().isAfter(dateFrom);
+                matches &= reservation.getDate().isBefore(dateTo);
+            }
+            return matches;
+        };
+        return reservations.stream()
+                .filter(reservationPredicate)
+                .toList();
     }
 
     @Override

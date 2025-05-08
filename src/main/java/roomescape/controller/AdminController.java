@@ -1,10 +1,14 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.request.AdminCreateReservationRequest;
@@ -19,6 +23,21 @@ public class AdminController {
 
     public AdminController(ReservationService reservationService) {
         this.reservationService = reservationService;
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationResponse>> getReservationsByFilter(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long themeId,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo
+            ) {
+        List<Reservation> reservations = reservationService.findAllByFilter(memberId, themeId, dateFrom, dateTo);
+        List<ReservationResponse> responses = reservations.stream()
+                .map(ReservationResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/reservations")
