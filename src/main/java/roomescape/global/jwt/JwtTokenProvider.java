@@ -12,6 +12,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import roomescape.member.domain.Member;
+import roomescape.member.domain.Role;
 
 @Component
 public class JwtTokenProvider implements TokenProvider {
@@ -29,20 +30,25 @@ public class JwtTokenProvider implements TokenProvider {
 
         return PREFIX + Jwts.builder()
                 .claim("id", member.getId())
+                .claim("role", member.getRole())
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+
     @Override
-    public Long getInfo(String token) {
+    public TokenInfo getInfo(String token) {
         validateToken(token);
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.get("id", Long.class);
+        return new TokenInfo(
+                claims.get("id", Long.class),
+                Role.valueOf(claims.get("role", String.class))
+        );
     }
 
     private void validateToken(String token) {

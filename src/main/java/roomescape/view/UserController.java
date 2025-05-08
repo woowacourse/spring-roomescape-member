@@ -22,4 +22,12 @@ public class UserController {
     ) {
         return "/signup";
     }
+
+    @GetMapping("/")
+    public String index(
+    ) {
+        return "/index";
+    }
+
+
 }

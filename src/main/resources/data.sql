@@ -1,9 +1,10 @@
 -- 테마 등록
-insert into member (email, password, name)
+insert into member (email, password, name, role)
 values
-    ('qwer@q.com', 'qwer', 'qwer'),
-    ('qwer2@q.com', 'qwer2', 'qwer2'),
-    ('qwer3@q.com', 'qwer3', 'qwer3');
+    ('qwer@q.com', 'qwer', 'qwer', 'USER'),
+    ('qwer2@q.com', 'qwer2', 'qwer2', 'USER'),
+    ('qwer3@q.com', 'qwer3', 'qwer3', 'USER'),
+    ('admin@admin.com', 'admin', 'admin', 'ADMIN');
 
 
 insert into theme (name, description, thumbnail)

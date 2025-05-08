@@ -29,7 +29,7 @@ public class MemberService {
     }
 
     public MemberResponse findByToken(String token) {
-        Long id = tokenProvider.getInfo(token);
+        Long id = tokenProvider.getInfo(token).getId();
         return findById(id);
     }
 
