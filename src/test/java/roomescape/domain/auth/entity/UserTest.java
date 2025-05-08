@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import roomescape.common.exception.InvalidArgumentException;
+import roomescape.domain.auth.exception.InvalidAuthorizationException;
 
 class UserTest {
 
@@ -57,6 +58,19 @@ class UserTest {
         assertThatCode(() -> {
             new User(1L, name, email, password, Roles.USER);
         }).doesNotThrowAnyException();
+    }
+
+    @DisplayName("로그인 값이 다르다면 예외를 반환한다")
+    @Test
+    void login_throwsException() {
+        // given
+        final String email = "sdaas@naver.com";
+        final User user = new User(1L, new Name("꾹"), email, "1234", Roles.USER);
+
+        // when & then
+        assertThatThrownBy(() -> {
+            user.login(email, "123");
+        }).isInstanceOf(InvalidAuthorizationException.class);
     }
 
 }
