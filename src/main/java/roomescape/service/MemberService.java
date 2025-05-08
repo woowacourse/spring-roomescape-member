@@ -25,7 +25,7 @@ public class MemberService {
         this.jwtProvider = jwtProvider;
     }
 
-    public MemberSignUpResult signup(final MemberSignUpCreation creation) {
+    public MemberSignUpResult register(final MemberSignUpCreation creation) {
         boolean exists = memberRepository.existsByEmail(creation.email());
         if (exists) {
             throw new ExistedDuplicateValueException("이미 사용 중인 이메일입니다");
@@ -38,7 +38,7 @@ public class MemberService {
         return MemberSignUpResult.from(savedMember);
     }
 
-    public String login(final MemberLoginCreation creation) {
+    public String publishAccessToken(final MemberLoginCreation creation) {
         Member member = memberRepository.findByEmailAndPassword(creation.email(), creation.password())
                 .orElseThrow(() -> new NotFoundValueException("존재하지 않는 유저입니다"));
         return publishToken(member);

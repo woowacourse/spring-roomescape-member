@@ -31,14 +31,14 @@ public class MemberController {
     @PostMapping("/members")
     public MemberSignUpResponse signup(@RequestBody @Valid MemberSignUpRequest request) {
         MemberSignUpCreation creation = MemberSignUpCreation.from(request);
-        MemberSignUpResult signUpResult = memberService.signup(creation);
+        MemberSignUpResult signUpResult = memberService.register(creation);
         return MemberSignUpResponse.from(signUpResult);
     }
 
     @PostMapping("/login")
     public void login(@RequestBody @Valid final MemberLoginRequest request,
                       final HttpServletResponse servletResponse) {
-        String loginToken = memberService.login(MemberLoginCreation.from(request));
+        String loginToken = memberService.publishAccessToken(MemberLoginCreation.from(request));
         addCookieToken(servletResponse, loginToken);
     }
 
