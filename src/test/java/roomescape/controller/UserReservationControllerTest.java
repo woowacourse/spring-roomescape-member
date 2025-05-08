@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.ReservationAvailableTimeResponse;
@@ -51,7 +52,7 @@ class UserReservationControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().get("/user/times?date=" + date + "&themeId=" + (int) themeId)
                 .then().log().all()
-                .statusCode(200)
+                .status(HttpStatus.OK)
                 .body("size()", is(2))
                 .body("[0].id", is(1))
                 .body("[0].isBooked", is(false))

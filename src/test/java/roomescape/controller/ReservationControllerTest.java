@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.ReservationRequest;
@@ -59,7 +60,7 @@ class ReservationControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
-                .statusCode(200)
+                .status(HttpStatus.OK)
                 .body("size()", is(2))
                 .body("[0].id", is(1))
                 .body("[0].name", is("브라운"))
@@ -87,7 +88,7 @@ class ReservationControllerTest {
                 .body(dto)
                 .when().post("/reservations")
                 .then().log().all()
-                .statusCode(201)
+                .status(HttpStatus.CREATED)
                 .body("id", is((int) expectedId))
                 .body("name", is("브라운"))
                 .body("date", is(fixedDate.toString()))
@@ -106,7 +107,7 @@ class ReservationControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/reservations/" + reservationId)
                 .then().log().all()
-                .statusCode(204);
+                .status(HttpStatus.NO_CONTENT);
 
         verify(reservationService, times(1)).deleteReservation(reservationId);
     }
@@ -123,7 +124,7 @@ class ReservationControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/reservations/" + nonExistingId)
                 .then().log().all()
-                .statusCode(404);
+                .status(HttpStatus.NOT_FOUND);
 
         verify(reservationService, times(1)).deleteReservation(nonExistingId);
     }

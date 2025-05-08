@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.dto.ThemeRequest;
@@ -51,7 +52,7 @@ class ThemeControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
-                .statusCode(200)
+                .status(HttpStatus.OK)
                 .body("size()", is(2))
                 .body("[0].id", is(1))
                 .body("[0].name", is("테스트1"))
@@ -77,7 +78,7 @@ class ThemeControllerTest {
                 .body(dto)
                 .when().post("/themes")
                 .then().log().all()
-                .statusCode(201)
+                .status(HttpStatus.CREATED)
                 .body("id", is((int) expectedId))
                 .body("name", is(name))
                 .body("description", is(description));
@@ -93,7 +94,7 @@ class ThemeControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/themes/" + themeId)
                 .then().log().all()
-                .statusCode(204);
+                .status(HttpStatus.NO_CONTENT);
 
         verify(themeService, times(1)).deleteTheme(themeId);
     }
@@ -110,7 +111,7 @@ class ThemeControllerTest {
         RestAssuredMockMvc.given().log().all()
                 .when().delete("/themes/" + nonExistingId)
                 .then().log().all()
-                .statusCode(404);
+                .status(HttpStatus.NOT_FOUND);
 
         verify(themeService, times(1)).deleteTheme(nonExistingId);
     }
