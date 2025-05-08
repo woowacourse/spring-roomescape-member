@@ -41,7 +41,7 @@ class ReservationTimeServiceTest {
     @Test
     void getTimeById() {
         // given
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.parse("10:00");
         Long timeId = reservationTimeRepository.add(new ReservationTime(time));
         ReservationTimeResponseDto expected = new ReservationTimeResponseDto(timeId, time);
 
@@ -57,7 +57,7 @@ class ReservationTimeServiceTest {
     @Test
     void createTime() {
         // given
-        LocalTime time = LocalTime.now();
+        LocalTime time = LocalTime.parse("10:00");
         ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(time);
 
         // when

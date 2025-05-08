@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.ReservationTheme;
 import roomescape.persistence.ReservationThemeRepository;
+import roomescape.persistence.entity.ReservationThemeEntity;
 
 @Repository
 public class JdbcReservationThemeRepository implements ReservationThemeRepository {
@@ -32,21 +33,27 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                 SELECT id, name, description, thumbnail
                 FROM theme
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
+        List<ReservationThemeEntity> reservationThemeEntities = jdbcTemplate.query(
+                query,
+                (rs, rowNum) -> new ReservationThemeEntity(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("description"),
                         rs.getString("thumbnail")
                 )
         );
+        return reservationThemeEntities.stream()
+                .map(ReservationThemeEntity::toDomain)
+                .toList();
     }
 
     @Override
     public Long add(ReservationTheme reservationTheme) {
+        ReservationThemeEntity reservationThemeEntity = ReservationThemeEntity.fromDomain(reservationTheme);
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservationTheme.getName());
-        parameters.put("description", reservationTheme.getDescription());
-        parameters.put("thumbnail", reservationTheme.getThumbnail());
+        parameters.put("name", reservationThemeEntity.getName());
+        parameters.put("description", reservationThemeEntity.getDescription());
+        parameters.put("thumbnail", reservationThemeEntity.getThumbnail());
         return (long) jdbcInsert.executeAndReturnKey(parameters);
     }
 
@@ -78,7 +85,9 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                 FROM theme
                 WHERE id = ?
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
+        return jdbcTemplate.query(
+                        query,
+                        (rs, rowNum) -> new ReservationThemeEntity(
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("description"),
@@ -87,11 +96,13 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                         id
                 )
                 .stream()
-                .findFirst();
+                .findFirst()
+                .map(ReservationThemeEntity::toDomain);
     }
 
     @Override
-    public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start, LocalDate end,
+    public List<ReservationTheme> findByStartDateAndEndDateOrderByReservedDesc(LocalDate start,
+                                                                               LocalDate end,
                                                                                int limit) {
         String query = """
                 SELECT th.id, th.name, th.description, th.thumbnail
@@ -103,7 +114,9 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                 ORDER BY COUNT(th.id) DESC
                 LIMIT ?
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTheme(
+        List<ReservationThemeEntity> themeEntities = jdbcTemplate.query(
+                query,
+                (rs, rowNum) -> new ReservationThemeEntity(
                         rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("description"),
@@ -113,5 +126,8 @@ public class JdbcReservationThemeRepository implements ReservationThemeRepositor
                 end,
                 limit
         );
+        return themeEntities.stream()
+                .map(ReservationThemeEntity::toDomain)
+                .toList();
     }
 }

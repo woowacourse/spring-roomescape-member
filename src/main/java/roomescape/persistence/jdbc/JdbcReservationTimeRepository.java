@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.ReservationTime;
 import roomescape.persistence.ReservationTimeRepository;
+import roomescape.persistence.entity.ReservationEntity;
+import roomescape.persistence.entity.ReservationTimeEntity;
 import roomescape.presentation.dto.AvailableTimesResponseDto;
 
 @Repository
@@ -34,10 +36,16 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 SELECT id, start_at 
                 FROM reservation_time
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTime(
-                rs.getLong("id"),
-                rs.getObject("start_at", LocalTime.class)
-        ));
+        List<ReservationTimeEntity> timeEntities = jdbcTemplate.query(
+                query,
+                (rs, rowNum) -> new ReservationTimeEntity(
+                        rs.getLong("id"),
+                        rs.getString("start_at")
+                )
+        );
+        return timeEntities.stream()
+                .map(ReservationTimeEntity::toDomain)
+                .toList();
     }
 
     @Override
@@ -47,20 +55,23 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                 FROM reservation_time 
                 WHERE id = ?
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTime(
+        return jdbcTemplate.query(query, (rs, rowNum) -> new ReservationTimeEntity(
                                 rs.getLong("id"),
-                                rs.getObject("start_at", LocalTime.class)),
+                                rs.getString("start_at")
+                        ),
                         id
                 )
                 .stream()
-                .findFirst();
+                .findFirst()
+                .map(ReservationTimeEntity::toDomain);
     }
 
     @Override
     public Long add(ReservationTime reservationTime) {
+        ReservationTimeEntity reservationTimeEntity = ReservationTimeEntity.fromDomain(reservationTime);
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("start_at", reservationTime.getStartAt());
-        return (Long) jdbcInsert.executeAndReturnKey(parameters);
+        parameters.put("start_at", reservationTimeEntity.getStartAt());
+        return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override

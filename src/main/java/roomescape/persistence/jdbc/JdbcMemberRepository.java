@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.Member;
 import roomescape.persistence.MemberRepository;
+import roomescape.persistence.entity.MemberEntity;
 
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
@@ -26,10 +27,11 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Long save(Member member) {
+        MemberEntity memberEntity = MemberEntity.fromDomain(member);
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", member.getName());
-        parameters.put("email", member.getEmail());
-        parameters.put("password", member.getPassword());
+        parameters.put("name", memberEntity.getName());
+        parameters.put("email", memberEntity.getEmail());
+        parameters.put("password", memberEntity.getPassword());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
@@ -41,7 +43,7 @@ public class JdbcMemberRepository implements MemberRepository {
                 WHERE id = ?""";
         return jdbcTemplate.query(
                         query,
-                        (rs, rowNum) -> new Member(
+                        (rs, rowNum) -> new MemberEntity(
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("email"),
@@ -50,7 +52,8 @@ public class JdbcMemberRepository implements MemberRepository {
                         id
                 )
                 .stream()
-                .findFirst();
+                .findFirst()
+                .map(MemberEntity::toDomain);
     }
 
     @Override
@@ -61,7 +64,7 @@ public class JdbcMemberRepository implements MemberRepository {
                 WHERE email = ?""";
         return jdbcTemplate.query(
                         query,
-                        (rs, rowNum) -> new Member(
+                        (rs, rowNum) -> new MemberEntity(
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("email"),
@@ -70,6 +73,7 @@ public class JdbcMemberRepository implements MemberRepository {
                         email
                 )
                 .stream()
-                .findFirst();
+                .findFirst()
+                .map(MemberEntity::toDomain);
     }
 }

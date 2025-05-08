@@ -1,7 +1,5 @@
 package roomescape.persistence.jdbc;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.Reservation;
-import roomescape.business.domain.ReservationTheme;
-import roomescape.business.domain.ReservationTime;
 import roomescape.persistence.ReservationRepository;
+import roomescape.persistence.entity.ReservationEntity;
+import roomescape.persistence.entity.ReservationThemeEntity;
+import roomescape.persistence.entity.ReservationTimeEntity;
 
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
@@ -41,15 +40,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 JOIN theme AS th
                 ON r.time_id = t.id AND r.theme_id = th.id
                 """;
-        return jdbcTemplate.query(query, (rs, rowNum) -> new Reservation(
+        List<ReservationEntity> reservationEntities = jdbcTemplate.query(
+                query,
+                (rs, rowNum) -> new ReservationEntity(
                         rs.getLong("reservation_id"),
                         rs.getString("name"),
-                        rs.getObject("date", LocalDate.class),
-                        new ReservationTime(
+                        rs.getString("date"),
+                        new ReservationTimeEntity(
                                 rs.getLong("time_id"),
-                                rs.getObject("start_at", LocalTime.class)
+                                rs.getString("start_at")
                         ),
-                        new ReservationTheme(
+                        new ReservationThemeEntity(
                                 rs.getLong("theme_id"),
                                 rs.getString("theme_name"),
                                 rs.getString("description"),
@@ -57,6 +58,9 @@ public class JdbcReservationRepository implements ReservationRepository {
                         )
                 )
         );
+        return reservationEntities.stream()
+                .map(ReservationEntity::toDomain)
+                .toList();
     }
 
     @Override
@@ -72,16 +76,17 @@ public class JdbcReservationRepository implements ReservationRepository {
                 ON r.time_id = t.id AND r.theme_id = th.id
                 WHERE r.id = ?
                 """;
-        return jdbcTemplate.query(query,
-                        (rs, rowNum) -> new Reservation(
+        return jdbcTemplate.query(
+                        query,
+                        (rs, rowNum) -> new ReservationEntity(
                                 rs.getLong("reservation_id"),
                                 rs.getString("name"),
-                                rs.getObject("date", LocalDate.class),
-                                new ReservationTime(
+                                rs.getString("date"),
+                                new ReservationTimeEntity(
                                         rs.getLong("time_id"),
-                                        rs.getObject("start_at", LocalTime.class)
+                                        rs.getString("start_at")
                                 ),
-                                new ReservationTheme(
+                                new ReservationThemeEntity(
                                         rs.getLong("theme_id"),
                                         rs.getString("theme_name"),
                                         rs.getString("description"),
@@ -91,17 +96,19 @@ public class JdbcReservationRepository implements ReservationRepository {
                         id
                 )
                 .stream()
-                .findFirst();
+                .findFirst()
+                .map(ReservationEntity::toDomain);
     }
 
     @Override
     public Long add(Reservation reservation) {
+        ReservationEntity reservationEntity = ReservationEntity.fromDomain(reservation);
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
-        parameters.put("date", reservation.getDate());
-        parameters.put("time_id", reservation.getTime().getId());
-        parameters.put("theme_id", reservation.getTheme().getId());
-        return (Long) jdbcInsert.executeAndReturnKey(parameters);
+        parameters.put("name", reservationEntity.getName());
+        parameters.put("date", reservationEntity.getDate());
+        parameters.put("time_id", reservationEntity.getTimeEntity().getId());
+        parameters.put("theme_id", reservationEntity.getThemeEntity().getId());
+        return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
