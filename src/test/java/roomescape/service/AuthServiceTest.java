@@ -1,7 +1,6 @@
 package roomescape.service;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +14,7 @@ import roomescape.model.Member;
 
 public class AuthServiceTest {
     private final FakeMemberDao fakeUserDao = new FakeMemberDao();
-    private final AuthService authService = new AuthService(fakeUserDao);
+    private final AuthService authService = new AuthService(null, fakeUserDao);
 
     private String email;
     private String password;
