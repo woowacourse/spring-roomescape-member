@@ -10,7 +10,7 @@ public class AdminViewController {
 
     @GetMapping
     public String home() {
-        return "admin/reservation";
+        return "redirect:/admin/reservation";
     }
 
     @GetMapping("/reservation")
