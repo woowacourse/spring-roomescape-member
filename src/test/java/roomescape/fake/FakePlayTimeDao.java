@@ -19,7 +19,7 @@ public class FakePlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public Long save(final PlayTime playTime) {
+    public Long insert(final PlayTime playTime) {
         final Long id = atomicLong.getAndIncrement();
         final PlayTime insertPlayTime = new PlayTime(id,
                 playTime.getStartAt());
@@ -28,7 +28,7 @@ public class FakePlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public Optional<PlayTime> find(final Long id) {
+    public Optional<PlayTime> findById(final Long id) {
         return times.stream()
                 .filter(time -> time.getId().equals(id))
                 .findFirst();
@@ -40,7 +40,7 @@ public class FakePlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public boolean remove(final Long id) {
+    public boolean deleteById(final Long id) {
         int beforeSize = times.size();
         times.removeIf(time -> time.getId().equals(id));
         int afterSize = times.size();

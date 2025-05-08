@@ -34,7 +34,7 @@ public class ReservationServiceTest {
     @BeforeEach
     void setUp() {
         final PlayTimeDao fakePlayTimeDao = new FakePlayTimeDao();
-        fakePlayTimeDao.save(
+        fakePlayTimeDao.insert(
                 new PlayTime(1L, FORMATTED_MAX_LOCAL_TIME)
         );
         final ThemeDao fakeThemeDao = new FakeThemeDao();

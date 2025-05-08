@@ -17,7 +17,6 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
 
     private static final String ID = "id";
     private static final String START_AT = "start_at";
-
     private static final RowMapper<PlayTime> playTimeRowMapper =
             (rs, rowNum) -> new PlayTime(
                     rs.getLong(ID),
@@ -35,7 +34,7 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public Long save(final PlayTime playTime) {
+    public Long insert(final PlayTime playTime) {
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put(START_AT, playTime.getStartAt());
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
@@ -43,7 +42,16 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public Optional<PlayTime> find(final Long id) {
+    public List<PlayTime> findAll() {
+        final String sql = """
+                SELECT id, start_at 
+                FROM reservation_time
+                """;
+        return jdbcTemplate.query(sql, playTimeRowMapper);
+    }
+
+    @Override
+    public Optional<PlayTime> findById(final Long id) {
         final String sql = """
                 SELECT id, start_at 
                 FROM reservation_time 
@@ -58,16 +66,7 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public List<PlayTime> findAll() {
-        final String sql = """
-                SELECT id, start_at 
-                FROM reservation_time
-                """;
-        return jdbcTemplate.query(sql, playTimeRowMapper);
-    }
-
-    @Override
-    public boolean remove(final Long id) {
+    public boolean deleteById(final Long id) {
         final String sql = """
                 DELETE FROM reservation_time 
                 WHERE id = ?

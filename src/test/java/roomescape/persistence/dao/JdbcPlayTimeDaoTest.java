@@ -25,15 +25,15 @@ class JdbcPlayTimeDaoTest {
 
     @Test
     @DisplayName("데이터베이스에 방탈출 예약 시간을 저장하고 조회하여 확인한다")
-    void saveAndFindById() {
+    void insertAndFindByIdById() {
         // given
         final PlayTime playTime = new PlayTime(LocalTime.of(10, 10));
 
         // when
-        final Long id = playTimeDao.save(playTime);
+        final Long id = playTimeDao.insert(playTime);
 
         // then
-        final Optional<PlayTime> findPlayTime = playTimeDao.find(id);
+        final Optional<PlayTime> findPlayTime = playTimeDao.findById(id);
         assertAll(
                 () -> assertThat(findPlayTime).isPresent(),
                 () -> assertThat(findPlayTime.get().getId()).isEqualTo(id),
@@ -42,30 +42,26 @@ class JdbcPlayTimeDaoTest {
     }
 
     @Test
-    @DisplayName("데이터베이스에서 id를 통해 테마를 삭제한다")
-    void deleteById() {
+    @DisplayName("데이터베이스에서 id를 통해 방탈출 예약 시간을 조회할 때 대상이 없다면 빈 Optional을 반환한다")
+    void findByIdByIdWhenNotExists() {
         // given
-        final PlayTime playTime = new PlayTime(LocalTime.of(10, 10));
-        final Long id = playTimeDao.save(playTime);
+        final Long notExistsId = 999L;
 
         // when
-        final boolean isDeleted = playTimeDao.remove(id);
+        final Optional<PlayTime> findPlayTime = playTimeDao.findById(notExistsId);
 
         // then
-        assertAll(
-                () -> assertThat(isDeleted).isTrue(),
-                () -> assertThat(playTimeDao.find(id)).isEmpty()
-        );
+        assertThat(findPlayTime).isEmpty();
     }
 
     @Test
     @DisplayName("데이터베이스의 모든 방탈출 예약 시간을 조회한다")
-    void findAll() {
+    void findByIdAll() {
         // given
         final PlayTime playTime1 = new PlayTime(LocalTime.of(10, 10));
         final PlayTime playTime2 = new PlayTime(LocalTime.of(11, 10));
-        playTimeDao.save(playTime1);
-        playTimeDao.save(playTime2);
+        playTimeDao.insert(playTime1);
+        playTimeDao.insert(playTime2);
 
         // when
         final List<PlayTime> playTimes = playTimeDao.findAll();
@@ -75,13 +71,30 @@ class JdbcPlayTimeDaoTest {
     }
 
     @Test
-    @DisplayName("데이터베이스에서 id를 통해 방탈출 예약 시간을 삭제할 때 대상이 없다면 false 반환한다")
-    void deleteByIdWhenNotExist() {
+    @DisplayName("데이터베이스에서 id를 통해 테마를 삭제한다")
+    void deleteById() {
         // given
-        final Long notExistId = 999L;
+        final PlayTime playTime = new PlayTime(LocalTime.of(10, 10));
+        final Long id = playTimeDao.insert(playTime);
 
         // when
-        final boolean isDeleted = playTimeDao.remove(notExistId);
+        final boolean isDeleted = playTimeDao.deleteById(id);
+
+        // then
+        assertAll(
+                () -> assertThat(isDeleted).isTrue(),
+                () -> assertThat(playTimeDao.findById(id)).isEmpty()
+        );
+    }
+
+    @Test
+    @DisplayName("데이터베이스에서 id를 통해 방탈출 예약 시간을 삭제할 때 대상이 없다면 false 반환한다")
+    void deleteByIdWhenNotExists() {
+        // given
+        final Long notExistsId = 999L;
+
+        // when
+        final boolean isDeleted = playTimeDao.deleteById(notExistsId);
 
         // then
         assertThat(isDeleted).isFalse();
@@ -94,7 +107,7 @@ class JdbcPlayTimeDaoTest {
         final LocalTime validStartAt = LocalTime.of(10, 10);
         final LocalTime invalidStartAt = LocalTime.of(11, 10);
         final PlayTime playTime = new PlayTime(validStartAt);
-        playTimeDao.save(playTime);
+        playTimeDao.insert(playTime);
 
         // when & then
         assertAll(

@@ -22,7 +22,7 @@ public class PlayTimeService {
     public PlayTimeResponse insert(final PlayTimeRequest playTimeRequest) {
         validateStartAtIsNotDuplicate(playTimeRequest.startAt());
         final PlayTime playTime = playTimeRequest.toDomain();
-        final Long id = playTimeDao.save(playTime);
+        final Long id = playTimeDao.insert(playTime);
         return PlayTimeResponse.withId(id, playTime);
     }
 
@@ -39,12 +39,12 @@ public class PlayTimeService {
     }
 
     public PlayTime findById(final Long id) {
-        return playTimeDao.find(id)
+        return playTimeDao.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당하는 방탈출 시간을 찾을 수 없습니다. 방탈출 id: %d".formatted(id)));
     }
 
     public void deleteById(final Long id) {
-        if (!playTimeDao.remove(id)) {
+        if (!playTimeDao.deleteById(id)) {
             throw new NotFoundException("해당하는 방탈출 시간을 찾을 수 없습니다. 방탈출 id: %d".formatted(id));
         }
     }

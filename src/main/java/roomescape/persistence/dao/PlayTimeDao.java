@@ -7,13 +7,13 @@ import roomescape.business.domain.PlayTime;
 
 public interface PlayTimeDao {
 
-    Long save(PlayTime playTime);
+    Long insert(PlayTime playTime);
 
-    Optional<PlayTime> find(Long id);
+    Optional<PlayTime> findById(Long id);
 
     List<PlayTime> findAll();
 
-    boolean remove(Long id);
+    boolean deleteById(Long id);
 
     boolean existsByStartAt(LocalTime startAt);
 }
