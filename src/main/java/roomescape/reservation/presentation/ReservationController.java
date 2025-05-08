@@ -31,7 +31,6 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             final @RequestBody @Valid ReservationRequest reservationRequest, LoginMember member
     ) {
-        System.out.println("member.getEmail() = " + member.getName());
         ReservationResponse reservation = reservationService.createReservation(reservationRequest, member);
 
         return ResponseEntity.created(createUri(reservation.getId()))
