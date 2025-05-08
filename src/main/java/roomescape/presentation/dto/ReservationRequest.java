@@ -2,9 +2,9 @@ package roomescape.presentation.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import roomescape.business.domain.Reservation;
-import roomescape.business.domain.ReservationTime;
-import roomescape.business.domain.Theme;
+import roomescape.business.domain.reservation.Reservation;
+import roomescape.business.domain.reservation.ReservationTime;
+import roomescape.business.domain.theme.Theme;
 
 public record ReservationRequest(
         @NotNull(message = "이름을 입력해주세요.") String name,

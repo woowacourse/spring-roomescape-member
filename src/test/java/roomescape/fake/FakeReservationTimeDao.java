@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.domain.ReservationTime;
+import roomescape.business.domain.reservation.ReservationTime;
 import roomescape.repository.ReservationTimeRepository;
 
 public class FakeReservationTimeDao implements ReservationTimeRepository {

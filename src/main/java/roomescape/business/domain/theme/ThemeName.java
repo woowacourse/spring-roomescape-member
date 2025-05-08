@@ -1,4 +1,4 @@
-package roomescape.business.domain;
+package roomescape.business.domain.theme;
 
 import java.util.Objects;
 

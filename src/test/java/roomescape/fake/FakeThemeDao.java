@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import roomescape.business.domain.Theme;
-import roomescape.business.domain.ThemeName;
+import roomescape.business.domain.theme.Theme;
+import roomescape.business.domain.theme.ThemeName;
 import roomescape.repository.ThemeRepository;
 
 public class FakeThemeDao implements ThemeRepository {

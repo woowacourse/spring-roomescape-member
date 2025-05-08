@@ -1,7 +1,8 @@
-package roomescape.business.domain;
+package roomescape.business.domain.reservation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import roomescape.business.domain.theme.Theme;
 
 public final class ReservationAvailability {
 

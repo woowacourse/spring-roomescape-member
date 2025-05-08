@@ -1,4 +1,4 @@
-package roomescape.business.domain;
+package roomescape.business.domain.theme;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import roomescape.business.domain.ThemeDescription;
 
 class ThemeDescriptionTest {
 

@@ -1,7 +1,7 @@
 package roomescape.presentation.dto;
 
 import java.time.LocalDate;
-import roomescape.business.domain.Reservation;
+import roomescape.business.domain.reservation.Reservation;
 
 public record ReservationResponse(
         Long id,

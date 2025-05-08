@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.business.domain.ReservationAvailability;
-import roomescape.business.domain.Theme;
+import roomescape.business.domain.reservation.ReservationAvailability;
+import roomescape.business.domain.theme.Theme;
 
 @JdbcTest
 @Import({JdbcReservationAvailabilityDao.class, JdbcThemeDao.class})

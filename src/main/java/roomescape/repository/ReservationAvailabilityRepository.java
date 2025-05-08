@@ -2,8 +2,8 @@ package roomescape.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import roomescape.business.domain.ReservationAvailability;
-import roomescape.business.domain.Theme;
+import roomescape.business.domain.reservation.ReservationAvailability;
+import roomescape.business.domain.theme.Theme;
 
 public interface ReservationAvailabilityRepository {
 

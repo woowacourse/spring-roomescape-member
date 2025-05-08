@@ -2,14 +2,14 @@ package roomescape.business.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.business.domain.Reservation;
-import roomescape.business.domain.ReservationTime;
-import roomescape.business.domain.Theme;
+import roomescape.business.domain.reservation.Reservation;
+import roomescape.business.domain.reservation.ReservationTime;
+import roomescape.business.domain.theme.Theme;
+import roomescape.presentation.dto.ReservationRequest;
+import roomescape.presentation.dto.ReservationResponse;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
-import roomescape.presentation.dto.ReservationRequest;
-import roomescape.presentation.dto.ReservationResponse;
 
 @Service
 public class ReservationService {

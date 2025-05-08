@@ -3,11 +3,11 @@ package roomescape.business.service;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import roomescape.business.domain.Theme;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ThemeRepository;
+import roomescape.business.domain.theme.Theme;
 import roomescape.presentation.dto.ThemeRequest;
 import roomescape.presentation.dto.ThemeResponse;
+import roomescape.repository.ReservationRepository;
+import roomescape.repository.ThemeRepository;
 
 @Service
 public class ThemeService {

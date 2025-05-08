@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.business.domain.Reservation;
-import roomescape.business.domain.ReservationTime;
-import roomescape.business.domain.Theme;
+import roomescape.business.domain.reservation.Reservation;
+import roomescape.business.domain.reservation.ReservationTime;
+import roomescape.business.domain.theme.Theme;
 
 @JdbcTest
 @Import({JdbcReservationDao.class, JdbcThemeDao.class, JdbcReservationTimeDao.class})

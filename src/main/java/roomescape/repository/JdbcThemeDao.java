@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import roomescape.business.domain.Theme;
-import roomescape.business.domain.ThemeName;
+import roomescape.business.domain.theme.Theme;
+import roomescape.business.domain.theme.ThemeName;
 
 @Repository
 public class JdbcThemeDao implements ThemeRepository {
