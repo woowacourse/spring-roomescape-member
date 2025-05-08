@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.presentation.dto.response.ReservationResponse;
@@ -46,8 +47,8 @@ public class MissionStepTest {
 
     @Test
     void 오단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운",
+        jdbcTemplate.update("INSERT INTO reservation (member_id, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
+                1L,
                 LocalDate.now().plusDays(1),
                 1L,
                 1L
@@ -67,13 +68,15 @@ public class MissionStepTest {
 
     @Test
     void 육단계() {
+        String token = getToken();
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1).toString());
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -114,13 +117,15 @@ public class MissionStepTest {
 
     @Test
     void 팔단계() {
+        String token = getToken();
+
         Map<String, Object> reservation = new HashMap<>();
-        reservation.put("name", "브라운");
         reservation.put("date", LocalDate.now().plusDays(1));
         reservation.put("timeId", 1);
         reservation.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", token)
                 .contentType(ContentType.JSON)
                 .body(reservation)
                 .when().post("/reservations")
@@ -132,5 +137,20 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    private String getToken() {
+        Map<String, Object> memberParams = new HashMap<>();
+        memberParams.put("email", "admin@gmail.com");
+        memberParams.put("password", "1234");
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(memberParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+        return accessToken;
     }
 }

@@ -5,11 +5,14 @@ import org.junit.jupiter.api.Test;
 import roomescape.application.service.ReservationService;
 import roomescape.domain.exception.ReservationDuplicatedException;
 import roomescape.domain.exception.ResourceNotExistException;
+import roomescape.domain.model.Member;
 import roomescape.domain.model.ReservationTime;
 import roomescape.domain.model.Theme;
+import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.fake.FakeMemberRepository;
 import roomescape.fake.FakeReservationRepository;
 import roomescape.fake.FakeReservationTimeRepository;
 import roomescape.fake.FakeThemeRepository;
@@ -24,13 +27,15 @@ public class ReservationServiceTest {
     ReservationRepository reservationRepository;
     ReservationTimeRepository reservationTimeRepository;
     ThemeRepository themeRepository;
+    MemberRepository memberRepository;
     ReservationService reservationService;
 
     public ReservationServiceTest() {
         reservationRepository = new FakeReservationRepository();
         reservationTimeRepository = new FakeReservationTimeRepository();
         themeRepository = new FakeThemeRepository();
-        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository);
+        memberRepository = new FakeMemberRepository();
+        this.reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository, memberRepository);
     }
 
     @BeforeEach
@@ -45,10 +50,13 @@ public class ReservationServiceTest {
         Theme theme = themeRepository.save(DEFAULT_THEME);
 
         // when
-        ReservationRequest reservation = new ReservationRequest("예약", TOMORROW, time.getId(), theme.getId());
+        ReservationRequest reservation = new ReservationRequest(TOMORROW, time.getId(), theme.getId());
+        Member member = memberRepository.findById(1L);
 
         // when & then
-        assertDoesNotThrow(() -> reservationService.save(reservation));
+        System.out.println("member = " + member);
+        System.out.println("reservation = " + reservation);
+        assertDoesNotThrow(() -> reservationService.save(member, reservation));
     }
 
     @Test
@@ -58,11 +66,12 @@ public class ReservationServiceTest {
         Theme theme = themeRepository.save(DEFAULT_THEME);
 
         // when
-        ReservationRequest reservation = new ReservationRequest("예약", TOMORROW, time.getId(), theme.getId());
-        reservationService.save(reservation);
+        ReservationRequest reservation = new ReservationRequest(TOMORROW, time.getId(), theme.getId());
+        Member member = memberRepository.findById(1L);
+        reservationService.save(member, reservation);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.save(reservation))
+        assertThatThrownBy(() -> reservationService.save(member, reservation))
                 .isInstanceOf(ReservationDuplicatedException.class);
     }
 
@@ -73,10 +82,11 @@ public class ReservationServiceTest {
         Theme theme = themeRepository.save(DEFAULT_THEME);
 
         // when
-        ReservationRequest reservation = new ReservationRequest("예약", YESTERDAY, time.getId(), theme.getId());
+        ReservationRequest reservation = new ReservationRequest(YESTERDAY, time.getId(), theme.getId());
+        Member member = memberRepository.findById(1L);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.save(reservation))
+        assertThatThrownBy(() -> reservationService.save(member, reservation))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("[ERROR] 현재보다 과거 시간에는 예약이 불가능합니다.");
     }

@@ -13,7 +13,7 @@ public interface ReservationRepository {
 
     int deleteById(Long id);
 
-    boolean existByTimeIdAndThemeIdAndDate(Long timeId, Long themeId, LocalDate date);
+    boolean existByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
 
     List<Long> findBookedTimes(Long themeId, LocalDate date);
 

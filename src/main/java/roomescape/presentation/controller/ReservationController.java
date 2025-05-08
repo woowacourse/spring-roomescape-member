@@ -4,9 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import roomescape.application.service.ReservationService;
+import roomescape.domain.model.Member;
+import roomescape.presentation.annotation.MemberAuthorization;
 import roomescape.presentation.dto.request.ReservationRequest;
 import roomescape.presentation.dto.response.ReservationResponse;
-import roomescape.application.service.ReservationService;
 
 import java.util.List;
 
@@ -27,8 +29,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@Validated @RequestBody ReservationRequest request) {
-        ReservationResponse response = reservationService.save(request);
+    public ResponseEntity<ReservationResponse> create(@MemberAuthorization Member member, @Validated @RequestBody ReservationRequest request) {
+        ReservationResponse response = reservationService.save(member, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

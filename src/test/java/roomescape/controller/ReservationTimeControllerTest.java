@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
@@ -108,13 +109,25 @@ public class ReservationTimeControllerTest {
     @Test
     @DisplayName("/times/{id} DELETE 요청시 특정 id에 대한 예약이 존재하면 400을 응답한다")
     void cannot_delete_time_if_reservation_exist() {
+        Map<String, Object> memberParams = new HashMap<>();
+        memberParams.put("email", "admin@gmail.com");
+        memberParams.put("password", "1234");
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(memberParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")

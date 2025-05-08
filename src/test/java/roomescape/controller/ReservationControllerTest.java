@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
@@ -31,13 +32,15 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("/reservations POST 요청에 정상적으로 응답한다")
     void reservation_post_api() {
+        String accessToken = getToken();
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -55,13 +58,15 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("/reservations POST 요청시 날짜 형식이 올바르지 않을 경우 400을 응답한다")
     void reservation_post_format_not_proper() {
+        String accessToken = getToken();
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", "1월 1일");
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -70,15 +75,39 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @DisplayName("/reservations POST 요청시 사용자의 입장에서 예약을 생성할 수 있다")
+    void reservation_post_by_member() {
+        String accessToken = getToken();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", LocalDate.now().plusDays(1));
+        params.put("timeId", 1);
+        params.put("themeId", 1);
+
+        RestAssured
+                .given().log().all()
+                .cookie("token", accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(ContentType.JSON)
+                .body(params)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(201)
+                .body("id", is(1));
+    }
+
+    @Test
     @DisplayName("/reservations POST 요청시 과거에 대한 예약을 시도하는 경우 400을 응답한다")
     void reservation_post_past() {
+        String accessToken = getToken();
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(-1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -89,18 +118,20 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("/reservations POST 요청시 중복 예약이 존재할 경우 400을 응답한다")
     void reservation_post_duplication() {
+        String accessToken = getToken();
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations");
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -111,13 +142,15 @@ public class ReservationControllerTest {
     @Test
     @DisplayName("/reservations/{id} DELETE 요청에 성공한 경우 204를 응답한다")
     void reservation_delete_api() {
+        String accessToken = getToken();
+
         Map<String, Object> params = new HashMap<>();
-        params.put("name", "브라운");
         params.put("date", LocalDate.now().plusDays(1));
         params.put("timeId", 1);
         params.put("themeId", 1);
 
         RestAssured.given().log().all()
+                .cookie("token", accessToken)
                 .contentType(ContentType.JSON)
                 .body(params)
                 .when().post("/reservations")
@@ -144,5 +177,20 @@ public class ReservationControllerTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(0));
+    }
+
+    private String getToken() {
+        Map<String, Object> memberParams = new HashMap<>();
+        memberParams.put("email", "admin@gmail.com");
+        memberParams.put("password", "1234");
+
+        String accessToken = RestAssured
+                .given().log().all()
+                .body(memberParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/login")
+                .then().log().all().extract().cookie("token");
+        return accessToken;
     }
 }

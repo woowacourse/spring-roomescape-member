@@ -15,7 +15,7 @@ public class FakeReservationDao {
 
     public Reservation save(Reservation reservation) {
         Long id = IDX.getAndIncrement();
-        Reservation newReservation = new Reservation(id, reservation.getName(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
+        Reservation newReservation = new Reservation(id, reservation.getMemberId(), reservation.getDate(), reservation.getTime(), reservation.getTheme());
         RESERVATIONS.put(id, newReservation);
         return newReservation;
     }

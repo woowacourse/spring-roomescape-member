@@ -20,7 +20,7 @@ public class ReservationDao {
     private final SimpleJdbcInsert simpleJdbcInsert;
     private static final RowMapper<Reservation> ROW_MAPPER = (resultSet, rowNum) -> new Reservation(
             resultSet.getLong("id"),
-            resultSet.getString("name"),
+            resultSet.getLong("member_id"),
             resultSet.getDate("date").toLocalDate(),
             new ReservationTime(
                     resultSet.getLong("time_id"),
@@ -43,7 +43,7 @@ public class ReservationDao {
 
     public List<Reservation> findAll() {
         String query = """
-                   SELECT r.id, r.name, r.date,
+                   SELECT r.id, r.member_id, r.date,
                    rt.id AS time_id, rt.start_at AS time_value,
                    t.id AS theme_id, t.name AS theme_name, t.description AS theme_description, t.thumbnail AS theme_thumbnail
                    FROM reservation AS r
@@ -58,7 +58,7 @@ public class ReservationDao {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", reservation.getName());
+        parameters.put("member_id", reservation.getMemberId());
         parameters.put("date", reservation.getDate());
         parameters.put("time_id", reservation.getTime().getId());
         parameters.put("theme_id", reservation.getTheme().getId());
@@ -66,7 +66,7 @@ public class ReservationDao {
         Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
         return new Reservation(
                 id,
-                reservation.getName(),
+                reservation.getMemberId(),
                 reservation.getDate(),
                 reservation.getTime(),
                 reservation.getTheme()

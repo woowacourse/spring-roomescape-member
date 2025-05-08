@@ -59,7 +59,7 @@ public class ReservationTimeServiceTest {
     void 특정_시간에_대한_예약이_존재하는_경우_시간을_삭제할_수_없다() {
         // given
         ReservationTime savedTime = reservationTimeRepository.save(DEFAULT_TIME);
-        reservationRepository.save(new Reservation("예약", TOMORROW, savedTime, DEFAULT_THEME));
+        reservationRepository.save(new Reservation(1L, TOMORROW, savedTime, DEFAULT_THEME));
 
         // when & then
         assertThatThrownBy(() -> reservationTimeService.deleteReservationTime(savedTime.getId()))
