@@ -8,6 +8,9 @@ public final class Member {
     private final String password;
 
     public Member(Long id, String name, String email, String password) {
+        if (name == null || email == null || password == null) {
+            throw new IllegalArgumentException("사용자 정보는 null일 수 없습니다.");
+        }
         this.id = id;
         this.name = name;
         this.email = email;
