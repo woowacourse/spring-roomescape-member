@@ -18,8 +18,8 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public static final RowMapper<Member> userRowMapper = (rs, rowNum) ->
             new Member(rs.getLong("id"),
-                    rs.getString("role"),
                     rs.getString("name"),
+                    rs.getString("role"),
                     rs.getString("email"),
                     rs.getString("password")
             );
@@ -32,7 +32,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmailAndPassword(final String email, final String password) {
-        String sql = "SELECT id, name, email, password FROM member WHERE email = ? and password = ?";
+        String sql = "SELECT id, role, name, email, password FROM member WHERE email = ? and password = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, userRowMapper, email, password);
             return Optional.of(member);
@@ -43,7 +43,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(final Long id) {
-        String sql = "SELECT id, name, email, password FROM member WHERE id = ?";
+        String sql = "SELECT id, role, name, email, password FROM member WHERE id = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, userRowMapper, id);
             return Optional.of(member);
