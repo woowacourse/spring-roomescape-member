@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import roomescape.auth.entity.User;
 import roomescape.auth.repository.FakeUserRepository;
 import roomescape.auth.repository.UserRepository;
-import roomescape.auth.service.dto.LoginRequest;
-import roomescape.auth.service.dto.SignupRequest;
-import roomescape.exception.conflict.ConflictException;
+import roomescape.auth.service.dto.request.LoginRequest;
+import roomescape.auth.service.dto.request.SignupRequest;
 import roomescape.exception.conflict.UserEmailConflictException;
 import roomescape.exception.unauthorized.UserUnauthorizedException;
 

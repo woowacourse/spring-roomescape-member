@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.auth.service.UserAuthService;
-import roomescape.auth.service.dto.CheckResponse;
-import roomescape.auth.service.dto.LoginRequest;
-import roomescape.auth.service.dto.LoginResponse;
-import roomescape.auth.service.dto.SignupRequest;
+import roomescape.auth.service.dto.response.CheckResponse;
+import roomescape.auth.service.dto.request.LoginRequest;
+import roomescape.auth.service.dto.response.LoginResponse;
+import roomescape.auth.service.dto.request.SignupRequest;
 
 @RestController
 public class AuthController {
