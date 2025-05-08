@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Member;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.fake.FakeReservationRepository;
@@ -85,7 +86,7 @@ class ReservationTimeServiceTest {
         //given
         themeRepository.create(new Theme(1L, "name", "description", "thumbnail"));
         reservationTimeRepository.create(new ReservationTime(1L, LocalTime.of(12, 1)));
-        reservationRepository.create(new CreateReservationQuery("test1", LocalDate.of(2025, 4, 30), new ReservationTime(1L, LocalTime.of(12, 1)), new Theme(1L, "name", "description", "thumbnail")));
+        reservationRepository.create(new CreateReservationQuery(new Member(1L, "Bob", "USER", "bob@example.com", "password"), LocalDate.of(2025, 4, 30), new ReservationTime(1L, LocalTime.of(12, 1)), new Theme(1L, "name", "description", "thumbnail")));
 
         //when & then
         assertThatThrownBy(() -> reservationTimeService.deleteById(1L))

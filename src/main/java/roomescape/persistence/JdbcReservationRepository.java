@@ -20,7 +20,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     private static final RowMapper<Reservation> reservationRowMapper = (rs, rowNum) ->
             new Reservation(
                     rs.getLong("reservation_id"),
-                    new Member(rs.getLong("member_id"), rs.getString("member_name"),rs.getString("member_role"), rs.getString("member_password")),
+                    new Member(rs.getLong("member_id"), rs.getString("member_name"), rs.getString("member_role"), rs.getString("member_email"), rs.getString("member_password")),
                     rs.getDate("date").toLocalDate(),
                     new ReservationTime(rs.getLong("time_id"), rs.getTime("time_value").toLocalTime()),
                     new Theme(rs.getLong("theme_id"), rs.getString("theme_name"), rs.getString("theme_description"), rs.getString("theme_thumbnail"))

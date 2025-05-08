@@ -18,6 +18,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     public static final RowMapper<Member> userRowMapper = (rs, rowNum) ->
             new Member(rs.getLong("id"),
+                    rs.getString("role"),
                     rs.getString("name"),
                     rs.getString("email"),
                     rs.getString("password")
