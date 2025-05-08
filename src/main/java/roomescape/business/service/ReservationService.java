@@ -42,7 +42,7 @@ public class ReservationService {
         final Theme theme = new Theme(reservationRequest.themeId());
         final Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), playTime,
                 theme);
-        final Long id = reservationDao.insert(reservation);
+        final Long id = reservationDao.insert(reservation).getId();
         final Reservation savedReservation = new Reservation(id, reservationRequest.name(), reservationRequest.date(),
                 playTime, theme);
         return ReservationResponse.from(savedReservation);

@@ -8,7 +8,7 @@ import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 public interface ReservationDao {
 
-    Long insert(Reservation reservation);
+    Reservation insert(Reservation reservation);
 
     List<Reservation> findAll();
 

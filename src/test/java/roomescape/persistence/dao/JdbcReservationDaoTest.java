@@ -67,7 +67,7 @@ class JdbcReservationDaoTest {
         );
 
         // when
-        final Long id = reservationDao.insert(reservation);
+        final Long id = reservationDao.insert(reservation).getId();
 
         // then
         final Optional<Reservation> findReservation = reservationDao.findById(id);
@@ -88,7 +88,7 @@ class JdbcReservationDaoTest {
                 new PlayTime(1L),
                 new Theme(1L)
         );
-        final Long id = reservationDao.insert(reservationDay1);
+        final Long id = reservationDao.insert(reservationDay1).getId();
 
         // when
         final boolean isDeleted = reservationDao.deleteById(id);

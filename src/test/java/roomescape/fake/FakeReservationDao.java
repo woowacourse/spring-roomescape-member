@@ -25,12 +25,12 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long insert(final Reservation reservation) {
+    public Reservation insert(final Reservation reservation) {
         final Long id = reservationAtomicLong.getAndIncrement();
         final Reservation insertReservation = new Reservation(id, reservation.getName(), reservation.getDate(),
                 reservation.getPlayTime(), reservation.getTheme());
         reservations.add(insertReservation);
-        return id;
+        return insertReservation;
     }
 
     @Override
