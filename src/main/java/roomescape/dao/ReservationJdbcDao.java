@@ -57,8 +57,8 @@ public class ReservationJdbcDao implements ReservationDao {
                             resultSet.getLong("member_id"),
                             resultSet.getString("member_name"),
                             resultSet.getString("member_email"),
-                            resultSet.getString("password"),
-                            Role.fromValue(resultSet.getString("role"))
+                            resultSet.getString("member_password"),
+                            Role.fromValue(resultSet.getString("member_role"))
                     )
             );
 
@@ -73,7 +73,7 @@ public class ReservationJdbcDao implements ReservationDao {
     }
 
     public Long saveReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id, member_id) values (?,?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -83,6 +83,7 @@ public class ReservationJdbcDao implements ReservationDao {
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
+            ps.setLong(5, reservation.getMember().getId());
             return ps;
         }, keyHolder);
 

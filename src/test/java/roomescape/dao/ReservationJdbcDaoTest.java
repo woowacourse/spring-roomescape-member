@@ -18,8 +18,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import roomescape.model.Member;
 import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
 
 @JdbcTest
@@ -47,6 +49,7 @@ public class ReservationJdbcDaoTest {
     private Reservation savedReservation;
     private ReservationTime reservationTime;
     private Theme theme;
+    private Member member;
 
     @BeforeEach
     void setUp() {
@@ -60,9 +63,14 @@ public class ReservationJdbcDaoTest {
 
         this.date = LocalDate.now().plusDays(1);
 
-        // TODO: 추후 수정
-        this.savedReservation = new Reservation("히로", date, reservationTime, theme, null);
+        Member tempMember = new Member("히로", "email@gmail.com", "password", Role.ADMIN);
+        Long memberId = saveNewMember(tempMember);
+        this.member = new Member(memberId, tempMember.getName(), tempMember.getEmail(), tempMember.getPassword(),
+                tempMember.getRole());
+
+        this.savedReservation = new Reservation("히로", date, reservationTime, theme, member);
         this.savedId = saveNewReservation(savedReservation);
+
     }
 
     @Test
@@ -85,9 +93,7 @@ public class ReservationJdbcDaoTest {
     @DisplayName("예약을 저장한다")
     void test2() {
         // given
-
-        // TODO: 추후 수정
-        Reservation reservation = new Reservation("히로", date, reservationTime, theme, null);
+        Reservation reservation = new Reservation("히로", date, reservationTime, theme, member);
 
         // when
         Long savedId = reservationDao.saveReservation(reservation);
@@ -112,9 +118,7 @@ public class ReservationJdbcDaoTest {
     void test3() {
         // when
         Optional<Reservation> foundReservation = reservationDao.findByDateAndTime(
-
-                // TODO: 추후 수정
-                new Reservation("히로", this.date, this.reservationTime, this.theme, null)
+                new Reservation("히로", this.date, this.reservationTime, this.theme, member)
         );
 
         // then
@@ -143,7 +147,7 @@ public class ReservationJdbcDaoTest {
     }
 
     private Long saveNewReservation(Reservation reservation) {
-        String sql = "INSERT INTO reservation (name, date, time_id, theme_id) values (?,?,?,?)";
+        String sql = "INSERT INTO reservation (name, date, time_id, theme_id, member_id) values (?,?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -153,6 +157,7 @@ public class ReservationJdbcDaoTest {
             ps.setDate(2, Date.valueOf(reservation.getDate()));
             ps.setLong(3, reservation.getTime().getId());
             ps.setLong(4, reservation.getTheme().getId());
+            ps.setLong(5, reservation.getMember().getId());
             return ps;
         }, keyHolder);
 
@@ -182,6 +187,23 @@ public class ReservationJdbcDaoTest {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
             ps.setTime(1, java.sql.Time.valueOf(reservationTime.getStartAt()));
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
+    }
+
+    private Long saveNewMember(Member member) {
+        String sql = "INSERT INTO member"
+                + " (name, email,password, role) VALUES (?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, member.getName());
+            ps.setString(2, member.getEmail());
+            ps.setString(3, member.getPassword());
+            ps.setString(4, member.getRole().getValue());
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();

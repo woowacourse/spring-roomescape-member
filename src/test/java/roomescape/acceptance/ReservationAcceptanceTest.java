@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.response.ReservationResponseDto;
+import roomescape.model.Role;
+import roomescape.service.JwtProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -26,7 +29,20 @@ class ReservationAcceptanceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    private String email;
+
     private final LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+    @BeforeEach
+    void setUp() {
+        this.email = "email@gmail.com";
+        jdbcTemplate.update("INSERT INTO member"
+                        + " (name, email,password, role) VALUES (?, ?, ?, ?)"
+                , "히로", email, "password", Role.ADMIN.name());
+    }
 
     @Test
     @DisplayName("예약 조회 시 저장된 예약 내역을 모두 가져온다")
@@ -60,6 +76,7 @@ class ReservationAcceptanceTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createToken())
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -79,6 +96,7 @@ class ReservationAcceptanceTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createToken())
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -98,6 +116,7 @@ class ReservationAcceptanceTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createToken())
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -121,6 +140,7 @@ class ReservationAcceptanceTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createToken())
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -140,6 +160,7 @@ class ReservationAcceptanceTest {
         // when & then
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createToken())
                 .body(params)
                 .when().post("/reservations")
                 .then().log().all()
@@ -167,14 +188,20 @@ class ReservationAcceptanceTest {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)", new String[]{"id"});
+                    "INSERT INTO reservation (name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                    new String[]{"id"});
             ps.setString(1, "히로");
             ps.setDate(2, Date.valueOf(tomorrow));
             ps.setLong(3, timeId);
             ps.setLong(4, themeId);
+            ps.setLong(5, 1L);
             return ps;
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
+
+    private String createToken() {
+        return jwtProvider.createToken(email);
     }
 }

@@ -22,7 +22,9 @@ import roomescape.dao.ReservationTimeJdbcDao;
 import roomescape.dao.ThemeJdbcDao;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.model.ReservationTime;
+import roomescape.model.Role;
 import roomescape.model.Theme;
+import roomescape.service.JwtProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -37,10 +39,19 @@ public class MissionStepTest {
     @Autowired
     private ThemeJdbcDao themeDao;
 
+    private String email;
+    @Autowired
+    private JwtProvider jwtProvider;
+
     @BeforeEach
     void beforeEachTest() {
         reservationTimeDao.saveTime(new ReservationTime(LocalTime.of(10, 10)));
         themeDao.saveTheme(new Theme("공포", "무서워요", "image"));
+
+        this.email = "email@gmail.com";
+        jdbcTemplate.update("INSERT INTO member"
+                        + " (name, email,password, role) VALUES (?, ?, ?, ?)"
+                , "히로", email, "password", Role.ADMIN.name());
     }
 
     @DisplayName("관리자 페이지 GET 요청 시 200 OK를 반환한다")
@@ -79,6 +90,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", createToken())
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
@@ -118,10 +130,11 @@ public class MissionStepTest {
     @Test
     void 오단계() {
         jdbcTemplate.update(
-                "INSERT INTO reservation (name, date, time_id, theme_id) VALUES (?, ?, ?, ?)",
-                "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1");
+                "INSERT INTO reservation (name, date, time_id, theme_id, member_id) VALUES (?, ?, ?, ?, ?)",
+                "브라운", String.valueOf(LocalDate.now().plusDays(1)), "1", "1", "1");
 
         List<ReservationResponseDto> reservations = RestAssured.given().log().all()
+                .cookie("token", createToken())
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
@@ -144,6 +157,7 @@ public class MissionStepTest {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .body(params)
+                .cookie("token", createToken())
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201);
@@ -195,6 +209,7 @@ public class MissionStepTest {
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
+                .cookie("token", createToken())
                 .body(reservation)
                 .when().post("/reservations")
                 .then().log().all()
@@ -205,5 +220,9 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
+    }
+
+    private String createToken() {
+        return jwtProvider.createToken(email);
     }
 }

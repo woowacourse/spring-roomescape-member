@@ -4,10 +4,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import roomescape.common.exception.UnauthorizedException;
 
-@Service
+@Component
 public class CookieUtils {
 
     public static final String COOKIE_NAME_FOR_TOKEN = "token";

@@ -15,9 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import roomescape.dto.request.LoginRequestDto;
 import roomescape.dto.response.TokenResponseDto;
 import roomescape.presentation.controller.AuthController;
+import roomescape.presentation.support.CookieUtils;
 import roomescape.service.AuthService;
 
-@WebMvcTest(AuthController.class)
+@WebMvcTest({AuthController.class, CookieUtils.class})
 public class AuthControllerTest {
 
     @MockitoBean
