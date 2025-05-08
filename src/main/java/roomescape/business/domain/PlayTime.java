@@ -5,16 +5,11 @@ import java.util.Objects;
 
 public class PlayTime {
 
-    private Long id;
-
+    private final Long id;
     private final LocalTime startAt;
 
-    public PlayTime(final LocalTime startAt) {
-        this(null, startAt);
-    }
-
-    private PlayTime(final Long id, final LocalTime startAt) {
-        validateNonNull(startAt);
+    public PlayTime(final Long id, final LocalTime startAt) {
+        validateStartAt(startAt);
         this.id = id;
         this.startAt = startAt;
     }
@@ -23,6 +18,8 @@ public class PlayTime {
         if (startAt == null) {
             throw new IllegalArgumentException("startAt이 null 입니다.");
         }
+    public PlayTime(final LocalTime startAt) {
+        this(null, startAt);
     }
 
     public static PlayTime createWithId(final Long id, final LocalTime startAt) {
@@ -31,6 +28,12 @@ public class PlayTime {
         }
 
         return new PlayTime(id, startAt);
+    }
+
+    private void validateStartAt(final LocalTime startAt) {
+        if (startAt == null) {
+            throw new IllegalArgumentException("startAt이 null 입니다.");
+        }
     }
 
     public Long getId() {

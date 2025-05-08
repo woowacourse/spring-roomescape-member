@@ -1,74 +1,91 @@
 package roomescape.persistence.dao;
 
-import java.sql.PreparedStatement;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.business.domain.PlayTime;
-import roomescape.persistence.entity.PlayTimeEntity;
 
 @Repository
 public class JdbcPlayTimeDao implements PlayTimeDao {
 
+    private static final String ID = "id";
+    private static final String START_AT = "start_at";
+
+    private static final RowMapper<PlayTime> playTimeRowMapper =
+            (rs, rowNum) -> new PlayTime(
+                    rs.getLong(ID),
+                    LocalTime.parse(rs.getString(START_AT))
+            );
+
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcPlayTimeDao(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation_time")
+                .usingGeneratedKeyColumns(ID);
     }
 
     @Override
     public Long save(final PlayTime playTime) {
-        final PlayTimeEntity playTimeEntity = PlayTimeEntity.from(playTime);
-        final String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
-        final KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
-            ps.setString(1, playTimeEntity.startAt());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put(START_AT, playTime.getStartAt());
+        final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        return id;
     }
 
     @Override
     public Optional<PlayTime> find(final Long id) {
-        final String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
+        final String sql = """
+                SELECT id, start_at 
+                FROM reservation_time 
+                WHERE id = ?
+                """;
         try {
-            final PlayTimeEntity playTimeEntity = jdbcTemplate.queryForObject(sql, PlayTimeEntity.getDefaultRowMapper(), id);
-            return Optional.of(playTimeEntity.toDomain());
-        } catch (EmptyResultDataAccessException e) {
+            final PlayTime playTime = jdbcTemplate.queryForObject(sql, playTimeRowMapper, id);
+            return Optional.of(playTime);
+        } catch (DataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
     public List<PlayTime> findAll() {
-        final String sql = "SELECT id, start_at FROM reservation_time";
-
-        return jdbcTemplate.query(sql, PlayTimeEntity.getDefaultRowMapper()).stream()
-                .map(PlayTimeEntity::toDomain)
-                .toList();
+        final String sql = """
+                SELECT id, start_at 
+                FROM reservation_time
+                """;
+        return jdbcTemplate.query(sql, playTimeRowMapper);
     }
 
     @Override
     public boolean remove(final Long id) {
-        final String sql = "DELETE FROM reservation_time WHERE id = ?";
-        final int rowNum = jdbcTemplate.update(sql, id);
-
-        return rowNum == 1;
+        final String sql = """
+                DELETE FROM reservation_time 
+                WHERE id = ?
+                """;
+        final int updatedRowCount = jdbcTemplate.update(sql, id);
+        return updatedRowCount >= 1;
     }
 
     @Override
     public boolean existsByStartAt(final LocalTime startAt) {
-        final String sql = "SELECT EXISTS (SELECT 1 FROM reservation_time WHERE start_at = ?) AS is_exists";
-        final int flag = jdbcTemplate.queryForObject(sql, Integer.class ,PlayTimeEntity.formatStartAt(startAt));
-
+        final String sql = """
+                SELECT EXISTS(
+                    SELECT 1 
+                    FROM reservation_time 
+                    WHERE start_at = ?    
+                ) as is_exist
+                """;
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, startAt.toString());
         return flag == 1;
     }
 }
