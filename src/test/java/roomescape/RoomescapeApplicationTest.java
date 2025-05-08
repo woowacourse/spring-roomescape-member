@@ -21,14 +21,34 @@ class RoomescapeApplicationTest {
         @DisplayName("로그인 요청시 set-cookie로 토큰을 받을 수 있다.")
         @Test
         void setCookieHeaderWhenLogin() {
-                Map<String, String> params = Map.of(
-                        "email", "example@test.com",
-                        "password", "1234"
+                // signup
+                String email = "example@test.com";
+                String password = "1234";
+                String name = "test";
+
+                Map<String, String> signupParams = Map.of(
+                        "email", email,
+                        "password", password,
+                        "name", name
+                );
+
+                RestAssured.given().log().all()
+                        .contentType(ContentType.JSON)
+                        .body(signupParams)
+                        .when()
+                        .post("/members")
+                        .then().log().all()
+                        .statusCode(200);
+
+                // login
+                Map<String, String> loginParams = Map.of(
+                        "email", email,
+                        "password", password
                 );
 
                 ExtractableResponse<Response> response = RestAssured.given().log().all()
                         .contentType(ContentType.JSON)
-                        .body(params)
+                        .body(loginParams)
                         .when()
                         .post("/login")
                         .then().log().all()
