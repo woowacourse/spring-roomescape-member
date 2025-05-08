@@ -366,7 +366,7 @@
 - [x] /login 요청 시 로그인 페이지 응답
     - 페이지는 templates/login.html 파일을 이용
   
-- [ ] 로그인 API 구현
+- [x] 로그인 API 구현
   - Request
     ```
     POST /login HTTP/1.1
@@ -374,8 +374,8 @@
     host: localhost:8080
     
     {
-        "password": "password",
         "email": "admin@email.com"
+        "password": "password",
     }
     ```
   
@@ -387,7 +387,7 @@
     Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
     ```
     
-- [ ] 사용자 정보 조회 API 구현
+- [x] 사용자 정보 조회 API 구현
   - Request
     ```
     GET /login/check HTTP/1.1
