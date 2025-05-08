@@ -5,7 +5,7 @@ import roomescape.domain.Reservation;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        String memberName,
         LocalDate date,
         ReservationTimeResponse time,
         String themeName

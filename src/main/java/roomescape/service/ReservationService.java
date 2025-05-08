@@ -12,7 +12,6 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
-import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
@@ -48,19 +47,14 @@ public class ReservationService {
                 .toList();
     }
 
-    public ReservationResponse create(Long memberId, ReservationCreateRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
+    public ReservationResponse create(Long memberId, Long timeId, Long themeId, LocalDate date) {
+        ReservationTime reservationTime = reservationTimeRepository.findById(timeId)
                 .orElseThrow(ReservationTimeNotFoundException::new);
-        Theme theme = themeRepository.findById(request.themeId()).orElseThrow(ThemeNotFoundException::new);
+        Theme theme = themeRepository.findById(themeId).orElseThrow(ThemeNotFoundException::new);
         Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
-        Reservation reservation = Reservation.createWithoutId(
-                member,
-                request.date(),
-                reservationTime,
-                theme
-        );
+        Reservation reservation = Reservation.createWithoutId(member, date, reservationTime, theme);
         reservation.validateDateTime();
-        validateDuplicate(request.date(), reservationTime.getStartAt());
+        validateDuplicate(date, reservationTime.getStartAt());
         Reservation savedReservation = reservationRepository.create(reservation);
         return new ReservationResponse(
                 savedReservation.getId(),
