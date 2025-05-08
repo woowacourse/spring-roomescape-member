@@ -28,7 +28,7 @@ public class ReservationTimeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ReservationTimeResponseDto> times() {
+    public List<ReservationTimeResponseDto> getTimes() {
         return reservationTimeService.getAllTimes();
     }
 

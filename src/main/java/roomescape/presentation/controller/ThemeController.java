@@ -27,7 +27,7 @@ public class ThemeController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ThemeResponseDto> themes() {
+    public List<ThemeResponseDto> getThemes() {
         return themeService.getAllThemes();
     }
 
