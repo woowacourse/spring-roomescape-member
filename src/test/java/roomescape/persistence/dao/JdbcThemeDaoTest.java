@@ -26,7 +26,7 @@ class JdbcThemeDaoTest {
     @DisplayName("데이터베이스에 테마를 저장하고 조회하여 확인한다")
     void saveAndFindById() {
         // given
-        Theme theme = new Theme("테마", "소개", "썸네일");
+        final Theme theme = new Theme("테마", "소개", "썸네일");
 
         // when
         final Long id = themeDao.save(theme);
@@ -46,11 +46,11 @@ class JdbcThemeDaoTest {
     @DisplayName("데이터베이스에 테마를 삭제한다")
     void deleteById() {
         // given
-        Theme theme = new Theme("테마", "소개", "썸네일");
-        long id = themeDao.save(theme);
+        final Theme theme = new Theme("테마", "소개", "썸네일");
+        final Long id = themeDao.save(theme);
 
         // when
-        boolean isDeleted = themeDao.remove(id);
+        final boolean isDeleted = themeDao.remove(id);
 
         // then
         assertAll(
@@ -63,8 +63,8 @@ class JdbcThemeDaoTest {
     @DisplayName("데이터베이스의 모든 테마를 조회한다")
     void findAll() {
         // given
-        Theme theme1 = new Theme("테마1", "소개1", "썸네일1");
-        Theme theme2 = new Theme("테마2", "소개2", "썸네일2");
+        final Theme theme1 = new Theme("테마1", "소개1", "썸네일1");
+        final Theme theme2 = new Theme("테마2", "소개2", "썸네일2");
         themeDao.save(theme1);
         themeDao.save(theme2);
 
