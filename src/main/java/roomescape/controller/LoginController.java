@@ -1,6 +1,5 @@
 package roomescape.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.CookieUtil;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.MemberResponse;
@@ -35,11 +35,7 @@ public class LoginController {
         Member member = memberService.findByEmailAndPassword(request);
         String accessToken = authService.createTokenByMember(member);
 
-        // TODO: 쿠키 설정 위치 생각해보기
-        Cookie cookie = new Cookie("token", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        CookieUtil.addCookie("token", accessToken, response);
 
         return ResponseEntity.ok().build();
     }
