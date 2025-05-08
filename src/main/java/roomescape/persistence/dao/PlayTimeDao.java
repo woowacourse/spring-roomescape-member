@@ -7,7 +7,7 @@ import roomescape.business.domain.PlayTime;
 
 public interface PlayTimeDao {
 
-    Long insert(PlayTime playTime);
+    PlayTime insert(PlayTime playTime);
 
     List<PlayTime> findAll();
 

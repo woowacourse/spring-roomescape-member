@@ -22,8 +22,8 @@ public class PlayTimeService {
     public PlayTimeResponse insert(final PlayTimeRequest playTimeRequest) {
         validateStartAtIsNotDuplicate(playTimeRequest.startAt());
         final PlayTime playTime = playTimeRequest.toDomain();
-        final Long id = playTimeDao.insert(playTime);
-        return PlayTimeResponse.withId(id, playTime);
+        final PlayTime insertPlayTime = playTimeDao.insert(playTime);
+        return PlayTimeResponse.from(insertPlayTime);
     }
 
     private void validateStartAtIsNotDuplicate(final LocalTime startAt) {

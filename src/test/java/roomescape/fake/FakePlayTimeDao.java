@@ -19,12 +19,11 @@ public class FakePlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public Long insert(final PlayTime playTime) {
+    public PlayTime insert(final PlayTime playTime) {
         final Long id = atomicLong.getAndIncrement();
-        final PlayTime insertPlayTime = new PlayTime(id,
-                playTime.getStartAt());
+        final PlayTime insertPlayTime = new PlayTime(id, playTime.getStartAt());
         times.add(insertPlayTime);
-        return id;
+        return insertPlayTime;
     }
 
     @Override

@@ -30,7 +30,7 @@ class JdbcPlayTimeDaoTest {
         final PlayTime playTime = new PlayTime(LocalTime.of(10, 10));
 
         // when
-        final Long id = playTimeDao.insert(playTime);
+        final Long id = playTimeDao.insert(playTime).getId();
 
         // then
         final Optional<PlayTime> findPlayTime = playTimeDao.findById(id);
@@ -75,7 +75,7 @@ class JdbcPlayTimeDaoTest {
     void deleteById() {
         // given
         final PlayTime playTime = new PlayTime(LocalTime.of(10, 10));
-        final Long id = playTimeDao.insert(playTime);
+        final Long id = playTimeDao.insert(playTime).getId();
 
         // when
         final boolean isDeleted = playTimeDao.deleteById(id);
@@ -106,7 +106,7 @@ class JdbcPlayTimeDaoTest {
         // given
         final LocalTime validStartAt = LocalTime.of(10, 10);
         final PlayTime playTime = new PlayTime(validStartAt);
-        final Long id = playTimeDao.insert(playTime);
+        final Long id = playTimeDao.insert(playTime).getId();
         final Long notExistsId = 999L;
 
         // when

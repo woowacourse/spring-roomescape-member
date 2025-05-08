@@ -34,11 +34,11 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
     }
 
     @Override
-    public Long insert(final PlayTime playTime) {
+    public PlayTime insert(final PlayTime playTime) {
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put(START_AT, playTime.getStartAt());
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return id;
+        return new PlayTime(id, playTime.getStartAt());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
         final int updatedRowCount = jdbcTemplate.update(sql, id);
         return updatedRowCount >= 1;
     }
-    
+
     @Override
     public boolean existsById(final Long timeId) {
         final String sql = """
