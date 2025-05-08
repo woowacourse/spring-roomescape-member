@@ -47,9 +47,25 @@ public final class MemberController {
         return ResponseEntity.ok(memberService.getMemberFromToken(accessToken));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        // TODO: 토큰을 어떻게 만료시킬 것인가?
+        String accessToken = extractTokenFromCookie(cookies);
+        clearCookie(response);
+        return ResponseEntity.ok().build();
+    }
+
     private void setCookie(HttpServletResponse response, String accessToken) {
         Cookie cookie = new Cookie("token", accessToken);
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    private void clearCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
