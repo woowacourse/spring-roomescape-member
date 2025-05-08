@@ -11,9 +11,10 @@ public class TokenUtil {
     public static String makeToken(Member member) {
 
         return Jwts.builder()
-                .setSubject(member.getName())
+                .setSubject(member.getId().toString())
                 .claim("name", member.getName())
                 .claim("email", member.getEmail())
+                .claim("role", member.getRole())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
     }

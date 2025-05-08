@@ -57,5 +57,5 @@ values ('김', '2025-4-30', 5, 4);
 INSERT INTO reservation (name, date, time_id, theme_id)
 values ('김', '2025-4-30', 1, 5);
 
-INSERT INTO member (name, email, password)
-values ('아마', 'admin@email.com', 'password');
+INSERT INTO member (name, email, password, role)
+values ('아마', 'admin@email.com', 'password', 'member');

@@ -17,7 +17,8 @@ public class H2MemberRepository implements MemberRepository {
                 resultSet.getLong("id"),
                 resultSet.getString("name"),
                 resultSet.getString("email"),
-                resultSet.getString("password")
+                resultSet.getString("password"),
+                resultSet.getString("role")
         );
     }
 

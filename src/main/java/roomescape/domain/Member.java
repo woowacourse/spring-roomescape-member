@@ -1,21 +1,31 @@
 package roomescape.domain;
 
+import io.jsonwebtoken.Claims;
+import java.util.Objects;
+
 public class Member {
     private Long id;
     private String name;
     private String email;
     private String password;
+    private String role;
 
-    public Member(final Long id, final String name, final String email, final String password) {
+    public Member(final Long id, final String name, final String email, final String password, final String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-//    public static Member createMemberWithoutId() {
-//
-//    }
+    public static Member createMemberWithoutPassword(Claims claims) {
+        return new Member(
+                claims.get("id", Long.class),
+                claims.get("name", String.class),
+                claims.get("email", String.class),
+                "0000",
+                claims.get("password", String.class));
+    }
 
     public String getName() {
         return name;
@@ -27,5 +37,27 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Member member = (Member) o;
+        return Objects.equals(id, member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
