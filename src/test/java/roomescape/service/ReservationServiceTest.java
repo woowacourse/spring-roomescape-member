@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.request.ReservationRegisterDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.fake.FakeMemberDao;
 import roomescape.fake.FakeReservationDao;
@@ -57,7 +57,7 @@ class ReservationServiceTest {
     void test1() {
         // given
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        ReservationRequestDto request = new ReservationRequestDto(
+        ReservationRegisterDto request = new ReservationRegisterDto(
                 "다로",
                 tomorrow.toString(),
                 1L,
@@ -78,9 +78,9 @@ class ReservationServiceTest {
     @Test
     void test2() {
         // given
-        ReservationRequestDto request1 = new ReservationRequestDto(
+        ReservationRegisterDto request1 = new ReservationRegisterDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
-        ReservationRequestDto request2 = new ReservationRequestDto(
+        ReservationRegisterDto request2 = new ReservationRegisterDto(
                 "에러", LocalDate.now().plusDays(2).toString(), 1L, 1L);
         reservationService.saveReservation(request1, loginMember);
         reservationService.saveReservation(request2, loginMember);
@@ -98,7 +98,7 @@ class ReservationServiceTest {
     @Test
     void test3() {
         // given
-        ReservationRequestDto request = new ReservationRequestDto(
+        ReservationRegisterDto request = new ReservationRegisterDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
         ReservationResponseDto saved = reservationService.saveReservation(request, loginMember);
 
@@ -114,10 +114,10 @@ class ReservationServiceTest {
     @Test
     void test4() {
         // given
-        ReservationRequestDto request = new ReservationRequestDto(
+        ReservationRegisterDto request = new ReservationRegisterDto(
                 "다로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
         reservationService.saveReservation(request, loginMember);
-        ReservationRequestDto savedRequest = new ReservationRequestDto(
+        ReservationRegisterDto savedRequest = new ReservationRegisterDto(
                 "히로", LocalDate.now().plusDays(1).toString(), 1L, 1L);
 
         // when && then
@@ -130,7 +130,7 @@ class ReservationServiceTest {
     @Test
     void test5() {
         // given
-        ReservationRequestDto request = new ReservationRequestDto(
+        ReservationRegisterDto request = new ReservationRegisterDto(
                 "다로", LocalDate.now().toString(), 1L, 1L);
         // when && then
         assertThatThrownBy(

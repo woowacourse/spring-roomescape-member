@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import roomescape.dto.request.ReservationTimeRequestDto;
+import roomescape.dto.request.ReservationTimeRegisterDto;
 
-class ReservationTimeRequestDtoTest {
+class ReservationTimeRegisterDtoTest {
 
     private static Stream<Arguments> testCasesForTimeFormat() {
         return Stream.of(
@@ -25,9 +25,9 @@ class ReservationTimeRequestDtoTest {
     @DisplayName("시간 형식이 올바르지 않은 경우 예외 처리한다.")
     void test(String input) {
         //given
-        ReservationTimeRequestDto reservationTimeRequestDto = new ReservationTimeRequestDto(input);
+        ReservationTimeRegisterDto reservationTimeRegisterDto = new ReservationTimeRegisterDto(input);
         // when & then
-        assertThatThrownBy(reservationTimeRequestDto::convertToTime)
+        assertThatThrownBy(reservationTimeRegisterDto::convertToTime)
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("시간");
 
@@ -36,7 +36,7 @@ class ReservationTimeRequestDtoTest {
     @DisplayName("예약 시각은 null 일 수 없다.")
     @Test
     void test2() {
-        assertThatThrownBy(() -> new ReservationTimeRequestDto(null))
+        assertThatThrownBy(() -> new ReservationTimeRegisterDto(null))
                 .isInstanceOf(IllegalArgumentException.class);
 
     }
@@ -44,7 +44,7 @@ class ReservationTimeRequestDtoTest {
     @DisplayName("예약 시각은 공백일 수 없다.")
     @Test
     void test3() {
-        assertThatThrownBy(() -> new ReservationTimeRequestDto(" "))
+        assertThatThrownBy(() -> new ReservationTimeRegisterDto(" "))
                 .isInstanceOf(IllegalArgumentException.class);
 
     }

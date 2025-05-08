@@ -8,7 +8,7 @@ import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.dto.request.ReservationRequestDto;
+import roomescape.dto.request.ReservationRegisterDto;
 import roomescape.dto.response.ReservationResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 import roomescape.dto.response.ThemeResponseDto;
@@ -34,9 +34,9 @@ public class ReservationService {
         this.memberDao = memberDao;
     }
 
-    public ReservationResponseDto saveReservation(ReservationRequestDto reservationRequestDto,
+    public ReservationResponseDto saveReservation(ReservationRegisterDto reservationRegisterDto,
                                                   LoginMember loginMember) {
-        Reservation reservation = createReservation(reservationRequestDto, loginMember);
+        Reservation reservation = createReservation(reservationRegisterDto, loginMember);
         assertReservationIsNotDuplicated(reservation);
 
         Long reservationId = reservationDao.saveReservation(reservation);
@@ -62,15 +62,15 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    private Reservation createReservation(ReservationRequestDto reservationRequestDto, LoginMember loginMember) {
-        ReservationTime foundTime = reservationTimeDao.findById(reservationRequestDto.timeId())
+    private Reservation createReservation(ReservationRegisterDto reservationRegisterDto, LoginMember loginMember) {
+        ReservationTime foundTime = reservationTimeDao.findById(reservationRegisterDto.timeId())
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 예약 시각이 존재하지 않습니다."));
 
-        Theme foundTheme = themeDao.findById(reservationRequestDto.themeId())
+        Theme foundTheme = themeDao.findById(reservationRegisterDto.themeId())
                 .orElseThrow(() -> new NotFoundException("id 에 해당하는 테마가 존재하지 않습니다."));
 
         Member member = findMemberById(loginMember.id());
-        return reservationRequestDto.convertToReservation(foundTime, foundTheme, member);
+        return reservationRegisterDto.convertToReservation(foundTime, foundTheme, member);
     }
 
     private void assertReservationIsNotDuplicated(Reservation reservation) {

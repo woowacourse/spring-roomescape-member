@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import roomescape.common.exception.DuplicatedException;
 import roomescape.common.exception.ResourceInUseException;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.dto.request.ReservationTimeRequestDto;
+import roomescape.dto.request.ReservationTimeRegisterDto;
 import roomescape.dto.response.AvailableReservationTimeResponseDto;
 import roomescape.dto.response.ReservationTimeResponseDto;
 import roomescape.model.AvailableReservationTime;
@@ -30,10 +30,10 @@ public class ReservationTimeService {
                 .toList();
     }
 
-    public ReservationTimeResponseDto saveTime(ReservationTimeRequestDto reservationTimeRequestDto) {
-        validateReservationTime(reservationTimeRequestDto);
+    public ReservationTimeResponseDto saveTime(ReservationTimeRegisterDto reservationTimeRegisterDto) {
+        validateReservationTime(reservationTimeRegisterDto);
 
-        ReservationTime reservationTime = reservationTimeRequestDto.convertToTime();
+        ReservationTime reservationTime = reservationTimeRegisterDto.convertToTime();
         Long id = reservationTimeDao.saveTime(reservationTime);
 
         return new ReservationTimeResponseDto(id, reservationTime.getStartAt());
@@ -52,8 +52,8 @@ public class ReservationTimeService {
         return availableTimes.stream().map(AvailableReservationTimeResponseDto::from).toList();
     }
 
-    private void validateReservationTime(ReservationTimeRequestDto reservationTimeRequestDto) {
-        LocalTime parsedStartAt = LocalTime.parse(reservationTimeRequestDto.startAt());
+    private void validateReservationTime(ReservationTimeRegisterDto reservationTimeRegisterDto) {
+        LocalTime parsedStartAt = LocalTime.parse(reservationTimeRegisterDto.startAt());
 
         boolean duplicatedStartAtExisted = reservationTimeDao.isDuplicatedStartAtExisted(parsedStartAt);
         if (duplicatedStartAtExisted) {

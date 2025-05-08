@@ -4,10 +4,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import roomescape.model.ReservationTime;
 
-public record ReservationTimeRequestDto(
+public record ReservationTimeRegisterDto(
         String startAt
 ) {
-    public ReservationTimeRequestDto {
+    public ReservationTimeRegisterDto {
         if (startAt == null || startAt.isBlank()) {
             throw new IllegalArgumentException("시작 시각은 null이거나 공백일 수 없습니다");
         }

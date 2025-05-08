@@ -7,13 +7,13 @@ import roomescape.model.Reservation;
 import roomescape.model.ReservationTime;
 import roomescape.model.Theme;
 
-public record ReservationRequestDto(
+public record ReservationRegisterDto(
         String name,
         String date,
         Long timeId,
         Long themeId
 ) {
-    public ReservationRequestDto {
+    public ReservationRegisterDto {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("예약자명은 null이거나 공백일 수 없습니다");
         }

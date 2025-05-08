@@ -2,12 +2,12 @@ package roomescape.dto.request;
 
 import roomescape.model.Theme;
 
-public record ThemeRequestDto(
+public record ThemeRegisterDto(
         String name,
         String description,
         String thumbnail
 ) {
-    public ThemeRequestDto {
+    public ThemeRegisterDto {
         validateRequiredFields(name, description, thumbnail);
     }
 
