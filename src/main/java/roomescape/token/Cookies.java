@@ -14,6 +14,14 @@ public class Cookies {
         return cookie;
     }
 
+    public static Cookie generate(String token, int expiry) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(expiry);
+        return cookie;
+    }
+
     public static String get(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
