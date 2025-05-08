@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
+import roomescape.reservation.presentation.fixture.ApiHelper;
 import roomescape.reservation.presentation.fixture.ReservationFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -26,10 +27,7 @@ public class ThemeControllerTest {
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
 
         // when - then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes")
+        ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme)
                 .then().log().all()
                 .statusCode(201);
     }
@@ -40,11 +38,7 @@ public class ThemeControllerTest {
         // given
         ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes");
+        ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         // when - then
         RestAssured.given().log().all()
@@ -61,11 +55,7 @@ public class ThemeControllerTest {
         // given
         ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes");
+        ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         // when - then
         RestAssured.given().log().all()
@@ -80,23 +70,14 @@ public class ThemeControllerTest {
     void deleteThemeExceptionTest() {
         // given
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times");
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
         ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes");
+        ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations");
+        ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when - then
         RestAssured.given().log().all()

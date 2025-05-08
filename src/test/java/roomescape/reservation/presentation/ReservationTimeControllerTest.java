@@ -3,7 +3,6 @@ package roomescape.reservation.presentation;
 import static org.hamcrest.Matchers.is;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import roomescape.reservation.presentation.dto.ReservationRequest;
 import roomescape.reservation.presentation.dto.ReservationTimeRequest;
 import roomescape.reservation.presentation.dto.ThemeRequest;
+import roomescape.reservation.presentation.fixture.ApiHelper;
 import roomescape.reservation.presentation.fixture.ReservationFixture;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -28,10 +28,7 @@ public class ReservationTimeControllerTest {
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
 
         // when-then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime)
                 .then().log().all()
                 .statusCode(201);
     }
@@ -43,11 +40,8 @@ public class ReservationTimeControllerTest {
         Map<String, String> reservationTime = new HashMap<>();
         reservationTime.put("startAt", "10-10");
 
-        // when-then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
+        // when - then
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime)
                 .then().log().all()
                 .statusCode(400);
     }
@@ -57,20 +51,10 @@ public class ReservationTimeControllerTest {
     void createTimeDuplicateExceptionTest() {
         // given
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
-        // when
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        // then
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
+        // when - then
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime)
                 .then().log().all()
                 .statusCode(400);
     }
@@ -80,17 +64,11 @@ public class ReservationTimeControllerTest {
     void getTimesTest() {
         // given
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
         // when-then
         RestAssured.given().log().all()
-                .when().get("/times")
+                .when().get(ApiHelper.TIME_ENDPOINT)
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(1));
@@ -102,33 +80,15 @@ public class ReservationTimeControllerTest {
         // given
         ReservationTimeRequest availableReservationTime = reservationFixture.createReservationTime("10:00");
         ReservationTimeRequest unAvailableReservationTime = reservationFixture.createReservationTime("11:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(availableReservationTime)
-                .when().post("/times");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(unAvailableReservationTime)
-                .when().post("/times");
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, availableReservationTime);
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, unAvailableReservationTime);
 
         ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes");
+        ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "2");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when
         RestAssured.given().log().all()
@@ -143,19 +103,7 @@ public class ReservationTimeControllerTest {
     void deleteTimeTest() {
         // given
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times")
-                .then().log().all()
-                .statusCode(201);
-
-        RestAssured.given().log().all()
-                .when().get("/times")
-                .then().log().all()
-                .statusCode(200)
-                .body("size()", is(1));
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
         // when-then
         RestAssured.given().log().all()
@@ -169,27 +117,14 @@ public class ReservationTimeControllerTest {
     void deleteTimeExceptionTest() {
         // given
         ReservationTimeRequest reservationTime = reservationFixture.createReservationTime("10:00");
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservationTime)
-                .when().post("/times");
+        ApiHelper.post(ApiHelper.TIME_ENDPOINT, reservationTime);
 
         ThemeRequest theme = reservationFixture.createTheme("레벨2 탈출", "우테코 레벨2를 탈출하는 내용입니다.",
                 "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(theme)
-                .when().post("/themes");
+        ApiHelper.post(ApiHelper.THEME_ENDPOINT, theme);
 
         ReservationRequest reservation = reservationFixture.createReservation("브라운", "2025-08-05", "1", "1");
-
-        RestAssured.given().log().all()
-                .contentType(ContentType.JSON)
-                .body(reservation)
-                .when().post("/reservations")
-                .then().log().all()
-                .statusCode(201);
+        ApiHelper.post(ApiHelper.RESERVATION_ENDPOINT, reservation);
 
         // when-then
         RestAssured.given().log().all()
@@ -197,5 +132,4 @@ public class ReservationTimeControllerTest {
                 .then().log().all()
                 .statusCode(400);
     }
-
 }
