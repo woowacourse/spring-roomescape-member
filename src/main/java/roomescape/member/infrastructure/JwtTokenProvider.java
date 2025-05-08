@@ -15,13 +15,15 @@ public class JwtTokenProvider implements TokenProvider {
     @Value("${security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    private final static String KEY = "token=";
+
     @Override
     public String createToken(String payload) {
         Claims claims = Jwts.claims().setSubject(payload);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
-        return Jwts.builder()
+        return KEY + Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -30,6 +32,10 @@ public class JwtTokenProvider implements TokenProvider {
     }
     @Override
     public String getPayload(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 }
