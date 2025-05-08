@@ -30,6 +30,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Object> handleAuthException(final Exception ex, final WebRequest request) {
+        log.info("AuthException: {}", ex.getMessage());
+        final ProblemDetail body = super.createProblemDetail(ex, HttpStatus.UNAUTHORIZED, ex.getMessage(), null,
+                null, request);
+        return super.handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleInternalServerError(final Exception ex, final WebRequest request) {
         log.error("InternalServerError: {}", ex.getMessage(), ex);
