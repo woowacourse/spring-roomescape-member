@@ -58,7 +58,7 @@ public class ThemeIntegrationTest {
                 .when().get("/themes")
                 .then().log().all()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
     }
 
     @DisplayName("최근 일주일 인기 테마 목록을 가져온다.")
