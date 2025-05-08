@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -8,8 +9,9 @@ import roomescape.model.Customer;
 @Repository
 public class CustomerDao {
 
-    private final RowMapper<Customer> userRowMapper = (resultSet, rowNum) -> {
+    private final RowMapper<Customer> customerRowMapper = (resultSet, rowNum) -> {
         return new Customer(
+                resultSet.getLong("id"),
                 resultSet.getString("email"),
                 resultSet.getString("name"),
                 resultSet.getString("password"));
@@ -24,5 +26,12 @@ public class CustomerDao {
     public boolean existsByEmailAndPassword(Customer customer){
         String sql = "SELECT EXISTS(SELECT 1 FROM customer WHERE email = ? AND password = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, customer.getEmail(), customer.getPassword()));
+    }
+
+    public Optional<Customer> findById(Long customerId) {
+        String sql = "SELECT * FROM customer WHERE id = ?";
+        return jdbcTemplate.query(sql, customerRowMapper, customerId)
+                .stream().
+                findFirst();
     }
 }
