@@ -2,8 +2,7 @@ package roomescape.auth.service;
 
 import roomescape.auth.entity.User;
 
-class FakeTokenProvider implements TokenProvider {
-
+public class FakeJwtTokenProvider implements TokenProvider {
     @Override
     public String createToken(User user) {
         return null;

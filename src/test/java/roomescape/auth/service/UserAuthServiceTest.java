@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserAuthServiceTest {
     private final UserRepository userRepository = new FakeUserRepository();
-    private final TokenProvider tokenProvider = new FakeTokenProvider();
+    private final TokenProvider tokenProvider = new FakeJwtTokenProvider();
     private final UserAuthService service = new UserAuthService(userRepository, tokenProvider);
 
     @DisplayName("존재하지 않는 유저가 로그인을 요청하는 경우 예외가 발생한다.")
