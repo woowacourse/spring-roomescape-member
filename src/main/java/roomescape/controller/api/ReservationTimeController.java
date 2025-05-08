@@ -37,21 +37,23 @@ public class ReservationTimeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<ReservationTimeResponse> getAllByThemeIdAndDate(
-            @RequestParam(value = "themeId", required = false) Long themeId,
-            @RequestParam(value = "date", required = false) LocalDate date
-    ) {
-        List<ReservationTimeServiceResponse> reservationTimes = getAllReservationTimeResponse(themeId, date);
+    public List<ReservationTimeResponse> getAll() {
+        List<ReservationTimeServiceResponse> reservationTimes = reservationTimeService.getAll();
         return reservationTimes.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
     }
 
-    private List<ReservationTimeServiceResponse> getAllReservationTimeResponse(Long themeId, LocalDate date) {
-        if (themeId == null && date == null) {
-            return reservationTimeService.getAll();
-        }
-        return reservationTimeService.getAllByThemeIdAndDate(themeId, date);
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(params = {"themeId", "date"})
+    public List<ReservationTimeResponse> getAllByThemeIdAndDate(
+            @RequestParam(value = "themeId") Long themeId,
+            @RequestParam(value = "date") LocalDate date
+    ) {
+        List<ReservationTimeServiceResponse> reservationTimes = reservationTimeService.getAllByThemeIdAndDate(themeId, date);
+        return reservationTimes.stream()
+                .map(ReservationTimeResponse::from)
+                .toList();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
