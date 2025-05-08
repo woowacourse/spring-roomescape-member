@@ -1,6 +1,7 @@
 package roomescape.auth;
 
 import jakarta.servlet.http.Cookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import roomescape.exception.UnAuthorizedException;
 
@@ -9,22 +10,24 @@ import java.util.Arrays;
 @Component
 public class CookieProvider {
 
-    public Cookie create(String token) {
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-
-        return cookie;
+    public ResponseCookie create(String token) {
+        return ResponseCookie.from("token", token)
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(24 * 60 * 60) //1일
+                .build();
     }
 
-    public Cookie invalidate(Cookie[] cookies) {
-        Cookie invalidatedCookie = new Cookie("token", "");
-        invalidatedCookie.setMaxAge(0);
-        invalidatedCookie.setPath("/");
-        invalidatedCookie.setSecure(true);
-
-        return invalidatedCookie;
+    public ResponseCookie invalidate() {
+        return ResponseCookie.from("token", "")
+                .maxAge(0)
+                .path("/")
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Strict")
+                .build();
     }
 
     public String extractToken(final Cookie[] cookies) {

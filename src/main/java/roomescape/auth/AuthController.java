@@ -30,8 +30,8 @@ public class AuthController {
     public ResponseEntity<LoginMemberResponse> login(@RequestBody LoginMemberRequest loginMemberRequest, HttpServletResponse response) {
         LoginMemberResult loginMemberResult = memberService.login(loginMemberRequest.toServiceParam());
         String token = authService.createToken(loginMemberResult);
-        response.addCookie(cookieProvider.create(token));
 
+        response.setHeader("Set-Cookie", cookieProvider.create(token).toString());
         return ResponseEntity.ok().body(LoginMemberResponse.from(loginMemberResult));
     }
 
@@ -43,8 +43,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        response.addCookie(cookieProvider.invalidate(request.getCookies()));
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        response.setHeader("Set-Cookie", cookieProvider.invalidate().toString());
         return ResponseEntity.ok().build();
     }
 }
