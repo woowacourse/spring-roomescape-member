@@ -20,9 +20,6 @@ import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
 import roomescape.exception.DBFKException;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationThemeRepository;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.request.CreateReservationThemeServiceRequest;
 import roomescape.service.dto.response.ReservationThemeServiceResponse;
 

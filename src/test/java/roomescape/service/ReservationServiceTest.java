@@ -1,6 +1,5 @@
 package roomescape.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static roomescape.constant.TestData.RESERVATION_COUNT;
 
@@ -17,9 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.DataBasedTest;
 import roomescape.domain.ReservationTheme;
 import roomescape.domain.ReservationTime;
-import roomescape.repository.ReservationRepository;
-import roomescape.repository.ReservationThemeRepository;
-import roomescape.repository.ReservationTimeRepository;
 import roomescape.service.dto.request.CreateReservationServiceRequest;
 import roomescape.service.dto.response.ReservationServiceResponse;
 

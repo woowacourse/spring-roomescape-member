@@ -3,19 +3,39 @@ package roomescape.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTheme;
+import roomescape.repository.dao.ReservationThemeDao;
 
-public interface ReservationThemeRepository {
+@Repository
+@RequiredArgsConstructor
+public class ReservationThemeRepository {
 
-    ReservationTheme save(ReservationTheme reservationTheme);
+    private final ReservationThemeDao reservationThemeDao;
 
-    List<ReservationTheme> getAll();
+    public List<ReservationTheme> getAll() {
+        return reservationThemeDao.selectAll();
+    }
 
-    void remove(ReservationTheme reservation);
+    public ReservationTheme save(ReservationTheme reservationTheme) {
+        return reservationThemeDao.insertAndGet(reservationTheme);
+    }
 
-    Optional<ReservationTheme> findById(Long id);
+    public Optional<ReservationTheme> findById(Long id) {
+        return reservationThemeDao.selectById(id);
+    }
 
-    ReservationTheme getById(Long id);
+    public ReservationTheme getById(Long id) {
+        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 테마입니다."));
+    }
 
-    List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit);
+    public void remove(ReservationTheme reservationTheme) {
+        reservationThemeDao.deleteById(reservationTheme.id());
+    }
+
+    public List<ReservationTheme> orderByThemeBookedCountWithLimit(int limit) {
+        return reservationThemeDao.orderByThemeBookedCountWithLimit(limit);
+    }
 }

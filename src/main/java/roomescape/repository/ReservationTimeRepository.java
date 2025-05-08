@@ -4,19 +4,39 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
+import lombok.RequiredArgsConstructor;
 import roomescape.domain.ReservationTime;
+import roomescape.repository.dao.ReservationTimeDao;
 
-public interface ReservationTimeRepository {
+@Repository
+@RequiredArgsConstructor
+public class ReservationTimeRepository {
 
-    ReservationTime save(ReservationTime reservationTime);
+    private final ReservationTimeDao reservationTimeDao;
 
-    List<ReservationTime> getAll();
+    public List<ReservationTime> getAll() {
+        return reservationTimeDao.selectAll();
+    }
 
-    Optional<ReservationTime> findById(Long id);
+    public ReservationTime save(ReservationTime reservationTime) {
+        return reservationTimeDao.insertAndGet(reservationTime);
+    }
 
-    void remove(ReservationTime reservation);
+    public Optional<ReservationTime> findById(Long id) {
+        return reservationTimeDao.selectById(id);
+    }
 
-    List<ReservationTime> getAllByThemeIdAndDate(Long themeId, LocalDate date);
+    public ReservationTime getById(Long id) {
+        return findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 예약 시간입니다."));
+    }
 
-    ReservationTime getById(Long id);
+    public void remove(ReservationTime reservationTime) {
+        reservationTimeDao.deleteById(reservationTime.id());
+    }
+
+    public List<ReservationTime> getAllByThemeIdAndDate(Long themeId, LocalDate date) {
+        return reservationTimeDao.selectAllByThemeIdAndDate(themeId, date);
+    }
 }
