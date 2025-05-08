@@ -46,7 +46,7 @@ class AuthenticationServiceTest {
         var wrongEmail = "xxxx@email.com";
         var password = "password";
         assertThatThrownBy(() -> service.issueToken(wrongEmail, password))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(AuthorizationException.class);
     }
 
     @Test
@@ -60,7 +60,7 @@ class AuthenticationServiceTest {
         var email = "poopo@email.com";
         var wrongPassword = "xxxx";
         assertThatThrownBy(() -> service.issueToken(email, wrongPassword))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(AuthorizationException.class);
     }
 
     @Test
@@ -94,6 +94,6 @@ class AuthenticationServiceTest {
 
         // when
         assertThatThrownBy(() -> service.findUserByToken(issuedToken))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(AuthorizationException.class);
     }
 }

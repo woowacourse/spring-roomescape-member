@@ -3,6 +3,7 @@ package roomescape.presentation;
 import static java.util.stream.Collectors.toMap;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import roomescape.application.AuthorizationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -55,6 +57,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(code = BAD_REQUEST)
     public ProblemDetail handleIllegalState(final IllegalStateException ex) {
         var problemDetail = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "요청을 처리하는 과정에서 실패했습니다.");
+        problemDetail.setProperties(Map.of("message", ex.getMessage()));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    @ResponseStatus(code = UNAUTHORIZED)
+    public ProblemDetail handleAuthentication(final AuthorizationException ex) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(UNAUTHORIZED, "인증에 실패했습니다.");
         problemDetail.setProperties(Map.of("message", ex.getMessage()));
         return problemDetail;
     }
