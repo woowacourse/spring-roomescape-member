@@ -23,6 +23,7 @@ import roomescape.service.member.MemberService;
 public class AuthenticationController {
 
     private final MemberService memberService;
+    private static int ONE_HOUR = 3600;
 
     public AuthenticationController(MemberService memberService) {
         this.memberService = memberService;
@@ -34,7 +35,7 @@ public class AuthenticationController {
         String token = memberService.login(loginRequestDto);
 
         Cookie newCookie = new Cookie("token", token);
-        newCookie.setMaxAge(3600);
+        newCookie.setMaxAge(ONE_HOUR);
         newCookie.setPath("/");
         response.addCookie(newCookie);
         return ResponseEntity.ok(new LoginResponseDto(token));
