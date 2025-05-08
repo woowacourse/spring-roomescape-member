@@ -11,9 +11,9 @@ CREATE TABLE IF NOT EXISTS theme
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
-    thumbnail VARCHAR(1024) NOT NULL,
+    thumbnail VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
-);
+    );
 
 CREATE TABLE IF NOT EXISTS reservation
 (
@@ -25,4 +25,12 @@ CREATE TABLE IF NOT EXISTS reservation
     PRIMARY KEY (id),
     FOREIGN KEY (time_id) REFERENCES reservation_time (id),
     FOREIGN KEY (theme_id) REFERENCES theme (id)
-);
+    );
+
+CREATE TABLE IF NOT EXISTS users
+(
+    id   BIGINT       NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
+    )
