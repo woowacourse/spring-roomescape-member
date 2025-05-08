@@ -1,43 +1,33 @@
 package roomescape.domain.auth.service;
 
+import jakarta.servlet.http.Cookie;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import roomescape.common.exception.AlreadyInUseException;
 import roomescape.domain.auth.dto.LoginRequest;
 import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.auth.dto.TokenResponse;
-import roomescape.domain.auth.dto.UserCreateRequest;
 import roomescape.domain.auth.dto.UserInfoResponse;
-import roomescape.domain.auth.entity.Name;
-import roomescape.domain.auth.entity.Roles;
 import roomescape.domain.auth.entity.User;
 import roomescape.domain.auth.exception.InvalidAuthorizationException;
 import roomescape.domain.auth.exception.UserNotFoundException;
 import roomescape.domain.auth.repository.UserRepository;
 
+@Slf4j
 @Service
 public class AuthService {
 
-    private final JWTManager jwtManager;
+    private static final String TOKEN_NAME = "token";
+
+    private final JwtManager jwtManager;
     private final UserRepository userRepository;
 
-    public AuthService(final JWTManager jwtManager, final UserRepository userRepository) {
+    public AuthService(final JwtManager jwtManager, final UserRepository userRepository) {
         this.jwtManager = jwtManager;
         this.userRepository = userRepository;
     }
 
-    @Transactional
-    public UserInfoResponse register(final UserCreateRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
-            throw new AlreadyInUseException("중복되는 이메일입니다!");
-        }
 
-        final Name name = new Name(request.name());
-        final User user = User.withoutId(name, request.email(), request.password(), Roles.USER);
-        final User savedUser = userRepository.save(user);
-
-        return UserInfoResponse.from(savedUser);
-    }
 
     @Transactional(readOnly = true)
     public TokenResponse login(final LoginRequest loginRequest) {
@@ -45,11 +35,12 @@ public class AuthService {
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
         user.login(loginRequest.email(), loginRequest.password());
 
-        final String token = jwtManager.createToken(user.getId());
+        final String token = jwtManager.createToken(user.getId(), user.getRole());
 
         return new TokenResponse(token);
     }
 
+    @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(final String token) {
         final Long userId = jwtManager.parseUserId(token);
 
@@ -59,8 +50,24 @@ public class AuthService {
         return UserInfoResponse.from(user);
     }
 
+    @Transactional(readOnly = true)
+    public LoginUserDto getLoginUser(final Cookie[] cookies) {
+        if (cookies != null) {
+            for (final Cookie cookie : cookies) {
+                if (TOKEN_NAME.equals(cookie.getName())) {
+                    final String token = cookie.getValue();
+                    log.info("token = {}", token);
+                    return getLoginUser(token);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Transactional(readOnly = true)
     public LoginUserDto getLoginUser(final String token) {
-        if (jwtManager.validateToken(token)) {
+        if (!jwtManager.validateToken(token)) {
+            log.error("잘못된 토큰입니다! token = {}", token);
             throw new InvalidAuthorizationException("잘못된 토큰입니다!");
         }
 
@@ -70,4 +77,5 @@ public class AuthService {
                 .map(LoginUserDto::from)
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
     }
+
 }

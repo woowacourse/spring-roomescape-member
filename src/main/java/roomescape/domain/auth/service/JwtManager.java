@@ -7,21 +7,25 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+import roomescape.domain.auth.entity.Roles;
 
-@Component
-public class JWTManager {
+@Slf4j
+public class JwtManager {
 
-    @Value("${auth.jwt.secret-key}")
-    private String secretKey;
+    private final String secretKey;
+    private final int validityInMilliseconds;
 
-    @Value("${auth.jwt.expire-length}")
-    private int validityInMilliseconds;
+    public JwtManager(final String secretKey, final int validityInMilliseconds) {
+        this.secretKey = secretKey;
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
 
-    public String createToken(final Long userId) {
+    public String createToken(final Long userId, final Roles role) {
         final Claims claims = Jwts.claims()
                 .setSubject(userId.toString());
+        claims.put("role", role.getRole());
+
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -55,5 +59,15 @@ public class JWTManager {
         } catch (final JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public Roles getRole(final String token) {
+        final Jws<Claims> claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey.getBytes())
+                .build()
+                .parseClaimsJws(token);
+
+        return Roles.from(claims.getBody()
+                .get("role", String.class));
     }
 }

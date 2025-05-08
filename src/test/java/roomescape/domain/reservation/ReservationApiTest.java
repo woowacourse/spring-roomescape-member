@@ -19,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.repository.UserRepository;
+import roomescape.domain.auth.service.JwtManager;
 import roomescape.domain.reservation.entity.Reservation;
 import roomescape.domain.reservation.entity.ReservationTime;
 import roomescape.domain.reservation.entity.Theme;
@@ -42,43 +44,15 @@ class ReservationApiTest {
     @Autowired
     private ThemeRepository themeRepository;
 
-    public static String formatDateTime(final LocalDate dateTime) {
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    @Autowired
+    private UserRepository userRepository;
 
-        return dateTimeFormatter.format(dateTime);
-    }
+    @Autowired
+    private JwtManager jwtManager;
 
     @BeforeEach
     void init() {
         JdbcTemplateUtils.deleteAllTables(jdbcTemplate);
-    }
-
-    @DisplayName("어드민 페이지로 접근할 수 있다.")
-    @Test
-    void test1() {
-        RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get("/admin")
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
-    }
-
-    @DisplayName("어드민이 예약 관리 페이지에 접근한다.")
-    @Test
-    void test2() {
-        RestAssured.given()
-                .log()
-                .all()
-                .when()
-                .get("/admin/reservation")
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
     }
 
     @DisplayName("모든 예약 정보를 반환한다.")
@@ -140,6 +114,12 @@ class ReservationApiTest {
                 .log()
                 .all()
                 .statusCode(201);
+    }
+
+    public static String formatDateTime(final LocalDate dateTime) {
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        return dateTimeFormatter.format(dateTime);
     }
 
     @DisplayName("존재하지 않는 예약 시간 ID 를 추가하면 예외를 반환한다.")

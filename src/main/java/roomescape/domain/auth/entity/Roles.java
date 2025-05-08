@@ -1,7 +1,9 @@
 package roomescape.domain.auth.entity;
 
 import java.util.Arrays;
+import lombok.Getter;
 
+@Getter
 public enum Roles {
     USER("ROLE_USER"), ADMIN("ROLE_ADMIN");
 
@@ -18,7 +20,7 @@ public enum Roles {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid role: " + role));
     }
 
-    public String getRole() {
-        return role;
+    public boolean isNotAdmin() {
+        return this != Roles.ADMIN;
     }
 }

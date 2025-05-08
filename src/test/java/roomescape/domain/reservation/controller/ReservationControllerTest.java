@@ -19,12 +19,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import roomescape.common.exception.EntityNotFoundException;
+import roomescape.domain.auth.config.JwtConfig;
+import roomescape.domain.auth.service.AuthService;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
 import roomescape.domain.reservation.dto.ReservationTimeResponse;
@@ -32,6 +35,7 @@ import roomescape.domain.reservation.dto.ThemeResponse;
 import roomescape.domain.reservation.service.ReservationService;
 
 @WebMvcTest(ReservationController.class)
+@Import(JwtConfig.class)
 public class ReservationControllerTest {
 
     @Autowired
@@ -46,11 +50,8 @@ public class ReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private static String formatStartAt(final LocalTime time) {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        return time.format(formatter);
-    }
+    @MockitoBean
+    private AuthService authService;
 
     @DisplayName("모든 예약 정보를 가져온다.")
     @Test
@@ -108,6 +109,12 @@ public class ReservationControllerTest {
                 .andExpect(jsonPath("$.date").value(date.toString()))
                 .andExpect(jsonPath("$.time.id").value(timeId))
                 .andExpect(jsonPath("$.time.startAt").value(formatStartAt(time)));
+    }
+
+    private static String formatStartAt(final LocalTime time) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        return time.format(formatter);
     }
 
     @DisplayName("이름이 존재하지 않을 경우 400 상태 코드를 반환한다.")
