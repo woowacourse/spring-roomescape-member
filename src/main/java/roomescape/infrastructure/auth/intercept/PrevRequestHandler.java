@@ -21,18 +21,17 @@ public class PrevRequestHandler implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        boolean isMatchExist = isMatchExist(request);
-        boolean isValidReqeust = true;
-        if (isMatchExist) {
-            String token = JwtCookieResolver.getTokenFromCookie(request);
-            UserInfo userInfo = jwtTokenProvider.resolveToken(token);
-            isValidReqeust = userInfo.isAdmin();
+        if (!isMatchExist(request)) {
+            return true;
         }
+        String token = JwtCookieResolver.getTokenFromCookie(request);
+        UserInfo userInfo = jwtTokenProvider.resolveToken(token);
 
-        if (!isValidReqeust) {
+        if (!userInfo.isAdmin()) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false;
         }
-        return isValidReqeust;
+        return true;
     }
 
     private boolean isMatchExist(HttpServletRequest request) {
