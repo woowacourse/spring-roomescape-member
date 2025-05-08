@@ -22,7 +22,7 @@ public class ThemeService {
     public ThemeResponse insert(final ThemeRequest themeRequest) {
         validateNameIsNotDuplicate(themeRequest.name());
         final Theme theme = themeRequest.toDomain();
-        final Long id = themeDao.insert(theme);
+        final Long id = themeDao.insert(theme).getId();
         return ThemeResponse.withId(id, theme);
     }
 

@@ -29,7 +29,7 @@ class JdbcThemeDaoTest {
         final Theme theme = new Theme("테마", "소개", "썸네일");
 
         // when
-        final Long id = themeDao.insert(theme);
+        final Long id = themeDao.insert(theme).getId();
 
         // then
         final Optional<Theme> findTheme = themeDao.findById(id);
@@ -47,7 +47,7 @@ class JdbcThemeDaoTest {
     void deleteById() {
         // given
         final Theme theme = new Theme("테마", "소개", "썸네일");
-        final Long id = themeDao.insert(theme);
+        final Long id = themeDao.insert(theme).getId();
 
         // when
         final boolean isDeleted = themeDao.deleteById(id);
@@ -95,7 +95,7 @@ class JdbcThemeDaoTest {
         final String existThemeName = "테마";
         final String notExistThemeName = "존재하지 않는 테마";
         final Theme theme = new Theme(existThemeName, "소개", "썸네일");
-        final Long id = themeDao.insert(theme);
+        final Long id = themeDao.insert(theme).getId();
         final Long notExistId = 999L;
 
         // when

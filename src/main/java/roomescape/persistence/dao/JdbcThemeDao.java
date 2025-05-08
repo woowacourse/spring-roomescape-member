@@ -37,13 +37,13 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long insert(final Theme theme) {
+    public Theme insert(final Theme theme) {
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put(NAME, theme.getName());
         parameters.put(DESCRIPTION, theme.getDescription());
         parameters.put(THUMBNAIL, theme.getThumbnail());
         final Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
-        return id;
+        return new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
     }
 
     @Override

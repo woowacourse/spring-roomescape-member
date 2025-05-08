@@ -18,16 +18,11 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
-    public Long insert(final Theme theme) {
+    public Theme insert(final Theme theme) {
         long id = atomicLong.getAndIncrement();
-        final Theme savedTheme = new Theme(
-                id,
-                theme.getName(),
-                theme.getDescription(),
-                theme.getThumbnail()
-        );
-        themes.add(savedTheme);
-        return id;
+        final Theme insertTheme = new Theme(id, theme.getName(), theme.getDescription(), theme.getThumbnail());
+        themes.add(insertTheme);
+        return insertTheme;
     }
 
     @Override
