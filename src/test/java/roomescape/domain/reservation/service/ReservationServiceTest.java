@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -26,7 +24,7 @@ import roomescape.domain.reservation.entity.Theme;
 import roomescape.domain.reservation.repository.fake.FakeReservationRepository;
 import roomescape.domain.reservation.repository.fake.FakeReservationTimeRepository;
 import roomescape.domain.reservation.repository.fake.FakeThemeRepository;
-import roomescape.domain.reservation.utils.FixedClock;
+import roomescape.domain.reservation.repository.fake.FakeUserRepository;
 
 class ReservationServiceTest {
 
@@ -35,6 +33,7 @@ class ReservationServiceTest {
     private final FakeReservationRepository reservationRepository = new FakeReservationRepository();
     private final FakeReservationTimeRepository reservationTimeRepository = new FakeReservationTimeRepository();
     private final FakeThemeRepository themeRepository = new FakeThemeRepository();
+    private final FakeUserRepository userRepository = new FakeUserRepository();
 
     private ReservationService reservationService;
     private ReservationTime reservationTime;
@@ -48,11 +47,10 @@ class ReservationServiceTest {
         reservationRepository.deleteAll();
         reservationTimeRepository.deleteAll();
         themeRepository.deleteAll();
+        userRepository.deleteAll();
 
-        final Clock clock = FixedClock.from(LocalDateTime.of(2024, 12, 18, 8, 0));
-
-        reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository,
-                themeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                userRepository);
 
         final ReservationTime savedReservationTime = reservationTimeRepository.save(ReservationTime.withoutId(time));
         reservationTimeId = savedReservationTime.getId();
@@ -79,7 +77,7 @@ class ReservationServiceTest {
         }
 
         // when
-        final List<ReservationResponse> result = reservationService.getAll();
+        final List<ReservationResponse> result = reservationService.getAll(null, null, null, null);
         final List<String> resultNames = result.stream()
                 .map(ReservationResponse::name)
                 .toList();
@@ -90,7 +88,7 @@ class ReservationServiceTest {
     @DisplayName("예약 정보가 없다면 빈 리스트를 반환한다.")
     @Test
     void test2() {
-        final List<ReservationResponse> result = reservationService.getAll();
+        final List<ReservationResponse> result = reservationService.getAll(null, null, null, null);
 
         assertThat(result).isEmpty();
     }
@@ -100,7 +98,8 @@ class ReservationServiceTest {
     void test3() {
         // given
         final String name = "꾹";
-        final LocalDate date = LocalDate.of(2025, 1, 1);
+        final LocalDate date = LocalDate.now()
+                .plusDays(1);
 
         final ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId, themeId);
 
@@ -127,7 +126,8 @@ class ReservationServiceTest {
     void test4() {
         // given
         final String name = "꾹";
-        final LocalDate date = LocalDate.of(2025, 1, 1);
+        final LocalDate date = LocalDate.now()
+                .plusDays(1);
 
         final ReservationRequest requestDto = new ReservationRequest(name, date, reservationTimeId, themeId);
         reservationService.create(requestDto);

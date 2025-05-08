@@ -25,6 +25,11 @@ public class FakeReservationRepository implements ReservationRepository {
     }
 
     @Override
+    public List<Reservation> findReservations(final Long themeId, final String name, final LocalDate dateFrom, final LocalDate dateTo) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Optional<Reservation> findById(final Long id) {
         if (reservations.containsKey(id)) {
             return Optional.ofNullable(reservations.get(id));

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,6 +18,8 @@ import org.springframework.context.annotation.Import;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.repository.UserRepository;
+import roomescape.domain.auth.repository.impl.UserDao;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -33,10 +34,9 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
-import roomescape.domain.reservation.utils.FixedClock;
 
 @JdbcTest
-@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
+@Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class, UserDao.class})
 public class ReservationServiceIntegrationTest {
 
     private static LocalDateTime now;
@@ -50,15 +50,17 @@ public class ReservationServiceIntegrationTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private ReservationService reservationService;
 
     @BeforeEach
     void setUp() {
-        now = LocalDateTime.of(2025, 4, 30, 12, 0);
-        final Clock clock = FixedClock.from(now);
+        now = LocalDateTime.now();
 
-        reservationService = new ReservationService(clock, reservationRepository, reservationTimeRepository,
-                themeRepository);
+        reservationService = new ReservationService(reservationRepository, reservationTimeRepository, themeRepository,
+                userRepository);
 
     }
 
@@ -76,7 +78,7 @@ public class ReservationServiceIntegrationTest {
         reservationRepository.save(Reservation.withoutId(name, date, savedTime, savedTheme));
 
         // when
-        final List<ReservationResponse> response = reservationService.getAll();
+        final List<ReservationResponse> response = reservationService.getAll(null, null, null, null);
 
         // then
         assertThat(response).hasSize(1);
@@ -85,7 +87,7 @@ public class ReservationServiceIntegrationTest {
     @DisplayName("예약 정보가 없다면 빈 리스트를 반환한다.")
     @Test
     void test2() {
-        final List<ReservationResponse> result = reservationService.getAll();
+        final List<ReservationResponse> result = reservationService.getAll(null, null, null, null);
 
         assertThat(result).isEmpty();
     }
