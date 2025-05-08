@@ -26,6 +26,10 @@ public class Member {
         return this.password.equals(comparedPassword);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getEmail() {
         return email;
     }

@@ -36,7 +36,7 @@ public class AuthService {
     public MemberResponseDto getMemberByToken(String tokenFromCookie) {
         String payload = jwtProvider.getPayload(tokenFromCookie);
         Member member = findMemberByEmail(payload);
-        return new MemberResponseDto(member.getName());
+        return new MemberResponseDto(member);
     }
 
     private Member findMemberByEmail(final String email) {
