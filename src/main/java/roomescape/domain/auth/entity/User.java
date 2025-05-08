@@ -71,6 +71,10 @@ public class User {
         return role.getRole();
     }
 
+    public boolean isNotAdmin() {
+        return role.isNotAdmin();
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(id);

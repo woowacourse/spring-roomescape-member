@@ -1,5 +1,6 @@
 package roomescape.domain.auth.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
@@ -19,6 +20,15 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @Transactional(readOnly = true)
+    public List<UserInfoResponse> getAll() {
+        return userRepository.findAll()
+                .stream()
+                .filter(User::isNotAdmin)
+                .map(UserInfoResponse::from)
+                .toList();
+    }
+
     @Transactional
     public UserInfoResponse register(final UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -31,6 +41,5 @@ public class UserService {
 
         return UserInfoResponse.from(savedUser);
     }
-
 
 }

@@ -2,6 +2,7 @@ package roomescape.domain.auth.repository.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -42,19 +43,18 @@ public class UserDao implements UserRepository {
     }
 
     @Override
-    public boolean existsByName(final String name) {
-        final String sql = "select exists(select 1 from " + TABLE_NAME + " where name = :name)";
-        final Map<String, Object> params = Map.of("name", name);
-
-        return jdbcTemplate.queryForObject(sql, params, Boolean.class);
-    }
-
-    @Override
     public boolean existsByEmail(final String email) {
         final String sql = "select exists(select 1 from " + TABLE_NAME + " where email = :email)";
         final Map<String, Object> params = Map.of("email", email);
 
         return jdbcTemplate.queryForObject(sql, params, Boolean.class);
+    }
+
+    @Override
+    public List<User> findAll() {
+        final String sql = "select id, name, email, password, role from " + TABLE_NAME;
+
+        return jdbcTemplate.query(sql, (resultSet, rowNum) -> userOf(resultSet));
     }
 
     @Override
