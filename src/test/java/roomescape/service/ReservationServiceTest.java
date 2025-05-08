@@ -19,10 +19,10 @@ import roomescape.exception.exception.PastReservationTimeException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class RoomescapeServiceTest {
+class ReservationServiceTest {
 
     @Autowired
-    RoomescapeService service;
+    ReservationService service;
 
     @DisplayName("같은 날짜 및 시간 예약이 존재하면 예외를 던진다")
     @Test

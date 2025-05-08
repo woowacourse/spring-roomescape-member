@@ -13,37 +13,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.ReservationThemeRequest;
 import roomescape.dto.ReservationThemeResponse;
-import roomescape.service.RoomescapeService;
+import roomescape.service.ReservationThemeService;
 
 @RestController
 @RequestMapping("/themes")
 public class ReservationThemeController {
 
-    private final RoomescapeService roomescapeService;
+    private final ReservationThemeService reservationThemeService;
 
-    public ReservationThemeController(final RoomescapeService roomescapeService) {
-        this.roomescapeService = roomescapeService;
+    public ReservationThemeController(final ReservationThemeService reservationThemeService) {
+        this.reservationThemeService = reservationThemeService;
     }
 
     @GetMapping
     public ResponseEntity<List<ReservationThemeResponse>> reservationThemeList() {
-        return ResponseEntity.ok(roomescapeService.findReservationThemes());
+        return ResponseEntity.ok(reservationThemeService.findReservationThemes());
     }
 
     @GetMapping("/ranking")
     public ResponseEntity<List<ReservationThemeResponse>> reservationThemeRankingList() {
-        return ResponseEntity.ok(roomescapeService.findPopularReservations());
+        return ResponseEntity.ok(reservationThemeService.findPopularReservations());
     }
 
     @PostMapping
     public ResponseEntity<ReservationThemeResponse> reservationThemeAdd(
             @Valid @RequestBody ReservationThemeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roomescapeService.addReservationTheme(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationThemeService.addReservationTheme(request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> reservationThemeRemove(@PathVariable(name = "id") long id) {
-        roomescapeService.removeReservationTheme(id);
+        reservationThemeService.removeReservationTheme(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
