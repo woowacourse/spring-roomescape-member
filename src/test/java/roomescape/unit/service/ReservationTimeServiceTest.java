@@ -9,7 +9,6 @@ import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import roomescape.auth.Role;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
@@ -24,7 +23,6 @@ import roomescape.service.ReservationTimeService;
 import roomescape.unit.fake.FakeReservationRepository;
 import roomescape.unit.fake.FakeReservationTimeRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest {
 
     private ReservationTimeRepository reservationTimeRepository;
