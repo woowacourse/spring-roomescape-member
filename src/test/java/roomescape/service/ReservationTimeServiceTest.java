@@ -25,7 +25,7 @@ import roomescape.service.dto.CreateReservationTimeServiceRequest;
 class ReservationTimeServiceTest {
 
     @Autowired
-    ReservationTimeService reservationTimeService;
+    private ReservationTimeService reservationTimeService;
 
     @Test
     @DisplayName("시간 데이터를 추가할 수 있어야 한다")
