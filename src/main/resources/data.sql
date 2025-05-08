@@ -17,3 +17,10 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES
                                                             ('모코', '2025-05-01', 2, 1),
                                                             ('리사', '2025-05-02', 3, 3),
                                                             ('검프', '2025-05-02', 1, 3);
+
+-- user 테이블 초기 데이터
+INSERT INTO users (name, email, password) VALUES
+                                             ('웨이드', 'wade@nnnn.com', 'password'),
+                                             ('모코', 'moko@nnnn.com', 'password'),
+                                             ('리사', 'lisa@nnnn.com', 'password'),
+                                             ('검프', 'gump@nnnn.com', 'password');

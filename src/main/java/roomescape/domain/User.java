@@ -6,4 +6,8 @@ public record User(
         String email,
         String password
 ) {
+
+    public User withId(Long id) {
+        return new User(id, name, email, password);
+    }
 }
