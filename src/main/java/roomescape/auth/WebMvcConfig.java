@@ -8,11 +8,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import roomescape.infrastructure.JwtTokenProvider;
 
 @Configuration
-public class AuthenticationConfig implements WebMvcConfigurer {
+public class WebMvcConfig implements WebMvcConfigurer {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthenticationConfig(JwtTokenProvider jwtTokenProvider) {
+    public WebMvcConfig(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
