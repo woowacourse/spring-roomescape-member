@@ -33,6 +33,28 @@ public class JdbcMemberDaoImpl implements MemberDao {
     }
 
     @Override
+    public Optional<Member> findByEmail(String email) {
+        String query = """
+            select *
+             from member
+             where email = ?;
+            """;
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query,
+                (resultSet, rowNum) -> {
+                    return new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")
+                    );
+                }, email));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
         String query = """
             select *

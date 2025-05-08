@@ -21,6 +21,12 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public Member findByEmail(String email) {
+        return memberDao.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    @Override
     public Member findByEmailAndPassword(String email, String password) {
         return memberDao.findByEmailAndPassword(email, password)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));

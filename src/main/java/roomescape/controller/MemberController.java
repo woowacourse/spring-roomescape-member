@@ -1,17 +1,20 @@
 package roomescape.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.CheckResponseDto;
 import roomescape.dto.MemberRequestDto;
 import roomescape.dto.MemberResponseDto;
 import roomescape.dto.TokenRequest;
 import roomescape.dto.TokenResponse;
 import roomescape.service.MemberService;
-import roomescape.token.CookieGenerator;
+import roomescape.token.Cookies;
 
 @RestController
 public class MemberController {
@@ -32,6 +35,12 @@ public class MemberController {
     public void login(@RequestBody TokenRequest tokenRequest,
         HttpServletResponse httpServletResponse) {
         TokenResponse tokenResponse = memberService.requestLogin(tokenRequest);
-        httpServletResponse.addCookie(CookieGenerator.generate(tokenResponse.token()));
+        httpServletResponse.addCookie(Cookies.generate(tokenResponse.token()));
+    }
+
+    @GetMapping("/login/check")
+    public CheckResponseDto checkLogin(HttpServletRequest request) {
+        String token = Cookies.get(request.getCookies());
+        return memberService.validate(token);
     }
 }

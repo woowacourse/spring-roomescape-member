@@ -1,6 +1,8 @@
 package roomescape.token;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
@@ -23,5 +25,22 @@ public class JwtProvider {
             .setExpiration(validity)
             .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
             .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            System.out.println(claims.getSignature());
+            System.out.println(claims.getBody().getSubject());
+            System.out.println(claims.getHeader());
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public String getTokenSubject(String token) {
+        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+        return claims.getBody().getSubject();
     }
 }
