@@ -29,17 +29,9 @@ class ThemeControllerTest {
 
     @BeforeEach
     void setUp() {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS reservation_time CASCADE");
         jdbcTemplate.execute("DROP TABLE IF EXISTS theme CASCADE");
         jdbcTemplate.execute("DROP TABLE IF EXISTS reservation CASCADE");
-        jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS reservation_time
-                (
-                    id SERIAL,
-                    start_at VARCHAR(255) NOT NULL,
-                    PRIMARY KEY (id)
-                );
-                """);
+
         jdbcTemplate.execute("""
                 CREATE TABLE IF NOT EXISTS theme
                 (
