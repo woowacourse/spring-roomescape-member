@@ -19,4 +19,10 @@ public class MemberRepositoryImpl implements MemberRepository {
         long savedId = memberDao.save(member);
         member.setId(savedId);
     }
+
+    @Override
+    public Member findByEmailAndPassword(String email, String password) {
+        return memberDao.findByEmailAndPassword(email, password)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
 }

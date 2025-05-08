@@ -4,15 +4,20 @@ import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.MemberRequestDto;
 import roomescape.dto.MemberResponseDto;
+import roomescape.dto.TokenRequest;
+import roomescape.dto.TokenResponse;
 import roomescape.repository.MemberRepository;
+import roomescape.token.JwtProvider;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtProvider jwtProvider) {
         this.memberRepository = memberRepository;
+        this.jwtProvider = jwtProvider;
     }
 
     public MemberResponseDto saveMember(MemberRequestDto memberRequestDto) {
@@ -20,5 +25,12 @@ public class MemberService {
             memberRequestDto.password());
         memberRepository.save(member);
         return MemberResponseDto.from(member);
+    }
+
+    public TokenResponse requestLogin(TokenRequest tokenRequest) {
+        Member member = memberRepository.findByEmailAndPassword(tokenRequest.email(),
+            tokenRequest.password());
+        String token = jwtProvider.createToken(member.getEmail());
+        return TokenResponse.from(token);
     }
 }
