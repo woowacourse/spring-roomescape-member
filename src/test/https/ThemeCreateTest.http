@@ -1,0 +1,47 @@
+POST localhost:8080/themes HTTP/1.1
+content-type: application/json
+
+{
+  "name": "레벨3 탈출",
+  "description": "우테코 레벨3를 탈출하는 내용입니다.",
+  "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
+}
+
+###
+GET localhost:8080/themes HTTP/1.1
+
+###
+DELETE localhost:8080/themes/1 HTTP/1.1
+
+###
+GET localhost:8080/reservations HTTP/1.1
+
+###
+POST localhost:8080/reservations HTTP/1.1
+content-type: application/json
+
+{
+
+    "name": "히스타",
+    "date": "2025-04-24",
+    "timeId": 1,
+    "themeId": 1
+}
+
+###
+
+POST localhost:8080/times HTTP/1.1
+content-type: application/json
+
+{
+"startAt": "18:00"
+}
+
+###
+
+POST localhost:8080/times HTTP/1.1
+content-type: application/json
+
+{
+"startAt": "19:30"
+}
