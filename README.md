@@ -414,3 +414,19 @@
 로그인 리팩터링
 - [x] Cookie에 담긴 인증 정보를 이용해 사용자 객체를 만드는 로직 분리
   - HandlerMethodArgumentResolver 활용
+
+예약 생성 기능 변경 - 사용자
+- [x] 사용자가 예약 생성 시, 쿠키를 이용한 로그인한 사용자 정보를 활용하도록 리팩터링 합니다.
+  - Request
+    ```
+    POST /reservations HTTP/1.1
+    content-type: application/json
+    cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI
+    host: localhost:8080
+    
+    {
+        "date": "2024-03-01",
+        "themeId": 1,
+        "timeId": 1
+    }
+    ```

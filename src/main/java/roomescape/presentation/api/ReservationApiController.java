@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.application.ReservationService;
+import roomescape.common.Authenticated;
+import roomescape.domain.User;
 import roomescape.presentation.request.CreateReservationRequest;
 import roomescape.presentation.response.ReservationResponse;
 
@@ -26,8 +28,11 @@ public class ReservationApiController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> reserve(@RequestBody @Valid final CreateReservationRequest request) {
-        var reservation = service.reserve(request.name(), request.date(), request.timeId(), request.themeId());
+    public ResponseEntity<ReservationResponse> reserve(
+        @Authenticated final User user,
+        @RequestBody @Valid final CreateReservationRequest request
+    ) {
+        var reservation = service.reserve(user.name(), request.date(), request.timeId(), request.themeId());
         var response = ReservationResponse.from(reservation);
         return ResponseEntity.created(URI.create("/reservations/" + reservation.id())).body(response);
     }
