@@ -33,10 +33,7 @@ public class ReservationController {
     }
 
     @GetMapping("/available-times")
-    public List<AvailableTimeResponse> getAvailableTimes(@RequestParam("date") LocalDate date,
-                                                         @RequestParam("themeId") Long themeId) {
-        validateDate(date);
-        validateThemeId(themeId);
+    public List<AvailableTimeResponse> getAvailableTimes(@RequestParam LocalDate date, @RequestParam Long themeId) {
         return reservationService.getAvailableTimes(date, themeId);
     }
 
@@ -50,18 +47,6 @@ public class ReservationController {
     @DeleteMapping("/{reservationId}")
     public void deleteReservation(@PathVariable("reservationId") Long reservationId) {
         reservationService.remove(reservationId);
-    }
-
-    private void validateThemeId(Long themeId) {
-        if (themeId == null) {
-            throw new IllegalArgumentException("테마 ID는 필수입니다.");
-        }
-    }
-
-    private void validateDate(LocalDate date) {
-        if (date == null) {
-            throw new IllegalArgumentException("예약 날짜는 필수입니다.");
-        }
     }
 
 }
