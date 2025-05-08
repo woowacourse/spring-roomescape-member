@@ -198,3 +198,6 @@ VALUES ('riwon', '2025-04-27', 11, 2);
 
 INSERT INTO reservation(name, date, time_id, theme_id)
 VALUES ('mimi', '2025-04-26', 11, 1);
+
+INSERT INTO member(name, email, password)
+VALUES ('어드민', 'wooteco@gmail.com', '1234A');
