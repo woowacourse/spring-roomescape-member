@@ -5,9 +5,12 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import roomescape.domain.Reservation;
+import roomescape.dto.request.ReservationCondition;
 
 public interface ReservationRepository {
     List<Reservation> findAll();
+
+    List<Reservation> findByCondition(ReservationCondition cond);
 
     Reservation create(Reservation reservation);
 

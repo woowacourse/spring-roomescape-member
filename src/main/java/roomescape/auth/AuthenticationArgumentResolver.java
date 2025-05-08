@@ -8,6 +8,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import roomescape.exception.InvalidTokenException;
 import roomescape.infrastructure.JwtTokenProvider;
 
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
@@ -28,10 +29,13 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
         Cookie[] cookies = httpServletRequest.getCookies();
+        if (cookies == null) {
+            throw new InvalidTokenException();
+        }
         String token = Arrays.stream(cookies)
                 .filter(cookie -> "token".equals(cookie.getName()))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new)
+                .orElseThrow(InvalidTokenException::new)
                 .getValue();
 
         String subject = tokenProvider.extractSubject(token);

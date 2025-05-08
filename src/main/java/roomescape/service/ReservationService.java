@@ -12,6 +12,7 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.domain.repository.ReservationRepository;
 import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.domain.repository.ThemeRepository;
+import roomescape.dto.request.ReservationCondition;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
@@ -40,7 +41,7 @@ public class ReservationService {
         this.memberRepository = memberRepository;
     }
 
-    public List<ReservationResponse> findAll() {
+    public List<ReservationResponse> findReservations(ReservationCondition cond) {
         List<Reservation> reservationDaoAll = reservationRepository.findAll();
         return reservationDaoAll.stream()
                 .map(ReservationResponse::toDto)

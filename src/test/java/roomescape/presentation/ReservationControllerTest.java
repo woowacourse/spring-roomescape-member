@@ -43,14 +43,27 @@ public class ReservationControllerTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .body("name", equalTo("포비"));
+                .body("memberName", equalTo("포비"));
 
     }
 
     @Test
     void 예약_조회_테스트() {
+        Map<String, Object> body = Map.of(
+                "email", "admin@domain.com",
+                "password", "admin"
+        );
+        String token = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(body)
+                .when().post("/login")
+                .then()
+                .statusCode(200)
+                .extract().cookie("token");
+
         RestAssured.given().log().all()
-                .when().get("/reservations")
+                .cookie("token", token)
+                .when().get("admin/reservations")
                 .then().log().all()
                 .statusCode(200)
                 .body("size()", is(4));
