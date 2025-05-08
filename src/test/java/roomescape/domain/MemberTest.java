@@ -14,7 +14,7 @@ class MemberTest {
             "fail, false"
     })
     @DisplayName("패스워드가 일치 여부를 판단한다")
-    void test(String password, boolean expected) {
+    void matchesPasswordReturnsTrueWhenMatched(String password, boolean expected) {
         // given
         Member member = new Member("name", "email@email.com", "success");
 
