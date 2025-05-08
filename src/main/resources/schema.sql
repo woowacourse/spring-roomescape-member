@@ -26,7 +26,7 @@ CREATE TABLE reservation
     FOREIGN KEY (theme_id) REFERENCES theme (id)
 );
 
-CREATE TABLE user
+CREATE TABLE member
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     name        VARCHAR(50) NOT NULL,
