@@ -26,6 +26,19 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(Long userId) {
+        String query = "SELECT * FROM member WHERE id = :userId";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId);
+        try {
+            User user = jdbcTemplate.queryForObject(query, params, rowMapper);
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<User> findByEmailAndPassword(String email, String password) {
         String query = "SELECT * FROM member WHERE email = :email AND password = :password";
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -41,12 +54,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        String query = """
-                SELECT
-                    id, name, email, password
-                FROM member
-                WHERE email = :email
-                """;
+        String query = "SELECT * FROM member WHERE email = :email";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("email", email);
         try {

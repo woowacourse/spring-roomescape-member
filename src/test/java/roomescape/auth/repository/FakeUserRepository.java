@@ -11,6 +11,13 @@ public class FakeUserRepository implements UserRepository {
     private final List<User> users = new ArrayList<>();
 
     @Override
+    public Optional<User> findById(Long userId) {
+        return users.stream()
+                .filter(user -> user.getId().equals(userId))
+                .findFirst();
+    }
+
+    @Override
     public Optional<User> findByEmailAndPassword(String email, String password) {
         return users.stream()
                 .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))

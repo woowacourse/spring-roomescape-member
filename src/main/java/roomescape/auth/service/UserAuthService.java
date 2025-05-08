@@ -3,10 +3,13 @@ package roomescape.auth.service;
 import org.springframework.stereotype.Service;
 import roomescape.auth.entity.User;
 import roomescape.auth.repository.UserRepository;
+import roomescape.auth.service.dto.CheckResponse;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.LoginResponse;
 import roomescape.auth.service.dto.SignupRequest;
+import roomescape.exception.badRequest.BadRequestException;
 import roomescape.exception.conflict.ConflictException;
+import roomescape.exception.notFound.NotFoundException;
 import roomescape.exception.unauthorized.UserUnauthorizedException;
 
 @Service
@@ -34,5 +37,17 @@ public class UserAuthService {
                     User user = request.toEntity();
                     userRepository.save(user);
                 });
+    }
+
+    public CheckResponse checkLogin(String token) {
+        String subject = jwtTokenProvider.resolve(token);
+        try {
+            final long userId = Long.parseLong(subject);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException(userId, "유저"));
+            return new CheckResponse(user.getName());
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("잘못된 형식의 토큰입니다.");
+        }
     }
 }
