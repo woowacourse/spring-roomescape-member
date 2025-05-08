@@ -19,10 +19,7 @@ public class AuthenticationPrincipalResolver implements HandlerMethodArgumentRes
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        if (parameter.hasParameterAnnotation(AuthenticationPrincipal.class)) {
-            return true;
-        }
-        return false;
+        return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
     }
 
     @Override
