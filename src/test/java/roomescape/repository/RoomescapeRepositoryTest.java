@@ -3,6 +3,7 @@ package roomescape.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -80,7 +81,7 @@ class RoomescapeRepositoryTest {
     void save() {
         //given
         Reservation reservation = new Reservation("네오", LocalDate.parse("2023-08-05"),
-                new ReservationTime("15:40").assignId(1L), new ReservationTheme("테마", "테마", "테마").assignId(1L));
+                new ReservationTime(1L, LocalTime.parse("15:40")), new ReservationTheme(1L, "테마", "테마", "테마"));
 
         //when
         Reservation saved = repository.save(reservation);

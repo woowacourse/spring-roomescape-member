@@ -10,21 +10,25 @@ public class ReservationTheme {
     private static final int THEME_NAME_MAX_SIZE = 20;
 
     @EqualsAndHashCode.Include
-    private Long id;
+    private final Long id;
     private final String name;
     private final String description;
     private final String thumbnail;
 
-    public ReservationTheme(final String name, final String description, final String thumbnail) {
+    public ReservationTheme(final Long id, final String name, final String description, final String thumbnail) {
         validateThemeNameSize(name);
+        this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnail = thumbnail;
     }
 
+    public ReservationTheme(final String name, final String description, final String thumbnail) {
+        this(null, name, description, thumbnail);
+    }
+
     public ReservationTheme assignId(final Long id) {
-        this.id = id;
-        return this;
+        return new ReservationTheme(id, name, description, thumbnail);
     }
 
     private void validateThemeNameSize(String name) {

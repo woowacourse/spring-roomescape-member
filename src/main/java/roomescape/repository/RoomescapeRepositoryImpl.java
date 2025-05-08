@@ -63,8 +63,7 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
                 .addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Number key = insert.executeAndReturnKey(param);
-        reservation.assignId(key.longValue());
-        return reservation;
+        return reservation.assignId(key.longValue());
     }
 
     @Override
@@ -100,19 +99,21 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
     private RowMapper<Reservation> reservationRowMapper() {
         return (rs, rowNum) -> {
             ReservationTime reservationTime = new ReservationTime(
+                    rs.getLong("time_id"),
                     rs.getTime("time_value").toLocalTime()
-            ).assignId(rs.getLong("time_id"));
+            );
             ReservationTheme reservationTheme = new ReservationTheme(
+                    rs.getLong("theme_id"),
                     rs.getString("theme_name"),
                     rs.getString("theme_description"),
                     rs.getString("theme_thumbnail")
-            ).assignId(rs.getLong("theme_id"));
+            );
             return new Reservation(
+                    rs.getLong("reservation_id"),
                     rs.getString("name"),
                     rs.getDate("date").toLocalDate(),
                     reservationTime,
-                    reservationTheme
-            ).assignId(rs.getLong("reservation_id"));
+                    reservationTheme);
         };
     }
 

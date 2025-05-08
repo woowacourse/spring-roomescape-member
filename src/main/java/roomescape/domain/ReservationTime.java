@@ -9,20 +9,24 @@ import lombok.Getter;
 public class ReservationTime {
 
     @EqualsAndHashCode.Include
-    private Long id;
+    private final Long id;
     private final LocalTime startAt;
 
-    public ReservationTime(final LocalTime startAt) {
+    public ReservationTime(final Long id, final LocalTime startAt) {
+        this.id = id;
         this.startAt = startAt;
     }
 
+    public ReservationTime(final LocalTime startAt) {
+        this(null, startAt);
+    }
+
     public ReservationTime(final String input) {
-        this(LocalTime.parse(input));
+        this(null, LocalTime.parse(input));
     }
 
     public ReservationTime assignId(final Long id) {
-        this.id = id;
-        return this;
+        return new ReservationTime(id, startAt);
     }
 
     public boolean isSameTime(final ReservationTime other) {

@@ -13,27 +13,30 @@ public class Reservation {
     private static final int NAME_MAX_SIZE = 5;
 
     @EqualsAndHashCode.Include
-    private Long id;
+    private final Long id;
     private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final ReservationTheme theme;
 
-    public Reservation(final String name,
-                       final LocalDate date,
-                       final ReservationTime time,
+    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
                        final ReservationTheme theme) {
         validateNameKoreanWords(name);
         validateNameSize(name);
+        this.id = id;
         this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
+    public Reservation(final String name, final LocalDate date, final ReservationTime time,
+                       final ReservationTheme theme) {
+        this(null, name, date, time, theme);
+    }
+
     public Reservation assignId(final Long id) {
-        this.id = id;
-        return this;
+        return new Reservation(id, name, date, time, theme);
     }
 
     public boolean isDuplicateReservation(Reservation reservation) {
