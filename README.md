@@ -123,8 +123,8 @@
     }
   ```
 
-- [ ] 로그인 API를 구현한다
-    - [ ] 로그인의 id로는 사용자의 이메일, password로는 사용자의 비밀번호를 사용한다
+- [x] 로그인 API를 구현한다
+    - [x] 로그인의 id로는 사용자의 이메일, password로는 사용자의 비밀번호를 사용한다
       ```http request
       POST /login HTTP/1.1
       content-type: application/json
