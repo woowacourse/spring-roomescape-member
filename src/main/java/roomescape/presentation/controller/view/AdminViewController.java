@@ -1,4 +1,4 @@
-package roomescape.controller.view;
+package roomescape.presentation.controller.view;
 
 import ch.qos.logback.core.model.Model;
 import org.springframework.stereotype.Controller;

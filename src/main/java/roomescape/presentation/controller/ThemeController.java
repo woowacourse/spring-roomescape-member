@@ -1,4 +1,4 @@
-package roomescape.controller;
+package roomescape.presentation.controller;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
