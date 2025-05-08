@@ -10,3 +10,5 @@ INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트1', '2
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트2', '2025-04-28', 2, 1);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트3', '2025-04-26', 1, 3);
 INSERT INTO reservation (name, date, time_id, theme_id) VALUES ('테스트4', '2025-04-18', 1, 2);
+
+INSERT INTO member (name, email, password, role) VALUES ('어드민', 'admin@email.com', 'password', 'ADMIN');
