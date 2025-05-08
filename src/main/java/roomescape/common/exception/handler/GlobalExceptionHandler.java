@@ -12,7 +12,7 @@ import roomescape.common.exception.handler.dto.ExceptionResponse;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ExceptionResponse> handleNull(final NullPointerException exception, final HttpServletRequest request) {
+    public ResponseEntity<ExceptionResponse> handleNullPointer(final NullPointerException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 500, "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ExceptionResponse> illegalArgument(final IllegalArgumentException exception, final HttpServletRequest request) {
+    public ResponseEntity<ExceptionResponse> handleIllegalArgument(final IllegalArgumentException exception, final HttpServletRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 400, "[ERROR] " + exception.getMessage(), request.getRequestURI()
         );
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public ResponseEntity<ExceptionResponse> notReadable(
+    public ResponseEntity<ExceptionResponse> handleHttpMessageNotReadable(
             final HttpMessageNotReadableException exception, final HttpServletRequest request
     ) {
         Throwable rootCause = exception.getRootCause();
@@ -53,6 +53,15 @@ public class GlobalExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 400, "[ERROR] 요청 입력이 잘못되었습니다.", request.getRequestURI()
         );
+        return ResponseEntity.badRequest().body(exceptionResponse);
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ExceptionResponse> handleIllegalState(final Exception exception, final HttpServletRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                400, "[ERROR] " + exception.getMessage(), request.getRequestURI()
+        );
+
         return ResponseEntity.badRequest().body(exceptionResponse);
     }
 }
