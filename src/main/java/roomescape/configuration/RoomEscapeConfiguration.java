@@ -15,5 +15,7 @@ public class RoomEscapeConfiguration implements WebMvcConfigurer {
         registry.addViewController("/admin/theme").setViewName("admin/theme");
 
         registry.addViewController("/reservation").setViewName("reservation");
+
+        registry.addViewController("/login").setViewName("login");
     }
 }
