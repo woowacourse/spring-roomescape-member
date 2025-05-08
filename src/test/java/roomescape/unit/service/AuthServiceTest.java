@@ -17,6 +17,7 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.AuthenticatedUserResponse;
 import roomescape.exception.LoginFailedException;
+import roomescape.exception.MemberNotFoundException;
 import roomescape.infrastructure.JwtTokenProvider;
 import roomescape.service.AuthService;
 import roomescape.unit.fake.FakeMemberRepository;
@@ -73,8 +74,15 @@ class AuthServiceTest {
         Member member = new Member(null, "name1", "email1@domain.com", "password1", Role.MEMBER);
         memberRepository.save(member);
         // when
-        AuthenticatedUserResponse token = authService.getAuthenticatedUserFromToken(1L);
+        AuthenticatedUserResponse token = authService.getAuthenticatedUser(1L);
         // then
         assertThat(token.name()).isEqualTo("name1");
+    }
+
+    @Test
+    void 존재하지_않는_사용자의_인증정보를_조회할_경우_예외가_발생한다() {
+        // when & then
+        assertThatThrownBy(() -> authService.getAuthenticatedUser(1L))
+                .isInstanceOf(MemberNotFoundException.class);
     }
 }

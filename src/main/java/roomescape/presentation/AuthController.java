@@ -40,6 +40,6 @@ public class AuthController {
 
     @GetMapping("/login/check")
     public AuthenticatedUserResponse getAuthenticatedUser(Long memberId) {
-        return authService.getAuthenticatedUserFromToken(memberId);
+        return authService.getAuthenticatedUser(memberId);
     }
 }

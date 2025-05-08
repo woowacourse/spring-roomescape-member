@@ -6,6 +6,7 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.AuthenticatedUserResponse;
 import roomescape.exception.LoginFailedException;
+import roomescape.exception.MemberNotFoundException;
 import roomescape.infrastructure.JwtTokenProvider;
 
 @Service
@@ -28,9 +29,9 @@ public class AuthService {
         return tokenProvider.createToken(String.valueOf(member.getId()), member.getRole());
     }
 
-    public AuthenticatedUserResponse getAuthenticatedUserFromToken(Long memberId) {
+    public AuthenticatedUserResponse getAuthenticatedUser(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow();
+                .orElseThrow(MemberNotFoundException::new);
         return new AuthenticatedUserResponse(member.getName());
     }
 }
