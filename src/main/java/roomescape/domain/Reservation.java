@@ -5,30 +5,28 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final String name;
+    private final Member member;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
-        validate(name, date, time, theme);
+    public Reservation(Long id, Member member, LocalDate date, ReservationTime time, Theme theme) {
+        validate(date, time, theme);
         this.id = id;
-        this.name = name;
+        this.member = member;
         this.date = date;
         this.time = time;
         this.theme = theme;
     }
 
     public static Reservation generateWithPrimaryKey(Reservation reservation, Long newPrimaryKey) {
-        return new Reservation(newPrimaryKey, reservation.name, reservation.date, reservation.time, reservation.theme);
+        return new Reservation(newPrimaryKey, reservation.member, reservation.date, reservation.time,
+                reservation.theme);
     }
 
-    private void validate(String name, LocalDate date, ReservationTime time, Theme theme) {
-        if (name == null || date == null || time == null || theme == null) {
+    private void validate(LocalDate date, ReservationTime time, Theme theme) {
+        if (date == null || time == null || theme == null) {
             throw new IllegalArgumentException("예약 정보가 비어있습니다.");
-        }
-        if (name.isBlank()) {
-            throw new IllegalArgumentException("예약자명은 비워둘 수 없습니다.");
         }
     }
 
@@ -36,8 +34,8 @@ public class Reservation {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Member getMember() {
+        return member;
     }
 
     public LocalDate getDate() {

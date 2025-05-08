@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,10 +15,14 @@ class ReservationTest {
 
     private static Stream<Arguments> getInvalidReservations() {
         return Stream.of(
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, null, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", null, new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", LocalDate.now(), null, new Theme(1L, "테마","테마 설명", "테마 이미지"))),
-                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", LocalDate.now(), new ReservationTime(1L, LocalTime.now()), null))
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, null, , LocalDate.now(),
+                        new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"))),
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", , null,
+                        new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"))),
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", , LocalDate.now(), null,
+                        new Theme(1L, "테마","테마 설명", "테마 이미지"))),
+                Arguments.of((Supplier<Reservation>) () -> new Reservation(1L, "히스타", , LocalDate.now(),
+                        new ReservationTime(1L, LocalTime.now()), null))
         );
     }
 
@@ -36,7 +39,8 @@ class ReservationTest {
     @Test
     void validateBlankName() {
         // given
-        Supplier<Reservation> supplier = () -> new Reservation(1L, null, LocalDate.now(), new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"));
+        Supplier<Reservation> supplier = () -> new Reservation(1L, null, , LocalDate.now(),
+                new ReservationTime(1L, LocalTime.now()), new Theme(1L, "테마","테마 설명", "테마 이미지"));
 
 
         // when & then

@@ -38,8 +38,9 @@ public class LoginController {
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 회원입니다."));
 
         String token = Jwts.builder()
-                .subject(member.getEmail())
+                .subject(member.getId().toString())
                 .claim("name", member.getName())
+                .claim("email", member.getEmail())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
 

@@ -13,6 +13,10 @@ public class Member {
         this.password = password;
     }
 
+    public Member(Long id, String name, String email) {
+        this(id, name, email, null);
+    }
+
     public static Member generateWithPrimaryKey(Member member, Long newPrimaryKey) {
         return new Member(newPrimaryKey, member.name, member.email, member.password);
     }

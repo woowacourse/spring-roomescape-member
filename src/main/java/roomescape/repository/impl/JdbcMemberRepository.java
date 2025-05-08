@@ -71,4 +71,22 @@ public class JdbcMemberRepository implements MemberRepository {
                 password
                 ).stream().findFirst();
     }
+
+    public Optional<Member> findById(Long id) {
+        final String query = """
+                SELECT id, name, email
+                FROM member
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.query(
+                query,
+                (resultSet, rowNum) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email")
+                ),
+                id
+        ).stream().findFirst();
+    }
 }

@@ -5,38 +5,54 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import roomescape.common.exception.NotAbleReservationException;
+import roomescape.common.exception.NotFoundMemberException;
 import roomescape.common.exception.NotFoundReservationTimeException;
 import roomescape.common.exception.NotFoundThemeException;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.dto.response.ThemeResponse;
+import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
 import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
-    // TODO: Repository 의존이 너무 많다. 개선할 방법이 없을까?
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
     public ReservationService(ReservationRepository reservationRepository,
                               ReservationTimeRepository reservationTimeRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository, MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public ReservationResponse saveReservation(ReservationRequest request) {
+    public ReservationResponse saveReservation(CreateReservationRequest request) {
+        /*
+         * 1. 멤버 ID가 존재하는 지 확인해야 한다
+         * 2. 예약 시간 ID가 존재하는 지 확인해야 한다
+         * 3. 방탈출 테마 ID가 존재하는 지 확인해야 한다
+         * 4. 과거 시점 검증을 해야한다.
+         * 5. 중복 예약이 아닌지 확인해야 한다.
+         * 이 복잡한 검증 로직을 어떻게 처리할 것인가?
+         */
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new NotFoundMemberException("올바른 멤버가 아닙니다."));
+
         ReservationTime reservationTime = reservationTimeRepository.read(request.timeId())
                 .orElseThrow(() -> new NotFoundReservationTimeException("올바른 예약 시간을 찾을 수 없습니다. 나중에 다시 시도해주세요."));
+
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NotFoundThemeException("올바른 방탈출 테마가 없습니다."));
 
@@ -53,9 +69,20 @@ public class ReservationService {
         }
 
         Reservation createdReservation = reservationRepository.save(
-                request.toReservation(reservationTime, theme));
-        return ReservationResponse.of(createdReservation, ReservationTimeResponse.from(reservationTime),
-                ThemeResponse.from(theme));
+                new Reservation(
+                        null,
+                        member,
+                        request.date(),
+                        reservationTime,
+                        theme
+                )
+        );
+
+        return ReservationResponse.of(
+                createdReservation,
+                ReservationTimeResponse.from(reservationTime),
+                ThemeResponse.from(theme)
+        );
     }
 
     public List<ReservationResponse> readReservation() {

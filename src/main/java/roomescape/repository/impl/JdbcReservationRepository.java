@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.common.exception.NotAbleDeleteException;
+import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
@@ -28,31 +29,30 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> readAll() {
         final String query = """
                 SELECT
-                    r.id as reservation_id,
-                    r.name as reservation_name,
-                    r.date as reservation_date,
-                    t.id as time_id,
-                    t.start_at as time_start_at,
-                    th.id as theme_id,
-                    th.name as theme_name,
-                    th.description as theme_description,
-                    th.thumbnail as theme_thumbnail 
-                FROM reservation as r
-                inner join reservation_time as t
-                on r.time_id = t.id
-                inner join theme as th
-                on r.theme_id = th.id
+                    r.id,
+                    m.id AS member_id, m.name AS member_name, m.email AS member_email,
+                    r.date,
+                    t.id AS time_id, t.start_at,
+                    th.id AS theme_id, th.name AS theme_name, th.description AS theme_description, th.thumbnail AS theme_thumbnail
+                FROM reservation r
+                JOIN member m ON r.member_id = m.id
+                JOIN reservation_time t ON r.time_id = t.id
+                JOIN theme th ON r.theme_id = th.id
                 """;
 
         return jdbcTemplate.query(
                 query,
                 (resultSet, rowNum) -> new Reservation(
-                        resultSet.getLong("reservation_id"),
-                        resultSet.getString("reservation_name"),
-                        resultSet.getDate("reservation_date").toLocalDate(),
+                        resultSet.getLong("id"),
+                        new Member(
+                                resultSet.getLong("member_id"),
+                                resultSet.getString("member_name"),
+                                resultSet.getString("member_email")
+                        ),
+                        resultSet.getDate("date").toLocalDate(),
                         new ReservationTime(
                                 resultSet.getLong("time_id"),
-                                resultSet.getTime("time_start_at").toLocalTime()
+                                resultSet.getTime("start_at").toLocalTime()
                         ),
                         new Theme(
                                 resultSet.getLong("theme_id"),
@@ -78,7 +78,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     public Reservation save(Reservation reservation) {
         Map<String, Object> parameters = Map.ofEntries(
-                Map.entry("name", reservation.getName()),
+                Map.entry("member_id", reservation.getMember().getId()),
                 Map.entry("date", reservation.getDate()),
                 Map.entry("time_id", reservation.getTime().getId()),
                 Map.entry("theme_id", reservation.getTheme().getId())

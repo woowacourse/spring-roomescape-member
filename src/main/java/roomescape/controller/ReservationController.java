@@ -1,6 +1,10 @@
 package roomescape.controller;
 
 import java.util.List;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import roomescape.dto.request.ReservationRequest;
+import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.service.ReservationService;
 
@@ -26,8 +30,24 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(@RequestBody ReservationRequest reservationRequest) {
-        ReservationResponse response = reservationService.saveReservation(reservationRequest);
+    public ResponseEntity<ReservationResponse> create(@RequestBody CreateReservationRequest createReservationRequest, HttpServletRequest request) {
+        // JWT 토큰에서 사용자 정보 추출
+        String token = extractTokenFromCookie(request.getCookies());
+        if (token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String memberId = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(LoginController.SECRET_KEY.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+
+        CreateReservationRequest requestWithAuthor = CreateReservationRequest.setMember(createReservationRequest,
+                Long.valueOf(memberId));
+
+        ReservationResponse response = reservationService.saveReservation(requestWithAuthor);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -41,5 +61,19 @@ public class ReservationController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         reservationService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // * 리팩터링 과정을 느껴보기 위해 중복 구현
+    private String extractTokenFromCookie(Cookie[] cookies) {
+        if (cookies == null) {
+            return "";
+        }
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                return cookie.getValue();
+            }
+        }
+        return "";
     }
 }
