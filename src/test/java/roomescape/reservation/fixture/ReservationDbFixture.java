@@ -25,7 +25,7 @@ public class ReservationDbFixture {
                 .usingGeneratedKeyColumns("id");
 
         String name = ReserverNameFixture.한스.getName();
-        LocalDate date = ReservationDateFixture.예약날짜_25_4_22.getDate();
+        LocalDate date = ReservationDateFixture.예약날짜_내일.getDate();
 
         Long id = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource()
                 .addValue("name", name)

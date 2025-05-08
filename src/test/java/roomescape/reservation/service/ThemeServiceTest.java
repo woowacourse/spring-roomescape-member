@@ -3,6 +3,7 @@ package roomescape.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -93,7 +94,7 @@ public class ThemeServiceTest extends BaseTest {
             addReservation(19 - i, ReservationDateFixture.예약날짜_7일전, reservationTimeDbFixture.예약시간_10시(), themes.get(i));
         }
 
-        List<ThemeResponse> popularThemes = themeService.getPopularThemes();
+        List<ThemeResponse> popularThemes = themeService.getPopularThemes(LocalDate.now());
 
         assertThat(popularThemes)
                 .hasSize(10)
