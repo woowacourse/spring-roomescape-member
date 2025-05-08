@@ -22,12 +22,19 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
 
     private final NamedParameterJdbcTemplate template;
     private final SimpleJdbcInsert insert;
+    private final RowMapper<Reservation> reservationRowMapper;
 
     public RoomescapeRepositoryImpl(final DataSource dataSource) {
         this.template = new NamedParameterJdbcTemplate(dataSource);
-        this.insert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation")
-                .usingGeneratedKeyColumns("id");
+        this.insert = new SimpleJdbcInsert(dataSource).withTableName("reservation").usingGeneratedKeyColumns("id");
+        this.reservationRowMapper = (rs, rowNum) -> {
+            ReservationTime reservationTime = new ReservationTime(rs.getLong("time_id"),
+                    rs.getTime("time_value").toLocalTime());
+            ReservationTheme reservationTheme = new ReservationTheme(rs.getLong("theme_id"), rs.getString("theme_name"),
+                    rs.getString("theme_description"), rs.getString("theme_thumbnail"));
+            return new Reservation(rs.getLong("reservation_id"), rs.getString("name"), rs.getDate("date").toLocalDate(),
+                    reservationTime, reservationTheme);
+        };
     }
 
     @Override
@@ -35,7 +42,7 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
         String sql = joinReservationAndTime("WHERE r.id = :id");
         try {
             SqlParameterSource param = new MapSqlParameterSource("id", id);
-            Reservation reservation = template.queryForObject(sql, param, reservationRowMapper());
+            Reservation reservation = template.queryForObject(sql, param, reservationRowMapper);
             return Optional.of(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -46,21 +53,19 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
     public List<Reservation> findByDate(final LocalDate date) {
         String sql = joinReservationAndTime("WHERE r.date = :date");
         SqlParameterSource param = new MapSqlParameterSource("date", date);
-        return template.query(sql, param, reservationRowMapper());
+        return template.query(sql, param, reservationRowMapper);
     }
 
     @Override
     public List<Reservation> findAll() {
         String sql = joinReservationAndTime("");
-        return template.query(sql, reservationRowMapper());
+        return template.query(sql, reservationRowMapper);
     }
 
     @Override
     public Reservation save(final Reservation reservation) {
-        SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", reservation.getName())
-                .addValue("date", reservation.getDate().toString())
-                .addValue("time_id", reservation.getTime().getId())
+        SqlParameterSource param = new MapSqlParameterSource().addValue("name", reservation.getName())
+                .addValue("date", reservation.getDate().toString()).addValue("time_id", reservation.getTime().getId())
                 .addValue("theme_id", reservation.getTheme().getId());
         Number key = insert.executeAndReturnKey(param);
         return reservation.assignId(key.longValue());
@@ -90,31 +95,9 @@ public class RoomescapeRepositoryImpl implements RoomescapeRepository {
     @Override
     public boolean existsByDateAndTime(final LocalDate date, final ReservationTime time) {
         String sql = wrapExistsQuery(joinReservationAndTime("WHERE r.date = :date and t.start_at = :startAt"));
-        SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("date", date)
+        SqlParameterSource param = new MapSqlParameterSource().addValue("date", date)
                 .addValue("startAt", time.getStartAt());
         return Boolean.TRUE.equals(template.queryForObject(sql, param, Boolean.class));
-    }
-
-    private RowMapper<Reservation> reservationRowMapper() {
-        return (rs, rowNum) -> {
-            ReservationTime reservationTime = new ReservationTime(
-                    rs.getLong("time_id"),
-                    rs.getTime("time_value").toLocalTime()
-            );
-            ReservationTheme reservationTheme = new ReservationTheme(
-                    rs.getLong("theme_id"),
-                    rs.getString("theme_name"),
-                    rs.getString("theme_description"),
-                    rs.getString("theme_thumbnail")
-            );
-            return new Reservation(
-                    rs.getLong("reservation_id"),
-                    rs.getString("name"),
-                    rs.getDate("date").toLocalDate(),
-                    reservationTime,
-                    reservationTheme);
-        };
     }
 
     private String wrapExistsQuery(String sql) {

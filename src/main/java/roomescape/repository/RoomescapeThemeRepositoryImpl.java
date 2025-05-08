@@ -19,12 +19,14 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
 
     private final NamedParameterJdbcTemplate template;
     private final SimpleJdbcInsert insert;
+    private final RowMapper<ReservationTheme> themeRowMapper;
 
     public RoomescapeThemeRepositoryImpl(final DataSource dataSource) {
         this.template = new NamedParameterJdbcTemplate(dataSource);
-        this.insert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation_theme")
+        this.insert = new SimpleJdbcInsert(dataSource).withTableName("reservation_theme")
                 .usingGeneratedKeyColumns("id");
+        this.themeRowMapper = (rs, rowNum) -> new ReservationTheme(rs.getLong("id"), rs.getString("name"),
+                rs.getString("description"), rs.getString("thumbnail"));
     }
 
     @Override
@@ -32,7 +34,7 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
         String sql = "select * from reservation_theme where id=:id";
         try {
             SqlParameterSource param = new MapSqlParameterSource("id", id);
-            ReservationTheme reservationTheme = template.queryForObject(sql, param, reservationThemeRowMapper());
+            ReservationTheme reservationTheme = template.queryForObject(sql, param, themeRowMapper);
             return Optional.of(reservationTheme);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -42,7 +44,7 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
     @Override
     public List<ReservationTheme> findAll() {
         String sql = "select * from reservation_theme";
-        return template.query(sql, reservationThemeRowMapper());
+        return template.query(sql, themeRowMapper);
     }
 
     @Override
@@ -57,13 +59,12 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
                 LIMIT 10;
                 """;
         SqlParameterSource param = new MapSqlParameterSource("days", -days);
-        return template.query(sql, param, reservationThemeRowMapper());
+        return template.query(sql, param, themeRowMapper);
     }
 
     @Override
     public ReservationTheme save(final ReservationTheme reservationTheme) {
-        SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("name", reservationTheme.getName())
+        SqlParameterSource param = new MapSqlParameterSource().addValue("name", reservationTheme.getName())
                 .addValue("description", reservationTheme.getDescription())
                 .addValue("thumbnail", reservationTheme.getThumbnail());
         Number key = insert.executeAndReturnKey(param);
@@ -75,17 +76,5 @@ public class RoomescapeThemeRepositoryImpl implements RoomescapeThemeRepository 
         String sql = "delete from reservation_theme where id=:id";
         SqlParameterSource param = new MapSqlParameterSource("id", id);
         return template.update(sql, param) == SUCCESS_COUNT;
-
-    }
-
-    private RowMapper<ReservationTheme> reservationThemeRowMapper() {
-        return (rs, rowNum) -> {
-            return new ReservationTheme(
-                    rs.getLong("id"),
-                    rs.getString("name"),
-                    rs.getString("description"),
-                    rs.getString("thumbnail")
-            );
-        };
     }
 }

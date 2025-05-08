@@ -19,12 +19,13 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
 
     private final NamedParameterJdbcTemplate template;
     private final SimpleJdbcInsert insert;
+    private final RowMapper<ReservationTime> timeRowMapper;
 
     public RoomescapeTimeRepositoryImpl(final DataSource dataSource) {
         this.template = new NamedParameterJdbcTemplate(dataSource);
-        this.insert = new SimpleJdbcInsert(dataSource)
-                .withTableName("reservation_time")
-                .usingGeneratedKeyColumns("id");
+        this.insert = new SimpleJdbcInsert(dataSource).withTableName("reservation_time").usingGeneratedKeyColumns("id");
+        this.timeRowMapper = (rs, rowNum) -> new ReservationTime(rs.getLong("id"),
+                rs.getTime("start_at").toLocalTime());
     }
 
     @Override
@@ -32,7 +33,7 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
         String sql = "select * from reservation_time where id=:id";
         try {
             SqlParameterSource param = new MapSqlParameterSource("id", id);
-            ReservationTime reservationTime = template.queryForObject(sql, param, reservationTimeRowMapper());
+            ReservationTime reservationTime = template.queryForObject(sql, param, timeRowMapper);
             return Optional.of(reservationTime);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -42,7 +43,7 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
     @Override
     public List<ReservationTime> findAll() {
         String sql = "select * from reservation_time";
-        return template.query(sql, reservationTimeRowMapper());
+        return template.query(sql, timeRowMapper);
     }
 
     @Override
@@ -57,14 +58,5 @@ public class RoomescapeTimeRepositoryImpl implements RoomescapeTimeRepository {
         String sql = "delete from reservation_time where id = :id";
         SqlParameterSource param = new MapSqlParameterSource("id", id);
         return template.update(sql, param) == SUCCESS_COUNT;
-    }
-
-    private RowMapper<ReservationTime> reservationTimeRowMapper() {
-        return (rs, rowNum) -> {
-            return new ReservationTime(
-                    rs.getLong("id"),
-                    rs.getTime("start_at").toLocalTime()
-            );
-        };
     }
 }
