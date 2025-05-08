@@ -2,42 +2,49 @@ const THEME_API_ENDPOINT = '/themes';
 
 document.addEventListener('DOMContentLoaded', () => {
   requestRead(THEME_API_ENDPOINT)
-      .then(renderTheme)
-      .catch(error => console.error('Error fetching times:', error));
+  .then(renderTheme)
+  .catch(error => console.error('Error fetching times:', error));
 
   flatpickr("#datepicker", {
     inline: true,
     onChange: function (selectedDates, dateStr, instance) {
-      if (dateStr === '') return;
+      if (dateStr === '') {
+        return;
+      }
       checkDate();
     }
   });
 
   document.getElementById('theme-slots').addEventListener('click', event => {
     if (event.target.classList.contains('theme-slot')) {
-      document.querySelectorAll('.theme-slot').forEach(slot => slot.classList.remove('active'));
+      document.querySelectorAll('.theme-slot').forEach(
+          slot => slot.classList.remove('active'));
       event.target.classList.add('active');
       checkDateAndTheme();
     }
   });
 
   document.getElementById('time-slots').addEventListener('click', event => {
-    if (event.target.classList.contains('time-slot') && !event.target.classList.contains('disabled')) {
-      document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('active'));
+    if (event.target.classList.contains('time-slot')
+        && !event.target.classList.contains('disabled')) {
+      document.querySelectorAll('.time-slot').forEach(
+          slot => slot.classList.remove('active'));
       event.target.classList.add('active');
       checkDateAndThemeAndTime();
     }
   });
 
-  document.getElementById('reserve-button').addEventListener('click', onReservationButtonClick);
+  document.getElementById('reserve-button').addEventListener('click',
+      onReservationButtonClick);
 });
 
 function renderTheme(themes) {
   const themeSlots = document.getElementById('theme-slots');
   themeSlots.innerHTML = '';
   themes.forEach(theme => {
-    const name = '';
-    const themeId = '';
+    console.log(theme)
+    const name = theme.name;
+    const themeId = theme.id;
     /*
     TODO: [3단계] 사용자 예약 - 테마 목록 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
@@ -49,7 +56,8 @@ function renderTheme(themes) {
 
 function createSlot(type, text, id, booked) {
   const div = document.createElement('div');
-  div.className = type + '-slot cursor-pointer bg-light border rounded p-3 mb-2';
+  div.className = type
+      + '-slot cursor-pointer bg-light border rounded p-3 mb-2';
   div.textContent = text;
   div.setAttribute('data-' + type + '-id', id);
   if (type === 'time') {
@@ -72,8 +80,8 @@ function checkDate() {
     timeSlots.innerHTML = '';
 
     requestRead(THEME_API_ENDPOINT)
-        .then(renderTheme)
-        .catch(error => console.error('Error fetching times:', error));
+    .then(renderTheme)
+    .catch(error => console.error('Error fetching times:', error));
   }
 }
 
@@ -91,13 +99,15 @@ function fetchAvailableTimes(date, themeId) {
   TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출
         요청 포맷에 맞게 설정
   */
-  fetch('/', { // 예약 가능 시간 조회 API endpoint
+  fetch(`/themes/${themeId}/times?date=${encodeURIComponent(date)}`, { // 예약 가능 시간 조회 API endpoint
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   }).then(response => {
-    if (response.status === 200) return response.json();
+    if (response.status === 200) {
+      return response.json();
+    }
     throw new Error('Read failed');
   }).then(renderAvailableTimes)
   .catch(error => console.error("Error fetching available times:", error));
@@ -120,9 +130,9 @@ function renderAvailableTimes(times) {
     TODO: [3단계] 사용자 예약 - 예약 가능 시간 조회 API 호출 후 렌더링
           response 명세에 맞춰 createSlot 함수 호출 시 값 설정
     */
-    const startAt = '';
-    const timeId = '';
-    const alreadyBooked = false;
+    const startAt = time.startAt;
+    const timeId = time.timeId;
+    const alreadyBooked = time.alreadyBooked;
 
     const div = createSlot('time', startAt, timeId, alreadyBooked); // createSlot('time', 시작 시간, time id, 예약 여부)
     timeSlots.appendChild(div);
@@ -151,8 +161,10 @@ function checkDateAndThemeAndTime() {
 
 function onReservationButtonClick() {
   const selectedDate = document.getElementById("datepicker").value;
-  const selectedThemeId = document.querySelector('.theme-slot.active')?.getAttribute('data-theme-id');
-  const selectedTimeId = document.querySelector('.time-slot.active')?.getAttribute('data-time-id');
+  const selectedThemeId = document.querySelector(
+      '.theme-slot.active')?.getAttribute('data-theme-id');
+  const selectedTimeId = document.querySelector(
+      '.time-slot.active')?.getAttribute('data-time-id');
   const name = document.getElementById('user-name').value;
 
   if (selectedDate && selectedThemeId && selectedTimeId) {
@@ -176,18 +188,20 @@ function onReservationButtonClick() {
       },
       body: JSON.stringify(reservationData)
     })
-        .then(response => {
-          if (!response.ok) throw new Error('Reservation failed');
-          return response.json();
-        })
-        .then(data => {
-          alert("Reservation successful!");
-          location.reload();
-        })
-        .catch(error => {
-          alert("An error occurred while making the reservation.");
-          console.error(error);
-        });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Reservation failed');
+      }
+      return response.json();
+    })
+    .then(data => {
+      alert("Reservation successful!");
+      location.reload();
+    })
+    .catch(error => {
+      alert("An error occurred while making the reservation.");
+      console.error(error);
+    });
   } else {
     alert("Please select a date, theme, and time before making a reservation.");
   }
@@ -195,8 +209,10 @@ function onReservationButtonClick() {
 
 function requestRead(endpoint) {
   return fetch(endpoint)
-      .then(response => {
-        if (response.status === 200) return response.json();
-        throw new Error('Read failed');
-      });
+  .then(response => {
+    if (response.status === 200) {
+      return response.json();
+    }
+    throw new Error('Read failed');
+  });
 }
