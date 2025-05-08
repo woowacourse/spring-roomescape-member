@@ -35,7 +35,7 @@ public class LoginController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check")
