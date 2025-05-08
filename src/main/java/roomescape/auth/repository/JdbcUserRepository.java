@@ -27,12 +27,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByEmailAndPassword(String email, String password) {
-        String query = """
-                SELECT
-                    id, name, email, password
-                FROM member
-                WHERE email = :email AND password = :password
-                """;
+        String query = "SELECT * FROM member WHERE email = :email AND password = :password";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("email", email)
                 .addValue("password", password);
