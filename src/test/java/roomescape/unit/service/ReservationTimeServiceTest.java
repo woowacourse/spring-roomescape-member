@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,8 @@ import roomescape.domain.Member;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
+import roomescape.domain.repository.ReservationRepository;
+import roomescape.domain.repository.ReservationTimeRepository;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
@@ -24,37 +27,35 @@ import roomescape.unit.fake.FakeReservationTimeRepository;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest {
 
-    private FakeReservationTimeRepository fakeReservationTimeDao;
-    private FakeReservationRepository fakeReservationDao;
+    private ReservationTimeRepository reservationTimeRepository;
+    private ReservationRepository reservationRepository;
     private ReservationTimeService reservationTimeService;
 
-    private final ReservationTime fakeReservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
-    private final ReservationTime fakeReservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
     private final Theme theme = new Theme(1L, "themeName1", "des", "th");
-    private final Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
-    private final Member member2 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
-    private final Reservation fakeReservation1 = Reservation.of(1L, member1, LocalDate.of(2025, 7, 25),
-            fakeReservationTime1, theme);
-    private final Reservation fakeReservation2 = Reservation.of(2L, member2, LocalDate.of(2025, 12, 25),
-            fakeReservationTime1, theme);
-
 
     @BeforeEach
     void setUp() {
-        fakeReservationTimeDao = new FakeReservationTimeRepository(fakeReservationTime1, fakeReservationTime2);
-        fakeReservationDao = new FakeReservationRepository(fakeReservation1, fakeReservation2);
-        reservationTimeService = new ReservationTimeService(fakeReservationTimeDao, fakeReservationDao);
+        reservationTimeRepository = new FakeReservationTimeRepository();
+        reservationRepository = new FakeReservationRepository();
+        reservationTimeService = new ReservationTimeService(reservationTimeRepository, reservationRepository);
     }
 
     @Test
     void 예약_시간을_조회할_수_있다() {
-        // given & when
-        List<ReservationTimeResponse> all = reservationTimeService.findAll();
+        // given
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
+        reservationTimeRepository.create(reservationTime1);
+        reservationTimeRepository.create(reservationTime2);
+        // when
+        List<ReservationTimeResponse> allTimes = reservationTimeService.findAll();
 
         // then
-        assertThat(all.size()).isEqualTo(2);
-        assertThat(all.get(0).startAt()).isEqualTo(LocalTime.of(10, 0));
-        assertThat(all.get(1).startAt()).isEqualTo(LocalTime.of(11, 0));
+        SoftAssertions soft = new SoftAssertions();
+        soft.assertThat(allTimes.size()).isEqualTo(2);
+        soft.assertThat(allTimes.get(0).startAt()).isEqualTo(LocalTime.of(10, 0));
+        soft.assertThat(allTimes.get(1).startAt()).isEqualTo(LocalTime.of(11, 0));
+        soft.assertAll();
     }
 
     @Test
@@ -65,13 +66,18 @@ class ReservationTimeServiceTest {
         List<ReservationTimeResponse> all = reservationTimeService.findAll();
 
         // then
-        assertThat(all.size()).isEqualTo(3);
+        assertThat(all.size()).isEqualTo(1);
         assertThat(all.getLast().startAt()).isEqualTo(LocalTime.of(2, 0));
     }
 
     @Test
     void 예약_시간을_삭제할_수_있다() {
-        // given & when
+        // given
+        ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
+        ReservationTime reservationTime2 = new ReservationTime(2L, LocalTime.of(11, 0));
+        reservationTimeRepository.create(reservationTime1);
+        reservationTimeRepository.create(reservationTime2);
+        // when
         reservationTimeService.delete(2L);
         List<ReservationTimeResponse> all = reservationTimeService.findAll();
 
@@ -82,7 +88,19 @@ class ReservationTimeServiceTest {
 
     @Test
     void 특정_시간에_대한_예약이_존재하면_예약시간을_삭제할_수_없다() {
+        // given
+        ReservationTime reservationTime1 = ReservationTime.createWithoutId(LocalTime.of(10, 0));
+        ReservationTime savedReservationTime1 = reservationTimeRepository.create(reservationTime1);
+        Member member1 = new Member(1L, "name1", "email1@domain.com", "password1", Role.MEMBER);
+        Reservation reservation1 = Reservation.createWithoutId(
+                member1, LocalDate.of(2025, 7, 25), savedReservationTime1, theme
+        );
+        reservationRepository.create(reservation1);
+
         // when & then
+        for (ReservationTime reservationTime : reservationTimeRepository.findAll()) {
+            System.out.println(reservationTime.getId());
+        }
         assertThatThrownBy(() -> reservationTimeService.delete(1L))
                 .isInstanceOf(ExistedReservationException.class);
     }

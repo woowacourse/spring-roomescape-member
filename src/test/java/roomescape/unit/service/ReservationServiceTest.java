@@ -49,7 +49,6 @@ class ReservationServiceTest {
     @Test
     void 예약을_조회할_수_있다() {
         // given
-        // given
         ReservationTime reservationTime1 = new ReservationTime(1L, LocalTime.of(10, 0));
         reservationTimeRepository.create(reservationTime1);
         Theme theme1 = new Theme(1L, "themeName1", "des", "th");
