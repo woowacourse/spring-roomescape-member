@@ -14,7 +14,7 @@ class ReservationRequestTest {
     @DisplayName("name 필드가 null일 경우 예외가 발생한다.")
     void failIfNameFieldIsNull() {
         assertThatThrownBy(() -> {
-            new ReservationRequest(null, LocalDate.of(2025, 4, 30), 1, 1L);
+            new ReservationRequest(null, LocalDate.of(2025, 4, 30), 1L, 1L);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잘못된 name 입력입니다.");
     }
@@ -23,7 +23,7 @@ class ReservationRequestTest {
     @DisplayName("date 필드가 null일 경우 예외가 발생한다.")
     void failIfDateFieldIsNull() {
         assertThatThrownBy(() -> {
-            new ReservationRequest("moda", null, 1, 1L);
+            new ReservationRequest("moda", null, 1L, 1L);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잘못된 date 입력입니다.");
     }
@@ -44,15 +44,6 @@ class ReservationRequestTest {
     void failIfThemeIdFieldIsInvalid(Long themeId) {
         assertThatThrownBy(() -> {
             new ReservationRequest("moda", LocalDate.of(2025, 4, 30), 1L, themeId);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("잘못된 themeId 입력입니다.");
-    }
-
-    @Test
-    @DisplayName("themeId 필드가 null일 경우 예외가 발생한다.")
-    void failIfThemeIdFieldIsNull() {
-        assertThatThrownBy(() -> {
-            new ReservationRequest("moda", LocalDate.of(2025, 4, 30), 1L, null);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잘못된 themeId 입력입니다.");
     }

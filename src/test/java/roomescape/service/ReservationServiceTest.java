@@ -8,13 +8,15 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import roomescape.dao.MemberDao;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
 import roomescape.dao.ThemeDao;
-import roomescape.entity.ReservationTime;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.entity.ReservationTime;
+import roomescape.service.fake_dao.FakeMemberDao;
 import roomescape.service.fake_dao.FakeReservationDao;
 import roomescape.service.fake_dao.FakeReservationTimeDao;
 import roomescape.service.fake_dao.FakeThemeDao;
@@ -22,9 +24,11 @@ import roomescape.service.fake_dao.FakeThemeDao;
 class ReservationServiceTest {
 
     private final ReservationDao reservationDao = new FakeReservationDao();
+    private final MemberDao memberDao = new FakeMemberDao();
     private final ReservationTimeDao timeDao = new FakeReservationTimeDao();
     private final ThemeDao themeDao = new FakeThemeDao();
-    private final ReservationService reservationService = new ReservationService(reservationDao, timeDao, themeDao);
+    private final ReservationService reservationService = new ReservationService(reservationDao, memberDao, timeDao,
+            themeDao);
 
     @Test
     @Disabled

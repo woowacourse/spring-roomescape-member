@@ -20,6 +20,7 @@ class ReservationTest {
                 1L,
                 TEST_NAME,
                 now.toLocalDate().minusDays(1),
+                new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime()),
                 new Theme("moda", "description", "thumbnail")
         );
@@ -39,6 +40,7 @@ class ReservationTest {
                 1L,
                 TEST_NAME,
                 now.toLocalDate(),
+                new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime().minusMinutes(1)),
                 new Theme("moda", "description", "thumbnail")
         );
@@ -58,6 +60,7 @@ class ReservationTest {
                 1L,
                 TEST_NAME,
                 now.toLocalDate(),
+                new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime()),
                 new Theme("moda", "description", "thumbnail")
         );
@@ -75,6 +78,7 @@ class ReservationTest {
                 1L,
                 TEST_NAME,
                 now.toLocalDate().plusDays(1),
+                new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime()),
                 new Theme("moda", "description", "thumbnail")
         );

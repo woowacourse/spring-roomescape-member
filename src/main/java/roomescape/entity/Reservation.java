@@ -7,24 +7,26 @@ public class Reservation {
     private final Long id;
     private final String name;
     private final LocalDate date;
+    private final Member member;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, ReservationTime time, Theme theme) {
+    public Reservation(Long id, String name, LocalDate date, Member member, ReservationTime time, Theme theme) {
         validateMaxLength(name);
         this.id = id;
         this.name = Objects.requireNonNull(name);
         this.date = Objects.requireNonNull(date);
+        this.member = member;
         this.time = Objects.requireNonNull(time);
         this.theme = Objects.requireNonNull(theme);
     }
 
-    public Reservation(String name, LocalDate date, ReservationTime time, Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(String name, LocalDate date, Member member, ReservationTime time, Theme theme) {
+        this(null, name, date, member, time, theme);
     }
 
     public Reservation copyWithId(Long id) {
-        return new Reservation(id, name, date, time, theme);
+        return new Reservation(id, name, date, member, time, theme);
     }
 
     public void validatePastDateTime() {
@@ -45,6 +47,10 @@ public class Reservation {
             throw new NullPointerException("id값이 존재하지 않습니다.");
         }
         return id;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public String getName() {
