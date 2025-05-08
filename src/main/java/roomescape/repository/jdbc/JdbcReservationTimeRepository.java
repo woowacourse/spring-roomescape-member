@@ -17,17 +17,19 @@ import roomescape.repository.ReservationTimeRepository;
 @Repository
 public class JdbcReservationTimeRepository implements ReservationTimeRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private static final String DEFAULT_SELECT_SQL = "select id, start_at from reservation_time";
 
     private final RowMapper<ReservationTime> reservationRowMapper = (resultSet, rowNumber) -> {
         long id = resultSet.getLong("id");
         LocalTime time = LocalTime.parse(resultSet.getTime("start_at").toString());
         return new ReservationTime(id, time);
     };
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcReservationTimeRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public ReservationTime add(ReservationTime reservationTime) {
@@ -47,13 +49,12 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
 
     @Override
     public List<ReservationTime> findAll() {
-        String sql = "select id, start_at from reservation_time";
-        return jdbcTemplate.query(sql, reservationRowMapper);
+        return jdbcTemplate.query(DEFAULT_SELECT_SQL, reservationRowMapper);
     }
 
     @Override
     public Optional<ReservationTime> findById(Long id) {
-        String sql = "select id, start_at from reservation_time where id = ?";
+    String sql = DEFAULT_SELECT_SQL + " where id = ?";
         try {
             ReservationTime reservationTime = jdbcTemplate.queryForObject(sql, reservationRowMapper, id);
             return Optional.of(reservationTime);

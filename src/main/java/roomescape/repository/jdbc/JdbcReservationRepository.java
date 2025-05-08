@@ -22,13 +22,31 @@ import roomescape.repository.ReservationRepository;
 @Repository
 public class JdbcReservationRepository implements ReservationRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final String DEFUALT_SELECT_SQL = """
+                select
+                    r.id as reservation_id,
+                    m.id as member_id,
+                    m.name,
+                    m.email,
+                    m.password,
+                    m.role,
+                    r.`date`,
+                    rt.id as time_id,
+                    rt.start_at as time_value,
+                    t.id as theme_id,
+                    t.name as theme_name,
+                    t.description as theme_description,
+                    t.thumbnail as theme_thumbnail
+                from reservation as r
+                inner join reservation_time as rt
+                on r.time_id = rt.id
+                inner join theme as t
+                on r.theme_id = t.id
+                inner join member as m
+                on r.member_id = m.id
+                """;
 
-    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> {
+    private static final RowMapper<Reservation> reservationRowMapper = (resultSet, rowNumber) -> {
         long reservationId = resultSet.getLong("reservation_id");
 
         Member member = new Member(
@@ -54,29 +72,11 @@ public class JdbcReservationRepository implements ReservationRepository {
         return new Reservation(reservationId, member, date, reservationTime, theme);
     };
 
-    private static final String DEFUALT_SELECT_SQL = """
-                select
-                    r.id as reservation_id,
-                    m.id as member_id,
-                    m.name,
-                    m.email,
-                    m.password,
-                    m.role,
-                    r.`date`,
-                    rt.id as time_id,
-                    rt.start_at as time_value,
-                    t.id as theme_id,
-                    t.name as theme_name,
-                    t.description as theme_description,
-                    t.thumbnail as theme_thumbnail
-                from reservation as r
-                inner join reservation_time as rt
-                on r.time_id = rt.id
-                inner join theme as t
-                on r.theme_id = t.id
-                inner join member as m
-                on r.member_id = m.id
-                """;
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcReservationRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Reservation add(Reservation reservation) {
@@ -110,7 +110,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Optional<Reservation> findById(long id) {
-        String sql = DEFUALT_SELECT_SQL + "where r.id = ?";
+        String sql = DEFUALT_SELECT_SQL + " where r.id = ?";
         try {
             return Optional.of(jdbcTemplate.queryForObject(sql, reservationRowMapper, id));
         } catch (EmptyResultDataAccessException e) {
@@ -120,13 +120,13 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAllByDateAndThemeId(LocalDate date, Long themeId) {
-        String sql = DEFUALT_SELECT_SQL + "where `date` = ? and theme_id = ?";
+        String sql = DEFUALT_SELECT_SQL + " where `date` = ? and theme_id = ?";
         return jdbcTemplate.query(sql, reservationRowMapper, date, themeId);
     }
 
     @Override
     public List<Reservation> findAllByDateInRange(LocalDate start, LocalDate end) {
-        String sql = DEFUALT_SELECT_SQL + "where r.`date` between ? and ?";
+        String sql = DEFUALT_SELECT_SQL + " where r.`date` between ? and ?";
         return jdbcTemplate.query(sql, reservationRowMapper, start, end);
     }
 

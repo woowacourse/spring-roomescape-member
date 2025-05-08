@@ -16,19 +16,22 @@ import roomescape.repository.MemberRepository;
 @Repository
 public class JdbcMemberRepository implements MemberRepository {
 
-    private final JdbcTemplate jdbcTemplate;
+    private static final String DEFAULT_SELECT_SQL = "select id, name, email, password, role from member";
 
-    public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
+    private static final RowMapper<Member> memberRowMapper = (resultSet, rowNum) -> new Member(
             resultSet.getLong("id"),
             resultSet.getString("name"),
             resultSet.getString("email"),
             resultSet.getString("password"),
             Role.valueOf(resultSet.getString("role"))
     );
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcMemberRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
 
     @Override
     public Member add(Member member) {
@@ -57,14 +60,12 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public List<Member> findAll() {
-        String sql = "select id, name, email, password, role from member";
-
-        return jdbcTemplate.query(sql, memberRowMapper);
+        return jdbcTemplate.query(DEFAULT_SELECT_SQL, memberRowMapper);
     }
 
     @Override
     public Optional<Member> findById(long id) {
-        String sql = "select id, name, email, password, role from member where id = ?";
+        String sql = DEFAULT_SELECT_SQL + " where id = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, id);
             return Optional.of(member);
@@ -75,7 +76,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByEmailAndPassword(String email, String password) {
-        String sql = "select id, name, email, password, role from member where email = ? and password = ?";
+        String sql = DEFAULT_SELECT_SQL + " where email = ? and password = ?";
         try {
             Member member = jdbcTemplate.queryForObject(sql, memberRowMapper, email, password);
             return Optional.of(member);
