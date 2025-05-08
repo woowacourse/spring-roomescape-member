@@ -30,6 +30,6 @@ public class JwtTokenProvider implements TokenProvider {
     }
     @Override
     public String getPayload(String token) {
-        return "";
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 }
