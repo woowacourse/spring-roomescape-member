@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.auth.domain.RequiresRole;
+import roomescape.member.domain.Member;
+import roomescape.member.domain.UserRole;
 import roomescape.reservation.application.ReservationService;
 import roomescape.reservation.ui.dto.AvailableReservationTimeRequest;
 import roomescape.reservation.ui.dto.AvailableReservationTimeResponse;
@@ -27,16 +30,19 @@ public class ReservationRestController {
     private final ReservationService reservationService;
 
     @PostMapping
+    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER})
     public ResponseEntity<CreateReservationResponse> create(
-            @RequestBody final CreateReservationRequest request
+            @RequestBody final CreateReservationRequest request,
+            final Member member
     ) {
-        CreateReservationResponse response = reservationService.create(request);
+        final CreateReservationResponse response = reservationService.create(request, member);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
     @DeleteMapping("/{id}")
+    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER})
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
         reservationService.delete(id);
 
@@ -44,6 +50,7 @@ public class ReservationRestController {
     }
 
     @GetMapping
+    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
     public ResponseEntity<List<ReservationResponse>> findAll() {
         final List<ReservationResponse> reservationResponses = reservationService.findAll();
 
@@ -51,6 +58,7 @@ public class ReservationRestController {
     }
 
     @GetMapping("/available-times")
+    @RequiresRole(userRoles = {UserRole.ADMIN, UserRole.MEMBER, UserRole.GUEST})
     public ResponseEntity<List<AvailableReservationTimeResponse>> findAvailableReservationTimes(
             @ModelAttribute final AvailableReservationTimeRequest request) {
         final List<AvailableReservationTimeResponse> availableReservationTimes
