@@ -2,6 +2,7 @@ package roomescape.util;
 
 import static roomescape.util.TokenUtil.SECRET_KEY;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -16,13 +17,13 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
-    public static String getSubjectFromCookie(Cookie[] cookies) {
+    public static Claims getSubjectFromCookie(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody().getSubject();
+                .getBody();
     }
 
     private static String extractTokenFromCookie(Cookie[] cookies) {

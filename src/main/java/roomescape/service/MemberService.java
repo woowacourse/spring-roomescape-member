@@ -28,6 +28,6 @@ public class MemberService {
 
     public LoginCheckResponse checkMember(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        return new LoginCheckResponse(getSubjectFromCookie(cookies));
+        return new LoginCheckResponse(getSubjectFromCookie(cookies).get("name", String.class));
     }
 }
