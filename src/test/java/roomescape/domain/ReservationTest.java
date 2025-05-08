@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import roomescape.exception.reservation.ReservationFieldRequiredException;
-import roomescape.exception.reservation.ReservationInPastException;
 
 class ReservationTest {
 
@@ -65,19 +64,5 @@ class ReservationTest {
         // when & then
         assertThatThrownBy(() -> new Reservation(name, date, time, theme)).isInstanceOf(
                 ReservationFieldRequiredException.class);
-    }
-
-    @DisplayName("예약은 이미 지난 시간으로 할 수 없다")
-    @Test
-    void reservationInPastTest() {
-        // given
-        String name = "슬링키";
-        LocalDate date = LocalDate.now();
-        ReservationTime time = new ReservationTime(LocalTime.now().minusMinutes(1));
-        Theme theme = null;
-
-        // when & then
-        assertThatThrownBy(() -> new Reservation(name, date, time, theme))
-                .isInstanceOf(ReservationInPastException.class);
     }
 }

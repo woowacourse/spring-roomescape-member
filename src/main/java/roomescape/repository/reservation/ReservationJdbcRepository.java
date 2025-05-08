@@ -10,9 +10,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.domain.Reservation;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.entity.ReservationEntity;
-import roomescape.entity.ReservationTimeEntity;
-import roomescape.entity.ThemeEntity;
 
 @Repository
 public class ReservationJdbcRepository implements ReservationRepository {

@@ -7,7 +7,6 @@ import roomescape.domain.Theme;
 import roomescape.dto.theme.PopularThemeResponse;
 import roomescape.dto.theme.ThemeRequest;
 import roomescape.dto.theme.ThemeResponse;
-import roomescape.entity.ThemeEntity;
 import roomescape.exception.theme.ThemeNotFoundException;
 import roomescape.repository.reservation.ReservationRepository;
 import roomescape.repository.theme.ThemeRepository;

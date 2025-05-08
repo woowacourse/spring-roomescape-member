@@ -1,7 +1,6 @@
 package roomescape.dto.login;
 
 import roomescape.domain.Member;
-import roomescape.entity.MemberEntity;
 
 public record TokenRequest(String password, String email) {
 

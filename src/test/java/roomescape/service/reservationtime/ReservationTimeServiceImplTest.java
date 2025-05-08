@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import roomescape.domain.ReservationTime;
 import roomescape.dto.reservationtime.AvailableTimeResponse;
 import roomescape.dto.reservationtime.ReservationTimeRequest;
-import roomescape.entity.ReservationTimeEntity;
 import roomescape.exception.reservationtime.ReservationTimeAlreadyExistsException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.reservationtime.UsingReservationTimeException;
@@ -79,13 +78,11 @@ class ReservationTimeServiceImplTest {
         // given
         LocalDate date = LocalDate.now();
         Long themeId = 1L;
-        ReservationTime reservationTime1 = new ReservationTime(LocalTime.now());
-        ReservationTime reservationTime2 = new ReservationTime(LocalTime.now());
 
         // when
         when(reservationRepository.findTimeIdsByDateAndTheme(date, themeId)).thenReturn(List.of(1L));
-        when(timeRepository.findAll()).thenReturn(List.of(ReservationTimeEntity.of(1L, reservationTime1),
-                ReservationTimeEntity.of(2L, reservationTime2)));
+        when(timeRepository.findAll()).thenReturn(List.of(new ReservationTime(1L, LocalTime.now()),
+                new ReservationTime(2L, LocalTime.now())));
         List<AvailableTimeResponse> actual = reservationTimeService.getAvailableTimes(date, themeId);
 
         // then

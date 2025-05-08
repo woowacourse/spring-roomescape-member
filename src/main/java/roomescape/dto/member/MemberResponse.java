@@ -1,7 +1,6 @@
 package roomescape.dto.member;
 
 import roomescape.domain.Member;
-import roomescape.entity.MemberEntity;
 
 public record MemberResponse(String name) {
 

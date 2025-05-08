@@ -1,5 +1,6 @@
 package roomescape.service.reservation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Reservation;
@@ -7,9 +8,8 @@ import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
 import roomescape.dto.reservation.ReservationRequest;
 import roomescape.dto.reservation.ReservationResponse;
-import roomescape.entity.ReservationTimeEntity;
-import roomescape.entity.ThemeEntity;
 import roomescape.exception.reservation.ReservationAlreadyExistsException;
+import roomescape.exception.reservation.ReservationInPastException;
 import roomescape.exception.reservation.ReservationNotFoundException;
 import roomescape.exception.reservationtime.ReservationTimeNotFoundException;
 import roomescape.exception.theme.ThemeNotFoundException;
@@ -37,12 +37,16 @@ public class ReservationServiceImpl implements ReservationService {
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new ThemeNotFoundException(request.themeId()));
 
-        Reservation newReservation = new Reservation(request.name(), request.date(),
-                reservationTime, theme);
+        if (LocalDateTime.now().isAfter(LocalDateTime.of(request.date(), reservationTime.getStartAt()))) {
+            throw new ReservationInPastException();
+        }
 
         if (reservationRepository.existsByDateAndTime(request.date(), reservationTime.getId())) {
             throw new ReservationAlreadyExistsException();
         }
+
+        Reservation newReservation = new Reservation(request.name(), request.date(),
+                reservationTime, theme);
 
         return ReservationResponse.from(reservationRepository.add(newReservation));
     }
