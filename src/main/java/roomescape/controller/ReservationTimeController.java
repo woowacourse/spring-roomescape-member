@@ -39,7 +39,7 @@ public class ReservationTimeController {
 
     @GetMapping
     public ResponseEntity<List<ReservationTimeResponse>> getReservationTimes() {
-        List<ReservationTime> reservationTimes = reservationTimeService.allReservationTimes();
+        List<ReservationTime> reservationTimes = reservationTimeService.findAll();
         List<ReservationTimeResponse> responses = reservationTimes.stream()
                 .map(ReservationTimeResponse::from)
                 .toList();
@@ -59,7 +59,7 @@ public class ReservationTimeController {
     public ResponseEntity<List<ReservationTimeSlotResponse>> getAvailableReservationTimes(
             @ModelAttribute @Valid AvailableTimeRequest request
     ) {
-        ReservationSlots reservationSlotTimes = reservationService.getReservationSlots(request);
+        ReservationSlots reservationSlotTimes = reservationTimeService.getReservationSlots(request);
         List<ReservationSlot> reservationSlots = reservationSlotTimes.getReservationSlots();
         List<ReservationTimeSlotResponse> responses = reservationSlots.stream()
                 .map(ReservationTimeSlotResponse::from)

@@ -2,7 +2,10 @@ package roomescape.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import roomescape.domain.Reservation;
+import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.dto.request.CreateReservationTimeRequest;
 import roomescape.exception.InvalidReservationTimeException;
 import roomescape.repository.ReservationRepository;
@@ -28,7 +31,7 @@ public class ReservationTimeService {
         return reservationTimeRepository.add(reservationTime);
     }
 
-    public List<ReservationTime> allReservationTimes() {
+    public List<ReservationTime> findAll() {
         return reservationTimeRepository.findAll();
     }
 
@@ -42,5 +45,15 @@ public class ReservationTimeService {
             throw new InvalidReservationTimeException("예약이 되어있는 시간은 삭제할 수 없습니다.");
         }
         reservationTimeRepository.deleteById(id);
+    }
+
+
+    public ReservationSlots getReservationSlots(AvailableTimeRequest request) {
+        List<ReservationTime> times = reservationTimeRepository.findAll();
+
+        List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
+                request.date(), request.themeId());
+
+        return new ReservationSlots(times, alreadyReservedReservations);
     }
 }

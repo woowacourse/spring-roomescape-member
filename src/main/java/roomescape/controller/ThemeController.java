@@ -50,7 +50,7 @@ public class ThemeController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ThemeResponse>> popularThemes() {
-        List<Theme> rankingThemes = reservationService.getRankingThemes(LocalDate.now());
+        List<Theme> rankingThemes = themeService.getRankingThemes(LocalDate.now());
         List<ThemeResponse> responses = rankingThemes.stream()
                 .map(ThemeResponse::from)
                 .toList();

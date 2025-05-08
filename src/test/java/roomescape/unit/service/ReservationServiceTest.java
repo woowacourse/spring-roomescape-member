@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -15,12 +14,10 @@ import org.junit.jupiter.api.Test;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationSlot;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Role;
 import roomescape.domain.Theme;
 import roomescape.dto.request.CreateReservationRequest;
-import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.exception.InvalidReservationException;
 import roomescape.repository.MemberRepository;
 import roomescape.repository.ReservationRepository;
@@ -73,7 +70,7 @@ class ReservationServiceTest {
         reservationService.addReservation(request, loginMember);
 
         //then
-        assertThat(reservationService.allReservations()).hasSize(1);
+        assertThat(reservationService.findAll()).hasSize(1);
     }
 
     @Test
@@ -178,9 +175,9 @@ class ReservationServiceTest {
 
         // when
         Reservation reservation = reservationService.addReservation(request, loginMember);
-        int beforeAddSize = reservationService.allReservations().size();
+        int beforeAddSize = reservationService.findAll().size();
         reservationService.deleteReservation(reservation.getId());
-        int afterDeleteSize = reservationService.allReservations().size();
+        int afterDeleteSize = reservationService.findAll().size();
 
         //then
         assertThat(beforeAddSize).isEqualTo(1);
@@ -207,90 +204,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.addReservation(
                 new CreateReservationRequest(LocalDate.now(), reservationTimeId, themeId), loginMember))
                 .isInstanceOf(InvalidReservationException.class);
-    }
-
-    @Test
-    void 선택된_테마와_날짜에_대해서_가능한_시간들을_확인할_수_있다2() {
-        // given
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
-        LocalDate today = LocalDate.now();
-        LocalTime firstTime = LocalTime.now().plusHours(1L);
-        LocalTime secondTime = LocalTime.now().plusHours(2L);
-
-        ReservationTime reservationTime1 = new ReservationTime( firstTime);
-        ReservationTime firstReservationTime = reservationTimeRepository.add(reservationTime1);
-        ReservationTime reservationTime2 = new ReservationTime( secondTime);
-        ReservationTime secondReservationTime = reservationTimeRepository.add(reservationTime2);
-
-        Theme theme = new Theme( "테마", "설명", "image.png");
-        long themeId = themeRepository.add(theme).getId();
-
-        reservationService.addReservation(
-                new CreateReservationRequest(today, firstReservationTime.getId(), themeId), loginMember);
-
-        // when
-        AvailableTimeRequest availableTimeRequest = new AvailableTimeRequest(today, themeId);
-        List<ReservationSlot> reservationSlots = reservationService.getReservationSlots(
-                        availableTimeRequest)
-                .getReservationSlots();
-
-        //then
-        List<ReservationSlot> expected = List.of(new ReservationSlot(1L, firstTime, true),
-                new ReservationSlot(2L, secondTime, false));
-
-        assertThat(reservationSlots).containsExactlyInAnyOrderElementsOf(expected);
-    }
-
-    @Test
-    void 최근_일주일을_기준으로_예약이_많은_테마_10개를_확인할_수_있다() {
-        // given
-        final int THEME_COUNT = 10;
-        final int TIME_SLOTS = 6;
-
-        for (int i = 0; i < THEME_COUNT; i++) {
-            Theme theme = new Theme( "테마" + (i + 1), "테마", "thumbnail");
-            themeRepository.add(theme);
-        }
-
-        for (int i = 0; i < TIME_SLOTS; i++) {
-            LocalTime localTime = LocalTime.of(10 + i, 0);
-            reservationTimeRepository.add(new ReservationTime( localTime));
-        }
-
-        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
-        Member member = memberRepository.add(beforeAddMember);
-        LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
-
-        // 테마 1 예약 3개
-        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 1L),
-                loginMember);
-        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 2L, 1L),
-                loginMember);
-        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 3L, 1L),
-                loginMember);
-
-        // 테마 2 예약 2개
-        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 2L),
-                loginMember);
-        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 2L, 2L),
-                loginMember);
-
-        // 테마 3 예약 1개
-        reservationService.addReservation(new CreateReservationRequest(LocalDate.now().plusDays(1), 1L, 3L),
-                loginMember);
-
-        // when
-        List<Theme> themeRanking = reservationService.getRankingThemes(LocalDate.now().plusDays(6));
-
-        // then
-        assertAll(() -> {
-            assertThat(themeRanking.getFirst().getId()).isEqualTo(1L);
-            assertThat(themeRanking.get(1).getId()).isEqualTo(2L);
-            assertThat(themeRanking.get(2).getId()).isEqualTo(3L);
-        });
     }
 
     @Test

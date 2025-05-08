@@ -2,19 +2,15 @@ package roomescape.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.LoginMember;
 import roomescape.domain.Member;
 import roomescape.domain.Reservation;
-import roomescape.domain.ReservationSlots;
 import roomescape.domain.ReservationTime;
 import roomescape.domain.Theme;
-import roomescape.domain.ThemeRanking;
 import roomescape.dto.request.CreateReservationRequest;
 import roomescape.dto.request.AdminCreateReservationRequest;
-import roomescape.dto.request.AvailableTimeRequest;
 import roomescape.exception.InvalidMemberException;
 import roomescape.exception.InvalidReservationException;
 import roomescape.exception.InvalidReservationTimeException;
@@ -26,9 +22,6 @@ import roomescape.repository.ThemeRepository;
 
 @Service
 public class ReservationService {
-
-    private static final int THEME_RANKING_END_RANGE = 7;
-    private static final int THEME_RANKING_START_RANGE = 1;
 
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
@@ -80,7 +73,7 @@ public class ReservationService {
         }
     }
 
-    public List<Reservation> allReservations() {
+    public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }
 
@@ -95,24 +88,6 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
-    }
-
-    public ReservationSlots getReservationSlots(AvailableTimeRequest request) {
-        List<ReservationTime> times = reservationTimeRepository.findAll();
-
-        List<Reservation> alreadyReservedReservations = reservationRepository.findAllByDateAndThemeId(
-                request.date(), request.themeId());
-
-        return new ReservationSlots(times, alreadyReservedReservations);
-    }
-
-    public List<Theme> getRankingThemes(LocalDate originDate) {
-        LocalDate end = originDate.minusDays(THEME_RANKING_START_RANGE);
-        LocalDate start = end.minusDays(THEME_RANKING_END_RANGE);
-        List<Reservation> inRangeReservations = reservationRepository.findAllByDateInRange(start, end);
-
-        ThemeRanking themeRanking = new ThemeRanking(inRangeReservations);
-        return themeRanking.getAscendingRanking();
     }
 
     private Theme getThemeById(long themeId) {
