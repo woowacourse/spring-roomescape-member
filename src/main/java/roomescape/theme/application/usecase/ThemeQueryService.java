@@ -7,7 +7,7 @@ import roomescape.theme.domain.ThemeName;
 
 import java.util.List;
 
-public interface ThemeQueryUseCase {
+public interface ThemeQueryService {
 
     boolean existsById(ThemeId id);
 

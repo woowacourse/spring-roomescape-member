@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.DuplicateException;
 import roomescape.theme.application.dto.CreateThemeServiceRequest;
-import roomescape.theme.application.usecase.ThemeCommandUseCaseImpl;
+import roomescape.theme.application.usecase.ThemeCommandServiceImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeId;
@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
-class ThemeCommandUseCaseImplTest {
+class ThemeCommandServiceImplTest {
 
     @Autowired
-    private ThemeCommandUseCaseImpl themeCommandUseCase;
+    private ThemeCommandServiceImpl themeCommandService;
 
     @Autowired
     private ThemeRepository themeRepository;
@@ -42,7 +42,7 @@ class ThemeCommandUseCaseImplTest {
                 ThemeThumbnail.from(url));
 
         // when
-        final Theme theme = themeCommandUseCase.create(request);
+        final Theme theme = themeCommandService.create(request);
 
         // then
         final Theme foundTheme = themeRepository.findById(theme.getId())
@@ -67,7 +67,7 @@ class ThemeCommandUseCaseImplTest {
                 ThemeDescription.from("des"),
                 ThemeThumbnail.from("uri"));
 
-        final Theme theme = themeCommandUseCase.create(request1);
+        final Theme theme = themeCommandService.create(request1);
 
         final CreateThemeServiceRequest request2 = new CreateThemeServiceRequest(
                 ThemeName.from(name),
@@ -76,7 +76,7 @@ class ThemeCommandUseCaseImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> themeCommandUseCase.create(request2))
+        assertThatThrownBy(() -> themeCommandService.create(request2))
                 .isInstanceOf(DuplicateException.class)
                 .hasMessage("THEME already exists. params={ThemeName=ThemeName(value=이름이같다)}");
     }
@@ -95,7 +95,7 @@ class ThemeCommandUseCaseImplTest {
                 ThemeThumbnail.from(url)));
 
         // when
-        themeCommandUseCase.delete(saved.getId());
+        themeCommandService.delete(saved.getId());
 
         // then
         assertThat(themeRepository.findById(saved.getId()).isEmpty()).isTrue();
@@ -109,7 +109,7 @@ class ThemeCommandUseCaseImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> themeCommandUseCase.delete(unassigned))
+        assertThatThrownBy(() -> themeCommandService.delete(unassigned))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("식별자가 할당되지 않았습니다.");
     }

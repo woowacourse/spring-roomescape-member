@@ -10,7 +10,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.reservation.domain.ReserverName;
-import roomescape.theme.application.usecase.ThemeQueryUseCaseImpl;
+import roomescape.theme.application.usecase.ThemeQueryServiceImpl;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeDescription;
 import roomescape.theme.domain.ThemeName;
@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class ThemeQueryUseCaseImplTest {
+class ThemeQueryServiceImplTest {
 
     @Autowired
-    private ThemeQueryUseCaseImpl themeQueryUseCase;
+    private ThemeQueryServiceImpl themeQueryService;
 
     @Autowired
     private ThemeRepository themeRepository;
@@ -64,7 +64,7 @@ class ThemeQueryUseCaseImplTest {
                 ThemeThumbnail.from(url2)));
 
         // when
-        final List<Theme> themes = themeQueryUseCase.getAll();
+        final List<Theme> themes = themeQueryService.getAll();
 
         // then
         assertThat(themes).hasSize(2);
@@ -167,7 +167,7 @@ class ThemeQueryUseCaseImplTest {
 
         // when
         final int count = 10;
-        final List<Theme> rankedThemes = themeQueryUseCase.getRanking(
+        final List<Theme> rankedThemes = themeQueryService.getRanking(
                 date,
                 ReservationDate.from(date.getValue().plusDays(30)),
                 count);

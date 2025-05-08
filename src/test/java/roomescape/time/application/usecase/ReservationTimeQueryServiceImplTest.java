@@ -16,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class ReservationTimeQueryUseCaseImplTest {
+class ReservationTimeQueryServiceImplTest {
 
     @Autowired
-    private ReservationTimeQueryUseCaseImpl reservationTimeQueryUseCase;
+    private ReservationTimeQueryServiceImpl reservationTimeQueryService;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -33,7 +33,7 @@ class ReservationTimeQueryUseCaseImplTest {
         final ReservationTimeId id = savedTime.getId();
 
         // when
-        final ReservationTime reservationTime = reservationTimeQueryUseCase.get(id);
+        final ReservationTime reservationTime = reservationTimeQueryService.get(id);
 
         // then
         assertThat(reservationTime.getStartAt()).isEqualTo(time);
@@ -47,7 +47,7 @@ class ReservationTimeQueryUseCaseImplTest {
         reservationTimeRepository.save(ReservationTime.withoutId(LocalTime.of(11, 0)));
 
         // when
-        final List<ReservationTime> times = reservationTimeQueryUseCase.getAll();
+        final List<ReservationTime> times = reservationTimeQueryService.getAll();
 
         // then
         assertThat(times).hasSize(2);

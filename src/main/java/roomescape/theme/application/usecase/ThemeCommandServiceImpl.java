@@ -15,17 +15,17 @@ import roomescape.theme.domain.ThemeRepository;
 @RequiredArgsConstructor
 @Service
 @Transactional
-public class ThemeCommandUseCaseImpl implements ThemeCommandUseCase {
+public class ThemeCommandServiceImpl implements ThemeCommandService {
 
     private final ThemeRepository themeRepository;
-    private final ThemeQueryUseCase themeQueryUseCase;
+    private final ThemeQueryService themeQueryService;
 
     @Override
     public Theme create(final CreateThemeServiceRequest request) {
         final Theme theme = request.toDomain();
         final ThemeName name = theme.getName();
 
-        if (themeQueryUseCase.existsByName(name)) {
+        if (themeQueryService.existsByName(name)) {
             throw new DuplicateException(DomainTerm.THEME, name);
         }
 
@@ -34,7 +34,7 @@ public class ThemeCommandUseCaseImpl implements ThemeCommandUseCase {
 
     @Override
     public void delete(final ThemeId id) {
-        if (themeQueryUseCase.existsById(id)) {
+        if (themeQueryService.existsById(id)) {
             themeRepository.deleteById(id);
             return;
         }

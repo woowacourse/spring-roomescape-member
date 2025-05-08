@@ -10,7 +10,7 @@ import roomescape.time.domain.ReservationTimeId;
 
 import java.util.List;
 
-public interface ReservationQueryUseCase {
+public interface ReservationQueryService {
 
     List<Reservation> getAll();
 

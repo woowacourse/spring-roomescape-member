@@ -6,7 +6,7 @@ import roomescape.time.domain.ReservationTimeId;
 import java.time.LocalTime;
 import java.util.List;
 
-public interface ReservationTimeQueryUseCase {
+public interface ReservationTimeQueryService {
 
     ReservationTime get(ReservationTimeId id);
 

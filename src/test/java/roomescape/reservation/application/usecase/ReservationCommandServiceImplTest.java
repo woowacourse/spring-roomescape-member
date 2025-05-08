@@ -35,10 +35,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
-class ReservationCommandUseCaseImplTest {
+class ReservationCommandServiceImplTest {
 
     @Autowired
-    private ReservationCommandUseCaseImpl reservationCommandUseCase;
+    private ReservationCommandServiceImpl reservationCommandService;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -72,7 +72,7 @@ class ReservationCommandUseCaseImplTest {
                 theme.getId());
 
         // when
-        final Reservation reservation = reservationCommandUseCase.create(requestDto);
+        final Reservation reservation = reservationCommandService.create(requestDto);
 
         // then
         final Reservation found = reservationRepository.findById(reservation.getId())
@@ -99,7 +99,7 @@ class ReservationCommandUseCaseImplTest {
                         ThemeDescription.from("지구별 방탈출 최고"),
                         ThemeThumbnail.from("www.making.com")));
 
-        final Reservation savedReservation = reservationCommandUseCase.create(
+        final Reservation savedReservation = reservationCommandService.create(
                 new CreateReservationServiceRequest(
                         ReserverName.from("브라운"),
                         ReservationDate.from(LocalDate.of(2025, 8, 5)),
@@ -109,7 +109,7 @@ class ReservationCommandUseCaseImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> reservationCommandUseCase.create(
+        assertThatThrownBy(() -> reservationCommandService.create(
                 new CreateReservationServiceRequest(
                         ReserverName.from("강산"),
                         ReservationDate.from(LocalDate.of(2025, 8, 5)),
@@ -162,11 +162,11 @@ class ReservationCommandUseCaseImplTest {
         // when
         // then
         assertAll(() -> {
-            assertThatThrownBy(() -> reservationCommandUseCase.create(pastDateReservationRequest))
+            assertThatThrownBy(() -> reservationCommandService.create(pastDateReservationRequest))
                     .isInstanceOf(PastDateReservationException.class)
                     .hasMessageContaining("Attempted to reserve with past date.");
 
-            assertThatThrownBy(() -> reservationCommandUseCase.create(pastTimeReservationRequest))
+            assertThatThrownBy(() -> reservationCommandService.create(pastTimeReservationRequest))
                     .isInstanceOf(PastTimeReservationException.class)
                     .hasMessageContaining("Attempted to reserve with past time.");
         });
@@ -193,7 +193,7 @@ class ReservationCommandUseCaseImplTest {
                         theme));
 
         // when
-        reservationCommandUseCase.delete(reservation.getId());
+        reservationCommandService.delete(reservation.getId());
 
         // then
         assertThat(reservationRepository.findAll()).isEmpty();
@@ -207,7 +207,7 @@ class ReservationCommandUseCaseImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> reservationCommandUseCase.delete(id))
+        assertThatThrownBy(() -> reservationCommandService.delete(id))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("Tried to delete [RESERVATION] that does not exist. params={ReservationId=ReservationId(-1)}");
     }

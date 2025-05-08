@@ -3,8 +3,8 @@ package roomescape.reservation.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.application.dto.AvailableReservationTimeServiceRequest;
-import roomescape.reservation.application.usecase.ReservationCommandUseCase;
-import roomescape.reservation.application.usecase.ReservationQueryUseCase;
+import roomescape.reservation.application.usecase.ReservationCommandService;
+import roomescape.reservation.application.usecase.ReservationQueryService;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.ui.dto.AvailableReservationTimeWebResponse;
@@ -17,15 +17,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ReservationServiceImpl implements ReservationService {
+public class ReservationWebFacadeImpl implements ReservationWebFacade {
 
-    private final ReservationQueryUseCase reservationQueryUseCase;
-    private final ReservationCommandUseCase reservationCommandUseCase;
+    private final ReservationQueryService reservationQueryService;
+    private final ReservationCommandService reservationCommandService;
 
     @Override
     public List<ReservationResponse> getAll() {
         return ReservationResponse.from(
-                reservationQueryUseCase.getAll());
+                reservationQueryService.getAll());
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
                 ReservationDate.from(date),
                 ThemeId.from(themeId));
 
-        return reservationQueryUseCase.getTimesWithAvailability(request).stream()
+        return reservationQueryService.getTimesWithAvailability(request).stream()
                 .map(AvailableReservationTimeWebResponse::from)
                 .toList();
     }
@@ -42,12 +42,12 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponse create(final CreateReservationWebRequest request) {
         return ReservationResponse.from(
-                reservationCommandUseCase.create(
+                reservationCommandService.create(
                         request.toServiceRequest()));
     }
 
     @Override
     public void delete(final Long id) {
-        reservationCommandUseCase.delete(ReservationId.from(id));
+        reservationCommandService.delete(ReservationId.from(id));
     }
 }

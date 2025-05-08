@@ -4,7 +4,7 @@ import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 
-public interface ReservationCommandUseCase {
+public interface ReservationCommandService {
 
     Reservation create(CreateReservationServiceRequest createReservationServiceRequest);
 

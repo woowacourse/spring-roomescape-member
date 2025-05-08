@@ -11,25 +11,25 @@ import roomescape.reservation.application.dto.CreateReservationServiceRequest;
 import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationId;
 import roomescape.reservation.domain.ReservationRepository;
-import roomescape.theme.application.usecase.ThemeQueryUseCase;
+import roomescape.theme.application.usecase.ThemeQueryService;
 import roomescape.theme.domain.Theme;
-import roomescape.time.application.usecase.ReservationTimeQueryUseCase;
+import roomescape.time.application.usecase.ReservationTimeQueryService;
 import roomescape.time.domain.ReservationTime;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase {
+public class ReservationCommandServiceImpl implements ReservationCommandService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationQueryUseCase reservationQueryUseCase;
-    private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
-    private final ThemeQueryUseCase themeQueryUseCase;
+    private final ReservationQueryService reservationQueryService;
+    private final ReservationTimeQueryService reservationTimeQueryService;
+    private final ThemeQueryService themeQueryService;
     private final TimeProvider timeProvider;
 
     @Override
     public Reservation create(final CreateReservationServiceRequest request) {
-        if (reservationQueryUseCase.existsByParams(
+        if (reservationQueryService.existsByParams(
                 request.date(),
                 request.timeId(),
                 request.themeId())
@@ -41,10 +41,10 @@ public class ReservationCommandUseCaseImpl implements ReservationCommandUseCase 
                     request.themeId());
         }
 
-        final ReservationTime reservationTime = reservationTimeQueryUseCase.get(
+        final ReservationTime reservationTime = reservationTimeQueryService.get(
                 request.timeId());
 
-        final Theme theme = themeQueryUseCase.get(
+        final Theme theme = themeQueryService.get(
                 request.themeId());
 
         final Reservation reservation = request.toDomain(reservationTime, theme);

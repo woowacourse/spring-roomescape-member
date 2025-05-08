@@ -3,8 +3,8 @@ package roomescape.theme.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import roomescape.reservation.domain.ReservationDate;
-import roomescape.theme.application.usecase.ThemeCommandUseCase;
-import roomescape.theme.application.usecase.ThemeQueryUseCase;
+import roomescape.theme.application.usecase.ThemeCommandService;
+import roomescape.theme.application.usecase.ThemeQueryService;
 import roomescape.theme.domain.ThemeId;
 import roomescape.theme.ui.dto.CreateThemeWebRequest;
 import roomescape.theme.ui.dto.ThemeResponse;
@@ -14,15 +14,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ThemeServiceImpl implements ThemeService {
+public class ThemeWebFacadeImpl implements ThemeWebFacade {
 
-    private final ThemeQueryUseCase themeQueryUseCase;
-    private final ThemeCommandUseCase themeCommandUseCase;
+    private final ThemeQueryService themeQueryService;
+    private final ThemeCommandService themeCommandService;
 
     @Override
     public List<ThemeResponse> getAll() {
         return ThemeResponse.from(
-                themeQueryUseCase.getAll());
+                themeQueryService.getAll());
     }
 
     @Override
@@ -33,7 +33,7 @@ public class ThemeServiceImpl implements ThemeService {
         final LocalDate startDate = endDate.minusDays(dateRange);
 
         return ThemeResponse.from(
-                themeQueryUseCase.getRanking(
+                themeQueryService.getRanking(
                         ReservationDate.from(startDate),
                         ReservationDate.from(endDate),
                         count));
@@ -42,11 +42,11 @@ public class ThemeServiceImpl implements ThemeService {
     @Override
     public ThemeResponse create(final CreateThemeWebRequest request) {
         return ThemeResponse.from(
-                themeCommandUseCase.create(request.toServiceRequest()));
+                themeCommandService.create(request.toServiceRequest()));
     }
 
     @Override
     public void delete(final Long id) {
-        themeCommandUseCase.delete(ThemeId.from(id));
+        themeCommandService.delete(ThemeId.from(id));
     }
 }

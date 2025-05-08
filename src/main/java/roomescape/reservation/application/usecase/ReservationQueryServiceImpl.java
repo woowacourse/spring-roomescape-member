@@ -12,7 +12,7 @@ import roomescape.reservation.domain.Reservation;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.reservation.domain.ReservationRepository;
 import roomescape.theme.domain.ThemeId;
-import roomescape.time.application.usecase.ReservationTimeQueryUseCase;
+import roomescape.time.application.usecase.ReservationTimeQueryService;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
 
@@ -24,10 +24,10 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
+public class ReservationQueryServiceImpl implements ReservationQueryService {
 
     private final ReservationRepository reservationRepository;
-    private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
+    private final ReservationTimeQueryService reservationTimeQueryService;
 
     @Override
     public List<Reservation> getAll() {
@@ -37,7 +37,7 @@ public class ReservationQueryUseCaseImpl implements ReservationQueryUseCase {
     @Override
     public List<AvailableReservationTimeServiceResponse> getTimesWithAvailability(
             final AvailableReservationTimeServiceRequest request) {
-        final List<ReservationTime> allTimes = reservationTimeQueryUseCase.getAll();
+        final List<ReservationTime> allTimes = reservationTimeQueryService.getAll();
 
         final Set<ReservationTimeId> bookedTimeIds = new HashSet<>(reservationRepository.findTimeIdByParams(
                 request.date(),

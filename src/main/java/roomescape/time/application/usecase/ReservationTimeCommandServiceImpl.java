@@ -7,7 +7,7 @@ import roomescape.common.domain.DomainTerm;
 import roomescape.common.exception.ConstraintConflictException;
 import roomescape.common.exception.DuplicateException;
 import roomescape.common.exception.NotFoundException;
-import roomescape.reservation.application.usecase.ReservationQueryUseCase;
+import roomescape.reservation.application.usecase.ReservationQueryService;
 import roomescape.time.application.dto.CreateReservationTimeServiceRequest;
 import roomescape.time.domain.ReservationTime;
 import roomescape.time.domain.ReservationTimeId;
@@ -16,15 +16,15 @@ import roomescape.time.domain.ReservationTimeRepository;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ReservationTimeCommandUseCaseImpl implements ReservationTimeCommandUseCase {
+public class ReservationTimeCommandServiceImpl implements ReservationTimeCommandService {
 
     private final ReservationTimeRepository reservationTimeRepository;
-    private final ReservationQueryUseCase reservationQueryUseCase;
-    private final ReservationTimeQueryUseCase reservationTimeQueryUseCase;
+    private final ReservationQueryService reservationQueryService;
+    private final ReservationTimeQueryService reservationTimeQueryService;
 
     @Override
     public ReservationTime create(final CreateReservationTimeServiceRequest request) {
-        if (reservationTimeQueryUseCase.existsByStartAt(request.startAt())) {
+        if (reservationTimeQueryService.existsByStartAt(request.startAt())) {
             throw new DuplicateException(DomainTerm.RESERVATION_TIME, request.startAt());
         }
         return reservationTimeRepository.save(
@@ -33,10 +33,10 @@ public class ReservationTimeCommandUseCaseImpl implements ReservationTimeCommand
 
     @Override
     public void delete(final ReservationTimeId id) {
-        if (!reservationTimeQueryUseCase.existById(id)) {
+        if (!reservationTimeQueryService.existById(id)) {
             throw new NotFoundException(DomainTerm.RESERVATION_TIME, id);
         }
-        if (reservationQueryUseCase.existsByTimeId(id)) {
+        if (reservationQueryService.existsByTimeId(id)) {
             throw new ConstraintConflictException(DomainTerm.RESERVATION_TIME, id);
         }
         reservationTimeRepository.deleteById(id);

@@ -5,7 +5,7 @@ import roomescape.time.ui.dto.ReservationTimeResponse;
 
 import java.util.List;
 
-public interface ReservationTimeService {
+public interface ReservationTimeWebFacade {
 
     List<ReservationTimeResponse> getAll();
 

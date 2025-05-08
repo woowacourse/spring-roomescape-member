@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.domain.DomainTerm;
 import roomescape.common.exception.NotFoundException;
 import roomescape.reservation.application.dto.ThemeToBookCountServiceResponse;
-import roomescape.reservation.application.usecase.ReservationQueryUseCase;
+import roomescape.reservation.application.usecase.ReservationQueryService;
 import roomescape.reservation.domain.ReservationDate;
 import roomescape.theme.domain.Theme;
 import roomescape.theme.domain.ThemeId;
@@ -18,10 +18,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ThemeQueryUseCaseImpl implements ThemeQueryUseCase {
+public class ThemeQueryServiceImpl implements ThemeQueryService {
 
     private final ThemeRepository themeRepository;
-    private final ReservationQueryUseCase reservationQueryUseCase;
+    private final ReservationQueryService reservationQueryService;
 
     @Override
     public boolean existsById(final ThemeId id) {
@@ -46,7 +46,7 @@ public class ThemeQueryUseCaseImpl implements ThemeQueryUseCase {
 
     @Override
     public List<Theme> getRanking(final ReservationDate startDate, final ReservationDate endDate, final int count) {
-        return reservationQueryUseCase.getRanking(startDate, endDate, count).stream()
+        return reservationQueryService.getRanking(startDate, endDate, count).stream()
                 .map(ThemeToBookCountServiceResponse::theme)
                 .toList();
     }

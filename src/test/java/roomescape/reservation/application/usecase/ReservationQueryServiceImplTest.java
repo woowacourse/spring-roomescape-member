@@ -29,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
-class ReservationQueryUseCaseImplTest {
+class ReservationQueryServiceImplTest {
 
     @Autowired
-    private ReservationQueryUseCaseImpl reservationQueryUseCase;
+    private ReservationQueryServiceImpl reservationQueryService;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -72,7 +72,7 @@ class ReservationQueryUseCaseImplTest {
         final Reservation saved2 = reservationRepository.save(given2);
 
         // when
-        final List<Reservation> reservations = reservationQueryUseCase.getAll();
+        final List<Reservation> reservations = reservationQueryService.getAll();
 
         // then
         assertThat(reservations).hasSize(2);
@@ -111,7 +111,7 @@ class ReservationQueryUseCaseImplTest {
                 theme));
 
         // when
-        final List<AvailableReservationTimeServiceResponse> timesWithAvailability = reservationQueryUseCase.getTimesWithAvailability(
+        final List<AvailableReservationTimeServiceResponse> timesWithAvailability = reservationQueryService.getTimesWithAvailability(
                 new AvailableReservationTimeServiceRequest(date, theme.getId()));
 
         // then

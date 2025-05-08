@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ReservationTimeQueryUseCaseImpl implements ReservationTimeQueryUseCase {
+public class ReservationTimeQueryServiceImpl implements ReservationTimeQueryService {
 
     private final ReservationTimeRepository reservationTimeRepository;
 

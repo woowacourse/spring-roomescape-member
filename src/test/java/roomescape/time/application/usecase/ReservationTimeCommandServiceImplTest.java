@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class ReservationTimeCommandUseCaseImplTest {
+class ReservationTimeCommandServiceImplTest {
 
     @Autowired
-    private ReservationTimeCommandUseCaseImpl reservationTimeCommandUseCase;
+    private ReservationTimeCommandServiceImpl reservationTimeCommandService;
 
     @Autowired
     private ReservationTimeRepository reservationTimeRepository;
@@ -51,7 +51,7 @@ class ReservationTimeCommandUseCaseImplTest {
         final CreateReservationTimeServiceRequest request = new CreateReservationTimeServiceRequest(LocalTime.of(12, 30));
 
         // when
-        final ReservationTime reservationTime = reservationTimeCommandUseCase.create(request);
+        final ReservationTime reservationTime = reservationTimeCommandService.create(request);
 
         // then
         assertThat(reservationTime.getStartAt()).isEqualTo(LocalTime.of(12, 30));
@@ -69,7 +69,7 @@ class ReservationTimeCommandUseCaseImplTest {
         final ReservationTimeId id = saved.getId();
 
         // when
-        reservationTimeCommandUseCase.delete(id);
+        reservationTimeCommandService.delete(id);
 
         // then
         assertThat(reservationTimeRepository.findById(id)).isEmpty();
@@ -83,7 +83,7 @@ class ReservationTimeCommandUseCaseImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(id))
+        assertThatThrownBy(() -> reservationTimeCommandService.delete(id))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("Tried to delete [RESERVATION_TIME] that does not exist. params={ReservationTimeId=ReservationTimeId(-1)}");
     }
@@ -110,7 +110,7 @@ class ReservationTimeCommandUseCaseImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> reservationTimeCommandUseCase.delete(savedTime.getId()))
+        assertThatThrownBy(() -> reservationTimeCommandService.delete(savedTime.getId()))
                 .isInstanceOf(ConstraintConflictException.class)
                 .hasMessage("[RESERVATION_TIME] is referenced by another entity. " +
                         "params={ReservationTimeId=ReservationTimeId(%s)}".formatted(reservation.getTime().getId().getValue()));
@@ -129,7 +129,7 @@ class ReservationTimeCommandUseCaseImplTest {
 
         // when
         // then
-        assertThatThrownBy(() -> reservationTimeCommandUseCase.create(sameTimeRequest))
+        assertThatThrownBy(() -> reservationTimeCommandService.create(sameTimeRequest))
                 .isInstanceOf(DuplicateException.class)
                 .hasMessage("RESERVATION_TIME already exists. params={LocalTime=14:00}");
     }
