@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +10,8 @@ import roomescape.domain.repository.ThemeRepository;
 import roomescape.dto.request.ThemeRequest;
 import roomescape.dto.response.ThemeResponse;
 import roomescape.exception.ExistedThemeException;
-import roomescape.fake.FakeThemeRepository;
+import roomescape.service.ThemeService;
+import roomescape.unit.fake.FakeThemeRepository;
 
 public class ThemeServiceTest {
 

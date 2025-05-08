@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,8 +17,9 @@ import roomescape.domain.Theme;
 import roomescape.dto.request.ReservationTimeRequest;
 import roomescape.dto.response.ReservationTimeResponse;
 import roomescape.exception.ExistedReservationException;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeReservationTimeRepository;
+import roomescape.service.ReservationTimeService;
+import roomescape.unit.fake.FakeReservationRepository;
+import roomescape.unit.fake.FakeReservationTimeRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ReservationTimeServiceTest {

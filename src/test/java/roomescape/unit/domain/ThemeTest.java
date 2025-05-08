@@ -1,7 +1,8 @@
-package roomescape.domain;
+package roomescape.unit.domain;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.Theme;
 import roomescape.exception.ArgumentNullException;
 
 class ThemeTest {

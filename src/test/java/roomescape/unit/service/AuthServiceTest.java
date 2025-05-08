@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
@@ -17,8 +17,9 @@ import roomescape.domain.repository.MemberRepository;
 import roomescape.dto.request.LoginRequest;
 import roomescape.dto.response.AuthenticatedUserResponse;
 import roomescape.exception.LoginFailedException;
-import roomescape.fake.FakeMemberRepository;
 import roomescape.infrastructure.JwtTokenProvider;
+import roomescape.service.AuthService;
+import roomescape.unit.fake.FakeMemberRepository;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {

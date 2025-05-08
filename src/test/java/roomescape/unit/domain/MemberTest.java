@@ -1,8 +1,9 @@
-package roomescape.domain;
+package roomescape.unit.domain;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import roomescape.auth.Role;
+import roomescape.domain.Member;
 import roomescape.exception.LoginFailedException;
 
 class MemberTest {

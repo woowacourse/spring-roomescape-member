@@ -1,4 +1,4 @@
-package roomescape.fake;
+package roomescape.unit.fake;
 
 import java.util.ArrayList;
 import java.util.List;

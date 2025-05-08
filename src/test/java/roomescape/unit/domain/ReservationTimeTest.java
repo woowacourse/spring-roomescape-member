@@ -1,7 +1,8 @@
-package roomescape.domain;
+package roomescape.unit.domain;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import roomescape.domain.ReservationTime;
 import roomescape.exception.ArgumentNullException;
 
 class ReservationTimeTest {

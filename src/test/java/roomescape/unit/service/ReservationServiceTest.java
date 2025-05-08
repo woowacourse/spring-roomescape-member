@@ -1,4 +1,4 @@
-package roomescape.service;
+package roomescape.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,10 +22,11 @@ import roomescape.dto.request.ReservationCreateRequest;
 import roomescape.dto.response.ReservationResponse;
 import roomescape.exception.ExistedReservationException;
 import roomescape.exception.ReservationNotFoundException;
-import roomescape.fake.FakeMemberRepository;
-import roomescape.fake.FakeReservationRepository;
-import roomescape.fake.FakeReservationTimeRepository;
-import roomescape.fake.FakeThemeRepository;
+import roomescape.service.ReservationService;
+import roomescape.unit.fake.FakeMemberRepository;
+import roomescape.unit.fake.FakeReservationRepository;
+import roomescape.unit.fake.FakeReservationTimeRepository;
+import roomescape.unit.fake.FakeThemeRepository;
 
 class ReservationServiceTest {
 
