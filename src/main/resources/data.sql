@@ -56,3 +56,7 @@ INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('하루', '2025-04-30', 5, 1);
 INSERT INTO reservation (name, date, time_id, theme_id)
 VALUES ('가콩', '2025-04-30', 6, 2);
+
+
+INSERT INTO member (name, email, password)
+VALUES ('슬링키', 'minki@naver.com', 1234);
