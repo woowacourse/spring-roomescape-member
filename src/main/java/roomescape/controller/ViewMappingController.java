@@ -35,4 +35,9 @@ public class ViewMappingController {
     public String theme() {
         return "admin/theme";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 }
