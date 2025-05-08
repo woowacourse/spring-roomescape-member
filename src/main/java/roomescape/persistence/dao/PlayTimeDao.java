@@ -16,4 +16,6 @@ public interface PlayTimeDao {
     boolean deleteById(Long id);
 
     boolean existsByStartAt(LocalTime startAt);
+
+    boolean existsById(Long timeId);
 }

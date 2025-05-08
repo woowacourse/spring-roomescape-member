@@ -16,4 +16,6 @@ public interface ThemeDao {
     List<Theme> findPopularThemesBetween(String startDate, String endDate);
 
     boolean existsByName(String name);
+
+    boolean existsById(Long themeId);
 }

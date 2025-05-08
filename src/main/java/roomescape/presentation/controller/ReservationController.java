@@ -33,7 +33,7 @@ public class ReservationController {
             @RequestBody final ReservationRequest reservationRequest
     ) {
         try {
-            final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+            final ReservationResponse reservationResponse = reservationService.insert(reservationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
         } catch (InvalidReservationDateException e) {
             return ResponseEntity.unprocessableEntity().build();
@@ -49,7 +49,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
-        reservationService.remove(id);
+        reservationService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

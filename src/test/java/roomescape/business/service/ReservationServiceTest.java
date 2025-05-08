@@ -1,7 +1,6 @@
 package roomescape.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -42,15 +41,15 @@ public class ReservationServiceTest {
                 new Theme(1L, "테마", "소개", "썸네일")
         );
         reservationService = new ReservationService(
-                new PlayTimeService(fakePlayTimeDao),
-                new ThemeService(fakeThemeDao),
-                new FakeReservationDao()
+                new FakeReservationDao(),
+                fakePlayTimeDao,
+                fakeThemeDao
         );
     }
 
     @Test
     @DisplayName("방탈출 예약 요청 객체로 방탈출 예약을 저장한다")
-    void create() {
+    void insert() {
         // given
         final String name = "name";
         final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
@@ -59,7 +58,7 @@ public class ReservationServiceTest {
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
 
         // when
-        final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+        final ReservationResponse reservationResponse = reservationService.insert(reservationRequest);
 
         // then
         assertAll(
@@ -71,7 +70,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 방탈출 시간으로 예약하면 예외가 발생한다")
-    void createWhenNotExistReservationTime() {
+    void insertWhenNotExistReservationTime() {
         // given
         final String name = "name";
         final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
@@ -80,13 +79,13 @@ public class ReservationServiceTest {
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, notExistTimeId, themeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.insert(reservationRequest))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     @DisplayName("존재하지 않는 방탈출 테마로 예약하면 예외가 발생한다")
-    void createWhenNotExistTheme() {
+    void insertWhenNotExistTheme() {
         // given
         final String name = "name";
         final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
@@ -95,29 +94,29 @@ public class ReservationServiceTest {
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, notExistThemeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.insert(reservationRequest))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     @DisplayName("예약하려는 방탈출 예약과 동일한 날짜, 시간, 테마가 이미 존재한다면 예외가 발생한다")
-    void createWhenDuplicateDateAndTimeAndTheme() {
+    void insertWhenDuplicateDateAndTimeAndTheme() {
         // given
         final String name = "name";
         final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
         final Long timeId = 1L;
         final Long themeId = 1L;
         final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
-        reservationService.create(reservationRequest);
+        reservationService.insert(reservationRequest);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.insert(reservationRequest))
                 .isInstanceOf(DuplicateException.class);
     }
 
     @Test
     @DisplayName("예약 시간이 현재를 기준으로 과거라면 예외가 발생한다")
-    void createWhenDateAndTimeIsPast() {
+    void insertWhenDateAndTimeIsPast() {
         // TODO: 현재 시간을 비교하는 유틸을 인터페이스로 구현하여 테스트 완성도 높이기
         // given
         final String name = "name";
@@ -127,7 +126,7 @@ public class ReservationServiceTest {
         final ReservationRequest reservationRequest = new ReservationRequest(name, pastDate, timeId, themeId);
 
         // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+        assertThatThrownBy(() -> reservationService.insert(reservationRequest))
                 .isInstanceOf(InvalidReservationDateException.class);
     }
 
@@ -141,8 +140,8 @@ public class ReservationServiceTest {
         final ReservationRequest reservationRequest2 = new ReservationRequest(
                 "lee", FORMATTED_MAX_LOCAL_DATE.minusDays(1), 1L, 1L
         );
-        final ReservationResponse expected1 = reservationService.create(reservationRequest1);
-        final ReservationResponse expected2 = reservationService.create(reservationRequest2);
+        final ReservationResponse expected1 = reservationService.insert(reservationRequest1);
+        final ReservationResponse expected2 = reservationService.insert(reservationRequest2);
 
         // when
         final List<ReservationResponse> reservationResponses = reservationService.findAll();
@@ -156,29 +155,31 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("id를 통해 방탈출 예약을 삭제한다")
-    void remove() {
+    void deleteById() {
         // given
         final ReservationRequest reservationRequest = new ReservationRequest(
                 "name", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
         );
-
-        final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+        final ReservationResponse reservationResponse = reservationService.insert(reservationRequest);
+        final Long id = reservationResponse.id();
 
         // when
+        reservationService.deleteById(id);
+
+        // then
         assertAll(
-                () -> assertThatCode(() -> reservationService.remove(1L)),
                 () -> assertThat(reservationService.findAll()).isEmpty()
         );
     }
 
     @Test
     @DisplayName("id를 통해 예약을 삭제할 때 대상이 없다면 예외가 발생한다")
-    void removeWhenNotExistReservation() {
+    void deleteByIdWhenNotExistReservation() {
         // given
         final Long notExistId = 999L;
 
         // when & then
-        assertThatThrownBy(() -> reservationService.remove(notExistId))
+        assertThatThrownBy(() -> reservationService.deleteById(notExistId))
                 .isInstanceOf(NotFoundException.class);
     }
 }

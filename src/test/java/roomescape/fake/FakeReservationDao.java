@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
-import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ReservationDao;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
@@ -57,14 +56,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndTheme(
-            final LocalDate date,
-            final PlayTime time,
-            final Theme theme
-    ) {
-        final Long timeId = time.getId();
-        final Long themeId = theme.getId();
-
+    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation ->
                         reservation.getDate().equals(date) &&
@@ -75,7 +67,7 @@ public class FakeReservationDao implements ReservationDao {
 
     @Override
     public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(final LocalDate date,
-                                                                                   final Theme theme) {
-        return List.of();
+                                                                                   final Long themeId) {
+        return null;
     }
 }

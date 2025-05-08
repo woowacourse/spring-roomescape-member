@@ -101,6 +101,26 @@ class JdbcPlayTimeDaoTest {
     }
 
     @Test
+    @DisplayName("데이터베이스에서 id를 통해 대상이 존재하는지 확인한다")
+    void existsById() {
+        // given
+        final LocalTime validStartAt = LocalTime.of(10, 10);
+        final PlayTime playTime = new PlayTime(validStartAt);
+        final Long id = playTimeDao.insert(playTime);
+        final Long notExistsId = 999L;
+
+        // when
+        final boolean existsPlayTime = playTimeDao.existsById(id);
+        final boolean notExistsPlayTime = playTimeDao.existsById(notExistsId);
+
+        // then
+        assertAll(
+                () -> assertThat(existsPlayTime).isTrue(),
+                () -> assertThat(notExistsPlayTime).isFalse()
+        );
+    }
+
+    @Test
     @DisplayName("데이터베이스에서 방탈출 예약 시간을 통해 대상이 존재하는지 확인한다")
     void existsByStartAt() {
         // given

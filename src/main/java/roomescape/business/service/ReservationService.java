@@ -2,6 +2,7 @@ package roomescape.business.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.business.domain.PlayTime;
@@ -10,7 +11,9 @@ import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
 import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.NotFoundException;
+import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.persistence.dao.ReservationDao;
+import roomescape.persistence.dao.ThemeDao;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
@@ -18,47 +21,56 @@ import roomescape.presentation.dto.ReservationResponse;
 @Service
 public class ReservationService {
 
-    private final PlayTimeService playTimeService;
-    private final ThemeService themeService;
     private final ReservationDao reservationDao;
+    private final PlayTimeDao playTimeDao;
+    private final ThemeDao themeDao;
 
-    public ReservationService(
-            final PlayTimeService playTimeService,
-            final ThemeService themeService,
-            final ReservationDao reservationDao
-    ) {
-        this.playTimeService = playTimeService;
-        this.themeService = themeService;
+    public ReservationService(final ReservationDao reservationDao, final PlayTimeDao playTimeDao,
+                              final ThemeDao themeDao) {
         this.reservationDao = reservationDao;
+        this.playTimeDao = playTimeDao;
+        this.themeDao = themeDao;
     }
 
-    public ReservationResponse create(final ReservationRequest reservationRequest) {
-        final PlayTime playTime = playTimeService.findById(reservationRequest.timeId());
-        final Theme theme = themeService.findById(reservationRequest.themeId());
-        validateIsDuplicate(reservationRequest.date(), playTime, theme);
+    public ReservationResponse insert(final ReservationRequest reservationRequest) {
+        validateTimeIdExists(reservationRequest.timeId());
+        validateThemeIdExists(reservationRequest.themeId());
+        validateIsDuplicate(reservationRequest.date(), reservationRequest.timeId(), reservationRequest.themeId());
+        final PlayTime playTime = playTimeDao.findById(reservationRequest.timeId()).get();
+        validateDateAndTimeIsFuture(reservationRequest.date(), playTime.getStartAt());
 
-        final Reservation reservation = reservationRequest.toDomain(playTime, theme);
-        validateIsFuture(reservation);
-
+        final Theme theme = new Theme(reservationRequest.themeId());
+        final Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), playTime,
+                theme);
         final Long id = reservationDao.save(reservation);
-
-        return ReservationResponse.withId(reservation, id);
+        final Reservation savedReservation = new Reservation(id, reservationRequest.name(), reservationRequest.date(),
+                playTime, theme);
+        return ReservationResponse.from(savedReservation);
     }
 
-    private void validateIsDuplicate(
-            final LocalDate date,
-            final PlayTime playTime,
-            final Theme theme
-    ) {
-        if (reservationDao.existsByDateAndTimeAndTheme(date, playTime, theme)) {
+    private void validateTimeIdExists(final Long timeId) {
+        if (!playTimeDao.existsById(timeId)) {
+            throw new NotFoundException("해당하는 방탈출 예약 시간을 찾을 수 없습니다. 방탈출 id: %d".formatted(timeId));
+        }
+    }
+
+    private void validateThemeIdExists(final Long themeId) {
+        if (!themeDao.existsById(themeId)) {
+            throw new NotFoundException("해당하는 테마를 찾을 수 없습니다. 테마 id: %d".formatted(themeId));
+        }
+    }
+
+    private void validateIsDuplicate(final LocalDate date, final Long playTimeId, final Long themeId) {
+        if (reservationDao.existsByDateAndTimeAndTheme(date, playTimeId, themeId)) {
             throw new DuplicateException("추가 하려는 예약과 같은 날짜, 시간, 테마의 예약이 이미 존재합니다.");
         }
     }
 
-    private void validateIsFuture(final Reservation reservation) {
+    private void validateDateAndTimeIsFuture(final LocalDate date, final LocalTime time) {
         final LocalDateTime now = LocalDateTime.now();
 
-        if (reservation.isBefore(now)) {
+        final LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
+        if (reservationDateTime.isBefore(now)) {
             throw new InvalidReservationDateException();
         }
     }
@@ -69,18 +81,13 @@ public class ReservationService {
                 .toList();
     }
 
-    public void remove(final Long id) {
+    public void deleteById(final Long id) {
         if (!reservationDao.remove(id)) {
             throw new NotFoundException("해당하는 방탈출 예약을 찾을 수 없습니다. 방탈출 id: %d".formatted(id));
         }
     }
 
-    public List<ReservationAvailableTimeResponse> findAvailableTimes(
-            final LocalDate date,
-            final Long themeId
-    ) {
-        final Theme theme = themeService.findById(themeId);
-
-        return reservationDao.findAvailableTimesByDateAndTheme(date, theme);
+    public List<ReservationAvailableTimeResponse> findAvailableTimes(final LocalDate date, final Long themeId) {
+        return reservationDao.findAvailableTimesByDateAndTheme(date, themeId);
     }
 }

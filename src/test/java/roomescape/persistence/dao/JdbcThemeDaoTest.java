@@ -79,13 +79,34 @@ class JdbcThemeDaoTest {
     @DisplayName("데이터베이스에서 id를 통해 테마를 삭제할 때 대상이 없다면 false 반환한다")
     void deleteByIdWhenNotExist() {
         // given
-        final Long notExistId = 999L;
+        final Long notExistsId = 999L;
 
         // when
-        final boolean isDeleted = themeDao.deleteById(notExistId);
+        final boolean isDeleted = themeDao.deleteById(notExistsId);
 
         // then
         assertThat(isDeleted).isFalse();
+    }
+
+    @Test
+    @DisplayName("데이터베이스에서 id를 통해 대상이 존재하는지 확인한다")
+    void existsById() {
+        // given
+        final String existThemeName = "테마";
+        final String notExistThemeName = "존재하지 않는 테마";
+        final Theme theme = new Theme(existThemeName, "소개", "썸네일");
+        final Long id = themeDao.insert(theme);
+        final Long notExistId = 999L;
+
+        // when
+        final boolean existsTheme = themeDao.existsById(id);
+        final boolean notExistsTheme = themeDao.existsById(notExistId);
+
+        // then
+        assertAll(
+                () -> assertThat(existsTheme).isTrue(),
+                () -> assertThat(notExistsTheme).isFalse()
+        );
     }
 
     @Test
@@ -98,13 +119,13 @@ class JdbcThemeDaoTest {
         themeDao.insert(theme);
 
         // when
-        final boolean existTheme = themeDao.existsByName(existThemeName);
-        final boolean notExistTheme = themeDao.existsByName(notExistThemeName);
+        final boolean existsTheme = themeDao.existsByName(existThemeName);
+        final boolean notExistsTheme = themeDao.existsByName(notExistThemeName);
 
         // then
         assertAll(
-                () -> assertThat(existTheme).isTrue(),
-                () -> assertThat(notExistTheme).isFalse()
+                () -> assertThat(existsTheme).isTrue(),
+                () -> assertThat(notExistsTheme).isFalse()
         );
     }
 }

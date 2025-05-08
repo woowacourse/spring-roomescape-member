@@ -137,7 +137,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final PlayTime time, final Theme theme) {
+    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
         final String sql = """
                 SELECT EXISTS (
                     SELECT 1 
@@ -145,15 +145,13 @@ public class JdbcReservationDao implements ReservationDao {
                     WHERE date = ? AND time_id = ? AND theme_id = ?
                 ) AS is_exists
                 """;
-        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, date, time.getId(), theme.getId());
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, date, timeId, themeId);
         return flag == 1;
     }
 
     @Override
-    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(
-            final LocalDate date,
-            final Theme theme
-    ) {
+    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(final LocalDate date,
+                                                                                   final Long themeId) {
         final String sql = """
                 SELECT 
                     start_at, 
@@ -176,7 +174,7 @@ public class JdbcReservationDao implements ReservationDao {
                         rs.getLong(3) != 0
                 ),
                 date,
-                theme.getId()
+                themeId
         );
     }
 }

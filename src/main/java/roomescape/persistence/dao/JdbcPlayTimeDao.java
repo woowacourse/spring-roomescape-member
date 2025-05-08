@@ -74,6 +74,19 @@ public class JdbcPlayTimeDao implements PlayTimeDao {
         final int updatedRowCount = jdbcTemplate.update(sql, id);
         return updatedRowCount >= 1;
     }
+    
+    @Override
+    public boolean existsById(final Long timeId) {
+        final String sql = """
+                SELECT EXISTS(
+                    SELECT 1 
+                    FROM reservation_time 
+                    WHERE id = ?    
+                ) as is_exist
+                """;
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, timeId);
+        return flag == 1;
+    }
 
     @Override
     public boolean existsByStartAt(final LocalTime startAt) {

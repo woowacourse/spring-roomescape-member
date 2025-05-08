@@ -29,13 +29,13 @@ public class Reservation {
 
     private void validateName(final String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("name이 null 또는 empty 입니다.");
+            throw new IllegalArgumentException("name 필드가 null 또는 empty 입니다.");
         }
     }
 
     private void validateDate(final LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("date가 null 입니다.");
+            throw new IllegalArgumentException("date 필드가 null 입니다.");
         }
     }
 

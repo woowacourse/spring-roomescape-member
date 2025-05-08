@@ -81,6 +81,19 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
+    public boolean existsById(final Long themeId) {
+        final String sql = """
+                SELECT EXISTS(
+                    SELECT 1 
+                    FROM theme 
+                    WHERE id = ?
+                ) AS is_exist
+                """;
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, themeId);
+        return flag == 1;
+    }
+
+    @Override
     public boolean existsByName(final String name) {
         final String sql = """
                 SELECT EXISTS(

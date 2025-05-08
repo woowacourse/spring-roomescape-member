@@ -52,6 +52,12 @@ public class FakeThemeDao implements ThemeDao {
     }
 
     @Override
+    public boolean existsById(final Long themeId) {
+        return themes.stream()
+                .anyMatch(theme -> theme.getId().equals(themeId));
+    }
+
+    @Override
     public boolean existsByName(final String name) {
         return themes.stream()
                 .anyMatch(theme -> theme.getName().equals(name));

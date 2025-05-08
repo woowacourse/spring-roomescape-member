@@ -49,6 +49,12 @@ public class FakePlayTimeDao implements PlayTimeDao {
     }
 
     @Override
+    public boolean existsById(final Long timeId) {
+        return times.stream()
+                .anyMatch(time -> time.getId().equals(timeId));
+    }
+
+    @Override
     public boolean existsByStartAt(final LocalTime startAt) {
         return times.stream()
                 .anyMatch(time -> time.getStartAt().equals(startAt));

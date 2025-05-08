@@ -155,9 +155,9 @@ class JdbcReservationDaoTest {
 
         // when
         final boolean existReservation = reservationDao.existsByDateAndTimeAndTheme(
-                validDate, new PlayTime(1L), new Theme(1L));
+                validDate, 1L, 1L);
         final boolean notExistReservation = reservationDao.existsByDateAndTimeAndTheme(
-                invalidDate, new PlayTime(1L), new Theme(1L));
+                invalidDate, 1L, 1L);
 
         // then
         assertAll(
