@@ -89,7 +89,7 @@ templates/index.html (인기 테마 페이지)
 
 ## Reservation
 
-### [예약 추가 API (Admin)]
+### [예약 추가 API]
 
 - 예약을 추가할 수 있다.
 - 다음과 같은 정보를 전달해야 한다.
@@ -127,7 +127,7 @@ Content-Type: application/json
 }
 ```
 
-### [예약 전체 조회 API (Admin)]
+### [예약 전체 조회 API]
 
 - 전체 예약 조회를 할 수 있다.
 - 다음과 같은 정보가 반환된다.
@@ -162,7 +162,7 @@ Content-Type: application/json
 ]
 ```
 
-### [예약 삭제 API (Admin)]
+### [예약 삭제 API]
 
 - 예약을 삭제할 수 있다.
 - 다음과 같은 정보를 포함해야 한다.
@@ -181,7 +181,7 @@ Content-Length: 0
 
 ## Time
 
-### [시간 추가 API(Admin)]
+### [시간 추가 API]
 
 ```text
 ### 요청 예시
@@ -204,7 +204,7 @@ Content-Type: application/json
 }
 ```
 
-### [시간 조회 API(Admin)]
+### [시간 조회 API]
 
 ```text
 ### 요청 예시
@@ -224,7 +224,7 @@ Content-Type: application/json
 ]
 ```
 
-### [시간 삭제 API(Admin)]
+### [시간 삭제 API]
 
 ```text
 ### 요청 예시
@@ -239,7 +239,7 @@ HTTP/1.1 204
 
 ## Theme
 
-### [테마 조회 API(Admin)]
+### [테마 조회 API]
 
 ```text
 ### 요청 예시
@@ -259,7 +259,7 @@ Content-Type: application/json
     }
 ]
 ```
-### [테마 추가 API(Admin)]
+### [테마 추가 API]
 
 ```text
 ### 요청 예시
@@ -284,7 +284,7 @@ Content-Type: application/json
 "thumbnail": "https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg"
 }
 ```
-### [테마 삭제 API(Admin)]
+### [테마 삭제 API]
 
 ```text
 ### 요청 예시
@@ -294,7 +294,7 @@ DELETE /themes/1 HTTP/1.1
 HTTP/1.1 204
 ```
 
-### [인기 테마 조회 API(Normal)]
+### [인기 테마 조회 API]
 
 - 예약 수 내림차순으로 테마들을 반환합니다.
 
