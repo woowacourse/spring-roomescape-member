@@ -34,7 +34,7 @@ class LoginServiceTest {
         LoginRequest request = new LoginRequest("password", email);
         Member member = new Member(1L, "name", email, "password");
 
-        doReturn(member).when(memberDao)
+        doReturn(Optional.of(member)).when(memberDao)
                 .findByEmail(email);
 
         // when
@@ -78,7 +78,7 @@ class LoginServiceTest {
         LoginRequest request = new LoginRequest("otherPassword", email);
         Member member = new Member(1L, "name", email, "password");
 
-        doReturn(member).when(memberDao)
+        doReturn(Optional.of(member)).when(memberDao)
                 .findByEmail(email);
 
         // when && then

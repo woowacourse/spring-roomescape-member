@@ -26,6 +26,10 @@ public class LoginService {
             throw new IllegalArgumentException("로그인을 실패했습니다. 정보를 다시 확인해 주세요.");
         }
 
+        if (member.get().notMatchesPassword(request.password())) {
+            throw new IllegalArgumentException("로그인을 실패했습니다. 정보를 다시 확인해 주세요.");
+        }
+
         return Jwts.builder()
                 .setSubject(member.get().getId().toString())
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))

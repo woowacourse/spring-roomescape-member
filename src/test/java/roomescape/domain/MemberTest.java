@@ -10,16 +10,16 @@ class MemberTest {
 
     @ParameterizedTest
     @CsvSource({
-            "success, true",
-            "fail, false"
+            "success, false",
+            "fail, true"
     })
-    @DisplayName("패스워드가 일치 여부를 판단한다")
+    @DisplayName("패스워드가 불일치 여부를 판단한다")
     void matchesPasswordReturnsTrueWhenMatched(String password, boolean expected) {
         // given
         Member member = new Member("name", "email@email.com", "success");
 
         // when
-        boolean result = member.matchesPassword(password);
+        boolean result = member.notMatchesPassword(password);
 
         // then
         assertThat(result)

@@ -18,8 +18,8 @@ public class Member {
         this(null, name, email, password);
     }
 
-    public boolean matchesPassword(String password) {
-        return this.password.equals(password);
+    public boolean notMatchesPassword(String password) {
+        return !this.password.equals(password);
     }
 
     public Long getId() {
