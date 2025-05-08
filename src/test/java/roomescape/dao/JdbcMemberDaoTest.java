@@ -27,7 +27,7 @@ class JdbcMemberDaoTest {
     @DisplayName("같은 이메일 사용자를 조회한다")
     void findMemberByEmail() {
         // given
-        String email = "admin@email.com";
+        String email = "test@email.com";
 
         // when
         Member result = jdbcMemberDao.findByEmail(email);
