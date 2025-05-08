@@ -44,7 +44,7 @@ public class AuthService {
     public UserInfoResponse getUserInfo(final String token) {
         final Long userId = jwtManager.parseUserId(token);
 
-        final User user = userRepository.findByUserId(userId)
+        final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
 
         return UserInfoResponse.from(user);
@@ -73,7 +73,7 @@ public class AuthService {
 
         final Long userId = jwtManager.parseUserId(token);
 
-        return userRepository.findByUserId(userId)
+        return userRepository.findById(userId)
                 .map(LoginUserDto::from)
                 .orElseThrow(() -> new UserNotFoundException("해당 계정이 존재하지 않습니다."));
     }

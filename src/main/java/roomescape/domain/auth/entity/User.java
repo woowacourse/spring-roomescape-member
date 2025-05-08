@@ -29,7 +29,7 @@ public class User {
     }
 
     private void validate() {
-        if (username == null || email == null || password == null || role == null) {
+        if (username == null || role == null) {
             throw new InvalidArgumentException("User 필드는 null일 수 없습니다. (id 필드 제외)");
         }
 
@@ -38,13 +38,13 @@ public class User {
     }
 
     private void validateEmail() {
-        if (!email.matches(EMAIL_REGEX)) {
+        if (email == null || !email.matches(EMAIL_REGEX)) {
             throw new InvalidArgumentException("잘못된 이메일입니다.");
         }
     }
 
     private void validatePassword() {
-        if (password.isBlank() || password.length() > PASSWORD_MAX_LENGTH) {
+        if (password == null || password.isBlank() || password.length() > PASSWORD_MAX_LENGTH) {
             throw new InvalidArgumentException("유효하지 않은 패스워드입니다.");
         }
     }
@@ -65,10 +65,6 @@ public class User {
 
     public String getName() {
         return username.getName();
-    }
-
-    public String toRole() {
-        return role.getRole();
     }
 
     public boolean isNotAdmin() {

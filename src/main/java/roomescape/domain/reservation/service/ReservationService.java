@@ -1,6 +1,5 @@
 package roomescape.domain.reservation.service;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,11 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.common.exception.AlreadyInUseException;
 import roomescape.common.exception.EntityNotFoundException;
 import roomescape.domain.auth.entity.Name;
+import roomescape.domain.auth.repository.UserRepository;
 import roomescape.domain.reservation.dto.BookedReservationTimeResponse;
 import roomescape.domain.reservation.dto.ReservationRequest;
 import roomescape.domain.reservation.dto.ReservationResponse;
@@ -27,25 +28,42 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 @Service
 public class ReservationService {
 
-    private final Clock clock;
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final UserRepository userRepository;
 
-    public ReservationService(final Clock clock, final ReservationRepository reservationRepository,
+    @Autowired
+    public ReservationService(final ReservationRepository reservationRepository,
                               final ReservationTimeRepository reservationTimeRepository,
-                              final ThemeRepository themeRepository) {
-        this.clock = clock;
+                              final ThemeRepository themeRepository, final UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationResponse> getAll() {
-        final List<Reservation> reservations = reservationRepository.findAll();
+    public List<ReservationResponse> getAll(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                            final LocalDate dateTo) {
+        if (hasNoArguments(themeId, memberId, dateFrom, dateTo)) {
+            return getAllReservationResponses(reservationRepository.findAll());
+        }
 
-        return reservations.stream()
+        final String name = userRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 회원이 존재하지 않습니다! id = " + memberId))
+                .getName();
+
+        return getAllReservationResponses(reservationRepository.findReservations(themeId, name, dateFrom, dateTo));
+    }
+
+    private boolean hasNoArguments(final Long themeId, final Long memberId, final LocalDate dateFrom,
+                                   final LocalDate dateTo) {
+        return themeId == null && memberId == null && dateFrom == null && dateTo == null;
+    }
+
+    private List<ReservationResponse> getAllReservationResponses(final List<Reservation> reservationRepository) {
+        return reservationRepository.stream()
                 .map(ReservationResponse::from)
                 .toList();
     }
@@ -57,7 +75,7 @@ public class ReservationService {
         }
 
         final Reservation reservation = getReservation(request);
-        reservation.validateNotPastReservation(now());
+        reservation.validateNotPastReservation(LocalDateTime.now());
 
         final Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -70,10 +88,6 @@ public class ReservationService {
         final Name name = new Name(request.name());
 
         return Reservation.withoutId(name, request.date(), reservationTime, theme);
-    }
-
-    private LocalDateTime now() {
-        return LocalDateTime.now(clock);
     }
 
     private ReservationTime getReservationTime(final ReservationRequest request) {

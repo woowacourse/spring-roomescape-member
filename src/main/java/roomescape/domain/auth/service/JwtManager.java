@@ -24,7 +24,7 @@ public class JwtManager {
     public String createToken(final Long userId, final Roles role) {
         final Claims claims = Jwts.claims()
                 .setSubject(userId.toString());
-        claims.put("role", role.getRole());
+        claims.put("role", role.getRoleName());
 
         final Date now = new Date();
         final Date validity = new Date(now.getTime() + validityInMilliseconds);

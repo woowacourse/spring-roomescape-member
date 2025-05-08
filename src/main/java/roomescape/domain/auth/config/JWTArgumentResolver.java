@@ -8,13 +8,11 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import roomescape.domain.auth.dto.LoginUserDto;
 import roomescape.domain.auth.service.AuthService;
 
 @Component
 public class JWTArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final String TOKEN_NAME = "token";
     private final AuthService authService;
 
     public JWTArgumentResolver(final AuthService authService) {
@@ -23,8 +21,7 @@ public class JWTArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.getParameterType()
-                .equals(LoginUserDto.class);
+        return parameter.hasParameterAnnotation(AuthenticationPrincipal.class);
     }
 
     @Override

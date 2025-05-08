@@ -7,15 +7,15 @@ import lombok.Getter;
 public enum Roles {
     USER("ROLE_USER"), ADMIN("ROLE_ADMIN");
 
-    private final String role;
+    private final String roleName;
 
-    Roles(final String role) {
-        this.role = role;
+    Roles(final String roleName) {
+        this.roleName = roleName;
     }
 
     public static Roles from(final String role) {
         return Arrays.stream(values())
-                .filter(r -> r.role.equals(role))
+                .filter(r -> r.roleName.equals(role))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid role: " + role));
     }

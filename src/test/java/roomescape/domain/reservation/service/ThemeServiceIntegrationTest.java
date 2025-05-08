@@ -3,9 +3,7 @@ package roomescape.domain.reservation.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
@@ -29,7 +27,6 @@ import roomescape.domain.reservation.repository.ThemeRepository;
 import roomescape.domain.reservation.repository.impl.ReservationDAO;
 import roomescape.domain.reservation.repository.impl.ReservationTimeDAO;
 import roomescape.domain.reservation.repository.impl.ThemeDAO;
-import roomescape.domain.reservation.utils.FixedClock;
 
 @JdbcTest
 @Import({ReservationDAO.class, ReservationTimeDAO.class, ThemeDAO.class})
@@ -45,14 +42,11 @@ class ThemeServiceIntegrationTest {
     private ThemeRepository themeRepository;
 
     private ThemeService themeService;
-    private LocalDateTime now;
 
     @BeforeEach
     void setUp() {
-        now = LocalDateTime.of(2025, 4, 30, 12, 0);
-        final Clock clock = FixedClock.from(now);
 
-        themeService = new ThemeService(clock, themeRepository, reservationRepository);
+        themeService = new ThemeService(themeRepository, reservationRepository);
     }
 
     @DisplayName("모든 테마 정보를 가져온다")
@@ -150,7 +144,7 @@ class ThemeServiceIntegrationTest {
         // given
         final ReservationTime reservationTime = reservationTimeRepository.save(
                 ReservationTime.withoutId(LocalTime.of(10, 0)));
-        final LocalDate date = now.toLocalDate();
+        final LocalDate date = LocalDate.now();
 
         final Theme theme1 = themeRepository.save(Theme.withoutId("테마1", "테마1", "www.m.com"));
         final Theme theme2 = themeRepository.save(Theme.withoutId("테마2", "테마2", "www.m.com"));

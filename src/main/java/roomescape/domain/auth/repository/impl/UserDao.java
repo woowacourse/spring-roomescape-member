@@ -58,9 +58,9 @@ public class UserDao implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByUserId(final Long userId) {
+    public Optional<User> findById(final Long id) {
         final String sql = "select id, name, email, password, role from " + TABLE_NAME + " where id = :id";
-        final Map<String, Object> params = Map.of("id", userId);
+        final Map<String, Object> params = Map.of("id", id);
 
         try {
             final User user = jdbcTemplate.queryForObject(sql, params, (resultSet, rowNum) -> userOf(resultSet));
@@ -116,7 +116,7 @@ public class UserDao implements UserRepository {
         final MapSqlParameterSource params = new MapSqlParameterSource().addValue("name", user.getName())
                 .addValue("email", user.getEmail())
                 .addValue("password", user.getPassword())
-                .addValue("role", user.toRole());
+                .addValue("role", user.getRole().getRoleName());
 
         final long id = jdbcInsert.executeAndReturnKey(params)
                 .longValue();
