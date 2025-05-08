@@ -1,11 +1,16 @@
 package roomescape.controller;
 
+import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
+import roomescape.dto.request.SignupRequest;
 import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
 
@@ -20,13 +25,28 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Member>> getMembers() {
+    public ResponseEntity<List<MemberResponse>> getMembers() {
         List<Member> members = memberService.findAll();
-        // TODO: Member 객체 그대로 반환하는 것 변경해보기
         List<MemberResponse> responses = members.stream()
                 .map(MemberResponse::from)
                 .toList();
 
-        return ResponseEntity.ok(members);
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberResponse> getMemberById(@PathVariable Long id) {
+        Member member = memberService.getMemberById(id);
+        MemberResponse response = MemberResponse.from(member);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    public ResponseEntity<MemberResponse> signUp(@RequestBody SignupRequest request) {
+        Member member = memberService.addMember(request);
+        MemberResponse response = MemberResponse.from(member);
+
+        return ResponseEntity.created(URI.create("/members/" + response.id())).body(response);
     }
 }

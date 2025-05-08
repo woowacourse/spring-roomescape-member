@@ -7,6 +7,8 @@ import roomescape.domain.Member;
 
 @Repository
 public interface MemberRepository {
+    Member add(Member member);
+
     List<Member> findAll();
 
     Optional<Member> findById(long id);

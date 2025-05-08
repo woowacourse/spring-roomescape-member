@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
+import roomescape.dto.request.SignupRequest;
 import roomescape.exception.InvalidMemberException;
 import roomescape.repository.MemberRepository;
 
@@ -16,6 +17,10 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
+    public Member addMember(SignupRequest request) {
+        return memberRepository.add(request.toMember());
+    }
+
     public List<Member> findAll() {
         return memberRepository.findAll();
     }
@@ -23,5 +28,10 @@ public class MemberService {
     public Member findByEmailAndPassword(LoginRequest request) {
         return memberRepository.findByEmailAndPassword(request.email(), request.password())
                 .orElseThrow(() -> new InvalidMemberException("유효하지 않은 로그인 정보입니다."));
+    }
+
+    public Member getMemberById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 멤버 ID입니다."));
     }
 }

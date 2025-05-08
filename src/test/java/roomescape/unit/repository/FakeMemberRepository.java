@@ -14,6 +14,21 @@ public class FakeMemberRepository implements MemberRepository {
     private final List<Member> members = new ArrayList<>();
 
     @Override
+    public Member add(Member member) {
+        Long id = index.getAndIncrement();
+        Member addMember = new Member(
+                id,
+                member.getName(),
+                member.getEmail(),
+                member.getPassword(),
+                member.getRole()
+        );
+        members.add(addMember);
+
+        return addMember;
+    }
+
+    @Override
     public List<Member> findAll() {
         return Collections.unmodifiableList(members);
     }
@@ -30,5 +45,6 @@ public class FakeMemberRepository implements MemberRepository {
         return members.stream()
                 .filter(member -> member.getEmail().equals(email)
                                   && member.getPassword().equals(password))
-                .findAny();    }
+                .findAny();
+    }
 }

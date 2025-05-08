@@ -100,7 +100,7 @@ public class JdbcReservationRepository implements ReservationRepository {
                 reservation.getDate(),
                 reservation.getReservationTime(),
                 reservation.getTheme()
-        ) ;
+        );
     }
 
     @Override
