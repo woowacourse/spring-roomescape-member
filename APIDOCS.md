@@ -238,10 +238,11 @@
     - 설명 : 사용자 로그인
     - 정상 응답 (200)
       ```
-      {
-         "password": "password",
-         "email": "admin@email.com"
-      }
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+        Keep-Alive: timeout=60
+        Set-Cookie: token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZSI6ImFkbWluIiwicm9sZSI6IkFETUlOIn0.cwnHsltFeEtOzMHs2Q5-ItawgvBZ140OyWecppNlLoI; Path=/; HttpOnly
+
       ```
 
 - GET /login/check

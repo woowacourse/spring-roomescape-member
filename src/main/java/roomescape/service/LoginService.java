@@ -3,21 +3,32 @@ package roomescape.service;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import roomescape.domain.Member;
 import roomescape.dto.request.LoginRequest;
+import roomescape.exception.NotFoundException;
+import roomescape.repository.MemberRepository;
 
 @Service
 public class LoginService {
-    String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    private static final String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+
+    private final MemberRepository memberRepository;
+
+    public LoginService(final MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     public Cookie doLogin(LoginRequest request) {
-        Member member = new Member("기본", request.email(), request.password());
-
+        Member member = getMember(request);
+        System.out.println(member.getName());
         String accessToken = Jwts.builder()
+                .setSubject(member.getName())
+                .claim("name", member.getName())
                 .claim("email", member.getEmail())
-                .claim("password", member.getPassword())
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
 
         Cookie cookie = new Cookie("token", accessToken);
@@ -26,15 +37,18 @@ public class LoginService {
         return cookie;
     }
 
+    private Member getMember(LoginRequest request) {
+        Optional<Member> member = memberRepository.findMember(request.email(), request.password());
+        return member.orElseThrow(() -> new NotFoundException("[ERROR] 로그인에 실패했습니다."));
+    }
+
     public String getNameFromCookie(Cookie[] cookies) {
         String token = extractTokenFromCookie(cookies);
-        // TODO: 쿠키에서 이름 뽑아내는거 해야함.
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .toString();
+                .getBody().getSubject();
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
