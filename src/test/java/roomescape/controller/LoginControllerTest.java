@@ -75,7 +75,7 @@ public class LoginControllerTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract().as(MemberNameResponse.class);
 
-        assertThat(nameResponse.name()).isEqualTo("메이");
+        assertThat(nameResponse.name()).isEqualTo("어드민");
     }
 
     @Test

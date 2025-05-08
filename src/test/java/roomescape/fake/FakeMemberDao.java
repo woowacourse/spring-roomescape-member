@@ -10,7 +10,7 @@ public class FakeMemberDao {
 
     private static final AtomicLong IDX = new AtomicLong();
     private static final Map<Long, Member> MEMBERS = Map.of(
-            1L, new Member(1L, "메이", "admin@gmail.com", "1234")
+            1L, new Member(1L, "어드민", "admin@gmail.com", "1234", "admin")
     );
 
     public Member findByEmailAndPassword(String email, String password) {

@@ -18,5 +18,7 @@ INSERT INTO theme(name, description, thumbnail)
 values ('탈출2', '레벨2 탈출', 'asdf');
 INSERT INTO theme(name, description, thumbnail)
 values ('탈출3', '레벨2 탈출', 'asdf');
-INSERT INTO member(name, email, password)
-values ('메이', 'admin@gmail.com', '1234');
+INSERT INTO member(name, email, password, role)
+values ('어드민', 'admin@gmail.com', '1234', 'admin');
+INSERT INTO member(name, email, password, role)
+values ('유저', 'user@gmail.com', '1234', 'user');

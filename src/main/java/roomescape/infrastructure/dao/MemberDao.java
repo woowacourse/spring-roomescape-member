@@ -16,7 +16,8 @@ public class MemberDao {
                     resultSet.getLong("id"),
                     resultSet.getString("name"),
                     resultSet.getString("email"),
-                    resultSet.getString("password")
+                    resultSet.getString("password"),
+                    resultSet.getString("role")
             );
 
     public MemberDao(final JdbcTemplate jdbcTemplate) {
@@ -24,7 +25,7 @@ public class MemberDao {
     }
 
     public Member findByEmailAndPassword(String email, String password) {
-        String query = "SELECT id, name, email, password FROM member WHERE email = ? and password = ?";
+        String query = "SELECT * FROM member WHERE email = ? and password = ?";
         return jdbcTemplate.queryForObject(
                 query,
                 ROW_MAPPER,
@@ -33,7 +34,7 @@ public class MemberDao {
     }
 
     public Member findById(final Long memberId) {
-        String query = "SELECT id, name, email, password FROM member WHERE id = ?";
+        String query = "SELECT * FROM member WHERE id = ?";
         return jdbcTemplate.queryForObject(
                 query,
                 ROW_MAPPER,
@@ -41,7 +42,7 @@ public class MemberDao {
     }
 
     public List<Member> findAll() {
-        String query = "SELECT id, name, email, password FROM member";
+        String query = "SELECT * FROM member";
         return jdbcTemplate.query(query, ROW_MAPPER);
     }
 }

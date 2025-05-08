@@ -8,16 +8,22 @@ public class Member {
     private final String name;
     private final String email;
     private final String password;
+    private final String role;
 
-    public Member(final Long id, final String name, final String email, final String password) {
+    public Member(final Long id, final String name, final String email, final String password, final String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public Member(final String name, final String email, final String password) {
-        this(null, name, email, password);
+    public Member(final String name, final String email, final String password, final String role) {
+        this(null, name, email, password, role);
+    }
+
+    public boolean isAdmin() {
+        return role.equals("admin");
     }
 
     public Long getId() {
@@ -36,6 +42,10 @@ public class Member {
         return password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -47,15 +57,5 @@ public class Member {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Member{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
     }
 }

@@ -26,6 +26,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Member resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer, final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        Member member = (Member) request.getAttribute("member");
+        if (member != null) {
+            return member;
+        }
         String token = extractTokenFromCookie(request.getCookies());
         return tokenLoginService.check(token);
     }
