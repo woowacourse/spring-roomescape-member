@@ -5,19 +5,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.dto.customer.LoginRequestDto;
-import roomescape.service.CustomerService;
+import roomescape.service.AuthenticationService;
 
 @RestController
-public class CustomerController {
+public class AuthenticationController {
 
-    private final CustomerService customerService;
+    private final AuthenticationService authenticationService;
 
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping("login")
     public void userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        customerService.verifyLogin(loginRequestDto);
+        authenticationService.verifyLogin(loginRequestDto);
     }
 }

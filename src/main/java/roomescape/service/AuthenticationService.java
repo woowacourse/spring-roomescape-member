@@ -6,11 +6,11 @@ import roomescape.dto.customer.LoginRequestDto;
 import roomescape.model.Customer;
 
 @Service
-public class CustomerService {
+public class AuthenticationService {
 
     private final CustomerDao customerDao;
 
-    public CustomerService(CustomerDao customerDao) {
+    public AuthenticationService(CustomerDao customerDao) {
         this.customerDao = customerDao;
     }
 
