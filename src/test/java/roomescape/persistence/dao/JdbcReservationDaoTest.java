@@ -18,6 +18,7 @@ import roomescape.business.domain.Theme;
 import roomescape.persistence.entity.PlayTimeEntity;
 import roomescape.persistence.entity.ReservationEntity;
 import roomescape.persistence.entity.ThemeEntity;
+import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 @JdbcTest
 class JdbcReservationDaoTest {
@@ -210,6 +211,24 @@ class JdbcReservationDaoTest {
                         LocalDate.of(2025, 1, 1),
                         playTimeFixture,
                         invalidTheme)).isFalse()
+        );
+    }
+
+    @DisplayName("데이터베이스에서 모든 시간에 대해 해당 날짜와 테마에 예약 여부를 조회한다.")
+    @Test
+    void findAvailableTimesByDateAndTheme() {
+        // given
+        jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES ('10:20')");
+        jdbcTemplate.update("INSERT INTO RESERVATION (name, date, time_id, theme_id) values ('hotteok', '2025-01-01', 1, 1)");
+
+        // when
+        final List<ReservationAvailableTimeResponse> actual =
+                reservationDao.findAvailableTimesByDateAndTheme(LocalDate.of(2025, 1, 1), themeFixture);
+
+        // then
+        assertThat(actual).containsExactly(
+                new ReservationAvailableTimeResponse("10:10", 1L, true),
+                new ReservationAvailableTimeResponse("10:20", 2L, false)
         );
     }
 }
