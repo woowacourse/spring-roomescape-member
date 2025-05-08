@@ -1,5 +1,6 @@
 package roomescape.repository.impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,22 @@ public class JdbcMemberRepository implements MemberRepository {
         this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("member")
                 .usingGeneratedKeyColumns("id");
+    }
+
+    public List<Member> readMembers() {
+        final String query = """
+                SELECT id, name, email
+                FROM member
+                """;
+
+        return jdbcTemplate.query(
+                query,
+                (resultSet, rowNum) -> new Member(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email")
+                )
+        );
     }
 
     public Member save(Member member) {

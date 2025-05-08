@@ -1,14 +1,17 @@
 package roomescape.controller;
 
 import java.net.URI;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Member;
 import roomescape.dto.request.CreateMemberRequest;
+import roomescape.dto.response.MemberResponse;
 import roomescape.service.MemberService;
 
 @RestController
@@ -20,6 +23,16 @@ public class MemberController {
     @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MemberResponse>> readAll() {
+        List<Member> members = memberService.readMembers();
+        List<MemberResponse> memberResponses = members.stream()
+                .map(MemberResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(memberResponses);
     }
 
     @PostMapping

@@ -2,10 +2,6 @@ package roomescape.dto.request;
 
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import roomescape.domain.Member;
-import roomescape.domain.Reservation;
-import roomescape.domain.ReservationTime;
-import roomescape.domain.Theme;
 
 public record CreateReservationRequest(
         Long memberId,
