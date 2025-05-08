@@ -21,11 +21,12 @@ public class AuthController {
 
     @PostMapping("login")
     @ResponseStatus(HttpStatus.OK)
-    public void userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public Cookie userLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String token = authService.loginAndGenerateToken(loginRequestDto);
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
+        return cookie;
     }
 }
