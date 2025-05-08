@@ -5,40 +5,31 @@ import java.util.Objects;
 
 public class Reservation {
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final Member member;
     private final ReservationTime time;
     private final Theme theme;
 
-    public Reservation(Long id, String name, LocalDate date, Member member, ReservationTime time, Theme theme) {
-        validateMaxLength(name);
+    public Reservation(Long id, LocalDate date, Member member, ReservationTime time, Theme theme) {
         this.id = id;
-        this.name = Objects.requireNonNull(name);
         this.date = Objects.requireNonNull(date);
         this.member = member;
         this.time = Objects.requireNonNull(time);
         this.theme = Objects.requireNonNull(theme);
     }
 
-    public Reservation(String name, LocalDate date, Member member, ReservationTime time, Theme theme) {
-        this(null, name, date, member, time, theme);
+    public Reservation(LocalDate date, Member member, ReservationTime time, Theme theme) {
+        this(null, date, member, time, theme);
     }
 
     public Reservation copyWithId(Long id) {
-        return new Reservation(id, name, date, member, time, theme);
+        return new Reservation(id, date, member, time, theme);
     }
 
     public void validatePastDateTime() {
         LocalDate now = LocalDate.now();
         if (date.isBefore(now) || (date.equals(now) && time.isPastTime())) {
             throw new IllegalArgumentException("지난 날짜와 시간의 예약은 생성 불가능합니다.");
-        }
-    }
-
-    private void validateMaxLength(String name) {
-        if (name.length() > 255) {
-            throw new IllegalArgumentException("name의 최대 제한 길이를 초과했습니다.");
         }
     }
 
@@ -51,10 +42,6 @@ public class Reservation {
 
     public Member getMember() {
         return member;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public LocalDate getDate() {

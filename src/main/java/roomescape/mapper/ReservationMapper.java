@@ -16,7 +16,6 @@ public class ReservationMapper implements RowMapper<Reservation> {
     public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Reservation(
                 rs.getLong("id"),
-                rs.getString("reservation_name"),
                 rs.getObject("date", LocalDate.class),
                 new Member(
                         rs.getLong("member_id"),

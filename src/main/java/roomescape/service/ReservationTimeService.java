@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import roomescape.dao.ReservationDao;
 import roomescape.dao.ReservationTimeDao;
-import roomescape.entity.ReservationTime;
 import roomescape.dto.ReservationTimeAvailableResponse;
 import roomescape.dto.ReservationTimeRequest;
 import roomescape.dto.ReservationTimeResponse;
+import roomescape.entity.ReservationTime;
 
 @Component
 public class ReservationTimeService {
@@ -25,12 +25,12 @@ public class ReservationTimeService {
         ReservationTime reservationTimeWithoutId = timeRequest.toTime();
         long id = reservationTimeDao.create(reservationTimeWithoutId);
         ReservationTime reservationTime = reservationTimeWithoutId.copyWithId(id);
-        return ReservationTimeResponse.from(reservationTime);
+        return new ReservationTimeResponse(reservationTime);
     }
 
     public List<ReservationTimeResponse> findAllTimes() {
         return reservationTimeDao.findAll().stream()
-                .map(ReservationTimeResponse::from)
+                .map(ReservationTimeResponse::new)
                 .toList();
     }
 

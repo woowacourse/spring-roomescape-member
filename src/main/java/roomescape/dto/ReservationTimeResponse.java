@@ -9,8 +9,10 @@ public record ReservationTimeResponse(
 ) {
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static ReservationTimeResponse from(ReservationTime reservationTime) {
-        return new ReservationTimeResponse(reservationTime.getId(), reservationTime.getStartAt());
+    public ReservationTimeResponse(ReservationTime reservationTime) {
+        this(
+                reservationTime.getId(), reservationTime.getStartAt()
+        );
     }
 
     public String getStartAt() {

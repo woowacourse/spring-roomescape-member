@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 
 class ReservationTest {
 
-    private final String TEST_NAME = "moda";
-
     @Test
     @DisplayName("지난 날짜 예약일 경우 예외가 발생한다")
     void failIfPastDate() {
@@ -18,7 +16,6 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
                 1L,
-                TEST_NAME,
                 now.toLocalDate().minusDays(1),
                 new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime()),
@@ -38,7 +35,6 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
                 1L,
-                TEST_NAME,
                 now.toLocalDate(),
                 new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime().minusMinutes(1)),
@@ -58,7 +54,6 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
                 1L,
-                TEST_NAME,
                 now.toLocalDate(),
                 new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime()),
@@ -76,7 +71,6 @@ class ReservationTest {
         LocalDateTime now = LocalDateTime.now();
         Reservation reservation = new Reservation(
                 1L,
-                TEST_NAME,
                 now.toLocalDate().plusDays(1),
                 new Member("moda", "email", "password"),
                 new ReservationTime(now.toLocalTime()),
