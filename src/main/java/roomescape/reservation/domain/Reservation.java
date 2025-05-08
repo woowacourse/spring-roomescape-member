@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import roomescape.member.domain.Member;
 import roomescape.theme.domain.Theme;
 
 @Getter
@@ -12,49 +13,50 @@ import roomescape.theme.domain.Theme;
 public class Reservation {
 
     private final Long id;
-    private final String name;
     private final LocalDate date;
     private final ReservationTime time;
     private final Theme theme;
+    private final Member member;
 
-    public Reservation(final Long id, final String name, final LocalDate date, final ReservationTime time,
-                       final Theme theme) {
-        validateName(name);
+    public Reservation(final Long id, final LocalDate date, final ReservationTime time,
+                       final Theme theme, final Member member) {
         validateDate(date);
         validateTime(time);
         validateTheme(theme);
+        validateMember(member);
+
         this.id = id;
-        this.name = name;
         this.date = date;
         this.time = time;
         this.theme = theme;
+        this.member = member;
     }
 
-    public Reservation(final String name, final LocalDate date, final ReservationTime time, final Theme theme) {
-        this(null, name, date, time, theme);
+    public Reservation(final LocalDate date, final ReservationTime time, final Theme theme, final Member member) {
+        this(null, date, time, theme, member);
     }
 
-    private void validateName(final String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Name cannot be null or blank");
+    private void validateMember(final Member member) {
+        if (member == null) {
+            throw new IllegalArgumentException("멤버는 null이면 안됩니다.");
         }
     }
 
     private void validateDate(final LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("Date cannot be null");
+            throw new IllegalArgumentException("날짜는 null이면 안됩니다.");
         }
     }
 
     private void validateTime(final ReservationTime time) {
         if (time == null) {
-            throw new IllegalArgumentException("Time cannot be null");
+            throw new IllegalArgumentException("시간은 null이면 안됩니다.");
         }
     }
 
     private void validateTheme(final Theme theme) {
         if (theme == null) {
-            throw new IllegalArgumentException("Theme cannot be null");
+            throw new IllegalArgumentException("테마는 null이면 안됩니다.");
         }
     }
 }
