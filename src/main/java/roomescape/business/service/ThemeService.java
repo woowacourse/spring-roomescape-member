@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import roomescape.business.domain.Theme;
 import roomescape.exception.NotFoundException;
 import roomescape.persistence.dao.ThemeDao;
-import roomescape.persistence.entity.ReservationEntity;
 import roomescape.presentation.dto.ThemeRequest;
 import roomescape.presentation.dto.ThemeResponse;
 
@@ -51,8 +50,8 @@ public class ThemeService {
 
     public List<ThemeResponse> findPopularThemes() {
         final LocalDate now = LocalDate.now();
-        final String startDate = ReservationEntity.formatDate(now);
-        final String endDate = ReservationEntity.formatDate(now.minusDays(7));
+        final String startDate = now.toString();
+        final String endDate = now.minusDays(7).toString();
 
         return themeDao.findPopularThemesBetween(startDate, endDate).stream()
                 .map(ThemeResponse::from)

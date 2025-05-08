@@ -1,26 +1,28 @@
 package roomescape.business.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import roomescape.business.domain.PlayTime;
+import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
+import roomescape.exception.InvalidReservationDateException;
 import roomescape.exception.NotFoundException;
 import roomescape.fake.FakePlayTimeDao;
 import roomescape.fake.FakeReservationDao;
 import roomescape.fake.FakeThemeDao;
-import roomescape.persistence.entity.PlayTimeEntity;
-import roomescape.persistence.entity.ThemeEntity;
-import roomescape.presentation.dto.PlayTimeResponse;
+import roomescape.persistence.dao.PlayTimeDao;
+import roomescape.persistence.dao.ThemeDao;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
-import roomescape.presentation.dto.ThemeResponse;
 
 public class ReservationServiceTest {
 
@@ -29,77 +31,83 @@ public class ReservationServiceTest {
 
     private ReservationService reservationService;
 
-    private final FakePlayTimeDao timeDaoFixture = new FakePlayTimeDao(new ArrayList<>(List.of(
-            new PlayTimeEntity(1L, FORMATTED_MAX_LOCAL_TIME.toString())
-    )));
-    private final FakeThemeDao themeDaoFixture = new FakeThemeDao(new ArrayList<>(List.of(
-            new ThemeEntity(1L, "테마", "소개", "썸네일")
-    )));
-    private final PlayTimeService playTimeServiceFixture = new PlayTimeService(timeDaoFixture);
-    private final ThemeService themeServiceFixture = new ThemeService(themeDaoFixture);
-
     @BeforeEach
     void setUp() {
+        final PlayTimeDao fakePlayTimeDao = new FakePlayTimeDao();
+        fakePlayTimeDao.save(
+                new PlayTime(1L, FORMATTED_MAX_LOCAL_TIME)
+        );
+        final ThemeDao fakeThemeDao = new FakeThemeDao();
+        fakeThemeDao.save(
+                new Theme(1L, "테마", "소개", "썸네일")
+        );
         reservationService = new ReservationService(
-                playTimeServiceFixture,
-                themeServiceFixture,
-                new FakeReservationDao(timeDaoFixture.getTimes())
+                new PlayTimeService(fakePlayTimeDao),
+                new ThemeService(fakeThemeDao),
+                new FakeReservationDao()
         );
     }
 
-    @DisplayName("방탈출 예약을 저장한다.")
     @Test
+    @DisplayName("방탈출 예약 요청 객체로 방탈출 예약을 저장한다")
     void create() {
         // given
-        final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
-        );
-        final ReservationResponse expected = new ReservationResponse(
-                1L,
-                "hotteok",
-                FORMATTED_MAX_LOCAL_DATE,
-                new PlayTimeResponse(1L, FORMATTED_MAX_LOCAL_TIME),
-                new ThemeResponse(1L, "테마", "소개", "썸네일")
-        );
+        final String name = "name";
+        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
 
-        // when & then
-        assertThat(reservationService.create(reservationRequest))
-                .isEqualTo(expected);
+        // when
+        final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+
+        // then
+        assertAll(
+                () -> assertThat(reservationResponse.name()).isEqualTo(name),
+                () -> assertThat(reservationResponse.date()).isEqualTo(date),
+                () -> assertThat(reservationResponse.time().startAt()).isEqualTo(FORMATTED_MAX_LOCAL_TIME)
+        );
     }
 
-    @DisplayName("저장하려는 예약에 해당하는 방탈출 시간이 없다면 예외가 발생한다.")
     @Test
-    void createOrThrowIfTimeIdNotExists() {
+    @DisplayName("존재하지 않는 방탈출 시간으로 예약하면 예외가 발생한다")
+    void createWhenNotExistReservationTime() {
         // given
-        final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 2L, 1L
-        );
-
-        // when & then
-        assertThatThrownBy(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(NotFoundException.class);
-    }
-
-    @DisplayName("저장하려는 예약에 해당하는 방탈출 테마가 없다면 예외가 발생한다.")
-    @Test
-    void createOrThrowIfThemeIdNotExists() {
-        // given
-        final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 2L
-        );
+        final String name = "name";
+        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
+        final Long notExistTimeId = 999L;
+        final Long themeId = 1L;
+        final ReservationRequest reservationRequest = new ReservationRequest(name, date, notExistTimeId, themeId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @DisplayName("저장하려는 방탈출 예약에 날짜/시간/테마가 이미 존재한다면 예외가 발생한다.")
     @Test
-    void createOrThrowIfDateAndTimeAndThemeDuplicate() {
+    @DisplayName("존재하지 않는 방탈출 테마로 예약하면 예외가 발생한다")
+    void createWhenNotExistTheme() {
         // given
-        final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
-        );
+        final String name = "name";
+        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
+        final Long timeId = 999L;
+        final Long notExistThemeId = 1L;
+        final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, notExistThemeId);
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.create(reservationRequest))
+                .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("예약하려는 방탈출 예약과 동일한 날짜, 시간, 테마가 이미 존재한다면 예외가 발생한다")
+    void createWhenDuplicateDateAndTimeAndTheme() {
+        // given
+        final String name = "name";
+        final LocalDate date = FORMATTED_MAX_LOCAL_DATE;
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final ReservationRequest reservationRequest = new ReservationRequest(name, date, timeId, themeId);
         reservationService.create(reservationRequest);
 
         // when & then
@@ -107,63 +115,70 @@ public class ReservationServiceTest {
                 .isInstanceOf(DuplicateException.class);
     }
 
-    @DisplayName("저장하려는 예약이 현재 날짜/시간보다 과거라면 예외가 발생한다.")
     @Test
-    void createOrThrowIfFuture() {
+    @DisplayName("예약 시간이 현재를 기준으로 과거라면 예외가 발생한다")
+    void createWhenDateAndTimeIsPast() {
+        // TODO: 현재 시간을 비교하는 유틸을 인터페이스로 구현하여 테스트 완성도 높이기
         // given
-        final ReservationRequest reservationRequest = new ReservationRequest(
-                "hotteok", LocalDate.of(0, 1, 1), 1L, 1L
-        );
+        final String name = "name";
+        final LocalDate pastDate = LocalDate.MIN;
+        final Long timeId = 1L;
+        final Long themeId = 1L;
+        final ReservationRequest reservationRequest = new ReservationRequest(name, pastDate, timeId, themeId);
 
         // when & then
         assertThatThrownBy(() -> reservationService.create(reservationRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("예약 날짜 및 시간이 현재보다 과거일 수 없습니다.");
+                .isInstanceOf(InvalidReservationDateException.class);
     }
 
-    @DisplayName("모든 방탈출 예약을 조회한다.")
     @Test
+    @DisplayName("모든 방탈출 예약을 조회한다")
     void findAll() {
         // given
-        reservationService.create(new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
-        ));
-        reservationService.create(new ReservationRequest(
-                "saba", FORMATTED_MAX_LOCAL_DATE.minusDays(1), 1L, 1L
-        ));
-
-        // when & then
-        assertThat(reservationService.findAll())
-                .containsExactly(
-                        new ReservationResponse(1L, "hotteok", FORMATTED_MAX_LOCAL_DATE,
-                                new PlayTimeResponse(1L, FORMATTED_MAX_LOCAL_TIME),
-                                new ThemeResponse(1L, "테마", "소개", "썸네일")),
-                        new ReservationResponse(2L, "saba", FORMATTED_MAX_LOCAL_DATE.minusDays(1),
-                                new PlayTimeResponse(1L, FORMATTED_MAX_LOCAL_TIME),
-                                new ThemeResponse(1L, "테마", "소개", "썸네일"))
-                );
-    }
-
-    @DisplayName("방탈출 예약을 삭제한다.")
-    @Test
-    void remove() {
-        // given
-        reservationService.create(new ReservationRequest(
-                "hotteok", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
-        ));
+        final ReservationRequest reservationRequest1 = new ReservationRequest(
+                "kim", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+        );
+        final ReservationRequest reservationRequest2 = new ReservationRequest(
+                "lee", FORMATTED_MAX_LOCAL_DATE.minusDays(1), 1L, 1L
+        );
+        final ReservationResponse expected1 = reservationService.create(reservationRequest1);
+        final ReservationResponse expected2 = reservationService.create(reservationRequest2);
 
         // when
-        reservationService.remove(1L);
+        final List<ReservationResponse> reservationResponses = reservationService.findAll();
 
         // then
-        assertThat(reservationService.findAll()).isEmpty();
+        assertAll(
+                () -> assertThat(reservationResponses).hasSize(2),
+                () -> assertThat(reservationResponses).contains(expected1, expected2)
+        );
     }
 
-    @DisplayName("삭제하려는 예약이 존재하지 않으면 예외가 발생한다.")
     @Test
-    void removeOrThrowIfIdNotExists() {
-        // given & when & then
-        assertThatThrownBy(() -> reservationService.remove(1L))
+    @DisplayName("id를 통해 방탈출 예약을 삭제한다")
+    void remove() {
+        // given
+        final ReservationRequest reservationRequest = new ReservationRequest(
+                "name", FORMATTED_MAX_LOCAL_DATE, 1L, 1L
+        );
+
+        final ReservationResponse reservationResponse = reservationService.create(reservationRequest);
+
+        // when
+        assertAll(
+                () -> assertThatCode(() -> reservationService.remove(1L)),
+                () -> assertThat(reservationService.findAll()).isEmpty()
+        );
+    }
+
+    @Test
+    @DisplayName("id를 통해 예약을 삭제할 때 대상이 없다면 예외가 발생한다")
+    void removeWhenNotExistReservation() {
+        // given
+        final Long notExistId = 999L;
+
+        // when & then
+        assertThatThrownBy(() -> reservationService.remove(notExistId))
                 .isInstanceOf(NotFoundException.class);
     }
 }

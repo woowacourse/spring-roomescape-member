@@ -1,53 +1,40 @@
 package roomescape.fake;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import roomescape.business.domain.Theme;
 import roomescape.persistence.dao.ThemeDao;
-import roomescape.persistence.entity.ThemeEntity;
 
 public class FakeThemeDao implements ThemeDao {
 
-    private final List<ThemeEntity> themes;
-
-    private int index = 1;
+    private final List<Theme> themes;
+    private final AtomicLong atomicLong = new AtomicLong(1L);
 
     public FakeThemeDao() {
         this.themes = new ArrayList<>();
-        final ThemeEntity dummy = new ThemeEntity(null, null, null, null);
-        themes.add(dummy);
-    }
-
-    public FakeThemeDao(final List<ThemeEntity> themes) {
-        this.themes = themes;
-        index += themes.size();
-        final ThemeEntity dummy = new ThemeEntity(null, null, null, null);
-        themes.addFirst(dummy);
     }
 
     @Override
     public Long save(final Theme theme) {
-        final ThemeEntity temp = ThemeEntity.from(theme);
-        final ThemeEntity themeEntity = new ThemeEntity(
-                (long) index,
-                temp.name(),
-                temp.description(),
-                temp.thumbnail()
+        long id = atomicLong.getAndIncrement();
+        final Theme savedTheme = new Theme(
+                id,
+                theme.getName(),
+                theme.getDescription(),
+                theme.getThumbnail()
         );
-        themes.add(index, themeEntity);
-
-        return (long) index++;
+        themes.add(savedTheme);
+        return id;
     }
 
     @Override
     public Optional<Theme> find(final Long id) {
-        try {
-            final ThemeEntity themeEntity = themes.get(Math.toIntExact(id));
-            return Optional.of(themeEntity.toDomain());
-        } catch (IndexOutOfBoundsException e) {
-            return Optional.empty();
-        }
+        return themes.stream()
+                .filter(theme -> theme.getId().equals(id))
+                .findFirst();
     }
 
     @Override
@@ -57,20 +44,20 @@ public class FakeThemeDao implements ThemeDao {
 
     @Override
     public List<Theme> findAll() {
-        return themes.stream()
-                .filter(themeEntity -> themeEntity.id() != null)
-                .map(ThemeEntity::toDomain)
-                .toList();
+        return Collections.unmodifiableList(themes);
     }
 
     @Override
     public boolean remove(final Long id) {
-        try {
-            themes.remove(themes.get(Math.toIntExact(id)));
-            index--;
-            return true;
-        } catch (IndexOutOfBoundsException e) {
-            return false;
-        }
+        final int beforeSize = themes.size();
+        themes.removeIf(theme -> theme.getId().equals(id));
+        final int afterSize = themes.size();
+        final int deletedCount = beforeSize - afterSize;
+        return deletedCount >= 1;
+    }
+
+    @Override
+    public boolean existsByName(final String name) {
+        return false;
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
-import roomescape.persistence.entity.ReservationEntity;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 @Repository
@@ -176,7 +175,7 @@ public class JdbcReservationDao implements ReservationDao {
                         rs.getLong(2),
                         rs.getLong(3) != 0
                 ),
-                ReservationEntity.formatDate(date),
+                date,
                 theme.getId()
         );
     }
