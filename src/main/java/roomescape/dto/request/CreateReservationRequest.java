@@ -15,6 +15,6 @@ public record CreateReservationRequest(
 ) {
 
     public Reservation toReservation(Member member, ReservationTime reservationTime, Theme theme) {
-        return new Reservation(null, member, date, reservationTime, theme);
+        return new Reservation(member, date, reservationTime, theme);
     }
 }

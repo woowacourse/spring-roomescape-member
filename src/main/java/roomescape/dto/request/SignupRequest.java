@@ -10,6 +10,6 @@ public record SignupRequest(
 ) {
 
     public Member toMember() {
-        return new Member(null, name, email, password, Role.USER);
+        return new Member( name, email, password, Role.USER);
     }
 }

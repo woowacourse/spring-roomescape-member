@@ -19,6 +19,10 @@ public class Member {
         this.role = role;
     }
 
+    public Member(String name, String email, String password, Role role) {
+        this(null, name, email, password, role);
+    }
+
     private void validate(String name, String email, String password) {
         if (name == null || name.isBlank()) {
             throw new InvalidMemberException("이름은 비어있을 수 없습니다");

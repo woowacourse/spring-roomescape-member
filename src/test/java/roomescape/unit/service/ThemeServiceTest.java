@@ -65,7 +65,7 @@ class ThemeServiceTest {
     @Test
     void 테마를_조회할_수_있다() {
         // given
-        Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
+        Theme theme = new Theme( "방탈출", "게임입니다.", "thumbnail");
         themeRepository.add(theme);
 
         // when & then
@@ -75,7 +75,7 @@ class ThemeServiceTest {
     @Test
     void 테마를_삭제할_수_있다() {
         // given
-        Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
+        Theme theme = new Theme( "방탈출", "게임입니다.", "thumbnail");
         themeRepository.add(theme);
 
         // when
@@ -88,11 +88,11 @@ class ThemeServiceTest {
     @Test
     void 예약이_존재하는_테마는_삭제할_수_없다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        Theme theme = new Theme(null, "방탈출", "게임입니다.", "thumbnail");
+        Theme theme = new Theme( "방탈출", "게임입니다.", "thumbnail");
         Long themeId = themeRepository.add(theme).getId();
 
         ReservationTime reservationTime = reservationTimeService.addReservationTime(

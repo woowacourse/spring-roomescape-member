@@ -48,41 +48,22 @@ public class ReservationService {
     }
 
     public Reservation addReservation(CreateReservationRequest request, LoginMember loginMember) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
-        Member member = memberRepository.findById(loginMember.getId())
-                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 멤버 id입니다."));
-
-        Reservation reservation = request.toReservation(member, reservationTime, theme);
-
-        validateDuplicateReservation(reservation);
-        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
-        validateAddReservationDateTime(reservation, currentDateTime);
-        return reservationRepository.add(reservation);
+        return createReservation(loginMember.getId(), request.themeId(), request.date(), request.timeId());
     }
 
-    // TODO: addReservation 메서드와 중복 로직 분리해보기
     public Reservation addReservationByAdmin(AdminCreateReservationRequest request) {
-        ReservationTime reservationTime = reservationTimeRepository.findById(request.timeId())
-                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
-        Theme theme = themeRepository.findById(request.themeId())
-                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
-        Member member = memberRepository.findById(request.memberId())
-                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 멤버 id입니다."));
+        return createReservation(request.memberId(), request.themeId(), request.date(), request.timeId());
+    }
 
-        Reservation reservation = new Reservation(
-                null,
-                member,
-                request.date(),
-                reservationTime,
-                theme
-        );
+    private Reservation createReservation(long memberId, long themeId, LocalDate date, long timeId) {
+        Member member = getMemberById(memberId);
+        ReservationTime reservationTime = getReservationTimeById(timeId);
+        Theme theme = getThemeById(themeId);
+
+        Reservation reservation = new Reservation(member, date, reservationTime, theme);
 
         validateDuplicateReservation(reservation);
-        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.now());
-        validateAddReservationDateTime(reservation, currentDateTime);
+        validateAddReservationDateTime(reservation);
         return reservationRepository.add(reservation);
     }
 
@@ -92,7 +73,8 @@ public class ReservationService {
         }
     }
 
-    private void validateAddReservationDateTime(Reservation reservation, LocalDateTime currentDateTime) {
+    private void validateAddReservationDateTime(Reservation reservation) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
         if (reservation.isBefore(currentDateTime)) {
             throw new InvalidReservationException("과거 시간에 예약할 수 없습니다.");
         }
@@ -131,5 +113,20 @@ public class ReservationService {
 
         ThemeRanking themeRanking = new ThemeRanking(inRangeReservations);
         return themeRanking.getAscendingRanking();
+    }
+
+    private Theme getThemeById(long themeId) {
+        return themeRepository.findById(themeId)
+                .orElseThrow(() -> new InvalidThemeException("존재하지 않는 테마 id입니다."));
+    }
+
+    private ReservationTime getReservationTimeById(long timeId) {
+        return reservationTimeRepository.findById(timeId)
+                .orElseThrow(() -> new InvalidReservationTimeException("존재하지 않는 예약 시간 id입니다."));
+    }
+
+    private Member getMemberById(long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new InvalidMemberException("존재하지 않는 멤버 id입니다."));
     }
 }

@@ -213,17 +213,17 @@ class ReservationIntegrateTest {
         Member member = memberRepository.findByEmailAndPassword(EMAIL, PASSWORD)
                 .orElse(null);
 
-        Reservation reservation1 = new Reservation(null, member, LocalDate.now().minusDays(1),
+        Reservation reservation1 = new Reservation(member, LocalDate.now().minusDays(1),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
-        Reservation reservation2 = new Reservation(null, member, LocalDate.now().minusDays(2),
+        Reservation reservation2 = new Reservation(member, LocalDate.now().minusDays(2),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
-        Reservation reservation3 = new Reservation(null, member, LocalDate.now().minusDays(3),
+        Reservation reservation3 = new Reservation(member, LocalDate.now().minusDays(3),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_1, "테마 명1", "description", "thumbnail"));
-        Reservation reservation4 = new Reservation(null, member, LocalDate.now().minusDays(4),
+        Reservation reservation4 = new Reservation(member, LocalDate.now().minusDays(4),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
-        Reservation reservation5 = new Reservation(null, member, LocalDate.now().minusDays(5),
+        Reservation reservation5 = new Reservation(member, LocalDate.now().minusDays(5),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_2, "테마 명2", "description", "thumbnail"));
-        Reservation reservation6 = new Reservation(null, member, LocalDate.now().minusDays(6),
+        Reservation reservation6 = new Reservation(member, LocalDate.now().minusDays(6),
                 new ReservationTime(timeId, afterTime), new Theme(themeId_3, "테마 명3", "description", "thumbnail"));
 
         reservationRepository.add(reservation1);

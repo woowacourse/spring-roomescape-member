@@ -10,6 +10,6 @@ public record CreateThemeRequest(
 ) {
 
     public Theme toTheme() {
-        return new Theme(null, name, description, thumbnail);
+        return new Theme( name, description, thumbnail);
     }
 }

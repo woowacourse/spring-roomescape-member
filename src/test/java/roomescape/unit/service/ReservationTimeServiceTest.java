@@ -74,7 +74,7 @@ class ReservationTimeServiceTest {
 
         Theme theme = new Theme(0L, "공포", "공포테마입니다.", "thumbnail");
 
-        Reservation reservation = new Reservation(null, member,
+        Reservation reservation = new Reservation(member,
                 LocalDate.now().plusDays(1), reservationTime, theme);
         reservationRepository.add(reservation);
 

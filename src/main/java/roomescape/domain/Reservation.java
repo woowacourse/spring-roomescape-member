@@ -22,6 +22,10 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(Member member, LocalDate date, ReservationTime time, Theme theme) {
+        this(null, member, date, time, theme);
+    }
+
     private void validate(Member member, LocalDate date, ReservationTime time, Theme theme) {
         if (member == null) {
             throw new InvalidReservationException("예약자는 비어있을 수 없습니다");

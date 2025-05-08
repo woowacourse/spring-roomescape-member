@@ -56,14 +56,14 @@ class ReservationServiceTest {
     @Test
     void 예약을_추가하고_조회할_수_있다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         CreateReservationRequest request = new CreateReservationRequest(LocalDate.now().plusDays(1L), reservationTimeId,
@@ -79,14 +79,14 @@ class ReservationServiceTest {
     @Test
     void 이전_날짜에_예약할_수_없다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -100,14 +100,14 @@ class ReservationServiceTest {
     @Test
     void 같은날짜일시_이전_시간에_예약할_수_없다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        ReservationTime pastTime = new ReservationTime(null, LocalTime.now().minusHours(1L));
+        ReservationTime pastTime = new ReservationTime( LocalTime.now().minusHours(1L));
         long pastTimeId = reservationTimeRepository.add(pastTime).getId();
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate today = LocalDate.now();
@@ -121,14 +121,14 @@ class ReservationServiceTest {
     @Test
     void 이후_날짜에_예약할_수_있다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate today = LocalDate.now();
@@ -142,14 +142,14 @@ class ReservationServiceTest {
     @Test
     void 같은날짜일시_이후_시간_예약할_수_있다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         LocalDate today = LocalDate.now();
@@ -163,14 +163,14 @@ class ReservationServiceTest {
     @Test
     void 예약을_삭제하고_조회할_수_있다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         CreateReservationRequest request = new CreateReservationRequest(
@@ -190,14 +190,14 @@ class ReservationServiceTest {
     @Test
     void 중복_예약은_불가능하다() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
-        ReservationTime reservationTime = new ReservationTime(null, LocalTime.now().plusHours(1L));
+        ReservationTime reservationTime = new ReservationTime( LocalTime.now().plusHours(1L));
         long reservationTimeId = reservationTimeRepository.add(reservationTime).getId();
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
@@ -212,7 +212,7 @@ class ReservationServiceTest {
     @Test
     void 선택된_테마와_날짜에_대해서_가능한_시간들을_확인할_수_있다2() {
         // given
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 
@@ -220,12 +220,12 @@ class ReservationServiceTest {
         LocalTime firstTime = LocalTime.now().plusHours(1L);
         LocalTime secondTime = LocalTime.now().plusHours(2L);
 
-        ReservationTime reservationTime1 = new ReservationTime(null, firstTime);
+        ReservationTime reservationTime1 = new ReservationTime( firstTime);
         ReservationTime firstReservationTime = reservationTimeRepository.add(reservationTime1);
-        ReservationTime reservationTime2 = new ReservationTime(null, secondTime);
+        ReservationTime reservationTime2 = new ReservationTime( secondTime);
         ReservationTime secondReservationTime = reservationTimeRepository.add(reservationTime2);
 
-        Theme theme = new Theme(null, "테마", "설명", "image.png");
+        Theme theme = new Theme( "테마", "설명", "image.png");
         long themeId = themeRepository.add(theme).getId();
 
         reservationService.addReservation(
@@ -251,16 +251,16 @@ class ReservationServiceTest {
         final int TIME_SLOTS = 6;
 
         for (int i = 0; i < THEME_COUNT; i++) {
-            Theme theme = new Theme(null, "테마" + (i + 1), "테마", "thumbnail");
+            Theme theme = new Theme( "테마" + (i + 1), "테마", "thumbnail");
             themeRepository.add(theme);
         }
 
         for (int i = 0; i < TIME_SLOTS; i++) {
             LocalTime localTime = LocalTime.of(10 + i, 0);
-            reservationTimeRepository.add(new ReservationTime(null, localTime));
+            reservationTimeRepository.add(new ReservationTime( localTime));
         }
 
-        Member beforeAddMember = new Member(null, "Hula", "test@test.com", "test", Role.USER);
+        Member beforeAddMember = new Member( "Hula", "test@test.com", "test", Role.USER);
         Member member = memberRepository.add(beforeAddMember);
         LoginMember loginMember = new LoginMember(member.getId(), member.getName(), member.getRole());
 

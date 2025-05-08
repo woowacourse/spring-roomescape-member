@@ -9,7 +9,7 @@ public record CreateReservationTimeRequest(
 ) {
 
     public ReservationTime toReservationTime() {
-        return new ReservationTime(null, startAt);
+        return new ReservationTime( startAt);
     }
 }
 
