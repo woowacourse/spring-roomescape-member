@@ -1,9 +1,9 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Service;
-import roomescape.JwtTokenProvider;
+import roomescape.config.JwtTokenProvider;
 import roomescape.domain.Member;
-import roomescape.exception.InvalidAuthorizationException;
+import roomescape.exception.UnauthorizedException;
 import roomescape.repository.MemberRepository;
 
 @Service
@@ -24,6 +24,6 @@ public class AuthService {
     public Member getMemberByToken(String token) {
         long memberId = jwtTokenProvider.getMemberIdByToken(token);
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new InvalidAuthorizationException("존재하지 않는 멤버 ID입니다."));
+                .orElseThrow(() -> new UnauthorizedException("존재하지 않는 멤버 ID입니다."));
     }
 }
