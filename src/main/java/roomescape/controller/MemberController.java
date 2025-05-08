@@ -23,7 +23,7 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/users")
+    @PostMapping("/members")
     public MemberResponseDto saveMember(@RequestBody MemberRequestDto memberRequestDto) {
         return memberService.saveMember(memberRequestDto);
     }
