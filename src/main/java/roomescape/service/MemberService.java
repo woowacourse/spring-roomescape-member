@@ -1,6 +1,7 @@
 package roomescape.service;
 
 import org.springframework.stereotype.Component;
+import roomescape.config.LoginMember;
 import roomescape.dao.MemberDao;
 import roomescape.dto.AuthorizationResponse;
 import roomescape.dto.LoginRequest;
@@ -30,11 +31,10 @@ public class MemberService {
         return new AccessToken(member);
     }
 
-    public AuthorizationResponse findMember(AccessToken accessToken) {
+    public AuthorizationResponse findMember(LoginMember member) {
         try {
-            long memberId = accessToken.findSubject();
-            Member member = memberDao.findById(memberId);
-            return new AuthorizationResponse(member);
+            Member realMemberINDb = memberDao.findById(member.getId());
+            return new AuthorizationResponse(realMemberINDb);
         } catch (MemberNotFoundException exception) {
             // TODO DAO에서 안잡고 여기서 잡은 이유 -> dao에서 잡기엔 너무 에러메세지가 authroization로직에서만 유효한 잡기이다.
             throw new InvalidAccessTokenException();
