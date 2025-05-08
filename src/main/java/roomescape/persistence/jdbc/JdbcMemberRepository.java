@@ -32,13 +32,14 @@ public class JdbcMemberRepository implements MemberRepository {
         parameters.put("name", memberEntity.getName());
         parameters.put("email", memberEntity.getEmail());
         parameters.put("password", memberEntity.getPassword());
+        parameters.put("role", memberEntity.getRole());
         return jdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     @Override
     public Optional<Member> findById(Long id) {
         String query = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 WHERE id = ?""";
         return jdbcTemplate.query(
@@ -47,7 +48,8 @@ public class JdbcMemberRepository implements MemberRepository {
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("email"),
-                                rs.getString("password")
+                                rs.getString("password"),
+                                rs.getString("role")
                         ),
                         id
                 )
@@ -59,7 +61,7 @@ public class JdbcMemberRepository implements MemberRepository {
     @Override
     public Optional<Member> findByEmail(String email) {
         String query = """
-                SELECT id, name, email, password
+                SELECT id, name, email, password, role
                 FROM member
                 WHERE email = ?""";
         return jdbcTemplate.query(
@@ -68,7 +70,8 @@ public class JdbcMemberRepository implements MemberRepository {
                                 rs.getLong("id"),
                                 rs.getString("name"),
                                 rs.getString("email"),
-                                rs.getString("password")
+                                rs.getString("password"),
+                                rs.getString("role")
                         ),
                         email
                 )

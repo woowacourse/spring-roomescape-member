@@ -9,20 +9,22 @@ public final class MemberEntity {
     private final String name;
     private final String email;
     private final String password;
+    private final String role;
 
-    public MemberEntity(Long id, String name, String email, String password) {
+    public MemberEntity(Long id, String name, String email, String password, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
-    public MemberEntity(String name, String email, String password) {
-        this(null, name, email, password);
+    public MemberEntity(String name, String email, String password, String role) {
+        this(null, name, email, password, role);
     }
 
     public MemberEntity copyWithId(Long id) {
-        return new MemberEntity(id, name, email, password);
+        return new MemberEntity(id, name, email, password, role);
     }
 
     public static MemberEntity fromDomain(Member member) {
@@ -31,12 +33,15 @@ public final class MemberEntity {
                     member.getId(),
                     member.getName(),
                     member.getEmail(),
-                    member.getPassword());
+                    member.getPassword(),
+                    member.getRole().value()
+            );
         }
         return new MemberEntity(
                 member.getName(),
                 member.getEmail(),
-                member.getPassword()
+                member.getPassword(),
+                member.getRole().value()
         );
     }
 
@@ -61,6 +66,10 @@ public final class MemberEntity {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     @Override
