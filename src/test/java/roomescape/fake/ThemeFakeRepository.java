@@ -1,8 +1,8 @@
 package roomescape.fake;
 
-import roomescape.entity.Theme;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ThemeRepository;
+import roomescape.common.exception.EntityNotFoundException;
+import roomescape.theme.entity.Theme;
+import roomescape.theme.repository.ThemeRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

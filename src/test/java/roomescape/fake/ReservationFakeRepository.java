@@ -1,10 +1,10 @@
 package roomescape.fake;
 
-import roomescape.entity.Reservation;
-import roomescape.entity.ReservationTime;
-import roomescape.entity.Theme;
-import roomescape.exceptions.EntityNotFoundException;
-import roomescape.repository.ReservationRepository;
+import roomescape.common.exception.EntityNotFoundException;
+import roomescape.reservation.entity.Reservation;
+import roomescape.time.entity.ReservationTime;
+import roomescape.theme.entity.Theme;
+import roomescape.reservation.repository.ReservationRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
