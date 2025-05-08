@@ -3,6 +3,7 @@ package roomescape.auth.presentation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import roomescape.auth.infrastructure.CookieAuthorizationExtractor;
@@ -23,12 +24,14 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
-        String token = extractor.extract(request);
 
-        if (token == null) {
+        Optional<String> result = extractor.extract(request);
+
+        if (result.isEmpty()) {
             return handleRedirectWithAlert(response, "로그인이 필요합니다.", "/login");
         }
 
+        String token = result.get();
         if (!jwtTokenProvider.validateToken(token)) {
             return handleRedirectWithAlert(response, "유효하지 않은 토큰입니다.", "/login");
         }
@@ -38,7 +41,6 @@ public class AdminAuthorizationInterceptor implements HandlerInterceptor {
             response.sendRedirect("/error/403.html");
             return false;
         }
-
         return true;
     }
 
