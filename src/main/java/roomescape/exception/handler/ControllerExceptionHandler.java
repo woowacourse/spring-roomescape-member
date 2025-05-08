@@ -2,6 +2,7 @@ package roomescape.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import roomescape.exception.exception.DataNotFoundException;
@@ -11,6 +12,11 @@ import roomescape.exception.exception.PastReservationTimeException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleHttpMessageNotReadableException() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("시간 형식이 올바르지 않습니다.");
+    }
 
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<String> handleDataNotFoundException(final DataNotFoundException ex) {
