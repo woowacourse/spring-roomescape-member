@@ -8,8 +8,8 @@ import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.LoginResponse;
 import roomescape.auth.service.dto.SignupRequest;
 import roomescape.exception.badRequest.BadRequestException;
-import roomescape.exception.conflict.ConflictException;
-import roomescape.exception.notFound.NotFoundException;
+import roomescape.exception.conflict.UserEmailConflictException;
+import roomescape.exception.notFound.UserNotFoundException;
 import roomescape.exception.unauthorized.UserUnauthorizedException;
 
 @Service
@@ -32,7 +32,7 @@ public class UserAuthService {
     public void signup(SignupRequest request) {
         userRepository.findByEmail(request.email())
                 .ifPresentOrElse(user -> {
-                    throw new ConflictException("이미 존재하는 유저입니다.");
+                    throw new UserEmailConflictException();
                 }, () -> {
                     User user = request.toEntity();
                     userRepository.save(user);
@@ -44,7 +44,7 @@ public class UserAuthService {
         try {
             final long userId = Long.parseLong(subject);
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new NotFoundException(userId, "유저"));
+                    .orElseThrow(() -> new UserNotFoundException(userId));
             return new CheckResponse(user.getName());
         } catch (NumberFormatException e) {
             throw new BadRequestException("잘못된 형식의 토큰입니다.");

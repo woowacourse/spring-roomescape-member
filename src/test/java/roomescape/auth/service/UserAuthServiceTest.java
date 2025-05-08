@@ -8,6 +8,7 @@ import roomescape.auth.repository.UserRepository;
 import roomescape.auth.service.dto.LoginRequest;
 import roomescape.auth.service.dto.SignupRequest;
 import roomescape.exception.conflict.ConflictException;
+import roomescape.exception.conflict.UserEmailConflictException;
 import roomescape.exception.unauthorized.UserUnauthorizedException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,6 +48,6 @@ class UserAuthServiceTest {
         // when & then
         assertThatThrownBy(() -> {
             service.signup(request);
-        }).isInstanceOf(ConflictException.class);
+        }).isInstanceOf(UserEmailConflictException.class);
     }
 }

@@ -1,7 +1,7 @@
 package roomescape.auth.repository;
 
 import roomescape.auth.entity.User;
-import roomescape.exception.conflict.ConflictException;
+import roomescape.exception.conflict.UserEmailConflictException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class FakeUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         if (findByEmail(user.getEmail()).isPresent()) {
-            throw new ConflictException("이미 존재하는 유저입니다.");
+            throw new UserEmailConflictException();
         }
         users.add(user);
         return user;
