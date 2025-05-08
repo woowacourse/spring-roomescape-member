@@ -81,6 +81,19 @@ public class JdbcThemeDao implements ThemeDao {
     }
 
     @Override
+    public boolean existsByName(final String name) {
+        final String sql = """
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM theme
+                    WHERE name = ?
+                )
+                """;
+        final int flag = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        return flag == 1;
+    }
+
+    @Override
     public List<Theme> findPopularThemesBetween(
             final String startDate,
             final String endDate

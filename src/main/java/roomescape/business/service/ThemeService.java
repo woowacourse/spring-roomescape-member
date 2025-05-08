@@ -25,10 +25,16 @@ public class ThemeService {
     }
 
     public ThemeResponse create(final ThemeRequest themeRequest) {
+        validateNameIsDuplicate(themeRequest.name());
         final Theme theme = themeRequest.toDomain();
         final Long id = themeDao.save(theme);
-
         return ThemeResponse.withId(id, theme);
+    }
+
+    private void validateNameIsDuplicate(final String name) {
+        if (themeDao.existsByName(name)) {
+            throw new NotFoundException("추가 하려는 테마 이름이 이미 존재합니다.");
+        }
     }
 
     public List<ThemeResponse> findAll() {

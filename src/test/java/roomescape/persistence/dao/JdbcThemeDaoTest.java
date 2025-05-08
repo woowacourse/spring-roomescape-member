@@ -87,4 +87,24 @@ class JdbcThemeDaoTest {
         // then
         assertThat(isDeleted).isFalse();
     }
+
+    @Test
+    @DisplayName("데이터베이스에서 이름과 동일한 대상이 존재하는지 확인한다")
+    void existsByName() {
+        // given
+        final String existThemeName = "테마";
+        final String notExistThemeName = "존재하지 않는 테마";
+        final Theme theme = new Theme(existThemeName, "소개", "썸네일");
+        themeDao.save(theme);
+
+        // when
+        final boolean existTheme = themeDao.existsByName(theme.getName());
+        final boolean notExistTheme = themeDao.existsByName(notExistThemeName);
+
+        // then
+        assertAll(
+                () -> assertThat(existTheme).isTrue(),
+                () -> assertThat(notExistTheme).isFalse()
+        );
+    }
 }
