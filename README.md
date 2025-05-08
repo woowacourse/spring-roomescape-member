@@ -33,12 +33,14 @@
 ### 🚀 5단계 - 로그인 리팩터링
 - [x] HandlerMethodArgumentResolver을 활용하여 로그인한 사용자 정보를 컨트롤러 메서드에 주입하도록 로직 분리
 - [x] 사용자 예약 생성 API에서 쿠키 정보를 사용하도록 리팩터링
-- [ ] 관리자 예약 생성 API에서 memberId 정보를 사용하도록 리팩터링
-- [ ] reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경
-- [ ] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
-- [ ] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경
+- [x] reservation.html, user-reservation.js 파일의 TODO 주석을 참고하여 변경
+- [x] admin/reservation-new.html 파일에서 안내된 4단계 관련 주석에 따라, 로딩하는 js 파일을 변경
+- [x] /members GET 요청 API 추가
+- [x] 관리자 예약 생성 API에서 memberId 정보를 사용하도록 리팩터링
+- [x] 관리자가 예약 생성 시, 유저를 조회하여 선택 후 예약을 생성하도록 리팩터링
 
 ### 추후 할 것
 - [ ] H2 DB - In memory 에서 Embedded 모드로 변경
 - [ ] H2 DB - DB 초기화 쿼리 작성 (불필요한 DirtiesContext 제거)
+- [ ] 관리자 예약 API와 유저 예약 API 분리
 

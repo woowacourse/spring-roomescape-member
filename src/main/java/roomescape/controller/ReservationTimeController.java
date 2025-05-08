@@ -36,7 +36,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservationTime>> read() {
+    public ResponseEntity<List<ReservationTime>> readAll() {
         List<ReservationTime> reservationTimes = reservationTimeService.readReservationTime();
         return ResponseEntity.ok(reservationTimes);
     }
@@ -48,7 +48,7 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ReservationTimeResponseWithBookedStatus>> read(
+    public ResponseEntity<List<ReservationTimeResponseWithBookedStatus>> readAll(
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) Long themeId) {
         List<ReservationTimeResponseWithBookedStatus> response = reservationTimeService.readAvailableTimesBy(

@@ -73,14 +73,14 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void readReservationTest() {
+    void readReservationsTest() {
         // given
         LocalDate givenDate = LocalDate.now().plusDays(1);
         CreateReservationRequest request = new CreateReservationRequest("히스타", givenDate, 1L, 1L);
         reservationService.saveReservation(request);
 
         // when
-        List<ReservationResponse> reservationResponses = reservationService.readReservation();
+        List<ReservationResponse> reservationResponses = reservationService.readReservations();
 
         // then
         assertThat(reservationResponses).hasSize(1);
@@ -104,9 +104,9 @@ public class ReservationServiceTest {
         reservationService.saveReservation(request);
 
         // when
-        List<ReservationResponse> reservationResponsesBeforeDelete = reservationService.readReservation();
+        List<ReservationResponse> reservationResponsesBeforeDelete = reservationService.readReservations();
         reservationService.delete(reservationResponsesBeforeDelete.get(0).id());
-        List<ReservationResponse> reservationResponsesAfterDelete = reservationService.readReservation();
+        List<ReservationResponse> reservationResponsesAfterDelete = reservationService.readReservations();
 
         // then
         Assertions.assertAll(

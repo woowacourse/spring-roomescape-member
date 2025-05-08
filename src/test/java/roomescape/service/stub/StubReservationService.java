@@ -27,7 +27,7 @@ public class StubReservationService extends ReservationService {
     }
 
     @Override
-    public List<ReservationResponse> readReservation() {
+    public List<ReservationResponse> readReservations() {
         return List.of(ReservationResponse.from(testReservation));
     }
 

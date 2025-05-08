@@ -43,7 +43,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void readTheme() {
+    void readAllTheme() {
         RestAssured.given().log().all()
                 .when().get("/themes")
                 .then().log().all()
@@ -62,7 +62,7 @@ public class ThemeControllerTest {
     }
 
     @Test
-    void readThemeList() {
+    void readAllThemeList() {
         RestAssured.given().log().all()
                 .when().get("/themes/lists?orderType=popular_desc&listNum=1")
                 .then().log().all()

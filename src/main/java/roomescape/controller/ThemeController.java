@@ -33,7 +33,7 @@ public class ThemeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Theme>> read() {
+    public ResponseEntity<List<Theme>> readAll() {
         List<Theme> themes = themeService.read();
         return ResponseEntity.ok(themes);
     }

@@ -27,7 +27,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void createReservation() {
+    void createWithTokenReservation() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "히스타");
         params.put("date", "2025-05-01");
@@ -51,7 +51,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    void readReservation() {
+    void readAllReservation() {
         RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()

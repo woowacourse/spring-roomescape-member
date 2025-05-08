@@ -39,7 +39,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    void readReservationTime() {
+    void readAllReservationTime() {
         RestAssured.given().log().all()
                 .when().get("/times")
                 .then().log().all()
@@ -56,7 +56,7 @@ public class ReservationTimeControllerTest {
     }
 
     @Test
-    void readAvailableTimesBy() {
+    void readAllAvailableTimesBy() {
         Map<String, String> params = new HashMap<>();
         params.put("date", "2024-05-01");
         params.put("themeId", "1");

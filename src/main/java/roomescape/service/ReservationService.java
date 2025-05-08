@@ -85,7 +85,7 @@ public class ReservationService {
         );
     }
 
-    public List<ReservationResponse> readReservation() {
+    public List<ReservationResponse> readReservations() {
         List<Reservation> reservations = reservationRepository.readAll();
         return reservations.stream().map(ReservationResponse::from).toList();
     }
