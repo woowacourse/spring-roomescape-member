@@ -6,12 +6,13 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import roomescape.application.AuthenticationService;
+import roomescape.common.Authenticated;
+import roomescape.domain.User;
 import roomescape.presentation.request.LoginRequest;
 import roomescape.presentation.response.UserResponse;
 
@@ -48,8 +49,7 @@ public class LoginApiController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserResponse> getUser(@CookieValue("token") final String token) {
-        var user = authenticationService.findUserByToken(token);
+    public ResponseEntity<UserResponse> getUser(@Authenticated final User user) {
         var response = UserResponse.from(user);
         return ResponseEntity.ok(response);
     }

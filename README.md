@@ -408,3 +408,9 @@
     "name": "어드민"
     }
     ```
+
+## 5단계
+
+로그인 리팩터링
+- [x] Cookie에 담긴 인증 정보를 이용해 사용자 객체를 만드는 로직 분리
+  - HandlerMethodArgumentResolver 활용
