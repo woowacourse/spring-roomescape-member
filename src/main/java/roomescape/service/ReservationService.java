@@ -5,34 +5,38 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
-import roomescape.service.request.ReservationCreateRequest;
-import roomescape.service.response.ReservationResponse;
+import roomescape.domain.member.Member;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationDate;
 import roomescape.domain.reservation.ReservationDateTime;
-import roomescape.domain.reservation.ReserverName;
-import roomescape.repository.ReservationRepository;
 import roomescape.domain.theme.Theme;
-import roomescape.repository.ThemeRepository;
 import roomescape.domain.time.ReservationTime;
+import roomescape.repository.MemberRepository;
+import roomescape.repository.ReservationRepository;
 import roomescape.repository.ReservationTimeRepository;
+import roomescape.repository.ThemeRepository;
+import roomescape.service.request.AdminCreateReservationRequest;
+import roomescape.service.request.ReservationCreateRequest;
+import roomescape.service.response.ReservationResponse;
 
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationTimeRepository reservationTimeRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
     private final Clock clock;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             ReservationTimeRepository reservationTimeRepository,
-            ThemeRepository themeRepository,
+            ThemeRepository themeRepository, final MemberRepository memberRepository,
             Clock clock
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationTimeRepository = reservationTimeRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
         this.clock = clock;
     }
 
@@ -41,13 +45,12 @@ public class ReservationService {
         return ReservationResponse.from(reservations);
     }
 
-    public ReservationResponse createReservation(ReservationCreateRequest request) {
+    public ReservationResponse createReservation(ReservationCreateRequest request, Member member) {
         ReservationDateTime dateTime = convertReservationDateTime(request.date(), request.timeId());
         validateReservationAvailability(dateTime);
         Theme theme = themeRepository.findById(request.themeId())
                 .orElseThrow(() -> new NoSuchElementException("해당 테마가 존재하지 않습니다."));
-        ReserverName reserverName = new ReserverName(request.name());
-        Reservation created = reservationRepository.save(reserverName, dateTime, theme);
+        Reservation created = reservationRepository.save(member, dateTime, theme);
         return ReservationResponse.from(created);
     }
 
@@ -72,5 +75,16 @@ public class ReservationService {
     private Reservation getReservation(Long id) {
         return reservationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다."));
+    }
+
+    public ReservationResponse createReservationByAdmin(final AdminCreateReservationRequest request) {
+        Member member = memberRepository.findById(request.memberId())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 멤버입니다."));
+        ReservationDateTime dateTime = convertReservationDateTime(request.date(), request.timeId());
+        validateReservationAvailability(dateTime);
+        Theme theme = themeRepository.findById(request.themeId())
+                .orElseThrow(() -> new NoSuchElementException("해당 테마가 존재하지 않습니다."));
+        Reservation created = reservationRepository.save(member, dateTime, theme);
+        return ReservationResponse.from(created);
     }
 }
