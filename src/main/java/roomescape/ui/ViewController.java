@@ -35,4 +35,9 @@ public class ViewController {
     public String getHomePage() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
 }
