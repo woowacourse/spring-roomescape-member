@@ -17,6 +17,6 @@ public class MemberService {
         if (memberRepository.existsByEmail(request.email())) {
             throw new MemberException("이미 존재하는 이메일입니다.");
         }
-        memberRepository.save(new Member(request.name(), request.email(), request.password()));
+        memberRepository.save(new Member(null, request.name(), request.email(), request.password()));
     }
 }

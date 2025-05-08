@@ -3,20 +3,29 @@ package roomescape.controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import roomescape.dto.LoginInfo;
 import roomescape.dto.request.AuthRequest;
 import roomescape.service.AuthService;
 
 @RestController
+@RequestMapping("/login")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/login")
+    @PostMapping
     public void login(@Valid @RequestBody final AuthRequest request, final HttpSession session) {
         authService.login(request, session);
+    }
+
+    @GetMapping("/check")
+    public LoginInfo checkLogin(final HttpSession session) {
+        return authService.checkLogin(session);
     }
 }
