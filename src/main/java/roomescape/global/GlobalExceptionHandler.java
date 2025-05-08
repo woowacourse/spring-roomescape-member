@@ -1,15 +1,18 @@
 package roomescape.global;
 
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import roomescape.global.dto.ErrorResponse;
+import roomescape.exception.ForbiddenException;
 import roomescape.exception.InvalidAuthorizationException;
+import roomescape.exception.UnauthorizedException;
+import roomescape.global.dto.ErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,7 +28,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAuthorizationException(InvalidAuthorizationException e) {
         ErrorResponse response = ErrorResponse.from(e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        return ResponseEntity.status(UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler(exception = UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
+        ErrorResponse response = ErrorResponse.from(e.getMessage());
+
+        return ResponseEntity.status(UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler(exception = ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
+        ErrorResponse response = ErrorResponse.from(e.getMessage());
+
+        return ResponseEntity.status(UNAUTHORIZED)
                 .body(response);
     }
 

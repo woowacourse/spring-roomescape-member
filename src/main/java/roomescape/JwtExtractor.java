@@ -2,13 +2,14 @@ package roomescape;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import roomescape.exception.UnauthorizedException;
 
 public class JwtExtractor {
 
     public static String extractFromRequest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
-            return "";
+            throw new UnauthorizedException("쿠키가 비어있습니다.");
         }
         return extractTokenFromCookie(cookies);
     }
@@ -19,6 +20,6 @@ public class JwtExtractor {
                 return cookie.getValue();
             }
         }
-        return "";
+        throw new UnauthorizedException("쿠키에 토큰이 없습니다.");
     }
 }
