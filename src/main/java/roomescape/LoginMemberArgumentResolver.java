@@ -34,6 +34,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         return authService.getMemberByToken(token);
     }
 
+    // TODO: Interceptor와 공통 로직 분리해보기
     private String extractTokenFromCookie(Cookie[] cookies) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
