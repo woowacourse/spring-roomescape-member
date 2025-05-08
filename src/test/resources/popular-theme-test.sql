@@ -1,8 +1,8 @@
-INSERT INTO reservation_time (id, start_at) VALUES
+INSERT INTO reservation_time (time_id, start_at) VALUES
 (100, '12:00'),
 (200, '13:00');
 
-INSERT INTO theme (id, theme_name, description, thumbnail) VALUES
+INSERT INTO theme (theme_id, theme_name, description, thumbnail) VALUES
 (100, 'top1', 'description1', 'thumbnail1'),
 (200, 'top2', 'description2', 'thumbnail2'),
 (300, 'top3', 'description3', 'thumbnail3'),

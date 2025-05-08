@@ -81,20 +81,20 @@ public class JdbcReservationRepository implements ReservationRepository {
     public Optional<Reservation> findById(long id) {
         final String query = """
                 SELECT
-                    id AS reservation_id,
+                    reservation_id,
                     name,
                     date,
-                    rt.id AS time_id,
+                    rt.time_id AS time_id,
                     start_at AS time_value,
                     theme_name,
                     description,
                     thumbnail
                 FROM reservation AS r
                 JOIN reservation_time AS rt
-                ON r.time_id = rt.id
+                ON r.time_id = rt.time_id
                 JOIN theme AS t 
-                ON r.theme_id = t.id
-                WHERE r.id = ?
+                ON r.theme_id = t.theme_id
+                WHERE r.reservation_id = ?
                 """;
         List<Reservation> reservations = jdbcTemplate.query(query, RESERVATION_ROW_MAPPER, id);
         return reservations.stream()
@@ -115,7 +115,7 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean deleteById(final long id) {
-        final String query = "DELETE FROM reservation WHERE id = ?";
+        final String query = "DELETE FROM reservation WHERE reservation_id = ?";
         final int deleted = jdbcTemplate.update(query, id);
         return deleted > 0;
     }
