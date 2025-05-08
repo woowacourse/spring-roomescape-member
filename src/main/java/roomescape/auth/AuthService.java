@@ -30,6 +30,6 @@ public class AuthService {
         Long id = jwtTokenProvider.extractIdFromToken(token);
         Member member = memberRepository.findById(id).orElseThrow(UnAuthorizedException::new);
 
-        return LoginMemberInfo.of(member.getName());
+        return LoginMemberInfo.of(member.getId());
     }
 }

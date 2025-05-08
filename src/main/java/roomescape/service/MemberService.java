@@ -28,9 +28,9 @@ public class MemberService {
 
     public RegisterUserResult create(final RegisterMemberParam registerMemberParam) {
         Long id = memberRepository.create(new CreateMemberQuery(
+                registerMemberParam.name(),
                 registerMemberParam.email(),
-                registerMemberParam.password(),
-                registerMemberParam.name()
+                registerMemberParam.password()
         ));
 
         Member member = memberRepository.findById(id)

@@ -1,8 +1,8 @@
 package roomescape.controller.request;
 
-public record LoginMemberInfo(String name) {
+public record LoginMemberInfo(Long id) {
 
-    public static LoginMemberInfo of(String name) {
-        return new LoginMemberInfo(name);
+    public static LoginMemberInfo of(Long id) {
+        return new LoginMemberInfo(id);
     }
 }

@@ -1,4 +1,4 @@
 package roomescape.persistence.query;
 
-public record CreateMemberQuery(String email, String password, String name) {
+public record CreateMemberQuery(String name, String email, String password) {
 }

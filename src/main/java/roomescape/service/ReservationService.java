@@ -5,6 +5,7 @@ import roomescape.domain.*;
 import roomescape.exception.ReservationException;
 import roomescape.persistence.query.CreateReservationQuery;
 import roomescape.service.param.CreateReservationParam;
+import roomescape.service.result.LoginMemberResult;
 import roomescape.service.result.ReservationResult;
 import roomescape.service.result.ReservationTimeResult;
 import roomescape.service.result.ThemeResult;
@@ -19,26 +20,29 @@ public class ReservationService {
     private final ReservationTimeRepository reservationTImeRepository;
     private final ReservationRepository reservationRepository;
     private final ThemeRepository themeRepository;
+    private final MemberRepository memberRepository;
 
-    public ReservationService(ReservationTimeRepository reservationTImeRepository,
-                              ReservationRepository reservationRepository, ThemeRepository themeRepository) {
+    public ReservationService(ReservationTimeRepository reservationTImeRepository, ReservationRepository reservationRepository, ThemeRepository themeRepository,  MemberRepository memberRepository) {
         this.reservationTImeRepository = reservationTImeRepository;
         this.reservationRepository = reservationRepository;
         this.themeRepository = themeRepository;
+        this.memberRepository = memberRepository;
     }
 
     public Long create(CreateReservationParam createReservationParam, LocalDateTime currentDateTime) {
         ReservationTime reservationTime = reservationTImeRepository.findById(createReservationParam.timeId()).orElseThrow(
-                () -> new ReservationException(createReservationParam.timeId() + "에 해당하는 reservation_time 튜플이 없습니다."));
+                () -> new ReservationException(createReservationParam.timeId() + "에 해당하는 정보가 없습니다."));
         Theme theme = themeRepository.findById(createReservationParam.themeId()).orElseThrow(
-                () -> new ReservationException(createReservationParam.themeId() + "에 해당하는 theme 튜플이 없습니다."));
+                () -> new ReservationException(createReservationParam.themeId() + "에 해당하는 정보가 없습니다."));
+        Member member = memberRepository.findById(createReservationParam.memberId()).orElseThrow(
+                () -> new ReservationException(createReservationParam.memberId() + "에 해당하는 정보가 없습니다."));
 
         validateUniqueReservation(createReservationParam, reservationTime, theme);
         validateReservationDateTime(createReservationParam, currentDateTime, reservationTime);
 
         return reservationRepository.create(
                 new CreateReservationQuery(
-                        createReservationParam.name(),
+                        member,
                         createReservationParam.date(),
                         reservationTime,
                         theme
@@ -65,7 +69,7 @@ public class ReservationService {
     private ReservationResult toReservationResult(Reservation reservation) {
         return new ReservationResult(
                 reservation.getId(),
-                reservation.getName(),
+                LoginMemberResult.from(reservation.getMember()),
                 reservation.getDate(),
                 ReservationTimeResult.from(reservation.getTime()),
                 ThemeResult.from(reservation.getTheme()));

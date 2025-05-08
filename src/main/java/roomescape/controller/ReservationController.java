@@ -36,8 +36,7 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody CreateReservationRequest createReservationRequest,
             @LoginMember LoginMemberInfo loginMemberInfo) {
-
-        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(loginMemberInfo), LocalDateTime.now());
+        Long reservationId = reservationService.create(createReservationRequest.toServiceParam(loginMemberInfo.id()), LocalDateTime.now());
         ReservationResult reservationResult = reservationService.findById(reservationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ReservationResponse.from(reservationResult));
     }
