@@ -2,13 +2,14 @@ package roomescape.controller.reservation.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import roomescape.controller.member.dto.MemberResponse;
 import roomescape.controller.theme.dto.ThemeResponse;
 import roomescape.controller.timeslot.dto.TimeSlotResponse;
 import roomescape.model.Reservation;
 
 public record ReservationResponse(
         Long id,
-        String name,
+        MemberResponse member,
         LocalDate date,
         TimeSlotResponse time,
         ThemeResponse theme
@@ -17,7 +18,7 @@ public record ReservationResponse(
     public static ReservationResponse from(final Reservation reservation) {
         return new ReservationResponse(
                 reservation.id(),
-                reservation.name(),
+                MemberResponse.from(reservation.member()),
                 reservation.date(),
                 TimeSlotResponse.from(reservation.timeSlot()),
                 ThemeResponse.from(reservation.theme())

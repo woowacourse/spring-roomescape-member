@@ -1,64 +1,60 @@
 package roomescape;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import roomescape.controller.reservation.dto.AddReservationRequest;
-import roomescape.controller.theme.dto.AddThemeRequest;
-import roomescape.controller.timeslot.dto.AddTimeSlotRequest;
-import roomescape.model.Reservation;
-import roomescape.model.Theme;
-import roomescape.model.TimeSlot;
+import java.util.List;
 
 public class Fixtures {
 
-    // Inserted Reservations
-    public static final TimeSlot JUNK_TIME_SLOT_1 = new TimeSlot(1L, LocalTime.of(10, 0));
-    public static final TimeSlot JUNK_TIME_SLOT_2 = new TimeSlot(2L, LocalTime.of(12, 0));
-    public static final TimeSlot JUNK_TIME_SLOT_3 = new TimeSlot(3L, LocalTime.of(14, 0));
-    public static final Theme JUNK_THEME_1 = new Theme(1L, "레벨1", "설명1", "썸네일1");
-    public static final Theme JUNK_THEME_2 = new Theme(2L, "레벨2", "설명2", "썸네일2");
-    public static final Theme JUNK_THEME_3 = new Theme(3L, "레벨3", "설명3", "썸네일3");
+    public static final String SQL_INSERT_MEMBERS = """
+        INSERT INTO MEMBER (NAME, EMAIL, PASSWORD, ROLE)
+        VALUES
+            ('이름1', 'example1@email.com', 'password1', 'ADMIN'),
+            ('이름2', 'example2@email.com', 'password2', 'USER'),
+            ('이름3', 'example3@email.com', 'password3', 'USER');
+    """;
 
-    public static final Reservation JUNK_RESERVATION_1 = new Reservation(1L, "예약1", LocalDate.of(2025, 5, 4),
-            JUNK_TIME_SLOT_1, JUNK_THEME_2);
-    public static final Reservation JUNK_RESERVATION_2 = new Reservation(2L, "예약2", LocalDate.of(2025, 5, 4),
-            JUNK_TIME_SLOT_2, JUNK_THEME_2);
-    public static final Reservation JUNK_RESERVATION_3 = new Reservation(3L, "예약3", LocalDate.of(2025, 5, 4),
-            JUNK_TIME_SLOT_3, JUNK_THEME_2);
-    public static final Reservation JUNK_RESERVATION_4 = new Reservation(4L, "예약4", LocalDate.of(2025, 5, 4),
-            JUNK_TIME_SLOT_1, JUNK_THEME_1);
-    public static final Reservation JUNK_RESERVATION_5 = new Reservation(5L, "예약5", LocalDate.of(2025, 5, 5),
-            JUNK_TIME_SLOT_2, JUNK_THEME_3);
-    public static final Reservation JUNK_RESERVATION_6 = new Reservation(6L, "예약6", LocalDate.of(2025, 5, 5),
-            JUNK_TIME_SLOT_3, JUNK_THEME_3);
+    public static final String SQL_INSERT_RESERVATION_TIMES = """
+        INSERT INTO RESERVATION_TIME (START_AT)
+        VALUES
+            ('10:00'),
+            ('12:00'),
+            ('14:00'),
+            ('16:00'),
+            ('18:00'),
+            ('20:00');
+    """;
 
-    // TimeSlot to insert
-    public static final AddTimeSlotRequest JUNK_TIME_SLOT_REQUEST = new AddTimeSlotRequest(LocalTime.of(16, 0));
-    public static final TimeSlot JUNK_TIME_SLOT = new TimeSlot(4L, LocalTime.of(16, 0));
+    public static final String SQL_INSERT_THEMES = """
+        INSERT INTO THEME (NAME, DESCRIPTION, THUMBNAIL)
+        VALUES
+            ('레벨1 탈출', '우테코 레벨1을 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+            ('레벨2 탈출', '우테코 레벨2를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+            ('레벨3 탈출', '우테코 레벨3을 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+            ('레벨4 탈출', '우테코 레벨4를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg'),
+            ('레벨5 탈출', '우테코 레벨5를 탈출하는 내용입니다.', 'https://i.pinimg.com/236x/6e/bc/46/6ebc461a94a49f9ea3b8bbe2204145d4.jpg');
+    """;
 
-    // Theme to insert
-    public static final AddThemeRequest JUNK_THEME_REQUEST = new AddThemeRequest("레벨4", "설명4", "썸네일4");
-    public static final Theme JUNK_THEME = new Theme(4L, "레벨4", "설명4", "썸네일4");
+    public static final String SQL_INSERT_RESERVATIONS = """
+        INSERT INTO RESERVATION (MEMBER_ID, DATE, TIME_ID, THEME_ID)
+        VALUES
+            (1, '2025-05-04', 1, 2),
+            (2, '2025-05-04', 2, 2),
+            (3, '2025-05-04', 3, 2),
+            (1, '2025-05-04', 4, 1),
+            (2, '2025-05-04', 5, 1),
+            (3, '2025-05-03', 3, 3),
+            (1, '2025-05-03', 4, 4),
+            (2, '2025-05-03', 5, 5);
+    """;
 
-    // Reservation to insert
-    public static final Reservation JUNK_RESERVATION = new Reservation(7L, "예약", LocalDate.of(2025, 5, 6),
-            JUNK_TIME_SLOT_1, JUNK_THEME_1);
-
+    public static final List<String> SQL_INSERT_ALL = List.of(
+            SQL_INSERT_MEMBERS,
+            SQL_INSERT_RESERVATION_TIMES,
+            SQL_INSERT_THEMES,
+            SQL_INSERT_RESERVATIONS
+    );
 
     public static LocalDate getDateOfTomorrow() {
         return LocalDate.now().plusDays(1);
-    }
-
-    public static AddReservationRequest getAddReservationRequestOfTomorrow() {
-        return getAddReservationRequestOfDate(getDateOfTomorrow());
-    }
-
-    public static Reservation getReservationOfTomorrow() {
-        var request = getAddReservationRequestOfTomorrow();
-        return request.toEntity(JUNK_TIME_SLOT_1, JUNK_THEME_1);
-    }
-
-    private static AddReservationRequest getAddReservationRequestOfDate(LocalDate date) {
-        return new AddReservationRequest("리버", date, 1L, 1L);
     }
 }
