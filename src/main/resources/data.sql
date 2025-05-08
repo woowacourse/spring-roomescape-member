@@ -25,3 +25,10 @@ INSERT INTO theme (name, description, thumbnail)
 VALUES ('B아파트13동1313호', '우테코가 끝나는 순간, 공포는 현실이 된다.', 'thumb4.jpg');
 INSERT INTO theme (name, description, thumbnail)
 VALUES ('꽁노리', '이따 포비랑 리사랑 꽁을 차기로 햇따.', 'thumb5.jpg');
+
+INSERT INTO member (name, email, password)
+VALUES ('이뜽연', 'forarium20@gmail.com', 'password');
+INSERT INTO member (name, email, password)
+VALUES ('이주연', 'leejuyeon28@gmail.com', 'password');
+INSERT INTO member (name, email, password)
+VALUES ('김영훈', 'younghooni@gmail.com', 'password');
