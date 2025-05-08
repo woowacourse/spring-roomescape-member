@@ -3,18 +3,15 @@ package roomescape.business.domain;
 public final class Member {
 
     private final Long id;
-    private final String name;
-    private final String email;
-    private final String password;
+    private final MemberName name;
+    private final Email email;
+    private final MemberPassword password;
 
     public Member(Long id, String name, String email, String password) {
-        if (name == null || email == null || password == null) {
-            throw new IllegalArgumentException("사용자 정보는 null일 수 없습니다.");
-        }
         this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+        this.name = new MemberName(name);
+        this.email = new Email(email);
+        this.password = new MemberPassword(password);
     }
 
     public Member(String email, String password, String name) {
@@ -26,14 +23,14 @@ public final class Member {
     }
 
     public String getName() {
-        return name;
+        return name.value();
     }
 
     public String getEmail() {
-        return email;
+        return email.value();
     }
 
     public String getPassword() {
-        return password;
+        return password.value();
     }
 }
