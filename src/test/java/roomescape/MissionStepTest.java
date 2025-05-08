@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
-import roomescape.controller.api.ReservationController;
+import roomescape.controller.api.ReservationApiController;
 import roomescape.controller.response.ReservationResponse;
 
 @Sql(scripts = {"/test-schema.sql"})
@@ -30,7 +30,7 @@ class MissionStepTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private ReservationController reservationController;
+    private ReservationApiController reservationApiController;
 
     @Test
     void 일단계() {
@@ -210,7 +210,7 @@ class MissionStepTest {
     void 구단계() {
         boolean isJdbcTemplateInjected = false;
 
-        for (Field field : reservationController.getClass().getDeclaredFields()) {
+        for (Field field : reservationApiController.getClass().getDeclaredFields()) {
             if (field.getType().equals(JdbcTemplate.class)) {
                 isJdbcTemplateInjected = true;
                 break;

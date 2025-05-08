@@ -17,11 +17,11 @@ import roomescape.controller.response.TimeSlotResponse;
 import roomescape.service.TimeSlotService;
 
 @RestController
-public class TimeSlotController {
+public class TimeSlotApiController {
 
     private final TimeSlotService service;
 
-    public TimeSlotController(final TimeSlotService service) {
+    public TimeSlotApiController(final TimeSlotService service) {
         this.service = service;
     }
 
