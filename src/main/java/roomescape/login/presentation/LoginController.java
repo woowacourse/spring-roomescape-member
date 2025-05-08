@@ -1,6 +1,6 @@
 package roomescape.login.presentation;
 
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
         Token token = loginService.login(request);
         String cookie = tokenCookieService.createTokenCookie(token.accessToken(), expiration);
 
@@ -47,7 +47,7 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout() {
         String cookie = tokenCookieService.createTokenCookie("", 0);
 
         return ResponseEntity.ok()
@@ -56,7 +56,7 @@ public class LoginController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<LoginCheckResponse> signup(@RequestBody SignupRequest request) {
+    public ResponseEntity<LoginCheckResponse> signup(@Valid @RequestBody SignupRequest request) {
         final LoginCheckResponse loginCheckResponse = loginService.signup(request);
         return ResponseEntity.ok(loginCheckResponse);
     }
