@@ -9,12 +9,13 @@ import roomescape.auth.entity.User;
 import java.util.Date;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String SECRET_KEY;
     @Value("${security.jwt.token.expire-length}")
     private long EXPIRE_LENGTH_MILLI;
 
+    @Override
     public String createToken(User user) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRE_LENGTH_MILLI);
@@ -24,5 +25,15 @@ public class JwtTokenProvider {
                 .expiration(expiration)
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                 .compact();
+    }
+
+    @Override
+    public String resolve(String token) {
+        return Jwts.parser()
+                .decryptWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
 }
