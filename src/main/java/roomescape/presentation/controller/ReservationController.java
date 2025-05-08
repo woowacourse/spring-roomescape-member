@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.business.service.ReservationService;
-import roomescape.exception.InvalidReservationDateException;
+import roomescape.exception.InvalidDateAndTimeException;
 import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 import roomescape.presentation.dto.ReservationRequest;
 import roomescape.presentation.dto.ReservationResponse;
@@ -35,7 +35,7 @@ public class ReservationController {
         try {
             final ReservationResponse reservationResponse = reservationService.insert(reservationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
-        } catch (InvalidReservationDateException e) {
+        } catch (InvalidDateAndTimeException e) {
             return ResponseEntity.unprocessableEntity().build();
         }
     }

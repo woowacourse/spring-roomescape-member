@@ -25,7 +25,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long save(final Reservation reservation) {
+    public Long insert(final Reservation reservation) {
         final Long id = reservationAtomicLong.getAndIncrement();
         final Reservation insertReservation = new Reservation(id, reservation.getName(), reservation.getDate(),
                 reservation.getPlayTime(), reservation.getTheme());
@@ -46,7 +46,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean remove(final Long id) {
+    public boolean deleteById(final Long id) {
         int beforeSize = reservations.size();
         reservations.removeIf(reservation -> reservation.getId().equals(id));
         int afterSize = reservations.size();
@@ -56,7 +56,7 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         return reservations.stream()
                 .anyMatch(reservation ->
                         reservation.getDate().equals(date) &&
@@ -66,8 +66,8 @@ public class FakeReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(final LocalDate date,
-                                                                                   final Long themeId) {
+    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndThemeId(final LocalDate date,
+                                                                                     final Long themeId) {
         return null;
     }
 }

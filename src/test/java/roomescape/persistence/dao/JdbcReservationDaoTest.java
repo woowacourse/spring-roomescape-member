@@ -57,7 +57,7 @@ class JdbcReservationDaoTest {
 
     @Test
     @DisplayName("데이터베이스에 방탈출 예약을 저장하고 조회하여 확인한다")
-    void saveAndFindById() {
+    void insertAndFindById() {
         // given
         final Reservation reservation = new Reservation(
                 "kim",
@@ -67,7 +67,7 @@ class JdbcReservationDaoTest {
         );
 
         // when
-        final Long id = reservationDao.save(reservation);
+        final Long id = reservationDao.insert(reservation);
 
         // then
         final Optional<Reservation> findReservation = reservationDao.findById(id);
@@ -88,10 +88,10 @@ class JdbcReservationDaoTest {
                 new PlayTime(1L),
                 new Theme(1L)
         );
-        final Long id = reservationDao.save(reservationDay1);
+        final Long id = reservationDao.insert(reservationDay1);
 
         // when
-        final boolean isDeleted = reservationDao.remove(id);
+        final boolean isDeleted = reservationDao.deleteById(id);
 
         // then
         assertAll(
@@ -116,8 +116,8 @@ class JdbcReservationDaoTest {
                 new PlayTime(1L),
                 new Theme(1L)
         );
-        reservationDao.save(reservationDay1);
-        reservationDao.save(reservationDay2);
+        reservationDao.insert(reservationDay1);
+        reservationDao.insert(reservationDay2);
 
         // when
         final List<Reservation> reservations = reservationDao.findAll();
@@ -133,7 +133,7 @@ class JdbcReservationDaoTest {
         final Long notExistId = 999L;
 
         // when
-        final boolean isDeleted = reservationDao.remove(notExistId);
+        final boolean isDeleted = reservationDao.deleteById(notExistId);
 
         // then
         assertThat(isDeleted).isFalse();
@@ -151,12 +151,12 @@ class JdbcReservationDaoTest {
                 new PlayTime(1L),
                 new Theme(1L)
         );
-        reservationDao.save(reservationDay1);
+        reservationDao.insert(reservationDay1);
 
         // when
-        final boolean existReservation = reservationDao.existsByDateAndTimeAndTheme(
+        final boolean existReservation = reservationDao.existsByDateAndTimeIdAndThemeId(
                 validDate, 1L, 1L);
-        final boolean notExistReservation = reservationDao.existsByDateAndTimeAndTheme(
+        final boolean notExistReservation = reservationDao.existsByDateAndTimeIdAndThemeId(
                 invalidDate, 1L, 1L);
 
         // then

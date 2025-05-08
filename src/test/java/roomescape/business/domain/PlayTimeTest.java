@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class PlayTimeTest {
 
     @Test
-    @DisplayName("startAt 필드에 null이 들어오면 예외가 발생한다")
+    @DisplayName("startAt 필드에 null 들어오면 예외가 발생한다")
     void validateStartAt() {
         // given
         final LocalTime invalidStartAt = null;

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.InvalidReservationDateException;
+import roomescape.exception.InvalidDateAndTimeException;
 import roomescape.exception.NotFoundException;
 import roomescape.fake.FakePlayTimeDao;
 import roomescape.fake.FakeReservationDao;
@@ -127,7 +127,7 @@ public class ReservationServiceTest {
 
         // when & then
         assertThatThrownBy(() -> reservationService.insert(reservationRequest))
-                .isInstanceOf(InvalidReservationDateException.class);
+                .isInstanceOf(InvalidDateAndTimeException.class);
     }
 
     @Test

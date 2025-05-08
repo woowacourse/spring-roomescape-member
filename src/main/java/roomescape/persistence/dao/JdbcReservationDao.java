@@ -28,14 +28,6 @@ public class JdbcReservationDao implements ReservationDao {
     private static final String THEME_NAME = "theme_name";
     private static final String THEME_DESCRIPTION = "theme_description";
     private static final String THEME_THUMBNAIL = "theme_thumbnail";
-    private static final RowMapper<Reservation> reservationStubRowMapper =
-            (rs, rowNum) -> new Reservation(
-                    rs.getLong(RESERVATION_ID),
-                    rs.getString(RESERVATION_NAME),
-                    LocalDate.parse(rs.getString(RESERVATION_DATE)),
-                    new PlayTime(rs.getLong(TIME_ID)),
-                    new Theme(rs.getLong(THEME_ID))
-            );
     private static final RowMapper<Reservation> reservationFullRowMapper =
             (rs, rowNum) -> new Reservation(
                     rs.getLong(RESERVATION_ID),
@@ -62,7 +54,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public Long save(final Reservation reservation) {
+    public Long insert(final Reservation reservation) {
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put(RESERVATION_NAME, reservation.getName());
         parameters.put(RESERVATION_DATE, reservation.getDate().toString());
@@ -127,7 +119,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean remove(final Long id) {
+    public boolean deleteById(final Long id) {
         final String sql = """
                 DELETE FROM reservation 
                 WHERE id = ?
@@ -137,7 +129,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public boolean existsByDateAndTimeAndTheme(final LocalDate date, final Long timeId, final Long themeId) {
+    public boolean existsByDateAndTimeIdAndThemeId(final LocalDate date, final Long timeId, final Long themeId) {
         final String sql = """
                 SELECT EXISTS (
                     SELECT 1 
@@ -150,8 +142,8 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(final LocalDate date,
-                                                                                   final Long themeId) {
+    public List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndThemeId(final LocalDate date,
+                                                                                     final Long themeId) {
         final String sql = """
                 SELECT 
                     start_at, 

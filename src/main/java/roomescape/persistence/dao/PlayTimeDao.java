@@ -9,13 +9,13 @@ public interface PlayTimeDao {
 
     Long insert(PlayTime playTime);
 
-    Optional<PlayTime> findById(Long id);
-
     List<PlayTime> findAll();
+
+    Optional<PlayTime> findById(Long id);
 
     boolean deleteById(Long id);
 
-    boolean existsByStartAt(LocalTime startAt);
-
     boolean existsById(Long timeId);
+
+    boolean existsByStartAt(LocalTime startAt);
 }

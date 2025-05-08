@@ -8,15 +8,15 @@ import roomescape.presentation.dto.ReservationAvailableTimeResponse;
 
 public interface ReservationDao {
 
-    Long save(Reservation reservation);
+    Long insert(Reservation reservation);
 
     List<Reservation> findAll();
 
-    boolean remove(Long id);
-
-    boolean existsByDateAndTimeAndTheme(LocalDate date, Long timeId, Long themeId);
-
-    List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndTheme(LocalDate date, Long themeId);
-
     Optional<Reservation> findById(Long id);
+
+    boolean deleteById(Long id);
+
+    boolean existsByDateAndTimeIdAndThemeId(LocalDate date, Long timeId, Long themeId);
+
+    List<ReservationAvailableTimeResponse> findAvailableTimesByDateAndThemeId(LocalDate date, Long themeId);
 }

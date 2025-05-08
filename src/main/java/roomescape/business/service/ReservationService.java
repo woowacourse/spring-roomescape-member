@@ -9,7 +9,7 @@ import roomescape.business.domain.PlayTime;
 import roomescape.business.domain.Reservation;
 import roomescape.business.domain.Theme;
 import roomescape.exception.DuplicateException;
-import roomescape.exception.InvalidReservationDateException;
+import roomescape.exception.InvalidDateAndTimeException;
 import roomescape.exception.NotFoundException;
 import roomescape.persistence.dao.PlayTimeDao;
 import roomescape.persistence.dao.ReservationDao;
@@ -42,7 +42,7 @@ public class ReservationService {
         final Theme theme = new Theme(reservationRequest.themeId());
         final Reservation reservation = new Reservation(reservationRequest.name(), reservationRequest.date(), playTime,
                 theme);
-        final Long id = reservationDao.save(reservation);
+        final Long id = reservationDao.insert(reservation);
         final Reservation savedReservation = new Reservation(id, reservationRequest.name(), reservationRequest.date(),
                 playTime, theme);
         return ReservationResponse.from(savedReservation);
@@ -61,7 +61,7 @@ public class ReservationService {
     }
 
     private void validateIsDuplicate(final LocalDate date, final Long playTimeId, final Long themeId) {
-        if (reservationDao.existsByDateAndTimeAndTheme(date, playTimeId, themeId)) {
+        if (reservationDao.existsByDateAndTimeIdAndThemeId(date, playTimeId, themeId)) {
             throw new DuplicateException("추가 하려는 예약과 같은 날짜, 시간, 테마의 예약이 이미 존재합니다.");
         }
     }
@@ -71,7 +71,7 @@ public class ReservationService {
 
         final LocalDateTime reservationDateTime = LocalDateTime.of(date, time);
         if (reservationDateTime.isBefore(now)) {
-            throw new InvalidReservationDateException();
+            throw new InvalidDateAndTimeException("방탈출 예약 날짜와 시간이 현재보다 과거일 수 없습니다.");
         }
     }
 
@@ -82,12 +82,12 @@ public class ReservationService {
     }
 
     public void deleteById(final Long id) {
-        if (!reservationDao.remove(id)) {
+        if (!reservationDao.deleteById(id)) {
             throw new NotFoundException("해당하는 방탈출 예약을 찾을 수 없습니다. 방탈출 id: %d".formatted(id));
         }
     }
 
     public List<ReservationAvailableTimeResponse> findAvailableTimes(final LocalDate date, final Long themeId) {
-        return reservationDao.findAvailableTimesByDateAndTheme(date, themeId);
+        return reservationDao.findAvailableTimesByDateAndThemeId(date, themeId);
     }
 }

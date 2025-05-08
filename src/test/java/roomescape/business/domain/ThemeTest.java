@@ -21,7 +21,7 @@ class ThemeTest {
     }
 
     @Test
-    @DisplayName("description 필드에 null이 들어오면 예외가 발생한다")
+    @DisplayName("description 필드에 null 들어오면 예외가 발생한다")
     void validateDescription() {
         // when & then
         assertThatThrownBy(() -> new Theme("예약자명", null, "썸네일"))
@@ -29,7 +29,7 @@ class ThemeTest {
     }
 
     @Test
-    @DisplayName("thumbnail 필드에 null이 들어오면 예외가 발생한다")
+    @DisplayName("thumbnail 필드에 null 들어오면 예외가 발생한다")
     void validateThumbnail() {
         // when & then
         assertThatThrownBy(() -> new Theme("예약자명", "소개", null))
